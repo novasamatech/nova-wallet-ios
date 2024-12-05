@@ -21,7 +21,11 @@ final class DAppListHeaderView: UICollectionViewCell {
         contentView.detailsLabel.font = .p1Paragraph
         contentView.detailsLabel.numberOfLines = 0
 
-        return ControlView(backgroundView: backgroundView, contentView: contentView, preferredHeight: 52.0)
+        return ControlView(
+            backgroundView: backgroundView,
+            contentView: contentView,
+            preferredHeight: 36.0
+        )
     }()
 
     var selectedLocale = Locale.current {
@@ -85,7 +89,7 @@ final class DAppListHeaderView: UICollectionViewCell {
         searchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
-            make.height.equalTo(52.0)
+            make.height.equalTo(36.0)
             make.bottom.equalToSuperview().inset(0.0)
         }
     }

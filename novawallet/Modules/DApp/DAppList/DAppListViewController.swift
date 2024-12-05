@@ -69,11 +69,13 @@ final class DAppListViewController: UIViewController, ViewHolder {
 private extension DAppListViewController {
     func configureCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
-        rootView.collectionView.registerCellClass(DAppListLoadingView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemCollectionViewCell.self)
-        rootView.collectionView.registerCellClass(DAppListFeaturedHeaderView.self)
+        rootView.collectionView.registerClass(
+            TitleCollectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
+        )
         rootView.collectionView.dataSource = dataSource
         rootView.collectionView.delegate = self
 
@@ -141,35 +143,24 @@ private extension DAppListViewController {
         indexPath: IndexPath
     ) -> UICollectionReusableView? {
         let sectionModel = dataSource.snapshot().sectionIdentifiers[indexPath.section]
-        let section = RootViewType.Section(for: indexPath.section)
 
-        switch section {
-        case .category, .favorites:
-            let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
-                forSupplementaryViewOfKind: kind,
-                for: indexPath
-            )
+        guard let title = sectionModel.title else { return nil }
 
-            if let title = sectionModel.title {
-                header?.bind(title: title)
-            }
+        let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
+            forSupplementaryViewOfKind: kind,
+            for: indexPath
+        )
 
-            return header
-        default:
-            return nil
-        }
-    }
+        header?.contentInsets = .init(
+            top: 4,
+            left: 16,
+            bottom: 4,
+            right: 16
+        )
 
-    func setupDAppHeaderView(
-        using collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithType(DAppListFeaturedHeaderView.self, for: indexPath)!
-        cell.locale = selectedLocale
+        header?.bind(title: title)
 
-        cell.actionButton.addTarget(self, action: #selector(actionSettings), for: .touchUpInside)
-
-        return cell
+        return header
     }
 
     func setupLoadingView(
@@ -245,13 +236,13 @@ private extension DAppListViewController {
                     categoriess: models,
                     indexPath: indexPath
                 )
-            case let .favorites(model):
+            case let .favorites(model, _):
                 setupDAppView(
                     using: collectionView,
                     dApp: model,
                     indexPath: indexPath
                 )
-            case let .category(model):
+            case let .category(model, _):
                 setupDAppView(
                     using: collectionView,
                     dApp: model,
@@ -324,10 +315,13 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 // MARK: DAppListViewProtocol
 
 extension DAppListViewController: DAppListViewProtocol {
-    func didReceive(_ sections: [DAppListSection]) {
-        sectionViewModels = sections
+    func didReceive(_ sections: [DAppListSectionViewModel]) {
+        rootView.sectionViewModels = sections
 
-        dataSource.apply(sections)
+        let models = sections.models
+
+        sectionViewModels = models
+        dataSource.apply(models)
     }
 
     func didReceive(state: DAppListState) {

@@ -4,7 +4,7 @@ import Operation_iOS
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceive(state: DAppListState)
     func didCompleteRefreshing()
-    func didReceive(_ sections: [DAppListSection])
+    func didReceive(_ sections: [DAppListSectionViewModel])
 }
 
 protocol DAppListPresenterProtocol: AnyObject {

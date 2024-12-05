@@ -27,6 +27,7 @@ struct DAppViewModel {
 extension DAppViewModel: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
+        hasher.combine(isFavorite)
     }
 
     static func == (

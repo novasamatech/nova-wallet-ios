@@ -16,7 +16,7 @@ final class DAppListViewLayout: UIView {
         return view
     }()
 
-    private var sectionViewModels: [DAppListSection] = []
+    var sectionViewModels: [DAppListSectionViewModel] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,22 +49,41 @@ final class DAppListViewLayout: UIView {
 
 private extension DAppListViewLayout {
     func createLayout() -> UICollectionViewCompositionalLayout {
-        let configuration = UICollectionViewCompositionalLayoutConfiguration()
-        configuration.interSectionSpacing = 16.0
+        UICollectionViewCompositionalLayout { [weak self] (index, _) -> NSCollectionLayoutSection? in
+            guard
+                let self,
+                index < sectionViewModels.count
+            else { return nil }
 
-        let sectionProvider: UICollectionViewCompositionalLayoutSectionProvider
-        sectionProvider = { [weak self] (index, _) -> NSCollectionLayoutSection? in
-            switch Section(for: index) {
-            case .favorites: self?.dAppFavoritesSectionLayout()
-            case .category: self?.dAppCategorySectionLayout()
-            default: nil
+            var section: NSCollectionLayoutSection?
+            var contentInsets: NSDirectionalEdgeInsets = .zero
+
+            switch sectionViewModels[index] {
+            case .header:
+                section = maxWidthsection(
+                    fixedHeight: 108,
+                    scrollingBehavior: .none
+                )
+            case .categorySelect:
+                section = maxWidthsection(
+                    fixedHeight: DAppCategoriesView.preferredHeight,
+                    scrollingBehavior: .none
+                )
+                contentInsets.bottom = 8
+            case .favorites:
+                section = dAppFavoritesSectionLayout()
+                contentInsets.bottom = 24
+                contentInsets.top = 12
+            case .category:
+                section = dAppCategorySectionLayout()
+                contentInsets.bottom = 24
+                contentInsets.top = 12
+                contentInsets.trailing = bounds.width * 0.25
             }
-        }
+            section?.contentInsets = contentInsets
 
-        return UICollectionViewCompositionalLayout(
-            sectionProvider: sectionProvider,
-            configuration: configuration
-        )
+            return section
+        }
     }
 
     func dAppFavoritesSectionLayout() -> NSCollectionLayoutSection {
@@ -82,14 +101,12 @@ private extension DAppListViewLayout {
             subitem: item,
             count: 1
         )
+
+        let header = headerLayoutItem()
+
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 16,
-            bottom: 0,
-            trailing: 16
-        )
+        section.boundarySupplementaryItems = [header]
 
         return section
     }
@@ -97,8 +114,8 @@ private extension DAppListViewLayout {
     func dAppCategorySectionLayout() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.75),
-                heightDimension: .absolute(88)
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .absolute(64)
             )
         )
         let group = NSCollectionLayoutGroup.vertical(
@@ -109,15 +126,51 @@ private extension DAppListViewLayout {
             subitem: item,
             count: 3
         )
-        let containerGroup = NSCollectionLayoutGroup.vertical(
+        let containerGroup = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.75),
-                heightDimension: .fractionalHeight(0.80)
+                widthDimension: .fractionalWidth(0.85),
+                heightDimension: .absolute(item.layoutSize.heightDimension.dimension * 3)
             ),
             subitem: group,
             count: 1
         )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
+
+        let header = headerLayoutItem()
+
+        let section = NSCollectionLayoutSection(group: containerGroup)
+        section.orthogonalScrollingBehavior = .groupPaging
+        section.boundarySupplementaryItems = [header]
+        section.interGroupSpacing = 16
+
+        return section
+    }
+
+    func maxWidthsection(
+        fixedHeight: CGFloat,
+        scrollingBehavior: UICollectionLayoutSectionOrthogonalScrollingBehavior
+    ) -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .fractionalHeight(1.0)
+            )
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .absolute(fixedHeight)
+            ),
+            subitem: item,
+            count: 1
+        )
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = scrollingBehavior
+
+        return section
+    }
+
+    func headerLayoutItem() -> NSCollectionLayoutBoundarySupplementaryItem {
+        NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .absolute(24.0)
@@ -125,34 +178,5 @@ private extension DAppListViewLayout {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
-        let section = NSCollectionLayoutSection(group: containerGroup)
-        section.orthogonalScrollingBehavior = .continuous
-        section.boundarySupplementaryItems = [header]
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 16,
-            bottom: 0,
-            trailing: 16
-        )
-
-        return section
-    }
-}
-
-extension DAppListViewLayout {
-    enum Section {
-        case header
-        case categorySelect
-        case favorites
-        case category
-
-        init(for index: Int) {
-            switch index {
-            case 0: self = .header
-            case 1: self = .categorySelect
-            case 2: self = .favorites
-            default: self = .category
-            }
-        }
     }
 }
