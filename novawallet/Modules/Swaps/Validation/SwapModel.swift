@@ -100,13 +100,13 @@ struct SwapModel {
     }
 
     var payAssetTotalBalanceAfterSwap: BigUInt {
-        let balance = payAssetBalance?.freeInPlank ?? 0
+        let balance = payAssetBalance?.balanceCountingEd ?? 0
         let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
         let spendingAmount = spendingAmountInPlank ?? 0
 
         let totalSpending = spendingAmount + fee
 
-        return balance > totalSpending ? balance - totalSpending : 0
+        return balance.subtractOrZero(totalSpending)
     }
 
     var isFeeInPayToken: Bool {
@@ -115,10 +115,10 @@ struct SwapModel {
 
     func checkBalanceSufficiency() -> InsufficientBalanceReason? {
         let balance = payAssetBalance?.transferable ?? 0
-        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
+        let feeInPayToken = isFeeInPayToken ? feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0 : 0
         let swapAmount = spendingAmountInPlank ?? 0
 
-        let totalSpending = swapAmount + fee
+        let totalSpending = swapAmount + feeInPayToken
 
         let isViolatingConsumers = !notViolatingConsumers
 
@@ -129,25 +129,26 @@ struct SwapModel {
         if balance < swapAmount {
             return .amountToHigh(.init(available: balance.decimal(precision: payChainAsset.asset.precision)))
         } else if isViolatingConsumers {
+            // TODO: Here we now can have custom asset
             let minBalance = utilityAssetExistense?.minBalance ?? 0
-            let precision = (utilityChainAsset ?? feeChainAsset).asset.precision
+            let precision = feeChainAsset.asset.precision
             return .violatingConsumers(
                 .init(
                     minBalance: minBalance.decimal(precision: precision),
-                    fee: fee.decimal(precision: precision)
+                    fee: feeInPayToken.decimal(precision: precision)
                 )
             )
         } else if payChainAsset.isUtilityAsset {
-            let available = balance > fee ? balance - fee : 0
+            let available = balance.subtractOrZero(feeInPayToken)
 
             return .feeInNativeAsset(
                 .init(
                     available: available.decimal(precision: payChainAsset.asset.precision),
-                    fee: fee.decimal(precision: feeChainAsset.asset.precision)
+                    fee: feeInPayToken.decimal(precision: feeChainAsset.asset.precision)
                 )
             )
         } else {
-            let available = balance > fee ? balance - fee : 0
+            let available = balance.subtractOrZero(feeInPayToken)
 
             if
                 isFeeInPayToken,
@@ -157,7 +158,7 @@ struct SwapModel {
                 return .feeInPayAsset(
                     .init(
                         available: available.decimal(precision: payChainAsset.asset.precision),
-                        feeInPayAsset: fee.decimal(precision: feeChainAsset.asset.precision),
+                        feeInPayAsset: feeInPayToken.decimal(precision: feeChainAsset.asset.precision),
                         minBalanceInPayAsset: additionInPayAsset.decimal(precision: payChainAsset.asset.precision),
                         minBalanceInNativeAsset: additionInNativeAsset.decimal(
                             precision: utilityAsset.asset.precision
@@ -168,7 +169,7 @@ struct SwapModel {
                 return .feeInNativeAsset(
                     .init(
                         available: available.decimal(precision: payChainAsset.asset.precision),
-                        fee: fee.decimal(precision: feeChainAsset.asset.precision)
+                        fee: feeInPayToken.decimal(precision: feeChainAsset.asset.precision)
                     )
                 )
             }
@@ -183,8 +184,9 @@ struct SwapModel {
         } else if feeChainAsset.isUtilityAsset {
             let total = feeAssetBalance?.freeInPlank ?? 0
             let fee = feeModel?.originFeeIn(assetIn: feeChainAsset) ?? 0
-            balance = total > fee ? total - fee : 0
+            balance = total.subtractOrZero(fee)
         } else {
+            // TODO: It is not more valid since ed in native asset doesn't remain on account after swap/crosschain
             // if fee is paid in non native token then we will have at least ed
             return false
         }
@@ -203,6 +205,7 @@ struct SwapModel {
     }
 
     func checkCanReceive() -> CannotReceiveReason? {
+        // TODO: We need to rewrite the logic to take into account crosschains and swaps
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
         let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.route.amountOut ?? 0)
         let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
