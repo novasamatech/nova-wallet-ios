@@ -170,10 +170,7 @@ private extension DAppListViewModelFactory {
         )
     }
 
-    func categorySections(
-        from dAppList: DAppList,
-        favorites: [String: DAppFavorite]
-    ) -> [DAppListSection]? {
+    func categorySections(from dAppList: DAppList) -> [DAppListSection]? {
         guard !dAppList.dApps.isEmpty else { return nil }
 
         let dAppsByCategory: [String: [DApp]] = dAppList.dApps.reduce(into: [:]) { acc, dApp in
@@ -196,7 +193,7 @@ private extension DAppListViewModelFactory {
             let dAppViewModels = createViewModels(
                 merging: indexedDApps,
                 filteredFavorites: [:],
-                allFavorites: favorites,
+                allFavorites: [:],
                 categoriesDict: [category.identifier: category]
             )
 
@@ -355,10 +352,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             viewModels.append(.favorites(favoritesSection))
         }
 
-        if let categorySections = categorySections(
-            from: dAppList,
-            favorites: favorites
-        ) {
+        if let categorySections = categorySections(from: dAppList) {
             viewModels.append(contentsOf: categorySections.map { .category($0) })
         }
 
