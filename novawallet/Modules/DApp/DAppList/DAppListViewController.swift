@@ -403,8 +403,6 @@ extension DAppListViewController: DAppListViewProtocol {
 
     func didReceive(state: DAppListState) {
         self.state = state
-
-        // rootView.collectionView.reloadData()
     }
 
     func didCompleteRefreshing() {
