@@ -42,13 +42,33 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
     func removeFavorite(with id: String) {
         interactor.removeFavorite(with: id)
     }
+
+    func reorderFavorites(reorderedModels: [DAppViewModel]) {
+        let ids = reorderedModels.map(\.identifier)
+
+        interactor.reorderFavorites(
+            favorites,
+            reorderedIds: ids
+        )
+    }
+
+    func selectDApp(with id: String) {
+        // TODO: Implement routing
+
+        print(id)
+    }
 }
 
 // MARK: DAppFavoritesInteractorOutputProtocol
 
 extension DAppFavoritesPresenter: DAppFavoritesInteractorOutputProtocol {
     func didReceiveFavorites(changes: [DataProviderChange<DAppFavorite>]) {
-        favorites = changes.mergeToDict(favorites)
+        let currentFavorites = favorites
+        let updatedFavorites = changes.mergeToDict(currentFavorites)
+
+        favorites = updatedFavorites
+
+        guard currentFavorites.count != updatedFavorites.count else { return }
 
         provideDApps()
     }

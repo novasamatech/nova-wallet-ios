@@ -45,6 +45,7 @@ private extension DAppFavoritesViewController {
     func setupTableView() {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
+        rootView.tableView.isEditing = true
 
         rootView.tableView.registerClassForCell(DAppFavoriteItemTableViewCell.self)
     }
@@ -94,6 +95,14 @@ extension DAppFavoritesViewController: UITableViewDataSource {
 // MARK: UITableViewDelegate
 
 extension DAppFavoritesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        let viewModel = viewModels[indexPath.row]
+
+        presenter.selectDApp(with: viewModel.identifier)
+    }
+
     func tableView(
         _: UITableView,
         heightForRowAt _: IndexPath
@@ -103,9 +112,14 @@ extension DAppFavoritesViewController: UITableViewDelegate {
 
     func tableView(
         _: UITableView,
-        canMoveRowAt _: IndexPath
-    ) -> Bool {
-        true
+        moveRowAt sourceIndexPath: IndexPath,
+        to destinationIndexPath: IndexPath
+    ) {
+        let movedDApp = viewModels[sourceIndexPath.row]
+        viewModels.remove(at: sourceIndexPath.row)
+        viewModels.insert(movedDApp, at: destinationIndexPath.row)
+
+        presenter.reorderFavorites(reorderedModels: viewModels)
     }
 
     func tableView(
@@ -125,10 +139,9 @@ extension DAppFavoritesViewController: UITableViewDelegate {
 
     func tableView(
         _: UITableView,
-        commit _: UITableViewCell.EditingStyle,
-        forRowAt indexPath: IndexPath
-    ) {
-        print(indexPath)
+        shouldIndentWhileEditingRowAt _: IndexPath
+    ) -> Bool {
+        false
     }
 }
 

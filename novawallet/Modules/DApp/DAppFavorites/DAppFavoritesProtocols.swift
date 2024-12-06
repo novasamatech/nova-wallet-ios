@@ -7,10 +7,16 @@ protocol DAppFavoritesViewProtocol: ControllerBackedProtocol {
 protocol DAppFavoritesPresenterProtocol: AnyObject {
     func setup()
     func removeFavorite(with id: String)
+    func reorderFavorites(reorderedModels: [DAppViewModel])
+    func selectDApp(with id: String)
 }
 
 protocol DAppFavoritesInteractorInputProtocol: AnyObject {
     func setup()
+    func reorderFavorites(
+        _ favorites: [String: DAppFavorite],
+        reorderedIds: [String]
+    )
     func removeFavorite(with id: String)
 }
 

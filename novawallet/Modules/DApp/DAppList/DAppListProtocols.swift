@@ -22,7 +22,12 @@ protocol DAppListPresenterProtocol: AnyObject {
 protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func addToFavorites(dApp: DApp)
+
+    func addToFavorites(
+        dApp: DApp,
+        at index: Int
+    )
+
     func removeFromFavorites(dAppIdentifier: String)
 }
 

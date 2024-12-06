@@ -5,6 +5,8 @@ final class DAppFavoritesViewLayout: UIView {
         let view = UITableView()
         view.separatorStyle = .none
         view.backgroundColor = .clear
+        view.allowsSelection = true
+        view.allowsSelectionDuringEditing = true
         return view
     }()
 

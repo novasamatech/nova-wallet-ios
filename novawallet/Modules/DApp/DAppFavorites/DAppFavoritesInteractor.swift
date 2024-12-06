@@ -40,6 +40,40 @@ extension DAppFavoritesInteractor: DAppFavoritesInteractorInputProtocol {
 
         operationQueue.addOperation(saveOperation)
     }
+
+    func reorderFavorites(
+        _ favorites: [String: DAppFavorite],
+        reorderedIds: [String]
+    ) {
+        let indexUpdateOperation = createIndexUpdateOperation(
+            favorites,
+            reorderedIds: reorderedIds
+        )
+        let saveOperation = dAppsFavoriteRepository.saveOperation(
+            { try indexUpdateOperation.extractNoCancellableResultData() },
+            { [] }
+        )
+
+        saveOperation.addDependency(indexUpdateOperation)
+
+        operationQueue.addOperations(
+            [saveOperation, indexUpdateOperation],
+            waitUntilFinished: false
+        )
+    }
+
+    func createIndexUpdateOperation(
+        _ favorites: [String: DAppFavorite],
+        reorderedIds: [String]
+    ) -> BaseOperation<[DAppFavorite]> {
+        ClosureOperation {
+            reorderedIds
+                .enumerated()
+                .compactMap { index, id in
+                    favorites[id]?.updatingIndex(to: index)
+                }
+        }
+    }
 }
 
 // MARK: DAppLocalStorageSubscriber

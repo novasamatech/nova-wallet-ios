@@ -33,7 +33,7 @@ private extension DAppFavoriteItemView {
             alignment: .center,
             [
                 dAppItemView,
-                .spacer(),
+                .spacer(length: 24),
                 favoriteButton
             ]
         )

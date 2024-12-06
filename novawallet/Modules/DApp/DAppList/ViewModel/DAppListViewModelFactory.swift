@@ -95,7 +95,8 @@ private extension DAppListViewModelFactory {
             name: name,
             details: model.identifier,
             icon: imageViewModel,
-            isFavorite: true
+            isFavorite: true,
+            order: model.index
         )
     }
 
@@ -121,26 +122,31 @@ private extension DAppListViewModelFactory {
             )
         }
 
-        let favoriteViewModels = filteredFavorites.values.filter {
+        let filteredFavorites = filteredFavorites.values.filter {
             !knownIdentifiers.contains($0.identifier)
-        }.map { createFavoriteDAppViewModel(from: $0) }
+        }
 
-        let allViewModels = favoriteViewModels + knownViewModels
+        let sortedKnownViewModels = sortedDAppViewModels(from: knownViewModels)
+        let sortedFavoriteViewModels = createFavoriteDApps(from: filteredFavorites)
 
-        return allViewModels.sorted { model1, model2 in
-            let favoriteValue1 = model1.isFavorite ? 1 : 0
-            let favoriteValue2 = model2.isFavorite ? 1 : 0
+        return sortedFavoriteViewModels + sortedKnownViewModels
+    }
 
-            if favoriteValue1 != favoriteValue2 {
-                return favoriteValue1 > favoriteValue2
-            } else if let order1 = model1.order, let order2 = model2.order {
-                return order1 < order2
-            } else if model1.order != nil {
-                return false
-            } else if model2.order != nil {
-                return true
+    func sortedDAppViewModels(from viewModels: [DAppViewModel]) -> [DAppViewModel] {
+        viewModels.sorted { lhsModel, rhsModel in
+            let lhsIsFavorite = lhsModel.isFavorite ? 1 : 0
+            let rhsIsFavorite = rhsModel.isFavorite ? 1 : 0
+
+            return if lhsIsFavorite != rhsIsFavorite {
+                lhsIsFavorite > rhsIsFavorite
+            } else if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
+                lhsOrder < rhsOrder
+            } else if lhsModel.order != nil {
+                false
+            } else if rhsModel.order != nil {
+                true
             } else {
-                return model1.name.localizedCompare(model2.name) == .orderedAscending
+                lhsModel.name.localizedCompare(rhsModel.name) == .orderedAscending
             }
         }
     }
@@ -244,9 +250,9 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
     }
 
     func createFavoriteDApps(from list: [DAppFavorite]) -> [DAppViewModel] {
-        list.map { favoriteDapp in
-            createFavoriteDAppViewModel(from: favoriteDapp)
-        }
+        let viewModels = list.map { createFavoriteDAppViewModel(from: $0) }
+
+        return sortedDAppViewModels(from: viewModels)
     }
 
     func createDApps(
