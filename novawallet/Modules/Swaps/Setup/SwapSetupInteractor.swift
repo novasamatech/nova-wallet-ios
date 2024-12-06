@@ -18,19 +18,22 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var receiveChainAsset: ChainAsset? {
         didSet {
-            updateSubscriptions(activeChainAssets: activeChainAssets)
+            clearSubscriptionsByAssets(activeChainAssets)
+            clearSubscriptionsByPriceId(activePriceIds)
         }
     }
 
     private var payChainAsset: ChainAsset? {
         didSet {
-            updateSubscriptions(activeChainAssets: activeChainAssets)
+            clearSubscriptionsByAssets(activeChainAssets)
+            clearSubscriptionsByPriceId(activePriceIds)
         }
     }
 
     private var feeChainAsset: ChainAsset? {
         didSet {
-            updateSubscriptions(activeChainAssets: activeChainAssets)
+            clearSubscriptionsByAssets(activeChainAssets)
+            clearSubscriptionsByPriceId(activePriceIds)
         }
     }
 
@@ -41,6 +44,17 @@ final class SwapSetupInteractor: SwapBaseInteractor {
                 payChainAsset?.chainAssetId,
                 feeChainAsset?.chainAssetId,
                 feeChainAsset?.chain.utilityChainAssetId()
+            ].compactMap { $0 }
+        )
+    }
+
+    private var activePriceIds: Set<AssetModel.PriceId> {
+        Set(
+            [
+                receiveChainAsset?.asset.priceId,
+                payChainAsset?.asset.priceId,
+                feeChainAsset?.asset.priceId,
+                feeChainAsset?.chain.utilityAsset()?.priceId
             ].compactMap { $0 }
         )
     }

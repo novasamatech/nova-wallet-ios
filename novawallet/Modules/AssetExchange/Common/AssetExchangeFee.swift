@@ -55,6 +55,7 @@ extension AssetExchangeFee {
         return originFee.totalAmountIn(asset: assetIn.chainAssetId) + intermediateFeesInAssetIn
     }
 
+    // An assumption here is that fee is either in assetIn or feeAsset
     func calculateTotalFeeInFiat(
         assetIn: ChainAsset,
         assetInPrice: PriceData?,

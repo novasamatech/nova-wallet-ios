@@ -5,16 +5,6 @@ class SwapBasePresenter {
     let selectedWallet: MetaAccountModel
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
 
-    init(
-        selectedWallet: MetaAccountModel,
-        dataValidatingFactory: SwapDataValidatorFactoryProtocol,
-        logger: LoggerProtocol
-    ) {
-        self.selectedWallet = selectedWallet
-        self.dataValidatingFactory = dataValidatingFactory
-        self.logger = logger
-    }
-
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
 
     var payAssetBalance: AssetBalance? {
@@ -37,18 +27,18 @@ class SwapBasePresenter {
         return balances[utilityAssetId]
     }
 
-    private(set) var prices: [ChainAssetId: PriceData] = [:]
+    private(set) var prices: [AssetModel.PriceId: PriceData] = [:]
 
     var payAssetPriceData: PriceData? {
-        getPayChainAsset().flatMap { prices[$0.chainAssetId] }
+        getPayChainAsset()?.asset.priceId.flatMap { prices[$0] }
     }
 
     var receiveAssetPriceData: PriceData? {
-        getReceiveChainAsset().flatMap { prices[$0.chainAssetId] }
+        getReceiveChainAsset()?.asset.priceId.flatMap { prices[$0] }
     }
 
     var feeAssetPriceData: PriceData? {
-        getFeeChainAsset().flatMap { prices[$0.chainAssetId] }
+        getFeeChainAsset()?.asset.priceId.flatMap { prices[$0] }
     }
 
     var assetBalanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
@@ -84,6 +74,16 @@ class SwapBasePresenter {
     }
 
     var accountInfo: AccountInfo?
+
+    init(
+        selectedWallet: MetaAccountModel,
+        dataValidatingFactory: SwapDataValidatorFactoryProtocol,
+        logger: LoggerProtocol
+    ) {
+        self.selectedWallet = selectedWallet
+        self.dataValidatingFactory = dataValidatingFactory
+        self.logger = logger
+    }
 
     func getSwapModel() -> SwapModel? {
         guard
@@ -173,7 +173,7 @@ class SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {}
 
-    func handleNewPrice(_: PriceData?, chainAssetId _: ChainAssetId) {}
+    func handleNewPrice(_: PriceData?, priceId _: AssetModel.PriceId) {}
 
     func handleNewBalance(_: AssetBalance?, for _: ChainAssetId) {}
 
@@ -289,20 +289,15 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
     }
 
     func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        let optChainAssetId = [getPayChainAsset(), getReceiveChainAsset(), getFeeChainAsset()]
-            .compactMap { $0 }
-            .filter { $0.asset.priceId == priceId }
-            .first?.chainAssetId
-
-        guard let chainAssetId = optChainAssetId, prices[chainAssetId] != price else {
+        guard prices[priceId] != price else {
             return
         }
 
         logger.debug("New price: \(String(describing: price))")
 
-        prices[chainAssetId] = price
+        prices[priceId] = price
 
-        handleNewPrice(price, chainAssetId: chainAssetId)
+        handleNewPrice(price, priceId: priceId)
     }
 
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId) {

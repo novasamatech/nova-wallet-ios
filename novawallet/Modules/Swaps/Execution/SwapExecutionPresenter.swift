@@ -82,7 +82,7 @@ final class SwapExecutionPresenter {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetIn,
             amount: model.quote.route.amountIn,
-            priceData: model.prices[chainAssetIn.chainAssetId],
+            priceData: model.payAssetPrice,
             locale: selectedLocale
         )
 
@@ -93,7 +93,7 @@ final class SwapExecutionPresenter {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetOut,
             amount: quote.route.amountOut,
-            priceData: model.prices[chainAssetOut.chainAssetId],
+            priceData: model.receiveAssetPrice,
             locale: selectedLocale
         )
 
@@ -129,8 +129,8 @@ final class SwapExecutionPresenter {
 
         if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(
             rateParams: params,
-            priceIn: model.prices[chainAssetIn.chainAssetId],
-            priceOut: model.prices[chainAssetOut.chainAssetId],
+            priceIn: model.payAssetPrice,
+            priceOut: model.receiveAssetPrice,
             locale: selectedLocale
         ) {
             view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))

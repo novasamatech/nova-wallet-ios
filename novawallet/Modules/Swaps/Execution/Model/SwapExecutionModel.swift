@@ -6,17 +6,17 @@ struct SwapExecutionModel {
     let feeAsset: ChainAsset
     let quote: AssetExchangeQuote
     let fee: AssetExchangeFee
-    let prices: [ChainAssetId: PriceData]
+    let prices: [AssetModel.PriceId: PriceData]
 
     var payAssetPrice: PriceData? {
-        prices[chainAssetIn.chainAssetId]
+        chainAssetIn.asset.priceId.flatMap { prices[$0] }
     }
 
     var receiveAssetPrice: PriceData? {
-        prices[chainAssetOut.chainAssetId]
+        chainAssetOut.asset.priceId.flatMap { prices[$0] }
     }
 
     var feeAssetPrice: PriceData? {
-        prices[feeAsset.chainAssetId]
+        feeAsset.asset.priceId.flatMap { prices[$0] }
     }
 }

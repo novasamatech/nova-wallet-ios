@@ -19,7 +19,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     private var quoteCallStore = CancellableCallStore()
     private var feeCallStore = CancellableCallStore()
 
-    private var priceProviders: [ChainAssetId: StreamableProvider<PriceData>] = [:]
+    private var priceProviders: [AssetModel.PriceId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
 
@@ -130,33 +130,38 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         accountInfoProvider = subscribeAccountInfo(for: accountId, chainId: chain.chainId)
     }
 
-    func updateSubscriptions(activeChainAssets: Set<ChainAssetId>) {
-        priceProviders = clear(providers: priceProviders, activeChainAssets: activeChainAssets)
-        assetBalanceProviders = clear(providers: assetBalanceProviders, activeChainAssets: activeChainAssets)
+    func setupPriceProviderIfNeeded(for chainAsset: ChainAsset) {
+        guard let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        if priceProviders[priceId] == nil {
+            priceProviders[priceId] = subscribeToPrice(
+                for: priceId,
+                currency: currencyManager.selectedCurrency
+            )
+        }
     }
 
-    func clear<T>(
-        providers: [ChainAssetId: StreamableProvider<T>],
-        activeChainAssets: Set<ChainAssetId>
-    ) -> [ChainAssetId: StreamableProvider<T>] {
-        providers.reduce(into: [ChainAssetId: StreamableProvider<T>]()) {
-            if !activeChainAssets.contains($1.key) {
+    func clearSubscriptionsByAssets(_ activeChainAssets: Set<ChainAssetId>) {
+        assetBalanceProviders = clear(providers: assetBalanceProviders, activeIds: activeChainAssets)
+    }
+
+    func clearSubscriptionsByPriceId(_ priceIds: Set<AssetModel.PriceId>) {
+        priceProviders = clear(providers: priceProviders, activeIds: priceIds)
+    }
+
+    func clear<K: Hashable, T>(
+        providers: [K: StreamableProvider<T>],
+        activeIds: Set<K>
+    ) -> [K: StreamableProvider<T>] {
+        providers.reduce(into: [K: StreamableProvider<T>]()) {
+            if !activeIds.contains($1.key) {
                 $1.value.removeObserver(self)
             } else {
                 $0[$1.key] = $1.value
             }
         }
-    }
-
-    func priceSubscription(chainAsset: ChainAsset) -> StreamableProvider<PriceData>? {
-        guard let priceId = chainAsset.asset.priceId else {
-            return nil
-        }
-
-        return priceProviders[chainAsset.chainAssetId] ?? subscribeToPrice(
-            for: priceId,
-            currency: currencyManager.selectedCurrency
-        )
     }
 
     func assetBalanceSubscription(chainAsset: ChainAsset) -> StreamableProvider<AssetBalance>? {
@@ -239,7 +244,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func setReceiveChainAssetSubscriptions(_ chainAsset: ChainAsset) {
         provideAssetBalanceExistenses(for: chainAsset)
 
-        priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
+        setupPriceProviderIfNeeded(for: chainAsset)
+
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
@@ -248,12 +254,12 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         provideAssetBalanceExistenses(for: chainAsset)
 
-        priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
+        setupPriceProviderIfNeeded(for: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
     func setFeeChainAssetSubscriptions(_ chainAsset: ChainAsset) {
-        priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: chainAsset)
+        setupPriceProviderIfNeeded(for: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
 
         provideAssetBalanceExistenses(for: chainAsset)
@@ -262,7 +268,7 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         if
             let utilityChainAsset = chainAsset.chain.utilityChainAsset(),
             utilityChainAsset.chainAssetId != chainAsset.chainAssetId {
-            priceProviders[chainAsset.chainAssetId] = priceSubscription(chainAsset: utilityChainAsset)
+            setupPriceProviderIfNeeded(for: utilityChainAsset)
             assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: utilityChainAsset)
 
             provideAssetBalanceExistenses(for: chainAsset)

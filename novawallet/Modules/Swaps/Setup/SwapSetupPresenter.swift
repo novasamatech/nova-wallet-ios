@@ -190,16 +190,16 @@ final class SwapSetupPresenter: SwapBasePresenter {
         switchFeeChainAssetIfNecessary()
     }
 
-    override func handleNewPrice(_: PriceData?, chainAssetId: ChainAssetId) {
-        if payChainAsset?.chainAssetId == chainAssetId {
+    override func handleNewPrice(_: PriceData?, priceId: AssetModel.PriceId) {
+        if payChainAsset?.asset.priceId == priceId {
             providePayInputPriceViewModel()
         }
 
-        if receiveChainAsset?.chainAssetId == chainAssetId {
+        if receiveChainAsset?.asset.priceId == priceId {
             provideReceiveInputPriceViewModel()
         }
 
-        if feeChainAsset?.chainAssetId == chainAssetId {
+        if feeChainAsset?.asset.priceId == priceId {
             provideFeeViewModel()
         }
     }
