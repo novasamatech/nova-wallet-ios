@@ -8,7 +8,6 @@ final class DAppListPresenter {
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
-    let categoryViewModelFactory: DAppCategoryViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
@@ -23,13 +22,11 @@ final class DAppListPresenter {
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
-        categoryViewModelFactory: DAppCategoryViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.categoryViewModelFactory = categoryViewModelFactory
         self.localizationManager = localizationManager
     }
 

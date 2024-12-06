@@ -8,19 +8,23 @@ final class DAppFavoritesPresenter {
     let interactor: DAppFavoritesInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
+    let logger: LoggerProtocol
 
     private var favorites: [String: DAppFavorite] = [:]
+    private var dAppList: DAppList?
 
     init(
         interactor: DAppFavoritesInteractorInputProtocol,
         wireframe: DAppFavoritesWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
+        self.logger = logger
     }
 }
 
@@ -28,8 +32,11 @@ final class DAppFavoritesPresenter {
 
 private extension DAppFavoritesPresenter {
     func provideDApps() {
+        guard let dAppList else { return }
+
         let viewModels = viewModelFactory.createFavoriteDApps(
-            from: Array(favorites.values)
+            from: Array(favorites.values),
+            categories: dAppList.categories
         )
 
         view?.didReceive(viewModels: viewModels)
@@ -72,6 +79,17 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
 // MARK: DAppFavoritesInteractorOutputProtocol
 
 extension DAppFavoritesPresenter: DAppFavoritesInteractorOutputProtocol {
+    func didReceive(dAppsResult: Result<DAppList?, any Error>) {
+        switch dAppsResult {
+        case let .success(list):
+            dAppList = list
+
+            provideDApps()
+        case let .failure(error):
+            logger.error("Fatal error: \(error)")
+        }
+    }
+
     func didReceiveFavorites(changes: [DataProviderChange<DAppFavorite>]) {
         let currentFavorites = favorites
         let updatedFavorites = changes.mergeToDict(currentFavorites)

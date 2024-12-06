@@ -82,6 +82,7 @@ final class DAppListInteractor {
             identifier: dApp.url.absoluteString,
             label: dApp.name,
             icon: dApp.icon?.absoluteString,
+            categories: dApp.categories,
             index: index
         )
 

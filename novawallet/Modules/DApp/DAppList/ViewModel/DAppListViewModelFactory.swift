@@ -4,7 +4,10 @@ import SubstrateSdk
 protocol DAppListViewModelFactoryProtocol {
     func createFavoriteDAppName(from model: DAppFavorite) -> String
 
-    func createFavoriteDApps(from list: [DAppFavorite]) -> [DAppViewModel]
+    func createFavoriteDApps(
+        from list: [DAppFavorite],
+        categories: [DAppCategory]
+    ) -> [DAppViewModel]
 
     func createDApps(
         from category: String?,
@@ -79,7 +82,10 @@ private extension DAppListViewModelFactory {
         )
     }
 
-    func createFavoriteDAppViewModel(from model: DAppFavorite) -> DAppViewModel {
+    func createFavoriteDAppViewModel(
+        from model: DAppFavorite,
+        categoriesDict: [String: DAppCategory]
+    ) -> DAppViewModel {
         let imageViewModel: ImageViewModelProtocol
 
         if let icon = model.icon, let url = URL(string: icon) {
@@ -90,10 +96,14 @@ private extension DAppListViewModelFactory {
 
         let name = createFavoriteDAppName(from: model)
 
+        let details = model.categories?.map {
+            categoriesDict[$0]?.name ?? $0
+        }.joined(separator: ", ") ?? model.identifier
+
         return DAppViewModel(
             identifier: model.identifier,
             name: name,
-            details: model.identifier,
+            details: details,
             icon: imageViewModel,
             isFavorite: true,
             order: model.index
@@ -104,12 +114,8 @@ private extension DAppListViewModelFactory {
         merging dapps: [IndexedDApp],
         filteredFavorites: [String: DAppFavorite],
         allFavorites: [String: DAppFavorite],
-        categories: [DAppCategory]
+        categoriesDict: [String: DAppCategory]
     ) -> [DAppViewModel] {
-        let categoriesDict = categories.reduce(into: [String: DAppCategory]()) { result, category in
-            result[category.identifier] = category
-        }
-
         let knownIdentifiers = Set(dapps.map(\.dapp.identifier))
 
         let knownViewModels: [DAppViewModel] = dapps.map { indexedDapp in
@@ -127,7 +133,11 @@ private extension DAppListViewModelFactory {
         }
 
         let sortedKnownViewModels = sortedDAppViewModels(from: knownViewModels)
-        let sortedFavoriteViewModels = createFavoriteDApps(from: filteredFavorites)
+
+        let sortedFavoriteViewModels = createFavorites(
+            from: filteredFavorites,
+            categoriesDict: categoriesDict
+        )
 
         return sortedFavoriteViewModels + sortedKnownViewModels
     }
@@ -155,11 +165,15 @@ private extension DAppListViewModelFactory {
 
     func favoritesSection(
         from favorites: [String: DAppFavorite],
+        categories: [DAppCategory],
         locale: Locale
     ) -> DAppListSection? {
         guard !favorites.isEmpty else { return nil }
 
-        let favoritesDApps = createFavoriteDApps(from: Array(favorites.values))
+        let favoritesDApps = createFavoriteDApps(
+            from: Array(favorites.values),
+            categories: categories
+        )
 
         let name = R.string.localizable.commonFavorites(preferredLanguages: locale.rLanguages)
 
@@ -196,7 +210,7 @@ private extension DAppListViewModelFactory {
                 merging: indexedDApps,
                 filteredFavorites: [:],
                 allFavorites: favorites,
-                categories: [category]
+                categoriesDict: [category.identifier: category]
             )
 
             return DAppListSection(
@@ -249,8 +263,30 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         }
     }
 
-    func createFavoriteDApps(from list: [DAppFavorite]) -> [DAppViewModel] {
-        let viewModels = list.map { createFavoriteDAppViewModel(from: $0) }
+    func createFavoriteDApps(
+        from list: [DAppFavorite],
+        categories: [DAppCategory]
+    ) -> [DAppViewModel] {
+        let categoriesDict = categories.reduce(into: [String: DAppCategory]()) { result, category in
+            result[category.identifier] = category
+        }
+
+        return createFavorites(
+            from: list,
+            categoriesDict: categoriesDict
+        )
+    }
+
+    func createFavorites(
+        from list: [DAppFavorite],
+        categoriesDict: [String: DAppCategory]
+    ) -> [DAppViewModel] {
+        let viewModels = list.map {
+            createFavoriteDAppViewModel(
+                from: $0,
+                categoriesDict: categoriesDict
+            )
+        }
 
         return sortedDAppViewModels(from: viewModels)
     }
@@ -294,11 +330,15 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             .filter { availableCategories.contains($0.identifier) }
             .map { dappCategoriesViewModelFactory.createViewModel(for: $0) }
 
+        let categoriesById = dAppList.categories.reduce(into: [String: DAppCategory]()) { result, category in
+            result[category.identifier] = category
+        }
+
         let dappViewModels = createViewModels(
             merging: actualDApps,
             filteredFavorites: filteredFavorites,
             allFavorites: favorites,
-            categories: dAppList.categories
+            categoriesDict: categoriesById
         )
 
         let selectedCategoryIndex = categoryViewModels.firstIndex(where: { $0.identifier == category })
@@ -331,6 +371,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 
         if let favoritesSection = favoritesSection(
             from: favorites,
+            categories: dAppList.categories,
             locale: locale
         ) {
             viewModels.append(.favorites(favoritesSection))

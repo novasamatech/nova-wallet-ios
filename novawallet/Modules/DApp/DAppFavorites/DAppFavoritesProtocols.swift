@@ -22,6 +22,7 @@ protocol DAppFavoritesInteractorInputProtocol: AnyObject {
 
 protocol DAppFavoritesInteractorOutputProtocol: AnyObject {
     func didReceiveFavorites(changes: [DataProviderChange<DAppFavorite>])
+    func didReceive(dAppsResult: Result<DAppList?, Error>)
 }
 
 protocol DAppFavoritesWireframeProtocol: DAppAlertPresentable {

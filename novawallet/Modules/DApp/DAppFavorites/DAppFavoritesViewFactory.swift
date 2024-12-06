@@ -7,6 +7,12 @@ struct DAppFavoritesViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let localizationManager = LocalizationManager.shared
+        let logger = Logger.shared
+
+        let dAppsUrl = ApplicationConfig.shared.dAppsListURL
+        let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
+            for: dAppsUrl
+        )
 
         let favoritesRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
@@ -15,8 +21,9 @@ struct DAppFavoritesViewFactory {
         let interactor = DAppFavoritesInteractor(
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
+            dAppProvider: dAppProvider,
             operationQueue: operationQueue,
-            logger: Logger.shared
+            logger: logger
         )
 
         let wireframe = DAppFavoritesWireframe()
@@ -30,7 +37,8 @@ struct DAppFavoritesViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: logger
         )
 
         let view = DAppFavoritesViewController(
