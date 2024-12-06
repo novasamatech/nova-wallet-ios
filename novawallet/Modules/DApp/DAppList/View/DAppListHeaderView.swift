@@ -28,6 +28,17 @@ final class DAppListHeaderView: UICollectionViewCell {
         )
     }()
 
+    let settingsButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
+        button.triangularedView?.fillColor = .clear
+        button.triangularedView?.highlightedFillColor = .clear
+        button.triangularedView?.shadowOpacity = 0
+        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        button.changesContentOpacityWhenHighlighted = true
+        return button
+    }()
+
     var selectedLocale = Locale.current {
         didSet {
             if selectedLocale != oldValue {
@@ -85,9 +96,18 @@ final class DAppListHeaderView: UICollectionViewCell {
             make.centerY.equalTo(walletSwitch.snp.centerY)
         }
 
+        contentView.addSubview(settingsButton)
+        settingsButton.snp.makeConstraints { make in
+            make.width.equalTo(44.0)
+            make.height.equalTo(32.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+        }
+
         contentView.addSubview(searchView)
         searchView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(settingsButton.snp.leading)
             make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
             make.height.equalTo(36.0)
             make.bottom.equalToSuperview().inset(0.0)

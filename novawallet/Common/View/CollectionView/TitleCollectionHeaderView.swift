@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class TitleCollectionHeaderView: UICollectionReusableView {
     private let displayContentView = UIView()
@@ -11,6 +12,16 @@ final class TitleCollectionHeaderView: UICollectionReusableView {
         view.iconWidth = 20.0
         return view
     }()
+
+    let button: RoundedButton = .create { button in
+        button.applyIconStyle()
+
+        let color = R.color.colorButtonTextAccent()!
+        button.imageWithTitleView?.titleColor = color
+        button.imageWithTitleView?.titleFont = .caption1
+
+        button.contentInsets = .zero
+    }
 
     var titleLabel: UILabel {
         titleView.detailsLabel
@@ -42,6 +53,7 @@ final class TitleCollectionHeaderView: UICollectionReusableView {
         backgroundColor = .clear
 
         setupLayout()
+        apply(style: .title)
     }
 
     @available(*, unavailable)
@@ -55,9 +67,15 @@ final class TitleCollectionHeaderView: UICollectionReusableView {
             make.edges.equalToSuperview().inset(contentInsets)
         }
 
+        displayContentView.addSubview(button)
+        button.snp.makeConstraints { make in
+            make.centerY.trailing.equalToSuperview()
+        }
+
         displayContentView.addSubview(titleView)
         titleView.snp.makeConstraints { make in
-            make.leading.centerY.trailing.equalToSuperview()
+            make.leading.centerY.equalToSuperview()
+            make.trailing.equalTo(button.snp.leading)
         }
     }
 }
@@ -90,5 +108,23 @@ extension TitleCollectionHeaderView {
         titleView.iconWidth = 0
 
         titleLabel.text = title
+    }
+
+    func apply(style: Style) {
+        switch style {
+        case .title:
+            button.isHidden = true
+        case .titleWithButton:
+            button.isHidden = false
+        }
+    }
+}
+
+// MARK: LayoutStyle
+
+extension TitleCollectionHeaderView {
+    enum Style {
+        case title
+        case titleWithButton
     }
 }

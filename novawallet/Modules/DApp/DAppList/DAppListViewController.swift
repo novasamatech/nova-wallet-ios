@@ -158,6 +158,13 @@ private extension DAppListViewController {
             return nil
         }
 
+        let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
+            forSupplementaryViewOfKind: kind,
+            for: indexPath
+        )
+        header?.contentInsets.top = 4
+        header?.contentInsets.bottom = 4
+
         var viewModel: TitleCollectionHeaderView.Model
 
         switch sectionViewModels[indexPath.section] {
@@ -166,21 +173,25 @@ private extension DAppListViewController {
                 title: title,
                 icon: R.image.iconFavButtonSel()
             )
-        case let .category(model):
+            header?.apply(style: .titleWithButton)
+            header?.button.imageWithTitleView?.title = R.string.localizable.commonSeeAll(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            header?.button.addTarget(
+                self,
+                action: #selector(actionSeeAllFavorites),
+                for: .touchUpInside
+            )
+        case .category:
             viewModel = .init(
                 title: title,
                 icon: nil
             )
+            header?.apply(style: .title)
         default:
             return nil
         }
 
-        let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
-            forSupplementaryViewOfKind: kind,
-            for: indexPath
-        )
-        header?.contentInsets.top = 4
-        header?.contentInsets.bottom = 4
         header?.bind(viewModel: viewModel)
 
         return header
@@ -303,6 +314,10 @@ private extension DAppListViewController {
 
     @objc func actionSettings() {
         presenter.activateSettings()
+    }
+
+    @objc func actionSeeAllFavorites() {
+        presenter.seeAllFavorites()
     }
 }
 

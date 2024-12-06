@@ -120,6 +120,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             )
         }
     }
+
+    func seeAllFavorites() {
+        print("SEE_ALL_FAVORITES")
+    }
 }
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {

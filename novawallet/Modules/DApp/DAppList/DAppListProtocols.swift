@@ -10,6 +10,7 @@ protocol DAppListViewProtocol: ControllerBackedProtocol {
 protocol DAppListPresenterProtocol: AnyObject {
     func setup()
     func refresh()
+    func seeAllFavorites()
     func activateAccount()
     func activateSearch()
     func activateSettings()
