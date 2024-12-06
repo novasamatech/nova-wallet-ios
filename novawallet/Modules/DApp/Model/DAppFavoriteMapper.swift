@@ -11,7 +11,6 @@ final class DAppFavoriteMapper: CoreDataMapperProtocol {
             identifier: entity.identifier!,
             label: entity.label,
             icon: entity.icon,
-            categories: entity.categories?.split(by: .comma),
             index: Int(entity.index)
         )
     }
@@ -24,10 +23,6 @@ final class DAppFavoriteMapper: CoreDataMapperProtocol {
         entity.identifier = model.identifier
         entity.icon = model.icon
         entity.label = model.label
-
-        if let categories = model.categories {
-            entity.categories = categories.joined(with: .comma)
-        }
 
         if let index = model.index {
             entity.index = Int64(index)

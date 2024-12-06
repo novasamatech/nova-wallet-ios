@@ -57,7 +57,6 @@ final class DAppAddFavoriteInteractor {
             identifier: browserPage.identifier,
             label: dApp?.name ?? browserPage.title,
             icon: dApp?.icon?.absoluteString,
-            categories: dApp?.categories,
             index: nil
         )
 

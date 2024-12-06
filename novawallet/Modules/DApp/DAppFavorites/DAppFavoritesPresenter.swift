@@ -36,7 +36,7 @@ private extension DAppFavoritesPresenter {
 
         let viewModels = viewModelFactory.createFavoriteDApps(
             from: Array(favorites.values),
-            categories: dAppList.categories
+            dAppList: dAppList
         )
 
         view?.didReceive(viewModels: viewModels)

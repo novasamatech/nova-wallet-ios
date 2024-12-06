@@ -76,7 +76,6 @@ extension DAppAddFavoritePresenter: DAppAddFavoritePresenterProtocol {
             identifier: urlString,
             label: title,
             icon: proposedModel?.icon,
-            categories: proposedModel?.categories,
             index: nil
         )
         interactor.save(favorite: favorite)

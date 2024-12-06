@@ -5,7 +5,6 @@ struct DAppFavorite: Identifiable {
     let identifier: String
     let label: String?
     let icon: String?
-    let categories: [String]?
     let index: Int?
 
     func updatingIndex(to newIndex: Int?) -> Self {
@@ -13,7 +12,6 @@ struct DAppFavorite: Identifiable {
             identifier: identifier,
             label: label,
             icon: icon,
-            categories: categories,
             index: newIndex
         )
     }

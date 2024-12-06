@@ -981,6 +981,7 @@
 		2D4431E22D01130E00017951 /* DAppListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E12D01130E00017951 /* DAppListSection.swift */; };
 		2D4431E52D02F9CE00017951 /* DAppFavoriteItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E42D02F9CE00017951 /* DAppFavoriteItemView.swift */; };
 		2D4431E72D03015F00017951 /* DAppFavoriteItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E62D03015F00017951 /* DAppFavoriteItemTableViewCell.swift */; };
+		2D4431E92D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */; };
 		2D4F55012CCA60E900B65B76 /* AssetsSearchCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */; };
 		2D4F55032CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */; };
 		2D4F55052CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */; };
@@ -6244,6 +6245,7 @@
 		2D4431E12D01130E00017951 /* DAppListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListSection.swift; sourceTree = "<group>"; };
 		2D4431E42D02F9CE00017951 /* DAppFavoriteItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavoriteItemView.swift; sourceTree = "<group>"; };
 		2D4431E62D03015F00017951 /* DAppFavoriteItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavoriteItemTableViewCell.swift; sourceTree = "<group>"; };
+		2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
 		2D4F55002CCA60E900B65B76 /* AssetsSearchCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionManager.swift; sourceTree = "<group>"; };
 		2D4F55022CCA60F300B65B76 /* AssetsSearchCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		2D4F55042CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsSearchCollectionViewDelegate.swift; sourceTree = "<group>"; };
@@ -12780,6 +12782,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D4431EA2D036A0400017951 /* DAppListViewModelFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */,
+				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
+			);
+			path = DAppListViewModelFactory;
+			sourceTree = "<group>";
+		};
 		2D4F54FF2CCA60C500B65B76 /* AssetsSearchCollectionManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -15540,9 +15551,9 @@
 				2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */,
 				841BFD6427BA332F000A16CE /* DAppListState.swift */,
 				842BA36A27B64F1000D31EEF /* DAppViewModel.swift */,
-				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
-				2D4431E12D01130E00017951 /* DAppListSection.swift */,
 				2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */,
+				2D4431E12D01130E00017951 /* DAppListSection.swift */,
+				2D4431EA2D036A0400017951 /* DAppListViewModelFactory */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -25630,6 +25641,7 @@
 				0CB313882C12C0FC00353724 /* CloudBackupEnablePasswordWireframe.swift in Sources */,
 				8406B5AF26FBE7EF00635B61 /* SelectionIconDetailsTableViewCell.swift in Sources */,
 				849014BE24AA87E4008F705E /* PinSetupPresenter.swift in Sources */,
+				2D4431E92D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift in Sources */,
 				849ABE63262785F200011A2A /* ControllerMapper.swift in Sources */,
 				841BFD6727BA4865000A16CE /* EthereumSerializationFactory.swift in Sources */,
 				8467FD0224E5D2D9005D486C /* OnboardingMainInteractor.swift in Sources */,
