@@ -25,6 +25,6 @@ protocol DAppFavoritesInteractorOutputProtocol: AnyObject {
     func didReceive(dAppsResult: Result<DAppList?, Error>)
 }
 
-protocol DAppFavoritesWireframeProtocol: DAppAlertPresentable {
+protocol DAppFavoritesWireframeProtocol: DAppAlertPresentable, DAppBrowserOpening {
     func close(from view: ControllerBackedProtocol?)
 }

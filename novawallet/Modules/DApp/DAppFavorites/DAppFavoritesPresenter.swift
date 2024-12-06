@@ -70,9 +70,20 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        // TODO: Implement routing
+        guard let dAppList else { return }
 
-        print(id)
+        let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
+            DAppBrowserTab(from: dApp)
+        } else {
+            DAppBrowserTab(from: id)
+        }
+
+        guard let tab else { return }
+
+        wireframe.showNewBrowserStack(
+            tab,
+            from: view
+        )
     }
 }
 
