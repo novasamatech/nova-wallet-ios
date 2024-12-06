@@ -272,6 +272,12 @@ extension DAppSearchViewController: DAppSearchViewProtocol {
         self.viewModel = viewModel
 
         rootView.categoriesView.bind(categories: viewModel?.categories ?? [])
+
+        rootView.categoriesView.setSelectedIndex(
+            viewModel?.selectedCategoryIndex,
+            animated: true
+        )
+
         rootView.tableView.reloadData()
     }
 }

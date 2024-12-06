@@ -135,6 +135,7 @@ private extension DAppListViewController {
         )!
 
         cell.view.delegate = self
+        cell.view.chagesStateOnSelect = false
         cell.view.bind(categories: categoriess)
 
         return cell

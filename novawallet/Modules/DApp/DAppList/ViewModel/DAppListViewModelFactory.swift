@@ -295,7 +295,10 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             categories: dAppList.categories
         )
 
+        let selectedCategoryIndex = categoryViewModels.firstIndex(where: { $0.identifier == category })
+
         return DAppListViewModel(
+            selectedCategoryIndex: selectedCategoryIndex,
             categories: categoryViewModels,
             dApps: dappViewModels
         )

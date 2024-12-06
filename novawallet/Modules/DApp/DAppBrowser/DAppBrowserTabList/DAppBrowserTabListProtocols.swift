@@ -49,6 +49,7 @@ protocol DAppBrowserSearchPresentable: AnyObject {
     func presentSearch(
         from view: ControllerBackedProtocol?,
         initialQuery: String?,
+        selectedCategoryId: String?,
         delegate: DAppSearchDelegate
     )
 }
@@ -56,10 +57,15 @@ protocol DAppBrowserSearchPresentable: AnyObject {
 extension DAppBrowserSearchPresentable {
     func presentSearch(
         from view: ControllerBackedProtocol?,
-        initialQuery: String?,
+        initialQuery: String? = nil,
+        selectedCategoryId: String? = nil,
         delegate: DAppSearchDelegate
     ) {
-        guard let searchView = DAppSearchViewFactory.createView(with: initialQuery, delegate: delegate) else {
+        guard let searchView = DAppSearchViewFactory.createView(
+            with: initialQuery,
+            selectedCategoryId: selectedCategoryId,
+            delegate: delegate
+        ) else {
             return
         }
 

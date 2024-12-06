@@ -24,15 +24,6 @@ class DAppCategoriesViewCell: CollectionViewContainerCell<DAppCategoriesView> {
 }
 
 final class DAppCategoriesView: UIView {
-    private enum Constants {
-        static let layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
-        static let buttonHeight: CGFloat = 32
-    }
-
-    static var preferredHeight: CGFloat {
-        Constants.layoutMargins.top + Constants.layoutMargins.bottom + Constants.buttonHeight
-    }
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .horizontal)
         view.stackView.distribution = .fill
@@ -45,6 +36,8 @@ final class DAppCategoriesView: UIView {
     }()
 
     weak var delegate: DAppCategoriesViewDelegate?
+
+    var chagesStateOnSelect: Bool = true
 
     private var categoryItems: [CategoryChip] = []
     private var viewModels: [DAppCategoryViewModel] = []
@@ -180,11 +173,30 @@ final class DAppCategoriesView: UIView {
             index = nil
         }
 
-        setSelectedIndex(index, animated: true)
+        if chagesStateOnSelect {
+            setSelectedIndex(index, animated: true)
+        }
 
         delegate?.dAppCategories(
             view: self,
             didSelectCategoryWith: selectedCategory?.identifier
         )
+    }
+}
+
+// MARK: Private Constants
+
+private extension DAppCategoriesView {
+    enum Constants {
+        static let layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+        static let buttonHeight: CGFloat = 32
+    }
+}
+
+// MARK: Internal Constants
+
+extension DAppCategoriesView {
+    static var preferredHeight: CGFloat {
+        Constants.layoutMargins.top + Constants.layoutMargins.bottom + Constants.buttonHeight
     }
 }

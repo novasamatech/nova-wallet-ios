@@ -84,7 +84,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func activateSearch() {
-        wireframe.showSearch(from: view, delegate: self)
+        wireframe.presentSearch(
+            from: view,
+            delegate: self
+        )
     }
 
     func activateSettings() {
@@ -95,15 +98,12 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         hasFavorites ? categoryModels.count + 2 : categoryModels.count + 1
     }
 
-    func selectCategory(with _: String) {
-        guard
-            case let .success(dAppList) = dAppsResult,
-            let favorites = favorites
-        else {
-            return
-        }
-
-        // TODO: Show search with selected category
+    func selectCategory(with id: String) {
+        wireframe.presentSearch(
+            from: view,
+            selectedCategoryId: id,
+            delegate: self
+        )
     }
 
     func selectDApp(with id: String) {

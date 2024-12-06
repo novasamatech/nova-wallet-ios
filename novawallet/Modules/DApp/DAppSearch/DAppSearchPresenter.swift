@@ -26,6 +26,7 @@ final class DAppSearchPresenter {
         wireframe: DAppSearchWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         initialQuery: String?,
+        selectedCategoryId: String?,
         delegate: DAppSearchDelegate,
         applicationConfig: ApplicationConfigProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -35,6 +36,7 @@ final class DAppSearchPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         query = initialQuery
+        self.selectedCategoryId = selectedCategoryId
         self.delegate = delegate
         self.applicationConfig = applicationConfig
         self.localizationManager = localizationManager
