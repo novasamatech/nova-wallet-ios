@@ -15,8 +15,8 @@ struct SwapMaxModel {
 
         return balance.transferable + minBalance <= balance.balanceCountingEd
     }
-    
-    var shouldKeepMinBalanceDueToReceiveInsufficiency: Bool {
+
+    var needMinBalanceDueToReceiveInsufficiency: Bool {
         guard
             let payChainAsset,
             payChainAsset.isUtilityAsset,
@@ -30,15 +30,20 @@ struct SwapMaxModel {
 
         return (!receiveAssetExistense.isSelfSufficient || hasConsumers)
     }
-    
-    var shouldKeepMinBalanceDueToPostsubmissionFee: Bool {
-        // TODO: Implement crosschain case
-        false
+
+    var needMinBalanceDueToPostsubmissionFee: Bool {
+        guard
+            let payChainAsset,
+            payChainAsset.isUtilityAsset,
+            let firstOperationFee = feeModel?.operationFees.first else {
+            return false
+        }
+
+        return !firstOperationFee.postSubmissionFee.paidByAccount.isEmpty
     }
 
     var shouldKeepMinBalance: Bool {
-        shouldKeepMinBalanceDueToReceiveInsufficiency ||
-        shouldKeepMinBalanceDueToPostsubmissionFee
+        needMinBalanceDueToReceiveInsufficiency || needMinBalanceDueToPostsubmissionFee
     }
 
     private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {

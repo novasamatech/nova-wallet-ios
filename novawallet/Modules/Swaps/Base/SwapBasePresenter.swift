@@ -119,6 +119,7 @@ class SwapBasePresenter {
         .init(
             payChainAsset: getPayChainAsset(),
             feeChainAsset: getFeeChainAsset(),
+            receiveChainAsset: getReceiveChainAsset(),
             balance: payAssetBalance,
             feeModel: fee,
             payAssetExistense: payAssetBalanceExistense,
