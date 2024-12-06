@@ -102,12 +102,24 @@ private extension DAppListViewController {
             for: indexPath
         )!
 
+        view.selectedLocale = selectedLocale
         view.walletSwitch.bind(viewModel: walletSwitchViewModel)
 
-        view.walletSwitch.addTarget(self, action: #selector(actionSelectAccount), for: .touchUpInside)
-        view.searchView.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
-
-        view.selectedLocale = selectedLocale
+        view.walletSwitch.addTarget(
+            self,
+            action: #selector(actionSelectAccount),
+            for: .touchUpInside
+        )
+        view.searchView.addTarget(
+            self,
+            action: #selector(actionSearch),
+            for: .touchUpInside
+        )
+        view.settingsButton.addTarget(
+            self,
+            action: #selector(actionSettings),
+            for: .touchUpInside
+        )
 
         return view
     }
@@ -295,6 +307,21 @@ private extension DAppListViewController {
             )
         }
     }
+
+    func selectDApp(
+        section: DAppListSection,
+        at index: Int
+    ) {
+        let item = section.cells[index]
+
+        switch item {
+        case let .category(model, _),
+             let .favorites(model, _):
+            presenter.selectDApp(with: model.identifier)
+        default:
+            break
+        }
+    }
 }
 
 // MARK: Actions
@@ -324,8 +351,21 @@ private extension DAppListViewController {
 // MARK: UICollectionViewDelegate
 
 extension DAppListViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         collectionView.deselectItem(at: indexPath, animated: true)
+
+        let section = sectionViewModels[indexPath.section]
+
+        switch section {
+        case let .category(model),
+             let .favorites(model):
+            selectDApp(section: model, at: indexPath.row)
+        default:
+            break
+        }
     }
 }
 

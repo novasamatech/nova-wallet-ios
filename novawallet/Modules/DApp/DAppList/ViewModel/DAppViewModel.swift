@@ -1,25 +1,13 @@
 import Foundation
 
 struct DAppViewModel {
-    enum Identifier: Equatable, Hashable {
-        case index(value: Int)
-        case key(value: String)
-    }
-
-    let identifier: Identifier
+    let identifier: String
     let name: String
     let details: String
     let icon: ImageViewModelProtocol?
     let isFavorite: Bool
 
-    var order: Int? {
-        switch identifier {
-        case let .index(value):
-            return value
-        case .key:
-            return nil
-        }
-    }
+    var order: Int?
 }
 
 // MARK: Hashable

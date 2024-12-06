@@ -84,12 +84,10 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             return
         }
 
-        switch viewModel.identifier {
-        case let .index(value):
-            let dApp = dAppList.dApps[value]
+        if let dApp = dAppList.dApps.first(where: { $0.identifier == viewModel.identifier }) {
             delegate?.didCompleteDAppSearchResult(.dApp(model: dApp))
-        case let .key(value):
-            delegate?.didCompleteDAppSearchResult(.query(string: value))
+        } else {
+            delegate?.didCompleteDAppSearchResult(.query(string: viewModel.identifier))
         }
 
         wireframe.close(from: view)

@@ -107,18 +107,22 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        guard case let .success(dAppList) = dAppsResult else {
-            return
+        guard case let .success(dAppList) = dAppsResult else { return }
+
+        let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
+            DAppBrowserTab(from: dApp)
+        } else if let dApp = favorites?[id] {
+            DAppBrowserTab(from: dApp.identifier)
+        } else {
+            nil
         }
 
-        if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
-            let tab = DAppBrowserTab(from: dApp)
+        guard let tab else { return }
 
-            wireframe.showNewBrowserStack(
-                tab,
-                from: view
-            )
-        }
+        wireframe.showNewBrowserStack(
+            tab,
+            from: view
+        )
     }
 
     func seeAllFavorites() {

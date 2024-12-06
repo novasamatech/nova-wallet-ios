@@ -70,11 +70,12 @@ private extension DAppListViewModelFactory {
         }.joined(separator: ", ")
 
         return DAppViewModel(
-            identifier: .index(value: index),
+            identifier: model.identifier,
             name: model.name,
             details: details,
             icon: imageViewModel,
-            isFavorite: favorite
+            isFavorite: favorite,
+            order: index
         )
     }
 
@@ -90,7 +91,7 @@ private extension DAppListViewModelFactory {
         let name = createFavoriteDAppName(from: model)
 
         return DAppViewModel(
-            identifier: .key(value: model.identifier),
+            identifier: model.identifier,
             name: name,
             details: model.identifier,
             icon: imageViewModel,
