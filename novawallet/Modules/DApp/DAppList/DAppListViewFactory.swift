@@ -55,7 +55,6 @@ struct DAppListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            categoryViewModelFactory: categoryViewModelFactory,
             localizationManager: localizationManager
         )
 

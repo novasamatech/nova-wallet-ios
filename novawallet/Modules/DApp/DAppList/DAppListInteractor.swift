@@ -74,11 +74,15 @@ final class DAppListInteractor {
         )
     }
 
-    func addToFavorites(dApp: DApp) {
+    func addToFavorites(
+        dApp: DApp,
+        at index: Int
+    ) {
         let model = DAppFavorite(
             identifier: dApp.url.absoluteString,
             label: dApp.name,
-            icon: dApp.icon?.absoluteString
+            icon: dApp.icon?.absoluteString,
+            index: index
         )
 
         let saveOperation = dAppsFavoriteRepository.saveOperation({ [model] }, { [] })

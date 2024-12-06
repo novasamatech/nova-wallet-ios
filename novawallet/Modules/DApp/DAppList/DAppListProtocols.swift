@@ -22,7 +22,12 @@ protocol DAppListPresenterProtocol: AnyObject {
 protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func addToFavorites(dApp: DApp)
+
+    func addToFavorites(
+        dApp: DApp,
+        at index: Int
+    )
+
     func removeFromFavorites(dAppIdentifier: String)
 }
 
@@ -40,4 +45,5 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable,
     WalletSwitchPresentable,
     DAppBrowserOpening {
     func showSetting(from view: DAppListViewProtocol?)
+    func showFavorites(from view: DAppListViewProtocol?)
 }
