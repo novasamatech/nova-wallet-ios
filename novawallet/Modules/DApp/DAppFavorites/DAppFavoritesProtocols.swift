@@ -24,6 +24,6 @@ protocol DAppFavoritesInteractorOutputProtocol: AnyObject {
     func didReceiveFavorites(changes: [DataProviderChange<DAppFavorite>])
 }
 
-protocol DAppFavoritesWireframeProtocol: AnyObject {
+protocol DAppFavoritesWireframeProtocol: DAppAlertPresentable {
     func close(from view: ControllerBackedProtocol?)
 }

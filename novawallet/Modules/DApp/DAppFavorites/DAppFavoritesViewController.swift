@@ -67,6 +67,14 @@ extension DAppFavoritesViewController: DAppFavoritesViewProtocol {
     }
 }
 
+// MARK: DAppFavoriteItemViewDelegate
+
+extension DAppFavoritesViewController: DAppFavoriteItemViewDelegate {
+    func didTapFavoriteButton(_ itemId: String) {
+        presenter.removeFavorite(with: itemId)
+    }
+}
+
 // MARK: UITableViewDataSource
 
 extension DAppFavoritesViewController: UITableViewDataSource {
@@ -86,6 +94,7 @@ extension DAppFavoritesViewController: UITableViewDataSource {
         )!
         let viewModel = viewModels[indexPath.row]
 
+        cell.contentDisplayView.delegate = self
         cell.contentDisplayView.bind(viewModel: viewModel)
 
         return cell

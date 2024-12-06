@@ -1,10 +1,12 @@
 import UIKit
 import SoraUI
 
+protocol DAppFavoriteItemViewDelegate: AnyObject {
+    func didTapFavoriteButton(_ itemId: String)
+}
+
 final class DAppFavoriteItemView: UIView {
-    private let dAppItemView: DAppItemView = .create { view in
-        view.layoutStyle = .horizontal
-    }
+    weak var delegate: DAppFavoriteItemViewDelegate?
 
     let favoriteButton: UIButton = .create { view in
         view.setImage(
@@ -13,10 +15,15 @@ final class DAppFavoriteItemView: UIView {
         )
     }
 
+    private let dAppItemView: DAppItemView = .create { view in
+        view.layoutStyle = .horizontal
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+        setupAction()
     }
 
     @available(*, unavailable)
@@ -46,6 +53,20 @@ private extension DAppFavoriteItemView {
         favoriteButton.snp.makeConstraints { make in
             make.size.equalTo(20)
         }
+    }
+
+    func setupAction() {
+        favoriteButton.addTarget(
+            self,
+            action: #selector(actionRemoveFavorite),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionRemoveFavorite() {
+        guard let model = dAppItemView.model else { return }
+
+        delegate?.didTapFavoriteButton(model.identifier)
     }
 }
 

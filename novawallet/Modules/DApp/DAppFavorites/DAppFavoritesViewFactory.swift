@@ -6,6 +6,8 @@ struct DAppFavoritesViewFactory {
     static func createView() -> DAppFavoritesViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
+        let localizationManager = LocalizationManager.shared
+
         let favoritesRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
         ).createFavoriteDAppsRepository()
@@ -27,12 +29,13 @@ struct DAppFavoritesViewFactory {
         let presenter = DAppFavoritesPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
         )
 
         let view = DAppFavoritesViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         presenter.view = view

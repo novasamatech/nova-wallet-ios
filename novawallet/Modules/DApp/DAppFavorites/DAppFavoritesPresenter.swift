@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 import Operation_iOS
 
 final class DAppFavoritesPresenter {
@@ -6,17 +7,20 @@ final class DAppFavoritesPresenter {
     let wireframe: DAppFavoritesWireframeProtocol
     let interactor: DAppFavoritesInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     private var favorites: [String: DAppFavorite] = [:]
 
     init(
         interactor: DAppFavoritesInteractorInputProtocol,
         wireframe: DAppFavoritesWireframeProtocol,
-        viewModelFactory: DAppListViewModelFactoryProtocol
+        viewModelFactory: DAppListViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.localizationManager = localizationManager
     }
 }
 
@@ -40,7 +44,13 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
     }
 
     func removeFavorite(with id: String) {
-        interactor.removeFavorite(with: id)
+        wireframe.showFavoritesRemovalConfirmation(
+            from: view,
+            name: favorites[id]?.label ?? "",
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.interactor.removeFavorite(with: id)
+        }
     }
 
     func reorderFavorites(reorderedModels: [DAppViewModel]) {
