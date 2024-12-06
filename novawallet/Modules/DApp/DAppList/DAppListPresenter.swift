@@ -126,7 +126,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func seeAllFavorites() {
-        print("SEE_ALL_FAVORITES")
+        wireframe.showFavorites(from: view)
     }
 }
 

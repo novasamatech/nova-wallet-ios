@@ -1,0 +1,23 @@
+import Operation_iOS
+
+protocol DAppFavoritesViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModels: [DAppViewModel])
+}
+
+protocol DAppFavoritesPresenterProtocol: AnyObject {
+    func setup()
+    func removeFavorite(with id: String)
+}
+
+protocol DAppFavoritesInteractorInputProtocol: AnyObject {
+    func setup()
+    func removeFavorite(with id: String)
+}
+
+protocol DAppFavoritesInteractorOutputProtocol: AnyObject {
+    func didReceiveFavorites(changes: [DataProviderChange<DAppFavorite>])
+}
+
+protocol DAppFavoritesWireframeProtocol: AnyObject {
+    func close(from view: ControllerBackedProtocol?)
+}
