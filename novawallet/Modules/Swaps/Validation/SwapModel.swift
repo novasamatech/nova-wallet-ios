@@ -154,7 +154,7 @@ struct SwapModel {
                 isFeeInPayToken,
                 let additionInPayAsset = feeModel?.postSubmissionFeeInAssetIn(payChainAsset),
                 let utilityAsset = feeChainAsset.chain.utilityChainAsset(),
-                let additionInNativeAsset = feeModel?.originPostsubmissionFeeIn(assetIn: utilityAsset) {
+                let additionInNativeAsset = feeModel?.originPostsubmissionFeeInAsset(utilityAsset) {
                 return .feeInPayAsset(
                     .init(
                         available: available.decimal(precision: payChainAsset.asset.precision),
@@ -183,7 +183,7 @@ struct SwapModel {
             balance = payAssetTotalBalanceAfterSwap
         } else if feeChainAsset.isUtilityAsset {
             let total = feeAssetBalance?.freeInPlank ?? 0
-            let fee = feeModel?.originFeeIn(assetIn: feeChainAsset) ?? 0
+            let fee = feeModel?.originFeeInAsset(feeChainAsset) ?? 0
             balance = total.subtractOrZero(fee)
         } else {
             // TODO: It is not more valid since ed in native asset doesn't remain on account after swap/crosschain
@@ -209,7 +209,7 @@ struct SwapModel {
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
         let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.route.amountOut ?? 0)
         let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
-            (feeModel?.originFeeIn(assetIn: feeChainAsset) ?? 0) : 0
+            (feeModel?.originFeeInAsset(feeChainAsset) ?? 0) : 0
         let minBalance = receiveAssetExistense?.minBalance ?? 0
 
         if amountAfterSwap < minBalance + feeInReceiveAsset {
@@ -242,7 +242,7 @@ struct SwapModel {
             let networkFee = feeModel?.totalFeeInAssetIn(payChainAsset),
             let additionInPayAsset = feeModel?.postSubmissionFeeInAssetIn(payChainAsset),
             let utilityAsset = feeChainAsset.chain.utilityChainAsset(),
-            let additionInNativeAsset = feeModel?.originPostsubmissionFeeIn(assetIn: utilityAsset) {
+            let additionInNativeAsset = feeModel?.originPostsubmissionFeeInAsset(utilityAsset) {
             return .swapAndFee(
                 .init(
                     dust: remaning.decimal(precision: payChainAsset.asset.precision),

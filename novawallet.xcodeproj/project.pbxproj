@@ -812,6 +812,7 @@
 		0CE933E22C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E12C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift */; };
 		0CE933E42C07C225000F3EFE /* WalletCreationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E32C07C225000F3EFE /* WalletCreationRequestFactory.swift */; };
 		0CE933E62C07DBE1000F3EFE /* WalletNameChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */; };
+		0CE94FF02D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6128,6 +6129,7 @@
 		0CE933E12C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupRemindPresentationResult.swift; sourceTree = "<group>"; };
 		0CE933E32C07C225000F3EFE /* WalletCreationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCreationRequestFactory.swift; sourceTree = "<group>"; };
 		0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameChanged.swift; sourceTree = "<group>"; };
+		0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPreferredFeeAssetModel.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -14765,6 +14767,7 @@
 				77C9BCBD2ACD286100022EA2 /* SwapsSetupViewModelFactory.swift */,
 				0C13DFD42AFA4F1500E5F355 /* SwapIssueCheckParams.swift */,
 				0C13DFD62AFA50A200E5F355 /* SwapIssueViewModelFactory.swift */,
+				0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -30016,6 +30019,7 @@
 				A640F0905D22C22F946278C6 /* NetworkManageNodeViewController.swift in Sources */,
 				A76FAB4B859306CE12958CDF /* NetworkManageNodeViewLayout.swift in Sources */,
 				4CD9B187647A37B4F6343DD7 /* NetworkManageNodeViewFactory.swift in Sources */,
+				0CE94FF02D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift in Sources */,
 				EECFBA0B881DBD2AE2BC73B7 /* CustomNetworkProtocols.swift in Sources */,
 				440436412294F3569F426552 /* CustomNetworkWireframe.swift in Sources */,
 				F08729B3361332AC9E017BED /* CustomNetworkViewController.swift in Sources */,

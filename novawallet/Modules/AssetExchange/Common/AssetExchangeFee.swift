@@ -19,20 +19,20 @@ struct AssetExchangeFee: Equatable {
 }
 
 extension AssetExchangeFee {
-    func originPostsubmissionFeeIn(assetIn: ChainAsset) -> Balance {
+    func originPostsubmissionFeeInAsset(_ asset: ChainAsset) -> Balance {
         guard let originFee = operationFees.first else {
             return 0
         }
 
-        return originFee.postSubmissionFee.totalAmountIn(asset: assetIn.chainAssetId)
+        return originFee.postSubmissionFee.totalAmountIn(asset: asset.chainAssetId)
     }
 
-    func originFeeIn(assetIn: ChainAsset) -> Balance {
+    func originFeeInAsset(_ asset: ChainAsset) -> Balance {
         guard let originFee = operationFees.first else {
             return 0
         }
 
-        return originFee.totalAmountIn(asset: assetIn.chainAssetId)
+        return originFee.totalAmountIn(asset: asset.chainAssetId)
     }
 
     func originExtrinsicFee() -> ExtrinsicFeeProtocol? {
@@ -53,6 +53,14 @@ extension AssetExchangeFee {
         }
 
         return originFee.totalAmountIn(asset: assetIn.chainAssetId) + intermediateFeesInAssetIn
+    }
+
+    var hasOriginPostSubmissionByAccount: Bool {
+        guard let originFee = operationFees.first else {
+            return false
+        }
+
+        return !originFee.postSubmissionFee.paidByAccount.isEmpty
     }
 
     // An assumption here is that fee is either in assetIn or feeAsset

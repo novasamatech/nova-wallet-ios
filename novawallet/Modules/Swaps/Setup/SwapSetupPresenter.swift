@@ -598,22 +598,24 @@ extension SwapSetupPresenter {
     }
 
     private func switchFeeChainAssetIfNecessary() {
-        guard
-            canPayFeeInPayAsset,
-            let payChainAsset = getPayChainAsset(),
-            !payChainAsset.isUtilityAsset,
-            let feeChainAsset = getFeeChainAsset(),
-            feeChainAsset.isUtilityAsset,
-            let feeAssetBalance = feeAssetBalance,
-            let payAssetBalance = payAssetBalance,
-            payAssetBalance.transferable > 0,
-            let fee = fee?.originFeeIn(assetIn: feeChainAsset),
-            let nativeMinBalance = utilityAssetBalanceExistense?.minBalance else {
+        guard let preferredFeeAssetModel = SwapPreferredFeeAssetModel(
+            payChainAsset: payChainAsset,
+            feeChainAsset: feeChainAsset,
+            utilityAssetBalance: utilityAssetBalance,
+            payAssetBalance: payAssetBalance,
+            utilityExistenceBalance: utilityAssetBalanceExistense,
+            feeModel: fee,
+            canPayFeeInPayAsset: canPayFeeInPayAsset
+        ) else {
             return
         }
 
-        if feeAssetBalance.freeInPlank < fee + nativeMinBalance {
-            updateFeeChainAsset(payChainAsset)
+        let newFeeAsset = preferredFeeAssetModel.deriveNewFeeAsset()
+
+        if newFeeAsset.chainAssetId != feeChainAsset?.chainAssetId {
+            logger.debug("New fee token: \(newFeeAsset.asset.symbol)")
+
+            updateFeeChainAsset(newFeeAsset)
         }
     }
 }

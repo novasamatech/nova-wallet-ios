@@ -33,13 +33,12 @@ struct SwapMaxModel {
 
     var needMinBalanceDueToPostsubmissionFee: Bool {
         guard
-            let payChainAsset,
-            payChainAsset.isUtilityAsset,
-            let firstOperationFee = feeModel?.operationFees.first else {
+            let payChainAsset, payChainAsset.isUtilityAsset,
+            let feeModel else {
             return false
         }
 
-        return !firstOperationFee.postSubmissionFee.paidByAccount.isEmpty
+        return feeModel.hasOriginPostSubmissionByAccount
     }
 
     var shouldKeepMinBalance: Bool {
