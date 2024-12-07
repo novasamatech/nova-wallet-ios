@@ -111,7 +111,7 @@ final class AssetExchangeExecutionManager {
         let nextSegment = currentSegment + 1
 
         do {
-            let leaveOnAccount = try fee.operationFees[nextSegment].totalAmountToPayFromAccount()
+            let leaveOnAccount = try fee.operationFees[nextSegment].totalAmountToPayFromSelectedAccount()
 
             logger.debug("Amount for fee: \(Balance(leaveOnAccount))")
 

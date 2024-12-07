@@ -118,7 +118,10 @@ final class AssetsExchangeOperationFactory {
                 let amountIn = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
                 if index > 0 {
-                    let totalFee = try segmentFee.totalEnsuringSubmissionAsset()
+                    let totalFee = try segmentFee.totalEnsuringSubmissionAsset(
+                        payerMatcher: .selectedAccount
+                    )
+
                     return amountIn + totalFee
                 } else {
                     return amountIn

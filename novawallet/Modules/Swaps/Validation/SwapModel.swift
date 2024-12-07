@@ -186,7 +186,7 @@ struct SwapModel {
             let fee = feeModel?.originFeeInAsset(feeChainAsset) ?? 0
             balance = total.subtractOrZero(fee)
         } else {
-            // TODO: It is not more valid since ed in native asset doesn't remain on account after swap/crosschain
+            // TODO: It is no more valid since ed in native asset doesn't remain on account after swap/crosschain
             // if fee is paid in non native token then we will have at least ed
             return false
         }

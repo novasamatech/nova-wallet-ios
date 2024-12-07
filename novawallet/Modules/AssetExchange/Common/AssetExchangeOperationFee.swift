@@ -3,6 +3,7 @@ import BigInt
 
 enum AssetExchangeOperationFeeError: Error {
     case assetMismatch
+    case payerMismatch
 }
 
 struct AssetExchangeOperationFee: Equatable {
@@ -26,32 +27,59 @@ struct AssetExchangeOperationFee: Equatable {
     struct Submission: Equatable {
         let amountWithAsset: Amount
 
-        // TODO: nil means account from the current wallet, probably make it explicit and rename to general type
+        // nil means selected account pays fee
         let payer: ExtrinsicFeePayer?
 
         let weight: BigUInt
 
-        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
-            try amountWithAsset.totalAmountEnsuring(asset: asset)
+        func totalAmountEnsuring(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) throws -> Balance {
+            guard matchingPayer.matches(payer: payer) else {
+                throw AssetExchangeOperationFeeError.payerMismatch
+            }
+
+            return try amountWithAsset.totalAmountEnsuring(asset: asset)
         }
 
-        func totalAmountIn(asset: ChainAssetId) -> Balance {
-            amountWithAsset.totalAmountIn(asset: asset)
+        func totalAmountIn(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) -> Balance {
+            guard matchingPayer.matches(payer: payer) else {
+                return 0
+            }
+
+            return amountWithAsset.totalAmountIn(asset: asset)
         }
     }
 
     struct AmountByPayer: Equatable {
         let amountWithAsset: Amount
 
-        // TODO: nil means account from the current wallet, probably make it explicit and rename to general type
         let payer: ExtrinsicFeePayer?
 
-        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
-            try amountWithAsset.totalAmountEnsuring(asset: asset)
+        func totalAmountEnsuring(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) throws -> Balance {
+            guard matchingPayer.matches(payer: payer) else {
+                throw AssetExchangeOperationFeeError.payerMismatch
+            }
+
+            return try amountWithAsset.totalAmountEnsuring(asset: asset)
         }
 
-        func totalAmountIn(asset: ChainAssetId) -> Balance {
-            amountWithAsset.totalAmountIn(asset: asset)
+        func totalAmountIn(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) -> Balance {
+            guard matchingPayer.matches(payer: payer) else {
+                return 0
+            }
+
+            return amountWithAsset.totalAmountIn(asset: asset)
         }
     }
 
@@ -69,17 +97,26 @@ struct AssetExchangeOperationFee: Equatable {
          */
         let paidFromAmount: [Amount]
 
-        func totalByAccountEnsuring(asset: ChainAssetId) throws -> Balance {
+        func totalByAccountEnsuring(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) throws -> Balance {
             try paidByAccount.reduce(0) { total, item in
-                let current = try item.totalAmountEnsuring(asset: asset)
+                let current = try item.totalAmountEnsuring(
+                    asset: asset,
+                    matchingPayer: matchingPayer
+                )
 
                 return total + current
             }
         }
 
-        func totalByAccountAmountIn(asset: ChainAssetId) -> Balance {
+        func totalByAccountAmountIn(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) -> Balance {
             paidByAccount.reduce(0) { total, item in
-                total + item.totalAmountIn(asset: asset)
+                total + item.totalAmountIn(asset: asset, matchingPayer: matchingPayer)
             }
         }
 
@@ -97,16 +134,28 @@ struct AssetExchangeOperationFee: Equatable {
             }
         }
 
-        func totalAmountEnsuring(asset: ChainAssetId) throws -> Balance {
-            let totalByAccount = try totalByAccountEnsuring(asset: asset)
+        func totalAmountEnsuring(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) throws -> Balance {
+            let totalByAccount = try totalByAccountEnsuring(
+                asset: asset,
+                matchingPayer: matchingPayer
+            )
 
             let totalFromAmount = try totalFromAmountEnsuring(asset: asset)
 
             return totalByAccount + totalFromAmount
         }
 
-        func totalAmountIn(asset: ChainAssetId) -> Balance {
-            let totalByAccount = totalByAccountAmountIn(asset: asset)
+        func totalAmountIn(
+            asset: ChainAssetId,
+            matchingPayer: AssetExchangeFeePayerMatcher
+        ) -> Balance {
+            let totalByAccount = totalByAccountAmountIn(
+                asset: asset,
+                matchingPayer: matchingPayer
+            )
 
             let totalFromAmount = totalFromAmountIn(asset: asset)
 
@@ -126,26 +175,57 @@ struct AssetExchangeOperationFee: Equatable {
 }
 
 extension AssetExchangeOperationFee {
-    func totalAmountToPayFromAccount() throws -> Balance {
-        let postSubmissionByAccount = try postSubmissionFee.totalByAccountEnsuring(
-            asset: submissionFee.amountWithAsset.asset
+    func totalAmountToPayFromSelectedAccount() throws -> Balance {
+        let asset = submissionFee.amountWithAsset.asset
+
+        let submissionByAccount = try submissionFee.totalAmountEnsuring(
+            asset: asset,
+            matchingPayer: .selectedAccount
         )
 
-        return submissionFee.amountWithAsset.amount + postSubmissionByAccount
+        let postSubmissionByAccount = try postSubmissionFee.totalByAccountEnsuring(
+            asset: submissionFee.amountWithAsset.asset,
+            matchingPayer: .selectedAccount
+        )
+
+        return submissionByAccount + postSubmissionByAccount
     }
 
     func totalToPayFromAmountEnsuring(asset: ChainAssetId) throws -> Balance {
         try postSubmissionFee.totalFromAmountEnsuring(asset: asset)
     }
 
-    func totalEnsuringSubmissionAsset() throws -> Balance {
-        let postSubmissionTotal = try postSubmissionFee.totalAmountEnsuring(asset: submissionFee.amountWithAsset.asset)
+    func totalEnsuringSubmissionAsset(payerMatcher: AssetExchangeFeePayerMatcher) throws -> Balance {
+        let asset = submissionFee.amountWithAsset.asset
 
-        return submissionFee.amountWithAsset.amount + postSubmissionTotal
+        let submissionTotal = try submissionFee.totalAmountEnsuring(
+            asset: asset,
+            matchingPayer: payerMatcher
+        )
+
+        let postSubmissionTotal = try postSubmissionFee.totalAmountEnsuring(
+            asset: asset,
+            matchingPayer: payerMatcher
+        )
+
+        return submissionTotal + postSubmissionTotal
     }
 
-    func totalAmountIn(asset: ChainAssetId) -> Balance {
-        submissionFee.totalAmountIn(asset: asset) + postSubmissionFee.totalAmountIn(asset: asset)
+    func totalAmountIn(
+        asset: ChainAssetId,
+        matchingPayer: AssetExchangeFeePayerMatcher
+    ) -> Balance {
+        let submissionTotal = submissionFee.totalAmountIn(
+            asset: asset,
+            matchingPayer: matchingPayer
+        )
+
+        let postSubmissionTotal = postSubmissionFee.totalAmountIn(
+            asset: asset,
+            matchingPayer: matchingPayer
+        )
+
+        return submissionTotal + postSubmissionTotal
     }
 }
 
