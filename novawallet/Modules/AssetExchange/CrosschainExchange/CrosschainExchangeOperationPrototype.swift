@@ -25,6 +25,11 @@ final class CrosschainExchangeOperationPrototype: AssetExchangeBaseOperationProt
 }
 
 extension CrosschainExchangeOperationPrototype: AssetExchangeOperationPrototypeProtocol {
+    var estimatedCostInUsdt: Decimal {
+        // TODO: Define cost
+        0
+    }
+
     func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
         guard let destinationAccount = host.wallet.fetch(for: assetOut.chain.accountRequest()) else {
             return .createWithError(ChainAccountFetchingError.accountNotExists)

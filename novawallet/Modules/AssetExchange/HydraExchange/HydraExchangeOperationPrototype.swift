@@ -12,6 +12,11 @@ final class HydraExchangeOperationPrototype: AssetExchangeBaseOperationPrototype
 }
 
 extension HydraExchangeOperationPrototype: AssetExchangeOperationPrototypeProtocol {
+    var estimatedCostInUsdt: Decimal {
+        // TODO: Define cost
+        0
+    }
+
     func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
         host.executionTimeEstimator.totalTimeWrapper(for: [host.chain.chainId])
     }

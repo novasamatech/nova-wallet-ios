@@ -14,6 +14,7 @@ class AssetsExchangeBaseProvider {
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        pathCostEstimator: AssetsExchangePathCostEstimating,
         operationQueue: OperationQueue,
         syncQueue: DispatchQueue,
         logger: LoggerProtocol
@@ -24,6 +25,7 @@ class AssetsExchangeBaseProvider {
         self.logger = logger
 
         graphProxy = AssetExchangeGraphProxy(
+            pathCostEstimator: pathCostEstimator,
             operationQueue: operationQueue,
             logger: logger
         )

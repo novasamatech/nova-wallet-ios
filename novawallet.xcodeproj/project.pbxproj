@@ -815,6 +815,8 @@
 		0CE94FF02D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */; };
 		0CE94FF22D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */; };
 		0CE94FF42D04969100E31D0C /* SwapInterEDNotMet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */; };
+		0CE94FF62D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */; };
+		0CE94FF82D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6134,6 +6136,8 @@
 		0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPreferredFeeAssetModel.swift; sourceTree = "<group>"; };
 		0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeePayerMatcher.swift; sourceTree = "<group>"; };
 		0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInterEDNotMet.swift; sourceTree = "<group>"; };
+		0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangePathCostEstimator.swift; sourceTree = "<group>"; };
+		0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationPrototypeFactory.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -11770,6 +11774,8 @@
 				0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */,
 				0C6353442CE463BD00EAB200 /* AssetExchangePathFilter.swift */,
 				0CF976802CFD04F8001D2801 /* AssetsExchangeStateMediator.swift */,
+				0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */,
+				0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -29611,6 +29617,7 @@
 				0C59E8DA2AA6085B001E11F3 /* ExternalAssetBalanceLocalSubscriptionFactory.swift in Sources */,
 				F5AADF461ED043EAF04A50DE /* ReferendumsFiltersProtocols.swift in Sources */,
 				A44CA3E6BB506841948AB2D1 /* ReferendumsFiltersWireframe.swift in Sources */,
+				0CE94FF82D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift in Sources */,
 				77DF40422B7FE07D00ABDB53 /* SwitchTitleIconViewModel.swift in Sources */,
 				32428875321BF68F5DC47D52 /* ReferendumsFiltersPresenter.swift in Sources */,
 				165FD10F3329A67373DA78C6 /* ReferendumsFiltersViewController.swift in Sources */,
@@ -29929,6 +29936,7 @@
 				B823DEE94E0979161EE96F59 /* OnboardingImportOptionsInteractor.swift in Sources */,
 				6AC4087E34E90E31DACE83EE /* WalletImportOptionsViewController.swift in Sources */,
 				625027A97EC1C01FEF2AB6BE /* WalletImportOptionsViewLayout.swift in Sources */,
+				0CE94FF62D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift in Sources */,
 				2D7E4A152C4028E300455509 /* CustomNetworkSetupFinishStrategy.swift in Sources */,
 				FD9855AC31967F470C7F9679 /* WalletImportOptionsViewFactory.swift in Sources */,
 				DB1FB213FCB39BE3A5780D82 /* ImportCloudPasswordProtocols.swift in Sources */,

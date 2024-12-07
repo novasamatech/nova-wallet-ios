@@ -55,16 +55,23 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
             logger: assetExchangeParams.logger
         )
 
+        let pathCostEstimator = AssetsExchangePathCostEstimator(
+            priceStore: AssetExchangePriceStore(assetListObservable: assetListObservable),
+            chainRegistry: assetExchangeParams.chainRegistry
+        )
+
         let graphProvider = AssetExchangeFacade.createGraphProvider(
             for: assetExchangeParams,
             feeSupportProvider: feeSupportProvider,
-            exchangesStateMediator: exchangesStateMediator
+            exchangesStateMediator: exchangesStateMediator,
+            pathCostEstimator: pathCostEstimator
         )
 
         let service = AssetsExchangeService(
             graphProvider: graphProvider,
             feeSupportProvider: feeSupportProvider,
             exchangesStateMediator: exchangesStateMediator,
+            pathCostEstimator: pathCostEstimator,
             operationQueue: assetExchangeParams.operationQueue,
             logger: Logger.shared
         )

@@ -12,6 +12,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        pathCostEstimator: AssetsExchangePathCostEstimating,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
@@ -27,6 +28,7 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
 
         super.init(
             chainRegistry: chainRegistry,
+            pathCostEstimator: pathCostEstimator,
             operationQueue: operationQueue,
             syncQueue: DispatchQueue(label: "io.novawallet.assetshubprovider.\(UUID().uuidString)"),
             logger: logger

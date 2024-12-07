@@ -4,7 +4,8 @@ final class AssetExchangeFacade {
     static func createGraphProvider(
         for params: AssetExchangeGraphProvidingParams,
         feeSupportProvider: AssetsExchangeFeeSupportProviding,
-        exchangesStateMediator: AssetsExchangeStateMediating
+        exchangesStateMediator: AssetsExchangeStateMediating,
+        pathCostEstimator: AssetsExchangePathCostEstimating
     ) -> AssetsExchangeGraphProviding {
         let suffiencyProvider = AssetExchangeSufficiencyProvider()
 
@@ -20,6 +21,7 @@ final class AssetExchangeFacade {
                         logger: params.logger
                     ),
                     chainRegistry: params.chainRegistry,
+                    pathCostEstimator: pathCostEstimator,
                     signingWrapperFactory: params.signingWrapperFactory,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
@@ -30,6 +32,7 @@ final class AssetExchangeFacade {
                 AssetsHydraExchangeProvider(
                     selectedWallet: params.wallet,
                     chainRegistry: params.chainRegistry,
+                    pathCostEstimator: pathCostEstimator,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
                     exchangeStateRegistrar: exchangesStateMediator,
@@ -40,6 +43,7 @@ final class AssetExchangeFacade {
                 AssetsHubExchangeProvider(
                     wallet: params.wallet,
                     chainRegistry: params.chainRegistry,
+                    pathCostEstimator: pathCostEstimator,
                     signingWrapperFactory: params.signingWrapperFactory,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,

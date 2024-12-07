@@ -2,16 +2,24 @@ import Foundation
 import Operation_iOS
 
 final class AssetsExchangeRouteManager {
+    struct AssetExchangeRouteWithCost {
+        let route: AssetExchangeRoute
+        let additionalEstimatedCost: Balance
+    }
+
     let possiblePaths: [AssetExchangeGraphPath]
+    let pathCostEstimator: AssetsExchangePathCostEstimating
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         possiblePaths: [AssetExchangeGraphPath],
+        pathCostEstimator: AssetsExchangePathCostEstimating,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.possiblePaths = possiblePaths
+        self.pathCostEstimator = pathCostEstimator
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -80,24 +88,46 @@ extension AssetsExchangeRouteManager {
         for amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
-        let routeWrappers = possiblePaths.map { createQuote(for: $0, amount: amount, direction: direction) }
+        let routeWithCostWrappers = possiblePaths.map { path in
+            let routeWrapper = createQuote(for: path, amount: amount, direction: direction)
+            let costWrapper = pathCostEstimator.costEstimationWrapper(for: path, direction: direction)
+
+            return (routeWrapper, costWrapper)
+        }
 
         let winnerCalculator = ClosureOperation<AssetExchangeRoute?> {
-            let exchangeRoutes: [AssetExchangeRoute] = routeWrappers.compactMap { routeWrapper in
-                try? routeWrapper.targetOperation.extractNoCancellableResultData()
+            let exchangeRoutes: [AssetExchangeRouteWithCost] = routeWithCostWrappers.compactMap { pairWrappers in
+                do {
+                    let route = try pairWrappers.0.targetOperation.extractNoCancellableResultData()
+                    let cost = try pairWrappers.1.targetOperation.extractNoCancellableResultData()
+
+                    return AssetExchangeRouteWithCost(route: route, additionalEstimatedCost: cost)
+                } catch {
+                    return nil
+                }
             }
 
             switch direction {
             case .sell:
-                return exchangeRoutes.max(by: { $0.quote < $1.quote })
+                return exchangeRoutes.max { res1, res2 in
+                    let value1 = res1.route.quote.subtractOrZero(res1.additionalEstimatedCost)
+                    let value2 = res2.route.quote.subtractOrZero(res2.additionalEstimatedCost)
+
+                    return value1 < value2
+                }?.route
             case .buy:
-                return exchangeRoutes.min(by: { $0.quote < $1.quote })
+                return exchangeRoutes.min { res1, res2 in
+                    let value1 = res1.route.quote + res1.additionalEstimatedCost
+                    let value2 = res2.route.quote + res2.additionalEstimatedCost
+
+                    return value1 < value2
+                }?.route
             }
         }
 
-        let dependencies = routeWrappers
-            .compactMap { $0 }
-            .flatMap(\.allOperations)
+        let dependencies = routeWithCostWrappers.flatMap { routeWithCostWrapper in
+            routeWithCostWrapper.0.allOperations + routeWithCostWrapper.1.allOperations
+        }
 
         dependencies.forEach { winnerCalculator.addDependency($0) }
 

@@ -12,6 +12,11 @@ final class AssetHubExchangeOperationPrototype: AssetExchangeBaseOperationProtot
 }
 
 extension AssetHubExchangeOperationPrototype: AssetExchangeOperationPrototypeProtocol {
+    var estimatedCostInUsdt: Decimal {
+        // TODO: Define cost
+        0
+    }
+
     func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {
         host.executionTimeEstimator.totalTimeWrapper(for: [host.chain.chainId])
     }

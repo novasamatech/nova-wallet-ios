@@ -20,16 +20,19 @@ enum AssetsExchangeOperationFactoryError: Error {
 final class AssetsExchangeOperationFactory {
     let graph: AssetsExchangeGraphProtocol
     let operationQueue: OperationQueue
+    let pathCostEstimator: AssetsExchangePathCostEstimating
     let maxQuotePaths: Int
     let logger: LoggerProtocol
 
     init(
         graph: AssetsExchangeGraphProtocol,
+        pathCostEstimator: AssetsExchangePathCostEstimating,
         maxQuotePaths: Int = AssetsExchange.maxQuotePaths,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.graph = graph
+        self.pathCostEstimator = pathCostEstimator
         self.operationQueue = operationQueue
         self.maxQuotePaths = maxQuotePaths
         self.logger = logger
@@ -189,18 +192,9 @@ final class AssetsExchangeOperationFactory {
     private func createOperationPrototypesFrom(
         path: AssetExchangeGraphPath
     ) throws -> [AssetExchangeOperationPrototypeProtocol] {
-        try path.reduce([]) { curOperations, edge in
-            if
-                let lastOperation = curOperations.last,
-                let newOperation = try edge.appendToOperationPrototype(
-                    lastOperation
-                ) {
-                return curOperations.dropLast() + [newOperation]
-            } else {
-                let newOperation = try edge.beginOperationPrototype()
-                return curOperations + [newOperation]
-            }
-        }
+        try AssetExchangeOperationPrototypeFactory().createOperationPrototypes(
+            from: path
+        )
     }
 }
 
@@ -221,6 +215,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
             let routeWrapper = AssetsExchangeRouteManager(
                 possiblePaths: paths,
+                pathCostEstimator: self.pathCostEstimator,
                 operationQueue: self.operationQueue,
                 logger: self.logger
             ).fetchRoute(for: args.amount, direction: args.direction)
