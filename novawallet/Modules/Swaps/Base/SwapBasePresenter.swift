@@ -242,6 +242,18 @@ class SwapBasePresenter {
                 },
                 locale: locale
             ),
+
+            dataValidatingFactory.passesIntermediateEDValidation(
+                params: swapModel,
+                remoteValidatingClosure: { closureParams in
+                    interactor.requestValidatingIntermediateED(
+                        for: closureParams.operations,
+                        completion: closureParams.completionClosure
+                    )
+                },
+                locale: locale
+            ),
+
             dataValidatingFactory.passesRealtimeQuoteValidation(
                 params: swapModel,
                 remoteValidatingClosure: { args, completion in

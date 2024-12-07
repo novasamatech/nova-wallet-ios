@@ -814,6 +814,7 @@
 		0CE933E62C07DBE1000F3EFE /* WalletNameChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */; };
 		0CE94FF02D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */; };
 		0CE94FF22D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */; };
+		0CE94FF42D04969100E31D0C /* SwapInterEDNotMet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6132,6 +6133,7 @@
 		0CE933E52C07DBE1000F3EFE /* WalletNameChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNameChanged.swift; sourceTree = "<group>"; };
 		0CE94FEF2D03AF9800E31D0C /* SwapPreferredFeeAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPreferredFeeAssetModel.swift; sourceTree = "<group>"; };
 		0CE94FF12D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeePayerMatcher.swift; sourceTree = "<group>"; };
+		0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInterEDNotMet.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -11147,6 +11149,7 @@
 				0C13DFE02AFBBAF600E5F355 /* SwapBaseViewModelFactory.swift */,
 				771901AA2AE9581400D9C918 /* SwapDetailsViewModelFactory.swift */,
 				0C9A7F982AFC9A2B00938CD0 /* SwapPriceDifferenceConfig.swift */,
+				0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -25731,6 +25734,7 @@
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
 				8490141124A92F6D008F705E /* OnboardingMainViewController.swift in Sources */,
 				D9D163642744F60D00681C1F /* ExternalContribution.swift in Sources */,
+				0CE94FF42D04969100E31D0C /* SwapInterEDNotMet.swift in Sources */,
 				0CCCDF842B64C63D00473D42 /* HydraDxTokenConverter.swift in Sources */,
 				84155DED2539817200A27058 /* ApplicationService.swift in Sources */,
 				84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */,

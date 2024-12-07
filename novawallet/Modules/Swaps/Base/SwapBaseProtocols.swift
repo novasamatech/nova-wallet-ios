@@ -10,6 +10,11 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
         for args: AssetConversion.QuoteArgs,
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     )
+
+    func requestValidatingIntermediateED(
+        for operations: [AssetExchangeMetaOperationProtocol],
+        completion: @escaping SwapInterEDCheckClosure
+    )
 }
 
 protocol SwapBaseInteractorOutputProtocol: AnyObject {

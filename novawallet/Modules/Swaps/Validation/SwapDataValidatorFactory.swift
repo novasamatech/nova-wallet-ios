@@ -4,6 +4,13 @@ import SoraFoundation
 
 typealias SwapRemoteValidatingClosure = (AssetConversion.QuoteArgs, @escaping SwapModel.QuoteValidateClosure) -> Void
 
+struct SwapInterEDValidatingParams {
+    let operations: [AssetExchangeMetaOperationProtocol]
+    let completionClosure: SwapInterEDCheckClosure
+}
+
+typealias SwapInterEDValidatingClosure = (SwapInterEDValidatingParams) -> Void
+
 protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func hasSufficientBalance(
         params: SwapModel,
@@ -23,6 +30,12 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
         onQuoteUpdate: @escaping (AssetExchangeQuote) -> Void,
+        locale: Locale
+    ) -> DataValidating
+
+    func passesIntermediateEDValidation(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping SwapInterEDValidatingClosure,
         locale: Locale
     ) -> DataValidating
 }
@@ -325,6 +338,39 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                     preservationCallback(preserves)
                 }
+            }
+        )
+    }
+
+    func passesIntermediateEDValidation(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping SwapInterEDValidatingClosure,
+        locale _: Locale
+    ) -> DataValidating {
+        var reason: SwapInterEDNotMet?
+
+        return AsyncErrorConditionViolation(
+            onError: {
+                guard let reason, let operations = params.quote?.metaOperations else {
+                    return
+                }
+
+                // TODO: Present error on validation
+            },
+            preservesCondition: { preservationCallback in
+                guard let operations = params.quote?.metaOperations else {
+                    preservationCallback(true)
+                    return
+                }
+
+                let closureParams = SwapInterEDValidatingParams(operations: operations) { result in
+                    let preserves = result == nil
+                    reason = result
+
+                    preservationCallback(preserves)
+                }
+
+                remoteValidatingClosure(closureParams)
             }
         )
     }

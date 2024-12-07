@@ -308,6 +308,45 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         )
     }
 
+    func requestValidatingIntermediateED(
+        for operations: [AssetExchangeMetaOperationProtocol],
+        completion: @escaping SwapInterEDCheckClosure
+    ) {
+        let intermediateOperations = operations.dropFirst()
+
+        guard !intermediateOperations.isEmpty else {
+            completion(nil)
+            return
+        }
+
+        let assetOutIds = intermediateOperations.map(\.assetOut.chainAssetId)
+
+        fetchAssetBalanceExistence(for: Set(assetOutIds)) { result in
+            switch result {
+            case let .success(edMapping):
+                for (index, operation) in intermediateOperations.enumerated() {
+                    let minBalance = edMapping[operation.assetOut.chainAssetId]?.minBalance ?? 0
+
+                    if operation.amountOut < minBalance {
+                        let checkValue = SwapInterEDNotMet(
+                            operationIndex: index + 1,
+                            minBalanceResult: .success(minBalance)
+                        )
+
+                        completion(checkValue)
+                    }
+                }
+            case let .failure(error):
+                let checkValue = SwapInterEDNotMet(
+                    operationIndex: 0,
+                    minBalanceResult: .failure(error)
+                )
+
+                completion(checkValue)
+            }
+        }
+    }
+
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset) {
         provideAssetBalanceExistenses(for: chainAsset)
     }
