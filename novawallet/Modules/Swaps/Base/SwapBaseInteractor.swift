@@ -334,8 +334,11 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
                         )
 
                         completion(checkValue)
+                        return
                     }
                 }
+
+                completion(nil)
             case let .failure(error):
                 let checkValue = SwapInterEDNotMet(
                     operationIndex: 0,
