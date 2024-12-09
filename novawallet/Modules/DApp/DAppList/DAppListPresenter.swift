@@ -50,6 +50,8 @@ final class DAppListPresenter {
     }
 }
 
+// MARK: DAppListPresenterProtocol
+
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
         interactor.setup()
@@ -106,6 +108,8 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 }
 
+// MARK: DAppListInteractorOutputProtocol
+
 extension DAppListPresenter: DAppListInteractorOutputProtocol {
     func didReceive(walletResult: Result<MetaAccountModel, Error>) {
         switch walletResult {
@@ -149,6 +153,8 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
     }
 }
 
+// MARK: DAppSearchDelegate
+
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
         guard let tab = DAppBrowserTab(from: result) else {
@@ -161,6 +167,8 @@ extension DAppListPresenter: DAppSearchDelegate {
         )
     }
 }
+
+// MARK: Localizable
 
 extension DAppListPresenter: Localizable {
     func applyLocalization() {
