@@ -38,6 +38,13 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         minBalance: String,
         locale: Locale
     )
+
+    func presentIntemediateAmountBelowMinimum(
+        from view: ControllerBackedProtocol,
+        amount: String,
+        minAmount: String,
+        locale: Locale
+    )
 }
 
 extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -214,5 +221,23 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentIntemediateAmountBelowMinimum(
+        from view: ControllerBackedProtocol,
+        amount: String,
+        minAmount: String,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.swapIntermediateTooLowAmountToStayAbowEdMessage(
+            amount,
+            minAmount,
+            preferredLanguages: locale.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
     }
 }

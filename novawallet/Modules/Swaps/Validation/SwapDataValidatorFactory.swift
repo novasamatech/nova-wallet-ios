@@ -345,17 +345,47 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
     func passesIntermediateEDValidation(
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapInterEDValidatingClosure,
-        locale _: Locale
+        locale: Locale
     ) -> DataValidating {
         var reason: SwapInterEDNotMet?
 
         return AsyncErrorConditionViolation(
-            onError: {
-                guard let reason, let operations = params.quote?.metaOperations else {
+            onError: { [weak self] in
+                guard
+                    let reason,
+                    let operations = params.quote?.metaOperations,
+                    let viewModelFactory = self?.balanceViewModelFactoryFacade,
+                    let view = self?.view
+                else {
                     return
                 }
 
-                // TODO: Present error on validation
+                let operation = operations[reason.operationIndex]
+                let amount = operation.amountOut
+                let outAssetDisplayInfo = operations[reason.operationIndex].assetOut.assetDisplayInfo
+
+                let amountString = viewModelFactory.amountFromValue(
+                    targetAssetInfo: outAssetDisplayInfo,
+                    value: amount.decimal(assetInfo: outAssetDisplayInfo)
+                ).value(for: locale)
+
+                let minBalanceString: String = switch reason.minBalanceResult {
+                case let .success(minBalance):
+                    viewModelFactory.amountFromValue(
+                        targetAssetInfo: outAssetDisplayInfo,
+                        value: minBalance.decimal(assetInfo: outAssetDisplayInfo)
+                    ).value(for: locale)
+                case .failure:
+                    ""
+                }
+
+                self?.presentable.presentIntemediateAmountBelowMinimum(
+                    from: view,
+                    amount: amountString,
+                    minAmount: minBalanceString,
+                    locale: locale
+                )
+
             },
             preservesCondition: { preservationCallback in
                 guard let operations = params.quote?.metaOperations else {
