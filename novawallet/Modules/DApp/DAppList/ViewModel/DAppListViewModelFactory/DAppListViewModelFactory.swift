@@ -325,8 +325,17 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         )
     }
 
+    func createErrorSection() -> DAppListSectionViewModel {
+        .error(
+            DAppListSection(
+                title: nil,
+                cells: [.error]
+            )
+        )
+    }
+
     func createDAppSections(
-        from dAppList: DAppList,
+        from dAppList: DAppList?,
         favorites: [String: DAppFavorite],
         wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool,
@@ -339,6 +348,18 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             hasWalletsListUpdates: hasWalletsListUpdates
         )
         viewModels.append(.header(headerSection))
+
+        guard let dAppList else {
+            viewModels.append(
+                .notLoaded(
+                    DAppListSection(
+                        title: nil,
+                        cells: [.notLoaded]
+                    )
+                )
+            )
+            return viewModels
+        }
 
         if let categorySelectSection = categorySelectSection(from: dAppList) {
             viewModels.append(.categorySelect(categorySelectSection))

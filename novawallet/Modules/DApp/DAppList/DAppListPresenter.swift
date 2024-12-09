@@ -31,44 +31,27 @@ final class DAppListPresenter {
     }
 
     private func provideSections() {
-        guard
-            case let .success(dAppList) = dAppsResult,
-            let wallet
-        else {
-            return
-        }
+        guard let wallet else { return }
 
-        let sections = viewModelFactory.createDAppSections(
-            from: dAppList,
-            favorites: favorites ?? [:],
-            wallet: wallet,
-            hasWalletsListUpdates: hasWalletsListUpdates,
-            locale: selectedLocale
-        )
+        if case let .success(dAppList) = dAppsResult {
+            let sections = viewModelFactory.createDAppSections(
+                from: dAppList,
+                favorites: favorites ?? [:],
+                wallet: wallet,
+                hasWalletsListUpdates: hasWalletsListUpdates,
+                locale: selectedLocale
+            )
 
-        view?.didReceive(sections)
-    }
-
-    private func updateState() {
-        if favorites != nil {
-            switch dAppsResult {
-            case .success:
-                view?.didReceive(state: .loaded)
-            case .failure:
-                view?.didReceive(state: .error)
-            case .none:
-                view?.didReceive(state: .loading)
-            }
+            view?.didReceive(sections)
         } else {
-            view?.didReceive(state: .loading)
+            let errorSection = viewModelFactory.createErrorSection()
+            view?.didReceive([errorSection])
         }
     }
 }
 
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
-        updateState()
-
         interactor.setup()
     }
 
@@ -89,10 +72,6 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
     func activateSettings() {
         wireframe.showSetting(from: view)
-    }
-
-    func numberOfCategories() -> Int {
-        hasFavorites ? categoryModels.count + 2 : categoryModels.count + 1
     }
 
     func selectCategory(with id: String) {
@@ -156,14 +135,12 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         self.dAppsResult = dAppsResult
 
         provideSections()
-        updateState()
     }
 
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
 
         provideSections()
-        updateState()
     }
 
     func didReceiveWalletsState(hasUpdates: Bool) {
@@ -188,7 +165,7 @@ extension DAppListPresenter: DAppSearchDelegate {
 extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            updateState()
+            provideSections()
         }
     }
 }

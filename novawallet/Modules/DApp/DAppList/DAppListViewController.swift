@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SubstrateSdk
 
-private typealias DataSource = UICollectionViewDiffableDataSource<DAppListSection, DAppListItem>
+typealias DAppListCollectionDataSource = UICollectionViewDiffableDataSource<DAppListSection, DAppListItem>
 
 final class DAppListViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppListViewLayout
@@ -10,19 +10,19 @@ final class DAppListViewController: UIViewController, ViewHolder {
     let presenter: DAppListPresenterProtocol
 
     var loadingView: DAppListLoadingView? {
-        guard case .loading = state else {
+        guard sectionViewModels.loaded else {
             return nil
         }
 
-        return nil
+        return rootView.collectionView.cellForItem(
+            at: IndexPath(item: 0, section: 0)
+        ) as? DAppListLoadingView
     }
 
-    private lazy var dataSource = createDataSource()
+    lazy var dataSource = createDataSource()
 
-    private var sectionViewModels: [DAppListSectionViewModel] = []
-    private var walletSwitchViewModel: WalletSwitchViewModel?
-
-    private var state: DAppListState?
+    var sectionViewModels: [DAppListSectionViewModel] = []
+    var walletSwitchViewModel: WalletSwitchViewModel?
 
     init(
         presenter: DAppListPresenterProtocol,
@@ -72,6 +72,7 @@ private extension DAppListViewController {
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemCollectionViewCell.self)
+        rootView.collectionView.registerCellClass(DAppListLoadingView.self)
 
         rootView.collectionView.registerClass(
             RoundedIconTitleCollectionHeaderView.self,
@@ -92,242 +93,14 @@ private extension DAppListViewController {
         )
     }
 
-    func setupHeaderView(
-        using collectionView: UICollectionView,
-        walletSwitchViewModel: WalletSwitchViewModel,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let view: DAppListHeaderView = collectionView.dequeueReusableCellWithType(
-            DAppListHeaderView.self,
-            for: indexPath
-        )!
-
-        view.selectedLocale = selectedLocale
-        view.walletSwitch.bind(viewModel: walletSwitchViewModel)
-
-        view.walletSwitch.addTarget(
-            self,
-            action: #selector(actionSelectAccount),
-            for: .touchUpInside
-        )
-        view.searchView.addTarget(
-            self,
-            action: #selector(actionSearch),
-            for: .touchUpInside
-        )
-        view.settingsButton.addTarget(
-            self,
-            action: #selector(actionSettings),
-            for: .touchUpInside
-        )
-
-        return view
-    }
-
-    func setupCategoriesView(
-        using collectionView: UICollectionView,
-        categoriess: [DAppCategoryViewModel],
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let cell: DAppCategoriesViewCell = collectionView.dequeueReusableCellWithType(
-            DAppCategoriesViewCell.self,
-            for: indexPath
-        )!
-
-        cell.view.delegate = self
-        cell.view.chagesStateOnSelect = false
-        cell.view.bind(categories: categoriess)
-
-        return cell
-    }
-
-    func setupDAppView(
-        using collectionView: UICollectionView,
-        dApp: DAppViewModel,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let cell: DAppItemCollectionViewCell = collectionView.dequeueReusableCellWithType(
-            DAppItemCollectionViewCell.self,
-            for: indexPath
-        )!
-
-        if dApp.isFavorite {
-            cell.view.layoutStyle = .vertical
-        } else {
-            cell.view.layoutStyle = .horizontal
-        }
-
-        cell.view.bind(viewModel: dApp)
-
-        return cell
-    }
-
-    func setupSectionHeaderView(
-        using collectionView: UICollectionView,
-        kind: String,
-        indexPath: IndexPath
-    ) -> UICollectionReusableView? {
-        guard let title = dataSource.snapshot().sectionIdentifiers[indexPath.section].title else {
-            return nil
-        }
-
-        let header: TitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
-            forSupplementaryViewOfKind: kind,
-            for: indexPath
-        )
-        header?.contentInsets.top = 4
-        header?.contentInsets.bottom = 4
-
-        var viewModel: TitleCollectionHeaderView.Model
-
-        switch sectionViewModels[indexPath.section] {
-        case .favorites:
-            viewModel = .init(
-                title: title,
-                icon: R.image.iconFavButtonSel()
-            )
-            header?.apply(style: .titleWithButton)
-            header?.button.imageWithTitleView?.title = R.string.localizable.commonSeeAll(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            header?.button.addTarget(
-                self,
-                action: #selector(actionSeeAllFavorites),
-                for: .touchUpInside
-            )
-        case .category:
-            viewModel = .init(
-                title: title,
-                icon: nil
-            )
-            header?.apply(style: .title)
-        default:
-            return nil
-        }
-
-        header?.bind(viewModel: viewModel)
-
-        return header
-    }
-
-    func setupLoadingView(
-        using collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let view = collectionView.dequeueReusableCellWithType(DAppListLoadingView.self, for: indexPath)!
-        view.selectedLocale = selectedLocale
-
-        return view
-    }
-
-    func setupErrorView(
-        using collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let view = collectionView.dequeueReusableCellWithType(DAppListErrorView.self, for: indexPath)!
-        view.selectedLocale = selectedLocale
-
-        view.errorView.delegate = self
-
-        return view
-    }
-
-    func setupLoadingOrErrorView(
-        using collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        switch state {
-        case .error:
-            return setupErrorView(using: collectionView, indexPath: indexPath)
-        case .loading:
-            return setupLoadingView(using: collectionView, indexPath: indexPath)
-        case .loaded, .none:
-            return UICollectionViewCell()
-        }
-    }
-
     func updateIcon(for headerView: DAppListHeaderView, walletSwitchViewModel: WalletSwitchViewModel) {
         headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
 }
 
-// MARK: Data Source
-
-private extension DAppListViewController {
-    func createDataSource() -> DataSource {
-        let cellProvider = cellProvider()
-
-        let dataSource = DataSource(
-            collectionView: rootView.collectionView,
-            cellProvider: cellProvider
-        )
-        dataSource.supplementaryViewProvider = supplementaryViewProvider()
-
-        return dataSource
-    }
-
-    func cellProvider() -> DataSource.CellProvider {
-        { [weak self] collectionView, indexPath, model -> UICollectionViewCell? in
-            guard let self else { return nil }
-
-            return switch model {
-            case let .header(model):
-                setupHeaderView(
-                    using: collectionView,
-                    walletSwitchViewModel: model,
-                    indexPath: indexPath
-                )
-            case let .categorySelect(models):
-                setupCategoriesView(
-                    using: collectionView,
-                    categoriess: models,
-                    indexPath: indexPath
-                )
-            case let .favorites(model, _):
-                setupDAppView(
-                    using: collectionView,
-                    dApp: model,
-                    indexPath: indexPath
-                )
-            case let .category(model, _):
-                setupDAppView(
-                    using: collectionView,
-                    dApp: model,
-                    indexPath: indexPath
-                )
-            }
-        }
-    }
-
-    func supplementaryViewProvider() -> DataSource.SupplementaryViewProvider {
-        { [weak self] collectionView, kind, indexPath in
-            self?.setupSectionHeaderView(
-                using: collectionView,
-                kind: kind,
-                indexPath: indexPath
-            )
-        }
-    }
-
-    func selectDApp(
-        section: DAppListSection,
-        at index: Int
-    ) {
-        let item = section.cells[index]
-
-        switch item {
-        case let .category(model, _),
-             let .favorites(model, _):
-            presenter.selectDApp(with: model.identifier)
-        default:
-            break
-        }
-    }
-}
-
 // MARK: Actions
 
-private extension DAppListViewController {
+extension DAppListViewController {
     @objc func actionSelectAccount() {
         presenter.activateAccount()
     }
@@ -346,6 +119,21 @@ private extension DAppListViewController {
 
     @objc func actionSeeAllFavorites() {
         presenter.seeAllFavorites()
+    }
+
+    func selectDApp(
+        section: DAppListSection,
+        at index: Int
+    ) {
+        let item = section.cells[index]
+
+        switch item {
+        case let .category(model, _),
+             let .favorites(model, _):
+            presenter.selectDApp(with: model.identifier)
+        default:
+            break
+        }
     }
 }
 
@@ -399,12 +187,6 @@ extension DAppListViewController: DAppListViewProtocol {
         sectionViewModels = sections
 
         dataSource.apply(sections.models)
-    }
-
-    func didReceive(state: DAppListState) {
-        self.state = state
-
-        // rootView.collectionView.reloadData()
     }
 
     func didCompleteRefreshing() {

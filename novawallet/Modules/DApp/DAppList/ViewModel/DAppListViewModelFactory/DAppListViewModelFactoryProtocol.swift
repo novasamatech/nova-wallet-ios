@@ -16,8 +16,10 @@ protocol DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite]
     ) -> DAppListViewModel
 
+    func createErrorSection() -> DAppListSectionViewModel
+
     func createDAppSections(
-        from dAppList: DAppList,
+        from dAppList: DAppList?,
         favorites: [String: DAppFavorite],
         wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool,

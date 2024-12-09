@@ -78,6 +78,18 @@ private extension DAppListViewLayout {
                 section = dAppCategorySectionLayout()
                 contentInsets.bottom = 24
                 contentInsets.top = 12
+            case .notLoaded:
+                section = maxWidthsection(
+                    fixedHeight: bounds.height,
+                    scrollingBehavior: .none
+                )
+                contentInsets.top = 16
+            case .error:
+                section = maxWidthsection(
+                    fixedHeight: DAppListErrorView.preferredHeight,
+                    scrollingBehavior: .none
+                )
+                contentInsets.top = 16
             }
             section?.contentInsets = contentInsets
 

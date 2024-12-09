@@ -65,11 +65,16 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserMinimizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        DAppBrowserLayoutTransitionDependencies(
+        let tabBarHeightInset = Constants.minimizedWidgetHeight + Constants.childSpacing
+
+        return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview()
                     make.height.equalTo(78)
+                }
+
+                self?.tabBar?.view.snp.updateConstraints { make in
+                    make.top.equalToSuperview()
                 }
 
                 return self?.rootView
@@ -85,14 +90,17 @@ private extension NovaMainAppContainerViewController {
 
     func browserMaximizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
         let fullHeight = view.frame.size.height
-        let safeAreaInsets = view.safeAreaInsets
-        let totalHeight = fullHeight + safeAreaInsets.top + safeAreaInsets.bottom
+        let tabBarTopOffset = fullHeight - Constants.minimizedWidgetHeight - Constants.childSpacing
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
+                    make.height.equalTo(fullHeight)
                     make.bottom.equalToSuperview()
-                    make.height.equalTo(totalHeight)
+                }
+
+                self?.tabBar?.view.snp.updateConstraints { make in
+                    make.top.equalToSuperview().inset(-tabBarTopOffset)
                 }
 
                 return self?.rootView
@@ -119,7 +127,8 @@ extension NovaMainAppContainerViewController {
         rootView.addSubview(topView)
 
         topView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview()
             make.bottom.equalTo(bottomView.snp.top).inset(-6)
         }
 
@@ -171,5 +180,14 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
 extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {
     func openBrowser(with tab: DAppBrowserTab?) {
         browserWidget?.openBrowser(with: tab)
+    }
+}
+
+// MARK: Constants
+
+private extension NovaMainAppContainerViewController {
+    enum Constants {
+        static let minimizedWidgetHeight: CGFloat = 78
+        static let childSpacing: CGFloat = 6
     }
 }
