@@ -4,7 +4,7 @@ import Operation_iOS
 final class AssetsExchangeRouteManager {
     struct AssetExchangeRouteWithCost {
         let route: AssetExchangeRoute
-        let additionalEstimatedCost: Balance
+        let additionalEstimatedCost: AssetsExchangePathCost
     }
 
     let possiblePaths: [AssetExchangeGraphPath]
@@ -90,7 +90,7 @@ extension AssetsExchangeRouteManager {
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
         let routeWithCostWrappers = possiblePaths.map { path in
             let routeWrapper = createQuote(for: path, amount: amount, direction: direction)
-            let costWrapper = pathCostEstimator.costEstimationWrapper(for: path, direction: direction)
+            let costWrapper = pathCostEstimator.costEstimationWrapper(for: path)
 
             return (routeWrapper, costWrapper)
         }
@@ -110,15 +110,15 @@ extension AssetsExchangeRouteManager {
             switch direction {
             case .sell:
                 return exchangeRoutes.max { res1, res2 in
-                    let value1 = res1.route.quote.subtractOrZero(res1.additionalEstimatedCost)
-                    let value2 = res2.route.quote.subtractOrZero(res2.additionalEstimatedCost)
+                    let value1 = res1.route.quote.subtractOrZero(res1.additionalEstimatedCost.amountInAssetOut)
+                    let value2 = res2.route.quote.subtractOrZero(res2.additionalEstimatedCost.amountInAssetOut)
 
                     return value1 < value2
                 }?.route
             case .buy:
                 return exchangeRoutes.min { res1, res2 in
-                    let value1 = res1.route.quote + res1.additionalEstimatedCost
-                    let value2 = res2.route.quote + res2.additionalEstimatedCost
+                    let value1 = res1.route.quote + res1.additionalEstimatedCost.amountInAssetIn
+                    let value2 = res2.route.quote + res2.additionalEstimatedCost.amountInAssetIn
 
                     return value1 < value2
                 }?.route

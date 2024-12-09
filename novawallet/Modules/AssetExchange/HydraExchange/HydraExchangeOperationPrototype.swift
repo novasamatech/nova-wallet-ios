@@ -12,9 +12,12 @@ final class HydraExchangeOperationPrototype: AssetExchangeBaseOperationPrototype
 }
 
 extension HydraExchangeOperationPrototype: AssetExchangeOperationPrototypeProtocol {
-    var estimatedCostInUsdt: Decimal {
-        // TODO: Define cost
-        0
+    func estimatedCostInUsdt(using converter: AssetExchageUsdtConverting) throws -> Decimal {
+        guard let nativeAsset = assetIn.chain.utilityChainAsset() else {
+            throw ChainModelFetchError.noAsset(assetId: AssetModel.utilityAssetId)
+        }
+
+        return converter.convertToUsdt(the: nativeAsset, decimalAmount: 0.5) ?? 0
     }
 
     func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {

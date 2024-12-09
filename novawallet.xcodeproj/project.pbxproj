@@ -51,6 +51,7 @@
 		0B48B02E973CB304B765BBC9 /* ReferendumDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */; };
 		0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E894D4633D04AD4415CE1F2 /* GovernanceDelegateInfoViewFactory.swift */; };
 		0BB2E3FF30B1700D321C526A /* TransferNetworkSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA463769D0F411429780D7D /* TransferNetworkSelectionViewFactory.swift */; };
+		0C0387512D066474000A2F24 /* AssetExchageUsdtConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0387502D066474000A2F24 /* AssetExchageUsdtConverter.swift */; };
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
 		0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */; };
 		0C0CB3822AC545A800EAC516 /* AssetConversionExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3812AC545A800EAC516 /* AssetConversionExtrinsicService.swift */; };
@@ -5332,6 +5333,7 @@
 		0B62C2CBCFF1865A1CA0F1B4 /* LedgerNetworkSelectionProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionProtocols.swift; sourceTree = "<group>"; };
 		0BA85EE628D7029AC940DFA3 /* NominationPoolBondMoreBasePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreBasePresenter.swift; sourceTree = "<group>"; };
 		0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel34.xcdatamodel; sourceTree = "<group>"; };
+		0C0387502D066474000A2F24 /* AssetExchageUsdtConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchageUsdtConverter.swift; sourceTree = "<group>"; };
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
 		0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversion.swift; sourceTree = "<group>"; };
 		0C0CB3812AC545A800EAC516 /* AssetConversionExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionExtrinsicService.swift; sourceTree = "<group>"; };
@@ -10886,6 +10888,7 @@
 			children = (
 				0C12BC362CEA7DCB00AB919D /* AssetExchangePrice.swift */,
 				0C12BC392CEA7ECB00AB919D /* AssetExchangePriceStore.swift */,
+				0C0387502D066474000A2F24 /* AssetExchageUsdtConverter.swift */,
 			);
 			path = Price;
 			sourceTree = "<group>";
@@ -29940,6 +29943,7 @@
 				2D7E4A152C4028E300455509 /* CustomNetworkSetupFinishStrategy.swift in Sources */,
 				FD9855AC31967F470C7F9679 /* WalletImportOptionsViewFactory.swift in Sources */,
 				DB1FB213FCB39BE3A5780D82 /* ImportCloudPasswordProtocols.swift in Sources */,
+				0C0387512D066474000A2F24 /* AssetExchageUsdtConverter.swift in Sources */,
 				F652C0081A957CCE6266D204 /* ImportCloudPasswordWireframe.swift in Sources */,
 				6D55D47510FAA4D33E1F1D7C /* ImportCloudPasswordPresenter.swift in Sources */,
 				51B9CE9BD264AB3B83BFB3D0 /* ImportCloudPasswordInteractor.swift in Sources */,

@@ -24,10 +24,32 @@ final class CrosschainExchangeOperationPrototype: AssetExchangeBaseOperationProt
     }
 }
 
+private extension CrosschainExchangeOperationPrototype {
+    private func isChainWithExpensiveCrossChain(chainId: ChainModel.Id) -> Bool {
+        chainId == KnowChainId.polkadot && chainId == KnowChainId.statemint
+    }
+}
+
 extension CrosschainExchangeOperationPrototype: AssetExchangeOperationPrototypeProtocol {
-    var estimatedCostInUsdt: Decimal {
-        // TODO: Define cost
-        0
+    func estimatedCostInUsdt(using _: AssetExchageUsdtConverting) throws -> Decimal {
+        var cost: Decimal = 0
+
+        let chainInExpensive = isChainWithExpensiveCrossChain(chainId: assetIn.chain.chainId)
+        let chainOutExpensive = isChainWithExpensiveCrossChain(chainId: assetOut.chain.chainId)
+
+        if chainInExpensive {
+            cost += 0.15
+        }
+
+        if chainOutExpensive {
+            cost += 0.1
+        }
+
+        if !chainInExpensive || !chainOutExpensive {
+            cost += 0.01
+        }
+
+        return cost
     }
 
     func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval> {

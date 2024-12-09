@@ -5,7 +5,7 @@ protocol AssetExchangeOperationPrototypeProtocol {
     var assetIn: ChainAsset { get }
     var assetOut: ChainAsset { get }
 
-    var estimatedCostInUsdt: Decimal { get }
+    func estimatedCostInUsdt(using converter: AssetExchageUsdtConverting) throws -> Decimal
 
     func estimatedExecutionTimeWrapper() -> CompoundOperationWrapper<TimeInterval>
 }

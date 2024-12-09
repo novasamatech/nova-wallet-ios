@@ -3,13 +3,21 @@ import Operation_iOS
 
 protocol AssetsExchangePathCostEstimating: AnyObject {
     func costEstimationWrapper(
-        for path: AssetExchangeGraphPath,
-        direction: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<Balance>
+        for path: AssetExchangeGraphPath
+    ) -> CompoundOperationWrapper<AssetsExchangePathCost>
 }
 
 enum AssetsExchangePathCostEstimatorError: Error {
     case amountConversion
+}
+
+struct AssetsExchangePathCost {
+    let amountInAssetIn: Balance
+    let amountInAssetOut: Balance
+
+    static var zero: AssetsExchangePathCost {
+        AssetsExchangePathCost(amountInAssetIn: 0, amountInAssetOut: 0)
+    }
 }
 
 final class AssetsExchangePathCostEstimator: AnyObject {
@@ -20,80 +28,51 @@ final class AssetsExchangePathCostEstimator: AnyObject {
         self.priceStore = priceStore
         self.chainRegistry = chainRegistry
     }
-
-    private func deriveChainAsset(
-        for operations: [AssetExchangeOperationPrototypeProtocol],
-        direction: AssetConversion.Direction
-    ) -> ChainAsset? {
-        switch direction {
-        case .sell:
-            operations.last?.assetOut
-        case .buy:
-            operations.first?.assetIn
-        }
-    }
-
-    private func deriveUsdtPrice() -> PriceData? {
-        guard let chainAsset = chainRegistry.getChain(for: KnowChainId.statemint)?.chainAssetForSymbol("USDT") else {
-            return nil
-        }
-
-        return priceStore.fetchPrice(for: chainAsset.chainAssetId)
-    }
-
-    private func convertToAssetAmount(
-        using chainAsset: ChainAsset,
-        costInUsdt: Decimal,
-        usdtFiatRate: Decimal,
-        assetFiatRate: Decimal
-    ) throws -> Balance {
-        guard assetFiatRate > 0 else {
-            return 0
-        }
-
-        let assetCostDecimal = costInUsdt * usdtFiatRate / assetFiatRate
-
-        guard let amount = assetCostDecimal.toSubstrateAmount(
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        ) else {
-            throw AssetsExchangePathCostEstimatorError.amountConversion
-        }
-
-        return amount
-    }
 }
 
 extension AssetsExchangePathCostEstimator: AssetsExchangePathCostEstimating {
     func costEstimationWrapper(
-        for path: AssetExchangeGraphPath,
-        direction: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<Balance> {
-        let operation = ClosureOperation<Balance> {
-            guard let ustdFiatRate = self.deriveUsdtPrice()?.decimalRate else {
-                return 0
+        for path: AssetExchangeGraphPath
+    ) -> CompoundOperationWrapper<AssetsExchangePathCost> {
+        let operation = ClosureOperation<AssetsExchangePathCost> {
+            guard let usdtTiedAsset = self.chainRegistry.getChain(
+                for: KnowChainId.statemint
+            )?.chainAssetForSymbol("USDT") else {
+                return .zero
             }
+
+            let usdtConverter = AssetExchageUsdtConverter(
+                priceStore: self.priceStore,
+                usdtTiedAsset: usdtTiedAsset.chainAssetId
+            )
 
             let operations = try AssetExchangeOperationPrototypeFactory().createOperationPrototypes(from: path)
 
-            let totalCostInUsdt = operations.reduce(Decimal(0)) { $0 + $1.estimatedCostInUsdt }
+            let totalCostInUsdt = try operations.reduce(Decimal(0)) { total, operation in
+                let estimatedCostInUsdt = try operation.estimatedCostInUsdt(using: usdtConverter)
 
-            guard
-                let amountChainAsset = self.deriveChainAsset(
-                    for: operations,
-                    direction: direction
-                ),
-                let assetFiatRate = self.priceStore.fetchPrice(
-                    for: amountChainAsset.chainAssetId
-                )?.decimalRate else {
-                return 0
+                return total + estimatedCostInUsdt
             }
 
-            return try self.convertToAssetAmount(
-                using: amountChainAsset,
-                costInUsdt: totalCostInUsdt,
-                usdtFiatRate: ustdFiatRate,
-                assetFiatRate: assetFiatRate
-            )
+            guard
+                let assetIn = operations.first?.assetIn,
+                let assetOut = operations.last?.assetOut else {
+                return .zero
+            }
+
+            guard
+                let assetInCost = usdtConverter.convertToAssetInPlankFromUsdt(
+                    amount: totalCostInUsdt,
+                    asset: assetIn
+                ),
+                let assetOutCost = usdtConverter.convertToAssetInPlankFromUsdt(
+                    amount: totalCostInUsdt,
+                    asset: assetOut
+                ) else {
+                throw AssetsExchangePathCostEstimatorError.amountConversion
+            }
+
+            return AssetsExchangePathCost(amountInAssetIn: assetInCost, amountInAssetOut: assetOutCost)
         }
 
         return CompoundOperationWrapper(targetOperation: operation)
