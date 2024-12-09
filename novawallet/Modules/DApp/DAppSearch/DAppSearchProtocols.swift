@@ -2,13 +2,14 @@ import Operation_iOS
 
 protocol DAppSearchViewProtocol: ControllerBackedProtocol {
     func didReceive(initialQuery: String)
-    func didReceiveDApp(viewModels: [DAppViewModel])
+    func didReceive(viewModel: DAppListViewModel?)
 }
 
 protocol DAppSearchPresenterProtocol: AnyObject {
     func setup()
     func updateSearch(query: String)
     func selectDApp(viewModel: DAppViewModel)
+    func selectCategory(with id: String?)
     func selectSearchQuery()
     func cancel()
 }

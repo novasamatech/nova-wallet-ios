@@ -69,11 +69,18 @@ class DAppListTests: XCTestCase {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
+        
+        let dAppCategoryViewModelFactory = DAppCategoryViewModelFactory()
+        
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: dAppCategoryViewModelFactory
+        )
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
+            viewModelFactory: viewModelFactory,
+            categoryViewModelFactory: dAppCategoryViewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
