@@ -1094,6 +1094,7 @@
 		2D8F0ED22CEFC7FF00A22074 /* WebViewPoolProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */; };
 		2D8F0ED52CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */; };
 		2D8F0ED72CEFD05B00A22074 /* DAppBrowserTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */; };
+		2D8FDEB12D06F22F008D0E28 /* DAppListViewController+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */; };
 		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */; };
 		2D95DF5B2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */; };
@@ -2092,7 +2093,6 @@
 		841AB78F2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AB78E2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift */; };
 		841AB7922993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AB7912993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift */; };
 		841B45292603D91800C08693 /* EraValidatorsServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */; };
-		841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6427BA332F000A16CE /* DAppListState.swift */; };
 		841BFD6727BA4865000A16CE /* EthereumSerializationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */; };
 		841BFD6927BA55C2000A16CE /* metamask_min.js in Resources */ = {isa = PBXBuildFile; fileRef = 841BFD6827BA55C2000A16CE /* metamask_min.js */; };
 		841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6A27BA5765000A16CE /* MetamaskError.swift */; };
@@ -6347,6 +6347,7 @@
 		2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPoolProtocol.swift; sourceTree = "<group>"; };
 		2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabViewModel.swift; sourceTree = "<group>"; };
+		2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppListViewController+DataSource.swift"; sourceTree = "<group>"; };
 		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovAlertPresentable.swift; sourceTree = "<group>"; };
 		2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicAssetsCustomFeeEstimator.swift; sourceTree = "<group>"; };
@@ -7280,7 +7281,6 @@
 		841AB78E2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateSetupPresenter+Protocols.swift"; sourceTree = "<group>"; };
 		841AB7912993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateConfirmInteractorError.swift; sourceTree = "<group>"; };
 		841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorsServiceStub.swift; sourceTree = "<group>"; };
-		841BFD6427BA332F000A16CE /* DAppListState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
 		841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSerializationFactory.swift; sourceTree = "<group>"; };
 		841BFD6827BA55C2000A16CE /* metamask_min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = metamask_min.js; sourceTree = "<group>"; };
 		841BFD6A27BA5765000A16CE /* MetamaskError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetamaskError.swift; sourceTree = "<group>"; };
@@ -15496,7 +15496,6 @@
 			isa = PBXGroup;
 			children = (
 				2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */,
-				841BFD6427BA332F000A16CE /* DAppListState.swift */,
 				842BA36A27B64F1000D31EEF /* DAppViewModel.swift */,
 				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
 				2D4431E12D01130E00017951 /* DAppListSection.swift */,
@@ -23612,6 +23611,7 @@
 				ED66939D92756F608FA11520 /* DAppListPresenter.swift */,
 				750C8C7940C944DA4C8CB95F /* DAppListInteractor.swift */,
 				AA2BB29AE8E556E6756A4F02 /* DAppListViewController.swift */,
+				2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */,
 				11BB49F165F64A7EF6418EB4 /* DAppListViewLayout.swift */,
 				07D08AF2C744DF2073702499 /* DAppListViewFactory.swift */,
 			);
@@ -25183,7 +25183,6 @@
 				84C3F78C26020DE800D47501 /* StakingStateMachineProtocols.swift in Sources */,
 				846CA7722707A3060011124C /* SingleToMultiasset.xcmappingmodel in Sources */,
 				8425EA9525EA82CE00C307C9 /* AccountIdentity.swift in Sources */,
-				841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */,
 				845BB8DB25E462B100E5FCDC /* SubstrateConstansts.swift in Sources */,
 				0CCDB2F12B75394D007BC5D6 /* HydraAssetRegistry.swift in Sources */,
 				847012662982AE5700F29C87 /* StackTableView+Cell.swift in Sources */,
@@ -28709,6 +28708,7 @@
 				88B438E728F6C629001FC08A /* StatusTimeViewModel.swift in Sources */,
 				E65FDA8BF9DBE7F50AE9D733 /* ChangeWatchOnlyWireframe.swift in Sources */,
 				0C8AF7C12B3A9EFE00005AC9 /* NftDetailsPrice.swift in Sources */,
+				2D8FDEB12D06F22F008D0E28 /* DAppListViewController+DataSource.swift in Sources */,
 				02838B00DD7C9BC3BD78FF65 /* ChangeWatchOnlyPresenter.swift in Sources */,
 				493A9637BE5A1BF4B0744A4C /* ChangeWatchOnlyInteractor.swift in Sources */,
 				4B4189889DEFAF917332D41C /* ChangeWatchOnlyViewController.swift in Sources */,

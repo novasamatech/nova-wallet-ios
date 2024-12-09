@@ -2,7 +2,6 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
-    func didReceive(state: DAppListState)
     func didCompleteRefreshing()
     func didReceive(_ sections: [DAppListSectionViewModel])
 }
@@ -22,8 +21,6 @@ protocol DAppListPresenterProtocol: AnyObject {
 protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func addToFavorites(dApp: DApp)
-    func removeFromFavorites(dAppIdentifier: String)
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
