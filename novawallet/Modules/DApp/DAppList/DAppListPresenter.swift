@@ -33,9 +33,9 @@ final class DAppListPresenter {
     private func provideSections() {
         guard let wallet else { return }
 
-        if case let .success(dAppList) = dAppsResult {
+        do {
             let sections = viewModelFactory.createDAppSections(
-                from: dAppList,
+                from: try dAppsResult?.get(),
                 favorites: favorites ?? [:],
                 wallet: wallet,
                 hasWalletsListUpdates: hasWalletsListUpdates,
@@ -43,7 +43,7 @@ final class DAppListPresenter {
             )
 
             view?.didReceive(sections)
-        } else {
+        } catch {
             let errorSection = viewModelFactory.createErrorSection()
             view?.didReceive([errorSection])
         }
