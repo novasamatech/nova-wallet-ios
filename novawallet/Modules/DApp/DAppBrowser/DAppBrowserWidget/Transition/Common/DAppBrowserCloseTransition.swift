@@ -20,4 +20,6 @@ extension DAppBrowserCloseTransition: DAppBrowserTransitionProtocol {
             dependencies.animatableClosure?()
         }
     }
+
+    func start(with _: @escaping () -> Void) {}
 }

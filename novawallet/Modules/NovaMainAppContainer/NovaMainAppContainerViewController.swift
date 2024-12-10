@@ -56,6 +56,10 @@ private extension NovaMainAppContainerViewController {
                     make.bottom.equalToSuperview().inset(-84)
                 }
 
+                self?.tabBar?.view.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview()
+                }
+
                 return self?.rootView
             },
             animatableClosure: { [weak self] in
@@ -74,7 +78,7 @@ private extension NovaMainAppContainerViewController {
                 }
 
                 self?.tabBar?.view.snp.updateConstraints { make in
-                    make.top.equalToSuperview()
+                    make.bottom.equalToSuperview().inset(84)
                 }
 
                 return self?.rootView
@@ -100,7 +104,7 @@ private extension NovaMainAppContainerViewController {
                 }
 
                 self?.tabBar?.view.snp.updateConstraints { make in
-                    make.top.equalToSuperview().inset(-tabBarTopOffset)
+                    make.bottom.equalToSuperview().inset(84)
                 }
 
                 return self?.rootView
@@ -116,6 +120,15 @@ extension NovaMainAppContainerViewController {
         bottomView: UIView,
         topView: UIView
     ) {
+        rootView.addSubview(topView)
+
+        topView.snp.makeConstraints { make in
+            make.leading.trailing.top.bottom.equalToSuperview()
+        }
+
+        topView.layer.cornerRadius = 16
+        topView.layer.masksToBounds = true
+
         rootView.addSubview(bottomView)
 
         bottomView.snp.makeConstraints { make in
@@ -123,17 +136,6 @@ extension NovaMainAppContainerViewController {
             make.bottom.equalToSuperview().inset(-84)
             make.height.equalTo(78)
         }
-
-        rootView.addSubview(topView)
-
-        topView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalTo(bottomView.snp.top).inset(-6)
-        }
-
-        topView.layer.cornerRadius = 16
-        topView.layer.masksToBounds = true
     }
 }
 
@@ -189,5 +191,30 @@ private extension NovaMainAppContainerViewController {
     enum Constants {
         static let minimizedWidgetHeight: CGFloat = 78
         static let childSpacing: CGFloat = 6
+    }
+}
+
+extension UIViewController {
+    func setTabBarHidden(_ hidden: Bool, animated: Bool = true, duration: TimeInterval = 0.25) {
+        if tabBarController?.tabBar.isHidden != hidden {
+            if animated {
+                // Show the tabbar before the animation in case it has to appear
+                if (tabBarController?.tabBar.isHidden)! {
+                    tabBarController?.tabBar.isHidden = hidden
+                }
+                if let frame = tabBarController?.tabBar.frame {
+                    let factor: CGFloat = hidden ? 1 : -1
+                    let yPoint = frame.origin.y + (frame.size.height * factor)
+                    UIView.animate(withDuration: duration, animations: {
+                        self.tabBarController?.tabBar.frame = CGRect(x: frame.origin.x, y: yPoint, width: frame.width, height: frame.height)
+                    }) { _ in
+                        // hide the tabbar after the animation in case ti has to be hidden
+                        if !(self.tabBarController?.tabBar.isHidden)! {
+                            self.tabBarController?.tabBar.isHidden = hidden
+                        }
+                    }
+                }
+            }
+        }
     }
 }

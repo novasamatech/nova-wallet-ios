@@ -1084,6 +1084,12 @@
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
+		2D8851DB2D0888690099B078 /* CardPresentingTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D62D0888690099B078 /* CardPresentingTransition.swift */; };
+		2D8851DC2D0888690099B078 /* CardLayoutPresentationContoroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */; };
+		2D8851DD2D0888690099B078 /* CardDismissingTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D52D0888690099B078 /* CardDismissingTransition.swift */; };
+		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
+		2D8851DF2D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */; };
+		2D8851E02D0888690099B078 /* CardLayoutTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
 		2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */; };
 		2D8EFB242CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB232CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift */; };
@@ -1099,10 +1105,6 @@
 		2D8F0ED52CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */; };
 		2D8F0ED72CEFD05B00A22074 /* DAppBrowserTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */; };
 		2D8FDEB12D06F22F008D0E28 /* DAppListViewController+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */; };
-		2D8FDEB32D06FCBE008D0E28 /* CardLayoutPresentationContoroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEB22D06FCBE008D0E28 /* CardLayoutPresentationContoroller.swift */; };
-		2D8FDEB92D0705C9008D0E28 /* CardDismissingAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEB82D0705C9008D0E28 /* CardDismissingAnimator.swift */; };
-		2D8FDEBB2D0705E3008D0E28 /* CardPresentingAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEBA2D0705E3008D0E28 /* CardPresentingAnimator.swift */; };
-		2D8FDEC12D075423008D0E28 /* CardLayoutTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FDEC02D075423008D0E28 /* CardLayoutTransitionDelegate.swift */; };
 		2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */; };
 		2D8FF9D32C9BD67500089F53 /* SwipeGovAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */; };
 		2D95DF5B2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */; };
@@ -6351,6 +6353,12 @@
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutTransitionDelegate.swift; sourceTree = "<group>"; };
+		2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutTransitionDelegateProtocol.swift; sourceTree = "<group>"; };
+		2D8851D52D0888690099B078 /* CardDismissingTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDismissingTransition.swift; sourceTree = "<group>"; };
+		2D8851D62D0888690099B078 /* CardPresentingTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentingTransition.swift; sourceTree = "<group>"; };
+		2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutPresentationContoroller.swift; sourceTree = "<group>"; };
+		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
 		2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListInteractorError.swift; sourceTree = "<group>"; };
 		2D8EFB232CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewFilesRenderOperationFactory.swift; sourceTree = "<group>"; };
@@ -6366,10 +6374,6 @@
 		2D8F0ED42CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListViewModelFactory.swift; sourceTree = "<group>"; };
 		2D8F0ED62CEFD05B00A22074 /* DAppBrowserTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabViewModel.swift; sourceTree = "<group>"; };
 		2D8FDEB02D06F22F008D0E28 /* DAppListViewController+DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppListViewController+DataSource.swift"; sourceTree = "<group>"; };
-		2D8FDEB22D06FCBE008D0E28 /* CardLayoutPresentationContoroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutPresentationContoroller.swift; sourceTree = "<group>"; };
-		2D8FDEB82D0705C9008D0E28 /* CardDismissingAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDismissingAnimator.swift; sourceTree = "<group>"; };
-		2D8FDEBA2D0705E3008D0E28 /* CardPresentingAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentingAnimator.swift; sourceTree = "<group>"; };
-		2D8FDEC02D075423008D0E28 /* CardLayoutTransitionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutTransitionDelegate.swift; sourceTree = "<group>"; };
 		2D8FF9CF2C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseReferendumVoteConfirmPresenter.swift; sourceTree = "<group>"; };
 		2D8FF9D22C9BD67500089F53 /* SwipeGovAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovAlertPresentable.swift; sourceTree = "<group>"; };
 		2D95DF5A2C6F7D83009BB063 /* HydraExtrinsicAssetsCustomFeeEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicAssetsCustomFeeEstimator.swift; sourceTree = "<group>"; };
@@ -13131,6 +13135,35 @@
 			path = Presenter;
 			sourceTree = "<group>";
 		};
+		2D8851D42D0888690099B078 /* CardLayoutTransitionDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */,
+				2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */,
+			);
+			path = CardLayoutTransitionDelegate;
+			sourceTree = "<group>";
+		};
+		2D8851D72D0888690099B078 /* Transitions */ = {
+			isa = PBXGroup;
+			children = (
+				2D8851D52D0888690099B078 /* CardDismissingTransition.swift */,
+				2D8851D62D0888690099B078 /* CardPresentingTransition.swift */,
+			);
+			path = Transitions;
+			sourceTree = "<group>";
+		};
+		2D8851DA2D0888690099B078 /* CardLayoutPresentationContoroller */ = {
+			isa = PBXGroup;
+			children = (
+				2D8851D42D0888690099B078 /* CardLayoutTransitionDelegate */,
+				2D8851D72D0888690099B078 /* Transitions */,
+				2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */,
+				2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */,
+			);
+			path = CardLayoutPresentationContoroller;
+			sourceTree = "<group>";
+		};
 		2D8EFB222CF0937F00ED7174 /* WebViewRenderFIlesOperationFactory */ = {
 			isa = PBXGroup;
 			children = (
@@ -13178,25 +13211,6 @@
 				2D8F0ED12CEFC7FF00A22074 /* WebViewPoolProtocol.swift */,
 			);
 			path = WebViewPool;
-			sourceTree = "<group>";
-		};
-		2D8FDEBE2D0752A7008D0E28 /* CardTransitionAnimator */ = {
-			isa = PBXGroup;
-			children = (
-				2D8FDEB82D0705C9008D0E28 /* CardDismissingAnimator.swift */,
-				2D8FDEBA2D0705E3008D0E28 /* CardPresentingAnimator.swift */,
-			);
-			path = CardTransitionAnimator;
-			sourceTree = "<group>";
-		};
-		2D8FDEBF2D07539D008D0E28 /* CardLayoutPresentation */ = {
-			isa = PBXGroup;
-			children = (
-				2D8FDEBE2D0752A7008D0E28 /* CardTransitionAnimator */,
-				2D8FDEB22D06FCBE008D0E28 /* CardLayoutPresentationContoroller.swift */,
-				2D8FDEC02D075423008D0E28 /* CardLayoutTransitionDelegate.swift */,
-			);
-			path = CardLayoutPresentation;
 			sourceTree = "<group>";
 		};
 		2D8FF9D12C9AA56A00089F53 /* Presenter */ = {
@@ -17211,7 +17225,6 @@
 		846B49A92769EEC80066B875 /* DApp */ = {
 			isa = PBXGroup;
 			children = (
-				2D8FDEBF2D07539D008D0E28 /* CardLayoutPresentation */,
 				849F33B829F7BA0F001AEFA4 /* DAppInteraction */,
 				84D17EDF2805A5ED00F7BAFF /* Protocols */,
 				84D2F1A3277437C00040C680 /* View */,
@@ -18335,6 +18348,7 @@
 		8490144124A93CDC008F705E /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				2D8851DA2D0888690099B078 /* CardLayoutPresentationContoroller */,
 				84FD91AE29B08F5F007851D3 /* SearchController */,
 				F5AF5EB89229D84F3701AAAA /* ChainAddressDetails */,
 				84754C862510BAE100854599 /* ModalAlert */,
@@ -26052,7 +26066,6 @@
 				84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */,
 				84A2C90C24E192F50020D3B7 /* ShakeAnimator.swift in Sources */,
 				AEE0C43E272A8C16009F9AD5 /* AddChainAccount+AccountConfirmInteractor.swift in Sources */,
-				2D8FDEC12D075423008D0E28 /* CardLayoutTransitionDelegate.swift in Sources */,
 				8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */,
 				2DCC876B2C598AA80028C3CA /* CloudBackupCreateViewFactory+UpdatePassword.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
@@ -26348,7 +26361,6 @@
 				0C38B5052B7B22F000882A8B /* ExtrinsicExtraction.swift in Sources */,
 				F466AA90273D188600D14021 /* SettingsRow.swift in Sources */,
 				84C1DBC029C276E000F295A5 /* RewardCalculatorParamsService.swift in Sources */,
-				2D8FDEBB2D0705E3008D0E28 /* CardPresentingAnimator.swift in Sources */,
 				8430AAE926022F69005B1066 /* StashState.swift in Sources */,
 				847ABE3128532E1B00851218 /* ConsesusType.swift in Sources */,
 				8469529C28528C9C0083E0B4 /* EraCountdownOperationFactoryProtocol.swift in Sources */,
@@ -27004,6 +27016,12 @@
 				84EBAB0B265E28590015E446 /* ChainDateCalculator.swift in Sources */,
 				2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */,
 				887404B829828D5500EE270A /* LoadMoreFooterView.swift in Sources */,
+				2D8851DB2D0888690099B078 /* CardPresentingTransition.swift in Sources */,
+				2D8851DC2D0888690099B078 /* CardLayoutPresentationContoroller.swift in Sources */,
+				2D8851DD2D0888690099B078 /* CardDismissingTransition.swift in Sources */,
+				2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */,
+				2D8851DF2D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift in Sources */,
+				2D8851E02D0888690099B078 /* CardLayoutTransitionDelegate.swift in Sources */,
 				84754C9A2513871300854599 /* SNAddressType+Codable.swift in Sources */,
 				84ED6BE82869A18F00B3C558 /* TransferConfirmCrossChainViewFactory.swift in Sources */,
 				88BB0B3D29C1E16300D041C1 /* KiltWeb3n+Ownership.swift in Sources */,
@@ -27762,7 +27780,6 @@
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
 				844C3E772A09228200C4305F /* WalletChoosePresentable.swift in Sources */,
 				2D6287532C96CA7100060814 /* SwipeGovSetupViewLayout.swift in Sources */,
-				2D8FDEB32D06FCBE008D0E28 /* CardLayoutPresentationContoroller.swift in Sources */,
 				84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */,
 				84282296289BC31300163031 /* AddAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				84FB9E1E285C58FF00B42FC0 /* Xcm.swift in Sources */,
@@ -29783,7 +29800,6 @@
 				88132A0B7C93C6A899B4403B /* SwipeGovReferendumDetailsWireframe.swift in Sources */,
 				60C2485381445EA724E059C9 /* SwipeGovReferendumDetailsPresenter.swift in Sources */,
 				CB86DDFBAB085C75CA39E98D /* SwipeGovReferendumDetailsInteractor.swift in Sources */,
-				2D8FDEB92D0705C9008D0E28 /* CardDismissingAnimator.swift in Sources */,
 				2B0B3DE595860BCA13DD745E /* SwipeGovReferendumDetailsViewController.swift in Sources */,
 				E462E4E84BE98F8CC83827A2 /* SwipeGovReferendumDetailsViewLayout.swift in Sources */,
 				13C118A723E684D4272845FB /* SwipeGovReferendumDetailsViewFactory.swift in Sources */,
