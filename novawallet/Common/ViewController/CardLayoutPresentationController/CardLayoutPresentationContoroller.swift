@@ -1,6 +1,6 @@
 import UIKit
 
-final class CardLayoutPresentationContoroller: UIViewController {
+final class CardLayoutPresentationController: UIViewController {
     // we keep strong reference to delegate pan gesture processing
     // because translation change is tied with transition.
     // Delegate doesn't retains controller so we're safe here
@@ -42,7 +42,7 @@ final class CardLayoutPresentationContoroller: UIViewController {
 
 // MARK: Private
 
-private extension CardLayoutPresentationContoroller {
+private extension CardLayoutPresentationController {
     func setupActions() {
         let pan = UIPanGestureRecognizer(
             target: self,

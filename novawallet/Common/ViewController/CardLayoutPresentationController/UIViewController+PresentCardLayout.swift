@@ -7,7 +7,7 @@ extension UIViewController {
         completion: (() -> Void)? = nil
     ) {
         let transitioningDelegate = CardLayoutTransitionDelegate()
-        let container = CardLayoutPresentationContoroller(transitionDelegate: transitioningDelegate)
+        let container = CardLayoutPresentationController(transitionDelegate: transitioningDelegate)
 
         container.addChild(viewController)
         container.view.addSubview(viewController.view)

@@ -13153,7 +13153,7 @@
 			path = Transitions;
 			sourceTree = "<group>";
 		};
-		2D8851DA2D0888690099B078 /* CardLayoutPresentationContoroller */ = {
+		2D8851DA2D0888690099B078 /* CardLayoutPresentationController */ = {
 			isa = PBXGroup;
 			children = (
 				2D8851D42D0888690099B078 /* CardLayoutTransitionDelegate */,
@@ -13161,7 +13161,7 @@
 				2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */,
 				2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */,
 			);
-			path = CardLayoutPresentationContoroller;
+			path = CardLayoutPresentationController;
 			sourceTree = "<group>";
 		};
 		2D8EFB222CF0937F00ED7174 /* WebViewRenderFIlesOperationFactory */ = {
@@ -18348,7 +18348,7 @@
 		8490144124A93CDC008F705E /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				2D8851DA2D0888690099B078 /* CardLayoutPresentationContoroller */,
+				2D8851DA2D0888690099B078 /* CardLayoutPresentationController */,
 				84FD91AE29B08F5F007851D3 /* SearchController */,
 				F5AF5EB89229D84F3701AAAA /* ChainAddressDetails */,
 				84754C862510BAE100854599 /* ModalAlert */,
