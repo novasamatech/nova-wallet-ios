@@ -26,7 +26,10 @@ extension WalletChoosePresentable {
 
         let navigationController = NovaNavigationController(rootViewController: chooseView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func closeWalletChoose(on view: ControllerBackedProtocol?, completion: @escaping () -> Void) {

@@ -17,6 +17,9 @@ final class BackupMnemonicCardWireframe: BackupMnemonicCardWireframeProtocol {
             rootViewController: advancedExport.controller
         )
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 }

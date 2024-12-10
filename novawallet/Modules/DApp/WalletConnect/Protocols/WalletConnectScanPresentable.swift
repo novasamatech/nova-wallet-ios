@@ -13,7 +13,10 @@ extension WalletConnectScanPresentable {
 
         let navigationController = NovaNavigationController(rootViewController: scanView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func hideUriScanAnimated(from view: ControllerBackedProtocol?, completion: @escaping () -> Void) {

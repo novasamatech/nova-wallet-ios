@@ -23,6 +23,7 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
         let childNavigation = dependencies.childNavigation
         let layoutClosure = dependencies.layoutDependencies.layoutClosure
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
+        let transformClosure = dependencies.layoutDependencies.transformClosure
 
         let containerView = layoutClosure()
 
@@ -33,6 +34,10 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
         UIView.animate(withDuration: 0.25) {
             layoutAnimatables?()
             containerView?.layoutIfNeeded()
+
+            UIView.performWithoutAnimation {
+                transformClosure?()
+            }
         } completion: { _ in
             guard let widgetView = dependencies.widgetViewClosure() else {
                 return

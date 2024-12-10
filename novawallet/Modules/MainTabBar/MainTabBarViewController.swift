@@ -88,6 +88,17 @@ extension MainTabBarViewController: UITabBarControllerDelegate {
 }
 
 extension MainTabBarViewController: MainTabBarViewProtocol {
+    func presentedController() -> UIViewController? {
+        let topViewControllers: [UIViewController]? = viewControllers?.compactMap {
+            ($0 as? UINavigationController)?.topViewController
+        }
+
+        return topViewControllers?
+            .filter { $0.presentedViewController != nil }
+            .first?
+            .presentedViewController
+    }
+
     func didReplaceView(for newView: UIViewController, for index: Int) {
         guard var newViewControllers = viewControllers else {
             return
