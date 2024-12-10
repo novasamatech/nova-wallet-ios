@@ -14,12 +14,17 @@ struct DAppBrowserCloseTransition {
 extension DAppBrowserCloseTransition: DAppBrowserTransitionProtocol {
     func start() {
         let containerView = dependencies.layoutClosure()
+        let layoutAnimatables = dependencies.animatableClosure
+        let transformClosure = dependencies.transformClosure
 
         UIView.animate(withDuration: 0.2) {
             containerView?.layoutIfNeeded()
-            dependencies.animatableClosure?()
+
+            UIView.performWithoutAnimation {
+                transformClosure?()
+            }
+
+            layoutAnimatables?()
         }
     }
-
-    func start(with _: @escaping () -> Void) {}
 }

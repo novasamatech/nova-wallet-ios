@@ -1,14 +1,19 @@
 import UIKit
+import SnapKit
 
 final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     typealias RootViewType = NovaMainAppContainerViewLayout
 
     let presenter: NovaMainAppContainerPresenterProtocol
+    let logger: LoggerProtocol
 
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
+    var topContainerBottomConstraint: NSLayoutConstraint?
 
-    let logger: LoggerProtocol
+    var topContainerBottomOffset: CGFloat {
+        abs(topContainerBottomConstraint?.constant ?? 0)
+    }
 
     init(
         presenter: NovaMainAppContainerPresenterProtocol,
@@ -50,36 +55,45 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserCloseLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        DAppBrowserLayoutTransitionDependencies(
+        var transform: CGAffineTransform?
+        var presentingController: UIViewController?
+
+        if let presentedViewController = tabBar?.presentedController() {
+            presentingController = presentedViewController.presentingViewController
+            transform = presentingController?.view.transform
+        }
+
+        presentingController?.view.transform = .identity
+
+        return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
                     make.bottom.equalToSuperview().inset(-84)
                 }
 
-                self?.tabBar?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview()
-                }
+                self?.topContainerBottomConstraint?.constant = 0
 
                 return self?.rootView
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
+            },
+            transformClosure: {
+                guard let transform else { return }
+
+                presentingController?.view.transform = transform
             }
         )
     }
 
     func browserMinimizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        let tabBarHeightInset = Constants.minimizedWidgetHeight + Constants.childSpacing
-
-        return DAppBrowserLayoutTransitionDependencies(
+        DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
                     make.height.equalTo(78)
                 }
 
-                self?.tabBar?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(84)
-                }
+                self?.topContainerBottomConstraint?.constant = -84.0
 
                 return self?.rootView
             },
@@ -94,7 +108,6 @@ private extension NovaMainAppContainerViewController {
 
     func browserMaximizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
         let fullHeight = view.frame.size.height
-        let tabBarTopOffset = fullHeight - Constants.minimizedWidgetHeight - Constants.childSpacing
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
@@ -103,9 +116,7 @@ private extension NovaMainAppContainerViewController {
                     make.bottom.equalToSuperview()
                 }
 
-                self?.tabBar?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(84)
-                }
+                self?.topContainerBottomConstraint?.constant = -84.0
 
                 return self?.rootView
             }
@@ -123,8 +134,11 @@ extension NovaMainAppContainerViewController {
         rootView.addSubview(topView)
 
         topView.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalToSuperview()
+            make.leading.trailing.top.equalToSuperview()
         }
+
+        topContainerBottomConstraint = topView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
+        topContainerBottomConstraint?.isActive = true
 
         topView.layer.cornerRadius = 16
         topView.layer.masksToBounds = true
@@ -191,30 +205,5 @@ private extension NovaMainAppContainerViewController {
     enum Constants {
         static let minimizedWidgetHeight: CGFloat = 78
         static let childSpacing: CGFloat = 6
-    }
-}
-
-extension UIViewController {
-    func setTabBarHidden(_ hidden: Bool, animated: Bool = true, duration: TimeInterval = 0.25) {
-        if tabBarController?.tabBar.isHidden != hidden {
-            if animated {
-                // Show the tabbar before the animation in case it has to appear
-                if (tabBarController?.tabBar.isHidden)! {
-                    tabBarController?.tabBar.isHidden = hidden
-                }
-                if let frame = tabBarController?.tabBar.frame {
-                    let factor: CGFloat = hidden ? 1 : -1
-                    let yPoint = frame.origin.y + (frame.size.height * factor)
-                    UIView.animate(withDuration: duration, animations: {
-                        self.tabBarController?.tabBar.frame = CGRect(x: frame.origin.x, y: yPoint, width: frame.width, height: frame.height)
-                    }) { _ in
-                        // hide the tabbar after the animation in case ti has to be hidden
-                        if !(self.tabBarController?.tabBar.isHidden)! {
-                            self.tabBarController?.tabBar.isHidden = hidden
-                        }
-                    }
-                }
-            }
-        }
     }
 }

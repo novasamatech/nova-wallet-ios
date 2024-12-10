@@ -18,7 +18,7 @@ private extension CardPresentingTransition {
         let widthDelta: CGFloat = UIConstants.horizontalInset * 2
         let scale = (sourceView.bounds.width - widthDelta) / sourceView.bounds.width
         let heightDiffAfterScale = (sourceView.bounds.height - (sourceView.bounds.height * scale)) / 2
-        let yOffset = (sourceView.safeAreaInsets.top - heightDiffAfterScale) + 10
+        let yOffset = sourceView.safeAreaInsets.top - heightDiffAfterScale
 
         let sourceTransform = CGAffineTransform.identity
         let sourceScaleTransform = CGAffineTransform(
@@ -62,7 +62,7 @@ extension CardPresentingTransition: UIViewControllerAnimatedTransitioning {
         )
         let finalDestinationViewFrame = sourceController.view.bounds.offsetBy(
             dx: 0,
-            dy: sourceController.view.safeAreaInsets.top + 25
+            dy: CardLayoutPresentationController.topOffset()
         )
 
         let destinationTransform = createDestinationViewTransform(finalDestinationViewFrame)

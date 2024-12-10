@@ -1090,6 +1090,7 @@
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8851DF2D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */; };
 		2D8851E02D0888690099B078 /* CardLayoutTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */; };
+		2D8851E22D08FF2F0099B078 /* UIViewController+TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851E12D08FF2F0099B078 /* UIViewController+TabBar.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
 		2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */; };
 		2D8EFB242CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB232CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift */; };
@@ -6359,6 +6360,7 @@
 		2D8851D62D0888690099B078 /* CardPresentingTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentingTransition.swift; sourceTree = "<group>"; };
 		2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutPresentationContoroller.swift; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
+		2D8851E12D08FF2F0099B078 /* UIViewController+TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+TabBar.swift"; sourceTree = "<group>"; };
 		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
 		2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListInteractorError.swift; sourceTree = "<group>"; };
 		2D8EFB232CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewFilesRenderOperationFactory.swift; sourceTree = "<group>"; };
@@ -18381,6 +18383,7 @@
 				849014C424AA890D008F705E /* UIFont+Style.swift */,
 				8428766A24ADF51D00D91AD8 /* UIViewController+Content.swift */,
 				84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */,
+				2D8851E12D08FF2F0099B078 /* UIViewController+TabBar.swift */,
 				84CCBFBB2509709500180F4F /* UIBarButtonItem+Style.swift */,
 				84D331AE2519E8080078D044 /* TriangularedView+Style.swift */,
 				84585A2E251BFC8400390F7A /* TriangularedButton+Style.swift */,
@@ -26464,6 +26467,7 @@
 				849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */,
 				0C1998E62C49B38C000EBFB8 /* HoldsSubscription.swift in Sources */,
 				84CFF1E426526FBC00DB7CF7 /* StakingBondMorePresenter.swift in Sources */,
+				2D8851E22D08FF2F0099B078 /* UIViewController+TabBar.swift in Sources */,
 				842D1E7924D063FD00C30A7A /* TriangularedView.swift in Sources */,
 				AE2C84E925EF98D500986716 /* ValidatorInfoViewFactory.swift in Sources */,
 				844CB57026F9CB3300396E13 /* CrowdloanLocalSubscriptionHandler.swift in Sources */,

@@ -13,7 +13,8 @@ extension UIViewController {
         container.view.addSubview(viewController.view)
 
         viewController.view.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.trailing.leading.equalToSuperview()
+            make.bottom.equalToSuperview().inset(CardLayoutPresentationController.topOffset())
         }
         container.view.layoutIfNeeded()
 

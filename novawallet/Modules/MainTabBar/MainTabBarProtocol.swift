@@ -3,7 +3,6 @@ import UIKit
 protocol MainTabBarProtocol {
     var view: UIView! { get set }
 
-    func presentsHidingCurrentContext() -> Bool
     func presentedController() -> UIViewController?
 }
 

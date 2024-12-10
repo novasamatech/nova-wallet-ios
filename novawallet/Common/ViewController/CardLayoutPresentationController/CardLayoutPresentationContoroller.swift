@@ -38,6 +38,10 @@ final class CardLayoutPresentationController: UIViewController {
             onDisappear?()
         }
     }
+
+    static func topOffset() -> CGFloat {
+        (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + 12
+    }
 }
 
 // MARK: Private
