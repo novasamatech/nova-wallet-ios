@@ -77,7 +77,11 @@ extension AddressOptionsPresentable {
             return
         }
 
-        view.controller.present(controller, animated: true, completion: nil)
+        view.controller.presentWithCardLayout(
+            controller,
+            animated: true,
+            completion: nil
+        )
     }
 
     func presentExtendedAccountOptions(
@@ -103,7 +107,11 @@ extension AddressOptionsPresentable {
             return
         }
 
-        view.controller.present(controller, animated: true, completion: nil)
+        view.controller.present(
+            controller,
+            animated: true,
+            completion: nil
+        )
     }
 }
 

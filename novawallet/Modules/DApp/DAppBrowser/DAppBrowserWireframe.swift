@@ -16,7 +16,11 @@ class BaseDAppBrowserWireframe {
             return
         }
 
-        view?.controller.present(confirmationView.controller, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            confirmationView.controller,
+            animated: true,
+            completion: nil
+        )
     }
 
     func presentSearch(
@@ -77,7 +81,11 @@ class BaseDAppBrowserWireframe {
         }
 
         let navigationController = NovaNavigationController(rootViewController: addFavoriteView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func presentSettings(
