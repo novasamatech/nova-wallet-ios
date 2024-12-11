@@ -54,7 +54,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
             (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
             if let dappView: DAppListViewProtocol = dappViewController?.contentViewController() {
-                // dappView.didReceive(dApp: dApp)
+                dappView.didReceiveDApp(with: dApp.identifier)
             }
         }
     }
