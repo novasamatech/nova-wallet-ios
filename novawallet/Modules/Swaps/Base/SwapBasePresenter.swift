@@ -213,7 +213,7 @@ class SwapBasePresenter {
         interactor: SwapBaseInteractorInputProtocol,
         locale: Locale
     ) -> [DataValidating] {
-        [
+        var baseValidations = [
             dataValidatingFactory.has(
                 fee: swapModel.feeModel?.originExtrinsicFee(),
                 locale: locale
@@ -241,9 +241,12 @@ class SwapBasePresenter {
                     self?.applySwapMax()
                 },
                 locale: locale
-            ),
+            )
+        ]
 
-            dataValidatingFactory.passesIntermediateEDValidation(
+        // for a single operation validation is covered by canReceive
+        if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
+            let intermediateEdValidation = dataValidatingFactory.passesIntermediateEDValidation(
                 params: swapModel,
                 remoteValidatingClosure: { closureParams in
                     interactor.requestValidatingIntermediateED(
@@ -252,20 +255,26 @@ class SwapBasePresenter {
                     )
                 },
                 locale: locale
-            ),
-
-            dataValidatingFactory.passesRealtimeQuoteValidation(
-                params: swapModel,
-                remoteValidatingClosure: { args, completion in
-                    interactor.requestValidatingQuote(for: args, completion: completion)
-                },
-                onQuoteUpdate: { [weak self] quote in
-                    self?.quoteResult = .success(quote)
-                    self?.handleNewQuote(quote, for: swapModel.quoteArgs)
-                },
-                locale: locale
             )
-        ]
+
+            baseValidations.append(intermediateEdValidation)
+        }
+
+        let quoteValidation = dataValidatingFactory.passesRealtimeQuoteValidation(
+            params: swapModel,
+            remoteValidatingClosure: { args, completion in
+                interactor.requestValidatingQuote(for: args, completion: completion)
+            },
+            onQuoteUpdate: { [weak self] quote in
+                self?.quoteResult = .success(quote)
+                self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+            },
+            locale: locale
+        )
+
+        baseValidations.append(quoteValidation)
+
+        return baseValidations
     }
 }
 

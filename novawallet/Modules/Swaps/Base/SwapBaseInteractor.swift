@@ -312,24 +312,22 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         for operations: [AssetExchangeMetaOperationProtocol],
         completion: @escaping SwapInterEDCheckClosure
     ) {
-        let intermediateOperations = operations.dropFirst()
-
-        guard !intermediateOperations.isEmpty else {
+        guard !operations.isEmpty else {
             completion(nil)
             return
         }
 
-        let assetOutIds = intermediateOperations.map(\.assetOut.chainAssetId)
+        let assetOutIds = operations.map(\.assetOut.chainAssetId)
 
         fetchAssetBalanceExistence(for: Set(assetOutIds)) { result in
             switch result {
             case let .success(edMapping):
-                for (index, operation) in intermediateOperations.enumerated() {
+                for (index, operation) in operations.enumerated() {
                     let minBalance = edMapping[operation.assetOut.chainAssetId]?.minBalance ?? 0
 
                     if operation.amountOut < minBalance {
                         let checkValue = SwapInterEDNotMet(
-                            operationIndex: index + 1,
+                            operationIndex: index,
                             minBalanceResult: .success(minBalance)
                         )
 
