@@ -198,6 +198,7 @@ final class AssetsExchangeTests: XCTestCase {
         
         return AssetsExchangeOperationFactory(
             graph: graph,
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
             operationQueue: params.operationQueue,
             logger: params.logger
         )
@@ -218,6 +219,8 @@ final class AssetsExchangeTests: XCTestCase {
             logger: params.logger
         )
         
+        let pathCostEstimator = MockAssetsExchangePathCostEstimator()
+        
         let graphProvider = AssetsExchangeGraphProvider(
             selectedWallet: params.wallet,
             chainRegistry: params.chainRegistry,
@@ -229,6 +232,7 @@ final class AssetsExchangeTests: XCTestCase {
                         operationQueue: params.operationQueue
                     ),
                     chainRegistry: params.chainRegistry,
+                    pathCostEstimator: pathCostEstimator,
                     signingWrapperFactory: SigningWrapperFactory(),
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
@@ -239,6 +243,7 @@ final class AssetsExchangeTests: XCTestCase {
                 AssetsHubExchangeProvider(
                     wallet: params.wallet,
                     chainRegistry: params.chainRegistry,
+                    pathCostEstimator: pathCostEstimator,
                     signingWrapperFactory: SigningWrapperFactory(),
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
@@ -250,6 +255,7 @@ final class AssetsExchangeTests: XCTestCase {
                 AssetsHydraExchangeProvider(
                     selectedWallet: params.wallet,
                     chainRegistry: params.chainRegistry,
+                    pathCostEstimator: pathCostEstimator,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,
                     exchangeStateRegistrar: exchangeStateRegistrar,
