@@ -21,6 +21,13 @@ extension AssetIconViewModelFactoryProtocol {
             defaultURL: defaultURL
         )
     }
+    
+    func createAssetIconViewModel(from assetDisplayInfo: AssetBalanceDisplayInfo) -> ImageViewModelProtocol {
+        createAssetIconViewModel(
+            for: assetDisplayInfo.icon?.getPath(),
+            defaultURL: assetDisplayInfo.icon?.getURL()
+        )
+    }
 }
 
 class AssetIconViewModelFactory {
