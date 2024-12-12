@@ -8,7 +8,7 @@ final class DAppListWireframe: DAppListWireframeProtocol {
     }
 
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate) {
-        guard let searchView = DAppSearchViewFactory.createView(with: nil, delegate: delegate) else {
+        guard let searchView = DAppSearchViewFactory.createView(delegate: delegate) else {
             return
         }
 

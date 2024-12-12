@@ -147,9 +147,10 @@ extension DAppBrowserTabListViewController: DAppBrowserTabViewDelegate {
 
 extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(
-        _: UICollectionView,
+        _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
+        collectionView.deselectItem(at: indexPath, animated: true)
         let tab = viewModels[indexPath.item]
 
         presenter.selectTab(with: tab.uuid)

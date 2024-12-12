@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 protocol DAppListViewModelFactoryProtocol {
     func createFavoriteDAppName(from model: DAppFavorite) -> String
@@ -7,21 +8,52 @@ protocol DAppListViewModelFactoryProtocol {
 
     func createDApps(
         from category: String?,
+        query: String?,
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel]
+    ) -> DAppListViewModel
 
-    func createDAppsFromQuery(
-        _ query: String?,
+    func createErrorSection() -> DAppListSectionViewModel
+
+    func createDAppSections(
+        from dAppList: DAppList?,
+        favorites: [String: DAppFavorite],
+        wallet: MetaAccountModel,
+        hasWalletsListUpdates: Bool,
+        locale: Locale
+    ) -> [DAppListSectionViewModel]
+}
+
+extension DAppListViewModelFactoryProtocol {
+    func createDApps(
+        from category: String?,
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel]
+    ) -> DAppListViewModel {
+        createDApps(
+            from: category,
+            query: nil,
+            dAppList: dAppList,
+            favorites: favorites
+        )
+    }
 }
 
 private typealias IndexedDApp = (index: Int, dapp: DApp)
 
 final class DAppListViewModelFactory {
-    private func createDAppViewModel(
+    private let dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol
+    private let walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
+
+    init(dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol) {
+        self.dappCategoriesViewModelFactory = dappCategoriesViewModelFactory
+    }
+}
+
+// MARK: Private
+
+private extension DAppListViewModelFactory {
+    func createDAppViewModel(
         from model: DApp,
         index: Int,
         categories: [String: DAppCategory],
@@ -40,15 +72,16 @@ final class DAppListViewModelFactory {
         }.joined(separator: ", ")
 
         return DAppViewModel(
-            identifier: .index(value: index),
+            identifier: model.identifier,
             name: model.name,
             details: details,
             icon: imageViewModel,
-            isFavorite: favorite
+            isFavorite: favorite,
+            order: index
         )
     }
 
-    private func createFavoriteDAppViewModel(from model: DAppFavorite) -> DAppViewModel {
+    func createFavoriteDAppViewModel(from model: DAppFavorite) -> DAppViewModel {
         let imageViewModel: ImageViewModelProtocol
 
         if let icon = model.icon, let url = URL(string: icon) {
@@ -60,7 +93,7 @@ final class DAppListViewModelFactory {
         let name = createFavoriteDAppName(from: model)
 
         return DAppViewModel(
-            identifier: .key(value: model.identifier),
+            identifier: model.identifier,
             name: name,
             details: model.identifier,
             icon: imageViewModel,
@@ -68,7 +101,7 @@ final class DAppListViewModelFactory {
         )
     }
 
-    private func createViewModels(
+    func createViewModels(
         merging dapps: [IndexedDApp],
         filteredFavorites: [String: DAppFavorite],
         allFavorites: [String: DAppFavorite],
@@ -113,7 +146,93 @@ final class DAppListViewModelFactory {
             }
         }
     }
+
+    // MARK: Sections
+
+    func favoritesSection(
+        from favorites: [String: DAppFavorite],
+        locale: Locale
+    ) -> DAppListSection? {
+        guard !favorites.isEmpty else { return nil }
+
+        let favoritesDApps = createFavoriteDApps(from: Array(favorites.values))
+
+        let name = R.string.localizable.commonFavorites(preferredLanguages: locale.rLanguages)
+
+        return DAppListSection(
+            title: name,
+            cells: favoritesDApps.map { .favorites(model: $0, categoryName: name) }
+        )
+    }
+
+    func categorySections(
+        from dAppList: DAppList,
+        favorites: [String: DAppFavorite]
+    ) -> [DAppListSection]? {
+        guard !dAppList.dApps.isEmpty else { return nil }
+
+        let dAppsByCategory: [String: [DApp]] = dAppList.dApps.reduce(into: [:]) { acc, dApp in
+            dApp.categories.forEach { categoryId in
+                if acc[categoryId] != nil {
+                    acc[categoryId]?.append(dApp)
+                } else {
+                    acc[categoryId] = [dApp]
+                }
+            }
+        }
+
+        let categorySections: [DAppListSection] = dAppList.categories.compactMap { category in
+            guard let dApps = dAppsByCategory[category.identifier] else { return nil }
+
+            let indexedDApps: [IndexedDApp] = dApps.enumerated().compactMap { valueIndex in
+                IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
+            }
+
+            let dAppViewModels = createViewModels(
+                merging: indexedDApps,
+                filteredFavorites: [:],
+                allFavorites: favorites,
+                categories: [category]
+            )
+
+            return DAppListSection(
+                title: category.name,
+                cells: dAppViewModels.map { .category(model: $0, categoryName: category.name) }
+            )
+        }
+
+        return categorySections
+    }
+
+    func categorySelectSection(from dAppList: DAppList) -> DAppListSection? {
+        guard !dAppList.categories.isEmpty else { return nil }
+
+        let categoryViewModels = dappCategoriesViewModelFactory.createViewModels(for: dAppList.categories)
+
+        return DAppListSection(
+            title: nil,
+            cells: [.categorySelect(categoryViewModels)]
+        )
+    }
+
+    func headerSection(
+        for wallet: MetaAccountModel,
+        hasWalletsListUpdates: Bool
+    ) -> DAppListSection {
+        let headerViewModel = walletSwitchViewModelFactory.createViewModel(
+            from: wallet.walletIdenticonData(),
+            walletType: wallet.type,
+            hasNotification: hasWalletsListUpdates
+        )
+
+        return DAppListSection(
+            title: nil,
+            cells: [.header(headerViewModel)]
+        )
+    }
 }
+
+// MARK: DAppListViewModelFactoryProtocol
 
 extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
     func createFavoriteDAppName(from model: DAppFavorite) -> String {
@@ -134,41 +253,11 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 
     func createDApps(
         from category: String?,
+        query: String?,
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel] {
-        let actualDApps: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
-            if let category = category {
-                return valueIndex.element.categories.contains(category) ?
-                    IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element) : nil
-            } else {
-                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
-            }
-        }
-
-        if category == nil {
-            return createViewModels(
-                merging: actualDApps,
-                filteredFavorites: favorites,
-                allFavorites: favorites,
-                categories: dAppList.categories
-            )
-        } else {
-            return createViewModels(
-                merging: actualDApps,
-                filteredFavorites: [:],
-                allFavorites: favorites,
-                categories: dAppList.categories
-            )
-        }
-    }
-
-    func createDAppsFromQuery(
-        _ query: String?,
-        dAppList: DAppList,
-        favorites: [String: DAppFavorite]
-    ) -> [DAppViewModel] {
-        let actualDApps: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
+    ) -> DAppListViewModel {
+        let dAppsByQuery: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
             guard let query = query, !query.isEmpty else {
                 return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             }
@@ -180,6 +269,12 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             }
         }
 
+        let actualDApps: [IndexedDApp] = dAppsByQuery.filter { indexedDApp in
+            guard let category else { return true }
+
+            return indexedDApp.dapp.categories.contains(category)
+        }
+
         let filteredFavorites = favorites.filter { keyValue in
             guard let query = query, !query.isEmpty else {
                 return true
@@ -189,11 +284,82 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             return name.localizedCaseInsensitiveContains(query)
         }
 
-        return createViewModels(
+        let availableCategories = Set(dAppsByQuery.flatMap(\.dapp.categories))
+
+        let categoryViewModels = dAppList.categories
+            .filter { availableCategories.contains($0.identifier) }
+            .map { dappCategoriesViewModelFactory.createViewModel(for: $0) }
+
+        let dappViewModels = createViewModels(
             merging: actualDApps,
             filteredFavorites: filteredFavorites,
             allFavorites: favorites,
             categories: dAppList.categories
         )
+
+        let selectedCategoryIndex = categoryViewModels.firstIndex(where: { $0.identifier == category })
+
+        return DAppListViewModel(
+            selectedCategoryIndex: selectedCategoryIndex,
+            categories: categoryViewModels,
+            dApps: dappViewModels
+        )
+    }
+
+    func createErrorSection() -> DAppListSectionViewModel {
+        .error(
+            DAppListSection(
+                title: nil,
+                cells: [.error]
+            )
+        )
+    }
+
+    func createDAppSections(
+        from dAppList: DAppList?,
+        favorites: [String: DAppFavorite],
+        wallet: MetaAccountModel,
+        hasWalletsListUpdates: Bool,
+        locale: Locale
+    ) -> [DAppListSectionViewModel] {
+        var viewModels: [DAppListSectionViewModel] = []
+
+        let headerSection = headerSection(
+            for: wallet,
+            hasWalletsListUpdates: hasWalletsListUpdates
+        )
+        viewModels.append(.header(headerSection))
+
+        guard let dAppList else {
+            viewModels.append(
+                .notLoaded(
+                    DAppListSection(
+                        title: nil,
+                        cells: [.notLoaded]
+                    )
+                )
+            )
+            return viewModels
+        }
+
+        if let categorySelectSection = categorySelectSection(from: dAppList) {
+            viewModels.append(.categorySelect(categorySelectSection))
+        }
+
+        if let favoritesSection = favoritesSection(
+            from: favorites,
+            locale: locale
+        ) {
+            viewModels.append(.favorites(favoritesSection))
+        }
+
+        if let categorySections = categorySections(
+            from: dAppList,
+            favorites: favorites
+        ) {
+            viewModels.append(contentsOf: categorySections.map { .category($0) })
+        }
+
+        return viewModels
     }
 }
