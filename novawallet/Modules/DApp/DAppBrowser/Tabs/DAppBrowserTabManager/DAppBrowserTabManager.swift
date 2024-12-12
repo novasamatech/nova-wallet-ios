@@ -48,8 +48,8 @@ private extension DAppBrowserTabManager {
             workingQueue.sync { transportStates }
         }
         set {
-            workingQueue.sync(flags: .barrier) {
-                transportStates = newValue
+            workingQueue.async(flags: .barrier) {
+                self.transportStates = newValue
             }
         }
     }
@@ -59,8 +59,8 @@ private extension DAppBrowserTabManager {
             workingQueue.sync { observableTabs.state }
         }
         set {
-            workingQueue.sync(flags: .barrier) {
-                observableTabs.state = newValue
+            workingQueue.async(flags: .barrier) {
+                self.observableTabs.state = newValue
             }
         }
     }

@@ -7,6 +7,7 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
     typealias DataSource = UICollectionViewDiffableDataSource<Int, DAppBrowserTabViewModel>
 
     let presenter: DAppBrowserTabListPresenterProtocol
+    let webViewPoolEraser: WebViewPoolEraserProtocol
 
     var viewModels: [DAppBrowserTabViewModel] = []
 
@@ -16,9 +17,11 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: DAppBrowserTabListPresenterProtocol,
+        webViewPoolEraser: WebViewPoolEraserProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.webViewPoolEraser = webViewPoolEraser
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -134,6 +137,7 @@ private extension DAppBrowserTabListViewController {
     }
 
     @objc func actionCloseAll() {
+        webViewPoolEraser.removeAll()
         presenter.closeAllTabs()
     }
 
@@ -164,6 +168,7 @@ extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
 
 extension DAppBrowserTabListViewController: DAppBrowserTabViewDelegate {
     func actionCloseTab(with id: UUID) {
+        webViewPoolEraser.removeWebView(for: id)
         presenter.closeTab(with: id)
     }
 }

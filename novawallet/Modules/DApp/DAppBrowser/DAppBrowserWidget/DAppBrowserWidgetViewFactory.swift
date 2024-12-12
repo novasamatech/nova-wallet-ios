@@ -16,7 +16,12 @@ struct DAppBrowserWidgetViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = DAppBrowserWidgetViewController(presenter: presenter)
+        let webViewPool = WebViewPool.shared
+
+        let view = DAppBrowserWidgetViewController(
+            presenter: presenter,
+            webViewPoolEraser: webViewPool
+        )
 
         presenter.view = view
         interactor.presenter = presenter
