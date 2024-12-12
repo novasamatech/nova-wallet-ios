@@ -31,7 +31,6 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionP
             childNavigation {}
         }
 
-        
         blockAnimator.animate {
             layoutAnimatables?()
             containerView?.layoutIfNeeded()

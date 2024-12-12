@@ -184,11 +184,11 @@ private extension DAppBrowserTabManager {
 
         let rendersClearWrapper = fileRepository.removeRenders(for: tabIds)
         let deleteOperation = repository.deleteAllOperation()
-        
+
         let mappingOperation = ClosureOperation {
-            let _ = try rendersClearWrapper.targetOperation.extractNoCancellableResultData()
-            let _ = try deleteOperation.extractNoCancellableResultData()
-            
+            _ = try rendersClearWrapper.targetOperation.extractNoCancellableResultData()
+            _ = try deleteOperation.extractNoCancellableResultData()
+
             return
         }
 
