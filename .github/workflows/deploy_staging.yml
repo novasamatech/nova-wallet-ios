@@ -24,7 +24,7 @@ on:
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
