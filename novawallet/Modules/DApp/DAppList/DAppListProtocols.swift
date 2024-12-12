@@ -38,4 +38,5 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable,
     WalletSwitchPresentable,
     DAppBrowserOpening {
     func showSetting(from view: DAppListViewProtocol?)
+    func showFavorites(from view: DAppListViewProtocol?)
 }
