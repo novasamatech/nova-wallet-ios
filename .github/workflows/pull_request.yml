@@ -13,6 +13,10 @@ env:
   device: 'iPhone 16'
   os_version: 'latest'
   xcode-version: '16.0'
+  BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+  BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+  KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+  P12_PASSWORD: ''
 
 jobs:
   build:
