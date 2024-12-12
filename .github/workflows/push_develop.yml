@@ -92,10 +92,10 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Dev
+        run: arch -x86_64 xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Dev
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
+        run: arch -x86_64 xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
