@@ -17,6 +17,7 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol, DAppBrowserTransitio
     func didSet(canShowSettings: Bool)
     func didSet(favorite: Bool)
     func didDecideClose()
+    func didReceiveRenderRequest()
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
@@ -82,6 +83,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didDetectPhishing(host: String)
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
     func didChangeGlobal(settings: DAppGlobalSettings)
+    func didReceiveRenderRequest()
     func didSaveLastTabState()
 }
 

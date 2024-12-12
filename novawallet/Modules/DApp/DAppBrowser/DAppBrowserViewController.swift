@@ -438,6 +438,8 @@ private extension DAppBrowserViewController {
     }
 }
 
+// MARK: DAppBrowserScriptHandlerDelegate
+
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
     func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
         let host = rootView.webView?.url?.host ?? ""
@@ -446,7 +448,13 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
     }
 }
 
+// MARK: DAppBrowserViewProtocol
+
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
+    func didReceiveRenderRequest() {
+        makeStateRender()
+    }
+
     func idForTransitioningTab() -> UUID? {
         viewModel?.selectedTab.uuid
     }
@@ -519,6 +527,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     }
 }
 
+// MARK: UIScrollViewDelegate
+
 extension DAppBrowserViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard isLandscape else {
@@ -552,6 +562,8 @@ extension DAppBrowserViewController: UIScrollViewDelegate {
         }
     }
 }
+
+// MARK: WKUIDelegate, WKNavigationDelegate
 
 extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
     func webView(

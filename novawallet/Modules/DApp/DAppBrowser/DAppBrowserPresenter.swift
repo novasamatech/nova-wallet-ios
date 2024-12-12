@@ -24,8 +24,12 @@ final class DAppBrowserPresenter {
         self.localizationManager = localizationManager
         self.logger = logger
     }
+}
 
-    private func showState(error: DAppBrowserStateError) {
+// MARK: Private
+
+private extension DAppBrowserPresenter {
+    func showState(error: DAppBrowserStateError) {
         let locale = localizationManager.selectedLocale
         let errorContent = error.toErrorContent(for: locale)
 
@@ -47,7 +51,7 @@ final class DAppBrowserPresenter {
         wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 
-    private func updateSettingsState() {
+    func updateSettingsState() {
         let canShowSettings = browserPage != nil
 
         view?.didSet(canShowSettings: canShowSettings)
@@ -80,6 +84,8 @@ final class DAppBrowserPresenter {
         }
     }
 }
+
+// MARK: DAppBrowserPresenterProtocol
 
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func actionFavorite(page: DAppBrowserPage) {
@@ -163,6 +169,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 }
 
+// MARK: DAppBrowserInteractorOutputProtocol
+
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceive(error: Error) {
         if let stateError = error as? DAppBrowserStateError {
@@ -219,7 +227,13 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didSaveLastTabState() {
         wireframe.showTabs(from: view)
     }
+
+    func didReceiveRenderRequest() {
+        view?.didReceiveRenderRequest()
+    }
 }
+
+// MARK: DAppOperationConfirmDelegate
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
     func didReceiveConfirmationResponse(
@@ -230,11 +244,15 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
     }
 }
 
+// MARK: DAppSearchDelegate
+
 extension DAppBrowserPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
         interactor.process(newQuery: result)
     }
 }
+
+// MARK: DAppAuthDelegate
 
 extension DAppBrowserPresenter: DAppAuthDelegate {
     func didReceiveAuthResponse(_ response: DAppAuthResponse, for request: DAppAuthRequest) {
@@ -242,11 +260,15 @@ extension DAppBrowserPresenter: DAppAuthDelegate {
     }
 }
 
+// MARK: DAppPhishingViewDelegate
+
 extension DAppBrowserPresenter: DAppPhishingViewDelegate {
     func dappPhishingViewDidHide() {
         wireframe.close(view: view)
     }
 }
+
+// MARK: DAppSettingsDelegate
 
 extension DAppBrowserPresenter: DAppSettingsDelegate {
     func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool) {

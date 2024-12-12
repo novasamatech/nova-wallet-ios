@@ -1,5 +1,6 @@
 import UIKit
 import Operation_iOS
+import SoraFoundation
 
 final class DAppBrowserInteractor {
     struct QueueMessage {
@@ -21,6 +22,7 @@ final class DAppBrowserInteractor {
     let dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>
     let securedLayer: SecurityLayerServiceProtocol
     let tabManager: DAppBrowserTabManagerProtocol
+    let applicationHandler: ApplicationHandlerProtocol
 
     let operationQueue: OperationQueue
 
@@ -42,6 +44,7 @@ final class DAppBrowserInteractor {
         operationQueue: OperationQueue,
         sequentialPhishingVerifier: PhishingSiteVerifing,
         tabManager: DAppBrowserTabManagerProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
@@ -53,6 +56,7 @@ final class DAppBrowserInteractor {
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
         self.tabManager = tabManager
+        self.applicationHandler = applicationHandler
         self.securedLayer = securedLayer
 
         if let existingDataSource = currentTab.transportStates?.first?.dataSource {
@@ -368,8 +372,12 @@ private extension DAppBrowserInteractor {
     }
 }
 
+// MARK: DAppBrowserInteractorInputProtocol
+
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
+        applicationHandler.delegate = self
+
         setupState()
         provideTabs()
 
@@ -477,18 +485,16 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func saveLastTabState(render: DAppBrowserTabRenderProtocol) {
-        let transportStates = transports.compactMap { $0.makeOpaqueState() }
-
-        let tabSaveWrapper = tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+        let transportSaveWrapper = createTransportSaveWrapper()
 
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
             render: render
         )
 
-        renderUpdateWrapper.addDependency(wrapper: tabSaveWrapper)
+        renderUpdateWrapper.addDependency(wrapper: transportSaveWrapper)
 
-        let resultWrapper = renderUpdateWrapper.insertingHead(operations: tabSaveWrapper.allOperations)
+        let resultWrapper = renderUpdateWrapper.insertingHead(operations: transportSaveWrapper.allOperations)
 
         execute(
             wrapper: resultWrapper,
@@ -498,7 +504,15 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             self?.presenter?.didSaveLastTabState()
         }
     }
+
+    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
+        let transportStates = transports.compactMap { $0.makeOpaqueState() }
+
+        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    }
 }
+
+// MARK: DAppBrowserTransportDelegate
 
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     func dAppTransport(
@@ -536,6 +550,8 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     }
 }
 
+// MARK: DAppLocalStorageSubscriber
+
 extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionHandler {
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
         switch result {
@@ -544,5 +560,20 @@ extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscripti
         case let .failure(error):
             logger?.error("Unexpected database error: \(error)")
         }
+    }
+}
+
+// MARK: ApplicationHandlerDelegate
+
+extension DAppBrowserInteractor: ApplicationHandlerDelegate {
+    func didReceiveWillResignActive(notification _: Notification) {
+        presenter?.didReceiveRenderRequest()
+
+        let transportSaveWrapper = createTransportSaveWrapper()
+
+        operationQueue.addOperations(
+            transportSaveWrapper.allOperations,
+            waitUntilFinished: false
+        )
     }
 }
