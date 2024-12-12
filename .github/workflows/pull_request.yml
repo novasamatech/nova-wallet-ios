@@ -7,33 +7,36 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+env:
+  scheme: 'default'
+  platform: 'iOS Simulator'
+  device: 'iPhone 16'
+  os_version: 'latest'
+  xcode-version: '16.0'
+
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
     runs-on: macos-15
 
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: actions/checkout@v4
+      - name: Get cached Swift Packages managed by Xcode
+        uses: actions/cache@v4
         with:
-          xcode-version: 16
-
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-
-      - name: Cache Cocoapods
-        id: cache-cocoapods
-        uses: actions/cache@v2
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-spm-
 
-      - name: Install Cocoapods
-        run: pod install --repo-update
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
+        with:
+          xcode-version: ${{ env.xcode-version }}
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
 
       - name: Set Default Scheme
         run: |
@@ -52,9 +55,6 @@ jobs:
 
       - name: Build
         env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
-          device: ${{ 'iPhone 16' }}
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
           MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
           MOONBEAM_HISTORY_API_KEY: ${{ secrets.MOONBEAM_HISTORY_API_KEY }}
@@ -72,7 +72,7 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          arch -x86_64 xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
 
       - name: Test
         env:
@@ -85,4 +85,4 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          arch -x86_64 xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
