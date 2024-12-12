@@ -18,6 +18,7 @@ protocol DAppBrowserWidgetProtocol {
 
 protocol DAppBrowserWidgetViewProtocol: ControllerBackedProtocol {
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel)
+    func didReceiveRequestForMinimizing()
 }
 
 // MARK: VIEW -> PRESENTER

@@ -13,10 +13,6 @@ struct FadeContentDAppBrowserMinimizeTransition {
 
 extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
-        guard let browserView = dependencies.browserViewClosure() else {
-            return
-        }
-
         let appearanceAnimator = dependencies.appearanceAnimator
         let disappearanceAnimator = dependencies.disappearanceAnimator
         let blockAnimator = dependencies.blockAnimator
@@ -27,17 +23,22 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionP
 
         let containerView = layoutClosure()
 
-        disappearanceAnimator.animate(view: browserView) { _ in
+        if let browserView = dependencies.browserViewClosure() {
+            disappearanceAnimator.animate(view: browserView) { _ in
+                childNavigation {}
+            }
+        } else {
             childNavigation {}
         }
+
+        let widgetView = dependencies.widgetViewClosure()
+        widgetView?.contentContainerView.alpha = 0
 
         blockAnimator.animate {
             layoutAnimatables?()
             containerView?.layoutIfNeeded()
         } completionBlock: { _ in
-            guard let widgetView = dependencies.widgetViewClosure() else {
-                return
-            }
+            guard let widgetView else { return }
 
             appearanceAnimator.animate(
                 view: widgetView.contentContainerView,

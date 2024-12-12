@@ -64,7 +64,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
     }
 
     func minimizeBrowser(transitionBuilder: DAppBrowserWidgetTransitionBuilder) {
-        guard state == .fullBrowser else { return }
+        guard state == .fullBrowser || state == .closed else { return }
 
         state = .miniature
 
@@ -132,6 +132,14 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
 extension DAppBrowserWidgetPresenter: DAppBrowserWidgetInteractorOutputProtocol {
     func didReceive(_ browserTabs: [UUID: DAppBrowserTab]) {
         self.browserTabs = browserTabs
+
+        let initialStateWithTabs = state == .disabled && !browserTabs.isEmpty
+
+        guard !initialStateWithTabs else {
+            state = .closed
+            view?.didReceiveRequestForMinimizing()
+            return
+        }
 
         switch state {
         case .disabled:

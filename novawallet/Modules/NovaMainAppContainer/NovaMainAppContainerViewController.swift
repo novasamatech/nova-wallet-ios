@@ -75,6 +75,7 @@ private extension NovaMainAppContainerViewController {
         DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview()
                     make.height.equalTo(Constants.minimizedWidgetHeight)
                 }
 
