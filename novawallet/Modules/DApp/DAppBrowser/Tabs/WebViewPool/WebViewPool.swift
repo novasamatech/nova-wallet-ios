@@ -1,7 +1,7 @@
 import Foundation
 import WebKit
 
-class WebViewPool {
+final class WebViewPool {
     private var webViewDict: [UUID: WKWebView] = [:]
 
     private let workingQueue = DispatchQueue(
