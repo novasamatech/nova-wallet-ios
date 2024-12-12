@@ -99,12 +99,22 @@ class DAppBrowserTests: XCTestCase {
 
         let loadingExpectation = XCTestExpectation()
         let enableSettingsExpectation = XCTestExpectation()
+        let favoriteExpectation = XCTestExpectation()
+        let tabCountExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(viewModel: any()).then { viewModel in
                 loadedModel = viewModel
 
                 loadingExpectation.fulfill()
+            }
+            
+            when(stub).didSet(favorite: any()).then { _ in
+                favoriteExpectation.fulfill()
+            }
+            
+            when(stub).didReceiveTabsCount(viewModel: any()).then { _ in
+                tabCountExpectation.fulfill()
             }
 
             when(stub).didSet(canShowSettings: any()).then { canShowSettings in
@@ -120,7 +130,15 @@ class DAppBrowserTests: XCTestCase {
 
         // then
 
-        wait(for: [loadingExpectation, enableSettingsExpectation], timeout: 10)
+        wait(
+            for: [
+                loadingExpectation,
+                enableSettingsExpectation,
+                favoriteExpectation,
+                tabCountExpectation
+            ],
+            timeout: 10
+        )
 
         XCTAssertEqual(loadedModel?.selectedTab.url, URL(string: dAppURL)!)
 
