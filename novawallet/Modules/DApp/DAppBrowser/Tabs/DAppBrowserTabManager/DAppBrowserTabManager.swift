@@ -184,10 +184,21 @@ private extension DAppBrowserTabManager {
 
         let rendersClearWrapper = fileRepository.removeRenders(for: tabIds)
         let deleteOperation = repository.deleteAllOperation()
+        
+        let mappingOperation = ClosureOperation {
+            let _ = try rendersClearWrapper.targetOperation.extractNoCancellableResultData()
+            let _ = try deleteOperation.extractNoCancellableResultData()
+            
+            return
+        }
 
-        rendersClearWrapper.addDependency(operations: [deleteOperation])
+        mappingOperation.addDependency(rendersClearWrapper.targetOperation)
+        mappingOperation.addDependency(deleteOperation)
 
-        return rendersClearWrapper.insertingHead(operations: [deleteOperation])
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: rendersClearWrapper.allOperations + [deleteOperation]
+        )
     }
 
     func sorted(_ tabs: [DAppBrowserTab]) -> [DAppBrowserTab] {
