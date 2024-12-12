@@ -81,6 +81,7 @@ class DAppBrowserTests: XCTestCase {
             operationQueue: OperationQueue(),
             sequentialPhishingVerifier: phishingVerifier,
             tabManager: tabManager,
+            applicationHandler: ApplicationHandler(),
             logger: Logger.shared
         )
 
