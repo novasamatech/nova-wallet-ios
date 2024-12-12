@@ -2,35 +2,26 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
-    func didReceiveWalletSwitch(viewModel: WalletSwitchViewModel)
-    func didReceive(state: DAppListState)
-    func didReceive(dApp: DApp)
     func didCompleteRefreshing()
+    func didReceive(_ sections: [DAppListSectionViewModel])
+    func didReceiveDApp(with id: String)
 }
 
 protocol DAppListPresenterProtocol: AnyObject {
     func setup()
     func refresh()
+    func seeAllFavorites()
     func activateAccount()
     func activateSearch()
     func activateSettings()
 
-    func numberOfCategories() -> Int
-    func category(at index: Int) -> String
-    func selectedCategoryIndex() -> Int
-    func selectCategory(at index: Int)
-    func numberOfDApps() -> Int
-    func dApp(at index: Int) -> DAppViewModel
-    func selectDApp(at index: Int)
-    func toogleFavoriteForDApp(at index: Int)
-    func selectDApp(_ dapp: DApp)
+    func selectCategory(with id: String)
+    func selectDApp(with id: String)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func addToFavorites(dApp: DApp)
-    func removeFromFavorites(dAppIdentifier: String)
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
@@ -41,13 +32,11 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
 }
 
 protocol DAppListWireframeProtocol: DAppAlertPresentable,
+    DAppBrowserSearchPresentable,
     ErrorPresentable,
     WebPresentable,
     WalletSwitchPresentable,
     DAppBrowserOpening {
-    func showSearch(
-        from view: DAppListViewProtocol?,
-        delegate: DAppSearchDelegate
-    )
     func showSetting(from view: DAppListViewProtocol?)
+    func showFavorites(from view: DAppListViewProtocol?)
 }

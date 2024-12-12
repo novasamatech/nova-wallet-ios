@@ -7,7 +7,7 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         case search
         case dapps
 
-        static func section(for index: Int, searchTitle: String?, viewModels _: [DAppViewModel]) -> Section {
+        static func section(for index: Int, searchTitle: String?) -> Section {
             guard index == 0 else {
                 return .dapps
             }
@@ -19,8 +19,12 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
             }
         }
 
-        static func numberOfSections(for searchTitle: String?, viewModels: [DAppViewModel]) -> Int {
-            if let searchTitle = searchTitle, !searchTitle.isEmpty, !viewModels.isEmpty {
+        static func numberOfSections(for searchTitle: String?, viewModel: DAppListViewModel?) -> Int {
+            if
+                let searchTitle = searchTitle,
+                let viewModel,
+                !viewModel.dApps.isEmpty,
+                !searchTitle.isEmpty {
                 return 2
             } else {
                 return 1
@@ -33,7 +37,7 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
     let presenter: DAppSearchPresenterProtocol
 
     private var searchTitle: String?
-    private var viewModels: [DAppViewModel] = []
+    private var viewModel: DAppListViewModel?
 
     init(presenter: DAppSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -56,12 +60,23 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
 
         setupTableView()
         setupSearchBar()
+        setupCategoriesBar()
         setupLocalization()
 
         presenter.setup()
     }
 
-    private func setupLocalization() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        rootView.searchBar.textField.becomeFirstResponder()
+    }
+}
+
+// MARK: Private
+
+private extension DAppSearchViewController {
+    func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.searchBar.textField.placeholder = R.string.localizable.dappListSearch(
             preferredLanguages: languages
@@ -70,22 +85,16 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         rootView.cancelBarItem.title = R.string.localizable.commonCancel(preferredLanguages: languages)
     }
 
-    private func setupTableView() {
+    func setupTableView() {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
 
         rootView.tableView.registerClassForCell(DAppSearchQueryTableViewCell.self)
-        rootView.tableView.registerClassForCell(DAppSearchDAppTableViewCell.self)
+        rootView.tableView.registerClassForCell(DAppItemTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: DAppSearchHeaderView.self)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        rootView.searchBar.textField.becomeFirstResponder()
-    }
-
-    private func setupSearchBar() {
+    func setupSearchBar() {
         navigationItem.titleView = rootView.searchBar
         navigationItem.rightBarButtonItem = rootView.cancelBarItem
 
@@ -102,11 +111,22 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         rootView.cancelBarItem.action = #selector(actionCancel)
     }
 
-    @objc private func actionTextFieldChanged() {
-        let oldSectionCount = Section.numberOfSections(for: searchTitle, viewModels: viewModels)
+    func setupCategoriesBar() {
+        rootView.categoriesView.delegate = self
+    }
+
+    @objc func actionTextFieldChanged() {
+        let oldSectionCount = Section.numberOfSections(
+            for: searchTitle,
+            viewModel: viewModel
+        )
+
         searchTitle = rootView.searchBar.textField.text
 
-        let newSectionCount = Section.numberOfSections(for: searchTitle, viewModels: viewModels)
+        let newSectionCount = Section.numberOfSections(
+            for: searchTitle,
+            viewModel: viewModel
+        )
 
         if oldSectionCount != newSectionCount {
             rootView.tableView.reloadData()
@@ -122,25 +142,27 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
     }
 }
 
+// MARK: UITableViewDataSource
+
 extension DAppSearchViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        Section.numberOfSections(for: searchTitle, viewModels: viewModels)
+        Section.numberOfSections(
+            for: searchTitle,
+            viewModel: viewModel
+        )
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch Section.section(for: section, searchTitle: searchTitle, viewModels: viewModels) {
-        case .search:
-            return 1
-        case .dapps:
-            return viewModels.count
+        switch Section.section(for: section, searchTitle: searchTitle) {
+        case .search: 1
+        case .dapps: viewModel?.dApps.count ?? 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section = Section.section(
             for: indexPath.section,
-            searchTitle: searchTitle,
-            viewModels: viewModels
+            searchTitle: searchTitle
         )
 
         switch section {
@@ -149,8 +171,12 @@ extension DAppSearchViewController: UITableViewDataSource {
             cell.bind(title: searchTitle ?? "")
             return cell
         case .dapps:
-            let cell = tableView.dequeueReusableCellWithType(DAppSearchDAppTableViewCell.self)!
-            cell.bind(viewModel: viewModels[indexPath.row])
+            guard let dAppViewModel = viewModel?.dApps[indexPath.row] else {
+                return UITableViewCell()
+            }
+
+            let cell: DAppItemTableViewCell = tableView.dequeueReusableCellWithType(DAppItemTableViewCell.self)!
+            cell.contentDisplayView.bind(viewModel: dAppViewModel)
             return cell
         }
     }
@@ -158,8 +184,7 @@ extension DAppSearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let tableSection = Section.section(
             for: section,
-            searchTitle: searchTitle,
-            viewModels: viewModels
+            searchTitle: searchTitle
         )
 
         let view: DAppSearchHeaderView = tableView.dequeueReusableHeaderFooterView()
@@ -191,24 +216,29 @@ extension DAppSearchViewController: UITableViewDataSource {
     }
 }
 
+// MARK: UITableViewDelegate
+
 extension DAppSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
         let tableSection = Section.section(
             for: indexPath.section,
-            searchTitle: searchTitle,
-            viewModels: viewModels
+            searchTitle: searchTitle
         )
 
         switch tableSection {
         case .search:
             presenter.selectSearchQuery()
         case .dapps:
-            presenter.selectDApp(viewModel: viewModels[indexPath.row])
+            guard let dAppViewModel = viewModel?.dApps[indexPath.row] else { return }
+
+            presenter.selectDApp(viewModel: dAppViewModel)
         }
     }
 }
+
+// MARK: UITextFieldDelegate
 
 extension DAppSearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -216,6 +246,19 @@ extension DAppSearchViewController: UITextFieldDelegate {
         return false
     }
 }
+
+// MARK: DAppCategoriesViewDelegate
+
+extension DAppSearchViewController: DAppCategoriesViewDelegate {
+    func dAppCategories(
+        view _: DAppCategoriesView,
+        didSelectCategoryWith identifier: String?
+    ) {
+        presenter.selectCategory(with: identifier)
+    }
+}
+
+// MARK: DAppSearchViewProtocol
 
 extension DAppSearchViewController: DAppSearchViewProtocol {
     func didReceive(initialQuery: String) {
@@ -225,12 +268,21 @@ extension DAppSearchViewController: DAppSearchViewProtocol {
         rootView.tableView.reloadData()
     }
 
-    func didReceiveDApp(viewModels: [DAppViewModel]) {
-        self.viewModels = viewModels
+    func didReceive(viewModel: DAppListViewModel?) {
+        self.viewModel = viewModel
+
+        rootView.categoriesView.bind(categories: viewModel?.categories ?? [])
+
+        rootView.categoriesView.setSelectedIndex(
+            viewModel?.selectedCategoryIndex,
+            animated: true
+        )
 
         rootView.tableView.reloadData()
     }
 }
+
+// MARK: Localizable
 
 extension DAppSearchViewController: Localizable {
     func applyLocalization() {

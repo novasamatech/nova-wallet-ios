@@ -3,7 +3,8 @@ import SoraFoundation
 
 struct DAppSearchViewFactory {
     static func createView(
-        with initialQuery: String?,
+        with initialQuery: String? = nil,
+        selectedCategoryId: String? = nil,
         delegate: DAppSearchDelegate
     ) -> DAppSearchViewProtocol? {
         let dAppsUrl = ApplicationConfig.shared.dAppsListURL
@@ -19,11 +20,16 @@ struct DAppSearchViewFactory {
 
         let wireframe = DAppSearchWireframe()
 
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory()
+        )
+
         let presenter = DAppSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
+            viewModelFactory: viewModelFactory,
             initialQuery: initialQuery,
+            selectedCategoryId: selectedCategoryId,
             delegate: delegate,
             applicationConfig: ApplicationConfig.shared,
             localizationManager: LocalizationManager.shared,

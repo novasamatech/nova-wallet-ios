@@ -7,17 +7,15 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         self.proxySyncService = proxySyncService
     }
 
-    func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate) {
-        guard let searchView = DAppSearchViewFactory.createView(with: nil, delegate: delegate) else {
+    func showFavorites(from view: (any DAppListViewProtocol)?) {
+        guard let favoritesView = DAppFavoritesViewFactory.createView() else {
             return
         }
 
-        let navigationController = NovaNavigationController(rootViewController: searchView.controller)
-        navigationController.barSettings = NavigationBarSettings.defaultSettings.bySettingCloseButton(false)
-
-        navigationController.modalTransitionStyle = .crossDissolve
-        navigationController.modalPresentationStyle = .fullScreen
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        presentWithNavigationController(
+            favoritesView,
+            from: view
+        )
     }
 
     func showSetting(from view: DAppListViewProtocol?) {
@@ -25,7 +23,22 @@ final class DAppListWireframe: DAppListWireframeProtocol {
             return
         }
 
-        let navigationController = NovaNavigationController(rootViewController: settingsView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        presentWithNavigationController(
+            settingsView,
+            from: view
+        )
+    }
+
+    private func presentWithNavigationController(
+        _ view: ControllerBackedProtocol,
+        from presentingController: ControllerBackedProtocol?
+    ) {
+        let navigationController = NovaNavigationController(rootViewController: view.controller)
+
+        presentingController?.controller.present(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 }

@@ -12,6 +12,7 @@ final class DAppSearchPresenter {
     private var favorites: [String: DAppFavorite]?
 
     private(set) var query: String?
+    private(set) var selectedCategoryId: String?
 
     weak var delegate: DAppSearchDelegate?
 
@@ -25,6 +26,7 @@ final class DAppSearchPresenter {
         wireframe: DAppSearchWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         initialQuery: String?,
+        selectedCategoryId: String?,
         delegate: DAppSearchDelegate,
         applicationConfig: ApplicationConfigProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -34,6 +36,7 @@ final class DAppSearchPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         query = initialQuery
+        self.selectedCategoryId = selectedCategoryId
         self.delegate = delegate
         self.applicationConfig = applicationConfig
         self.localizationManager = localizationManager
@@ -42,20 +45,28 @@ final class DAppSearchPresenter {
 
     private func provideViewModel() {
         if let dAppList = dAppList, let favorites = favorites {
-            let viewModels = viewModelFactory.createDAppsFromQuery(
-                query,
+            let viewModel = viewModelFactory.createDApps(
+                from: selectedCategoryId,
+                query: query,
                 dAppList: dAppList,
                 favorites: favorites
             )
 
-            view?.didReceiveDApp(viewModels: viewModels)
+            view?.didReceive(viewModel: viewModel)
         } else {
-            view?.didReceiveDApp(viewModels: [])
+            view?.didReceive(viewModel: nil)
         }
     }
 }
 
+// MARK: DAppSearchPresenterProtocol
+
 extension DAppSearchPresenter: DAppSearchPresenterProtocol {
+    func selectCategory(with id: String?) {
+        selectedCategoryId = id
+        provideViewModel()
+    }
+
     func setup() {
         if let query = query {
             view?.didReceive(initialQuery: query)
@@ -75,12 +86,10 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             return
         }
 
-        switch viewModel.identifier {
-        case let .index(value):
-            let dApp = dAppList.dApps[value]
+        if let dApp = dAppList.dApps.first(where: { $0.identifier == viewModel.identifier }) {
             delegate?.didCompleteDAppSearchResult(.dApp(model: dApp))
-        case let .key(value):
-            delegate?.didCompleteDAppSearchResult(.query(string: value))
+        } else {
+            delegate?.didCompleteDAppSearchResult(.query(string: viewModel.identifier))
         }
 
         wireframe.close(from: view)
@@ -104,6 +113,8 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
         wireframe.close(from: view)
     }
 }
+
+// MARK: DAppSearchInteractorOutputProtocol
 
 extension DAppSearchPresenter: DAppSearchInteractorOutputProtocol {
     func didReceive(dAppsResult: Result<DAppList?, Error>) {
