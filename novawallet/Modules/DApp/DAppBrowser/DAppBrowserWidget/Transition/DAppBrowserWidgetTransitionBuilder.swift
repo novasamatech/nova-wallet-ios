@@ -31,7 +31,7 @@ class DAppBrowserWidgetTransitionBuilder {
 // MARK: Private
 
 private extension DAppBrowserWidgetTransitionBuilder {
-    func buildDisappearTransition() throws -> DAppBrowserTransitionProtocol {
+    func buildDisappearTransition() throws -> DAppBrowserWidgetTransitionProtocol {
         guard let layoutDependencies else {
             throw DAppBrowserWidgetTransitionBuilderError.missingRequiredDependencies
         }
@@ -43,7 +43,7 @@ private extension DAppBrowserWidgetTransitionBuilder {
 
     func buildAppearedTransition(
         for state: DAppBrowserWidgetLayout
-    ) throws -> DAppBrowserTransitionProtocol {
+    ) throws -> DAppBrowserWidgetTransitionProtocol {
         guard
             let browserViewClosure,
             let widgetViewClosure,
@@ -106,7 +106,7 @@ extension DAppBrowserWidgetTransitionBuilder {
         return self
     }
 
-    func build(for layoutState: DAppBrowserWidgetLayout) throws -> DAppBrowserTransitionProtocol {
+    func build(for layoutState: DAppBrowserWidgetLayout) throws -> DAppBrowserWidgetTransitionProtocol {
         switch layoutState {
         case .maximized, .minimized:
             try buildAppearedTransition(for: layoutState)

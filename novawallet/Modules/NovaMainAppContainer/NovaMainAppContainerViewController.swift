@@ -4,11 +4,15 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     typealias RootViewType = NovaMainAppContainerViewLayout
 
     let presenter: NovaMainAppContainerPresenterProtocol
+    let logger: LoggerProtocol
 
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
+    var topContainerBottomConstraint: NSLayoutConstraint?
 
-    let logger: LoggerProtocol
+    var topContainerBottomOffset: CGFloat {
+        abs(topContainerBottomConstraint?.constant ?? 0)
+    }
 
     init(
         presenter: NovaMainAppContainerPresenterProtocol,
@@ -53,8 +57,11 @@ private extension NovaMainAppContainerViewController {
         DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(-84)
+                    make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
+                    make.height.equalTo(Constants.minimizedWidgetHeight)
                 }
+
+                self?.topContainerBottomConstraint?.constant = 0
 
                 return self?.rootView
             },
@@ -65,17 +72,13 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserMinimizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        let tabBarHeightInset = Constants.minimizedWidgetHeight + Constants.childSpacing
-
-        return DAppBrowserLayoutTransitionDependencies(
+        DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.height.equalTo(78)
+                    make.height.equalTo(Constants.minimizedWidgetHeight)
                 }
 
-                self?.tabBar?.view.snp.updateConstraints { make in
-                    make.top.equalToSuperview()
-                }
+                self?.topContainerBottomConstraint?.constant = -Constants.topContainerBottomOffset
 
                 return self?.rootView
             },
@@ -90,7 +93,6 @@ private extension NovaMainAppContainerViewController {
 
     func browserMaximizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
         let fullHeight = view.frame.size.height
-        let tabBarTopOffset = fullHeight - Constants.minimizedWidgetHeight - Constants.childSpacing
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
@@ -99,9 +101,7 @@ private extension NovaMainAppContainerViewController {
                     make.bottom.equalToSuperview()
                 }
 
-                self?.tabBar?.view.snp.updateConstraints { make in
-                    make.top.equalToSuperview().inset(-tabBarTopOffset)
-                }
+                self?.topContainerBottomConstraint?.constant = -Constants.topContainerBottomOffset
 
                 return self?.rootView
             }
@@ -116,24 +116,25 @@ extension NovaMainAppContainerViewController {
         bottomView: UIView,
         topView: UIView
     ) {
+        rootView.addSubview(topView)
+
+        topView.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+        }
+
+        topContainerBottomConstraint = topView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
+        topContainerBottomConstraint?.isActive = true
+
+        topView.layer.cornerRadius = 16
+        topView.layer.masksToBounds = true
+
         rootView.addSubview(bottomView)
 
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(-84)
-            make.height.equalTo(78)
+            make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
+            make.height.equalTo(Constants.minimizedWidgetHeight)
         }
-
-        rootView.addSubview(topView)
-
-        topView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalTo(bottomView.snp.top).inset(-6)
-        }
-
-        topView.layer.cornerRadius = 16
-        topView.layer.masksToBounds = true
     }
 }
 
@@ -189,5 +190,6 @@ private extension NovaMainAppContainerViewController {
     enum Constants {
         static let minimizedWidgetHeight: CGFloat = 78
         static let childSpacing: CGFloat = 6
+        static let topContainerBottomOffset: CGFloat = minimizedWidgetHeight + childSpacing
     }
 }

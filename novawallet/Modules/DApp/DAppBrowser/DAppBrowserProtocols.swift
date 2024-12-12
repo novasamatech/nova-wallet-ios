@@ -1,7 +1,11 @@
 import Foundation
 import Operation_iOS
 
-protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
+protocol DAppBrowserTransitionProtocol {
+    func idForTransitioningTab() -> UUID?
+}
+
+protocol DAppBrowserViewProtocol: ControllerBackedProtocol, DAppBrowserTransitionProtocol {
     func didReceive(viewModel: DAppBrowserModel)
     func didReceiveTabsCount(viewModel: String)
     func didReceive(response: DAppScriptResponse, forTransport name: String)

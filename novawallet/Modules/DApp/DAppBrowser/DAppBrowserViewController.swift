@@ -416,6 +416,10 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
 }
 
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
+    func idForTransitioningTab() -> UUID? {
+        viewModel?.selectedTab.uuid
+    }
+
     func didReceive(viewModel: DAppBrowserModel) {
         var reload: Bool = true
 

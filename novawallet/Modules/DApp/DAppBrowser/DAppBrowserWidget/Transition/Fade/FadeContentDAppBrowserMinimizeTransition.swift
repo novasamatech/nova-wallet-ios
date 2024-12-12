@@ -9,9 +9,9 @@ struct FadeContentDAppBrowserMinimizeTransition {
     }
 }
 
-// MARK: DAppBrowserTransitionProtocol
+// MARK: DAppBrowserWidgetTransitionProtocol
 
-extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtocol {
+extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
         guard let browserView = dependencies.browserViewClosure() else {
             return
@@ -19,6 +19,7 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
 
         let appearanceAnimator = dependencies.appearanceAnimator
         let disappearanceAnimator = dependencies.disappearanceAnimator
+        let blockAnimator = dependencies.blockAnimator
 
         let childNavigation = dependencies.childNavigation
         let layoutClosure = dependencies.layoutDependencies.layoutClosure
@@ -30,10 +31,11 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserTransitionProtoco
             childNavigation {}
         }
 
-        UIView.animate(withDuration: 0.25) {
+        
+        blockAnimator.animate {
             layoutAnimatables?()
             containerView?.layoutIfNeeded()
-        } completion: { _ in
+        } completionBlock: { _ in
             guard let widgetView = dependencies.widgetViewClosure() else {
                 return
             }

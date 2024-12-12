@@ -9,9 +9,9 @@ struct DAppBrowserCloseTransition {
     }
 }
 
-// MARK: DAppBrowserTransitionProtocol
+// MARK: DAppBrowserWidgetTransitionProtocol
 
-extension DAppBrowserCloseTransition: DAppBrowserTransitionProtocol {
+extension DAppBrowserCloseTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
         let containerView = dependencies.layoutClosure()
 

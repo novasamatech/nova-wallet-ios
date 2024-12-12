@@ -22,6 +22,9 @@ enum DAppBrowserTabTransition {
 
             destController?.preferredTransition = .zoom(options: options) { context in
                 let source = context.sourceViewController as? DAppBrowserTabViewTransitionProtocol
+                let destintation = context.zoomedViewController as? DAppBrowserTransitionProtocol
+
+                let destinationTabId = destintation?.idForTransitioningTab() ?? tabId
 
                 return source?.getTabViewForTransition(for: tabId)
             }
