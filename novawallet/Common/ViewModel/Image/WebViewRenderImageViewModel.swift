@@ -9,8 +9,8 @@ final class WebViewRenderImageViewModel: NSObject {
 
     private let operationFactory: WebViewRenderFilesOperationFactoryProtocol
     private let renderFetchOperationQueue: OperationQueue
-    
-    private imageOperationCallStore = CancellableCallStore()
+
+    private let imageOperationCallStore = CancellableCallStore()
 
     init(
         operationFactory: WebViewRenderFilesOperationFactoryProtocol,
@@ -58,7 +58,7 @@ extension WebViewRenderImageViewModel: ImageViewModelProtocol {
         }
     }
 
-    func cancel(on imageView: UIImageView) {
+    func cancel(on _: UIImageView) {
         imageOperationCallStore.cancel()
     }
 }

@@ -10,6 +10,8 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
 
     var viewModels: [DAppBrowserTabViewModel] = []
 
+    private var scrollsToBottomOnLoad: Bool = false
+
     private lazy var dataSource = createDataSource()
 
     init(
@@ -99,9 +101,28 @@ private extension DAppBrowserTabListViewController {
         rootView.doneButtonItem.action = #selector(actionDone)
     }
 
+    func scrollToLast() {
+        let indexForLastItem = rootView.collectionView.numberOfItems(inSection: 0) - 1
+        let indexPath = IndexPath(
+            item: indexForLastItem,
+            section: 0
+        )
+
+        rootView.collectionView.scrollToItem(
+            at: indexPath,
+            at: .bottom,
+            animated: true
+        )
+    }
+
     func reloadCollection() {
         let snapshot = createSnapshot()
         dataSource.apply(snapshot)
+
+        if scrollsToBottomOnLoad {
+            scrollToLast()
+            scrollsToBottomOnLoad.toggle()
+        }
     }
 
     func createSnapshot() -> NSDiffableDataSourceSnapshot<Int, DAppBrowserTabViewModel> {
@@ -132,6 +153,10 @@ extension DAppBrowserTabListViewController: DAppBrowserTabListViewProtocol {
         self.viewModels = viewModels
 
         reloadCollection()
+    }
+
+    func setScrollsToLatestOnLoad() {
+        scrollsToBottomOnLoad = true
     }
 }
 

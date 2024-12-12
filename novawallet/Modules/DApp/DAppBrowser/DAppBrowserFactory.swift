@@ -56,6 +56,8 @@ enum DAppBrowserFactory {
             return nil
         }
 
+        tabsView.setScrollsToLatestOnLoad()
+
         let navigationController = NovaNavigationController(rootViewController: tabsView.controller)
         navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
 
