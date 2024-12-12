@@ -37,6 +37,7 @@ class DAppSearchTests: XCTestCase {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             initialQuery: "",
+            selectedCategoryId: nil,
             delegate: delegate,
             applicationConfig: ApplicationConfig.shared,
             localizationManager: LocalizationManager.shared
@@ -55,8 +56,8 @@ class DAppSearchTests: XCTestCase {
                 querySetupExpectation.fulfill()
             }
 
-            when(stub).didReceiveDApp(viewModels: any()).then { viewModels in
-                if !viewModels.isEmpty {
+            when(stub).didReceive(viewModel: any()).then { viewModel in
+                if viewModel?.dApps.isEmpty == false {
                     dAppSetupExpectatation.fulfill()
                 }
             }
@@ -79,8 +80,8 @@ class DAppSearchTests: XCTestCase {
         stub(view) { stub in
             when(stub).didReceive(initialQuery: any()).thenDoNothing()
 
-            when(stub).didReceiveDApp(viewModels: any()).then { viewModels in
-                if let dApp = viewModels.last {
+            when(stub).didReceive(viewModel: any()).then { viewModel in
+                if let dApp = viewModel?.dApps.last {
                     selectedDApp = dApp
                     dAppSearchExpectation.fulfill()
                 }

@@ -35,12 +35,6 @@ final class DAppBrowserTabListViewController: UIViewController, ViewHolder {
 
         setup()
     }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        rootView.collectionView.isUserInteractionEnabled = true
-    }
 }
 
 // MARK: Private
@@ -157,8 +151,6 @@ extension DAppBrowserTabListViewController: UICollectionViewDelegate, UICollecti
         didSelectItemAt indexPath: IndexPath
     ) {
         collectionView.deselectItem(at: indexPath, animated: true)
-
-        collectionView.isUserInteractionEnabled = false
         let tab = viewModels[indexPath.item]
 
         presenter.selectTab(with: tab.uuid)

@@ -189,6 +189,10 @@ extension DAppListViewController: DAppListViewProtocol {
         dataSource.apply(sections.models)
     }
 
+    func didReceiveDApp(with id: String) {
+        presenter.selectDApp(with: id)
+    }
+
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
     }
