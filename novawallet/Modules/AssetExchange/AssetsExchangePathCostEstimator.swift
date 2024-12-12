@@ -20,7 +20,7 @@ struct AssetsExchangePathCost {
     }
 }
 
-final class AssetsExchangePathCostEstimator: AnyObject {
+final class AssetsExchangePathCostEstimator {
     let priceStore: AssetExchangePriceStoring
     let chainRegistry: ChainRegistryProtocol
 
