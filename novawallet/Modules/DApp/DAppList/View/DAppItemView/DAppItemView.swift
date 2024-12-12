@@ -17,7 +17,7 @@ final class DAppItemView: UIView {
         view.spacing = Constants.titleSubtitleSpace
     }
 
-    private var model: DAppViewModel?
+    var model: DAppViewModel?
 
     var layoutStyle: LayoutStyle = .horizontal {
         didSet {
