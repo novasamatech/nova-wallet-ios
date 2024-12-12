@@ -1,0 +1,5 @@
+"NSCameraUsageDescription" = "A kamera a címekkel rendelkező QR-kódok, Polkadot Vault tranzakciók vagy WalletConnect kapcsolatok beolvasásához kell";
+"NSFaceIDUsageDescription" = "A Face ID a Nova Wallet-ben való engedélyezésre szolgál";
+"NSPhotoLibraryUsageDescription" = "A fotókönyvtár-hozzáférés lehetővé teszi a címmel rendelkező QR-kód kiválasztását, a Polkadot Vault tranzakciókat vagy a WalletConnect-en keresztüli kapcsolódást";
+"NSPhotoLibraryAddUsageDescription" = "Átutalási kérelem mentése QR-kódként";
+"NSBluetoothAlwaysUsageDescription" = "A Bluetooth a Ledger Nano X eszközökkel való kommunikációra szolgál";
