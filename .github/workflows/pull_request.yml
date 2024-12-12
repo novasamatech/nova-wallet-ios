@@ -10,12 +10,12 @@ concurrency:
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-13
+    runs-on: macos-14
 
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 15.2
+          xcode-version: 16
 
       - name: Checkout
         uses: actions/checkout@v2
