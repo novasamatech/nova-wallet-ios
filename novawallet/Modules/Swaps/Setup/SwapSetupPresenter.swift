@@ -767,6 +767,18 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         wireframe.showRateInfo(from: view)
     }
 
+    func showRouteDetails() {
+        guard let quote, let fee else {
+            return
+        }
+
+        wireframe.showRouteDetails(
+            from: view,
+            quote: quote,
+            fee: fee
+        )
+    }
+
     func proceed() {
         guard let swapModel = getSwapModel() else {
             return

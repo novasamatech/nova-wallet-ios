@@ -1781,3 +1781,5 @@
 "swaps.label.swap" = "Swap";
 "swaps.label.transfer" = "Transfer";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "During swap execution intermediate receive amount is %@ which is less than minimum balance of %@. Try specifying larger swap amount.";
+"common.fee.amount.prefixed" = "Fee: %@";
+"swap.route.details.subtitle" = "The way that your token will take through different networks to get the desired token.";

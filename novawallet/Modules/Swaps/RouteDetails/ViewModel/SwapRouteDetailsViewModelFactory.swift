@@ -12,12 +12,14 @@ protocol SwapRouteDetailsViewModelFactoryProtocol {
 final class SwapRouteDetailsViewModelFactory {
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
-    
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+
     init(
-        balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
     ) {
-        self.balanceViewModelFacade = balanceViewModelFacade
+        self.priceAssetInfoFactory = priceAssetInfoFactory
+        balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         self.assetIconViewModelFactory = assetIconViewModelFactory
     }
 }
@@ -27,38 +29,38 @@ private extension SwapRouteDetailsViewModelFactory {
         from operation: AssetExchangeMetaOperationProtocol,
         locale: Locale
     ) -> String {
-        switch self {
+        switch operation.label {
         case .swap:
             R.string.localizable.swapsLabelSwap(preferredLanguages: locale.rLanguages)
         case .transfer:
             R.string.localizable.swapsLabelTransfer(preferredLanguages: locale.rLanguages)
         }
     }
-    
+
     func createAmountItem(
         from chainAsset: ChainAsset,
         amount: Balance,
         locale: Locale
     ) -> AssetAmountRouteItemView.ViewModel {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        
+
         let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(
             from: assetDisplayInfo
         )
-        
+
         let amount = balanceViewModelFacade.amountFromValue(
             targetAssetInfo: assetDisplayInfo,
             value: amount.decimal(assetInfo: assetDisplayInfo)
-        )
-        
+        ).value(for: locale)
+
         return AssetAmountRouteItemView.ViewModel(imageViewModel: imageViewModel, amount: amount)
     }
-    
+
     func createAmountItems(
         from operation: AssetExchangeMetaOperationProtocol,
         locale: Locale
     ) -> [AssetAmountRouteItemView.ViewModel] {
-        switch operation {
+        switch operation.label {
         case .swap:
             [
                 createAmountItem(
@@ -66,13 +68,11 @@ private extension SwapRouteDetailsViewModelFactory {
                     amount: operation.amountIn,
                     locale: locale
                 ),
-                [
-                    createAmountItem(
-                        from: operation.assetOut,
-                        amount: operation.amountOut,
-                        locale: locale
-                    )
-                ]
+                createAmountItem(
+                    from: operation.assetOut,
+                    amount: operation.amountOut,
+                    locale: locale
+                )
             ]
         case .transfer:
             [
@@ -84,9 +84,9 @@ private extension SwapRouteDetailsViewModelFactory {
             ]
         }
     }
-    
+
     func createNetworkItems(from operation: AssetExchangeMetaOperationProtocol) -> [LabelRouteItemView.ViewModel] {
-        switch operation {
+        switch operation.label {
         case .swap:
             [
                 operation.assetIn.chain.name
@@ -98,7 +98,7 @@ private extension SwapRouteDetailsViewModelFactory {
             ]
         }
     }
-    
+
     func createFee(
         from fee: AssetExchangeOperationFee,
         chain: ChainModel,
@@ -106,7 +106,7 @@ private extension SwapRouteDetailsViewModelFactory {
         locale: Locale
     ) -> String {
         let amounts = fee.groupedAmountByAsset()
-        
+
         let totalAmountInFiat = amounts
             .map { keyValue in
                 guard
@@ -114,7 +114,7 @@ private extension SwapRouteDetailsViewModelFactory {
                     let chainAssetInfo = chain.chainAsset(for: keyValue.key.assetId)?.assetDisplayInfo else {
                     return 0
                 }
-            
+
                 return Decimal.fiatValue(
                     from: keyValue.value,
                     price: prices[keyValue.key],
@@ -122,17 +122,20 @@ private extension SwapRouteDetailsViewModelFactory {
                 )
             }
             .reduce(Decimal(0)) { $1 + $0 }
-        
+
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
             from: prices.first?.value.currencyId
         )
 
-        let amount = balanceViewModelFactoryFacade.amountFromValue(
+        let amount = balanceViewModelFacade.amountFromValue(
             targetAssetInfo: assetDisplayInfo,
             value: totalAmountInFiat
         ).value(for: locale)
-        
-        return amount
+
+        return R.string.localizable.commonFeeAmountPrefixed(
+            amount,
+            preferredLanguages: locale.rLanguages
+        )
     }
 }
 
@@ -143,11 +146,17 @@ extension SwapRouteDetailsViewModelFactory: SwapRouteDetailsViewModelFactoryProt
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> SwapRouteDetailsItemContent.ViewModel {
-        
+        let fee = createFee(
+            from: fee,
+            chain: operation.assetIn.chain,
+            prices: prices,
+            locale: locale
+        )
+
         return SwapRouteDetailsItemContent.ViewModel(
             type: createType(from: operation, locale: locale),
             amountItems: createAmountItems(from: operation, locale: locale),
-            fee: "",
+            fee: fee,
             networkItems: createNetworkItems(from: operation)
         )
     }

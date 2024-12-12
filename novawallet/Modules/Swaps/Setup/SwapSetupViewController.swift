@@ -76,6 +76,11 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(rateInfoAction),
             for: .touchUpInside
         )
+        rootView.routeCell.addTarget(
+            self,
+            action: #selector(routeDetailsAction),
+            for: .touchUpInside
+        )
         rootView.networkFeeCell.addTarget(
             self,
             action: #selector(networkFeeInfoAction),
@@ -159,6 +164,10 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func rateInfoAction() {
         presenter.showRateInfo()
+    }
+
+    @objc private func routeDetailsAction() {
+        presenter.showRouteDetails()
     }
 
     @objc private func payMaxAction() {

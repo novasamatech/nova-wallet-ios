@@ -34,6 +34,8 @@ final class SwapRouteDetailsItemContent: GenericMultiValueView<
 
     private func configure() {
         titleLabel.apply(style: .regularSubhedlinePrimary)
+        titleLabel.textAlignment = .left
+
         feeView.apply(style: .caption1Secondary)
 
         spacing = 12
