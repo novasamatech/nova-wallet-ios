@@ -54,7 +54,7 @@ jobs:
         env:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
-          device: ${{ 'iPhone 14' }}
+          device: ${{ 'iPhone 16' }}
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
           MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
           MOONBEAM_HISTORY_API_KEY: ${{ secrets.MOONBEAM_HISTORY_API_KEY }}
@@ -78,7 +78,7 @@ jobs:
         env:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
-          device: ${{ 'iPhone 14' }}
+          device: ${{ 'iPhone 16' }}
         run: |
           # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
           # device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
