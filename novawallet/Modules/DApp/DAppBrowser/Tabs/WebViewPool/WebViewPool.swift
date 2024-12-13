@@ -1,7 +1,8 @@
 import Foundation
 import WebKit
 
-class WebViewPool {
+@MainActor
+final class WebViewPool {
     private var webViewDict: [UUID: WKWebView] = [:]
 }
 
@@ -27,6 +28,26 @@ extension WebViewPool: WebViewPoolProtocol {
         webViewDict[id] = view
 
         return view
+    }
+
+    func removeWebView(for id: UUID) {
+        webViewDict[id] = nil
+    }
+
+    func removeAll() {
+        webViewDict = [:]
+    }
+
+    func webViewExists(for id: UUID) -> Bool {
+        webViewDict[id] != nil
+    }
+}
+
+// MARK: Constants
+
+private extension WebViewPool {
+    enum Constants {
+        static let readWriteQueueLabel: String = "WebViewPool.readWriteQueue"
     }
 }
 

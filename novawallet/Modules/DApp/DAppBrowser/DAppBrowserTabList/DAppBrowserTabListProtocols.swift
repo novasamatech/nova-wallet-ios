@@ -8,6 +8,7 @@ protocol DAppBrowserParentViewProtocol: AnyObject {
 
 protocol DAppBrowserTabListViewProtocol: ControllerBackedProtocol, DAppBrowserTabViewTransitionProtocol {
     func didReceive(_ viewModels: [DAppBrowserTabViewModel])
+    func setScrollsToLatestOnLoad()
 }
 
 protocol DAppBrowserTabListPresenterProtocol: AnyObject {

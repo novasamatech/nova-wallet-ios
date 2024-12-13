@@ -12,16 +12,31 @@ final class DAppBrowserScriptHandler: NSObject {
     private(set) var viewModel: DAppTransportModel?
 
     deinit {
-        clearScript()
+        clearScript(for: viewModel?.name)
     }
 
     init(contentController: WKUserContentController, delegate: DAppBrowserScriptHandlerDelegate) {
         self.contentController = contentController
         self.delegate = delegate
     }
+}
 
+// MARK: Private
+
+private extension DAppBrowserScriptHandler {
+    func clearScript(for name: String?) {
+        guard let name else { return }
+
+        contentController.removeScriptMessageHandler(forName: name)
+    }
+}
+
+// MARK: Internal
+
+extension DAppBrowserScriptHandler {
     func bind(viewModel: DAppTransportModel) {
-        clearScript()
+        clearScript(for: self.viewModel?.name)
+        clearScript(for: viewModel.name)
 
         self.viewModel = viewModel
 
@@ -45,16 +60,11 @@ final class DAppBrowserScriptHandler: NSObject {
             contentController.addUserScript(wkScript)
         }
 
-        contentController.removeScriptMessageHandler(forName: viewModel.name)
         contentController.add(self, name: viewModel.name)
     }
-
-    private func clearScript() {
-        if let oldViewModel = viewModel {
-            contentController.removeScriptMessageHandler(forName: oldViewModel.name)
-        }
-    }
 }
+
+// MARK: WKScriptMessageHandler
 
 extension DAppBrowserScriptHandler: WKScriptMessageHandler {
     func userContentController(
