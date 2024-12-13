@@ -116,7 +116,7 @@ jobs:
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
           WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
           POLKASSEMBLY_SUMMARY_API_KEY: ${{ secrets.POLKASSEMBLY_SUMMARY_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} EXCLUDED_ARCHS=arm64
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }}
 
       - name: Export Staging archive
         if: ${{ github.event.inputs.config == 'Staging' }}
