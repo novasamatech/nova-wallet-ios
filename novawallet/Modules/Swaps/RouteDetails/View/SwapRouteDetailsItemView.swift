@@ -9,6 +9,7 @@ final class SwapRouteDetailsItemView: GenericBorderedView<SwapRouteDetailsItemCo
 
     private func configure() {
         contentInsets = UIEdgeInsets(verticalInset: 12, horizontalInset: 16)
+        backgroundView.cornerRadius = 12
     }
 }
 
@@ -42,15 +43,45 @@ final class SwapRouteDetailsItemContent: GenericMultiValueView<
         valueBottom.setVerticalAndSpacing(12)
     }
 
+    private func configureAmountItemsConstraints(_ items: [AssetAmountRouteItemView]) {
+        items.dropLast().forEach { itemView in
+            itemView.amountLabel.setContentHuggingPriority(.high, for: .horizontal)
+            itemView.amountLabel.setContentCompressionResistancePriority(.high, for: .horizontal)
+        }
+
+        guard let lastView = items.last else { return }
+
+        lastView.amountLabel.setContentHuggingPriority(.low, for: .horizontal)
+        lastView.amountLabel.setContentCompressionResistancePriority(.low, for: .horizontal)
+    }
+
+    private func configureAmountSeparatorConstraints(_ separators: [SwapRouteSeparatorView]) {
+        separators.forEach { separator in
+            separator.contentMode = .center
+            separator.setContentHuggingPriority(.required, for: .horizontal)
+            separator.setContentCompressionResistancePriority(.required, for: .horizontal)
+        }
+    }
+
+    private func configureNetworkSeparatorConstraints(_ separators: [SwapRouteSeparatorView]) {
+        separators.forEach { separator in
+            separator.contentMode = .scaleAspectFit
+
+            separator.snp.remakeConstraints { make in
+                make.width.equalTo(12)
+            }
+        }
+    }
+
     func bind(viewModel: ViewModel) {
         titleLabel.text = viewModel.type
 
         amountView.bind(
             items: viewModel.amountItems,
             itemStyle: AssetAmountRouteItemView.Style(
-                imageSize: 18,
+                imageSize: 24,
                 amountStyle: .semiboldBodyPrimary,
-                spacing: 1
+                spacing: 4
             ),
             separatorStyle: R.image.iconForward()
         )
@@ -62,6 +93,10 @@ final class SwapRouteDetailsItemContent: GenericMultiValueView<
             itemStyle: .caption1Secondary,
             separatorStyle: R.image.iconForward()
         )
+
+        configureAmountItemsConstraints(amountView.getItems())
+        configureAmountSeparatorConstraints(amountView.getSeparators())
+        configureNetworkSeparatorConstraints(networkView.getSeparators())
     }
 }
 

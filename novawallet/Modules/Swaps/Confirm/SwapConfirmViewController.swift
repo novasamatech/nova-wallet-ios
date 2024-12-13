@@ -42,6 +42,7 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     private func setupHandlers() {
         rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+        rootView.routeCell.addTarget(self, action: #selector(routeAction), for: .touchUpInside)
         rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
         rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(networkFeeAction), for: .touchUpInside)
@@ -63,6 +64,10 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     @objc private func networkFeeAction() {
         presenter.showNetworkFeeInfo()
+    }
+
+    @objc private func routeAction() {
+        presenter.showRouteDetails()
     }
 
     @objc private func addressAction() {

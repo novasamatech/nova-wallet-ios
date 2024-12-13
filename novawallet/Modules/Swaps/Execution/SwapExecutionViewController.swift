@@ -44,6 +44,7 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
         rootView.detailsView.delegate = self
 
         rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+        rootView.routeCell.addTarget(self, action: #selector(routeAction), for: .touchUpInside)
         rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
         rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
         rootView.totalFeeCell.addTarget(self, action: #selector(totalFeeAction), for: .touchUpInside)
@@ -59,6 +60,10 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
 
     @objc private func priceDifferenceAction() {
         presenter.showPriceDifferenceInfo()
+    }
+
+    @objc private func routeAction() {
+        presenter.showRouteDetails()
     }
 
     @objc private func slippageAction() {

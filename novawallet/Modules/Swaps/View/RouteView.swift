@@ -97,6 +97,14 @@ final class RouteView<I: RouteItemView, S: RouteSeparatorView>: UIView {
         separatorViews.forEach { $0.apply(routeSeparatorStyle: separatorStyle) }
     }
 
+    func getItems() -> [I] {
+        itemViews
+    }
+
+    func getSeparators() -> [S] {
+        separatorViews
+    }
+
     private func setupLayout() {
         addSubview(stackView)
         stackView.snp.makeConstraints { make in

@@ -31,4 +31,23 @@ final class SwapConfirmWireframe: SwapConfirmWireframeProtocol {
             presenter?.present(swapExecutionView.controller, animated: true)
         }
     }
+
+    func showRouteDetails(
+        from view: ControllerBackedProtocol?,
+        quote: AssetExchangeQuote,
+        fee: AssetExchangeFee
+    ) {
+        guard
+            let routeDetailsView = SwapRouteDetailsViewFactory.createView(
+                for: quote,
+                fee: fee,
+                state: flowState
+            ) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: routeDetailsView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
 }

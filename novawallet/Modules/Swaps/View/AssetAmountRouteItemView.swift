@@ -5,7 +5,25 @@ final class AssetAmountRouteItemView: AssetAmountView {
     typealias ViewModel = AssetAmountRouteItemView.ItemViewModel
     typealias Style = AssetAmountRouteItemView.ItemStyle
 
-    private var imageSize: CGFloat = 18
+    private var imageSize: CGFloat = 24 {
+        didSet {
+            if imageSize != oldValue {}
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        updateAssetIconLayout()
+    }
+}
+
+private extension AssetAmountRouteItemView {
+    private func updateAssetIconLayout() {
+        assetIconView.snp.remakeConstraints { make in
+            make.size.equalTo(imageSize)
+        }
+    }
 }
 
 extension AssetAmountRouteItemView {
