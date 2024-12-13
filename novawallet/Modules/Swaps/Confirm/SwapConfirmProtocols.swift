@@ -22,6 +22,7 @@ protocol SwapConfirmPresenterProtocol: AnyObject {
     func showPriceDifferenceInfo()
     func showSlippageInfo()
     func showNetworkFeeInfo()
+    func showRouteDetails()
     func showAddressOptions()
     func confirm()
 }
@@ -33,5 +34,11 @@ protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptions
     func showSwapExecution(
         from view: SwapConfirmViewProtocol?,
         model: SwapExecutionModel
+    )
+
+    func showRouteDetails(
+        from view: ControllerBackedProtocol?,
+        quote: AssetExchangeQuote,
+        fee: AssetExchangeFee
     )
 }

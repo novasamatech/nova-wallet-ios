@@ -381,6 +381,18 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
         )
     }
 
+    func showRouteDetails() {
+        guard let fee else {
+            return
+        }
+
+        wireframe.showRouteDetails(
+            from: view,
+            quote: initState.quote,
+            fee: fee
+        )
+    }
+
     func confirm() {
         guard let swapModel = getSwapModel() else {
             return

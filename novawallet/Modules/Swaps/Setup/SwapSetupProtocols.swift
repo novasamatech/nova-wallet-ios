@@ -34,6 +34,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showFeeInfo()
     func showRateInfo()
     func showSettings()
+    func showRouteDetails()
     func selectMaxPayAmount()
     func depositInsufficientToken()
 }
@@ -85,6 +86,12 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         purchaseHadler: PurchaseFlowManaging,
         destinationChainAsset: ChainAsset,
         locale: Locale
+    )
+
+    func showRouteDetails(
+        from view: ControllerBackedProtocol?,
+        quote: AssetExchangeQuote,
+        fee: AssetExchangeFee
     )
 }
 

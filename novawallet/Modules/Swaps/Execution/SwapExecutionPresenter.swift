@@ -251,6 +251,14 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
         wireframe.showRateInfo(from: view)
     }
 
+    func showRouteDetails() {
+        wireframe.showRouteDetails(
+            from: view,
+            quote: model.quote,
+            fee: model.fee
+        )
+    }
+
     func showPriceDifferenceInfo() {
         let title = LocalizableResource {
             R.string.localizable.swapsSetupPriceDifference(

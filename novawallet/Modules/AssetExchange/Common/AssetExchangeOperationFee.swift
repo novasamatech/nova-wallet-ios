@@ -22,6 +22,10 @@ struct AssetExchangeOperationFee: Equatable {
         func totalAmountIn(asset: ChainAssetId) -> Balance {
             self.asset == asset ? amount : 0
         }
+
+        func addAmount(to store: inout [ChainAssetId: Balance]) {
+            store[asset] = (store[asset] ?? 0) + amount
+        }
     }
 
     struct Submission: Equatable {
@@ -53,6 +57,10 @@ struct AssetExchangeOperationFee: Equatable {
 
             return amountWithAsset.totalAmountIn(asset: asset)
         }
+
+        func addAmount(to store: inout [ChainAssetId: Balance]) {
+            amountWithAsset.addAmount(to: &store)
+        }
     }
 
     struct AmountByPayer: Equatable {
@@ -80,6 +88,10 @@ struct AssetExchangeOperationFee: Equatable {
             }
 
             return amountWithAsset.totalAmountIn(asset: asset)
+        }
+
+        func addAmount(to store: inout [ChainAssetId: Balance]) {
+            amountWithAsset.addAmount(to: &store)
         }
     }
 
@@ -161,6 +173,11 @@ struct AssetExchangeOperationFee: Equatable {
 
             return totalByAccount + totalFromAmount
         }
+
+        func addAmount(to store: inout [ChainAssetId: Balance]) {
+            paidByAccount.forEach { $0.amountWithAsset.addAmount(to: &store) }
+            paidFromAmount.forEach { $0.addAmount(to: &store) }
+        }
     }
 
     /**
@@ -226,6 +243,15 @@ extension AssetExchangeOperationFee {
         )
 
         return submissionTotal + postSubmissionTotal
+    }
+
+    func groupedAmountByAsset() -> [ChainAssetId: Balance] {
+        var store: [ChainAssetId: Balance] = [:]
+
+        submissionFee.addAmount(to: &store)
+        postSubmissionFee.addAmount(to: &store)
+
+        return store
     }
 }
 

@@ -16,6 +16,7 @@ protocol SwapExecutionPresenterProtocol: AnyObject {
     func showPriceDifferenceInfo()
     func showSlippageInfo()
     func showTotalFeeInfo()
+    func showRouteDetails()
     func activateDone()
     func activateTryAgain()
 }
@@ -41,5 +42,11 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
         from view: SwapExecutionViewProtocol?,
         payChainAsset: ChainAsset,
         receiveChainAsset: ChainAsset
+    )
+
+    func showRouteDetails(
+        from view: ControllerBackedProtocol?,
+        quote: AssetExchangeQuote,
+        fee: AssetExchangeFee
     )
 }
