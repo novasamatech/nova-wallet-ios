@@ -42,10 +42,12 @@ final class DAppBrowserTabListChildViewWireframe: DAppBrowserTabListWireframePro
         _ tab: DAppBrowserTab,
         from view: ControllerBackedProtocol?
     ) {
-        guard let browserView = DAppBrowserViewFactory.createChildView(
-            for: parentView,
-            selectedTab: tab
-        ) else {
+        guard
+            view?.controller.navigationController?.topViewController == view?.controller,
+            let browserView = DAppBrowserViewFactory.createChildView(
+                for: parentView,
+                selectedTab: tab
+            ) else {
             return
         }
 
