@@ -68,7 +68,8 @@ private extension NovaMainAppContainerViewController {
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(-84)
+                    make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
+                    make.height.equalTo(Constants.minimizedWidgetHeight)
                 }
 
                 self?.topContainerBottomConstraint?.constant = 0
@@ -90,10 +91,11 @@ private extension NovaMainAppContainerViewController {
         DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.height.equalTo(78)
+                    make.bottom.equalToSuperview()
+                    make.height.equalTo(Constants.minimizedWidgetHeight)
                 }
 
-                self?.topContainerBottomConstraint?.constant = -84.0
+                self?.topContainerBottomConstraint?.constant = -Constants.topContainerBottomOffset
 
                 return self?.rootView
             },
@@ -116,7 +118,7 @@ private extension NovaMainAppContainerViewController {
                     make.bottom.equalToSuperview()
                 }
 
-                self?.topContainerBottomConstraint?.constant = -84.0
+                self?.topContainerBottomConstraint?.constant = -Constants.topContainerBottomOffset
 
                 return self?.rootView
             }
@@ -147,8 +149,8 @@ extension NovaMainAppContainerViewController {
 
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(-84)
-            make.height.equalTo(78)
+            make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
+            make.height.equalTo(Constants.minimizedWidgetHeight)
         }
     }
 }
@@ -205,5 +207,6 @@ private extension NovaMainAppContainerViewController {
     enum Constants {
         static let minimizedWidgetHeight: CGFloat = 78
         static let childSpacing: CGFloat = 6
+        static let topContainerBottomOffset: CGFloat = minimizedWidgetHeight + childSpacing
     }
 }

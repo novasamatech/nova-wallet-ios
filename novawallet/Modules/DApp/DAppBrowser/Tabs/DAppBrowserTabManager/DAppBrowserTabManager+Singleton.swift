@@ -20,12 +20,6 @@ extension DAppBrowserTabManager {
         )
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let workingQueue = DispatchQueue(
-            label: readWriteQueueLabel,
-            qos: .userInitiated,
-            attributes: [.concurrent]
-        )
-
         let logger = Logger.shared
 
         return DAppBrowserTabManager(
@@ -36,7 +30,6 @@ extension DAppBrowserTabManager {
                 logger: logger
             ),
             repository: AnyDataProviderRepository(coreDataRepository),
-            workingQueue: workingQueue,
             operationQueue: operationQueue,
             logger: logger
         )

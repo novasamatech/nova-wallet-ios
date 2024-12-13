@@ -70,6 +70,7 @@ struct DAppBrowserViewFactory {
             operationQueue: operationQueue,
             sequentialPhishingVerifier: phishingVerifier,
             tabManager: DAppBrowserTabManager.shared,
+            applicationHandler: ApplicationHandler(),
             logger: logger
         )
 

@@ -1,7 +1,11 @@
 import Foundation
 import Operation_iOS
 
-protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
+protocol DAppBrowserTransitionProtocol {
+    func idForTransitioningTab() -> UUID?
+}
+
+protocol DAppBrowserViewProtocol: ControllerBackedProtocol, DAppBrowserTransitionProtocol {
     func didReceive(viewModel: DAppBrowserModel)
     func didReceiveTabsCount(viewModel: String)
     func didReceive(response: DAppScriptResponse, forTransport name: String)
@@ -13,6 +17,7 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didSet(canShowSettings: Bool)
     func didSet(favorite: Bool)
     func didDecideClose()
+    func didReceiveRenderRequest()
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
@@ -78,6 +83,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didDetectPhishing(host: String)
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
     func didChangeGlobal(settings: DAppGlobalSettings)
+    func didReceiveRenderRequest()
     func didSaveLastTabState()
 }
 

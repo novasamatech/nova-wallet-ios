@@ -52,9 +52,9 @@ class DAppBrowserWidgetView: UIView {
 
         addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-            make.size.equalTo(13)
-            make.leading.equalToSuperview().inset(21.5)
-            make.top.equalToSuperview().inset(13.5)
+            make.size.equalTo(25)
+            make.leading.equalToSuperview().inset(16.0)
+            make.top.equalToSuperview().inset(8.0)
         }
 
         contentContainerView.addSubview(title)

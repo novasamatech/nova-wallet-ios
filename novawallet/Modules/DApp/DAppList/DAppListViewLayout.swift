@@ -91,7 +91,13 @@ private extension DAppListViewLayout {
                 )
                 contentInsets.top = 16
             }
-            section?.contentInsets = contentInsets
+
+            section?.contentInsets = NSDirectionalEdgeInsets(
+                top: (section?.contentInsets.top ?? 0) + contentInsets.top,
+                leading: (section?.contentInsets.leading ?? 0) + contentInsets.leading,
+                bottom: (section?.contentInsets.bottom ?? 0) + contentInsets.bottom,
+                trailing: (section?.contentInsets.trailing ?? 0) + contentInsets.trailing
+            )
 
             return section
         }
@@ -145,16 +151,21 @@ private extension DAppListViewLayout {
             subitem: group,
             count: 1
         )
-        containerGroup.contentInsets = NSDirectionalEdgeInsets.zero
-        containerGroup.contentInsets.trailing = -(bounds.width * 0.25)
-        containerGroup.contentInsets.leading = 16
+
+        containerGroup.contentInsets = .zero
 
         let header = headerLayoutItem()
 
         let section = NSCollectionLayoutSection(group: containerGroup)
         section.orthogonalScrollingBehavior = .groupPaging
         section.boundarySupplementaryItems = [header]
-        section.interGroupSpacing = 16
+        section.supplementariesFollowContentInsets = false
+        section.interGroupSpacing = UIConstants.horizontalInset
+
+        let sectionInset = bounds.width * 0.15 / 2
+        section.contentInsets = .zero
+        section.contentInsets.trailing = sectionInset + UIConstants.horizontalInset
+        section.contentInsets.leading = UIConstants.horizontalInset
 
         return section
     }

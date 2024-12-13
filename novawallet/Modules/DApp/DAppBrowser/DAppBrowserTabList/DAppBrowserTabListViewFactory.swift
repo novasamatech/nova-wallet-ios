@@ -43,8 +43,11 @@ struct DAppBrowserTabListViewFactory {
             localizationManager: localizationManager
         )
 
+        let webViewPool = WebViewPool.shared
+
         let view = DAppBrowserTabListViewController(
             presenter: presenter,
+            webViewPoolEraser: webViewPool,
             localizationManager: localizationManager
         )
 

@@ -3,7 +3,7 @@ import UIKit
 final class DAppBrowserTabListViewLayout: UIView {
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical // .horizontal
+        layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 24
         layout.minimumInteritemSpacing = 16
 

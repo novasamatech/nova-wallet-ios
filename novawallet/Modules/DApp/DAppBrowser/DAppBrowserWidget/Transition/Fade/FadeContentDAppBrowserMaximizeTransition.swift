@@ -10,9 +10,9 @@ struct FadeContentDAppBrowserMaximizeTransition {
     }
 }
 
-// MARK: DAppBrowserTransitionProtocol
+// MARK: DAppBrowserWidgetTransitionProtocol
 
-extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserTransitionProtocol {
+extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
         guard let widgetView = dependencies.widgetViewClosure() else {
             return

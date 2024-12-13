@@ -32,6 +32,10 @@ struct FadeContentDAppBrowserTransitionDependencies {
         to: 0.0,
         duration: 0.2
     )
+    let blockAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.25, delay: 0,
+        options: [.curveEaseOut]
+    )
 
     init(
         browserViewClosure: @escaping () -> UIView?,

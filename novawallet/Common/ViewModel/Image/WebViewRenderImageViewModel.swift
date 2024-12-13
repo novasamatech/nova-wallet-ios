@@ -10,6 +10,8 @@ final class WebViewRenderImageViewModel: NSObject {
     private let operationFactory: WebViewRenderFilesOperationFactoryProtocol
     private let renderFetchOperationQueue: OperationQueue
 
+    private let imageOperationCallStore = CancellableCallStore()
+
     init(
         operationFactory: WebViewRenderFilesOperationFactoryProtocol,
         id: UUID,
@@ -33,9 +35,10 @@ extension WebViewRenderImageViewModel: ImageViewModelProtocol {
     ) {
         let renderFetchWrapper = operationFactory.fetchRender(for: id)
 
-        execute(
+        executeCancellable(
             wrapper: renderFetchWrapper,
             inOperationQueue: renderFetchOperationQueue,
+            backingCallIn: imageOperationCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
 
@@ -55,7 +58,7 @@ extension WebViewRenderImageViewModel: ImageViewModelProtocol {
         }
     }
 
-    func cancel(on imageView: UIImageView) {
-        imageView.image = nil
+    func cancel(on _: UIImageView) {
+        imageOperationCallStore.cancel()
     }
 }

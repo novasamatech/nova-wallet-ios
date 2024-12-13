@@ -17,9 +17,14 @@ final class DAppBrowserWidgetViewController: UIViewController, ViewHolder {
     }
 
     let presenter: DAppBrowserWidgetPresenterProtocol
+    let webViewPoolEraser: WebViewPoolEraserProtocol
 
-    init(presenter: DAppBrowserWidgetPresenterProtocol) {
+    init(
+        presenter: DAppBrowserWidgetPresenterProtocol,
+        webViewPoolEraser: WebViewPoolEraserProtocol
+    ) {
         self.presenter = presenter
+        self.webViewPoolEraser = webViewPoolEraser
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -58,7 +63,18 @@ private extension DAppBrowserWidgetViewController {
         )
     }
 
+    func createTransitionBuilder() -> DAppBrowserWidgetTransitionBuilder {
+        DAppBrowserWidgetTransitionBuilder()
+            .setBrowserView(
+                { [weak self] in self?.children.first?.view }
+            )
+            .setWidgetContentView(
+                { [weak self] in self?.rootView.browserWidgetView }
+            )
+    }
+
     @objc func actionClose() {
+        webViewPoolEraser.removeAll()
         presenter.closeTabs()
     }
 
@@ -71,6 +87,10 @@ private extension DAppBrowserWidgetViewController {
 // MARK: DAppBrowserWidgetViewProtocol
 
 extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
+    func didReceiveRequestForMinimizing() {
+        minimize()
+    }
+
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel) {
         rootView.browserWidgetView.title.text = browserWidgetModel.title
 
@@ -82,16 +102,6 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
             browserWidgetModel.widgetState,
             transitionBuilder: browserWidgetModel.transitionBuilder
         )
-    }
-
-    func createTransitionBuilder() -> DAppBrowserWidgetTransitionBuilder {
-        DAppBrowserWidgetTransitionBuilder()
-            .setBrowserView(
-                { [weak self] in self?.children.first?.view }
-            )
-            .setWidgetContentView(
-                { [weak self] in self?.rootView.browserWidgetView }
-            )
     }
 }
 
