@@ -260,14 +260,14 @@ private extension DAppBrowserViewController {
 
         setupTransports(
             transports,
-            contentController: contentController
+            for: contentController
         )
-        setupAdditionalUserScripts()
+        setupAdditionalUserScripts(for: contentController)
     }
 
     func setupTransports(
         _ transports: [DAppTransportModel],
-        contentController: WKUserContentController
+        for contentController: WKUserContentController
     ) {
         scriptMessageHandlers = transports.reduce(
             into: scriptMessageHandlers
@@ -283,7 +283,7 @@ private extension DAppBrowserViewController {
         }
     }
 
-    func setupAdditionalUserScripts() {
+    func setupAdditionalUserScripts(for contentController: WKUserContentController) {
         guard let webView = rootView.webView else { return }
 
         if isDesktop {
@@ -293,7 +293,7 @@ private extension DAppBrowserViewController {
                 forMainFrameOnly: false
             )
 
-            rootView.webView?.configuration.userContentController.addUserScript(script)
+            contentController.addUserScript(script)
         }
     }
 
@@ -378,10 +378,7 @@ private extension DAppBrowserViewController {
             newTabView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
         }
 
-        [rootView.webView, newTabView].forEach {
-            $0?.configuration.userContentController.removeAllUserScripts()
-            $0?.configuration.userContentController.removeAllScriptMessageHandlers()
-        }
+        rootView.webView?.configuration.userContentController.removeAllUserScripts()
 
         makeStateRender()
         rootView.setWebView(newTabView)

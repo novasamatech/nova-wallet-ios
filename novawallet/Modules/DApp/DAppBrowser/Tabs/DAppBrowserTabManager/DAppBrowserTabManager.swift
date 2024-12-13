@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-typealias DAppBrowserTabsObservable = Observable<[UUID: DAppBrowserTab]>
+typealias DAppBrowserTabsObservable = Observable<InMemoryCache<UUID, DAppBrowserTab>>
 
 final class DAppBrowserTabManager {
     let tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol
@@ -10,21 +10,19 @@ final class DAppBrowserTabManager {
     private let repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>
     private let operationQueue: OperationQueue
     private let observerQueue: DispatchQueue
-    private let workingQueue: DispatchQueue
 
     private let logger: LoggerProtocol
 
     private var browserTabProvider: StreamableProvider<DAppBrowserTab.PersistenceModel>?
 
-    private var transportStates: [UUID: [DAppTransportState]] = [:]
-    private var observableTabs: DAppBrowserTabsObservable = .init(state: [:])
+    private var transportStates: InMemoryCache<UUID, [DAppTransportState]> = .init()
+    private var observableTabs: DAppBrowserTabsObservable = .init(state: .init())
 
     init(
         fileRepository: WebViewRenderFilesOperationFactoryProtocol,
         tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol,
         repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>,
         observerQueue: DispatchQueue = .main,
-        workingQueue: DispatchQueue,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -33,36 +31,9 @@ final class DAppBrowserTabManager {
         self.fileRepository = fileRepository
         self.operationQueue = operationQueue
         self.observerQueue = observerQueue
-        self.workingQueue = workingQueue
         self.logger = logger
 
         setup()
-    }
-}
-
-// MARK: Synchronization
-
-private extension DAppBrowserTabManager {
-    var dAppTransportStates: [UUID: [DAppTransportState]] {
-        get {
-            workingQueue.sync { transportStates }
-        }
-        set {
-            workingQueue.async(flags: .barrier) {
-                self.transportStates = newValue
-            }
-        }
-    }
-
-    var tabs: [UUID: DAppBrowserTab] {
-        get {
-            workingQueue.sync { observableTabs.state }
-        }
-        set {
-            workingQueue.async(flags: .barrier) {
-                self.observableTabs.state = newValue
-            }
-        }
     }
 }
 
@@ -74,8 +45,8 @@ private extension DAppBrowserTabManager {
     }
 
     func clearInMemory() {
-        dAppTransportStates = [:]
-        tabs = [:]
+        transportStates = .init()
+        observableTabs.state = .init()
     }
 
     func saveRenderWrapper(
@@ -100,7 +71,10 @@ private extension DAppBrowserTabManager {
         let resultOperation = ClosureOperation { [weak self] in
             _ = try saveTabOperation.extractNoCancellableResultData()
 
-            self?.dAppTransportStates[tab.uuid] = tab.transportStates
+            self?.transportStates.store(
+                value: tab.transportStates ?? [],
+                for: tab.uuid
+            )
 
             return tab
         }
@@ -113,7 +87,7 @@ private extension DAppBrowserTabManager {
     }
 
     func retrieveWrapper(for tabId: UUID) -> CompoundOperationWrapper<DAppBrowserTab?> {
-        if let currentTab = tabs[tabId] {
+        if let currentTab = observableTabs.state.fetchValue(for: tabId) {
             return .createWithResult(currentTab)
         } else {
             let fetchTabOperation = repository.fetchOperation(
@@ -180,7 +154,9 @@ private extension DAppBrowserTabManager {
     }
 
     func removeAllWrapper() -> CompoundOperationWrapper<Void> {
-        let tabIds = tabs.map(\.value.uuid)
+        let tabIds = observableTabs.state
+            .fetchAllValues()
+            .map(\.uuid)
 
         let rendersClearWrapper = fileRepository.removeRenders(for: tabIds)
         let deleteOperation = repository.deleteAllOperation()
@@ -206,7 +182,9 @@ private extension DAppBrowserTabManager {
     }
 
     func apply(_ tabsChanges: [DataProviderChange<DAppBrowserTab.PersistenceModel>]) {
-        var updatedTabs = tabs
+        var updatedTabs: [UUID: DAppBrowserTab] = observableTabs.state
+            .fetchAllValues()
+            .reduce(into: [:]) { $0[$1.uuid] = $1 }
 
         tabsChanges.forEach { change in
             switch change {
@@ -217,11 +195,11 @@ private extension DAppBrowserTabManager {
                 guard let tabId = UUID(uuidString: deletedIdentifier) else { return }
 
                 updatedTabs[tabId] = nil
-                dAppTransportStates[tabId] = nil
+                transportStates.removeValue(for: tabId)
             }
         }
 
-        tabs = updatedTabs
+        observableTabs.state = .init(with: updatedTabs)
     }
 
     func map(persistenceModel: DAppBrowserTab.PersistenceModel) -> DAppBrowserTab {
@@ -237,7 +215,7 @@ private extension DAppBrowserTabManager {
             url: persistenceModel.url,
             createdAt: persistenceModel.createdAt,
             renderModifiedAt: persistenceModel.renderModifiedAt,
-            transportStates: dAppTransportStates[persistenceModel.uuid],
+            transportStates: transportStates.fetchValue(for: persistenceModel.uuid),
             desktopOnly: persistenceModel.desktopOnly,
             icon: iconURL
         )
@@ -269,7 +247,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
-        let currentTabs = Array(tabs.values)
+        let currentTabs = observableTabs.state.fetchAllValues()
 
         guard currentTabs.isEmpty else {
             return .createWithResult(sorted(currentTabs))
@@ -305,7 +283,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             inOperationQueue: operationQueue,
             runningCallbackIn: .main,
             callbackClosure: { [weak self] _ in
-                self?.dAppTransportStates[id] = nil
+                self?.transportStates.removeValue(for: id)
             }
         )
     }
@@ -318,7 +296,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         with id: UUID,
         render: DAppBrowserTabRenderProtocol
     ) -> CompoundOperationWrapper<Void> {
-        guard let tab = tabs[id] else {
+        guard let tab = observableTabs.state.fetchValue(for: id) else {
             return .createWithResult(())
         }
 
@@ -372,7 +350,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         ) { [weak self] _, newState in
             guard let self else { return }
 
-            let sortedTabs = sorted(Array(newState.values))
+            let sortedTabs = sorted(newState.fetchAllValues())
 
             observer.didReceiveUpdatedTabs(sortedTabs)
         }

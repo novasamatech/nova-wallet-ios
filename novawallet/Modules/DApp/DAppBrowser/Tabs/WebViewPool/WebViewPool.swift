@@ -1,36 +1,20 @@
 import Foundation
 import WebKit
 
+@MainActor
 final class WebViewPool {
     private var webViewDict: [UUID: WKWebView] = [:]
-
-    private let workingQueue = DispatchQueue(
-        label: Constants.readWriteQueueLabel,
-        qos: .userInitiated,
-        attributes: [.concurrent]
-    )
-
-    private var syncWebViewDict: [UUID: WKWebView] {
-        get {
-            workingQueue.sync { webViewDict }
-        }
-        set {
-            workingQueue.async(flags: .barrier) {
-                self.webViewDict = newValue
-            }
-        }
-    }
 }
 
 // MARK: WebViewPoolProtocol
 
 extension WebViewPool: WebViewPoolProtocol {
     func getWebView(for id: UUID) -> WKWebView? {
-        syncWebViewDict[id]
+        webViewDict[id]
     }
 
     func setupWebView(for id: UUID) -> WKWebView {
-        if let existingWebView = syncWebViewDict[id] {
+        if let existingWebView = webViewDict[id] {
             return existingWebView
         }
 
@@ -41,21 +25,21 @@ extension WebViewPool: WebViewPoolProtocol {
         view.scrollView.contentInsetAdjustmentBehavior = .always
         view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
 
-        syncWebViewDict[id] = view
+        webViewDict[id] = view
 
         return view
     }
 
     func removeWebView(for id: UUID) {
-        syncWebViewDict[id] = nil
+        webViewDict[id] = nil
     }
 
     func removeAll() {
-        syncWebViewDict = [:]
+        webViewDict = [:]
     }
 
     func webViewExists(for id: UUID) -> Bool {
-        syncWebViewDict[id] != nil
+        webViewDict[id] != nil
     }
 }
 
