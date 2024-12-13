@@ -42,7 +42,7 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionP
             UIView.performWithoutAnimation {
                 transformClosure?()
             }
-        } completion: { _ in
+        } completionBlock: { _ in
             guard let widgetView = dependencies.widgetViewClosure() else {
                 return
             }
