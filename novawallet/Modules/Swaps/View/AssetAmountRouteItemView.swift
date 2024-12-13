@@ -7,7 +7,9 @@ final class AssetAmountRouteItemView: AssetAmountView {
 
     private var imageSize: CGFloat = 24 {
         didSet {
-            if imageSize != oldValue {}
+            if imageSize != oldValue {
+                updateAssetIconLayout()
+            }
         }
     }
 
