@@ -94,7 +94,7 @@ extension SwapRouteDetailsView {
     enum Constants {
         static let stepsContainerWidth: CGFloat = 24
         static let stepWidth: CGFloat = 20
-        static let stepsTopOffset: CGFloat = 10
+        static let stepsTopOffset: CGFloat = 11
         static let itemsHorOffset: CGFloat = 18
     }
 }
