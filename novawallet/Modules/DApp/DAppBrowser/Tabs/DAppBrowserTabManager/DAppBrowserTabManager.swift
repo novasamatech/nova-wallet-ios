@@ -71,10 +71,7 @@ private extension DAppBrowserTabManager {
         let resultOperation = ClosureOperation { [weak self] in
             _ = try saveTabOperation.extractNoCancellableResultData()
 
-            self?.transportStates.store(
-                value: tab.transportStates ?? [],
-                for: tab.uuid
-            )
+            self?.transportStates.removeValue(for: tab.uuid)
 
             return tab
         }
