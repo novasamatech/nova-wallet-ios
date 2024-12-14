@@ -253,6 +253,29 @@ extension AssetExchangeOperationFee {
 
         return store
     }
+
+    func totalInFiat(
+        in chain: ChainModel,
+        prices: [ChainAssetId: PriceData]
+    ) -> Decimal {
+        let amounts = groupedAmountByAsset()
+
+        return amounts
+            .map { keyValue in
+                guard
+                    keyValue.key.chainId == chain.chainId,
+                    let chainAssetInfo = chain.chainAsset(for: keyValue.key.assetId)?.assetDisplayInfo else {
+                    return 0
+                }
+
+                return Decimal.fiatValue(
+                    from: keyValue.value,
+                    price: prices[keyValue.key],
+                    precision: chainAssetInfo.assetPrecision
+                )
+            }
+            .reduce(Decimal(0)) { $1 + $0 }
+    }
 }
 
 extension AssetExchangeOperationFee.Submission: ExtrinsicFeeProtocol {

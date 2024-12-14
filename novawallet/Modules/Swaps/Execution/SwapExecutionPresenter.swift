@@ -282,7 +282,11 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
     }
 
     func showTotalFeeInfo() {
-        wireframe.showFeeInfo(from: view)
+        wireframe.showFeeDetails(
+            from: view,
+            operations: model.quote.metaOperations,
+            fee: model.fee
+        )
     }
 
     func activateDone() {

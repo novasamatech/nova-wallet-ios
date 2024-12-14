@@ -93,6 +93,12 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         quote: AssetExchangeQuote,
         fee: AssetExchangeFee
     )
+
+    func showFeeDetails(
+        from view: ControllerBackedProtocol?,
+        operations: [AssetExchangeMetaOperationProtocol],
+        fee: AssetExchangeFee
+    )
 }
 
 enum SwapSetupViewIssue: Equatable {

@@ -105,23 +105,7 @@ private extension SwapRouteDetailsViewModelFactory {
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> String {
-        let amounts = fee.groupedAmountByAsset()
-
-        let totalAmountInFiat = amounts
-            .map { keyValue in
-                guard
-                    keyValue.key.chainId == chain.chainId,
-                    let chainAssetInfo = chain.chainAsset(for: keyValue.key.assetId)?.assetDisplayInfo else {
-                    return 0
-                }
-
-                return Decimal.fiatValue(
-                    from: keyValue.value,
-                    price: prices[keyValue.key],
-                    precision: chainAssetInfo.assetPrecision
-                )
-            }
-            .reduce(Decimal(0)) { $1 + $0 }
+        let totalAmountInFiat = fee.totalInFiat(in: chain, prices: prices)
 
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
             from: prices.first?.value.currencyId

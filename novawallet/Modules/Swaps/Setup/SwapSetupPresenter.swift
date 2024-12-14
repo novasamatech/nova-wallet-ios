@@ -760,7 +760,15 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showFeeInfo() {
-        wireframe.showFeeInfo(from: view)
+        guard let quote, let fee else {
+            return
+        }
+
+        wireframe.showFeeDetails(
+            from: view,
+            operations: quote.metaOperations,
+            fee: fee
+        )
     }
 
     func showRateInfo() {
