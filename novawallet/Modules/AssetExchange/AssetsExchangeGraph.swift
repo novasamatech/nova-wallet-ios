@@ -16,6 +16,8 @@ final class AssetsExchangeGraph {
     let model: AssetsExchangeGraphModel
     let filter: AnyGraphEdgeFilter<AnyAssetExchangeEdge>
 
+    private var cachedReachability: AssetsExchageGraphReachability?
+
     init(model: AssetsExchangeGraphModel, filter: AnyGraphEdgeFilter<AnyAssetExchangeEdge>) {
         self.model = model
         self.filter = filter
@@ -32,12 +34,18 @@ extension AssetsExchangeGraph: AssetsExchangeGraphProtocol {
     }
 
     func fetchReachability() -> AssetsExchageGraphReachabilityProtocol {
+        if let cachedReachability { return cachedReachability }
+
         let allNodes = model.connections.keys
 
         let mapping = allNodes.reduce(into: [ChainAssetId: Set<ChainAssetId>]()) { accum, assetIn in
             accum[assetIn] = model.calculateReachableNodes(for: assetIn, filter: filter)
         }
 
-        return AssetsExchageGraphReachability(mapping: mapping)
+        let reachability = AssetsExchageGraphReachability(mapping: mapping)
+
+        cachedReachability = reachability
+
+        return reachability
     }
 }
