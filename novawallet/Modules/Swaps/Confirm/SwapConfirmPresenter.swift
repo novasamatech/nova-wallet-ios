@@ -361,7 +361,15 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func showNetworkFeeInfo() {
-        wireframe.showFeeInfo(from: view)
+        guard let fee, let quote else {
+            return
+        }
+
+        wireframe.showFeeDetails(
+            from: view,
+            operations: quote.metaOperations,
+            fee: fee
+        )
     }
 
     func showAddressOptions() {
@@ -382,13 +390,13 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
     }
 
     func showRouteDetails() {
-        guard let fee else {
+        guard let fee, let quote else {
             return
         }
 
         wireframe.showRouteDetails(
             from: view,
-            quote: initState.quote,
+            quote: quote,
             fee: fee
         )
     }

@@ -11,6 +11,7 @@ final class SwapOperationFeeView: UIView {
         cell.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         cell.titleButton.imageWithTitleView?.titleFont = .regularFootnote
         cell.rowContentView.selectable = false
+        cell.isUserInteractionEnabled = false
     }
 
     private var feeCells: [StackTitleMultiValueCell] = []
@@ -27,6 +28,8 @@ final class SwapOperationFeeView: UIView {
     }
 
     func bind(viewModel: ViewModel) {
+        tableView.resetSeparators()
+
         bindRoute(from: viewModel)
         bindFeeGroups(from: viewModel)
     }
@@ -63,9 +66,16 @@ private extension SwapOperationFeeView {
 
         cells.first?.titleLabel.text = feeGroup.title
 
-        feeCells.append(contentsOf: cells)
+        cells.enumerated().forEach { index, cell in
+            let insertingIndex = feeCells.count + 1 + index
 
-        cells.forEach { tableView.addArrangedSubview($0) }
+            tableView.addArrangedSubview(cell)
+
+            let showsSeparator = index == cells.count - 1
+            tableView.setShowsSeparator(showsSeparator, at: insertingIndex)
+        }
+
+        feeCells.append(contentsOf: cells)
     }
 
     func setupLayout() {

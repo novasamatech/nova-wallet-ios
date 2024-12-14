@@ -41,4 +41,10 @@ protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptions
         quote: AssetExchangeQuote,
         fee: AssetExchangeFee
     )
+
+    func showFeeDetails(
+        from view: ControllerBackedProtocol?,
+        operations: [AssetExchangeMetaOperationProtocol],
+        fee: AssetExchangeFee
+    )
 }

@@ -49,4 +49,10 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
         quote: AssetExchangeQuote,
         fee: AssetExchangeFee
     )
+
+    func showFeeDetails(
+        from view: ControllerBackedProtocol?,
+        operations: [AssetExchangeMetaOperationProtocol],
+        fee: AssetExchangeFee
+    )
 }
