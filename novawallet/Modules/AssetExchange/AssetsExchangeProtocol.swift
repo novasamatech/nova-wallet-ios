@@ -20,7 +20,7 @@ protocol AssetsExchangeProviding: AnyObject {
     func inject(graph: AssetsExchangeGraphProtocol)
 }
 
-protocol AssetsExchangeGraphProviding {
+protocol AssetsExchangeGraphProviding: AnyObject {
     func setup()
     func throttle()
 
@@ -40,11 +40,13 @@ extension AssetsExchangeGraphProviding {
         let subscriber = NSObject()
 
         let operation = AsyncClosureOperation<AssetsExchangeGraphProtocol>(
-            operationClosure: { completion in
-                self.subscribeGraph(
+            operationClosure: { [weak self] completion in
+                self?.subscribeGraph(
                     subscriber,
                     notifyingIn: workingQueue
                 ) { graph in
+                    self?.unsubscribeGraph(subscriber)
+
                     guard let graph else {
                         return
                     }
@@ -52,8 +54,8 @@ extension AssetsExchangeGraphProviding {
                     completion(.success(graph))
                 }
             },
-            cancelationClosure: {
-                self.unsubscribeGraph(subscriber)
+            cancelationClosure: { [weak self] in
+                self?.unsubscribeGraph(subscriber)
             }
         )
 
