@@ -1,29 +1,29 @@
 import Foundation
 import SoraFoundation
 
-struct SwapRouteDetailsViewFactory {
+struct SwapFeeDetailsViewFactory {
     static func createView(
-        for quote: AssetExchangeQuote,
+        for operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee,
         state: SwapTokensFlowStateProtocol
-    ) -> SwapRouteDetailsViewProtocol? {
+    ) -> SwapFeeDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let prices = (try? state.assetListObservable.state.value.priceResult?.get()) ?? [:]
 
-        let viewModelFactory = SwapRouteDetailsViewModelFactory(
+        let viewModelFactory = SwapFeeDetailsViewModelFactory(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
-        let presenter = SwapRouteDetailsPresenter(
-            quote: quote,
+        let presenter = SwapFeeDetailsPresenter(
+            operations: operations,
             fee: fee,
             prices: prices,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
-        let view = SwapRouteDetailsViewController(
+        let view = SwapFeeDetailsViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
