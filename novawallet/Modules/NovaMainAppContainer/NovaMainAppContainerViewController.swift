@@ -78,6 +78,7 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
+                self?.updateModalsIfNeeded()
             },
             transformClosure: {
                 guard let transform else { return }
@@ -123,6 +124,12 @@ private extension NovaMainAppContainerViewController {
                 return self?.rootView
             }
         )
+    }
+
+    func updateModalsIfNeeded() {
+        if let cardModalController = tabBar?.presentedController() as? CardLayoutPresentationController {
+            cardModalController.updateLayout()
+        }
     }
 }
 

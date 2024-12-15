@@ -17,19 +17,14 @@ extension UIViewController {
             make.bottom.equalToSuperview().inset(CardLayoutPresentationController.topOffset())
         }
         container.view.layoutIfNeeded()
+        container.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         container.didMove(toParent: viewController)
 
         container.transitioningDelegate = transitioningDelegate
         container.modalPresentationStyle = .overCurrentContext
 
-        setTabBarHidden(true, animated: animated)
-
-        container.onDisappear = { [weak self] in
-            self?.setTabBarHidden(false, animated: animated)
-        }
-
-        present(
+        tabBarController?.present(
             container,
             animated: animated,
             completion: completion

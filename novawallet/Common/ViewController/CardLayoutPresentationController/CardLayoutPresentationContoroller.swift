@@ -8,8 +8,6 @@ final class CardLayoutPresentationController: UIViewController {
     // swiftlint:disable weak_delegate
     private let transitionDelegate: CardLayoutTransitionDelegateProtocol
 
-    var onDisappear: (() -> Void)?
-
     init(transitionDelegate: CardLayoutTransitionDelegateProtocol) {
         self.transitionDelegate = transitionDelegate
 
@@ -27,20 +25,23 @@ final class CardLayoutPresentationController: UIViewController {
         setupActions()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        if isBeingDismissed {
-            onDisappear?()
-        }
-    }
-
     static func topOffset() -> CGFloat {
         (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + 12
+    }
+}
+
+// MARK: Internal
+
+extension CardLayoutPresentationController {
+    func updateLayout() {
+        guard let presentingView = presentingViewController?.view else { return }
+
+        view.frame = CGRect(
+            x: view.frame.minX,
+            y: view.frame.minY,
+            width: presentingView.bounds.width,
+            height: presentingView.bounds.height
+        )
     }
 }
 
