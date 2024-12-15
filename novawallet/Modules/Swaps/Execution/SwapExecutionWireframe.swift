@@ -14,12 +14,12 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
 
     func complete(
         on view: ControllerBackedProtocol?,
-        payChainAsset: ChainAsset
+        receiveChainAsset: ChainAsset
     ) {
         let presenter = view?.controller.presentingViewController
 
         presenter?.dismiss(animated: true) {
-            self.completionClosure?(payChainAsset)
+            self.completionClosure?(receiveChainAsset)
         }
     }
 
