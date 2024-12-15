@@ -465,7 +465,7 @@ extension SwapSetupPresenter {
         let viewModel = viewModelFactory.feeViewModel(
             amountInFiat: totalFeeInFiat,
             isEditable: false,
-            priceData: feeAssetPriceData,
+            currencyId: feeAssetPriceData?.currencyId,
             locale: selectedLocale
         )
 

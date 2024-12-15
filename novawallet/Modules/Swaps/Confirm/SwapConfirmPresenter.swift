@@ -274,7 +274,7 @@ extension SwapConfirmPresenter {
         let viewModel = viewModelFactory.feeViewModel(
             amountInFiat: fee,
             isEditable: false,
-            priceData: feeAssetPriceData,
+            currencyId: feeAssetPriceData?.currencyId,
             locale: selectedLocale
         )
 

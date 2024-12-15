@@ -155,7 +155,7 @@ final class SwapExecutionPresenter {
         let viewModel = detailsViewModelFactory.feeViewModel(
             amountInFiat: feeInFiat,
             isEditable: false,
-            priceData: model.feeAssetPrice,
+            currencyId: model.feeAssetPrice?.currencyId,
             locale: selectedLocale
         )
 

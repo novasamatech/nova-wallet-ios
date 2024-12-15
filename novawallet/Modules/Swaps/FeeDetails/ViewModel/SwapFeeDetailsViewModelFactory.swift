@@ -190,13 +190,11 @@ private extension SwapFeeDetailsViewModelFactory {
             fee.totalInFiat(in: operation.assetIn.chain, prices: prices)
         }.reduce(Decimal(0)) { $0 + $1 }
 
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
-            from: prices.first?.value.currencyId
-        )
+        let currencyId = prices.first?.value.currencyId
 
-        return balanceViewModelFacade.amountFromValue(
-            targetAssetInfo: assetDisplayInfo,
-            value: totalAmountInFiat
+        return balanceViewModelFacade.priceFromFiatAmount(
+            totalAmountInFiat,
+            currencyId: currencyId
         ).value(for: locale)
     }
 }
