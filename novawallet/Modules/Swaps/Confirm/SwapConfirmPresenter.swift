@@ -23,6 +23,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         initState: SwapConfirmInitState,
         selectedWallet: MetaAccountModel,
         viewModelFactory: SwapDetailsViewModelFactoryProtocol,
+        priceStore: AssetExchangePriceStoring,
         slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -38,6 +39,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         super.init(
             selectedWallet: selectedWallet,
             dataValidatingFactory: dataValidatingFactory,
+            priceStore: priceStore,
             logger: logger
         )
 
@@ -126,6 +128,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {
         quoteResult = .success(quote)
+        fee = nil
 
         view?.didReceiveStopLoading()
 
@@ -137,6 +140,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {
+        provideRouteViewModel()
         provideFeeViewModel()
     }
 
@@ -204,7 +208,7 @@ extension SwapConfirmPresenter {
     }
 
     private func provideRouteViewModel() {
-        guard let quote else {
+        guard let quote, fee != nil else {
             view?.didReceiveRoute(viewModel: .loading)
             return
         }
@@ -261,12 +265,9 @@ extension SwapConfirmPresenter {
     }
 
     private func provideFeeViewModel() {
-        guard let fee = fee?.calculateTotalFeeInFiat(
-            assetIn: initState.chainAssetIn,
-            assetInPrice: payAssetPriceData,
-            feeAsset: initState.feeChainAsset,
-            feeAssetPrice: feeAssetPriceData
-        ) else {
+        guard
+            let operations = quote?.metaOperations,
+            let fee = fee?.calculateTotalFeeInFiat(matching: operations, priceStore: priceStore) else {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
@@ -274,7 +275,7 @@ extension SwapConfirmPresenter {
         let viewModel = viewModelFactory.feeViewModel(
             amountInFiat: fee,
             isEditable: false,
-            priceData: feeAssetPriceData,
+            currencyId: feeAssetPriceData?.currencyId,
             locale: selectedLocale
         )
 
@@ -319,8 +320,7 @@ extension SwapConfirmPresenter {
             chainAssetOut: initState.chainAssetOut,
             feeAsset: initState.feeChainAsset,
             quote: quote,
-            fee: fee,
-            prices: prices
+            fee: fee
         )
 
         wireframe.showSwapExecution(from: view, model: executionModel)

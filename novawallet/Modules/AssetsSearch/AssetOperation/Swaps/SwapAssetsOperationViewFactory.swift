@@ -138,8 +138,6 @@ enum SwapAssetsOperationViewFactory {
         selectClosureStrategy: SubmoduleNavigationStrategy,
         selectClosure: @escaping SwapAssetSelectionClosure
     ) -> SwapAssetsOperationPresenter? {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = SwapAssetsOperationInteractor(

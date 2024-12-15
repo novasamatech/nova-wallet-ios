@@ -12,7 +12,8 @@ struct SwapRouteDetailsViewFactory {
         let prices = (try? state.assetListObservable.state.value.priceResult?.get()) ?? [:]
 
         let viewModelFactory = SwapRouteDetailsViewModelFactory(
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
+            priceStore: state.priceStore
         )
 
         let presenter = SwapRouteDetailsPresenter(

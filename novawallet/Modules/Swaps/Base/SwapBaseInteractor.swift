@@ -8,7 +8,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     let assetsExchangeService: AssetsExchangeServiceProtocol
     let chainRegistry: ChainRegistryProtocol
     let assetStorageFactory: AssetStorageInfoOperationFactoryProtocol
-    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
@@ -19,7 +18,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     private var quoteCallStore = CancellableCallStore()
     private var feeCallStore = CancellableCallStore()
 
-    private var priceProviders: [AssetModel.PriceId: StreamableProvider<PriceData>] = [:]
     private var assetBalanceProviders: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
 
@@ -27,7 +25,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         state: SwapTokensFlowStateProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         selectedWallet: MetaAccountModel,
@@ -37,7 +34,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         assetsExchangeService = state.setupAssetExchangeService()
         self.chainRegistry = chainRegistry
         self.assetStorageFactory = assetStorageFactory
-        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         generalLocalSubscriptionFactory = state.generalLocalSubscriptionFactory
         self.currencyManager = currencyManager
@@ -130,25 +126,8 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         accountInfoProvider = subscribeAccountInfo(for: accountId, chainId: chain.chainId)
     }
 
-    func setupPriceProviderIfNeeded(for chainAsset: ChainAsset) {
-        guard let priceId = chainAsset.asset.priceId else {
-            return
-        }
-
-        if priceProviders[priceId] == nil {
-            priceProviders[priceId] = subscribeToPrice(
-                for: priceId,
-                currency: currencyManager.selectedCurrency
-            )
-        }
-    }
-
     func clearSubscriptionsByAssets(_ activeChainAssets: Set<ChainAssetId>) {
         assetBalanceProviders = clear(providers: assetBalanceProviders, activeIds: activeChainAssets)
-    }
-
-    func clearSubscriptionsByPriceId(_ priceIds: Set<AssetModel.PriceId>) {
-        priceProviders = clear(providers: priceProviders, activeIds: priceIds)
     }
 
     func clear<K: Hashable, T>(
@@ -244,8 +223,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
     func setReceiveChainAssetSubscriptions(_ chainAsset: ChainAsset) {
         provideAssetBalanceExistenses(for: chainAsset)
 
-        setupPriceProviderIfNeeded(for: chainAsset)
-
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
@@ -254,12 +231,10 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
         provideAssetBalanceExistenses(for: chainAsset)
 
-        setupPriceProviderIfNeeded(for: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
     }
 
     func setFeeChainAssetSubscriptions(_ chainAsset: ChainAsset) {
-        setupPriceProviderIfNeeded(for: chainAsset)
         assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: chainAsset)
 
         provideAssetBalanceExistenses(for: chainAsset)
@@ -268,7 +243,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         if
             let utilityChainAsset = chainAsset.chain.utilityChainAsset(),
             utilityChainAsset.chainAssetId != chainAsset.chainAssetId {
-            setupPriceProviderIfNeeded(for: utilityChainAsset)
             assetBalanceProviders[chainAsset.chainAssetId] = assetBalanceSubscription(chainAsset: utilityChainAsset)
 
             provideAssetBalanceExistenses(for: chainAsset)
@@ -350,17 +324,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
 
     func retryAssetBalanceExistenseFetch(for chainAsset: ChainAsset) {
         provideAssetBalanceExistenses(for: chainAsset)
-    }
-}
-
-extension SwapBaseInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        switch result {
-        case let .success(priceData):
-            basePresenter?.didReceive(price: priceData, priceId: priceId)
-        case let .failure(error):
-            logger.error("Unexpected price error: \(error)")
-        }
     }
 }
 

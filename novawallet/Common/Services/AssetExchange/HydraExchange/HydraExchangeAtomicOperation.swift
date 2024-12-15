@@ -52,8 +52,7 @@ final class HydraExchangeAtomicOperation {
                 amountOut: swapLimit.amountOut,
                 receiver: self.host.selectedAccount.accountId,
                 direction: swapLimit.direction,
-                slippage: swapLimit.slippage,
-                context: nil
+                slippage: swapLimit.slippage
             )
 
             let routeComponents = self.edges.map(\.routeComponent)

@@ -4,7 +4,6 @@ protocol SwapRouteDetailsViewModelFactoryProtocol {
     func createViewModel(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> SwapRouteDetailsItemContent.ViewModel
 }
@@ -13,14 +12,17 @@ final class SwapRouteDetailsViewModelFactory {
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let priceStore: AssetExchangePriceStoring
 
     init(
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
+        priceStore: AssetExchangePriceStoring
     ) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
         balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         self.assetIconViewModelFactory = assetIconViewModelFactory
+        self.priceStore = priceStore
     }
 }
 
@@ -102,18 +104,13 @@ private extension SwapRouteDetailsViewModelFactory {
     func createFee(
         from fee: AssetExchangeOperationFee,
         chain: ChainModel,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> String {
-        let totalAmountInFiat = fee.totalInFiat(in: chain, prices: prices)
+        let totalAmountInFiat = fee.totalInFiat(in: chain, priceStore: priceStore)
 
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
-            from: prices.first?.value.currencyId
-        )
-
-        let amount = balanceViewModelFacade.amountFromValue(
-            targetAssetInfo: assetDisplayInfo,
-            value: totalAmountInFiat
+        let amount = balanceViewModelFacade.priceFromFiatAmount(
+            totalAmountInFiat,
+            currencyId: priceStore.getCurrencyId()
         ).value(for: locale)
 
         return R.string.localizable.commonFeeAmountPrefixed(
@@ -127,13 +124,11 @@ extension SwapRouteDetailsViewModelFactory: SwapRouteDetailsViewModelFactoryProt
     func createViewModel(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> SwapRouteDetailsItemContent.ViewModel {
         let fee = createFee(
             from: fee,
             chain: operation.assetIn.chain,
-            prices: prices,
             locale: locale
         )
 

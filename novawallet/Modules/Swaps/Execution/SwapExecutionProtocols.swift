@@ -35,7 +35,7 @@ protocol SwapExecutionWireframeProtocol: ShortTextInfoPresentable, MessageSheetP
     ErrorPresentable, ExtrinsicSigningErrorHandling {
     func complete(
         on view: ControllerBackedProtocol?,
-        payChainAsset: ChainAsset
+        receiveChainAsset: ChainAsset
     )
 
     func showSwapSetup(

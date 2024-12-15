@@ -6,19 +6,16 @@ final class SwapFeeDetailsPresenter {
 
     let operations: [AssetExchangeMetaOperationProtocol]
     let fee: AssetExchangeFee
-    let prices: [ChainAssetId: PriceData]
     let viewModelFactory: SwapFeeDetailsViewModelFactoryProtocol
 
     init(
         operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee,
-        prices: [ChainAssetId: PriceData],
         viewModelFactory: SwapFeeDetailsViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.operations = operations
         self.fee = fee
-        self.prices = prices
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -27,7 +24,6 @@ final class SwapFeeDetailsPresenter {
         let viewModel = viewModelFactory.createViewModel(
             from: operations,
             fee: fee,
-            prices: prices,
             locale: selectedLocale
         )
 

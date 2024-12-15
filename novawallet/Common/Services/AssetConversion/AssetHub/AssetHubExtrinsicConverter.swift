@@ -1,6 +1,10 @@
 import Foundation
 import SubstrateSdk
 
+enum AssetHubExtrinsicConverterError: Error {
+    case remoteAssetNotFound(ChainAssetId)
+}
+
 enum AssetHubExtrinsicConverter {
     static func addingOperation(
         to builder: ExtrinsicBuilderProtocol,
@@ -14,7 +18,7 @@ enum AssetHubExtrinsicConverter {
                 chain: chain,
                 codingFactory: codingFactory
             ) else {
-            throw AssetConversionExtrinsicServiceError.remoteAssetNotFound(args.assetIn)
+            throw AssetHubExtrinsicConverterError.remoteAssetNotFound(args.assetIn)
         }
 
         guard
@@ -23,7 +27,7 @@ enum AssetHubExtrinsicConverter {
                 chain: chain,
                 codingFactory: codingFactory
             ) else {
-            throw AssetConversionExtrinsicServiceError.remoteAssetNotFound(args.assetOut)
+            throw AssetHubExtrinsicConverterError.remoteAssetNotFound(args.assetOut)
         }
 
         switch args.direction {

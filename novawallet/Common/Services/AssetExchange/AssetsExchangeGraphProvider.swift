@@ -140,7 +140,7 @@ extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
 
         feeSupportProvider.subscribeFeeSupport(
             self,
-            notifyingIn: .main
+            notifyingIn: syncQueue
         ) { [weak self] newState in
             self?.feeSupporting = newState
             self?.rebuildGraph()

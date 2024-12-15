@@ -4,6 +4,8 @@ import Operation_iOS
 protocol SwapTokensFlowStateProtocol {
     var assetListObservable: AssetListModelObservable { get }
 
+    var priceStore: AssetExchangePriceStoring { get }
+
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
 
     func setupAssetExchangeService() -> AssetsExchangeServiceProtocol
@@ -11,6 +13,7 @@ protocol SwapTokensFlowStateProtocol {
 
 final class SwapTokensFlowState {
     let assetListObservable: AssetListModelObservable
+    let priceStore: AssetExchangePriceStoring
     let assetExchangeParams: AssetExchangeGraphProvidingParams
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
 
@@ -22,6 +25,7 @@ final class SwapTokensFlowState {
     ) {
         self.assetListObservable = assetListObservable
         self.assetExchangeParams = assetExchangeParams
+        priceStore = AssetExchangePriceStore(assetListObservable: assetListObservable)
 
         generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
             chainRegistry: assetExchangeParams.chainRegistry,
@@ -56,7 +60,7 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
         )
 
         let pathCostEstimator = AssetsExchangePathCostEstimator(
-            priceStore: AssetExchangePriceStore(assetListObservable: assetListObservable),
+            priceStore: priceStore,
             chainRegistry: assetExchangeParams.chainRegistry
         )
 

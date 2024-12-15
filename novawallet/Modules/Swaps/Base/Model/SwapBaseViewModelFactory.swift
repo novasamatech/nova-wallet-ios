@@ -26,7 +26,7 @@ protocol SwapBaseViewModelFactoryProtocol {
     func feeViewModel(
         amountInFiat: Decimal,
         isEditable: Bool,
-        priceData: PriceData?,
+        currencyId: Int?,
         locale: Locale
     ) -> NetworkFeeInfoViewModel
 }
@@ -151,16 +151,12 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
     func feeViewModel(
         amountInFiat: Decimal,
         isEditable: Bool,
-        priceData: PriceData?,
+        currencyId: Int?,
         locale: Locale
     ) -> NetworkFeeInfoViewModel {
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(
-            from: priceData?.currencyId
-        )
-
-        let amount = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: assetDisplayInfo,
-            value: amountInFiat
+        let amount = balanceViewModelFactoryFacade.priceFromFiatAmount(
+            amountInFiat,
+            currencyId: currencyId
         ).value(for: locale)
 
         return .init(

@@ -9,16 +9,14 @@ struct SwapFeeDetailsViewFactory {
     ) -> SwapFeeDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
-        let prices = (try? state.assetListObservable.state.value.priceResult?.get()) ?? [:]
-
         let viewModelFactory = SwapFeeDetailsViewModelFactory(
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
+            priceStore: state.priceStore
         )
 
         let presenter = SwapFeeDetailsPresenter(
             operations: operations,
             fee: fee,
-            prices: prices,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )

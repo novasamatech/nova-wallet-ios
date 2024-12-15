@@ -256,7 +256,7 @@ extension AssetExchangeOperationFee {
 
     func totalInFiat(
         in chain: ChainModel,
-        prices: [ChainAssetId: PriceData]
+        priceStore: AssetExchangePriceStoring
     ) -> Decimal {
         let amounts = groupedAmountByAsset()
 
@@ -270,7 +270,7 @@ extension AssetExchangeOperationFee {
 
                 return Decimal.fiatValue(
                     from: keyValue.value,
-                    price: prices[keyValue.key],
+                    price: priceStore.fetchPrice(for: keyValue.key),
                     precision: chainAssetInfo.assetPrecision
                 )
             }
