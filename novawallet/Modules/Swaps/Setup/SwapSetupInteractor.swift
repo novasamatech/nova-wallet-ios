@@ -10,7 +10,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
 
-    private var requoteChange = Debouncer(delay: 2)
+    private var requoteChange = Debouncer(delay: 4)
 
     weak var presenter: SwapSetupInteractorOutputProtocol? {
         basePresenter as? SwapSetupInteractorOutputProtocol
