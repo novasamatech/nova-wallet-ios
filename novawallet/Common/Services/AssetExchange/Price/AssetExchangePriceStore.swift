@@ -19,4 +19,8 @@ extension AssetExchangePriceStore: AssetExchangePriceStoring {
     func fetchPrice(for chainAssetId: ChainAssetId) -> PriceData? {
         store[chainAssetId]
     }
+
+    func getCurrencyId() -> Int? {
+        store.values.first?.currencyId
+    }
 }

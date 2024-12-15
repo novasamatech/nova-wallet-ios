@@ -9,6 +9,7 @@ final class SwapExecutionPresenter {
     let model: SwapExecutionModel
     let executionViewModelFactory: SwapExecutionViewModelFactoryProtocol
     let detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol
+    let priceStore: AssetExchangePriceStoring
 
     var quote: AssetExchangeQuote {
         model.quote
@@ -22,6 +23,18 @@ final class SwapExecutionPresenter {
         model.chainAssetOut
     }
 
+    var payAssetPrice: PriceData? {
+        priceStore.fetchPrice(for: model.chainAssetIn.chainAssetId)
+    }
+
+    var receiveAssetPrice: PriceData? {
+        priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
+    }
+
+    var feeAssetPrice: PriceData? {
+        priceStore.fetchPrice(for: model.feeAsset.chainAssetId)
+    }
+
     private var state: SwapExecutionState?
     private var execTimer: CountdownTimer?
 
@@ -31,6 +44,7 @@ final class SwapExecutionPresenter {
         wireframe: SwapExecutionWireframeProtocol,
         executionViewModelFactory: SwapExecutionViewModelFactoryProtocol,
         detailsViewModelFactory: SwapDetailsViewModelFactoryProtocol,
+        priceStore: AssetExchangePriceStoring,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.model = model
@@ -38,6 +52,7 @@ final class SwapExecutionPresenter {
         self.wireframe = wireframe
         self.executionViewModelFactory = executionViewModelFactory
         self.detailsViewModelFactory = detailsViewModelFactory
+        self.priceStore = priceStore
         self.localizationManager = localizationManager
     }
 
@@ -82,7 +97,7 @@ final class SwapExecutionPresenter {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetIn,
             amount: model.quote.route.amountIn,
-            priceData: model.payAssetPrice,
+            priceData: payAssetPrice,
             locale: selectedLocale
         )
 
@@ -93,7 +108,7 @@ final class SwapExecutionPresenter {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetOut,
             amount: quote.route.amountOut,
-            priceData: model.receiveAssetPrice,
+            priceData: receiveAssetPrice,
             locale: selectedLocale
         )
 
@@ -129,8 +144,8 @@ final class SwapExecutionPresenter {
 
         if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(
             rateParams: params,
-            priceIn: model.payAssetPrice,
-            priceOut: model.receiveAssetPrice,
+            priceIn: payAssetPrice,
+            priceOut: receiveAssetPrice,
             locale: selectedLocale
         ) {
             view?.didReceivePriceDifference(viewModel: .loaded(value: viewModel))
@@ -146,16 +161,14 @@ final class SwapExecutionPresenter {
 
     private func provideFeeViewModel() {
         let feeInFiat = model.fee.calculateTotalFeeInFiat(
-            assetIn: chainAssetIn,
-            assetInPrice: model.payAssetPrice,
-            feeAsset: model.feeAsset,
-            feeAssetPrice: model.feeAssetPrice
+            matching: model.quote.metaOperations,
+            priceStore: priceStore
         )
 
         let viewModel = detailsViewModelFactory.feeViewModel(
             amountInFiat: feeInFiat,
             isEditable: false,
-            currencyId: model.feeAssetPrice?.currencyId,
+            currencyId: feeAssetPrice?.currencyId,
             locale: selectedLocale
         )
 

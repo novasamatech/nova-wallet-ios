@@ -4,7 +4,6 @@ protocol SwapFeeDetailsViewModelFactoryProtocol {
     func createViewModel(
         from operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> SwapFeeDetailsViewModel
 }
@@ -12,9 +11,11 @@ protocol SwapFeeDetailsViewModelFactoryProtocol {
 final class SwapFeeDetailsViewModelFactory {
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let priceStore: AssetExchangePriceStoring
 
-    init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
+    init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol, priceStore: AssetExchangePriceStoring) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
+        self.priceStore = priceStore
         balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
     }
 }
@@ -61,7 +62,6 @@ private extension SwapFeeDetailsViewModelFactory {
         for amount: Balance,
         feeAssetId: ChainAssetId,
         chain: ChainModel,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> BalanceViewModelProtocol? {
         guard
@@ -73,21 +73,19 @@ private extension SwapFeeDetailsViewModelFactory {
         return balanceViewModelFacade.balanceFromPrice(
             targetAssetInfo: assetDisplayInfo,
             amount: amount.decimal(assetInfo: assetDisplayInfo),
-            priceData: prices[feeAssetId]
+            priceData: priceStore.fetchPrice(for: feeAssetId)
         ).value(for: locale)
     }
 
     func createNetworkFees(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> [BalanceViewModelProtocol] {
         if let networkFee = createFee(
             for: fee.submissionFee.amount,
             feeAssetId: fee.submissionFee.amountWithAsset.asset,
             chain: operation.assetIn.chain,
-            prices: prices,
             locale: locale
         ) {
             return [networkFee]
@@ -99,7 +97,6 @@ private extension SwapFeeDetailsViewModelFactory {
     func createCrosschainFees(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> [BalanceViewModelProtocol] {
         var crosschainFees: [BalanceViewModelProtocol] = []
@@ -118,7 +115,6 @@ private extension SwapFeeDetailsViewModelFactory {
                     for: groupByToken[asset] ?? 0,
                     feeAssetId: asset,
                     chain: operation.assetIn.chain,
-                    prices: prices,
                     locale: locale
                 ) {
                     crosschainFees.append(fee)
@@ -133,7 +129,6 @@ private extension SwapFeeDetailsViewModelFactory {
     func createOperationViewModel(
         for operation: AssetExchangeMetaOperationProtocol,
         fee: AssetExchangeOperationFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> SwapOperationFeeView.ViewModel {
         let type = createType(from: operation, locale: locale)
@@ -142,14 +137,12 @@ private extension SwapFeeDetailsViewModelFactory {
         let networkFees = createNetworkFees(
             for: operation,
             fee: fee,
-            prices: prices,
             locale: locale
         )
 
         let crosschainFees = createCrosschainFees(
             for: operation,
             fee: fee,
-            prices: prices,
             locale: locale
         )
 
@@ -183,18 +176,16 @@ private extension SwapFeeDetailsViewModelFactory {
     func createTotalFee(
         operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> String {
-        let totalAmountInFiat = zip(operations, fee.operationFees).map { operation, fee in
-            fee.totalInFiat(in: operation.assetIn.chain, prices: prices)
-        }.reduce(Decimal(0)) { $0 + $1 }
-
-        let currencyId = prices.first?.value.currencyId
+        let totalAmountInFiat = fee.calculateTotalFeeInFiat(
+            matching: operations,
+            priceStore: priceStore
+        )
 
         return balanceViewModelFacade.priceFromFiatAmount(
             totalAmountInFiat,
-            currencyId: currencyId
+            currencyId: priceStore.getCurrencyId()
         ).value(for: locale)
     }
 }
@@ -203,17 +194,15 @@ extension SwapFeeDetailsViewModelFactory: SwapFeeDetailsViewModelFactoryProtocol
     func createViewModel(
         from operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee,
-        prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> SwapFeeDetailsViewModel {
         let operationFeeViewModels = zip(operations, fee.operationFees).map { operation, fee in
-            createOperationViewModel(for: operation, fee: fee, prices: prices, locale: locale)
+            createOperationViewModel(for: operation, fee: fee, locale: locale)
         }
 
         let totalFee = createTotalFee(
             operations: operations,
             fee: fee,
-            prices: prices,
             locale: locale
         )
 

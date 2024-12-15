@@ -4,6 +4,7 @@ class SwapBasePresenter {
     let logger: LoggerProtocol
     let selectedWallet: MetaAccountModel
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
+    let priceStore: AssetExchangePriceStoring
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
 
@@ -27,18 +28,16 @@ class SwapBasePresenter {
         return balances[utilityAssetId]
     }
 
-    private(set) var prices: [AssetModel.PriceId: PriceData] = [:]
-
     var payAssetPriceData: PriceData? {
-        getPayChainAsset()?.asset.priceId.flatMap { prices[$0] }
+        getPayChainAsset().flatMap { priceStore.fetchPrice(for: $0.chainAssetId) }
     }
 
     var receiveAssetPriceData: PriceData? {
-        getReceiveChainAsset()?.asset.priceId.flatMap { prices[$0] }
+        getReceiveChainAsset().flatMap { priceStore.fetchPrice(for: $0.chainAssetId) }
     }
 
     var feeAssetPriceData: PriceData? {
-        getFeeChainAsset()?.asset.priceId.flatMap { prices[$0] }
+        getFeeChainAsset().flatMap { priceStore.fetchPrice(for: $0.chainAssetId) }
     }
 
     var assetBalanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
@@ -78,10 +77,12 @@ class SwapBasePresenter {
     init(
         selectedWallet: MetaAccountModel,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
+        priceStore: AssetExchangePriceStoring,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.dataValidatingFactory = dataValidatingFactory
+        self.priceStore = priceStore
         self.logger = logger
     }
 
@@ -307,18 +308,6 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         logger.error("Did receive error: \(baseError)")
 
         handleBaseError(baseError)
-    }
-
-    func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        guard prices[priceId] != price else {
-            return
-        }
-
-        logger.debug("New price: \(String(describing: price))")
-
-        prices[priceId] = price
-
-        handleNewPrice(price, priceId: priceId)
     }
 
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId) {

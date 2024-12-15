@@ -88,45 +88,12 @@ extension AssetExchangeFee {
         return !originFee.postSubmissionFee.paidByAccount.isEmpty
     }
 
-    // An assumption here is that fee is either in assetIn or feeAsset
     func calculateTotalFeeInFiat(
-        assetIn: ChainAsset,
-        assetInPrice: PriceData?,
-        feeAsset: ChainAsset,
-        feeAssetPrice: PriceData?
+        matching operations: [AssetExchangeMetaOperationProtocol],
+        priceStore: AssetExchangePriceStoring
     ) -> Decimal {
-        guard let originFee = operationFees.first else {
-            return 0
-        }
-
-        let originFeeInAssetIn = originFee.totalAmountIn(
-            asset: assetIn.chainAssetId,
-            matchingPayer: .anyAccount
-        )
-
-        let totalFeeInAssetIn = originFeeInAssetIn + intermediateFeesInAssetIn
-
-        let totalAmountInFeeInFiat = Decimal.fiatValue(
-            from: totalFeeInAssetIn,
-            price: assetInPrice,
-            precision: assetIn.assetDisplayInfo.assetPrecision
-        )
-
-        guard feeAsset.chainAssetId != assetIn.chainAssetId else {
-            return totalAmountInFeeInFiat
-        }
-
-        let totalFeeInFeeAsset = originFee.totalAmountIn(
-            asset: feeAsset.chainAssetId,
-            matchingPayer: .anyAccount
-        )
-
-        let totalFeeAssetFeeInFiat = Decimal.fiatValue(
-            from: totalFeeInFeeAsset,
-            price: feeAssetPrice,
-            precision: feeAsset.assetDisplayInfo.assetPrecision
-        )
-
-        return totalAmountInFeeInFiat + totalFeeAssetFeeInFiat
+        zip(operations, operationFees).map { operation, fee in
+            fee.totalInFiat(in: operation.assetIn.chain, priceStore: priceStore)
+        }.reduce(Decimal(0)) { $0 + $1 }
     }
 }

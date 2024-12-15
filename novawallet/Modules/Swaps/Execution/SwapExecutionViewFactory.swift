@@ -36,6 +36,7 @@ struct SwapExecutionViewFactory {
             wireframe: wireframe,
             executionViewModelFactory: SwapExecutionViewModelFactory(),
             detailsViewModelFactory: detailsViewModelFactory,
+            priceStore: flowState.priceStore,
             localizationManager: LocalizationManager.shared
         )
 

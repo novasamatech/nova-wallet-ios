@@ -30,7 +30,6 @@ final class SwapRouteDetailsPresenter {
             return viewModelFactory.createViewModel(
                 for: operation,
                 fee: fee,
-                prices: prices,
                 locale: selectedLocale
             )
         }

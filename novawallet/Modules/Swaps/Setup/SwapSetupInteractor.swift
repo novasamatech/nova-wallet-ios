@@ -10,7 +10,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
 
-    private var requoteChange = Debouncer(delay: 6)
+    private var requoteChange = Debouncer(delay: 2)
+    private var quoteRequest = Debouncer(delay: 0.5)
 
     weak var presenter: SwapSetupInteractorOutputProtocol? {
         basePresenter as? SwapSetupInteractorOutputProtocol
@@ -19,21 +20,18 @@ final class SwapSetupInteractor: SwapBaseInteractor {
     private var receiveChainAsset: ChainAsset? {
         didSet {
             clearSubscriptionsByAssets(activeChainAssets)
-            clearSubscriptionsByPriceId(activePriceIds)
         }
     }
 
     private var payChainAsset: ChainAsset? {
         didSet {
             clearSubscriptionsByAssets(activeChainAssets)
-            clearSubscriptionsByPriceId(activePriceIds)
         }
     }
 
     private var feeChainAsset: ChainAsset? {
         didSet {
             clearSubscriptionsByAssets(activeChainAssets)
-            clearSubscriptionsByPriceId(activePriceIds)
         }
     }
 
@@ -63,7 +61,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         state: SwapTokensFlowStateProtocol,
         chainRegistry: ChainRegistryProtocol,
         assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         storageRepository: AnyDataProviderRepository<ChainStorageItem>,
         currencyManager: CurrencyManagerProtocol,
@@ -77,7 +74,6 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             state: state,
             chainRegistry: chainRegistry,
             assetStorageFactory: assetStorageFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
