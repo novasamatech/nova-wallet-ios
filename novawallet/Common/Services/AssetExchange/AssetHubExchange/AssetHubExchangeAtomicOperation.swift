@@ -29,8 +29,7 @@ final class AssetHubExchangeAtomicOperation {
             amountOut: operationArgs.swapLimit.amountOut,
             receiver: host.selectedAccount.accountId,
             direction: operationArgs.swapLimit.direction,
-            slippage: operationArgs.swapLimit.slippage,
-            context: nil
+            slippage: operationArgs.swapLimit.slippage
         )
 
         let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
@@ -66,8 +65,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 amountOut: swapLimit.amountOut,
                 receiver: self.host.selectedAccount.accountId,
                 direction: swapLimit.direction,
-                slippage: swapLimit.slippage,
-                context: nil
+                slippage: swapLimit.slippage
             )
 
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()

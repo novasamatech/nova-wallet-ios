@@ -45,7 +45,6 @@ enum AssetConversion {
         let receiver: AccountId
         let direction: Direction
         let slippage: BigRational
-        let context: String? // TODO: Get rid of the field
     }
 }
 
