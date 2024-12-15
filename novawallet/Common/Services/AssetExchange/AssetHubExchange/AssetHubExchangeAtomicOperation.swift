@@ -21,7 +21,6 @@ final class AssetHubExchangeAtomicOperation {
     }
 
     private func createFeeWrapper() -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        // TODO: Check whether we need to change direction
         let callArgs = AssetConversion.CallArgs(
             assetIn: edge.origin,
             amountIn: operationArgs.swapLimit.amountIn,

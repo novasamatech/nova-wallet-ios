@@ -3581,7 +3581,6 @@
 		84B7C719289BFA79001A3566 /* DAppSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A4289BFA79001A3566 /* DAppSearchTests.swift */; };
 		84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A6289BFA79001A3566 /* DAppListGenerator.swift */; };
 		84B7C71B289BFA79001A3566 /* DAppListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6A8289BFA79001A3566 /* DAppListTests.swift */; };
-		84B7C71C289BFA79001A3566 /* DAppTxDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6AA289BFA79001A3566 /* DAppTxDetailsTests.swift */; };
 		84B7C71D289BFA79001A3566 /* MnemonicTextNormalizerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6AC289BFA79001A3566 /* MnemonicTextNormalizerTest.swift */; };
 		84B7C71E289BFA79001A3566 /* AccountImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6AD289BFA79001A3566 /* AccountImportTests.swift */; };
 		84B7C71F289BFA79001A3566 /* CrowdloanContributionConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6B0289BFA79001A3566 /* CrowdloanContributionConfirmTests.swift */; };
@@ -3621,7 +3620,6 @@
 		84B7C745289BFA79001A3566 /* AssetsManageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C702289BFA79001A3566 /* AssetsManageTests.swift */; };
 		84B7C746289BFA79001A3566 /* WalletHistoryFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C704289BFA79001A3566 /* WalletHistoryFilterTests.swift */; };
 		84B7C747289BFA79001A3566 /* AccountManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C706289BFA79001A3566 /* AccountManagementTests.swift */; };
-		84B7C748289BFA79001A3566 /* WalletListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C709289BFA79001A3566 /* WalletListTests.swift */; };
 		84B7C749289BFA79001A3566 /* ControllerAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C70B289BFA79001A3566 /* ControllerAccountTests.swift */; };
 		84B8AA7129F8E59300347A37 /* DAppInteractionPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B8AA7029F8E59300347A37 /* DAppInteractionPresenter.swift */; };
 		84B8AA7329F8EFC700347A37 /* DAppInteractionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B8AA7229F8EFC700347A37 /* DAppInteractionError.swift */; };
@@ -8869,7 +8867,6 @@
 		84B7C6A4289BFA79001A3566 /* DAppSearchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppSearchTests.swift; sourceTree = "<group>"; };
 		84B7C6A6289BFA79001A3566 /* DAppListGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListGenerator.swift; sourceTree = "<group>"; };
 		84B7C6A8289BFA79001A3566 /* DAppListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListTests.swift; sourceTree = "<group>"; };
-		84B7C6AA289BFA79001A3566 /* DAppTxDetailsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsTests.swift; sourceTree = "<group>"; };
 		84B7C6AC289BFA79001A3566 /* MnemonicTextNormalizerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MnemonicTextNormalizerTest.swift; sourceTree = "<group>"; };
 		84B7C6AD289BFA79001A3566 /* AccountImportTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountImportTests.swift; sourceTree = "<group>"; };
 		84B7C6B0289BFA79001A3566 /* CrowdloanContributionConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmTests.swift; sourceTree = "<group>"; };
@@ -8909,7 +8906,6 @@
 		84B7C702289BFA79001A3566 /* AssetsManageTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManageTests.swift; sourceTree = "<group>"; };
 		84B7C704289BFA79001A3566 /* WalletHistoryFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterTests.swift; sourceTree = "<group>"; };
 		84B7C706289BFA79001A3566 /* AccountManagementTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManagementTests.swift; sourceTree = "<group>"; };
-		84B7C709289BFA79001A3566 /* WalletListTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletListTests.swift; sourceTree = "<group>"; };
 		84B7C70B289BFA79001A3566 /* ControllerAccountTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerAccountTests.swift; sourceTree = "<group>"; };
 		84B8AA7029F8E59300347A37 /* DAppInteractionPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppInteractionPresenter.swift; sourceTree = "<group>"; };
 		84B8AA7229F8EFC700347A37 /* DAppInteractionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppInteractionError.swift; sourceTree = "<group>"; };
@@ -19935,7 +19931,6 @@
 				84B7C701289BFA79001A3566 /* AssetsManage */,
 				84B7C703289BFA79001A3566 /* WalletHistoryFilter */,
 				84B7C705289BFA79001A3566 /* AccountManagement */,
-				84B7C708289BFA79001A3566 /* WalletList */,
 				84B7C70A289BFA79001A3566 /* ControllerAccount */,
 			);
 			path = Modules;
@@ -20016,7 +20011,6 @@
 				84B7C6A3289BFA79001A3566 /* DAppSearch */,
 				84B7C6A5289BFA79001A3566 /* Model */,
 				84B7C6A7289BFA79001A3566 /* DAppList */,
-				84B7C6A9289BFA79001A3566 /* DAppTxDetails */,
 			);
 			path = DApps;
 			sourceTree = "<group>";
@@ -20067,14 +20061,6 @@
 				84B7C6A8289BFA79001A3566 /* DAppListTests.swift */,
 			);
 			path = DAppList;
-			sourceTree = "<group>";
-		};
-		84B7C6A9289BFA79001A3566 /* DAppTxDetails */ = {
-			isa = PBXGroup;
-			children = (
-				84B7C6AA289BFA79001A3566 /* DAppTxDetailsTests.swift */,
-			);
-			path = DAppTxDetails;
 			sourceTree = "<group>";
 		};
 		84B7C6AB289BFA79001A3566 /* AccountImport */ = {
@@ -20407,14 +20393,6 @@
 				84B7C706289BFA79001A3566 /* AccountManagementTests.swift */,
 			);
 			path = AccountManagement;
-			sourceTree = "<group>";
-		};
-		84B7C708289BFA79001A3566 /* WalletList */ = {
-			isa = PBXGroup;
-			children = (
-				84B7C709289BFA79001A3566 /* WalletListTests.swift */,
-			);
-			path = WalletList;
 			sourceTree = "<group>";
 		};
 		84B7C70A289BFA79001A3566 /* ControllerAccount */ = {
@@ -30342,7 +30320,6 @@
 				84B7C731289BFA79001A3566 /* ValidatorInfoTests.swift in Sources */,
 				0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */,
 				845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */,
-				84B7C71C289BFA79001A3566 /* DAppTxDetailsTests.swift in Sources */,
 				0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */,
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
@@ -30375,7 +30352,6 @@
 				84E25BF427E8FEFD00290BF1 /* RewardDataSourceTests.swift in Sources */,
 				84AA004326C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift in Sources */,
 				8413B27A29507F3A00F8E2E4 /* DataProviderRepositoryStub.swift in Sources */,
-				84B7C748289BFA79001A3566 /* WalletListTests.swift in Sources */,
 				84B7C720289BFA79001A3566 /* ReferralCrowdloanTests.swift in Sources */,
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
 			);
