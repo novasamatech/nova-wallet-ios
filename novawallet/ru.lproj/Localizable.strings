@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "ожидание следующей эры (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Поддержка и обратная связь";
-"settings.email" = "Написать разработчикам";
+"settings.email" = "Получите поддержку по Email";
 "wallet.manage.assets.title" = "Управление ассетами";
 "staking.reward.payouts.title_v2_2_0" = "Невыплаченные награды";
 "staking.setup.restake.title_v2_2_0" = "Увеличивать стейк";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Обмен";
 "common.action.repeat.operation" = "Повторить операцию";
 "swaps.error.rate.was.updated.message" = "Было: %@.\nСтало: %@";
-"settings.wiki" = "Руководство пользователя";
+"settings.wiki" = "Вики и справочный центр";
 "common.not.enough.fee.message_v3.8.0" = "У вас недостаточно средств для оплаты комиссии сети в размере %@.\nДоступный баланс для оплаты комиссии после операции: %@";
 "deeplink.error.invalid.chainId.message" = "Сеть не найдена";
 "deeplink.error.no.governance.type.message" = "Не указан тип управления";
@@ -1763,6 +1763,18 @@
 "gov.referendum.completed.title.with.index" = "Референдум #%li завершен";
 "gov.referendum.completed.message.with.index" = "Референдум №%li завершен, голосование окончено";
 "common.use.max.due.fee.message" = "Вы можете использовать до %@, так как вам нужно заплатить %@ комиссию сети.";
+"send.operation.network.list.title" = "Выберите сеть для отправки %@";
+"buy.operation.network.list.title" = "Выберите сеть для покупки %@";
+"receive.operation.network.list.title" = "Выберите сеть для получения %@";
+"swap.operation.network.list.title" = "Выберите сеть для обмена %@";
+"settings.appearance" = "Внешний вид";
+"settings.appearance.token.icons.title" = "иконки токенов";
+"settings.appearance.token.icons.option.white" = "Белый";
+"settings.appearance.token.icons.option.colored" = "Цветной";
+"wallet.receive.details.format" = "Отправляйте только токен %@ и токены в сети %@ на этот адрес, иначе вы можете потерять свои средства";
+"common.address.coppied" = "Адрес скопирован";
+"common.networks" = "Сети";
+"assets.search.token.hint" = "Поиск по токену";
 "common.pay.anywhere" = "Платите везде";
 "common.nova.card" = "Карта Nova";
 "common.estimated.timer" = "Ожидаемое ~%@";

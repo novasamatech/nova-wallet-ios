@@ -23,7 +23,7 @@ extension MockCloudBackupOperationFactory: CloudBackupOperationFactoryProtocol {
         dataClosure: @escaping () throws -> Data
     ) -> BaseOperation<Void> {
         ClosureOperation {
-            self.data = try? dataClosure()
+            self.data = try dataClosure()
         }
     }
     

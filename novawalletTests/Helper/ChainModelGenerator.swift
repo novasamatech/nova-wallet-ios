@@ -294,7 +294,7 @@ enum ChainModelGenerator {
 
         return AssetModel(
             assetId: identifier,
-            icon: Constants.dummyURL,
+            icon: nil,
             name: UUID().uuidString,
             symbol: assetSymbol,
             precision: assetPresicion,

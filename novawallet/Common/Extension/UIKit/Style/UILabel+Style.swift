@@ -31,6 +31,11 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let footnoteSecondaryOnWhite = UILabel.Style(
+        textColor: R.color.colorTextSecondaryOnWhite(),
+        font: .regularFootnote
+    )
+
     static let semiboldSubhedlineSecondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .semiBoldSubheadline
@@ -79,6 +84,11 @@ extension UILabel.Style {
     static let semiboldFootnoteAccentText = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .semiBoldFootnote
+    )
+
+    static let semiboldCalloutPrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCallout
     )
 
     static let semiboldCalloutPositive = UILabel.Style(
@@ -143,6 +153,11 @@ extension UILabel.Style {
 
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlinePrimaryOnWhite = UILabel.Style(
+        textColor: R.color.colorTextPrimaryOnWhite(),
         font: .regularSubheadline
     )
 

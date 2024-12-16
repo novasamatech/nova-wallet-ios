@@ -42,18 +42,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showAssetsSettings(from view: AssetListViewProtocol?) {
-        guard let assetsManageView = AssetsSettingsViewFactory.createView() else {
-            return
-        }
-
-        let navigationController = NovaNavigationController(
-            rootViewController: assetsManageView.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
     func showTokensManage(from view: AssetListViewProtocol?) {
         guard let tokensManageView = TokensManageViewFactory.createView() else {
             return

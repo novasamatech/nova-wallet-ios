@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "đang chờ đợi kỷ nguyên tiếp theo (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Hỗ trợ &  Phản hồi";
-"settings.email" = "Email";
+"settings.email" = "Nhận hỗ trợ qua Email";
 "wallet.manage.assets.title" = "Quản lý tài sản";
 "staking.reward.payouts.title_v2_2_0" = "Phần thưởng chưa trả";
 "staking.setup.restake.title_v2_2_0" = "Restake phần thưởng";
@@ -908,9 +908,9 @@
 "ledger.instructions.title" = "Kết nối Ledger Nano X";
 "ledger.instructions.link" = "Hướng dẫn kết nối Bluetooth chính thức của Ledger";
 "ledger.instructions.step1" = "Đảm bảo %@ vào thiết bị Ledger của bạn bằng ứng dụng Ledger Live";
-"ledger.instructions.step1.highlighted" = "<font>Ứng dụng mạng đã được cài đặt</font>";
+"ledger.instructions.step1.highlighted" = "Ứng dụng mạng đã được cài đặt";
 "ledger.instructions.step2" = "%@ trên thiết bị Ledger của bạn";
-"ledger.instructions.step2.highlighted" = "<font>Mở ứng dụng mạng</font>";
+"ledger.instructions.step2.highlighted" = "Mở ứng dụng mạng";
 "ledger.instructions.step3" = "Cho phép Nova Wallet %@";
 "ledger.instructions.step3.highlighted" = "truy cập Bluetooth";
 "hardware.wallet.import.description" = "Polkadot Vault, Parity Signer hoặc Ledger";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Đổi";
 "common.action.repeat.operation" = "Lặp lại thao tác";
 "swaps.error.rate.was.updated.message" = "Tỷ lệ cũ: %@.\nTỷ lệ mới: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki & Trung tâm trợ giúp";
 "common.not.enough.fee.message_v3.8.0" = "Bạn không có đủ số dư để trả phí mạng là %@.\nSố dư khả dụng để trả phí sau khi thực hiện: %@";
 "deeplink.error.invalid.chainId.message" = "Không tìm thấy chuỗi";
 "deeplink.error.no.governance.type.message" = "Loại quản lý không được chỉ định";
@@ -1727,7 +1727,7 @@
 "gov.voters.abstain" = "Bỏ phiếu Abstain";
 "gov.vote.conviction.alert.title" = "Cập nhật độ xác tín";
 "gov.vote.conviction.alert.message" = "Bỏ phiếu Abstain chỉ có thể thực hiện với độ xác tín 0.1x. Bỏ phiếu với độ xác tín 0.1x?";
-"gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi <font>bỏ phiếu Abstain</font>";
+"gov.vote.conviction.hint.title" = "Độ xác tín sẽ được đặt là 0.1x khi bỏ phiếu Abstain";
 "cloud.backup.password.confirm.title" = "Xác nhận mật khẩu sao lưu";
 "cloud.backup.password.confirm.details" = "Vui lòng nhập mật khẩu bạn đã tạo ở màn hình trước";
 "swipe.gov.empty.view.voted.text" = "Bạn đã bỏ phiếu cho tất cả các cuộc trưng cầu khả dụng";
@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Cuộc trưng cầu #%li đã hoàn thành";
 "gov.referendum.completed.message.with.index" = "Cuộc trưng cầu #%li đã hoàn thành và việc bỏ phiếu đã kết thúc";
 "common.use.max.due.fee.message" = "Bạn có thể sử dụng tối đa %@ vì bạn cần trả %@ cho phí mạng.";
+"send.operation.network.list.title" = "Chọn mạng để gửi %@";
+"buy.operation.network.list.title" = "Chọn mạng để mua %@";
+"receive.operation.network.list.title" = "Chọn mạng để nhận %@";
+"swap.operation.network.list.title" = "Chọn mạng để hoán đổi %@";
+"settings.appearance" = "Giao diện";
+"settings.appearance.token.icons.title" = "biểu tượng token";
+"settings.appearance.token.icons.option.white" = "Trắng";
+"settings.appearance.token.icons.option.colored" = "Đã tô màu";
+"wallet.receive.details.format" = "Chỉ gửi token %@ và các token trong mạng %@ tới địa chỉ này, nếu không bạn có thể mất tiền";
+"common.address.coppied" = "Địa chỉ đã được sao chép";
+"common.networks" = "Mạng";
+"assets.search.token.hint" = "Tìm kiếm theo token";

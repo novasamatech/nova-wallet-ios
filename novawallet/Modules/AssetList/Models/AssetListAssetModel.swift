@@ -3,9 +3,9 @@ import BigInt
 import Operation_iOS
 
 struct AssetListAssetModel: Identifiable {
-    var identifier: String { String(assetModel.assetId) }
+    var identifier: String { chainAssetModel.chainAssetId.stringValue }
 
-    let assetModel: AssetModel
+    let chainAssetModel: ChainAsset
     let balanceResult: Result<BigUInt, Error>?
     let balanceValue: Decimal?
 
@@ -16,13 +16,13 @@ struct AssetListAssetModel: Identifiable {
     let totalAmount: BigUInt?
 
     init(
-        assetModel: AssetModel,
+        chainAssetModel: ChainAsset,
         balanceResult: Result<BigUInt, Error>?,
         balanceValue: Decimal?,
         externalBalancesResult: Result<BigUInt, Error>?,
         externalBalancesValue: Decimal?
     ) {
-        self.assetModel = assetModel
+        self.chainAssetModel = chainAssetModel
         self.balanceResult = balanceResult
         self.balanceValue = balanceValue
         self.externalBalancesResult = externalBalancesResult
@@ -36,7 +36,7 @@ struct AssetListAssetModel: Identifiable {
             totalAmount = maybeBalanceAmount ?? maybeExternalBalances
         }
 
-        totalAmountDecimal = totalAmount?.decimal(precision: assetModel.precision)
+        totalAmountDecimal = totalAmount?.decimal(precision: chainAssetModel.asset.precision)
     }
 
     var totalValue: Decimal? {

@@ -484,13 +484,13 @@ final class UIFactory: UIFactoryProtocol {
         view.titleLabel.font = .p1Paragraph
         view.subtitleLabel?.textColor = R.color.colorTextSecondary()
         view.subtitleLabel?.font = .p2Paragraph
-        view.iconBackgroundView.apply(style: .assetContainer)
+        view.iconBackgroundView.apply(style: .clear)
         view.actionImage = R.image.iconMore()
-        view.contentInsets = UIEdgeInsets(top: 13.0, left: 19.0, bottom: 13.0, right: 19.0)
+        view.contentInsets = UIEdgeInsets(top: 13.0, left: 12.0, bottom: 13.0, right: 16.0)
         view.titleAdditionalTopMargin = -5
         view.subtitleAdditionalBottomMargin = -5
-        view.iconRadius = 13.0
-        view.horizontalSpacing = 19.0
+        view.iconRadius = 16.0
+        view.horizontalSpacing = 10.0
         return view
     }
 

@@ -10,11 +10,11 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: GovernanceAssetSelectionDelegate,
+        delegate: GovernanceChainSelectionDelegate,
         chainId: ChainModel.Id?,
         governanceType: GovernanceType?
     ) {
-        guard let selectionView = GovernanceAssetSelectionViewFactory.createView(
+        guard let selectionView = GovernanceChainSelectionViewFactory.createView(
             for: delegate,
             chainId: chainId,
             governanceType: governanceType
@@ -120,5 +120,16 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         searchView.controller.modalPresentationStyle = .fullScreen
 
         view?.controller.present(searchView.controller, animated: true, completion: nil)
+    }
+
+    func showWalletDetails(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel
+    ) {
+        guard let accountManagementView = AccountManagementViewFactory.createView(for: wallet.identifier) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(accountManagementView.controller, animated: true)
     }
 }

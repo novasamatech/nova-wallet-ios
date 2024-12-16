@@ -20,7 +20,15 @@ extension ParachainStaking {
         let annual: Range<StringScaleMapper<BigUInt>>
     }
 
+    typealias InflationDistributionPercent = UInt8
+
     struct ParachainBondConfig: Codable, Equatable {
-        @StringCodable var percent: UInt8
+        @StringCodable var percent: InflationDistributionPercent
     }
+
+    struct InflationDistributionAccount: Codable, Equatable {
+        @StringCodable var percent: InflationDistributionPercent
+    }
+
+    typealias InflationDistributionInfo = [InflationDistributionAccount]
 }

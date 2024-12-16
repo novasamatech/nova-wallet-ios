@@ -2,6 +2,8 @@ import Foundation
 
 enum StateCallRpc {
     static var method: String { "state_call" }
+    static var feeBuiltInModule: String { "TransactionPaymentApi" }
+    static var feeBuiltInMethod: String { "query_info" }
     static var feeBuiltIn: String { "TransactionPaymentApi_query_info" }
     static var feeResultType: String { "RuntimeDispatchInfo" }
 

@@ -1,32 +1,19 @@
 import UIKit
 
 final class AssetListSettingsCell: UICollectionViewCell {
-    let titleLabel: UILabel = {
-        let view = UILabel()
-        view.font = .semiBoldTitle3
-        view.textColor = R.color.colorTextPrimary()
-        return view
-    }()
+    let styleSwitcher = AssetListStyleSwitcher()
 
-    let manageButton: TriangularedBlurButton = {
-        let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
-        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
-        button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
-        return button
-    }()
+    let manageButton = BadgedManageButton()
 
-    let settingsButton = FilterBlurButton()
-
-    let searchButton: TriangularedBlurButton = {
-        let button = TriangularedBlurButton()
+    let searchButton: TriangularedButton = {
+        let button = TriangularedButton()
         button.imageWithTitleView?.iconImage = R.image.iconSearchButton()
+        button.triangularedView?.fillColor = .clear
+        button.triangularedView?.highlightedFillColor = .clear
+        button.triangularedView?.shadowOpacity = 0
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorCellBackgroundPressed()!
+
         return button
     }()
 
@@ -51,9 +38,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLocalization() {
-        titleLabel.text = R.string.localizable.commonTokens(
-            preferredLanguages: locale.rLanguages
-        )
+        styleSwitcher.controlContentView.locale = locale
     }
 
     private func setupLayout() {
@@ -64,23 +49,16 @@ final class AssetListSettingsCell: UICollectionViewCell {
             make.centerY.equalToSuperview()
         }
 
-        addSubview(settingsButton)
-
-        settingsButton.snp.makeConstraints { make in
-            make.trailing.equalTo(manageButton.snp.leading).inset(-8.0)
-            make.centerY.equalToSuperview()
-        }
-
         addSubview(searchButton)
 
         searchButton.snp.makeConstraints { make in
-            make.trailing.equalTo(settingsButton.snp.leading).inset(-8.0)
+            make.trailing.equalTo(manageButton.snp.leading).inset(-4.0)
             make.centerY.equalToSuperview()
         }
 
-        addSubview(titleLabel)
+        addSubview(styleSwitcher)
 
-        titleLabel.snp.makeConstraints { make in
+        styleSwitcher.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.lessThanOrEqualTo(searchButton.snp.leading).offset(-8.0)
             make.centerY.equalToSuperview()

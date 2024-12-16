@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "esperando la próxima era (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Soporte & Retroalimentación";
-"settings.email" = "Email";
+"settings.email" = "Obtenga ayuda por Email";
 "wallet.manage.assets.title" = "Gestionar activos";
 "staking.reward.payouts.title_v2_2_0" = "Recompensas sin pagar";
 "staking.setup.restake.title_v2_2_0" = "Reinvertir recompensas";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Intercambiar";
 "common.action.repeat.operation" = "Repetir la operación";
 "swaps.error.rate.was.updated.message" = "Antes: %@.\nAhora: %@";
-"settings.wiki" = "Wiki";
+"settings.wiki" = "Wiki y centro de ayuda";
 "common.not.enough.fee.message_v3.8.0" = "No tienes suficiente saldo para pagar la tarifa de red de %@.\nSaldo disponible para pagar tarifa después de la operación: %@";
 "deeplink.error.invalid.chainId.message" = "Cadena no encontrada";
 "deeplink.error.no.governance.type.message" = "Tipo de gobernanza no especificado";
@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Referéndum #%li completado";
 "gov.referendum.completed.message.with.index" = "El referéndum #%li ha sido completado y la votación ha terminado";
 "common.use.max.due.fee.message" = "Puedes usar hasta %@ ya que necesitas pagar %@ por la tarifa de la red.";
+"send.operation.network.list.title" = "Seleccionar red para enviar %@";
+"buy.operation.network.list.title" = "Seleccionar red para comprar %@";
+"receive.operation.network.list.title" = "Seleccionar red para recibir %@";
+"swap.operation.network.list.title" = "Seleccionar red para intercambiar %@";
+"settings.appearance" = "Apariencia";
+"settings.appearance.token.icons.title" = "iconos de token";
+"settings.appearance.token.icons.option.white" = "Blanco";
+"settings.appearance.token.icons.option.colored" = "Coloreado";
+"wallet.receive.details.format" = "Enviar solo el token %@ y tokens en la red %@ a esta dirección, o podrías perder tus fondos";
+"common.address.coppied" = "Dirección copiada";
+"common.networks" = "Redes";
+"assets.search.token.hint" = "Buscar por token";

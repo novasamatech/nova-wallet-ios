@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "bir sonraki era için bekleniyor (%@)";
 "settings.youtube" = "Youtube";
 "settings.support" = "Destek & Geribildirim";
-"settings.email" = "Email";
+"settings.email" = "Email yoluyla destek alın";
 "wallet.manage.assets.title" = "Varlıkları Yönet";
 "staking.reward.payouts.title_v2_2_0" = "Ödenmemiş ödüller";
 "staking.setup.restake.title_v2_2_0" = "Ödülleri Yeniden Stake Et";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "Takas";
 "common.action.repeat.operation" = "İşlemi tekrarla";
 "swaps.error.rate.was.updated.message" = "Eski oran: %@.\nYeni oran: %@";
-"settings.wiki" = "Kullanıcı Kılavuzu";
+"settings.wiki" = "Wiki & Yardım Merkezi";
 "common.not.enough.fee.message_v3.8.0" = "Ağ ücretini ödemek için yeterli bakiyeniz yok. İşlem sonrası ücreti ödemek için kullanılabilir bakiye: %@";
 "deeplink.error.invalid.chainId.message" = "Zincir bulunamadı";
 "deeplink.error.no.governance.type.message" = "Yönetim türü belirtilmemiş";
@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "Referandum #%li tamamlandı";
 "gov.referendum.completed.message.with.index" = "Referandum #%li tamamlandı ve oylama sona erdi";
 "common.use.max.due.fee.message" = "%@ kadar kullanabilirsiniz çünkü ağ ücreti için %@ ödemeniz gerekiyor.";
+"send.operation.network.list.title" = "Gönderme için ağ seçin %@";
+"buy.operation.network.list.title" = "Satın alma için ağ seçin %@";
+"receive.operation.network.list.title" = "Alma için ağ seçin %@";
+"swap.operation.network.list.title" = "Takas için ağ seçin %@";
+"settings.appearance" = "Görünüm";
+"settings.appearance.token.icons.title" = "token simgeleri";
+"settings.appearance.token.icons.option.white" = "Beyaz";
+"settings.appearance.token.icons.option.colored" = "Renkli";
+"wallet.receive.details.format" = "Bu adrese yalnızca %@ token ve %@ ağındaki tokenleri gönderin, aksi takdirde paranızı kaybedebilirsiniz";
+"common.address.coppied" = "Adres kopyalandı";
+"common.networks" = "Ağlar";
+"assets.search.token.hint" = "Tokene göre ara";

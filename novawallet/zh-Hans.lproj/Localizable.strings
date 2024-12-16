@@ -625,7 +625,7 @@
 "staking.waiting.next.era.format" = "等待下一个时代（%@）";
 "settings.youtube" = "Youtube";
 "settings.support" = "支持和反馈";
-"settings.email" = "电子邮件";
+"settings.email" = "通过电子邮件获得支持";
 "wallet.manage.assets.title" = "资产管理";
 "staking.reward.payouts.title_v2_2_0" = "未支付奖励";
 "staking.setup.restake.title_v2_2_0" = "增加质押奖励";
@@ -1419,7 +1419,7 @@
 "common.swap.title" = "交换";
 "common.action.repeat.operation" = "重复操作";
 "swaps.error.rate.was.updated.message" = "旧汇率：%@。\n新汇率：%@";
-"settings.wiki" = "用户指南";
+"settings.wiki" = "维基百科和帮助中心";
 "common.not.enough.fee.message_v3.8.0" = "您的余额不足以支付%@的网络费用。\n操作后可用于支付费用的余额：%@";
 "deeplink.error.invalid.chainId.message" = "未找到链";
 "deeplink.error.no.governance.type.message" = "未指定治理类型";
@@ -1757,3 +1757,15 @@
 "gov.referendum.completed.title.with.index" = "公投 #%li 完成";
 "gov.referendum.completed.message.with.index" = "公投 #%li 已完成，投票结束";
 "common.use.max.due.fee.message" = "您最多可以使用 %@，因为您需要支付 %@ 的网络费用。";
+"send.operation.network.list.title" = "选择发送%@的网络";
+"buy.operation.network.list.title" = "选择购买%@的网络";
+"receive.operation.network.list.title" = "选择接收%@的网络";
+"swap.operation.network.list.title" = "选择交换%@的网络";
+"settings.appearance" = "外观";
+"settings.appearance.token.icons.title" = "代币图标";
+"settings.appearance.token.icons.option.white" = "白色图标";
+"settings.appearance.token.icons.option.colored" = "彩色图标";
+"wallet.receive.details.format" = "仅将%@代币和%@网络中的代币发送到此地址，否则您可能会失去资金";
+"common.address.coppied" = "地址已复制";
+"common.networks" = "网络";
+"assets.search.token.hint" = "按代币搜索";

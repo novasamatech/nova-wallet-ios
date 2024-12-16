@@ -3,9 +3,14 @@ import BigInt
 
 final class ChainBalanceViewModelFactory {
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
-    init(formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
+    init(
+        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory(),
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    ) {
         self.formatterFactory = formatterFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
     }
 
     func createViewModel(
@@ -17,7 +22,7 @@ final class ChainBalanceViewModelFactory {
         let displayInfo = chainAsset.assetDisplayInfo
         let tokenFormatter = formatterFactory.createTokenFormatter(for: displayInfo)
 
-        let icon = ImageViewModelFactory.createAssetIconOrDefault(from: chainAsset.asset.icon ?? chainAsset.chain.icon)
+        let icon = ImageViewModelFactory.createChainIconOrDefault(from: chainAsset.chain.icon)
 
         if
             let balanceInPlank = balanceInPlank,

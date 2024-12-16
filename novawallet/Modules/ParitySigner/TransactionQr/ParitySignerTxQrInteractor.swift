@@ -36,7 +36,10 @@ final class ParitySignerTxQrInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func provideTransactionCode(for size: CGSize, account: ChainAccountResponse) {
+    private func provideTransactionCode(
+        for size: CGSize,
+        account: ChainAccountResponse
+    ) {
         let messageWrapper = messageOperationFactory.createTransaction(
             for: signingData,
             accountId: account.accountId,

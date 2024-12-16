@@ -46,7 +46,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             (.preferences, [
                 createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
-                createLanguageViewModel(from: language, locale: locale)
+                createLanguageViewModel(from: language, locale: locale),
+                createCommonViewViewModel(row: .appearance, locale: locale)
             ]),
             (.security, [
                 createCommonViewViewModel(row: .backup, locale: locale),
@@ -60,15 +61,15 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 ),
                 createCommonViewViewModel(row: .changePin, locale: locale)
             ].compactMap { $0 }),
+            (.support, [
+                createCommonViewViewModel(row: .email, locale: locale),
+                createCommonViewViewModel(row: .wiki, locale: locale),
+                createCommonViewViewModel(row: .rateUs, locale: locale)
+            ]),
             (.community, [
                 createCommonViewViewModel(row: .telegram, locale: locale),
                 createCommonViewViewModel(row: .twitter, locale: locale),
                 createCommonViewViewModel(row: .youtube, locale: locale)
-            ]),
-            (.support, [
-                createCommonViewViewModel(row: .rateUs, locale: locale),
-                createCommonViewViewModel(row: .wiki, locale: locale),
-                createCommonViewViewModel(row: .email, locale: locale)
             ]),
             (.about, [
                 createCommonViewViewModel(row: .website, locale: locale),

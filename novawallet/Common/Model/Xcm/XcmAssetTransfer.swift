@@ -20,6 +20,7 @@ extension XcmAssetTransfer {
         case xtokens
         case xcmpallet
         case teleport = "xcmpallet-teleport"
+        case xcmpalletTransferAssets = "xcmpallet-transferAssets"
         case unknown
 
         init(from decoder: Decoder) throws {
@@ -34,6 +35,8 @@ extension XcmAssetTransfer {
                 self = .xcmpallet
             case Self.teleport.rawValue:
                 self = .teleport
+            case Self.xcmpalletTransferAssets.rawValue:
+                self = .xcmpalletTransferAssets
             default:
                 self = .unknown
             }

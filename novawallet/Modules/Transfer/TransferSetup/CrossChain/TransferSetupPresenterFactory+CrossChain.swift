@@ -47,7 +47,10 @@ extension TransferSetupPresenterFactory {
             utilityBalanceViewModelFactory = nil
         }
 
-        guard let utilityAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo else {
+        guard
+            let utilityAssetInfo = originChainAsset.chain.utilityAssetDisplayInfo(),
+            let destUtilityAssetInfo = destinationChainAsset.chain.utilityAssetDisplayInfo()
+        else {
             return nil
         }
 
@@ -55,6 +58,7 @@ extension TransferSetupPresenterFactory {
             presentable: wireframe,
             assetDisplayInfo: originChainAsset.assetDisplayInfo,
             utilityAssetInfo: utilityAssetInfo,
+            destUtilityAssetInfo: destUtilityAssetInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 

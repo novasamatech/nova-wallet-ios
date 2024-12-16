@@ -42,16 +42,19 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
 final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
     let issuesViewModelFactory: SwapIssueViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
         percentForamatter: LocalizableResource<NumberFormatter>,
         priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
         self.issuesViewModelFactory = issuesViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
+        self.assetIconViewModelFactory = assetIconViewModelFactory
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
@@ -81,8 +84,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
 
     private func assetViewModel(chainAsset: ChainAsset) -> SwapsAssetViewModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-        let assetIcon: ImageViewModelProtocol = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) } ??
-            StaticImageViewModel(image: R.image.iconDefaultToken()!)
+        let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
 
         return SwapsAssetViewModel(
             symbol: chainAsset.asset.symbol,
