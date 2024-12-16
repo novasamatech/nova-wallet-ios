@@ -9,14 +9,13 @@ extension UIViewController {
         let transitioningDelegate = CardLayoutTransitionDelegate()
         let container = CardLayoutPresentationController(transitionDelegate: transitioningDelegate)
 
-        container.view.autoresizingMask = [.flexibleWidth, .flexibleHeight] 
+        container.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         container.addChild(viewController)
         container.view.addSubview(viewController.view)
 
         viewController.view.snp.makeConstraints { make in
-            make.top.trailing.leading.equalToSuperview()
-            make.bottom.equalToSuperview().inset(CardLayoutPresentationController.topOffset())
+            make.top.trailing.leading.bottom.equalToSuperview()
         }
         container.view.layoutIfNeeded()
 

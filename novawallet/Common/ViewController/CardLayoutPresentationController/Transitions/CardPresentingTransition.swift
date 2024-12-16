@@ -57,6 +57,25 @@ private extension CardPresentingTransition {
 
         return dimmingView
     }
+
+    func calculateFinalDestinationFrame(using sourceView: UIView) -> CGRect {
+        let finalOrigin = sourceView.bounds.offsetBy(
+            dx: 0,
+            dy: CardLayoutPresentationController.topOffset()
+        ).origin
+
+        let finalFrameSize = CGSize(
+            width: sourceView.bounds.width,
+            height: sourceView.bounds.height - CardLayoutPresentationController.topOffset()
+        )
+
+        let finalDestinationViewFrame = CGRect(
+            origin: finalOrigin,
+            size: finalFrameSize
+        )
+
+        return finalDestinationViewFrame
+    }
 }
 
 // MARK: UIViewControllerAnimatedTransitioning
@@ -83,12 +102,9 @@ extension CardPresentingTransition: UIViewControllerAnimatedTransitioning {
 
         let initialDestinationViewFrame = coveredContextView.bounds.offsetBy(
             dx: 0,
-            dy: sourceController.view.bounds.maxY
+            dy: coveredContextView.bounds.maxY
         )
-        let finalDestinationViewFrame = coveredContextView.bounds.offsetBy(
-            dx: 0,
-            dy: CardLayoutPresentationController.topOffset()
-        )
+        let finalDestinationViewFrame = calculateFinalDestinationFrame(using: coveredContextView)
 
         let destinationTransform = createDestinationViewTransform(finalDestinationViewFrame)
         let sourceTransform = createSourceViewTransform(sourceController.view)
