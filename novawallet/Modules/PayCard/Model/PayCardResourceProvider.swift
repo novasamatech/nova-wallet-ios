@@ -1,10 +1,10 @@
 import Foundation
+import Operation_iOS
 
 struct PayCardHtmlResource {
     let url: URL
-    let content: String
 }
 
 protocol PayCardResourceProviding {
-    func loadResource() throws -> PayCardHtmlResource
+    func loadResourceWrapper() -> CompoundOperationWrapper<PayCardHtmlResource>
 }

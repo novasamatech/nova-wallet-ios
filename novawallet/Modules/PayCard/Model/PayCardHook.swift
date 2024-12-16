@@ -15,5 +15,5 @@ protocol PayCardHookDelegate: AnyObject {
 }
 
 protocol PayCardHookFactoryProtocol {
-    func createHooks(for delegate: PayCardHookDelegate) -> CompoundOperationWrapper<[PayCardHook]>
+    func createHooks(for delegate: PayCardHookDelegate) -> [PayCardHook]
 }

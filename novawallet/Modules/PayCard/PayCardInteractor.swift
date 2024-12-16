@@ -43,28 +43,26 @@ final class PayCardInteractor {
     }
 }
 
+// MARK: PayCardInteractorInputProtocol
+
 extension PayCardInteractor: PayCardInteractorInputProtocol {
     func setup() {
-        do {
-            let resource = try payCardResourceProvider.loadResource()
+        let resourceWrapper = payCardResourceProvider.loadResourceWrapper()
 
-            let hooksWrapper = payCardHookFactory.createHooks(for: self)
+        let hooks = payCardHookFactory.createHooks(for: self)
 
-            execute(
-                wrapper: hooksWrapper,
-                inOperationQueue: operationQueue,
-                runningCallbackIn: .main
-            ) { [weak self] result in
-                switch result {
-                case let .success(hooks):
-                    self?.messageHandlers = hooks.flatMap(\.handlers)
-                    self?.provideModel(for: resource, hooks: hooks)
-                case let .failure(error):
-                    self?.logger.error("Unexpected hooks \(error)")
-                }
+        execute(
+            wrapper: resourceWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(resource):
+                self?.messageHandlers = hooks.flatMap(\.handlers)
+                self?.provideModel(for: resource, hooks: hooks)
+            case let .failure(error):
+                self?.logger.error("Unexpected hooks \(error)")
             }
-        } catch {
-            logger.error("Unexpected \(error)")
         }
     }
 
@@ -106,6 +104,8 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
         handler.handle(message: body, of: name)
     }
 }
+
+// MARK: PayCardHookDelegate
 
 extension PayCardInteractor: PayCardHookDelegate {
     func didRequestTopup(from model: PayCardTopupModel) {

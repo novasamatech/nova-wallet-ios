@@ -67,15 +67,21 @@ final class PayCardViewController: UIViewController, ViewHolder {
     }
 
     func load(resource: PayCardHtmlResource) {
-        rootView.webView.loadHTMLString(resource.content, baseURL: resource.url)
+        let request = URLRequest(url: resource.url)
+
+        rootView.webView.load(request)
     }
 }
+
+// MARK: DAppBrowserScriptHandlerDelegate
 
 extension PayCardViewController: DAppBrowserScriptHandlerDelegate {
     func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
         presenter.processMessage(body: message.body, of: message.name)
     }
 }
+
+// MARK: WKNavigationDelegate
 
 extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
     func webView(
@@ -104,6 +110,8 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
         return nil
     }
 }
+
+// MARK: PayCardViewProtocol
 
 extension PayCardViewController: PayCardViewProtocol {
     func didReceive(model: PayCardModel) {
