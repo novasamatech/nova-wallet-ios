@@ -1783,3 +1783,5 @@
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "During swap execution intermediate receive amount is %@ which is less than minimum balance of %@. Try specifying larger swap amount.";
 "common.fee.amount.prefixed" = "Fee: %@";
 "swap.route.details.subtitle" = "The way that your token will take through different networks to get the desired token.";
+"common.not.enough.to.pay.fee.message" = "You don\'t have enough balance to pay network fee of %@. Current balance is %@";
+"swap.delivery.fee.error.message" = "Due to crosschain restrictions you should have at least %@ after operation";

@@ -14,8 +14,6 @@ struct SwapModel {
     struct InsufficientDuePayAssetFee {
         let available: Decimal
         let feeInPayAsset: Decimal
-        let minBalanceInPayAsset: Decimal
-        let minBalanceInNativeAsset: Decimal
     }
 
     struct InsufficientDueConsumers {
@@ -23,10 +21,15 @@ struct SwapModel {
         let fee: Decimal
     }
 
+    struct InsufficientDueDeliveryFee {
+        let minBalance: Decimal
+    }
+
     enum InsufficientBalanceReason {
         case amountToHigh(InsufficientDueBalance)
         case feeInNativeAsset(InsufficientDueNativeFee)
         case feeInPayAsset(InsufficientDuePayAssetFee)
+        case deliveryFee(InsufficientDueDeliveryFee)
         case violatingConsumers(InsufficientDueConsumers)
     }
 
@@ -35,17 +38,8 @@ struct SwapModel {
         let minBalance: Decimal
     }
 
-    struct DustAfterSwapAndFee {
-        let dust: Decimal
-        let minBalance: Decimal
-        let fee: Decimal
-        let minBalanceInPayAsset: Decimal
-        let minBalanceInNativeAsset: Decimal
-    }
-
     enum DustReason {
         case swap(DustAfterSwap)
-        case swapAndFee(DustAfterSwapAndFee)
     }
 
     struct CannotReceiveDueExistense {
@@ -113,118 +107,193 @@ struct SwapModel {
         payChainAsset.chainAssetId == feeChainAsset.chainAssetId
     }
 
-    func checkBalanceSufficiency() -> InsufficientBalanceReason? {
+    func checkEnoughBalanceToSpend() -> InsufficientBalanceReason? {
         let balance = payAssetBalance?.transferable ?? 0
-        let feeInPayToken = isFeeInPayToken ? feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0 : 0
         let swapAmount = spendingAmountInPlank ?? 0
 
-        let totalSpending = swapAmount + feeInPayToken
-
-        let isViolatingConsumers = !notViolatingConsumers
-
-        guard balance < totalSpending || isViolatingConsumers else {
+        guard swapAmount > balance else {
             return nil
         }
 
-        if balance < swapAmount {
-            return .amountToHigh(.init(available: balance.decimal(precision: payChainAsset.asset.precision)))
-        } else if isViolatingConsumers {
-            // TODO: Here we now can have custom asset
-            let minBalance = utilityAssetExistense?.minBalance ?? 0
-            let precision = feeChainAsset.asset.precision
-            return .violatingConsumers(
-                .init(
-                    minBalance: minBalance.decimal(precision: precision),
-                    fee: feeInPayToken.decimal(precision: precision)
-                )
-            )
-        } else if payChainAsset.isUtilityAsset {
-            let available = balance.subtractOrZero(feeInPayToken)
+        let model = InsufficientDueBalance(
+            available: balance.decimal(precision: payChainAsset.asset.precision)
+        )
 
-            return .feeInNativeAsset(
-                .init(
-                    available: available.decimal(precision: payChainAsset.asset.precision),
-                    fee: feeInPayToken.decimal(precision: feeChainAsset.asset.precision)
-                )
-            )
-        } else {
-            let available = balance.subtractOrZero(feeInPayToken)
-
-            if
-                isFeeInPayToken,
-                let additionInPayAsset = feeModel?.postSubmissionFeeInAssetIn(payChainAsset),
-                let utilityAsset = feeChainAsset.chain.utilityChainAsset(),
-                let additionInNativeAsset = feeModel?.originPostsubmissionFeeInAsset(utilityAsset) {
-                return .feeInPayAsset(
-                    .init(
-                        available: available.decimal(precision: payChainAsset.asset.precision),
-                        feeInPayAsset: feeInPayToken.decimal(precision: feeChainAsset.asset.precision),
-                        minBalanceInPayAsset: additionInPayAsset.decimal(precision: payChainAsset.asset.precision),
-                        minBalanceInNativeAsset: additionInNativeAsset.decimal(
-                            precision: utilityAsset.asset.precision
-                        )
-                    )
-                )
-            } else {
-                return .feeInNativeAsset(
-                    .init(
-                        available: available.decimal(precision: payChainAsset.asset.precision),
-                        fee: feeInPayToken.decimal(precision: feeChainAsset.asset.precision)
-                    )
-                )
-            }
-        }
-    }
-
-    var accountWillBeKilled: Bool {
-        let balance: BigUInt
-
-        if payChainAsset.isUtilityAsset {
-            balance = payAssetTotalBalanceAfterSwap
-        } else if feeChainAsset.isUtilityAsset {
-            let total = feeAssetBalance?.freeInPlank ?? 0
-            let fee = feeModel?.originFeeInAsset(feeChainAsset) ?? 0
-            balance = total.subtractOrZero(fee)
-        } else {
-            // TODO: It is no more valid since ed in native asset doesn't remain on account after swap/crosschain
-            // if fee is paid in non native token then we will have at least ed
-            return false
-        }
-
-        let minBalance = utilityAssetExistense?.minBalance ?? 0
-
-        return balance < minBalance
+        return .amountToHigh(model)
     }
 
     var notViolatingConsumers: Bool {
-        guard accountWillBeKilled else {
+        guard nativeTokenProviderWillBeKilled else {
             return true
         }
 
         return !(accountInfo?.hasConsumers ?? false)
     }
 
-    func checkCanReceive() -> CannotReceiveReason? {
-        // TODO: We need to rewrite the logic to take into account crosschains and swaps
-        let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
+    func checkNotViolatingConsumers() -> InsufficientBalanceReason? {
+        guard let utilityChainAsset else {
+            return nil
+        }
+
+        guard !notViolatingConsumers else {
+            return nil
+        }
+
+        let minBalance = utilityAssetExistense?.minBalance ?? 0
+        let feeInNativeToken = feeModel?.totalFeeInAssetIn(utilityChainAsset) ?? 0
+
+        let assetDisplayInfo = utilityChainAsset.assetDisplayInfo
+
+        return .violatingConsumers(
+            .init(
+                minBalance: minBalance.decimal(assetInfo: assetDisplayInfo),
+                fee: feeInNativeToken.decimal(assetInfo: assetDisplayInfo)
+            )
+        )
+    }
+
+    func checkEnoughBalanceToSpendAndPayFee() -> InsufficientBalanceReason? {
+        let balance = payAssetBalance?.transferable ?? 0
+        let fee = feeModel?.totalFeeInAssetIn(payChainAsset) ?? 0
+        let swapAmount = spendingAmountInPlank ?? 0
+
+        guard balance < swapAmount + fee else {
+            return nil
+        }
+
+        let model = InsufficientDuePayAssetFee(
+            available: balance.decimal(assetInfo: payChainAsset.assetDisplayInfo),
+            feeInPayAsset: fee.decimal(precision: payChainAsset.asset.precision)
+        )
+
+        return .feeInPayAsset(model)
+    }
+
+    func checkEnoughBalanceToPayFeeInNativeBalance() -> InsufficientBalanceReason? {
+        guard let utilityChainAsset else {
+            return nil
+        }
+
+        let balance = utilityAssetBalance?.transferable ?? 0
+        let fee = feeModel?.totalFeeInAssetIn(utilityChainAsset) ?? 0
+
+        guard balance < fee else {
+            return nil
+        }
+
+        let model = InsufficientDueNativeFee(
+            available: balance.decimal(assetInfo: utilityChainAsset.assetDisplayInfo),
+            fee: fee.decimal(assetInfo: utilityChainAsset.assetDisplayInfo)
+        )
+
+        return .feeInNativeAsset(model)
+    }
+
+    func checkEnoughBalanceToPayDeliveryFee() -> InsufficientBalanceReason? {
+        guard
+            let utilityChainAsset,
+            let feeModel,
+            feeModel.hasOriginPostSubmissionByAccount,
+            nativeTokenProviderWillBeKilled else {
+            return nil
+        }
+
+        let minBalance = utilityAssetExistense?.minBalance.decimal(
+            assetInfo: utilityChainAsset.assetDisplayInfo
+        ) ?? 0
+
+        let model = InsufficientDueDeliveryFee(minBalance: minBalance)
+
+        return .deliveryFee(model)
+    }
+
+    func checkBalanceSufficiency() -> InsufficientBalanceReason? {
+        if let insufficient = checkEnoughBalanceToSpend() {
+            return insufficient
+        }
+
+        if let insufficient = checkEnoughBalanceToSpendAndPayFee() {
+            return insufficient
+        }
+
+        if let insufficient = checkEnoughBalanceToPayFeeInNativeBalance() {
+            return insufficient
+        }
+
+        if let insufficient = checkEnoughBalanceToPayDeliveryFee() {
+            return insufficient
+        }
+
+        if let insufficient = checkNotViolatingConsumers() {
+            return insufficient
+        }
+
+        return nil
+    }
+
+    var nativeTokenProviderWillBeKilled: Bool {
+        guard let utilityChainAsset else {
+            return false
+        }
+
+        let minBalance = utilityAssetExistense?.minBalance ?? 0
+
+        if payChainAsset.isUtilityAsset {
+            return payAssetTotalBalanceAfterSwap < minBalance
+        }
+
+        let feeInNativeAsset = feeModel?.totalFeeInAssetIn(utilityChainAsset) ?? 0
+
+        guard feeInNativeAsset > 0 else {
+            return false
+        }
+
+        let totalInNativeAsset = utilityAssetBalance?.balanceCountingEd ?? 0
+
+        return totalInNativeAsset.subtractOrZero(feeInNativeAsset) < minBalance
+    }
+
+    func checkReceiveBalanceAboveMin() -> CannotReceiveReason? {
         let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + (quote?.route.amountOut ?? 0)
-        let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
-            (feeModel?.originFeeInAsset(feeChainAsset) ?? 0) : 0
         let minBalance = receiveAssetExistense?.minBalance ?? 0
 
-        if amountAfterSwap < minBalance + feeInReceiveAsset {
+        if amountAfterSwap < minBalance {
             return .existense(
                 .init(minBalance: minBalance.decimal(precision: receiveChainAsset.asset.precision))
             )
-        } else if !isSelfSufficient, accountWillBeKilled {
+        } else {
+            return nil
+        }
+    }
+
+    func checkReceiveBalanceSelfSufOrHasProvider() -> CannotReceiveReason? {
+        guard payChainAsset.chain.chainId == receiveChainAsset.chain.chainId, let utilityChainAsset else {
+            return nil
+        }
+
+        let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
+
+        if !isSelfSufficient, nativeTokenProviderWillBeKilled {
             let utilityMinBalance = utilityAssetExistense?.minBalance ?? 0
-            let precision = (utilityChainAsset ?? feeChainAsset).asset.precision
+            let precision = utilityChainAsset.asset.precision
             return .noProvider(
                 .init(minBalance: utilityMinBalance.decimal(precision: precision))
             )
         } else {
             return nil
         }
+    }
+
+    func checkCanReceive() -> CannotReceiveReason? {
+        if let cannotReceive = checkReceiveBalanceAboveMin() {
+            return cannotReceive
+        }
+
+        if let cannotReceive = checkReceiveBalanceSelfSufOrHasProvider() {
+            return cannotReceive
+        }
+
+        return nil
     }
 
     func checkDustAfterSwap() -> DustReason? {
@@ -237,31 +306,14 @@ struct SwapModel {
 
         let remaning = minBalance - balance
 
-        if
-            isFeeInPayToken, !payChainAsset.isUtilityAsset,
-            let networkFee = feeModel?.totalFeeInAssetIn(payChainAsset),
-            let additionInPayAsset = feeModel?.postSubmissionFeeInAssetIn(payChainAsset),
-            let utilityAsset = feeChainAsset.chain.utilityChainAsset(),
-            let additionInNativeAsset = feeModel?.originPostsubmissionFeeInAsset(utilityAsset) {
-            return .swapAndFee(
-                .init(
-                    dust: remaning.decimal(precision: payChainAsset.asset.precision),
-                    minBalance: minBalance.decimal(precision: payChainAsset.asset.precision),
-                    fee: networkFee.decimal(precision: payChainAsset.asset.precision),
-                    minBalanceInPayAsset: additionInPayAsset.decimal(precision: payChainAsset.asset.precision),
-                    minBalanceInNativeAsset: additionInNativeAsset.decimal(
-                        precision: utilityAsset.asset.precision
-                    )
-                )
-            )
-        } else {
-            return .swap(
-                .init(
-                    dust: remaning.decimal(precision: payChainAsset.asset.precision),
-                    minBalance: minBalance.decimal(precision: payChainAsset.asset.precision)
-                )
-            )
-        }
+        let assetDisplayInfo = payChainAsset.assetDisplayInfo
+
+        let model = DustAfterSwap(
+            dust: remaning.decimal(assetInfo: assetDisplayInfo),
+            minBalance: minBalance.decimal(assetInfo: assetDisplayInfo)
+        )
+
+        return .swap(model)
     }
 
     func asyncCheckQuoteValidity(

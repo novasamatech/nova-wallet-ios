@@ -39,6 +39,12 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         locale: Locale
     )
 
+    func presentMinBalanceViolatedDueDeliveryFee(
+        from view: ControllerBackedProtocol,
+        minBalance: String,
+        locale: Locale
+    )
+
     func presentIntemediateAmountBelowMinimum(
         from view: ControllerBackedProtocol,
         amount: String,
@@ -122,6 +128,21 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
+    func presentMinBalanceViolatedDueDeliveryFee(
+        from view: ControllerBackedProtocol,
+        minBalance: String,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.swapDeliveryFeeErrorMessage(
+            minBalance,
+            preferredLanguages: locale.rLanguages
+        )
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
     func presentInsufficientBalance(
         from view: ControllerBackedProtocol?,
         reason: SwapDisplayError.InsufficientBalance,
@@ -133,18 +154,15 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
 
         switch reason {
         case let .dueFeePayAsset(value):
-            message = R.string.localizable.swapsSetupErrorInsufficientBalanceFeeSwapMessage(
-                value.available,
+            message = R.string.localizable.commonNotEnoughToPayFeeMessage(
                 value.fee,
-                value.minBalanceInPayAsset,
-                value.minBalanceInUtilityAsset,
-                value.tokenSymbol,
+                value.available,
                 preferredLanguages: locale.rLanguages
             )
         case let .dueFeeNativeAsset(value):
-            message = R.string.localizable.swapsSetupErrorInsufficientBalanceFeeNativeMessage(
-                value.available,
+            message = R.string.localizable.commonNotEnoughToPayFeeMessage(
                 value.fee,
+                value.available,
                 preferredLanguages: locale.rLanguages
             )
         case let .dueConsumers(value):
@@ -185,17 +203,7 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         let message: String
 
         switch reason {
-        case let .dueFeeSwap(value):
-            message = R.string.localizable.swapsDustRemainsFeePayAssetMessage(
-                value.minBalanceOfPayAsset,
-                value.fee,
-                value.minBalanceInPayAsset,
-                value.minBalanceInUtilityAsset,
-                value.utilitySymbol,
-                value.remaining,
-                preferredLanguages: locale.rLanguages
-            )
-        case let .dueNativeSwap(value):
+        case let .dueSwap(value):
             message = R.string.localizable.swapsDustRemainsFeeNativeAssetMessage(
                 value.minBalance,
                 value.remaining,
