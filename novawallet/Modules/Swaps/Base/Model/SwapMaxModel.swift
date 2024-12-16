@@ -30,7 +30,7 @@ struct SwapMaxModel {
 
         return (!receiveAssetExistense.isSelfSufficient || hasConsumers)
     }
-    
+
     var needMinBalanceDueConsumers: Bool {
         accountInfo?.hasConsumers ?? false
     }
@@ -47,8 +47,8 @@ struct SwapMaxModel {
 
     var shouldKeepMinBalance: Bool {
         needMinBalanceDueConsumers ||
-        needMinBalanceDueToPostsubmissionFee ||
-        needMinBalanceDueToReceiveInsufficiency
+            needMinBalanceDueToPostsubmissionFee ||
+            needMinBalanceDueToReceiveInsufficiency
     }
 
     private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {

@@ -140,7 +140,7 @@ struct SwapModel {
         }
 
         let minBalance = utilityAssetExistense?.minBalance ?? 0
-        let feeInNativeToken = feeModel?.totalFeeInAssetIn(utilityChainAsset) ?? 0
+        let feeInNativeToken = feeModel?.originFeeInAsset(utilityChainAsset) ?? 0
 
         let assetDisplayInfo = utilityChainAsset.assetDisplayInfo
 
@@ -175,7 +175,7 @@ struct SwapModel {
         }
 
         let balance = utilityAssetBalance?.transferable ?? 0
-        let fee = feeModel?.totalFeeInAssetIn(utilityChainAsset) ?? 0
+        let fee = feeModel?.originFeeInAsset(utilityChainAsset) ?? 0
 
         guard balance < fee else {
             return nil
@@ -242,7 +242,7 @@ struct SwapModel {
             return payAssetTotalBalanceAfterSwap < minBalance
         }
 
-        let feeInNativeAsset = feeModel?.totalFeeInAssetIn(utilityChainAsset) ?? 0
+        let feeInNativeAsset = feeModel?.originFeeInAsset(utilityChainAsset) ?? 0
 
         guard feeInNativeAsset > 0 else {
             return false

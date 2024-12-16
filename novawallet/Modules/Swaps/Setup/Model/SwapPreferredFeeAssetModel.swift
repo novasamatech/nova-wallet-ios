@@ -71,13 +71,13 @@ extension SwapPreferredFeeAssetModel {
         if isFeeInNativeAsset {
             if canPayFeeInNativeAsset() {
                 return utilityChainAsset
-            } else if hasPayAssetBalance {
+            } else if hasPayAssetBalance, canPayFeeInPayAsset {
                 return payChainAsset
             } else {
                 return utilityChainAsset
             }
         } else {
-            return hasPayAssetBalance ? payChainAsset : utilityChainAsset
+            return canPayFeeInPayAsset && hasPayAssetBalance ? payChainAsset : utilityChainAsset
         }
     }
 }

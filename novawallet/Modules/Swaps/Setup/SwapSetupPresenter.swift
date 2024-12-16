@@ -30,6 +30,12 @@ final class SwapSetupPresenter: SwapBasePresenter {
         !quoteResult.hasError() && quoteArgs != nil
     }
 
+    /*
+     *  We might have cases when quote recalcution triggers fee recalculation and vice versa
+     *  and we want to bound such triggers to avoid deadlock.
+     */
+    private var maxCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
@@ -132,8 +138,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
         logger.debug("New quote: \(quote)")
 
-        // we need to keep fee in sync with quote
-        fee = nil
+        if let fee, !quote.hasSamePath(other: fee.route) {
+            // we need to keep fee in sync with quote
+            self.fee = nil
+            maxCorrectionCounter.resetCounter()
+        }
 
         switch quoteArgs.direction {
         case .buy:
@@ -172,6 +181,16 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if case .rate = payAmountInput {
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
+
+            /*
+             * As fee changes the max amount we might also refresh the quote but make sure
+             * no deadlock.
+             */
+            if maxCorrectionCounter.incrementCounterIfPossible() {
+                refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
+            } else {
+                maxCorrectionCounter.resetCounter()
+            }
         }
 
         provideButtonState()
@@ -436,14 +455,12 @@ extension SwapSetupPresenter {
     }
 
     private func provideFeeViewModel() {
-        guard let operations = quote?.metaOperations else {
-            return
-        }
-
-        guard let totalFeeInFiat = fee?.calculateTotalFeeInFiat(
-            matching: operations,
-            priceStore: priceStore
-        ) else {
+        guard
+            let operations = quote?.metaOperations,
+            let totalFeeInFiat = fee?.calculateTotalFeeInFiat(
+                matching: operations,
+                priceStore: priceStore
+            ) else {
             view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
@@ -486,7 +503,6 @@ extension SwapSetupPresenter {
 
         if forceUpdate {
             quoteResult = nil
-            fee = nil
         }
 
         switch direction {
@@ -741,6 +757,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func selectMaxPayAmount() {
+        maxCorrectionCounter.resetCounter()
+
         applySwapMax()
     }
 

@@ -245,13 +245,13 @@ class SwapBasePresenter {
             )
         ]
 
-        // for a single operation validation is covered by canReceive
+        // for last operation validation is covered by canReceive
         if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
             let intermediateEdValidation = dataValidatingFactory.passesIntermediateEDValidation(
                 params: swapModel,
                 remoteValidatingClosure: { closureParams in
                     interactor.requestValidatingIntermediateED(
-                        for: closureParams.operations,
+                        for: closureParams.operations.dropLast(),
                         completion: closureParams.completionClosure
                     )
                 },
