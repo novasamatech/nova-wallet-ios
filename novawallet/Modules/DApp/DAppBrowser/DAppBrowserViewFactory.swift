@@ -3,7 +3,33 @@ import SoraFoundation
 import Operation_iOS
 
 struct DAppBrowserViewFactory {
-    static func createView(for userQuery: DAppSearchResult) -> DAppBrowserViewProtocol? {
+    static func createChildView(
+        for parent: DAppBrowserParentViewProtocol,
+        selectedTab: DAppBrowserTab
+    ) -> DAppBrowserViewProtocol? {
+        let wireframe = DAppBrowserChildWireframe(parentView: parent)
+
+        return createView(
+            with: selectedTab,
+            wireframe: wireframe
+        )
+    }
+
+    static func createView(
+        selectedTab: DAppBrowserTab
+    ) -> DAppBrowserViewProtocol? {
+        let wireframe = DAppBrowserWireframe()
+
+        return createView(
+            with: selectedTab,
+            wireframe: wireframe
+        )
+    }
+
+    private static func createView(
+        with selectedTab: DAppBrowserTab,
+        wireframe: DAppBrowserWireframeProtocol
+    ) -> DAppBrowserViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
@@ -29,9 +55,11 @@ struct DAppBrowserViewFactory {
             for: wallet.metaId
         )
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let interactor = DAppBrowserInteractor(
             transports: transports,
-            userQuery: userQuery,
+            selectedTab: selectedTab,
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             securedLayer: SecurityLayerService.shared,
@@ -39,12 +67,12 @@ struct DAppBrowserViewFactory {
             dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: favoritesRepository,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             sequentialPhishingVerifier: phishingVerifier,
+            tabManager: DAppBrowserTabManager.shared,
+            applicationHandler: ApplicationHandler(),
             logger: logger
         )
-
-        let wireframe = DAppBrowserWireframe()
 
         let presenter = DAppBrowserPresenter(
             interactor: interactor,
@@ -56,8 +84,10 @@ struct DAppBrowserViewFactory {
         let view = DAppBrowserViewController(
             presenter: presenter,
             localRouter: URLLocalRouter.createWithDeeplinks(),
+            webViewPool: WebViewPool.shared,
             deviceOrientationManager: DeviceOrientationManager.shared,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: logger
         )
 
         presenter.view = view

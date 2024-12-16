@@ -33,7 +33,7 @@ final class SecurityLayerWireframe: SecurityLayerWireframeProtocol, Authorizatio
             return
         }
 
-        if window.rootViewController as? MainTabBarViewProtocol != nil {
+        if window.rootViewController as? NovaMainAppContainerViewProtocol != nil {
             guard !isAuthorizing else {
                 return
             }

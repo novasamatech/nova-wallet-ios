@@ -1,6 +1,10 @@
 import UIKit
 
-protocol MainTabBarViewProtocol: ControllerBackedProtocol {
+protocol MainTabBarProtocol {
+    var view: UIView! { get set }
+}
+
+protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {
     func didReplaceView(for newView: UIViewController, for index: Int)
     func setSyncStatus(_ syncStatus: SharedSyncStatus)
 }

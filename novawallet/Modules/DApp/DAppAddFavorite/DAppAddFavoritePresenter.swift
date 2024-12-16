@@ -72,7 +72,12 @@ extension DAppAddFavoritePresenter: DAppAddFavoritePresenterProtocol {
             return
         }
 
-        let favorite = DAppFavorite(identifier: urlString, label: title, icon: proposedModel?.icon)
+        let favorite = DAppFavorite(
+            identifier: urlString,
+            label: title,
+            icon: proposedModel?.icon,
+            index: nil
+        )
         interactor.save(favorite: favorite)
     }
 }

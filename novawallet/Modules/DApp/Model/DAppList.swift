@@ -22,10 +22,12 @@ struct DApp: Codable, Equatable {
 struct DAppCategory: Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
+        case icon
         case name
     }
 
     let identifier: String
+    let icon: URL?
     let name: String
 }
 

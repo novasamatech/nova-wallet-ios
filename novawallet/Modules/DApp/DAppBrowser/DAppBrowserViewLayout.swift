@@ -7,32 +7,82 @@ final class DAppBrowserViewLayout: UIView {
         static let toolbarHeight: CGFloat = 44.0
     }
 
-    let urlBar = DAppURLBarView()
-
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
 
-    let closeBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconClose()!, style: .plain, target: nil, action: nil)
+    // MARK: Top bar controls
+
+    let urlBar = DAppURLBarView()
+
+    let minimizeBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconSmallArrowDown()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
         item.tintColor = R.color.colorIconPrimary()!
         return item
     }()
 
     let refreshBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconRefresh()!, style: .plain, target: nil, action: nil)
+        let item = UIBarButtonItem(
+            image: R.image.iconRefresh()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
         item.tintColor = R.color.colorIconPrimary()
         return item
     }()
 
+    // MARK: Bottom bar controls
+
+    let favoriteBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconFavToolbar()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+
+        item.tintColor = R.color.colorIconPrimary()
+
+        return item
+    }()
+
     let goBackBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconBrowserBack()!, style: .plain, target: nil, action: nil)
+        let item = UIBarButtonItem(
+            image: R.image.iconBrowserBack()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
         item.tintColor = R.color.colorIconPrimary()
         return item
     }()
 
     let goForwardBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconBrowserForward()!, style: .plain, target: nil, action: nil)
+        let item = UIBarButtonItem(
+            image: R.image.iconBrowserForward()!,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
         item.tintColor = R.color.colorIconPrimary()
+        return item
+    }()
+
+    let tabsButton: RoundedButton = .create { view in
+        view.imageWithTitleView?.titleFont = .semiBoldCaption1
+        view.roundedBackgroundView?.applyStrokedBackgroundStyle()
+        view.roundedBackgroundView?.cornerRadius = 6.0
+        view.roundedBackgroundView?.strokeWidth = 1.2
+        view.roundedBackgroundView?.strokeColor = R.color.colorTextPrimary()!
+    }
+
+    lazy var tabsButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(customView: tabsButton)
         return item
     }()
 
@@ -63,16 +113,9 @@ final class DAppBrowserViewLayout: UIView {
         return view
     }()
 
-    let webView: WKWebView = {
-        let configuration = WKWebViewConfiguration()
-        configuration.userContentController = WKUserContentController()
+    let webViewContainer = UIView()
 
-        let view = WKWebView(frame: .zero, configuration: configuration)
-        view.scrollView.contentInsetAdjustmentBehavior = .always
-        view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        return view
-    }()
+    var webView: WKWebView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -86,7 +129,56 @@ final class DAppBrowserViewLayout: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
+// MARK: Private
+
+private extension DAppBrowserViewLayout {
+    func setupLayout() {
+        addSubview(toolbarBackgroundView)
+        toolbarBackgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.toolbarHeight)
+        }
+
+        addSubview(toolBar)
+        toolBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            make.height.equalTo(Constants.toolbarHeight)
+        }
+
+        addSubview(webViewContainer)
+        webViewContainer.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(toolBar.snp.top)
+        }
+
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
+        tabsButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+
+        toolBar.items = [
+            goBackBarItem,
+            flexibleSpace,
+            goForwardBarItem,
+            flexibleSpace,
+            tabsButtonItem,
+            flexibleSpace,
+            favoriteBarItem,
+            flexibleSpace,
+            settingsBarButton
+        ]
+    }
+}
+
+// MARK: Interface
+
+extension DAppBrowserViewLayout {
     func setIsToolbarHidden(_ isHidden: Bool) {
         toolbarBackgroundView.snp.remakeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -114,39 +206,35 @@ final class DAppBrowserViewLayout: UIView {
         layoutIfNeeded()
     }
 
-    private func setupLayout() {
-        addSubview(webView)
-
-        addSubview(toolbarBackgroundView)
-        toolbarBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.toolbarHeight)
+    func setFavorite(_ favorite: Bool) {
+        if favorite {
+            favoriteBarItem.image = R.image.iconFavToolbarSel()
+            favoriteBarItem.tintColor = R.color.colorIconFavorite()
+        } else {
+            favoriteBarItem.image = R.image.iconFavToolbar()
+            favoriteBarItem.tintColor = R.color.colorIconPrimary()
         }
+    }
 
-        addSubview(toolBar)
-        toolBar.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
-            make.height.equalTo(Constants.toolbarHeight)
+    func setURLSecure(_ secure: Bool) {
+        if secure {
+            securityImageView.image = R.image.iconBrowserSecurity()?
+                .tinted(with: R.color.colorIconPositive()!)
+            urlLabel.textColor = R.color.colorTextPositive()
+        } else {
+            securityImageView.image = nil
+            urlLabel.textColor = R.color.colorTextPrimary()
         }
+    }
+
+    func setWebView(_ webView: WKWebView) {
+        self.webView?.removeFromSuperview()
+        self.webView = webView
+
+        webViewContainer.addSubview(webView)
 
         webView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.equalTo(toolBar.snp.top)
+            make.edges.equalToSuperview()
         }
-
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-        toolBar.items = [
-            goBackBarItem,
-            flexibleSpace,
-            goForwardBarItem,
-            flexibleSpace,
-            refreshBarItem,
-            flexibleSpace,
-            settingsBarButton
-        ]
     }
 }

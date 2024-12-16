@@ -1,7 +1,7 @@
 import Foundation
 import SoraUI
 
-final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
+class BaseDAppBrowserWireframe {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
@@ -101,13 +101,33 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(dappSettingsView.controller, animated: true, completion: nil)
     }
 
-    func hideSettings(from view: DAppBrowserViewProtocol?) {
-        if view?.controller.topModalViewController is DAppSettingsViewProtocol {
-            view?.controller.topModalViewController.dismiss(animated: true)
-        }
+    func showTabs(from view: DAppBrowserViewProtocol?) {
+        DAppBrowserTabTransition.setTransition(
+            from: view?.controller,
+            to: nil,
+            tabId: nil
+        )
+
+        view?.controller.navigationController?.popViewController(
+            animated: DAppBrowserTabTransition.animated
+        )
+    }
+}
+
+final class DAppBrowserWireframe: BaseDAppBrowserWireframe, DAppBrowserWireframeProtocol {
+    func close(view: ControllerBackedProtocol?) {
+        view?.controller.navigationController?.dismiss(animated: true)
+    }
+}
+
+final class DAppBrowserChildWireframe: BaseDAppBrowserWireframe, DAppBrowserWireframeProtocol {
+    private let parentView: DAppBrowserParentViewProtocol
+
+    init(parentView: DAppBrowserParentViewProtocol) {
+        self.parentView = parentView
     }
 
-    func close(view: DAppBrowserViewProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
+    func close(view _: ControllerBackedProtocol?) {
+        parentView.minimize()
     }
 }

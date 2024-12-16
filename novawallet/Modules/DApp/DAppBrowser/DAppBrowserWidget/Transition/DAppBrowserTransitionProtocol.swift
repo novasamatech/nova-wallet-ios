@@ -1,0 +1,3 @@
+protocol DAppBrowserWidgetTransitionProtocol {
+    func start()
+}
