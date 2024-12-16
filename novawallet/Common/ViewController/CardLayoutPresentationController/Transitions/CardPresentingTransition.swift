@@ -3,9 +3,14 @@ import SoraUI
 
 final class CardPresentingTransition: NSObject {
     private let transitionDuration: TimeInterval
+    private let dimmingViewTag: Int
 
-    init(transitionDuration: TimeInterval = 0.5) {
+    init(
+        transitionDuration: TimeInterval = 0.5,
+        dimmingViewTag: Int
+    ) {
         self.transitionDuration = transitionDuration
+        self.dimmingViewTag = dimmingViewTag
 
         super.init()
     }
@@ -41,6 +46,17 @@ private extension CardPresentingTransition {
             y: finalFrame.minY
         )
     }
+
+    func createDimmingView(for view: UIView) -> UIView {
+        let dimmingView = UIView(frame: view.bounds)
+        let dimmingColor = UIColor.white.withAlphaComponent(0.1)
+
+        dimmingView.backgroundColor = dimmingColor
+        dimmingView.clipsToBounds = true
+        dimmingView.tag = dimmingViewTag
+
+        return dimmingView
+    }
 }
 
 // MARK: UIViewControllerAnimatedTransitioning
@@ -56,11 +72,20 @@ extension CardPresentingTransition: UIViewControllerAnimatedTransitioning {
             let destinationController = transitionContext.viewController(forKey: .to)
         else { return }
 
-        let initialDestinationViewFrame = sourceController.view.bounds.offsetBy(
+        let coveredContextView: UIView
+
+        if let tabBarController = sourceController as? UITabBarController {
+            let navController = tabBarController.selectedViewController as? UINavigationController
+            coveredContextView = navController?.topViewController?.view ?? tabBarController.view
+        } else {
+            coveredContextView = sourceController.view
+        }
+
+        let initialDestinationViewFrame = coveredContextView.bounds.offsetBy(
             dx: 0,
             dy: sourceController.view.bounds.maxY
         )
-        let finalDestinationViewFrame = sourceController.view.bounds.offsetBy(
+        let finalDestinationViewFrame = coveredContextView.bounds.offsetBy(
             dx: 0,
             dy: CardLayoutPresentationController.topOffset()
         )
@@ -68,11 +93,16 @@ extension CardPresentingTransition: UIViewControllerAnimatedTransitioning {
         let destinationTransform = createDestinationViewTransform(finalDestinationViewFrame)
         let sourceTransform = createSourceViewTransform(sourceController.view)
 
-        sourceController.view.layer.masksToBounds = true
+        coveredContextView.layer.masksToBounds = true
         destinationController.view.layer.masksToBounds = true
         destinationController.view.frame = initialDestinationViewFrame
 
         transitionContext.containerView.addSubview(destinationController.view)
+
+        let dimmingView = createDimmingView(for: coveredContextView)
+        dimmingView.alpha = 0
+
+        coveredContextView.addSubview(dimmingView)
 
         // TODO: Refactor to using BlockViewAnimator after UIKit update to support spring params
         UIView.animate(
@@ -86,9 +116,9 @@ extension CardPresentingTransition: UIViewControllerAnimatedTransitioning {
                 destinationController.view.frame = finalDestinationViewFrame
                 destinationController.view.layer.cornerRadius = Constants.destinationViewCornerRadius
 
-                sourceController.view.layer.cornerRadius = Constants.sourceViewCornerRadius
+                coveredContextView.layer.cornerRadius = Constants.sourceViewCornerRadius
                 sourceController.view.transform = sourceTransform
-                sourceController.view.alpha = 0.6
+                dimmingView.alpha = 1.0
             }
         ) { _ in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)

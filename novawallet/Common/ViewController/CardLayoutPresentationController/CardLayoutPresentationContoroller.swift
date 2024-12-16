@@ -30,21 +30,6 @@ final class CardLayoutPresentationController: UIViewController {
     }
 }
 
-// MARK: Internal
-
-extension CardLayoutPresentationController {
-    func updateLayout() {
-        guard let presentingView = presentingViewController?.view else { return }
-
-        view.frame = CGRect(
-            x: view.frame.minX,
-            y: view.frame.minY,
-            width: presentingView.bounds.width,
-            height: presentingView.bounds.height
-        )
-    }
-}
-
 // MARK: Private
 
 private extension CardLayoutPresentationController {

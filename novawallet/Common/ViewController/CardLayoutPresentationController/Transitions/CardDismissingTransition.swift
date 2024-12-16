@@ -4,13 +4,16 @@ import SoraUI
 final class CardDismissingTransition: NSObject {
     private let transitionDuration: TimeInterval
     private let animator: BlockViewAnimatorProtocol
+    private let dimmingViewTag: Int
 
     init(
         transitionDuration: TimeInterval = 0.25,
-        animator: BlockViewAnimatorProtocol
+        animator: BlockViewAnimatorProtocol,
+        dimmingViewTag: Int
     ) {
         self.transitionDuration = transitionDuration
         self.animator = animator
+        self.dimmingViewTag = dimmingViewTag
 
         super.init()
     }
@@ -33,20 +36,35 @@ extension CardDismissingTransition: UIViewControllerAnimatedTransitioning {
             )
         else { return }
 
+        let coveredContextView: UIView
+
+        if let tabBarController = destinationController as? UITabBarController {
+            let navController = tabBarController.selectedViewController as? UINavigationController
+            coveredContextView = navController?.topViewController?.view ?? tabBarController.view
+        } else {
+            coveredContextView = destinationController.view
+        }
+
         let sourceFrame = sourceController.view.bounds.offsetBy(
             dx: 0,
             dy: sourceController.view.bounds.height
         )
 
-        destinationController.view.layer.masksToBounds = true
+        coveredContextView.layer.masksToBounds = true
+
+        let dimmingView = coveredContextView.subviews.first { $0.tag == dimmingViewTag }
 
         animator.animate {
             destinationController.view.transform = .identity
-            destinationController.view.layer.cornerRadius = 0
-            destinationController.view.alpha = 1
+            coveredContextView.layer.cornerRadius = 0
+            dimmingView?.alpha = 0
 
             sourceController.view.frame = sourceFrame
         } completionBlock: { _ in
+            if !transitionContext.transitionWasCancelled {
+                dimmingView?.removeFromSuperview()
+            }
+
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }

@@ -5,6 +5,7 @@ final class CardLayoutTransitionDelegate: NSObject {
     private weak var presentedController: UIViewController?
 
     private var transition = UIPercentDrivenInteractiveTransition()
+    private var dimmingViewUUID = UUID()
 
     private var started = false
     private var shouldFinish = false
@@ -18,7 +19,8 @@ extension CardLayoutTransitionDelegate: UIViewControllerTransitioningDelegate {
 
         return CardDismissingTransition(
             transitionDuration: Constants.dismissTransitionDuration,
-            animator: animator
+            animator: animator,
+            dimmingViewTag: dimmingViewUUID.hashValue
         )
     }
 
@@ -29,7 +31,10 @@ extension CardLayoutTransitionDelegate: UIViewControllerTransitioningDelegate {
     ) -> UIViewControllerAnimatedTransitioning? {
         presentedController = presented
 
-        return CardPresentingTransition(transitionDuration: Constants.presentTransitionDuration)
+        return CardPresentingTransition(
+            transitionDuration: Constants.presentTransitionDuration,
+            dimmingViewTag: dimmingViewUUID.hashValue
+        )
     }
 
     func interactionControllerForDismissal(

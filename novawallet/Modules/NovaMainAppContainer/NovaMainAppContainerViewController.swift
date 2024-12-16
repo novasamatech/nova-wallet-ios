@@ -78,7 +78,7 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
-                self?.updateModalsIfNeeded()
+                self?.updateModalsLayoutIfNeeded()
             },
             transformClosure: {
                 guard let transform else { return }
@@ -126,9 +126,16 @@ private extension NovaMainAppContainerViewController {
         )
     }
 
-    func updateModalsIfNeeded() {
-        if let cardModalController = tabBar?.presentedController() as? CardLayoutPresentationController {
-            cardModalController.updateLayout()
+    func updateModalsLayoutIfNeeded() {
+        if
+            let cardModalController = tabBar?.presentedController() as? CardLayoutPresentationController,
+            let presentingController = cardModalController.presentingViewController {
+            cardModalController.view.frame = CGRect(
+                x: cardModalController.view.frame.minX,
+                y: cardModalController.view.frame.minY,
+                width: presentingController.view.bounds.width,
+                height: presentingController.view.bounds.height
+            )
         }
     }
 }
