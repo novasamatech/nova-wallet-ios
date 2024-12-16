@@ -207,7 +207,7 @@ struct SwapModel {
     func checkCanReceive() -> CannotReceiveReason? {
         // TODO: We need to rewrite the logic to take into account crosschains and swaps
         let isSelfSufficient = receiveAssetExistense?.isSelfSufficient ?? false
-        let amountAfterSwap = (receiveAssetBalance?.freeInPlank ?? 0) + (quote?.route.amountOut ?? 0)
+        let amountAfterSwap = (receiveAssetBalance?.balanceCountingEd ?? 0) + (quote?.route.amountOut ?? 0)
         let feeInReceiveAsset = feeChainAsset.chainAssetId == receiveChainAsset.chainAssetId ?
             (feeModel?.originFeeInAsset(feeChainAsset) ?? 0) : 0
         let minBalance = receiveAssetExistense?.minBalance ?? 0

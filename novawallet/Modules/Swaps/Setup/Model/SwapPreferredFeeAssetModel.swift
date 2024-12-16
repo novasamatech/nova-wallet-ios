@@ -71,7 +71,7 @@ extension SwapPreferredFeeAssetModel {
         if isFeeInNativeAsset {
             if canPayFeeInNativeAsset() {
                 return utilityChainAsset
-            } else if hasPayAssetBalance, !feeModel.hasOriginPostSubmissionByAccount {
+            } else if hasPayAssetBalance {
                 return payChainAsset
             } else {
                 return utilityChainAsset
