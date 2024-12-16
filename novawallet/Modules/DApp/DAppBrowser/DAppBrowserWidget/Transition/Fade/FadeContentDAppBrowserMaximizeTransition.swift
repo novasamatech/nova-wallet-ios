@@ -24,6 +24,7 @@ extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionP
         let childNavigation = dependencies.childNavigation
         let layoutClosure = dependencies.layoutDependencies.layoutClosure
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
+        let transformClosure = dependencies.layoutDependencies.transformClosure
 
         disappearanceAnimator.animate(
             view: widgetView.contentContainerView
@@ -35,11 +36,13 @@ extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionP
 
                 let containerView = layoutClosure()
 
-                UIView.animate(
-                    withDuration: 0.25
-                ) {
+                UIView.animate(withDuration: 0.25) {
                     layoutAnimatables?()
                     containerView?.layoutIfNeeded()
+
+                    UIView.performWithoutAnimation {
+                        transformClosure?()
+                    }
                 }
 
                 appearanceAnimator.animate(
