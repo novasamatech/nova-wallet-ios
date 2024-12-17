@@ -270,7 +270,8 @@ extension SwapSetupPresenter {
             receiveAssetBalance: receiveAssetBalance,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            quoteResult: quoteResult
+            quoteResult: quoteResult,
+            fee: fee
         )
     }
 

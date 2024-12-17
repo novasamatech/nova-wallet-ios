@@ -28,14 +28,18 @@ final class SwapIssueViewModelFactory {
     }
 
     func detectInsufficientBalance(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
-        if let payAmount = model.payAmount,
-           let payChainAsset = model.payChainAsset,
-           let balance = model.payAssetBalance?.transferable.decimal(precision: payChainAsset.asset.precision),
-           payAmount > balance {
-            return .insufficientBalance
-        } else {
+        guard
+            let payAmount = model.payAmount,
+            let payChainAsset = model.payChainAsset
+        else {
             return nil
         }
+
+        let assetDisplayInfo = payChainAsset.assetDisplayInfo
+        let balance = model.payAssetBalance?.transferable.decimal(assetInfo: assetDisplayInfo) ?? 0
+        let fee = model.fee?.totalFeeInAssetIn(payChainAsset).decimal(assetInfo: assetDisplayInfo) ?? 0
+
+        return payAmount + fee > balance ? .insufficientBalance : nil
     }
 
     func detectMinBalanceViolationOnReceive(in model: SwapIssueCheckParams, locale: Locale) -> SwapSetupViewIssue? {
@@ -45,7 +49,7 @@ final class SwapIssueViewModelFactory {
             let minBalance = model.receiveAssetExistense?.minBalance.decimal(
                 precision: receiveChainAsset.asset.precision
             ),
-            let beforeSwapBalance = model.receiveAssetBalance?.freeInPlank.decimal(
+            let beforeSwapBalance = model.receiveAssetBalance?.balanceCountingEd.decimal(
                 precision: receiveChainAsset.asset.precision
             ) else {
             return nil

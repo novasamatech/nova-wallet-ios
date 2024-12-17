@@ -10,4 +10,5 @@ struct SwapIssueCheckParams {
     let payAssetExistense: AssetBalanceExistence?
     let receiveAssetExistense: AssetBalanceExistence?
     let quoteResult: Result<AssetExchangeQuote, Error>?
+    let fee: AssetExchangeFee?
 }
