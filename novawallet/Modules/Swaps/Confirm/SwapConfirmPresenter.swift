@@ -91,8 +91,9 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     }
 
     override func applySwapMax() {
+        let maxAmount = getMaxModel().calculate()
+
         guard
-            let maxAmount = getMaxModel()?.calculate(),
             maxAmount > 0,
             let maxAmountInPlank = maxAmount.toSubstrateAmount(
                 precision: initState.chainAssetIn.assetDisplayInfo.assetPrecision

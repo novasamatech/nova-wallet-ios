@@ -6,7 +6,7 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
 
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        maxValue: BigUInt?,
+        maxValue: Decimal?,
         locale: Locale
     ) -> TitleHorizontalMultiValueView.Model
 
@@ -130,7 +130,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
 
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        maxValue: BigUInt?,
+        maxValue: Decimal?,
         locale: Locale
     ) -> TitleHorizontalMultiValueView.Model {
         let title = R.string.localizable.swapsSetupAssetSelectPayTitle(
@@ -138,13 +138,9 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         )
 
         if let assetDisplayInfo = assetDisplayInfo, let maxValue = maxValue {
-            let amountDecimal = Decimal.fromSubstrateAmount(
-                maxValue,
-                precision: Int16(assetDisplayInfo.assetPrecision)
-            ) ?? 0
             let maxValueString = balanceViewModelFactoryFacade.amountFromValue(
                 targetAssetInfo: assetDisplayInfo,
-                value: amountDecimal
+                value: maxValue
             ).value(for: locale)
 
             return .init(

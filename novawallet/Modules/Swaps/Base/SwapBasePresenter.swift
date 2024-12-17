@@ -116,7 +116,7 @@ class SwapBasePresenter {
         )
     }
 
-    func getMaxModel() -> SwapMaxModel? {
+    func getMaxModel() -> SwapMaxModel {
         .init(
             payChainAsset: getPayChainAsset(),
             feeChainAsset: getFeeChainAsset(),
