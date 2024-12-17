@@ -7,10 +7,6 @@ protocol AssetsExchangePathCostEstimating: AnyObject {
     ) -> CompoundOperationWrapper<AssetsExchangePathCost>
 }
 
-enum AssetsExchangePathCostEstimatorError: Error {
-    case amountConversion
-}
-
 struct AssetsExchangePathCost {
     let amountInAssetIn: Balance
     let amountInAssetOut: Balance
@@ -60,17 +56,15 @@ extension AssetsExchangePathCostEstimator: AssetsExchangePathCostEstimating {
                 return .zero
             }
 
-            guard
-                let assetInCost = usdtConverter.convertToAssetInPlankFromUsdt(
-                    amount: totalCostInUsdt,
-                    asset: assetIn
-                ),
-                let assetOutCost = usdtConverter.convertToAssetInPlankFromUsdt(
-                    amount: totalCostInUsdt,
-                    asset: assetOut
-                ) else {
-                throw AssetsExchangePathCostEstimatorError.amountConversion
-            }
+            let assetInCost = usdtConverter.convertToAssetInPlankFromUsdt(
+                amount: totalCostInUsdt,
+                asset: assetIn
+            ) ?? .zero
+
+            let assetOutCost = usdtConverter.convertToAssetInPlankFromUsdt(
+                amount: totalCostInUsdt,
+                asset: assetOut
+            ) ?? .zero
 
             return AssetsExchangePathCost(amountInAssetIn: assetInCost, amountInAssetOut: assetOutCost)
         }
