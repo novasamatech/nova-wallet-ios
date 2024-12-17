@@ -18,4 +18,12 @@ struct AssetExchangeQuote {
 
         return subarray.reduce(0, +)
     }
+
+    func hasSamePath(other: AssetExchangeRoute) -> Bool {
+        guard route.items.count == other.items.count else { return false }
+
+        return zip(route.items, other.items).allSatisfy {
+            $0.0.edge.identifier == $0.1.edge.identifier
+        }
+    }
 }
