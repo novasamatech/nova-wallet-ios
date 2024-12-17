@@ -3,17 +3,11 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol BlockEventsQueryFactoryProtocol {
-    func queryExtrinsicEventsWrapper(
+    func queryBlockDetailsWrapper(
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data
-    ) -> CompoundOperationWrapper<[SubstrateExtrinsicEvents]>
-
-    func queryInherentEventsWrapper(
-        from connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        blockHash: Data
-    ) -> CompoundOperationWrapper<SubstrateInherentsEvents>
+    ) -> CompoundOperationWrapper<SubstrateBlockDetails>
 }
 
 final class BlockEventsQueryFactory {
@@ -67,7 +61,7 @@ final class BlockEventsQueryFactory {
         blockOperation: BaseOperation<SignedBlock>,
         repository: SubstrateEventsRepositoryProtocol,
         logger: LoggerProtocol
-    ) -> BaseOperation<[SubstrateExtrinsicEvents]> {
+    ) -> BaseOperation<SubstrateBlockDetails> {
         ClosureOperation {
             let block = try blockOperation.extractNoCancellableResultData().block
 
@@ -77,31 +71,23 @@ final class BlockEventsQueryFactory {
 
             logger.debug("Events received: \(eventRecords)")
 
-            return repository.getExtrinsicsEvents(from: block, eventRecords: eventRecords)
-        }
-    }
+            let extrinsicsWithEvents = repository.getExtrinsicsEvents(from: block, eventRecords: eventRecords)
+            let inherentEvents = repository.getInherentEvents(from: eventRecords)
 
-    private func createParsingInherentEventsOperation(
-        dependingOn eventsOperation: BaseOperation<StorageResponse<[EventRecord]>>,
-        repository: SubstrateEventsRepositoryProtocol,
-        logger: LoggerProtocol
-    ) -> BaseOperation<SubstrateInherentsEvents> {
-        ClosureOperation {
-            let eventRecords = try eventsOperation.extractNoCancellableResultData().value ?? []
-
-            logger.debug("Events received: \(eventRecords)")
-
-            return repository.getInherentEvents(from: eventRecords)
+            return SubstrateBlockDetails(
+                extrinsicsWithEvents: extrinsicsWithEvents,
+                inherentsEvents: inherentEvents
+            )
         }
     }
 }
 
 extension BlockEventsQueryFactory: BlockEventsQueryFactoryProtocol {
-    func queryExtrinsicEventsWrapper(
+    func queryBlockDetailsWrapper(
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data
-    ) -> CompoundOperationWrapper<[SubstrateExtrinsicEvents]> {
+    ) -> CompoundOperationWrapper<SubstrateBlockDetails> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let eventsWrapper = createEventsWrapper(
@@ -130,32 +116,6 @@ extension BlockEventsQueryFactory: BlockEventsQueryFactoryProtocol {
         return eventsWrapper
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: blockFetchOperation)
-            .insertingTail(operation: parsingOperation)
-    }
-
-    func queryInherentEventsWrapper(
-        from connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        blockHash: Data
-    ) -> CompoundOperationWrapper<SubstrateInherentsEvents> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let eventsWrapper = createEventsWrapper(
-            dependingOn: codingFactoryOperation,
-            connection: connection,
-            blockHash: blockHash
-        )
-
-        let parsingOperation = createParsingInherentEventsOperation(
-            dependingOn: eventsWrapper.targetOperation,
-            repository: eventsRepository,
-            logger: logger
-        )
-
-        parsingOperation.addDependency(eventsWrapper.targetOperation)
-
-        return eventsWrapper
-            .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: parsingOperation)
     }
 }

@@ -880,6 +880,7 @@
 		0CFA161C2B0CE851007AF885 /* Utility+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA161B2B0CE851007AF885 /* Utility+Calls.swift */; };
 		0CFA161E2B0CED07007AF885 /* GovTreasurySpentLocalHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA161D2B0CED07007AF885 /* GovTreasurySpentLocalHandler.swift */; };
 		0CFA16202B0CEF31007AF885 /* GovTreasuryApproveHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA161F2B0CEF31007AF885 /* GovTreasuryApproveHandler.swift */; };
+		0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */; };
 		0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD8B98AB03AAF06AA891695 /* TransferConfirmViewLayout.swift */; };
 		0D8213272889988B78188D9A /* DAppWalletAuthInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337EC62037D657258BCBC02F /* DAppWalletAuthInteractor.swift */; };
 		0DACB56C0BDD4C984FE3C15C /* AssetReceiveWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1179A25C22AF0875A1ADCD /* AssetReceiveWireframe.swift */; };
@@ -6211,6 +6212,7 @@
 		0CFA161B2B0CE851007AF885 /* Utility+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utility+Calls.swift"; sourceTree = "<group>"; };
 		0CFA161D2B0CED07007AF885 /* GovTreasurySpentLocalHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovTreasurySpentLocalHandler.swift; sourceTree = "<group>"; };
 		0CFA161F2B0CEF31007AF885 /* GovTreasuryApproveHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovTreasuryApproveHandler.swift; sourceTree = "<group>"; };
+		0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTokensArrivalDetector.swift; sourceTree = "<group>"; };
 		0D37CF4AFB06AF3AC2F78057 /* ImportCloudPasswordPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImportCloudPasswordPresenter.swift; sourceTree = "<group>"; };
 		0D3FE2CE7F9F2836755DBA63 /* GovernanceUnlockConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmProtocols.swift; sourceTree = "<group>"; };
 		0D65686560E2E6C18A5C34CB /* StartStakingInfoWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingInfoWireframe.swift; sourceTree = "<group>"; };
@@ -20658,6 +20660,7 @@
 				84C1DBBB29C0A18000F295A5 /* XcmTransferService+Compose.swift */,
 				0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */,
 				0CA8AD682CE0904D00ED9746 /* XcmDepositMonitoringService.swift */,
+				0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -29370,6 +29373,7 @@
 				F35B520D7955A70588AB593C /* ReferendumVoteConfirmWireframe.swift in Sources */,
 				F0ADB63765A8EAA19D85C30B /* ReferendumVoteConfirmPresenter.swift in Sources */,
 				84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */,
+				0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */,
 				77C3D7D52B5E7E7800997BA0 /* StakingRemoveProxyInteractor.swift in Sources */,
 				84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */,
 				DE52F23521D54A07F558EB1B /* ReferendumVoteConfirmInteractor.swift in Sources */,

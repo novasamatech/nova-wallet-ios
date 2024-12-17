@@ -3,7 +3,11 @@ import SubstrateSdk
 
 protocol SubstrateEventsRepositoryProtocol {
     func getInherentEvents(from eventRecords: [EventRecord]) -> SubstrateInherentsEvents
-    func getExtrinsicsEvents(from block: Block, eventRecords: [EventRecord]) -> [SubstrateExtrinsicEvents]
+
+    func getExtrinsicsEvents(
+        from block: Block,
+        eventRecords: [EventRecord]
+    ) -> [SubstrateExtrinsicEvents]
 }
 
 final class SubstrateEventsRepository: SubstrateEventsRepositoryProtocol {
@@ -16,14 +20,14 @@ final class SubstrateEventsRepository: SubstrateEventsRepositoryProtocol {
 
     func getExtrinsicsEvents(from block: Block, eventRecords: [EventRecord]) -> [SubstrateExtrinsicEvents] {
         let eventsByExtrinsicIndex = eventRecords.reduce(
-            into: [ExtrinsicIndex: [Event]]()
+            into: [ExtrinsicIndex: [EventRecord]]()
         ) { accum, record in
             guard let extrinsicIndex = record.extrinsicIndex else {
                 return
             }
 
             let currentEvents = accum[extrinsicIndex] ?? []
-            accum[extrinsicIndex] = currentEvents + [record.event]
+            accum[extrinsicIndex] = currentEvents + [record]
         }
 
         return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
@@ -33,7 +37,8 @@ final class SubstrateEventsRepository: SubstrateEventsRepositoryProtocol {
 
                 return SubstrateExtrinsicEvents(
                     extrinsicHash: extrinsicHash,
-                    events: eventsByExtrinsicIndex[ExtrinsicIndex(index)] ?? []
+                    extrinsicData: data,
+                    eventRecords: eventsByExtrinsicIndex[ExtrinsicIndex(index)] ?? []
                 )
 
             } catch {

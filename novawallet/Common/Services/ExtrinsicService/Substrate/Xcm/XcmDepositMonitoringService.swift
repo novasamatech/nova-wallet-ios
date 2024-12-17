@@ -105,33 +105,30 @@ final class XcmDepositMonitoringService {
     ) {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let eventsWrapper = blockEventsQueryFactory.queryInherentEventsWrapper(
+        let blockDetailsWrapper = blockEventsQueryFactory.queryBlockDetailsWrapper(
             from: connection,
             runtimeProvider: runtimeProvider,
             blockHash: hash
         )
 
+        let detector = XcmTokensArrivalDetector(logger: logger)
+
         let matchingOperation = ClosureOperation<TokenDepositEvent?> {
-            let events = try eventsWrapper.targetOperation.extractNoCancellableResultData()
+            let blockDetails = try blockDetailsWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let allEvents = events.initialization + events.finalization
-
-            for event in allEvents {
-                if
-                    let deposit = eventMatcher.matchDeposit(event: event, using: codingFactory),
-                    deposit.accountId == accountId {
-                    return deposit
-                }
-            }
-
-            return nil
+            return detector.searchForXcmArrival(
+                in: blockDetails,
+                eventMatcher: eventMatcher,
+                accountId: accountId,
+                codingFactory: codingFactory
+            )
         }
 
         matchingOperation.addDependency(codingFactoryOperation)
-        matchingOperation.addDependency(eventsWrapper.targetOperation)
+        matchingOperation.addDependency(blockDetailsWrapper.targetOperation)
 
-        let totalWrapper = eventsWrapper
+        let totalWrapper = blockDetailsWrapper
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: matchingOperation)
 
