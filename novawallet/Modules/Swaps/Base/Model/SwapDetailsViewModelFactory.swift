@@ -12,7 +12,7 @@ protocol SwapDetailsViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol {
 
     func slippageViewModel(slippage: BigRational, locale: Locale) -> String
 
-    func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel?
+    func walletViewModel(metaAccountResponse: MetaChainAccountResponse) -> WalletAccountViewModel?
 }
 
 final class SwapDetailsViewModelFactory: SwapBaseViewModelFactory {
@@ -72,7 +72,7 @@ extension SwapDetailsViewModelFactory: SwapDetailsViewModelFactoryProtocol {
         slippage.decimalValue.map { percentForamatter.value(for: locale).stringFromDecimal($0) ?? "" } ?? ""
     }
 
-    func walletViewModel(walletAddress: WalletDisplayAddress) -> WalletAccountViewModel? {
-        try? walletViewModelFactory.createViewModel(from: walletAddress)
+    func walletViewModel(metaAccountResponse: MetaChainAccountResponse) -> WalletAccountViewModel? {
+        try? walletViewModelFactory.createViewModel(from: metaAccountResponse)
     }
 }

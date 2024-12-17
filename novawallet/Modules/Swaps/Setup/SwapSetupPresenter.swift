@@ -75,7 +75,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
             return nil
         }
 
-        let maxAmount = getMaxModel()?.calculate() ?? 0
+        let maxAmount = getMaxModel().calculate()
         return payAmountInput.absoluteValue(from: maxAmount)
     }
 
@@ -197,6 +197,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideIssues()
         provideFeeViewModel()
         provideRouteViewModel()
+        providePayTitle()
         switchFeeChainAssetIfNecessary()
     }
 
@@ -236,6 +237,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
             provideButtonState()
         }
 
+        providePayTitle()
         provideIssues()
     }
 
@@ -254,8 +256,8 @@ extension SwapSetupPresenter {
             return nil
         }
 
-        let maxAmount = getMaxModel()?.calculate()
-        return input.absoluteValue(from: maxAmount ?? 0)
+        let maxAmount = getMaxModel().calculate()
+        return input.absoluteValue(from: maxAmount)
     }
 
     func getIssueParams() -> SwapIssueCheckParams {
@@ -268,16 +270,26 @@ extension SwapSetupPresenter {
             receiveAssetBalance: receiveAssetBalance,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            quoteResult: quoteResult
+            quoteResult: quoteResult,
+            fee: fee
         )
     }
 
     private func providePayTitle() {
-        let payTitleViewModel = viewModelFactory.payTitleViewModel(
-            assetDisplayInfo: payChainAsset?.assetDisplayInfo,
-            maxValue: payAssetBalance?.transferable,
-            locale: selectedLocale
-        )
+        let payTitleViewModel = if let payChainAsset, payAssetBalance != nil {
+            viewModelFactory.payTitleViewModel(
+                assetDisplayInfo: payChainAsset.assetDisplayInfo,
+                maxValue: getMaxModel().calculate(),
+                locale: selectedLocale
+            )
+        } else {
+            viewModelFactory.payTitleViewModel(
+                assetDisplayInfo: nil,
+                maxValue: nil,
+                locale: selectedLocale
+            )
+        }
+
         view?.didReceiveTitle(payViewModel: payTitleViewModel)
     }
 
@@ -715,6 +727,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         Swift.swap(&payChainAsset, &receiveChainAsset)
         feeChainAsset = payChainAsset?.chain.utilityChainAsset()
         canPayFeeInPayAsset = false
+        fee = nil
 
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(receiveChainAsset: receiveChainAsset)
