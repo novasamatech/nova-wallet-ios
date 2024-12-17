@@ -1,8 +1,15 @@
 import Foundation
+import SubstrateSdk
+
+struct SubstrateBlockDetails {
+    let extrinsicsWithEvents: SubstrateExtrinsicsEvents
+    let inherentsEvents: SubstrateInherentsEvents
+}
 
 struct SubstrateExtrinsicEvents {
     let extrinsicHash: Data
-    let events: [Event]
+    let extrinsicData: Data
+    let eventRecords: [EventRecord]
 }
 
 typealias SubstrateExtrinsicsEvents = [SubstrateExtrinsicEvents]
