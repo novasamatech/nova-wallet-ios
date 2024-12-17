@@ -30,6 +30,7 @@ final class SwapIssueViewModelFactory {
     func detectInsufficientBalance(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
         guard
             let payAmount = model.payAmount,
+            payAmount > 0,
             let payChainAsset = model.payChainAsset
         else {
             return nil
