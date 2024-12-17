@@ -290,11 +290,7 @@ extension SwapConfirmPresenter {
             return
         }
 
-        guard let walletAddress = WalletDisplayAddress(response: chainAccountResponse) else {
-            view?.didReceiveWallet(viewModel: nil)
-            return
-        }
-        let viewModel = viewModelFactory.walletViewModel(walletAddress: walletAddress)
+        let viewModel = viewModelFactory.walletViewModel(metaAccountResponse: chainAccountResponse)
 
         view?.didReceiveWallet(viewModel: viewModel)
     }
