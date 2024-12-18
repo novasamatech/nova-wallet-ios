@@ -47,7 +47,8 @@ extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
 
             lastTransactionStatus = data.status
 
-            if data.status == .new {
+            switch data.status {
+            case .new:
                 let model = PayCardTopupModel(
                     chainAsset: chainAsset,
                     amount: data.amounts.request.amount.decimalValue,
@@ -55,6 +56,10 @@ extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
                 )
 
                 delegate?.didRequestTopup(from: model)
+            case .pending:
+                delegate?.didReceivePendingCardOpen()
+            case .completed:
+                delegate?.didOpenCard()
             }
         } catch {
             logger.error("Unexpected error: \(error)")

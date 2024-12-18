@@ -3,6 +3,7 @@ import Foundation
 struct MercuryoCallbackBody: Decodable {
     let data: MercuryoStatusChange
 }
+
 struct MercuryoStatusChange: Decodable {
     let id: String
     let amount: AmountDecimal
@@ -16,6 +17,7 @@ enum MercuryoStatus: String, Decodable {
     case new
     case pending
     case succeeded
+    case completed
     case failed
 }
 

@@ -12,6 +12,7 @@ protocol PayCardHookDelegate: AnyObject {
     func didReceiveNoCard()
     func didOpenCard()
     func didFailToOpenCard()
+    func didReceivePendingCardOpen()
 }
 
 protocol PayCardHookFactoryProtocol {

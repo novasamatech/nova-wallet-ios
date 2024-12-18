@@ -143,4 +143,12 @@ extension PayCardInteractor: PayCardHookDelegate {
 
         presenter?.didReceiveCardStatus(failedStatus)
     }
+    
+    func didReceivePendingCardOpen() {
+        if let cardOpenTimestamp = settingsManager.novaCardOpenTimestamp {
+            checkPendingTimeout()
+        } else {
+            processIssueInit()
+        }
+    }
 }

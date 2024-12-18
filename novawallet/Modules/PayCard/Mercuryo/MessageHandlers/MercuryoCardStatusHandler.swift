@@ -23,14 +23,15 @@ extension MercuryoCardStatusHandler: PayCardMessageHandling {
             }
 
             let statusChange = try JSONDecoder().decode(MercuryoCallbackBody.self, from: message)
+            let statusData = statusChange.data
 
             logger.debug("New status: \(statusChange)")
 
-            guard statusChange.type == MercuryoStatusType.fiatCardSell.rawValue else {
+            guard statusData.type == MercuryoStatusType.fiatCardSell.rawValue else {
                 return
             }
 
-            switch MercuryoStatus(rawValue: statusChange.status) {
+            switch MercuryoStatus(rawValue: statusData.status) {
             case .succeeded:
                 delegate?.didOpenCard()
             case .failed:
