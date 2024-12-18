@@ -241,7 +241,7 @@ extension ExtrinsicProcessor {
             from: params,
             callSender: mappingResult.callSender,
             call: call,
-            eventRecords: eventRecords,
+            eventRecords: eventRecords.filter { $0.extrinsicIndex == extrinsicIndex },
             codingFactory: codingFactory
         )
 

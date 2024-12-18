@@ -154,7 +154,7 @@ extension ExtrinsicProcessor {
             return try findSuccessAssetHubSwapResult(
                 from: call,
                 callSender: mappingResult.callSender,
-                eventRecords: eventRecords,
+                eventRecords: eventRecords.filter { $0.extrinsicIndex == extrinsicIndex },
                 customFee: customFee,
                 codingFactory: codingFactory
             )
