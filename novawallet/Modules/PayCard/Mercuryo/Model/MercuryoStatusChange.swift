@@ -1,5 +1,8 @@
 import Foundation
 
+struct MercuryoCallbackBody: Decodable {
+    let data: MercuryoStatusChange
+}
 struct MercuryoStatusChange: Decodable {
     let id: String
     let amount: AmountDecimal
