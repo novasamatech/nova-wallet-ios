@@ -58,8 +58,10 @@ extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
                 delegate?.didRequestTopup(from: model)
             case .pending:
                 delegate?.didReceivePendingCardOpen()
-            case .completed:
+            case .completed, .succeeded:
                 delegate?.didOpenCard()
+            case .failed:
+                delegate?.didFailToOpenCard()
             }
         } catch {
             logger.error("Unexpected error: \(error)")

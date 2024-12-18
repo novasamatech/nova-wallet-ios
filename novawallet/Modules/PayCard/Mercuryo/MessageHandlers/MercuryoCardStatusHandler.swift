@@ -32,7 +32,7 @@ extension MercuryoCardStatusHandler: PayCardMessageHandling {
             }
 
             switch MercuryoStatus(rawValue: statusData.status) {
-            case .succeeded:
+            case .completed, .succeeded:
                 delegate?.didOpenCard()
             case .failed:
                 delegate?.didFailToOpenCard()
