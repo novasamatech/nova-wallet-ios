@@ -22,16 +22,17 @@ extension MercuryoCardStatusHandler: PayCardMessageHandling {
                 return
             }
 
-            let statusChange = try JSONDecoder().decode(MercuryoStatusChange.self, from: message)
+            let statusChange = try JSONDecoder().decode(MercuryoCallbackBody.self, from: message)
+            let statusData = statusChange.data
 
             logger.debug("New status: \(statusChange)")
 
-            guard statusChange.type == MercuryoStatusType.fiatCardSell.rawValue else {
+            guard statusData.type == MercuryoStatusType.fiatCardSell.rawValue else {
                 return
             }
 
-            switch MercuryoStatus(rawValue: statusChange.status) {
-            case .succeeded:
+            switch MercuryoStatus(rawValue: statusData.status) {
+            case .completed, .succeeded:
                 delegate?.didOpenCard()
             case .failed:
                 delegate?.didFailToOpenCard()

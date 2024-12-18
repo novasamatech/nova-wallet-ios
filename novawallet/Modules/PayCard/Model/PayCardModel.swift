@@ -1,7 +1,7 @@
 import Foundation
 
 struct PayCardModel {
-    let resource: PayCardHtmlResource
+    let resource: PayCardResource
     let messageNames: Set<String>
     let scripts: [DAppBrowserScript]
 }

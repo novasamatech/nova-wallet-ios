@@ -1,10 +1,10 @@
 import Foundation
+import Operation_iOS
 
-struct PayCardHtmlResource {
+struct PayCardResource {
     let url: URL
-    let content: String
 }
 
 protocol PayCardResourceProviding {
-    func loadResource() throws -> PayCardHtmlResource
+    func loadResource(using params: MercuryoCardParams) throws -> PayCardResource
 }

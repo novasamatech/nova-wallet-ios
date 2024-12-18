@@ -24,20 +24,24 @@ struct PayCardViewFactory {
     private static func createInteractor() -> PayCardInteractor {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let hooksFactory = MercuryoCardHookFactory(
+        let logger = Logger.shared
+
+        let paramsProvider = MercuryoCardParamsProvider(
             chainRegistry: chainRegistry,
             wallet: SelectedWalletSettings.shared.value,
-            chainId: KnowChainId.polkadot,
-            logger: Logger.shared
+            chainId: KnowChainId.polkadot
         )
+        let hooksFactory = MercuryoCardHookFactory(logger: logger)
+        let resourceProvider = MercuryoCardResourceProvider()
 
         return PayCardInteractor(
+            paramsProvider: paramsProvider,
             payCardHookFactory: hooksFactory,
-            payCardResourceProvider: MercuryoCardResourceProvider(),
+            payCardResourceProvider: resourceProvider,
             settingsManager: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             pendingTimeout: MercuryoCardApi.pendingTimeout,
-            logger: Logger.shared
+            logger: logger
         )
     }
 }
