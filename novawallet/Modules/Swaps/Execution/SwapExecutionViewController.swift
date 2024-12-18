@@ -145,6 +145,12 @@ extension SwapExecutionViewController: CollapsableContainerViewDelegate {
     func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {}
 }
 
+extension SwapExecutionViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
+        false
+    }
+}
+
 extension SwapExecutionViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
