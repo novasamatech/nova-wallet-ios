@@ -42,6 +42,7 @@ final class CountdownLoadingView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        setupStyle()
         setupLayout()
     }
 
@@ -68,6 +69,10 @@ final class CountdownLoadingView: UIView {
         }
     }
 
+    private func setupStyle() {
+        timerView.clipsToBounds = true
+    }
+    
     private func setupLayout() {
         addSubview(loadingView)
         loadingView.snp.makeConstraints { make in
