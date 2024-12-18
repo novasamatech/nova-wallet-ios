@@ -146,7 +146,7 @@ extension SwapExecutionViewController: CollapsableContainerViewDelegate {
 }
 
 extension SwapExecutionViewController: UIAdaptivePresentationControllerDelegate {
-    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
+    func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool {
         false
     }
 }
