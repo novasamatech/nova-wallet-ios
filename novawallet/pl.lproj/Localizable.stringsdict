@@ -255,9 +255,9 @@
         <key>one</key>
         <string>%li sekunda</string>
         <key>few</key>
-        <string></string>
+        <string>%li sekunda</string>
         <key>many</key>
-        <string></string>
+        <string>%li sekunda</string>
         <key>other</key>
         <string>%li sekund</string>
       </dict>
@@ -275,9 +275,9 @@
         <key>one</key>
         <string>%li operacja</string>
         <key>few</key>
-        <string></string>
+        <string>%li operacja</string>
         <key>many</key>
-        <string></string>
+        <string>%li operacja</string>
         <key>other</key>
         <string>%li operacji</string>
       </dict>

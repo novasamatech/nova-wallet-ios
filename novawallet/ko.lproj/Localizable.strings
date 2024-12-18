@@ -1783,5 +1783,5 @@
 "swaps.label.crosschain" = "크로스체인 전송";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "스왑 실행 중 중간 수신 금액이 %@로 최소 잔액 %@보다 적습니다. 더 큰 스왑 금액을 지정해 보세요.";
 "common.fee.amount.prefixed" = "수수료: %@";
-"common.not.enough.to.pay.fee.message" = "\"네트워크 수수료 %@를 지불할 충분한 잔액이 없습니다. 현재 잔액은 %@입니다\"";
+"common.not.enough.to.pay.fee.message" = "네트워크 수수료 %@를 지불할 충분한 잔액이 없습니다. 현재 잔액은 %@입니다";
 "swap.delivery.fee.error.message" = "크로스체인 제한으로 인해 작업 후 최소 %@ 이상의 잔액이 있어야 합니다";

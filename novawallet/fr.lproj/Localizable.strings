@@ -1783,5 +1783,5 @@
 "swaps.label.crosschain" = "Transfert inter-chaînes";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Lors de l'exécution de l'échange, le montant intermédiaire reçu est %@, ce qui est inférieur au solde minimum de %@. Essayez de spécifier un montant d'échange plus important.";
 "common.fee.amount.prefixed" = "Frais : %@";
-"common.not.enough.to.pay.fee.message" = "\"Vous n'avez pas assez de solde pour payer les frais de réseau de %@. Le solde actuel est %@";
+"common.not.enough.to.pay.fee.message" = "Vous n'avez pas assez de solde pour payer les frais de réseau de %@. Le solde actuel est %@";
 "swap.delivery.fee.error.message" = "En raison des restrictions crosschain, vous devez avoir au moins %@ après l'opération";

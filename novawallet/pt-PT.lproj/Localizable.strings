@@ -1783,5 +1783,5 @@
 "swaps.label.crosschain" = "Transferência entre cadeias";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Durante a execução da troca, o valor intermediário recebido é %@, o que é menor que o saldo mínimo de %@. Tente especificar um valor maior para a troca.";
 "common.fee.amount.prefixed" = "Taxa: %@";
-"common.not.enough.to.pay.fee.message" = "\"Você não tem saldo suficiente para pagar a taxa de rede de %@. O saldo atual é %@";
+"common.not.enough.to.pay.fee.message" = "Você não tem saldo suficiente para pagar a taxa de rede de %@. O saldo atual é %@";
 "swap.delivery.fee.error.message" = "Devido a restrições de crosschain, você deve ter pelo menos %@ após a operação";

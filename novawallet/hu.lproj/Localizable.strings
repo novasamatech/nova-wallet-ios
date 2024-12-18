@@ -1783,5 +1783,5 @@
 "swaps.label.crosschain" = "Láncok közötti átutalás";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "A csere végrehajtása során a köztes kapott összeg %@, ami kevesebb, mint a minimális egyenleg %@. Próbáljon meg nagyobb csereösszeget megadni.";
 "common.fee.amount.prefixed" = "Díj: %@";
-"common.not.enough.to.pay.fee.message" = "\"Nincs elegendő egyenlege a hálózati díj kifizetéséhez, amely %@. Az aktuális egyenleg: %@";
+"common.not.enough.to.pay.fee.message" = "Nincs elegendő egyenlege a hálózati díj kifizetéséhez, amely %@. Az aktuális egyenleg: %@";
 "swap.delivery.fee.error.message" = "A láncközi korlátozások miatt legalább %@-nak kell maradnia a művelet után";

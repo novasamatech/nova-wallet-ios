@@ -1783,5 +1783,5 @@
 "swaps.label.crosschain" = "Chuyển liên chuỗi";
 "swap.intermediate.too.low.amount.to.stay.abow.ed.message" = "Trong quá trình thực hiện giao dịch, số tiền nhận trung gian là %@, thấp hơn số dư tối thiểu là %@. Thử chỉ định số lượng swap lớn hơn.";
 "common.fee.amount.prefixed" = "Phí: %@";
-"common.not.enough.to.pay.fee.message" = "\"Bạn không có đủ số dư để trả phí mạng %@. Số dư hiện tại là %@";
+"common.not.enough.to.pay.fee.message" = "Bạn không có đủ số dư để trả phí mạng %@. Số dư hiện tại là %@";
 "swap.delivery.fee.error.message" = "Do những hạn chế crosschain, bạn cần có ít nhất %@ sau khi thực hiện";

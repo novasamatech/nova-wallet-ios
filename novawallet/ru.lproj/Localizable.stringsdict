@@ -255,9 +255,9 @@
         <key>one</key>
         <string>%li секунда</string>
         <key>few</key>
-        <string></string>
+        <string>%li секунды</string>
         <key>many</key>
-        <string></string>
+        <string>%li секунд</string>
         <key>other</key>
         <string>%li секунд</string>
       </dict>
@@ -275,9 +275,9 @@
         <key>one</key>
         <string>%li операция</string>
         <key>few</key>
-        <string></string>
+        <string>%li операция</string>
         <key>many</key>
-        <string></string>
+        <string>%li операция</string>
         <key>other</key>
         <string>%li операций</string>
       </dict>
