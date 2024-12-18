@@ -22,7 +22,7 @@ extension MercuryoCardStatusHandler: PayCardMessageHandling {
                 return
             }
 
-            let statusChange = try JSONDecoder().decode(MercuryoStatusChange.self, from: message)
+            let statusChange = try JSONDecoder().decode(MercuryoCallbackBody.self, from: message)
 
             logger.debug("New status: \(statusChange)")
 
