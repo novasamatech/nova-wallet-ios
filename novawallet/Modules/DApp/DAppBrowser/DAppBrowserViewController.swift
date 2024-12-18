@@ -478,8 +478,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         )
     }
 
-    func didReceiveTabsCount(viewModel: String) {
-        rootView.tabsButton.imageWithTitleView?.title = viewModel
+    func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel) {
+        switch viewModel {
+        case let .count(text):
+            rootView.tabsButton.imageWithTitleView?.iconImage = nil
+            rootView.tabsButton.imageWithTitleView?.title = text
+        case .icon:
+            rootView.tabsButton.imageWithTitleView?.iconImage = R.image.iconSiriPawBrowser()
+            rootView.tabsButton.imageWithTitleView?.title = nil
+        }
     }
 
     func didReceive(response: DAppScriptResponse, forTransport _: String) {

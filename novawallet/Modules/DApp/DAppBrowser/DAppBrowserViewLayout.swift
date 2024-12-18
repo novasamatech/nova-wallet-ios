@@ -75,6 +75,7 @@ final class DAppBrowserViewLayout: UIView {
 
     let tabsButton: RoundedButton = .create { view in
         view.imageWithTitleView?.titleFont = .semiBoldCaption1
+        view.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         view.roundedBackgroundView?.applyStrokedBackgroundStyle()
         view.roundedBackgroundView?.cornerRadius = 6.0
         view.roundedBackgroundView?.strokeWidth = 1.2
