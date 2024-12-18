@@ -4,6 +4,7 @@ import SoraKeystore
 final class PayCardInteractor {
     weak var presenter: PayCardInteractorOutputProtocol?
 
+    let paramsProvider: MercuryoCardParamsProviderProtocol
     let payCardHookFactory: PayCardHookFactoryProtocol
     let payCardResourceProvider: PayCardResourceProviding
     let operationQueue: OperationQueue
@@ -14,6 +15,7 @@ final class PayCardInteractor {
     private var messageHandlers: [PayCardMessageHandling] = []
 
     init(
+        paramsProvider: MercuryoCardParamsProviderProtocol,
         payCardHookFactory: PayCardHookFactoryProtocol,
         payCardResourceProvider: PayCardResourceProviding,
         settingsManager: SettingsManagerProtocol,
@@ -21,6 +23,7 @@ final class PayCardInteractor {
         pendingTimeout: TimeInterval,
         logger: LoggerProtocol
     ) {
+        self.paramsProvider = paramsProvider
         self.payCardHookFactory = payCardHookFactory
         self.payCardResourceProvider = payCardResourceProvider
         self.settingsManager = settingsManager
@@ -29,7 +32,10 @@ final class PayCardInteractor {
         self.logger = logger
     }
 
-    private func provideModel(for resource: PayCardHtmlResource, hooks: [PayCardHook]) {
+    private func provideModel(
+        for resource: PayCardResource,
+        hooks: [PayCardHook]
+    ) {
         let messageNames = hooks.reduce(Set<String>()) { $0.union($1.messageNames) }
         let scripts = hooks.map(\.script)
 
@@ -47,21 +53,27 @@ final class PayCardInteractor {
 
 extension PayCardInteractor: PayCardInteractorInputProtocol {
     func setup() {
-        let resourceWrapper = payCardResourceProvider.loadResourceWrapper()
-
-        let hooks = payCardHookFactory.createHooks(for: self)
+        let fetchParamsOperation = paramsProvider.fetchParamsOperation()
 
         execute(
-            wrapper: resourceWrapper,
+            operation: fetchParamsOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            switch result {
-            case let .success(resource):
-                self?.messageHandlers = hooks.flatMap(\.handlers)
-                self?.provideModel(for: resource, hooks: hooks)
-            case let .failure(error):
-                self?.logger.error("Unexpected hooks \(error)")
+            guard let self else { return }
+
+            do {
+                switch result {
+                case let .success(params):
+                    let resource = try payCardResourceProvider.loadResource(using: params)
+                    let hooks = payCardHookFactory.createHooks(using: params, for: self)
+                    messageHandlers = hooks.flatMap(\.handlers)
+                    provideModel(for: resource, hooks: hooks)
+                case let .failure(error):
+                    logger.error("Unexpected hooks \(error)")
+                }
+            } catch {
+                logger.error("Resource unavailable \(error)")
             }
         }
     }

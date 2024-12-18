@@ -26,14 +26,16 @@ struct PayCardViewFactory {
 
         let logger = Logger.shared
 
-        let hooksFactory = MercuryoCardHookFactory(logger: logger)
-        let resourceProvider = MercuryoCardResourceProvider(
+        let paramsProvider = MercuryoCardParamsProvider(
             chainRegistry: chainRegistry,
             wallet: SelectedWalletSettings.shared.value,
             chainId: KnowChainId.polkadot
         )
+        let hooksFactory = MercuryoCardHookFactory(logger: logger)
+        let resourceProvider = MercuryoCardResourceProvider()
 
         return PayCardInteractor(
+            paramsProvider: paramsProvider,
             payCardHookFactory: hooksFactory,
             payCardResourceProvider: resourceProvider,
             settingsManager: SettingsManager.shared,

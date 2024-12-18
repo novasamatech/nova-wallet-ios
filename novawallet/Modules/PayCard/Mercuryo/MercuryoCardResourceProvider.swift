@@ -6,67 +6,7 @@ enum MercuryoCardResourceProviderError: Error {
 }
 
 final class MercuryoCardResourceProvider {
-    let chainRegistry: ChainRegistryProtocol
-    let wallet: MetaAccountModel
-    let chainId: ChainModel.Id
-
-    init(
-        chainRegistry: ChainRegistryProtocol,
-        wallet: MetaAccountModel,
-        chainId: ChainModel.Id
-    ) {
-        self.chainRegistry = chainRegistry
-        self.wallet = wallet
-        self.chainId = chainId
-    }
-}
-
-// MARK: Private
-
-private extension MercuryoCardResourceProvider {
-    func createQueryItemsWrapper() -> CompoundOperationWrapper<[URLQueryItem]> {
-        let chainFetchWrapper = chainRegistry.asyncWaitChainWrapper(for: chainId)
-
-        let queryItemsOperation = createQueryItemsOperation(
-            dependingOn: chainFetchWrapper.targetOperation,
-            wallet: wallet
-        )
-
-        queryItemsOperation.addDependency(chainFetchWrapper.targetOperation)
-
-        return chainFetchWrapper.insertingTail(operation: queryItemsOperation)
-    }
-
-    func createQueryItemsOperation(
-        dependingOn chainOperation: BaseOperation<ChainModel?>,
-        wallet: MetaAccountModel
-    ) -> BaseOperation<[URLQueryItem]> {
-        ClosureOperation { [weak self] in
-            guard
-                let self,
-                let chain = try chainOperation.extractNoCancellableResultData(),
-                let utilityAsset = chain.utilityChainAsset()
-            else {
-                throw ChainModelFetchError.noAsset(assetId: 0)
-            }
-
-            guard
-                let selectedAccount = wallet.fetch(for: chain.accountRequest()) else {
-                throw ChainAccountFetchingError.accountNotExists
-            }
-
-            let refundAddress = try selectedAccount.accountId.toAddress(
-                using: utilityAsset.chain.chainFormat
-            )
-
-            return createQueryItems(
-                for: utilityAsset,
-                refundAddress: refundAddress
-            )
-        }
-    }
-
-    func createQueryItems(
+    private func createQueryItems(
         for chainAsset: ChainAsset,
         refundAddress: AccountAddress
     ) -> [URLQueryItem] {
@@ -129,28 +69,23 @@ private extension MercuryoCardResourceProvider {
 // MARK: PayCardResourceProviding
 
 extension MercuryoCardResourceProvider: PayCardResourceProviding {
-    func loadResourceWrapper() -> CompoundOperationWrapper<PayCardHtmlResource> {
-        let queryItemsWrapper = createQueryItemsWrapper()
+    func loadResource(using params: MercuryoCardParams) throws -> PayCardResource {
+        let queryItems = createQueryItems(
+            for: params.chainAsset,
+            refundAddress: params.refundAddress
+        )
 
-        let mapOperation = ClosureOperation<PayCardHtmlResource> {
-            let queryItems = try queryItemsWrapper.targetOperation.extractNoCancellableResultData()
+        var urlComponents = URLComponents(
+            url: MercuryoCardApi.widgetUrl,
+            resolvingAgainstBaseURL: false
+        )
 
-            var urlComponents = URLComponents(
-                url: MercuryoCardApi.widgetUrl,
-                resolvingAgainstBaseURL: false
-            )
+        urlComponents?.queryItems = queryItems
 
-            urlComponents?.queryItems = queryItems
-
-            guard let url = urlComponents?.url else {
-                throw MercuryoCardResourceProviderError.unavailable
-            }
-
-            return PayCardHtmlResource(url: url)
+        guard let url = urlComponents?.url else {
+            throw MercuryoCardResourceProviderError.unavailable
         }
 
-        mapOperation.addDependency(queryItemsWrapper.targetOperation)
-
-        return queryItemsWrapper.insertingTail(operation: mapOperation)
+        return PayCardResource(url: url)
     }
 }

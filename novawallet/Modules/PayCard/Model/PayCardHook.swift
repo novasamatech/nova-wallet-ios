@@ -15,5 +15,8 @@ protocol PayCardHookDelegate: AnyObject {
 }
 
 protocol PayCardHookFactoryProtocol {
-    func createHooks(for delegate: PayCardHookDelegate) -> [PayCardHook]
+    func createHooks(
+        using params: MercuryoCardParams,
+        for delegate: PayCardHookDelegate
+    ) -> [PayCardHook]
 }

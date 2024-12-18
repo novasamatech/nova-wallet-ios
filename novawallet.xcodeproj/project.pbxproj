@@ -423,7 +423,7 @@
 		0C8FDBB82CB0FD3200775D7F /* MercuryoMessageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */; };
 		0C8FDBBA2CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */; };
 		0C8FDBBC2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */; };
-		0C8FDBBE2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBD2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift */; };
+		0C8FDBBE2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBD2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift */; };
 		0C8FDBC02CB1001A00775D7F /* PayCardHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */; };
 		0C8FDBC22CB1011C00775D7F /* MercuryoCardHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */; };
 		0C8FDBC42CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */; };
@@ -936,6 +936,7 @@
 		2D039DE82BFCA83600A928E5 /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */; };
 		2D039DEA2BFCAB9000A928E5 /* ExportViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
+		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0A82EC2CB47E4E0043B330 /* PayCardSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */; };
 		2D0A82EE2CB47F080043B330 /* MessageSheetTimerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */; };
 		2D0A82F02CB5722C0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
@@ -1094,7 +1095,7 @@
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
 		2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */; };
-		2DA85A6E2C7F3F2F00591900 /* MercuryoTransferData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */; };
+		2DA85A6E2C7F3F2F00591900 /* MercuryoSellResponseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */; };
 		2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */; };
 		2DA85A742C7FC5D100591900 /* RoundedGradientBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */; };
 		2DA85A772C7FCCCE00591900 /* SwipeGovViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */; };
@@ -5640,7 +5641,7 @@
 		0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoMessageName.swift; sourceTree = "<group>"; };
 		0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardsResponseHandler.swift; sourceTree = "<group>"; };
 		0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardStatusHandler.swift; sourceTree = "<group>"; };
-		0C8FDBBD2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardTopupHandler.swift; sourceTree = "<group>"; };
+		0C8FDBBD2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoSellRequestResponseHandler.swift; sourceTree = "<group>"; };
 		0C8FDBBF2CB1001A00775D7F /* PayCardHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardHook.swift; sourceTree = "<group>"; };
 		0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardHookFactory.swift; sourceTree = "<group>"; };
 		0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MercuryoCardHookFactory+ResponseIntercept.swift"; sourceTree = "<group>"; };
@@ -6164,6 +6165,7 @@
 		2D039DE72BFCA83600A928E5 /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		2D039DE92BFCAB9000A928E5 /* ExportViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewModelFactory.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
+		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
@@ -6320,7 +6322,7 @@
 		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
 		2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupProtocols.swift; sourceTree = "<group>"; };
-		2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoTransferData.swift; sourceTree = "<group>"; };
+		2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoSellResponseData.swift; sourceTree = "<group>"; };
 		2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovBannerView.swift; sourceTree = "<group>"; };
 		2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedGradientBackgroundView.swift; sourceTree = "<group>"; };
 		2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovViewModelFactory.swift; sourceTree = "<group>"; };
@@ -11328,17 +11330,11 @@
 		0C8FDBCB2CB10E2C00775D7F /* Mercuryo */ = {
 			isa = PBXGroup;
 			children = (
-				0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */,
-				2DA85A6D2C7F3F2F00591900 /* MercuryoTransferData.swift */,
-				0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */,
-				0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */,
-				0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */,
-				0C8FDBBD2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift */,
-				0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */,
-				0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */,
-				0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */,
+				2D07803F2D12C68E003E35B1 /* MessageHandlers */,
+				2D0780402D12C6B5003E35B1 /* Hooks */,
+				2D0780412D12C6F8003E35B1 /* Model */,
 				0C8FDBC92CB10CB100775D7F /* MercuryoCardResourceProvider.swift */,
-				0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */,
+				2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */,
 			);
 			path = Mercuryo;
 			sourceTree = "<group>";
@@ -12550,6 +12546,37 @@
 				2D039DE32BFBB2FE00A928E5 /* ExportRowView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		2D07803F2D12C68E003E35B1 /* MessageHandlers */ = {
+			isa = PBXGroup;
+			children = (
+				0C8FDBBD2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift */,
+				0C8FDBB92CB0FE3600775D7F /* MercuryoCardsResponseHandler.swift */,
+				0C8FDBBB2CB0FECA00775D7F /* MercuryoCardStatusHandler.swift */,
+			);
+			path = MessageHandlers;
+			sourceTree = "<group>";
+		};
+		2D0780402D12C6B5003E35B1 /* Hooks */ = {
+			isa = PBXGroup;
+			children = (
+				0C8FDBC32CB101E700775D7F /* MercuryoCardHookFactory+ResponseIntercept.swift */,
+				0C8FDBC52CB1045800775D7F /* MercuryoCardHookFactory+Widget.swift */,
+				0C8FDBC12CB1011C00775D7F /* MercuryoCardHookFactory.swift */,
+			);
+			path = Hooks;
+			sourceTree = "<group>";
+		};
+		2D0780412D12C6F8003E35B1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C8FDBCE2CB25D7400775D7F /* MercuryoStatusChange.swift */,
+				2DA85A6D2C7F3F2F00591900 /* MercuryoSellResponseData.swift */,
+				0C8FDBB72CB0FD3200775D7F /* MercuryoMessageName.swift */,
+				0C8FDBD02CB25E0400775D7F /* MercuryoGenericResponse.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		2D0A82EA2CB47E200043B330 /* View */ = {
@@ -26405,6 +26432,7 @@
 				2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */,
 				8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
+				2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */,
 				84F231E329B233F20070FC2F /* GovernanceDelegateListOperationFactoryProtocol+BlockNumber.swift in Sources */,
 				2D4F551C2CCBA0D300B65B76 /* AssetOperationCollectionManager.swift in Sources */,
 				849AFEB326DADC1300B65924 /* SubqueryHistory.swift in Sources */,
@@ -26957,7 +26985,7 @@
 				842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */,
 				84880C4429026C3E00CADB06 /* ReferendumDelegatingLocal.swift in Sources */,
 				8472C5B2265CF9C500E2481B /* StakingRewardDestConfirmInteractor.swift in Sources */,
-				2DA85A6E2C7F3F2F00591900 /* MercuryoTransferData.swift in Sources */,
+				2DA85A6E2C7F3F2F00591900 /* MercuryoSellResponseData.swift in Sources */,
 				88F9F696297B082F00F6550D /* SelectableTitleTableViewCell.swift in Sources */,
 				882C29AE28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift in Sources */,
 				846CA77A27099B1E0011124C /* StakingAnalyticsLocalSubscriptionFactory.swift in Sources */,
@@ -27636,7 +27664,7 @@
 				846B749828B4BA0500C39B93 /* LedgerAccountsStore.swift in Sources */,
 				844ADE7728CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift in Sources */,
 				8499FED627BFB12600712589 /* UniquesSyncService.swift in Sources */,
-				0C8FDBBE2CB0FF2A00775D7F /* MercuryoCardTopupHandler.swift in Sources */,
+				0C8FDBBE2CB0FF2A00775D7F /* MercuryoSellRequestResponseHandler.swift in Sources */,
 				841E556B282EAC3600C8438F /* ParachainStakingDelegatorState.swift in Sources */,
 				880E40FF298CF1ED0077B18B /* VotesProtocols.swift in Sources */,
 				774A980D2B0D0873009146CA /* OpenScreenUrlParsingService.swift in Sources */,

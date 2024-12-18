@@ -66,7 +66,7 @@ final class PayCardViewController: UIViewController, ViewHolder {
         rootView.webView.uiDelegate = self
     }
 
-    func load(resource: PayCardHtmlResource) {
+    func load(resource: PayCardResource) {
         let request = URLRequest(url: resource.url)
 
         rootView.webView.load(request)

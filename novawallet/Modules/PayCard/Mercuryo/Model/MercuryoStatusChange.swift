@@ -9,7 +9,7 @@ struct MercuryoStatusChange: Decodable {
     let status: String
 }
 
-enum MercuryoStatus: String {
+enum MercuryoStatus: String, Decodable {
     case new
     case pending
     case succeeded
