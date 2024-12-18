@@ -41,6 +41,8 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
+        presentationController?.delegate = self
+
         rootView.detailsView.delegate = self
 
         rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)

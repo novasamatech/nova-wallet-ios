@@ -37,7 +37,8 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
 
         button.setTitle(R.string.localizable.commonDone(preferredLanguages: locale.rLanguages))
 
-        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 8
+        containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
+            UIConstants.actionHeight + 8
 
         return button
     }
@@ -47,7 +48,8 @@ final class SwapExecutionViewLayout: ScrollableContainerLayoutView {
 
         button.setTitle(R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages))
 
-        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 8
+        containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
+            UIConstants.actionHeight + 8
 
         return button
     }
