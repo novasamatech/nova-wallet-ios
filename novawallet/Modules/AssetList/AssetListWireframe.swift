@@ -175,7 +175,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         viewController.controller.modalTransitioningFactory = factory
         viewController.controller.modalPresentationStyle = .custom
 
-        view?.controller.presentWithCardLayout(
+        view?.controller.present(
             viewController.controller,
             animated: true
         )
