@@ -201,7 +201,7 @@ extension AssetExchangeOperationFee {
         )
 
         let postSubmissionByAccount = try postSubmissionFee.totalByAccountEnsuring(
-            asset: submissionFee.amountWithAsset.asset,
+            asset: asset,
             matchingPayer: .selectedAccount
         )
 
