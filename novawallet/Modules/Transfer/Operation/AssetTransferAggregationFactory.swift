@@ -46,6 +46,10 @@ extension AssetCanPayFeeWrapperFactoryProtocol {
 
 protocol AssetTransferAggregationFactoryProtocol: AssetCanPayFeeWrapperFactoryProtocol {}
 
+enum AssetFeePaymentError: Error {
+    case unavailableProvider(ChainModel)
+}
+
 final class AssetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol {
     let operationQueue: OperationQueue
     let chainRegistry: ChainRegistryProtocol
@@ -59,13 +63,13 @@ final class AssetTransferAggregationFactory: AssetTransferAggregationFactoryProt
     }
 
     func createCanPayFeeWrapper(in chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
-        if chainAsset.chain.hasAssetHubTransferFees {
+        if chainAsset.chain.hasAssetHubFees {
             return createAssetHubCanPayFee(for: chainAsset)
-        } else if chainAsset.chain.hasHydrationTransferFees {
+        } else if chainAsset.chain.hasHydrationFees {
             return createHydraCanPayFee(for: chainAsset)
         } else {
             return CompoundOperationWrapper.createWithError(
-                AssetConversionAggregationFactoryError.unavailableProvider(chainAsset.chain)
+                AssetFeePaymentError.unavailableProvider(chainAsset.chain)
             )
         }
     }

@@ -211,7 +211,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
             engine: connection,
             keyParams: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: .account
+            storagePath: SystemPallet.accountPath
         )
 
         let mapOperation = ClosureOperation<AccountInfo?> {

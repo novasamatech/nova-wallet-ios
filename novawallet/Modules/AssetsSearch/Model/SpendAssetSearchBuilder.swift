@@ -2,12 +2,18 @@ import BigInt
 
 final class SpendAssetSearchBuilder: AssetSearchBuilder {
     override func assetListState(from model: AssetListModel) -> AssetListState {
-        let balanceResults = model.balances.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
-            switch $1.value {
-            case let .success(balance):
-                $0[$1.key] = .success(balance.transferable)
+        let chainAssets = model.allChains.flatMap { _, chain in
+            chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
+        }
+
+        let balanceResults = chainAssets.reduce(into: [ChainAssetId: Result<BigUInt, Error>]()) {
+            switch model.balances[$1] {
+            case let .success(amount):
+                $0[$1] = .success(amount.transferable)
             case let .failure(error):
-                $0[$1.key] = .failure(error)
+                $0[$1] = .failure(error)
+            case .none:
+                $0[$1] = .success(0)
             }
         }
 
