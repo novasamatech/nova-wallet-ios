@@ -163,6 +163,10 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetInteractorOutputProtocol 
 
         provideModel()
     }
+
+    func didReceiveWalletChanged() {
+        view?.didReceiveRequestForCachedWebViewClear()
+    }
 }
 
 // MARK: Localizable

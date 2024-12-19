@@ -10,6 +10,7 @@ final class DAppBrowserTabManager {
     private let repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>
     private let operationQueue: OperationQueue
     private let observerQueue: DispatchQueue
+    private let eventCenter: EventCenterProtocol
 
     private let logger: LoggerProtocol
 
@@ -22,6 +23,7 @@ final class DAppBrowserTabManager {
         fileRepository: WebViewRenderFilesOperationFactoryProtocol,
         tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol,
         repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>,
+        eventCenter: EventCenterProtocol,
         observerQueue: DispatchQueue = .main,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -29,6 +31,7 @@ final class DAppBrowserTabManager {
         self.repository = repository
         self.tabsSubscriptionFactory = tabsSubscriptionFactory
         self.fileRepository = fileRepository
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.observerQueue = observerQueue
         self.logger = logger
@@ -41,6 +44,11 @@ final class DAppBrowserTabManager {
 
 private extension DAppBrowserTabManager {
     func setup() {
+        eventCenter.add(
+            observer: self,
+            dispatchIn: .main
+        )
+
         browserTabProvider = subscribeToBrowserTabs(nil)
     }
 
@@ -71,7 +79,14 @@ private extension DAppBrowserTabManager {
         let resultOperation = ClosureOperation { [weak self] in
             _ = try saveTabOperation.extractNoCancellableResultData()
 
-            self?.transportStates.removeValue(for: tab.uuid)
+            if let transportStates = tab.transportStates {
+                self?.transportStates.store(
+                    value: transportStates,
+                    for: tab.uuid
+                )
+            } else {
+                self?.transportStates.removeValue(for: tab.uuid)
+            }
 
             return tab
         }
@@ -351,5 +366,18 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
 
             observer.didReceiveUpdatedTabs(sortedTabs)
         }
+    }
+}
+
+// MARK: EventVisitorProtocol
+
+extension DAppBrowserTabManager: EventVisitorProtocol {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
+        transportStates.removeAllValues()
+
+        observableTabs.state
+            .fetchAllValues()
+            .map { $0.clearingTransportStates() }
+            .forEach { observableTabs.state.store(value: $0, for: $0.uuid) }
     }
 }

@@ -134,6 +134,19 @@ struct DAppBrowserTab {
         )
     }
 
+    func clearingTransportStates() -> DAppBrowserTab {
+        DAppBrowserTab(
+            uuid: uuid,
+            name: name,
+            url: url,
+            createdAt: createdAt,
+            renderModifiedAt: renderModifiedAt,
+            transportStates: nil,
+            desktopOnly: desktopOnly,
+            icon: icon
+        )
+    }
+
     static func resolveUrl(for query: String) -> URL? {
         var urlComponents = URLComponents(string: query)
 

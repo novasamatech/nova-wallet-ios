@@ -47,6 +47,16 @@ class InMemoryCache<K: Hashable, V> {
 
         cache[key] = nil
     }
+
+    func removeAllValues() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        cache.removeAll()
+    }
 }
 
 extension InMemoryCache: Equatable where V: Equatable {

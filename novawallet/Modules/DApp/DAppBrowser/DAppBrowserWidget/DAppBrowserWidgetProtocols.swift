@@ -19,6 +19,7 @@ protocol DAppBrowserWidgetProtocol {
 protocol DAppBrowserWidgetViewProtocol: ControllerBackedProtocol {
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel)
     func didReceiveRequestForMinimizing()
+    func didReceiveRequestForCachedWebViewClear()
 }
 
 // MARK: VIEW -> PRESENTER
@@ -46,6 +47,7 @@ protocol DAppBrowserWidgetInteractorInputProtocol: AnyObject {
 
 protocol DAppBrowserWidgetInteractorOutputProtocol: AnyObject {
     func didReceive(_ browserTabs: [UUID: DAppBrowserTab])
+    func didReceiveWalletChanged()
 }
 
 // MARK: PRESENTER -> WIREFRAME
