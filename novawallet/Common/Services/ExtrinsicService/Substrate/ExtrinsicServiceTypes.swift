@@ -67,7 +67,7 @@ typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
 typealias ExtrinsicSubmitIndexedClosure = (SubmitIndexedExtrinsicResult) -> Void
 
 typealias ExtrinsicSubscriptionIdClosure = (UInt16) -> Bool
-typealias ExtrinsicSubscriptionStatusClosure = (Result<ExtrinsicStatus, Error>) -> Void
+typealias ExtrinsicSubscriptionStatusClosure = (Result<ExtrinsicStatusUpdate, Error>) -> Void
 
 typealias ExtrinsicBuilderClosure = (ExtrinsicBuilderProtocol) throws -> (ExtrinsicBuilderProtocol)
 typealias ExtrinsicBuilderIndexedClosure = (ExtrinsicBuilderProtocol, Int) throws -> (ExtrinsicBuilderProtocol)

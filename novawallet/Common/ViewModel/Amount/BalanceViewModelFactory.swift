@@ -49,7 +49,7 @@ final class BalanceViewModelFactory: PrimitiveBalanceViewModelFactory, BalanceVi
         priceData: PriceData?
     ) -> LocalizableResource<AssetBalanceViewModelProtocol> {
         let localizableBalanceFormatter = formatterFactory.createTokenFormatter(for: targetAssetInfo)
-        let optLocalizablePriceFormatter = priceFormatter(for: priceData)
+        let localizablePriceFormatter = priceFormatter(for: priceData?.currencyId)
 
         let symbol = targetAssetInfo.symbol
 
@@ -63,7 +63,6 @@ final class BalanceViewModelFactory: PrimitiveBalanceViewModelFactory, BalanceVi
 
             if
                 let priceData = priceData,
-                let localizablePriceFormatter = optLocalizablePriceFormatter,
                 let rate = Decimal(string: priceData.price) {
                 let targetAmount = rate * amount
 

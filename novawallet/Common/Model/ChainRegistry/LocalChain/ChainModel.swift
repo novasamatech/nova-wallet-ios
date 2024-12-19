@@ -181,16 +181,16 @@ struct ChainModel: Equatable, Hashable {
         hasSwapHub || hasSwapHydra
     }
 
-    var hasAssetHubTransferFees: Bool {
+    var hasAssetHubFees: Bool {
         options?.contains(where: { $0 == .assetHubFees }) ?? false
     }
 
-    var hasHydrationTransferFees: Bool {
+    var hasHydrationFees: Bool {
         options?.contains(where: { $0 == .hydrationFees }) ?? false
     }
 
-    var hasCustomTransferFees: Bool {
-        hasAssetHubTransferFees || hasHydrationTransferFees
+    var hasCustomFees: Bool {
+        hasAssetHubFees || hasHydrationFees
     }
 
     var hasProxy: Bool {
@@ -241,6 +241,30 @@ struct ChainModel: Equatable, Hashable {
 
     func chainAssets() -> [ChainAsset] {
         assets.map { ChainAsset(chain: self, asset: $0) }
+    }
+
+    func chainAsset(for assetId: AssetModel.Id) -> ChainAsset? {
+        guard let asset = assets.first(where: { $0.assetId == assetId }) else {
+            return nil
+        }
+
+        return .init(chain: self, asset: asset)
+    }
+
+    func chainAssetOrError(for assetId: AssetModel.Id) throws -> ChainAsset {
+        guard let chainAsset = chainAsset(for: assetId) else {
+            throw ChainModelFetchError.noAsset(assetId: assetId)
+        }
+
+        return chainAsset
+    }
+
+    func chainAssetForSymbol(_ symbol: String) -> ChainAsset? {
+        guard let asset = assets.first(where: { $0.symbol == symbol }) else {
+            return nil
+        }
+
+        return .init(chain: self, asset: asset)
     }
 
     func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {

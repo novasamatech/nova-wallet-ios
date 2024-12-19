@@ -12,28 +12,8 @@ struct EventCodingPath: Equatable, Hashable {
 }
 
 extension EventCodingPath {
-    static var extrisicSuccess: EventCodingPath {
-        EventCodingPath(moduleName: "System", eventName: "ExtrinsicSuccess")
-    }
-
-    static var extrinsicFailed: EventCodingPath {
-        EventCodingPath(moduleName: "System", eventName: "ExtrinsicFailed")
-    }
-
-    static var balancesDeposit: EventCodingPath {
-        EventCodingPath(moduleName: "Balances", eventName: "Deposit")
-    }
-
     static var treasuryDeposit: EventCodingPath {
         EventCodingPath(moduleName: "Treasury", eventName: "Deposit")
-    }
-
-    static var balancesWithdraw: EventCodingPath {
-        EventCodingPath(moduleName: "Balances", eventName: "Withdraw")
-    }
-
-    static var balancesTransfer: EventCodingPath {
-        EventCodingPath(moduleName: "Balances", eventName: "Transfer")
     }
 
     static var tokensTransfer: EventCodingPath {

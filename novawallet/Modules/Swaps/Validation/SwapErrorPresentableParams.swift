@@ -2,9 +2,6 @@ enum SwapDisplayError {
     struct InsufficientBalanceDueFeePayAsset {
         let available: String
         let fee: String
-        let minBalanceInPayAsset: String
-        let minBalanceInUtilityAsset: String
-        let tokenSymbol: String
     }
 
     struct InsufficientBalanceDueFeeNativeAsset {
@@ -23,22 +20,12 @@ enum SwapDisplayError {
         case dueConsumers(InsufficientBalanceDueConsumers)
     }
 
-    struct DustRemainsDueNativeSwap {
+    struct DustRemainsDueSwap {
         let remaining: String
         let minBalance: String
     }
 
-    struct DustRemainsDueFeeSwap {
-        let remaining: String
-        let minBalanceOfPayAsset: String
-        let fee: String
-        let minBalanceInPayAsset: String
-        let minBalanceInUtilityAsset: String
-        let utilitySymbol: String
-    }
-
     enum DustRemains {
-        case dueNativeSwap(DustRemainsDueNativeSwap)
-        case dueFeeSwap(DustRemainsDueFeeSwap)
+        case dueSwap(DustRemainsDueSwap)
     }
 }
