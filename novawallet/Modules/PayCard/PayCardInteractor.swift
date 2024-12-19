@@ -4,6 +4,7 @@ import SoraKeystore
 final class PayCardInteractor {
     weak var presenter: PayCardInteractorOutputProtocol?
 
+    let paramsProvider: MercuryoCardParamsProviderProtocol
     let payCardHookFactory: PayCardHookFactoryProtocol
     let payCardResourceProvider: PayCardResourceProviding
     let operationQueue: OperationQueue
@@ -14,6 +15,7 @@ final class PayCardInteractor {
     private var messageHandlers: [PayCardMessageHandling] = []
 
     init(
+        paramsProvider: MercuryoCardParamsProviderProtocol,
         payCardHookFactory: PayCardHookFactoryProtocol,
         payCardResourceProvider: PayCardResourceProviding,
         settingsManager: SettingsManagerProtocol,
@@ -21,6 +23,7 @@ final class PayCardInteractor {
         pendingTimeout: TimeInterval,
         logger: LoggerProtocol
     ) {
+        self.paramsProvider = paramsProvider
         self.payCardHookFactory = payCardHookFactory
         self.payCardResourceProvider = payCardResourceProvider
         self.settingsManager = settingsManager
@@ -29,7 +32,10 @@ final class PayCardInteractor {
         self.logger = logger
     }
 
-    private func provideModel(for resource: PayCardHtmlResource, hooks: [PayCardHook]) {
+    private func provideModel(
+        for resource: PayCardResource,
+        hooks: [PayCardHook]
+    ) {
         let messageNames = hooks.reduce(Set<String>()) { $0.union($1.messageNames) }
         let scripts = hooks.map(\.script)
 
@@ -43,28 +49,32 @@ final class PayCardInteractor {
     }
 }
 
+// MARK: PayCardInteractorInputProtocol
+
 extension PayCardInteractor: PayCardInteractorInputProtocol {
     func setup() {
-        do {
-            let resource = try payCardResourceProvider.loadResource()
+        let fetchParamsWrapper = paramsProvider.fetchParamsWrapper()
 
-            let hooksWrapper = payCardHookFactory.createHooks(for: self)
+        execute(
+            wrapper: fetchParamsWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else { return }
 
-            execute(
-                wrapper: hooksWrapper,
-                inOperationQueue: operationQueue,
-                runningCallbackIn: .main
-            ) { [weak self] result in
+            do {
                 switch result {
-                case let .success(hooks):
-                    self?.messageHandlers = hooks.flatMap(\.handlers)
-                    self?.provideModel(for: resource, hooks: hooks)
+                case let .success(params):
+                    let resource = try payCardResourceProvider.loadResource(using: params)
+                    let hooks = payCardHookFactory.createHooks(using: params, for: self)
+                    messageHandlers = hooks.flatMap(\.handlers)
+                    provideModel(for: resource, hooks: hooks)
                 case let .failure(error):
-                    self?.logger.error("Unexpected hooks \(error)")
+                    logger.error("Unexpected hooks \(error)")
                 }
+            } catch {
+                logger.error("Resource unavailable \(error)")
             }
-        } catch {
-            logger.error("Unexpected \(error)")
         }
     }
 
@@ -107,6 +117,8 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
     }
 }
 
+// MARK: PayCardHookDelegate
+
 extension PayCardInteractor: PayCardHookDelegate {
     func didRequestTopup(from model: PayCardTopupModel) {
         presenter?.didRequestTopup(for: model)
@@ -130,5 +142,13 @@ extension PayCardInteractor: PayCardHookDelegate {
         settingsManager.novaCardOpenTimestamp = nil
 
         presenter?.didReceiveCardStatus(failedStatus)
+    }
+
+    func didReceivePendingCardOpen() {
+        if let cardOpenTimestamp = settingsManager.novaCardOpenTimestamp {
+            checkPendingTimeout()
+        } else {
+            processIssueInit()
+        }
     }
 }

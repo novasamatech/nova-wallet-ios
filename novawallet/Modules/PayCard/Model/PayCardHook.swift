@@ -12,8 +12,12 @@ protocol PayCardHookDelegate: AnyObject {
     func didReceiveNoCard()
     func didOpenCard()
     func didFailToOpenCard()
+    func didReceivePendingCardOpen()
 }
 
 protocol PayCardHookFactoryProtocol {
-    func createHooks(for delegate: PayCardHookDelegate) -> CompoundOperationWrapper<[PayCardHook]>
+    func createHooks(
+        using params: MercuryoCardParams,
+        for delegate: PayCardHookDelegate
+    ) -> [PayCardHook]
 }
