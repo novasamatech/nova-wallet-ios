@@ -22,11 +22,6 @@ struct SwapSetupInitState {
     }
 }
 
-struct SwapSetupFeeIdentifier: Equatable {
-    let transactionId: String
-    let feeChainAssetId: ChainAssetId?
-}
-
 struct DepositOperationModel {
     let operation: TokenOperation
     let active: Bool

@@ -1,16 +1,25 @@
 import UIKit
 import SoraUI
 
-final class SwapAssetsOperationWireframe: AssetOperationWireframe, SwapAssetsOperationWireframeProtocol {
-    func showSelectNetwork(
-        from view: ControllerBackedProtocol?,
-        multichainToken: MultichainToken,
-        selectClosure: @escaping (ChainAsset) -> Void,
+final class SwapAssetsOperationWireframe: SwapAssetsOperationWireframeProtocol {
+    let state: SwapTokensFlowStateProtocol
+    let selectClosure: SwapAssetSelectionClosure
+    let selectClosureStrategy: SubmoduleNavigationStrategy
+
+    init(
+        state: SwapTokensFlowStateProtocol,
+        selectClosure: @escaping SwapAssetSelectionClosure,
         selectClosureStrategy: SubmoduleNavigationStrategy
     ) {
+        self.state = state
+        self.selectClosure = selectClosure
+        self.selectClosureStrategy = selectClosureStrategy
+    }
+
+    func showSelectNetwork(from view: ControllerBackedProtocol?, multichainToken: MultichainToken) {
         guard let selectNetworkView = AssetOperationNetworkListViewFactory.createSwapsView(
             with: multichainToken,
-            stateObservable: stateObservable,
+            state: state,
             selectClosure: selectClosure,
             selectClosureStrategy: selectClosureStrategy
         ) else {

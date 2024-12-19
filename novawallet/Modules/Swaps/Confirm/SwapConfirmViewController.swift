@@ -42,6 +42,7 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
 
     private func setupHandlers() {
         rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
+        rootView.routeCell.addTarget(self, action: #selector(routeAction), for: .touchUpInside)
         rootView.priceDifferenceCell.addTarget(self, action: #selector(priceDifferenceAction), for: .touchUpInside)
         rootView.slippageCell.addTarget(self, action: #selector(slippageAction), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(networkFeeAction), for: .touchUpInside)
@@ -65,6 +66,10 @@ final class SwapConfirmViewController: UIViewController, ViewHolder {
         presenter.showNetworkFeeInfo()
     }
 
+    @objc private func routeAction() {
+        presenter.showRouteDetails()
+    }
+
     @objc private func addressAction() {
         presenter.showAddressOptions()
     }
@@ -85,6 +90,14 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
 
     func didReceiveRate(viewModel: LoadableViewModelState<String>) {
         rootView.rateCell.bind(loadableViewModel: viewModel)
+    }
+
+    func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>) {
+        rootView.routeCell.bind(loadableRouteViewModel: viewModel)
+    }
+
+    func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>) {
+        rootView.execTimeCell.bind(loadableViewModel: viewModel)
     }
 
     func didReceivePriceDifference(viewModel: LoadableViewModelState<DifferenceViewModel>?) {
@@ -123,10 +136,6 @@ extension SwapConfirmViewController: SwapConfirmViewProtocol {
 
     func didReceiveWarning(viewModel: String?) {
         rootView.set(warning: viewModel)
-    }
-
-    func didReceiveNotification(viewModel: String?) {
-        rootView.set(notification: viewModel)
     }
 
     func didReceiveStartLoading() {

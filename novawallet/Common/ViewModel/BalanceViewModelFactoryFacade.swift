@@ -7,39 +7,46 @@ protocol BalanceViewModelFactoryFacadeProtocol {
         amount: Decimal,
         priceData: PriceData
     ) -> LocalizableResource<String>
+
+    func priceFromFiatAmount(
+        _ decimalValue: Decimal,
+        currencyId: Int?
+    ) -> LocalizableResource<String>
+
     func amountFromValue(
         targetAssetInfo: AssetBalanceDisplayInfo,
         value: Decimal
     ) -> LocalizableResource<String>
+
     func balanceFromPrice(
         targetAssetInfo: AssetBalanceDisplayInfo,
         amount: Decimal,
         priceData: PriceData?
-    )
-        -> LocalizableResource<BalanceViewModelProtocol>
+    ) -> LocalizableResource<BalanceViewModelProtocol>
+
     func spendingAmountFromPrice(
         targetAssetInfo: AssetBalanceDisplayInfo,
         amount: Decimal,
         priceData: PriceData?
-    )
-        -> LocalizableResource<BalanceViewModelProtocol>
+    ) -> LocalizableResource<BalanceViewModelProtocol>
+
     func lockingAmountFromPrice(
         targetAssetInfo: AssetBalanceDisplayInfo,
         amount: Decimal,
         priceData: PriceData?
-    )
-        -> LocalizableResource<BalanceViewModelProtocol>
+    ) -> LocalizableResource<BalanceViewModelProtocol>
+
     func createBalanceInputViewModel(
         targetAssetInfo: AssetBalanceDisplayInfo,
         amount: Decimal?
     ) -> LocalizableResource<AmountInputViewModelProtocol>
+
     func createAssetBalanceViewModel(
         targetAssetInfo: AssetBalanceDisplayInfo,
         amount: Decimal,
         balance: Decimal?,
         priceData: PriceData?
-    )
-        -> LocalizableResource<AssetBalanceViewModelProtocol>
+    ) -> LocalizableResource<AssetBalanceViewModelProtocol>
 }
 
 final class BalanceViewModelFactoryFacade {
@@ -73,6 +80,18 @@ extension BalanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol {
         getOrCreateBalanceViewModelFactory(targetAssetInfo: targetAssetInfo).priceFromAmount(
             amount,
             priceData: priceData
+        )
+    }
+
+    func priceFromFiatAmount(
+        _ decimalValue: Decimal,
+        currencyId: Int?
+    ) -> LocalizableResource<String> {
+        let assetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+
+        return getOrCreateBalanceViewModelFactory(targetAssetInfo: assetInfo).priceFromFiatAmount(
+            decimalValue,
+            currencyId: currencyId
         )
     }
 

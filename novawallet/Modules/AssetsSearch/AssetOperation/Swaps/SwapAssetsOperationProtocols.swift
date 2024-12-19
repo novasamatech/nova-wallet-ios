@@ -2,9 +2,7 @@ protocol SwapAssetsOperationWireframeProtocol: AssetsSearchWireframeProtocol, Er
     AlertPresentable, CommonRetryable {
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
-        multichainToken: MultichainToken,
-        selectClosure: @escaping (ChainAsset) -> Void,
-        selectClosureStrategy: SubmoduleNavigationStrategy
+        multichainToken: MultichainToken
     )
 }
 

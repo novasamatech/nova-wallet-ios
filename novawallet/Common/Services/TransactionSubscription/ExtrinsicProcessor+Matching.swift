@@ -40,8 +40,11 @@ extension ExtrinsicProcessor {
                 return false
             }
 
-            return [.extrisicSuccess, .extrinsicFailed].contains(eventPath)
-        }.first.map { metadata.createEventCodingPath(from: $0.event) == .extrisicSuccess }
+            return [
+                SystemPallet.extrinsicSuccessEventPath,
+                SystemPallet.extrinsicFailedEventPath
+            ].contains(eventPath)
+        }.first.map { metadata.createEventCodingPath(from: $0.event) == SystemPallet.extrinsicSuccessEventPath }
     }
 
     func matchOrmlTransfer(

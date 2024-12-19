@@ -5,7 +5,8 @@ struct AssetDetailsViewFactory {
     static func createView(
         chain: ChainModel,
         asset: AssetModel,
-        operationState: AssetOperationState
+        operationState: AssetOperationState,
+        swapState: SwapTokensFlowStateProtocol
     ) -> AssetDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -16,11 +17,6 @@ struct AssetDetailsViewFactory {
 
         let chainAsset = ChainAsset(chain: chain, asset: asset)
 
-        let assetConversionAggregator = AssetConversionAggregationFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
@@ -28,12 +24,12 @@ struct AssetDetailsViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
-            assetConvertionAggregator: assetConversionAggregator,
+            swapState: swapState,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
 
-        let wireframe = AssetDetailsWireframe(operationState: operationState)
+        let wireframe = AssetDetailsWireframe(operationState: operationState, swapState: swapState)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetDetailsViewModelFactory(
