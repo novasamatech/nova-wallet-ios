@@ -21,7 +21,6 @@ class AssetsManageTests: XCTestCase {
         let repository: CoreDataRepository<ChainModel, CDChain> = storageFacade.createRepository(
             mapper: AnyCoreDataMapper(mapper)
         )
-        let dataOperationFactory = MockDataOperationFactoryProtocol()
         let operationQueue = OperationQueue()
         let eventCenter = MockEventCenterProtocol()
         

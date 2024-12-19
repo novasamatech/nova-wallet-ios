@@ -41,6 +41,15 @@ struct XcmDeliveryFee: Decodable {
                 self = .undefined
             }
         }
+
+        var alwaysHoldingPays: Bool? {
+            switch self {
+            case let .exponential(exponential):
+                return exponential.alwaysHoldingPays
+            default:
+                return nil
+            }
+        }
     }
 
     let toParent: Price?

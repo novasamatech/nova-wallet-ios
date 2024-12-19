@@ -187,7 +187,7 @@ final class BlockTimeEstimationService {
             return
         }
 
-        let storagePaths: [StorageCodingPath] = [.blockNumber, .timestampNow]
+        let storagePaths: [StorageCodingPath] = [SystemPallet.blockNumberPath, .timestampNow]
         let optRequests: [UnkeyedSubscriptionRequest]? = try? storagePaths.map { path in
             let localKey = try localKeyFactory.createFromStoragePath(path, chainId: chainId)
             return UnkeyedSubscriptionRequest(storagePath: path, localKey: localKey)

@@ -6,7 +6,7 @@ import SoraFoundation
 struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
     func priceFromFiatAmount(
         _ decimalValue: Decimal,
-        priceData: PriceData
+        currencyId: Int?
     ) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "$100"

@@ -445,8 +445,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.noSubstrateRuntime = model.noSubstrateRuntime
         entity.hasSwapHub = model.hasSwapHub
         entity.hasSwapHydra = model.hasSwapHydra
-        entity.hasAssetHubTransferFees = model.hasAssetHubTransferFees
-        entity.hasHydrationTransferFees = model.hasHydrationTransferFees
+        entity.hasAssetHubTransferFees = model.hasAssetHubFees
+        entity.hasHydrationTransferFees = model.hasHydrationFees
         entity.hasProxy = model.hasProxy
         entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order

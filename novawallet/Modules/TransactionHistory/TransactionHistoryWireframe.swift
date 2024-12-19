@@ -3,13 +3,16 @@ import UIKit
 final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
     let chainAsset: ChainAsset
     let operationState: AssetOperationState
+    let swapState: SwapTokensFlowStateProtocol
 
     init(
         chainAsset: ChainAsset,
-        operationState: AssetOperationState
+        operationState: AssetOperationState,
+        swapState: SwapTokensFlowStateProtocol
     ) {
         self.chainAsset = chainAsset
         self.operationState = operationState
+        self.swapState = swapState
     }
 
     func showFilter(
@@ -34,7 +37,8 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
         guard let operationDetailsView = OperationDetailsViewFactory.createView(
             for: operation,
             chainAsset: chainAsset,
-            operationState: operationState
+            operationState: operationState,
+            swapState: swapState
         ) else {
             return
         }

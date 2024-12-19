@@ -112,20 +112,19 @@ extension ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
     ) -> Fee? {
-        let withdraw = EventCodingPath.balancesWithdraw
+        let withdrawPath = BalancesPallet.balancesWithdraw
         let closure: (EventRecord) -> Bool = { record in
             guard record.extrinsicIndex == index,
                   let eventPath = metadata.createEventCodingPath(from: record.event) else {
                 return false
             }
 
-            guard eventPath.moduleName == withdraw.moduleName,
-                  eventPath.eventName == withdraw.eventName else {
+            guard eventPath == withdrawPath else {
                 return false
             }
 
             guard let event = try? record.event.params.map(
-                to: BalancesWithdrawEvent.self,
+                to: BalancesPallet.WithdrawEvent.self,
                 with: runtimeJsonContext.toRawContext()
             ) else {
                 return false
@@ -137,7 +136,7 @@ extension ExtrinsicProcessor {
         guard
             let record = eventRecords.first(where: closure),
             let event = try? record.event.params.map(
-                to: BalancesWithdrawEvent.self,
+                to: BalancesPallet.WithdrawEvent.self,
                 with: runtimeJsonContext.toRawContext()
             ) else {
             return nil
@@ -155,7 +154,7 @@ extension ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
     ) -> Fee? {
-        let balances = EventCodingPath.balancesDeposit
+        let balancesPath = BalancesPallet.balancesDeposit
 
         let maybeBalancesDeposit: BigUInt? = eventRecords.last { record in
             guard record.extrinsicIndex == index,
@@ -163,11 +162,10 @@ extension ExtrinsicProcessor {
                 return false
             }
 
-            return eventPath.moduleName == balances.moduleName &&
-                eventPath.eventName == balances.eventName
+            return eventPath == balancesPath
         }.map { record in
             let event = try? record.event.params.map(
-                to: BalanceDepositEvent.self,
+                to: BalancesPallet.DepositEvent.self,
                 with: runtimeJsonContext.toRawContext()
             )
             return event?.amount ?? 0

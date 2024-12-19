@@ -73,7 +73,7 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         let storageKeyFactory = LocalStorageKeyFactory()
         let chainId = chainAsset.chain.chainId
 
-        let accountStoragePath = StorageCodingPath.account
+        let accountStoragePath = SystemPallet.accountPath
         let accountLocalKey = try storageKeyFactory.createFromStoragePath(
             accountStoragePath,
             accountId: accountId,

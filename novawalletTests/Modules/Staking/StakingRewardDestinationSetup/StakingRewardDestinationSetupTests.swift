@@ -8,7 +8,11 @@ import SoraFoundation
 import BigInt
 
 class StakingRewardDestinationSetupTests: XCTestCase {
-
+    struct PresenterSetupResult {
+        let presenter: StakingRewardDestSetupPresenter
+        let outputProxy: StakingRewardDestSetupInteractorOutputProtocol
+    }
+    
     func testRewardDestinationSetupSuccess() throws {
         // given
 
@@ -19,7 +23,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
 
         // when
 
-        let presenter = try setupPresenter(for: view, wireframe: wireframe, newPayout: newPayoutAccount)
+        let presenterResult = try setupPresenter(for: view, wireframe: wireframe, newPayout: newPayoutAccount)
 
         let changesApplied = XCTestExpectation()
 
@@ -66,12 +70,12 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             }
         }
 
-        presenter.selectPayoutDestination()
-        presenter.selectPayoutAccount()
+        presenterResult.presenter.selectPayoutDestination()
+        presenterResult.presenter.selectPayoutAccount()
 
         wait(for: [changesApplied, payoutSelectionsExpectation], timeout: 10.0)
 
-        presenter.proceed()
+        presenterResult.presenter.proceed()
 
         // then
 
@@ -82,7 +86,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         for view: MockStakingRewardDestSetupViewProtocol,
         wireframe: MockStakingRewardDestSetupWireframeProtocol,
         newPayout: MetaAccountModel?
-    ) throws -> StakingRewardDestSetupPresenter {
+    ) throws -> PresenterSetupResult {
         // given
 
         let chain = ChainModelGenerator.generateChain(
@@ -201,14 +205,17 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             assetInfo: assetInfo
         )
 
+        let mockedPresenter = MockStakingRewardDestSetupInteractorOutputProtocol()
+        
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.presenter = mockedPresenter
         validationFactory.view = view
 
         // when
 
         let feeExpectation = XCTestExpectation()
         let rewardDestinationExpectation = XCTestExpectation()
+        let balanceExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceiveFee(viewModel: any()).then { feeViewModel in
@@ -223,14 +230,68 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                 }
             }
         }
+        
+        stub(mockedPresenter) { stub in
+            when(stub).didReceiveFee(result: any()).then { fee in
+                presenter.didReceiveFee(result: fee)
+            }
+            
+            when(stub).didReceivePriceData(result: any()).then { result in
+                presenter.didReceivePriceData(result: result)
+            }
+            
+            when(stub).didReceiveStashItem(result: any()).then { result in
+                presenter.didReceiveStashItem(result: result)
+            }
+
+            when(stub).didReceiveStakingLedger(result: any()).then { result in
+                presenter.didReceiveStakingLedger(result: result)
+            }
+            
+            when(stub).didReceiveController(result: any()).then { result in
+                presenter.didReceiveController(result: result)
+            }
+            
+            when(stub).didReceiveStash(result: any()).then { result in
+                presenter.didReceiveStash(result: result)
+            }
+            
+            when(stub).didReceiveRewardDestinationAccount(result: any()).then { result in
+                presenter.didReceiveRewardDestinationAccount(result: result)
+            }
+            
+            when(stub).didReceiveRewardDestinationAddress(result: any()).then { result in
+                presenter.didReceiveRewardDestinationAddress(result: result)
+            }
+
+            when(stub).didReceiveCalculator(result: any()).then { result in
+                presenter.didReceiveCalculator(result: result)
+            }
+            
+            when(stub).didReceiveAccounts(result: any()).then { result in
+                presenter.didReceiveAccounts(result: result)
+            }
+            
+            when(stub).didReceiveNomination(result: any()).then { result in
+                presenter.didReceiveNomination(result: result)
+            }
+            
+            when(stub).didReceiveAccountBalance(result: any()).then { result in
+                presenter.didReceiveAccountBalance(result: result)
+                
+                if case .success = result {
+                    balanceExpectation.fulfill()
+                }
+            }
+        }
 
         presenter.setup()
 
         // then
 
-        wait(for: [feeExpectation, rewardDestinationExpectation], timeout: 10)
+        wait(for: [feeExpectation, rewardDestinationExpectation, balanceExpectation], timeout: 20)
 
-        return presenter
+        return PresenterSetupResult(presenter: presenter, outputProxy: mockedPresenter)
     }
 
 }

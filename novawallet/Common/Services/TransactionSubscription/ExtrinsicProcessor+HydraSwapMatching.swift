@@ -241,7 +241,7 @@ extension ExtrinsicProcessor {
             from: params,
             callSender: mappingResult.callSender,
             call: call,
-            eventRecords: eventRecords,
+            eventRecords: eventRecords.filter { $0.extrinsicIndex == extrinsicIndex },
             codingFactory: codingFactory
         )
 
@@ -277,13 +277,13 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        let assetIn = try HydraDxTokenConverter.converToLocal(
+        let assetIn = try HydraDxTokenConverter.convertToLocal(
             for: swapArgs.assetIn,
             chain: chain,
             codingFactory: codingFactory
         )
 
-        let assetOut = try HydraDxTokenConverter.converToLocal(
+        let assetOut = try HydraDxTokenConverter.convertToLocal(
             for: swapArgs.assetOut,
             chain: chain,
             codingFactory: codingFactory
@@ -313,13 +313,13 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        let assetIn = try HydraDxTokenConverter.converToLocal(
+        let assetIn = try HydraDxTokenConverter.convertToLocal(
             for: swapArgs.assetIn,
             chain: chain,
             codingFactory: codingFactory
         )
 
-        let assetOut = try HydraDxTokenConverter.converToLocal(
+        let assetOut = try HydraDxTokenConverter.convertToLocal(
             for: swapArgs.assetOut,
             chain: chain,
             codingFactory: codingFactory

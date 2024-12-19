@@ -163,6 +163,10 @@ extension MetaAccountModel {
         }
     }
 
+    func hasAccount(in chain: ChainModel) -> Bool {
+        fetch(for: chain.accountRequest()) != nil
+    }
+
     // Note that this query might return an account in another chain if it can't be found for provided chain
     func fetchByAccountId(_ accountId: AccountId, request: ChainAccountRequest) -> ChainAccountResponse? {
         if
@@ -325,7 +329,7 @@ extension MetaAccountModel {
 
     func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
         let request = chainAsset.chain.accountRequest()
-        return try fetch(for: request)?.toAddress()
+        return fetch(for: request)?.toAddress()
     }
 }
 

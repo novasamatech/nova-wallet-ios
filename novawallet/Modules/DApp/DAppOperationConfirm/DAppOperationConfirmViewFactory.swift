@@ -153,22 +153,25 @@ struct DAppOperationConfirmViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
+        )
+
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
         )
 
         let metadataHashFactory = MetadataHashOperationFactory(

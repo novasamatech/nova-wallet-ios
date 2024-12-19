@@ -13,6 +13,19 @@ extension BorderedLabelView {
 }
 
 extension BorderedLabelView.Style {
+    static let stepNumber = BorderedLabelView.Style(
+        text: .init(
+            textColor: R.color.colorTextSecondary()!,
+            font: .semiBoldCaps1
+        ),
+        background: .init(
+            shadowOpacity: 0,
+            strokeWidth: 0,
+            fillColor: R.color.colorRouteNumberBackground()!,
+            highlightedFillColor: R.color.colorRouteNumberBackground()!
+        )
+    )
+
     static let chipsText = BorderedLabelView.Style(
         text: .init(
             textColor: R.color.colorChipText()!,

@@ -72,7 +72,7 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        let assetId = try HydraDxTokenConverter.converToLocal(
+        let assetId = try HydraDxTokenConverter.convertToLocal(
             for: depositedModel.currencyId.value,
             chain: chain,
             codingFactory: codingFactory

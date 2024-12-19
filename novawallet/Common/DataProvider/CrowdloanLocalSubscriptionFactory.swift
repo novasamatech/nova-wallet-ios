@@ -13,7 +13,7 @@ protocol CrowdloanLocalSubscriptionFactoryProtocol {
 final class CrowdloanLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     CrowdloanLocalSubscriptionFactoryProtocol {
     func getBlockNumberProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBlockNumber> {
-        let codingPath = StorageCodingPath.blockNumber
+        let codingPath = SystemPallet.blockNumberPath
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         return try getDataProvider(

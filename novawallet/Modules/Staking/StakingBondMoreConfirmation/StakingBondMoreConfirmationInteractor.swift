@@ -4,7 +4,7 @@ import BigInt
 import SoraKeystore
 
 final class StakingBondMoreConfirmationInteractor: AccountFetching {
-    weak var presenter: StakingBondMoreConfirmationOutputProtocol!
+    weak var presenter: StakingBondMoreConfirmationOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chainAsset: ChainAsset
@@ -76,7 +76,7 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter?.didReceivePriceData(result: .success(nil))
         }
 
         feeProxy.delegate = self
@@ -87,7 +87,7 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
               let amountValue = amount.toSubstrateAmount(
                   precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
-            presenter.didReceiveFee(result: .failure(CommonError.undefined))
+            presenter?.didReceiveFee(result: .failure(CommonError.undefined))
             return
         }
 
@@ -107,7 +107,7 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
             let amountValue = amount.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             ) else {
-            presenter.didSubmitBonding(result: .failure(CommonError.undefined))
+            presenter?.didSubmitBonding(result: .failure(CommonError.undefined))
             return
         }
 
@@ -120,7 +120,7 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] result in
-                self?.presenter.didSubmitBonding(result: result)
+                self?.presenter?.didSubmitBonding(result: result)
             }
         )
     }
@@ -131,16 +131,16 @@ extension StakingBondMoreConfirmationInteractor: StakingLocalStorageSubscriber,
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
             guard let stashItem = try result.get() else {
-                presenter.didReceiveStashItem(result: .success(nil))
-                presenter.didReceiveAccountBalance(result: .success(nil))
-                presenter.didReceiveStakingLedger(result: .success(nil))
+                presenter?.didReceiveStashItem(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
+                presenter?.didReceiveStakingLedger(result: .success(nil))
                 return
             }
 
             clear(streamableProvider: &balanceProvider)
             clear(dataProvider: &ledgerProvider)
 
-            presenter.didReceiveStashItem(result: result)
+            presenter?.didReceiveStashItem(result: result)
 
             let stashAccountId = try stashItem.stash.toAccountId(using: chainAsset.chain.chainFormat)
             let controllerAccountId = try stashItem.controller.toAccountId(using: chainAsset.chain.chainFormat)
@@ -168,16 +168,16 @@ extension StakingBondMoreConfirmationInteractor: StakingLocalStorageSubscriber,
 
                 switch result {
                 case let .success(response):
-                    self?.presenter.didReceiveStash(result: .success(response))
+                    self?.presenter?.didReceiveStash(result: .success(response))
                 case let .failure(error):
-                    self?.presenter.didReceiveStash(result: .failure(error))
+                    self?.presenter?.didReceiveStash(result: .failure(error))
                 }
             }
 
         } catch {
-            presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountBalance(result: .failure(error))
-            presenter.didReceiveStakingLedger(result: .failure(error))
+            presenter?.didReceiveStashItem(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
+            presenter?.didReceiveStakingLedger(result: .failure(error))
         }
     }
 
@@ -186,14 +186,14 @@ extension StakingBondMoreConfirmationInteractor: StakingLocalStorageSubscriber,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {
-        presenter.didReceiveStakingLedger(result: result)
+        presenter?.didReceiveStakingLedger(result: result)
     }
 }
 
 extension StakingBondMoreConfirmationInteractor: PriceLocalStorageSubscriber,
     PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 
@@ -204,13 +204,13 @@ extension StakingBondMoreConfirmationInteractor: WalletLocalStorageSubscriber, W
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountBalance(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 
 extension StakingBondMoreConfirmationInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter.didReceiveFee(result: result)
+        presenter?.didReceiveFee(result: result)
     }
 }
 

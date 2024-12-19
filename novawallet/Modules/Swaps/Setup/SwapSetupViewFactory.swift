@@ -4,19 +4,19 @@ import Operation_iOS
 
 struct SwapSetupViewFactory {
     static func createView(
-        assetListObservable: AssetListModelObservable,
+        state: SwapTokensFlowStateProtocol,
         payChainAsset: ChainAsset,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
         createView(
-            assetListObservable: assetListObservable,
+            state: state,
             initState: .init(payChainAsset: payChainAsset),
             swapCompletionClosure: swapCompletionClosure
         )
     }
 
     static func createView(
-        assetListObservable: AssetListModelObservable,
+        state: SwapTokensFlowStateProtocol,
         initState: SwapSetupInitState,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
@@ -26,32 +26,13 @@ struct SwapSetupViewFactory {
             return nil
         }
 
-        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager))
+        let priceInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceInfoFactory)
 
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue),
-            logger: Logger.shared
-        )
-
-        let flowState = AssetConversionFlowFacade(
-            wallet: selectedWallet,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
-            generalSubscriptonFactory: generalLocalSubscriptionFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
-        guard let interactor = createInteractor(for: flowState) else {
-            return nil
-        }
+        guard let interactor = createInteractor(for: state) else { return nil }
 
         let wireframe = SwapSetupWireframe(
-            assetListObservable: assetListObservable,
-            flowState: flowState,
+            state: state,
             swapCompletionClosure: swapCompletionClosure
         )
 
@@ -61,6 +42,7 @@ struct SwapSetupViewFactory {
 
         let viewModelFactory = SwapsSetupViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceInfoFactory,
             issuesViewModelFactory: issuesViewModelFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
@@ -79,6 +61,7 @@ struct SwapSetupViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
+            priceStore: state.priceStore,
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,
@@ -97,7 +80,7 @@ struct SwapSetupViewFactory {
         return view
     }
 
-    private static func createInteractor(for flowState: AssetConversionFlowFacadeProtocol) -> SwapSetupInteractor? {
+    private static func createInteractor(for flowState: SwapTokensFlowStateProtocol) -> SwapSetupInteractor? {
         guard let currencyManager = CurrencyManager.shared,
               let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -106,27 +89,21 @@ struct SwapSetupViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let assetConversionAggregator = AssetConversionAggregationFactory(
-            chainRegistry: chainRegistry,
-            operationQueue: operationQueue
-        )
-
         let assetStorageFactory = AssetStorageInfoOperationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
 
         let interactor = SwapSetupInteractor(
-            flowState: flowState,
-            assetConversionAggregatorFactory: assetConversionAggregator,
+            state: flowState,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             assetStorageFactory: assetStorageFactory,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             storageRepository: SubstrateRepositoryFactory().createChainStorageItemRepository(),
             currencyManager: currencyManager,
             selectedWallet: selectedWallet,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         return interactor

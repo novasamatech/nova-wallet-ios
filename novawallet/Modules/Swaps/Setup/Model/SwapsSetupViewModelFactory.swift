@@ -6,7 +6,7 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
 
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        maxValue: BigUInt?,
+        maxValue: Decimal?,
         locale: Locale
     ) -> TitleHorizontalMultiValueView.Model
 
@@ -28,14 +28,6 @@ protocol SwapsSetupViewModelFactoryProtocol: SwapBaseViewModelFactoryProtocol, S
         locale: Locale
     ) -> AmountInputViewModelProtocol
 
-    func feeViewModel(
-        amount: BigUInt,
-        assetDisplayInfo: AssetBalanceDisplayInfo,
-        isEditable: Bool,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> NetworkFeeInfoViewModel
-
     func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String
 }
 
@@ -46,6 +38,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         issuesViewModelFactory: SwapIssueViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol,
@@ -58,6 +51,7 @@ final class SwapsSetupViewModelFactory: SwapBaseViewModelFactory {
 
         super.init(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             percentForamatter: percentForamatter,
             priceDifferenceConfig: priceDifferenceConfig
         )
@@ -136,7 +130,7 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
 
     func payTitleViewModel(
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        maxValue: BigUInt?,
+        maxValue: Decimal?,
         locale: Locale
     ) -> TitleHorizontalMultiValueView.Model {
         let title = R.string.localizable.swapsSetupAssetSelectPayTitle(
@@ -144,13 +138,9 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
         )
 
         if let assetDisplayInfo = assetDisplayInfo, let maxValue = maxValue {
-            let amountDecimal = Decimal.fromSubstrateAmount(
-                maxValue,
-                precision: Int16(assetDisplayInfo.assetPrecision)
-            ) ?? 0
             let maxValueString = balanceViewModelFactoryFacade.amountFromValue(
                 targetAssetInfo: assetDisplayInfo,
-                value: amountDecimal
+                value: maxValue
             ).value(for: locale)
 
             return .init(
@@ -219,26 +209,6 @@ extension SwapsSetupViewModelFactory: SwapsSetupViewModelFactoryProtocol {
             targetAssetInfo: chainAsset.assetDisplayInfo,
             amount: amount
         ).value(for: locale)
-    }
-
-    func feeViewModel(
-        amount: BigUInt,
-        assetDisplayInfo: AssetBalanceDisplayInfo,
-        isEditable: Bool,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> NetworkFeeInfoViewModel {
-        let amountDecimal = Decimal.fromSubstrateAmount(
-            amount,
-            precision: assetDisplayInfo.assetPrecision
-        ) ?? 0
-        let balanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
-            targetAssetInfo: assetDisplayInfo,
-            amount: amountDecimal,
-            priceData: priceData
-        ).value(for: locale)
-
-        return .init(isEditable: isEditable, balanceViewModel: balanceViewModel)
     }
 
     func amountFromValue(_ decimal: Decimal, chainAsset: ChainAsset, locale: Locale) -> String {

@@ -111,13 +111,13 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         let stashId = try stashItem.stash.toAccountId(using: chainFormat)
 
         if stashId != accountId {
-            requests.append(.init(storagePath: .account, accountId: stashId))
+            requests.append(.init(storagePath: SystemPallet.accountPath, accountId: stashId))
         }
 
         let controllerId = try stashItem.controller.toAccountId(using: chainFormat)
 
         if controllerId != accountId {
-            requests.append(.init(storagePath: .account, accountId: controllerId))
+            requests.append(.init(storagePath: SystemPallet.accountPath, accountId: controllerId))
         }
 
         requests.append(.init(storagePath: Staking.payee, accountId: stashId))

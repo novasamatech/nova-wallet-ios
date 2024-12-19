@@ -55,7 +55,7 @@ class OnChainTransferPresenter {
     }
 
     var feeAssetChangeAvailable: Bool {
-        chainAsset.chain.hasCustomTransferFees
+        chainAsset.chain.hasCustomFees
             && sendingAssetFeeAvailable ?? false
             && !isUtilityTransfer
     }

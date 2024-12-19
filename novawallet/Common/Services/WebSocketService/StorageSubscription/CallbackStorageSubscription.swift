@@ -142,7 +142,7 @@ final class CallbackStorageSubscription<T: Decodable> {
         }
     }
 
-    private func unsubscribe() {
+    func unsubscribe() {
         mutex.lock()
 
         defer {

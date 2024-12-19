@@ -128,12 +128,12 @@ final class TransactionSubscription {
         connection: JSONRPCEngine,
         blockHash: Data
     ) throws -> CompoundOperationWrapper<[StorageResponse<[EventRecord]>]> {
-        let eventsKey = try StorageKeyFactory().key(from: .events)
+        let eventsKey = try StorageKeyFactory().key(from: SystemPallet.eventsPath)
         return storageRequestFactory.queryItems(
             engine: connection,
             keys: { [eventsKey] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: .events,
+            storagePath: SystemPallet.eventsPath,
             at: blockHash
         )
     }

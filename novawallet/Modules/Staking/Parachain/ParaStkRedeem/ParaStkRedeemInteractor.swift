@@ -139,8 +139,8 @@ extension ParaStkRedeemInteractor: ParaStkRedeemInteractorInputProtocol {
 
         let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
             switch result {
-            case let .success(status):
-                if case let .inBlock(extrinsicHash) = status {
+            case let .success(statusUpdate):
+                if case let .inBlock(extrinsicHash) = statusUpdate.extrinsicStatus {
                     self?.cancelExtrinsicSubscriptionIfNeeded()
                     self?.presenter?.didCompleteExtrinsicSubmission(for: .success(extrinsicHash))
                 }

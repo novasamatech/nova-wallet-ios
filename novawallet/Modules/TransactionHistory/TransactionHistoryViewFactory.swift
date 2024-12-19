@@ -6,7 +6,8 @@ import Operation_iOS
 struct TransactionHistoryViewFactory {
     static func createView(
         chainAsset: ChainAsset,
-        operationState: AssetOperationState
+        operationState: AssetOperationState,
+        swapState: SwapTokensFlowStateProtocol
     ) -> TransactionHistoryViewProtocol? {
         guard
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
@@ -24,7 +25,8 @@ struct TransactionHistoryViewFactory {
 
         let wireframe = TransactionHistoryWireframe(
             chainAsset: chainAsset,
-            operationState: operationState
+            operationState: operationState,
+            swapState: swapState
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(

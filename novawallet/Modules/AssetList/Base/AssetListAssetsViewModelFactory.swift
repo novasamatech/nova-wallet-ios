@@ -181,7 +181,7 @@ private extension AssetListAssetViewModelFactory {
         if let priceData {
             let balanceValue = balanceViewModelFactory.priceFromFiatAmount(
                 value,
-                priceData: priceData
+                currencyId: priceData.currencyId
             ).value(for: locale)
 
             return (balanceState, .loaded(value: balanceValue))
@@ -283,7 +283,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let priceString: String = if let asset = assets.first, let priceData = asset.priceData {
             balanceViewModelFactory(assetInfo: asset.assetInfo)
-                .priceFromFiatAmount(value, priceData: priceData)
+                .priceFromFiatAmount(value, currencyId: priceData.currencyId)
                 .value(for: locale)
         } else {
             ""

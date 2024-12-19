@@ -48,6 +48,11 @@ extension RoundedView {
         highlightedFillColor = R.color.colorCellBackgroundPressed()!
     }
 
+    func applyErrorBlockBackgroundStyle() {
+        let color = R.color.colorErrorBlockBackground()!
+        applyFilledBackgroundStyle(for: color, highlighted: color)
+    }
+
     func applyFilledBackgroundStyle() {
         shadowOpacity = 0.0
         strokeWidth = 0.0
@@ -57,5 +62,14 @@ extension RoundedView {
         shadowOpacity = 0.0
         fillColor = .clear
         highlightedFillColor = .clear
+    }
+
+    func applyFilledBackgroundStyle(for color: UIColor, highlighted: UIColor) {
+        shadowOpacity = 0.0
+        strokeWidth = 0.0
+        strokeColor = .clear
+        highlightedStrokeColor = .clear
+        fillColor = color
+        highlightedFillColor = highlighted
     }
 }

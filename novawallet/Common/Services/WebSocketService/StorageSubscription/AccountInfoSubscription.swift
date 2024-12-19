@@ -46,7 +46,7 @@ final class AccountInfoSubscription {
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let decodingOperation = StorageFallbackDecodingOperation<AccountInfo>(
-            path: .account,
+            path: SystemPallet.accountPath,
             data: item
         )
 

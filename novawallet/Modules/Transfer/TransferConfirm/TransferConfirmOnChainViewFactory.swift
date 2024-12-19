@@ -209,12 +209,7 @@ struct TransferConfirmOnChainViewFactory {
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
-            remoteSubscriptionService: walletRemoteSubscriptionService,
-            chainRegistry: chainRegistry,
-            repositoryFactory: repositoryFactory,
-            eventCenter: EventCenter.shared,
-            operationQueue: operationQueue,
-            logger: Logger.shared
+            remoteSubscriptionService: walletRemoteSubscriptionService
         )
 
         let extrinsicService = ExtrinsicServiceFactory(

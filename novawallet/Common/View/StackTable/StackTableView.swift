@@ -93,6 +93,12 @@ final class StackTableView: RoundedView {
         updateLayout()
     }
 
+    func resetSeparators() {
+        showsSeparatorStore = [:]
+
+        updateLayout()
+    }
+
     func updateLayout() {
         let views = stackView.arrangedSubviews
 

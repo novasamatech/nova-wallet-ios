@@ -194,5 +194,37 @@
         <string>Seleziona almeno %li portafogli</string>
       </dict>
     </dict>
+    <key>common.seconds.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li secondo</string>
+        <key>other</key>
+        <string>%li secondi</string>
+      </dict>
+    </dict>
+    <key>common.operations</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li operazione</string>
+        <key>other</key>
+        <string>%li operazioni</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

@@ -22,7 +22,7 @@ class ExtrinsicProcessingTests: XCTestCase {
             let processor = ExtrinsicProcessor(accountId: senderAccountId, chain: chain)
 
             let eventRecordsData = try Data(hexString: eventRecordsHex)
-            let typeName = coderFactory.metadata.getStorageMetadata(for: .events)!.type.typeName
+            let typeName = coderFactory.metadata.getStorageMetadata(for: SystemPallet.eventsPath)!.type.typeName
             let decoder = try coderFactory.createDecoder(from: eventRecordsData)
             let eventRecords: [EventRecord] = try decoder.read(of: typeName)
 

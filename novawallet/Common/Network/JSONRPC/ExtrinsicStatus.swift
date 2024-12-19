@@ -1,5 +1,21 @@
 import Foundation
 
+struct ExtrinsicStatusUpdate {
+    let extrinsicHash: String
+    let extrinsicStatus: ExtrinsicStatus
+
+    func getInBlockOrFinalizedHash() -> BlockHash? {
+        switch extrinsicStatus {
+        case let .inBlock(blockHash):
+            blockHash
+        case let .finalized(blockHash):
+            blockHash
+        default:
+            nil
+        }
+    }
+}
+
 enum ExtrinsicStatus: Decodable {
     case inBlock(String)
     case finalized(String)

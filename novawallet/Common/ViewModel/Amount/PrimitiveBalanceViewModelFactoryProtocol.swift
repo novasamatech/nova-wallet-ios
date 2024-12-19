@@ -7,7 +7,7 @@ protocol PrimitiveBalanceViewModelFactoryProtocol {
 
     func priceFromFiatAmount(
         _ decimalValue: Decimal,
-        priceData: PriceData
+        currencyId: Int?
     ) -> LocalizableResource<String>
 
     func amountFromValue(

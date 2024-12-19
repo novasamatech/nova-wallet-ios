@@ -9,9 +9,9 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> BigUInt? {
         try eventRecords.first { record in
-            metadata.createEventCodingPath(from: record.event) == .balancesTransfer
+            metadata.createEventCodingPath(from: record.event) == BalancesPallet.balancesTransfer
         }.map { eventRecord in
-            try eventRecord.event.params.map(to: BalancesTransferEvent.self, with: context.toRawContext())
+            try eventRecord.event.params.map(to: BalancesPallet.TransferEvent.self, with: context.toRawContext())
         }?.amount
     }
 

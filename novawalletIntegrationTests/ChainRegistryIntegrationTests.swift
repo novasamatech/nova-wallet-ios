@@ -77,7 +77,7 @@ class ChainRegistryIntegrationTests: XCTestCase {
                     [accountId]
                 }, factory: {
                     try factoryOperation.extractNoCancellableResultData()
-                }, storagePath: .account
+                }, storagePath: SystemPallet.accountPath
             )
 
             queryWrapper.addDependency(operations: [factoryOperation])

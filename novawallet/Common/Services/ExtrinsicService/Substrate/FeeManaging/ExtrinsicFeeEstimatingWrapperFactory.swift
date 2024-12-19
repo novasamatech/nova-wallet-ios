@@ -10,44 +10,29 @@ protocol ExtrinsicFeeEstimatingWrapperFactoryProtocol {
         asset: AssetModel,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol>
-
-    func createHydraFeeEstimatingWrapper(
-        asset: AssetModel,
-        flowStateStore: HydraFlowStateStore,
-        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
-    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol>
 }
 
 final class ExtrinsicFeeEstimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactoryProtocol {
-    let account: ChainAccountResponse
-    let chain: ChainModel
-    let runtimeService: RuntimeProviderProtocol
-    let connection: JSONRPCEngine
-    let operationQueue: OperationQueue
+    let host: ExtrinsicFeeEstimatorHostProtocol
+    let customFeeEstimatorFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
 
     init(
-        account: ChainAccountResponse,
-        chain: ChainModel,
-        runtimeService: RuntimeProviderProtocol,
-        connection: JSONRPCEngine,
-        operationQueue: OperationQueue
+        host: ExtrinsicFeeEstimatorHostProtocol,
+        customFeeEstimatorFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) {
-        self.account = account
-        self.chain = chain
-        self.runtimeService = runtimeService
-        self.connection = connection
-        self.operationQueue = operationQueue
+        self.host = host
+        self.customFeeEstimatorFactory = customFeeEstimatorFactory
     }
 
     func createNativeFeeEstimatingWrapper(
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
         ExtrinsicNativeFeeEstimator(
-            chain: chain,
-            operationQueue: operationQueue
+            chain: host.chain,
+            operationQueue: host.operationQueue
         ).createFeeEstimatingWrapper(
-            connection: connection,
-            runtimeService: runtimeService,
+            connection: host.connection,
+            runtimeService: host.runtimeProvider,
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
         )
     }
@@ -56,41 +41,21 @@ final class ExtrinsicFeeEstimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperF
         asset: AssetModel,
         extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
     ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        ExtrinsicAssetsCustomFeeEstimator(
-            chainAsset: .init(chain: chain, asset: asset),
-            operationQueue: operationQueue
-        ).createFeeEstimatingWrapper(
-            connection: connection,
-            runtimeService: runtimeService,
+        let chainAsset = ChainAsset(chain: host.chain, asset: asset)
+
+        guard
+            let customFeeEstimator = customFeeEstimatorFactory.createCustomFeeEstimator(
+                for: chainAsset
+            ) else {
+            return .createWithError(
+                ExtrinsicFeeEstimationRegistryError.unexpectedChainAssetId(chainAsset.chainAssetId)
+            )
+        }
+
+        return customFeeEstimator.createFeeEstimatingWrapper(
+            connection: host.connection,
+            runtimeService: host.runtimeProvider,
             extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
         )
-    }
-
-    func createHydraFeeEstimatingWrapper(
-        asset: AssetModel,
-        flowStateStore: HydraFlowStateStore,
-        extrinsicCreatingResultClosure: @escaping () throws -> ExtrinsicsCreationResult
-    ) -> CompoundOperationWrapper<ExtrinsicFeeEstimationResultProtocol> {
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
-
-        do {
-            let flowState = try flowStateStore.setupFlowState(
-                account: account,
-                chain: chain,
-                queue: operationQueue
-            )
-
-            return HydraExtrinsicAssetsCustomFeeEstimator(
-                chainAsset: chainAsset,
-                flowState: flowState,
-                operationQueue: operationQueue
-            ).createFeeEstimatingWrapper(
-                connection: connection,
-                runtimeService: runtimeService,
-                extrinsicCreatingResultClosure: extrinsicCreatingResultClosure
-            )
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
     }
 }

@@ -39,6 +39,14 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.rateCell
     }
 
+    var routeCell: SwapRouteViewCell {
+        detailsView.routeCell
+    }
+
+    var execTimeCell: SwapInfoViewCell {
+        detailsView.execTimeCell
+    }
+
     var networkFeeCell: SwapNetworkFeeViewCell {
         detailsView.networkFeeCell
     }
@@ -46,8 +54,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
     var payIssueLabel: UILabel?
 
     var receiveIssueLabel: UILabel?
-
-    var notificationView: InlineAlertView?
 
     private func setupPayIssueLabel() -> UILabel {
         if let payIssueLabel = payIssueLabel {
@@ -79,20 +85,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         receiveIssueLabel = label
 
         return label
-    }
-
-    private func setupNotificationView() -> InlineAlertView {
-        if let notificationView = notificationView {
-            return notificationView
-        }
-
-        let view = InlineAlertView.info()
-        insertArrangedSubview(view, after: detailsView, spacingAfter: 8)
-        stackView.setCustomSpacing(16, after: detailsView)
-
-        notificationView = view
-
-        return view
     }
 
     override func setupStyle() {
@@ -146,11 +138,25 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.titleControl.titleLabel.text = R.string.localizable.swapsSetupDetailsTitle(
             preferredLanguages: locale.rLanguages
         )
+
         rateCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsSetupDetailsRate(
             preferredLanguages: locale.rLanguages)
-        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.commonNetworkFee(
-            preferredLanguages: locale.rLanguages)
+
+        routeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsRoute(
+            preferredLanguages: locale.rLanguages
+        )
+
+        execTimeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsExecTime(
+            preferredLanguages: locale.rLanguages
+        )
+
+        networkFeeCell.titleButton.imageWithTitleView?.title = R.string.localizable.swapsDetailsTotalFee(
+            preferredLanguages: locale.rLanguages
+        )
+
         rateCell.titleButton.invalidateLayout()
+        routeCell.titleButton.invalidateLayout()
+        execTimeCell.titleButton.invalidateLayout()
         networkFeeCell.titleButton.invalidateLayout()
     }
 
@@ -199,17 +205,5 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         stackView.setCustomSpacing(16, after: receiveAmountInputView)
 
         receiveAmountInputView.applyInput(style: .normal)
-    }
-
-    func displayInfoNotification(with text: String) {
-        let notificationView = setupNotificationView()
-        notificationView.contentView.detailsLabel.text = text
-    }
-
-    func hideNotification() {
-        notificationView?.removeFromSuperview()
-        notificationView = nil
-
-        stackView.setCustomSpacing(8, after: detailsView)
     }
 }

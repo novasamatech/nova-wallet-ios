@@ -1,12 +1,17 @@
 import UIKit
 import SoraUI
 
-final class SwapInfoView: GenericTitleValueView<RoundedButton, UILabel>, SkeletonableView {
+class SwapGenericInfoView<V: UIView>: GenericTitleValueView<RoundedButton, V>, SkeletonableView {
     var titleButton: RoundedButton { titleView }
-    var valueLabel: UILabel { valueView }
     var skeletonView: SkrullableView?
 
     private var isLoading: Bool = false
+
+    var selectable: Bool = true {
+        didSet {
+            applySelectable()
+        }
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -30,35 +35,23 @@ final class SwapInfoView: GenericTitleValueView<RoundedButton, UILabel>, Skeleto
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configure() {
+    func configure() {
         titleButton.applyIconStyle()
-        titleButton.imageWithTitleView?.iconImage = R.image.iconInfoFilled()
         titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         titleButton.imageWithTitleView?.titleFont = .regularFootnote
         titleButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 4
         titleButton.imageWithTitleView?.layoutType = .horizontalLabelFirst
         titleButton.contentInsets = .init(top: 8, left: 0, bottom: 8, right: 0)
 
-        valueLabel.textColor = R.color.colorTextPrimary()
-        valueLabel.font = .regularFootnote
+        applySelectable()
+    }
+
+    func applySelectable() {
+        titleButton.imageWithTitleView?.iconImage = selectable ? R.image.iconInfoFilled() : nil
     }
 }
 
-extension SwapInfoView {
-    func bind(loadableViewModel: LoadableViewModelState<String>) {
-        switch loadableViewModel {
-        case let .cached(value), let .loaded(value):
-            stopLoadingIfNeeded()
-            isLoading = false
-            valueView.text = value
-        case .loading:
-            startLoadingIfNeeded()
-            isLoading = true
-        }
-    }
-}
-
-extension SwapInfoView {
+extension SwapGenericInfoView {
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let size = CGSize(width: 68, height: 8)
         let offset = CGPoint(
@@ -91,5 +84,26 @@ extension SwapInfoView {
 
     func didStopSkeleton() {
         isLoading = false
+    }
+}
+
+final class SwapInfoView: SwapGenericInfoView<UILabel> {
+    var valueLabel: UILabel { valueView }
+
+    override func configure() {
+        super.configure()
+
+        valueLabel.textColor = R.color.colorTextPrimary()
+        valueLabel.font = .regularFootnote
+    }
+
+    func bind(loadableViewModel: LoadableViewModelState<String>) {
+        switch loadableViewModel {
+        case let .cached(value), let .loaded(value):
+            stopLoadingIfNeeded()
+            valueView.text = value
+        case .loading:
+            startLoadingIfNeeded()
+        }
     }
 }

@@ -263,10 +263,16 @@ final class ExtrinsicService {
         notificationClosure: @escaping ExtrinsicSubscriptionStatusClosure
     ) {
         do {
+            let extrinsicHash = try Data(hexString: extrinsic).blake2b32().toHex(includePrefix: true)
             let updateClosure: (ExtrinsicSubscriptionUpdate) -> Void = { update in
                 let status = update.params.result
+                let model = ExtrinsicStatusUpdate(
+                    extrinsicHash: extrinsicHash,
+                    extrinsicStatus: status
+                )
+
                 queue.async {
-                    notificationClosure(.success(status))
+                    notificationClosure(.success(model))
                 }
             }
 

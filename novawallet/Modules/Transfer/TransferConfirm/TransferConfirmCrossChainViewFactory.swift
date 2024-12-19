@@ -109,7 +109,6 @@ struct TransferConfirmCrossChainViewFactory {
         let storageFacade = SubstrateDataStorageFacade.shared
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let logger = Logger.shared
         let eventCenter = EventCenter.shared
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
@@ -117,15 +116,8 @@ struct TransferConfirmCrossChainViewFactory {
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
-            remoteSubscriptionService: walletRemoteSubscriptionService,
-            chainRegistry: chainRegistry,
-            repositoryFactory: repositoryFactory,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
+            remoteSubscriptionService: walletRemoteSubscriptionService
         )
-
-        let senderResolutionFacade = ExtrinsicSenderResolutionFacade(userStorageFacade: UserDataStorageFacade.shared)
 
         let metadataHashOperationFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
@@ -137,8 +129,9 @@ struct TransferConfirmCrossChainViewFactory {
         let extrinsicService = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: senderResolutionFacade,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
 

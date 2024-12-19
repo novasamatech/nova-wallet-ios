@@ -62,9 +62,7 @@ final class SwapAssetsOperationPresenter: AssetsSearchPresenter {
             onMultipleInstances: { multichainToken in
                 swapAssetsWireframe?.showSelectNetwork(
                     from: view,
-                    multichainToken: multichainToken,
-                    selectClosure: selectClosure,
-                    selectClosureStrategy: selectClosureStrategy
+                    multichainToken: multichainToken
                 )
             }
         )

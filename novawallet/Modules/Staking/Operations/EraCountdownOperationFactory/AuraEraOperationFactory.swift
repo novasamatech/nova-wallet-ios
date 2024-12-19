@@ -53,9 +53,9 @@ final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
         let blockNumberWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BlockNumber>>]> =
             storageRequestFactory.queryItems(
                 engine: connection,
-                keys: { [try keyFactory.key(from: .blockNumber)] },
+                keys: { [try keyFactory.key(from: SystemPallet.blockNumberPath)] },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .blockNumber
+                storagePath: SystemPallet.blockNumberPath
             )
 
         let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<ActiveEraInfo>]> =

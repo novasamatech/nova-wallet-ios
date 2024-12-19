@@ -336,8 +336,9 @@ class XcmTransfersFeeTests: XCTestCase {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
             metadataHashOperationFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
         )
 
@@ -402,8 +403,9 @@ class XcmTransfersFeeTests: XCTestCase {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
             metadataHashOperationFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: substrateStorageFacade,
             operationQueue: OperationQueue()
         )
 

@@ -242,5 +242,45 @@
         <string>Wybierz co najmniej %li portfeli</string>
       </dict>
     </dict>
+    <key>common.seconds.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li sekunda</string>
+        <key>few</key>
+        <string>%li sekunda</string>
+        <key>many</key>
+        <string>%li sekunda</string>
+        <key>other</key>
+        <string>%li sekund</string>
+      </dict>
+    </dict>
+    <key>common.operations</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li operacja</string>
+        <key>few</key>
+        <string>%li operacja</string>
+        <key>many</key>
+        <string>%li operacja</string>
+        <key>other</key>
+        <string>%li operacji</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

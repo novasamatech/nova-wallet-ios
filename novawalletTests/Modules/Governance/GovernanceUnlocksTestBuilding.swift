@@ -75,7 +75,6 @@ enum GovernanceUnlocksTestBuilding {
 
         let initReferendums = [ReferendumIdLocal: GovUnlockReferendumProtocol]()
         let referendums = tracksVoting.votes.tracksByReferendums().keys.reduce(into: initReferendums) { (accum, referendumId) in
-            let deposit = Referenda.Deposit(who: AccountId.zeroAccountId(of: 32), amount: BigUInt(0))
             let referendum = prepareReferendumInfo(
                 for: referendumId,
                 given: referendumsDef,

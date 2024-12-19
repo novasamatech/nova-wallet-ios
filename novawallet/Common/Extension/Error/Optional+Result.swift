@@ -9,4 +9,12 @@ extension Optional {
             return true
         }
     }
+
+    func mapOrThrow(_ error: Error) throws -> Wrapped {
+        guard let value = self else {
+            throw error
+        }
+
+        return value
+    }
 }

@@ -76,9 +76,9 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(rateInfoAction),
             for: .touchUpInside
         )
-        rootView.networkFeeCell.valueTopButton.addTarget(
+        rootView.routeCell.addTarget(
             self,
-            action: #selector(changeNetworkFeeAction),
+            action: #selector(routeDetailsAction),
             for: .touchUpInside
         )
         rootView.networkFeeCell.addTarget(
@@ -158,16 +158,16 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
         presenter.updateReceiveAmount(amount)
     }
 
-    @objc private func changeNetworkFeeAction() {
-        presenter.showFeeActions()
-    }
-
     @objc private func networkFeeInfoAction() {
         presenter.showFeeInfo()
     }
 
     @objc private func rateInfoAction() {
         presenter.showRateInfo()
+    }
+
+    @objc private func routeDetailsAction() {
+        presenter.showRouteDetails()
     }
 
     @objc private func payMaxAction() {
@@ -251,6 +251,14 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
         rootView.rateCell.bind(loadableViewModel: viewModel)
     }
 
+    func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>) {
+        rootView.routeCell.bind(loadableRouteViewModel: viewModel)
+    }
+
+    func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>) {
+        rootView.execTimeCell.bind(loadableViewModel: viewModel)
+    }
+
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>) {
         rootView.networkFeeCell.bind(loadableViewModel: viewModel)
 
@@ -311,14 +319,6 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
 
                 rootView.displayPayIssue(with: message)
             }
-        }
-    }
-
-    func didSetNotification(message: String?) {
-        if let message = message {
-            rootView.displayInfoNotification(with: message)
-        } else {
-            rootView.hideNotification()
         }
     }
 
