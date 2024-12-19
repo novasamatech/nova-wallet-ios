@@ -75,16 +75,19 @@ class BaseDAppBrowserWireframe {
         view?.controller.present(phishingView.controller, animated: true, completion: nil)
     }
 
-    func presentAddToFavoriteForm(from view: DAppBrowserViewProtocol?, page: DAppBrowserPage) {
+    func presentAddToFavoriteForm(
+        from view: DAppBrowserViewProtocol?,
+        page: DAppBrowserPage
+    ) {
         guard let addFavoriteView = DAppAddFavoriteViewFactory.createView(for: page) else {
             return
         }
 
         let navigationController = NovaNavigationController(rootViewController: addFavoriteView.controller)
-        view?.controller.presentWithCardLayout(
+
+        view?.controller.present(
             navigationController,
-            animated: true,
-            completion: nil
+            animated: true
         )
     }
 

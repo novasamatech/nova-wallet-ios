@@ -30,10 +30,11 @@ struct FadeContentDAppBrowserTransitionDependencies {
     let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
         from: 1.0,
         to: 0.0,
-        duration: 0.2
+        duration: 0.1
     )
     let blockAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
-        duration: 0.25, delay: 0,
+        duration: 0.25,
+        delay: 0,
         options: [.curveEaseOut]
     )
 
