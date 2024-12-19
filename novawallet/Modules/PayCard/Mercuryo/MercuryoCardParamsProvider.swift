@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol MercuryoCardParamsProviderProtocol {
-    func fetchParamsOperation() -> BaseOperation<MercuryoCardParams>
+    func fetchParamsWrapper() -> CompoundOperationWrapper<MercuryoCardParams>
 }
 
 final class MercuryoCardParamsProvider {
@@ -24,16 +24,16 @@ final class MercuryoCardParamsProvider {
 // MARK: MercuryoCardParamsProviderProtocol
 
 extension MercuryoCardParamsProvider: MercuryoCardParamsProviderProtocol {
-    func fetchParamsOperation() -> BaseOperation<MercuryoCardParams> {
+    func fetchParamsWrapper() -> CompoundOperationWrapper<MercuryoCardParams> {
         let chainFetchWrapper = chainRegistry.asyncWaitChainWrapper(for: chainId)
 
-        return ClosureOperation { [weak self] in
+        let resultOperation = ClosureOperation { [weak self] in
             guard
                 let self,
                 let chain = try chainFetchWrapper.targetOperation.extractNoCancellableResultData(),
                 let utilityAsset = chain.utilityChainAsset()
             else {
-                throw ChainModelFetchError.noAsset(assetId: 0)
+                throw ChainModelFetchError.noAsset(assetId: AssetModel.utilityAssetId)
             }
 
             guard
@@ -50,5 +50,9 @@ extension MercuryoCardParamsProvider: MercuryoCardParamsProviderProtocol {
                 refundAddress: refundAddress
             )
         }
+
+        resultOperation.addDependency(chainFetchWrapper.targetOperation)
+
+        return chainFetchWrapper.insertingTail(operation: resultOperation)
     }
 }

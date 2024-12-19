@@ -53,10 +53,10 @@ final class PayCardInteractor {
 
 extension PayCardInteractor: PayCardInteractorInputProtocol {
     func setup() {
-        let fetchParamsOperation = paramsProvider.fetchParamsOperation()
+        let fetchParamsWrapper = paramsProvider.fetchParamsWrapper()
 
         execute(
-            operation: fetchParamsOperation,
+            wrapper: fetchParamsWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
