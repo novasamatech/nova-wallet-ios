@@ -82,6 +82,9 @@ final class SwapConfirmViewLayout: ScrollableContainerLayoutView {
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
+
+        containerView.scrollBottomOffset = safeAreaInsets.bottom + UIConstants.actionBottomInset +
+            UIConstants.actionHeight + 8
     }
 
     func setup(locale: Locale) {

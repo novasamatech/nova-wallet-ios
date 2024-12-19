@@ -41,6 +41,8 @@ final class SwapExecutionViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
+        presentationController?.delegate = self
+
         rootView.detailsView.delegate = self
 
         rootView.rateCell.addTarget(self, action: #selector(rateAction), for: .touchUpInside)
@@ -143,6 +145,12 @@ extension SwapExecutionViewController: CollapsableContainerViewDelegate {
     }
 
     func didChangeExpansion(isExpanded _: Bool, sender _: AnyObject) {}
+}
+
+extension SwapExecutionViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool {
+        false
+    }
 }
 
 extension SwapExecutionViewController: Localizable {
