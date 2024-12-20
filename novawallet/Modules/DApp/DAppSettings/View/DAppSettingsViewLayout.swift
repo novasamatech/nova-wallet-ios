@@ -3,7 +3,6 @@ import SnapKit
 
 final class DAppSettingsViewLayout: UIView {
     let tableView: UITableView = .create {
-        $0.registerClassForCell(DAppFavoriteSettingsView.self)
         $0.registerClassForCell(DAppDesktopModeSettingsView.self)
         $0.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
         $0.separatorStyle = .none

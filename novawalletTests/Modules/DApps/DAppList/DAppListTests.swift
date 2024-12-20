@@ -69,11 +69,17 @@ class DAppListTests: XCTestCase {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
+        
+        let dAppCategoryViewModelFactory = DAppCategoryViewModelFactory()
+        
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: dAppCategoryViewModelFactory
+        )
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
+            viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
@@ -83,27 +89,40 @@ class DAppListTests: XCTestCase {
         // when
 
         let iconExpectation = XCTestExpectation()
-
         let stateExpectation = XCTestExpectation()
-
-        var actualState: DAppListState? = nil
+        
+        var sectionsModels: [DAppListSectionViewModel] = []
 
         stub(view) { stub in
-            stub.didReceive(state: any()).then { state in
-                guard case .loaded = state else {
+            stub.didReceive(any()).then { sections in
+                guard
+                    !sections.isEmpty,
+                    !sections.contains(where: { $0.model.cells.contains(.notLoaded) })
+                else {
                     return
                 }
-
-                actualState = state
-
+                
+                sectionsModels = sections
+                
                 stateExpectation.fulfill()
-            }
-
-            stub.didCompleteRefreshing().thenDoNothing()
-
-            stub.didReceiveWalletSwitch(viewModel: any()).then { _ in
+                
+                let walletSection = sections
+                    .first { section in
+                        section.model.cells.contains(
+                            where: { cell in
+                                guard case let .header(header) = cell else { return false }
+                                
+                                return true
+                            }
+                        )
+                    }
+                
+                guard walletSection != nil else { return }
+                
                 iconExpectation.fulfill()
             }
+            
+            stub.didCompleteRefreshing().thenDoNothing()
         }
 
         presenter.setup()
@@ -112,11 +131,19 @@ class DAppListTests: XCTestCase {
 
         wait(for: [iconExpectation, stateExpectation], timeout: 10.0)
 
-        switch actualState {
-        case .loading, .error, .none:
+        let unexpectedFinalStates = sectionsModels.filter { model in
+            switch model {
+            case .error, .notLoaded:
+                true
+            default:
+                false
+            }
+        }
+        
+        guard unexpectedFinalStates.isEmpty else {
             XCTFail("Unexpected final state")
-        case .loaded:
-            break
+            
+            return
         }
 
         verify(phishingSyncService, times(1)).setup()
