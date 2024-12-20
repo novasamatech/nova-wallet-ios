@@ -6,14 +6,6 @@ struct StorageCodingPath: Equatable {
 }
 
 extension StorageCodingPath {
-    static var account: StorageCodingPath {
-        StorageCodingPath(moduleName: "System", itemName: "Account")
-    }
-
-    static var events: StorageCodingPath {
-        StorageCodingPath(moduleName: "System", itemName: "Events")
-    }
-
     static var totalIssuance: StorageCodingPath {
         StorageCodingPath(moduleName: "Balances", itemName: "TotalIssuance")
     }
@@ -48,10 +40,6 @@ extension StorageCodingPath {
 
     static var crowdloanFunds: StorageCodingPath {
         StorageCodingPath(moduleName: "Crowdloan", itemName: "Funds")
-    }
-
-    static var blockNumber: StorageCodingPath {
-        StorageCodingPath(moduleName: "System", itemName: "Number")
     }
 
     static var timestampNow: StorageCodingPath {

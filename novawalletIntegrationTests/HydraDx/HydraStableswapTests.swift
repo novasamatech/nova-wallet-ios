@@ -155,6 +155,7 @@ final class HydraStableswapTests: XCTestCase {
             chain: chain,
             connection: connection,
             runtimeProvider: runtimeService,
+            notificationsRegistrar: nil,
             operationQueue: operationQueue
         )
         

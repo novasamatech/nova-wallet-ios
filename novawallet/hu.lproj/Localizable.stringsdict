@@ -194,5 +194,37 @@
         <string>Legalább %li tárcát kell választani</string>
       </dict>
     </dict>
+    <key>common.seconds.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li másodperc</string>
+        <key>other</key>
+        <string>%li másodpercek</string>
+      </dict>
+    </dict>
+    <key>common.operations</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li művelet</string>
+        <key>other</key>
+        <string>%li műveletek</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

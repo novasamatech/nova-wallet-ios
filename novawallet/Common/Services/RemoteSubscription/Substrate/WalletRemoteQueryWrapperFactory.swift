@@ -14,18 +14,15 @@ final class WalletRemoteQueryWrapperFactory {
     let requestFactory: StorageRequestFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
     let connection: JSONRPCEngine
-    let assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     init(
         requestFactory: StorageRequestFactoryProtocol,
-        assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
         runtimeProvider: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
         operationQueue: OperationQueue
     ) {
         self.requestFactory = requestFactory
-        self.assetInfoOperationFactory = assetInfoOperationFactory
         self.runtimeProvider = runtimeProvider
         self.connection = connection
         self.operationQueue = operationQueue
@@ -42,7 +39,7 @@ final class WalletRemoteQueryWrapperFactory {
             factory: {
                 try codingFactoryOperation.extractNoCancellableResultData()
             },
-            storagePath: StorageCodingPath.account
+            storagePath: SystemPallet.accountPath
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
