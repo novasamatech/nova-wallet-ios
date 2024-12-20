@@ -87,7 +87,7 @@ private extension DAppBrowserWidgetViewController {
 // MARK: DAppBrowserWidgetViewProtocol
 
 extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
-    func didReceiveRequestForCachedWebViewClear() {
+    func didChangeWallet() {
         webViewPoolEraser.removeAll()
     }
 

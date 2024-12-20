@@ -165,7 +165,7 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetInteractorOutputProtocol 
     }
 
     func didReceiveWalletChanged() {
-        view?.didReceiveRequestForCachedWebViewClear()
+        view?.didChangeWallet()
     }
 }
 

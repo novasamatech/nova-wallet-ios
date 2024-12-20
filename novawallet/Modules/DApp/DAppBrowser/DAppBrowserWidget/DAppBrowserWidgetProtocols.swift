@@ -19,7 +19,7 @@ protocol DAppBrowserWidgetProtocol {
 protocol DAppBrowserWidgetViewProtocol: ControllerBackedProtocol {
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel)
     func didReceiveRequestForMinimizing()
-    func didReceiveRequestForCachedWebViewClear()
+    func didChangeWallet()
 }
 
 // MARK: VIEW -> PRESENTER
