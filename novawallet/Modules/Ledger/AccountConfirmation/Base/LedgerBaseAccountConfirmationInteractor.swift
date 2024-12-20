@@ -77,7 +77,7 @@ class LedgerBaseAccountConfirmationInteractor {
             factory: {
                 try codingFactoryOperation.extractNoCancellableResultData()
             },
-            storagePath: .account
+            storagePath: SystemPallet.accountPath
         )
 
         balanceWrapper.addDependency(wrapper: ledgerWrapper)

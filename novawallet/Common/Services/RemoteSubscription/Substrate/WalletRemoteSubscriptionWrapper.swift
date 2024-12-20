@@ -19,27 +19,12 @@ protocol WalletRemoteSubscriptionWrapperProtocol {
 }
 
 final class WalletRemoteSubscriptionWrapper {
-    let chainRegistry: ChainRegistryProtocol
     let remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol
-    let repositoryFactory: SubstrateRepositoryFactoryProtocol
-    let eventCenter: EventCenterProtocol
-    let operationQueue: OperationQueue
-    let logger: LoggerProtocol
 
     init(
-        remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol,
-        chainRegistry: ChainRegistryProtocol,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        remoteSubscriptionService: BalanceRemoteSubscriptionServiceProtocol
     ) {
         self.remoteSubscriptionService = remoteSubscriptionService
-        self.chainRegistry = chainRegistry
-        self.repositoryFactory = repositoryFactory
-        self.eventCenter = eventCenter
-        self.operationQueue = operationQueue
-        self.logger = logger
     }
 }
 

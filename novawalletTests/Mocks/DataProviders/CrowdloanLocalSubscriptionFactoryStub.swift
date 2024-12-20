@@ -18,7 +18,7 @@ final class CrowdloanLocalSubscriptionFactoryStub: CrowdloanLocalSubscriptionFac
         let localIdentifierFactory = LocalStorageKeyFactory()
 
         let blockNumberModel: DecodedBlockNumber = try {
-            let localKey = try localIdentifierFactory.createFromStoragePath(.blockNumber, chainId: chainId)
+            let localKey = try localIdentifierFactory.createFromStoragePath(SystemPallet.blockNumberPath, chainId: chainId)
             if let blockNumber = blockNumber {
                 return DecodedBlockNumber(identifier: localKey, item: StringScaleMapper(value: blockNumber))
             } else {

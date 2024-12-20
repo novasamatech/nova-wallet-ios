@@ -19,11 +19,9 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
     func priceFromFiatAmount(
         _ decimalValue: Decimal,
-        priceData: PriceData
+        currencyId: Int?
     ) -> LocalizableResource<String> {
-        guard let localizableFormatter = priceFormatter(for: priceData) else {
-            return LocalizableResource { _ in "" }
-        }
+        let localizableFormatter = priceFormatter(for: currencyId)
 
         return LocalizableResource { locale in
             let formatter = localizableFormatter.value(for: locale)
@@ -32,10 +30,11 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     }
 
     func priceFromAmount(_ amount: Decimal, priceData: PriceData) -> LocalizableResource<String> {
-        guard let rate = Decimal(string: priceData.price),
-              let localizableFormatter = priceFormatter(for: priceData) else {
+        guard let rate = Decimal(string: priceData.price) else {
             return LocalizableResource { _ in "" }
         }
+
+        let localizableFormatter = priceFormatter(for: priceData.currencyId)
 
         let targetAmount = rate * amount
 
@@ -45,12 +44,8 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         }
     }
 
-    func priceFormatter(for priceData: PriceData?) -> LocalizableResource<TokenFormatter>? {
-        guard let priceData = priceData else {
-            return nil
-        }
-
-        let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
+    func priceFormatter(for currencyId: Int?) -> LocalizableResource<TokenFormatter> {
+        let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
         return formatterFactory.createAssetPriceFormatter(for: priceAssetInfo)
     }
 
@@ -89,7 +84,7 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
         priceData: PriceData?
     ) -> LocalizableResource<BalanceViewModelProtocol> {
         let localizableAmountFormatter = formatterFactory.createInputTokenFormatter(for: targetAssetInfo)
-        let optLocalizablePriceFormatter = priceFormatter(for: priceData)
+        let localizablePriceFormatter = priceFormatter(for: priceData?.currencyId)
 
         return LocalizableResource { locale in
             let amountFormatter = localizableAmountFormatter.value(for: locale)
@@ -98,7 +93,6 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
             guard
                 let priceData = priceData,
-                let localizablePriceFormatter = optLocalizablePriceFormatter,
                 let rate = Decimal(string: priceData.price) else {
                 return BalanceViewModel(amount: amountString, price: nil)
             }
@@ -122,7 +116,7 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
             roundingMode: roundingMode
         )
 
-        let optLocalizablePriceFormatter = priceFormatter(for: priceData)
+        let localizablePriceFormatter = priceFormatter(for: priceData?.currencyId)
 
         return LocalizableResource { locale in
             let amountFormatter = localizableAmountFormatter.value(for: locale)
@@ -131,7 +125,6 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
             guard
                 let priceData = priceData,
-                let localizablePriceFormatter = optLocalizablePriceFormatter,
                 let rate = Decimal(string: priceData.price) else {
                 return BalanceViewModel(amount: amountString, price: nil)
             }
@@ -148,10 +141,9 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     func spendingAmountFromPrice(
         _ amount: Decimal,
         priceData: PriceData?
-    )
-        -> LocalizableResource<BalanceViewModelProtocol> {
+    ) -> LocalizableResource<BalanceViewModelProtocol> {
         let localizableAmountFormatter = formatterFactory.createInputTokenFormatter(for: targetAssetInfo)
-        let optLocalizablePriceFormatter = priceFormatter(for: priceData)
+        let localizablePriceFormatter = priceFormatter(for: priceData?.currencyId)
 
         return LocalizableResource { locale in
             let amountFormatter = localizableAmountFormatter.value(for: locale)
@@ -161,7 +153,6 @@ class PrimitiveBalanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
             guard
                 let priceData = priceData,
-                let localizablePriceFormatter = optLocalizablePriceFormatter,
                 let rate = Decimal(string: priceData.price) else {
                 return BalanceViewModel(amount: amountString, price: nil)
             }

@@ -216,7 +216,7 @@ final class Gov1OperationFactory {
             requestFactory.queryItem(
                 engine: connection,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .blockNumber,
+                storagePath: SystemPallet.blockNumberPath,
                 at: blockHash
             )
 

@@ -10,32 +10,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
 
-    init(
-        flowState: AssetConversionFlowFacadeProtocol,
-        assetConversionAggregatorFactory: AssetConversionAggregationFactoryProtocol,
-        chainRegistry: ChainRegistryProtocol,
-        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        storageRepository: AnyDataProviderRepository<ChainStorageItem>,
-        currencyManager: CurrencyManagerProtocol,
-        selectedWallet: MetaAccountModel,
-        operationQueue: OperationQueue
-    ) {
-        self.storageRepository = storageRepository
-
-        super.init(
-            flowState: flowState,
-            assetConversionAggregator: assetConversionAggregatorFactory,
-            chainRegistry: chainRegistry,
-            assetStorageFactory: assetStorageFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            currencyManager: currencyManager,
-            selectedWallet: selectedWallet,
-            operationQueue: operationQueue
-        )
-    }
+    private var requoteChange = Debouncer(delay: 4)
 
     weak var presenter: SwapSetupInteractorOutputProtocol? {
         basePresenter as? SwapSetupInteractorOutputProtocol
@@ -43,19 +18,19 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var receiveChainAsset: ChainAsset? {
         didSet {
-            updateSubscriptions(activeChainAssets: activeChainAssets)
+            clearSubscriptionsByAssets(activeChainAssets)
         }
     }
 
     private var payChainAsset: ChainAsset? {
         didSet {
-            updateSubscriptions(activeChainAssets: activeChainAssets)
+            clearSubscriptionsByAssets(activeChainAssets)
         }
     }
 
     private var feeChainAsset: ChainAsset? {
         didSet {
-            updateSubscriptions(activeChainAssets: activeChainAssets)
+            clearSubscriptionsByAssets(activeChainAssets)
         }
     }
 
@@ -70,9 +45,46 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         )
     }
 
+    private var activePriceIds: Set<AssetModel.PriceId> {
+        Set(
+            [
+                receiveChainAsset?.asset.priceId,
+                payChainAsset?.asset.priceId,
+                feeChainAsset?.asset.priceId,
+                feeChainAsset?.chain.utilityAsset()?.priceId
+            ].compactMap { $0 }
+        )
+    }
+
+    init(
+        state: SwapTokensFlowStateProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        assetStorageFactory: AssetStorageInfoOperationFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        storageRepository: AnyDataProviderRepository<ChainStorageItem>,
+        currencyManager: CurrencyManagerProtocol,
+        selectedWallet: MetaAccountModel,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) {
+        self.storageRepository = storageRepository
+
+        super.init(
+            state: state,
+            chainRegistry: chainRegistry,
+            assetStorageFactory: assetStorageFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            currencyManager: currencyManager,
+            selectedWallet: selectedWallet,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
     deinit {
         canPayFeeInAssetCall.cancel()
         clearRemoteSubscription()
+        requoteChange.cancel()
     }
 
     private func provideCanPayFee(for asset: ChainAsset) {
@@ -84,7 +96,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             return
         }
 
-        let wrapper = assetConversionAggregator.createCanPayFeeWrapper(in: asset)
+        let wrapper = assetsExchangeService.canPayFee(in: asset)
 
         executeCancellable(
             wrapper: wrapper,
@@ -93,10 +105,14 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(canPayFee):
-                self?.presenter?.didReceiveCanPayFeeInPayAsset(canPayFee, chainAssetId: asset.chainAssetId)
+            case let .success(isFeeSupported):
+                self?.presenter?.didReceiveCanPayFeeInPayAsset(
+                    isFeeSupported,
+                    chainAssetId: asset.chainAssetId
+                )
             case let .failure(error):
-                self?.presenter?.didReceive(setupError: .payAssetSetFailed(error))
+                self?.logger.error("Unexpected error: \(error)")
+                self?.presenter?.didReceiveCanPayFeeInPayAsset(false, chainAssetId: asset.chainAssetId)
             }
         }
     }
@@ -106,7 +122,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         remoteSubscription = nil
     }
 
-    private func setupRemoteSubscription(for chain: ChainModel) throws {
+    private func setupRemoteSubscription(for chain: ChainModel) {
         guard
             let accountId = selectedWallet.fetch(for: chain.accountRequest())?.accountId,
             let connection = chainRegistry.getConnection(for: chain.chainId),
@@ -114,66 +130,61 @@ final class SwapSetupInteractor: SwapBaseInteractor {
             return
         }
 
-        let localKeyFactory = LocalStorageKeyFactory()
+        do {
+            let localKeyFactory = LocalStorageKeyFactory()
 
-        let accountInfoKey = try localKeyFactory.createFromStoragePath(
-            .account,
-            accountId: accountId,
-            chainId: chain.chainId
-        )
-        let accountInfoRequest = BatchStorageSubscriptionRequest(
-            innerRequest: MapSubscriptionRequest(
-                storagePath: .account,
-                localKey: accountInfoKey,
-                keyParamClosure: {
-                    BytesCodable(wrappedValue: accountId)
+            let accountInfoKey = try localKeyFactory.createFromStoragePath(
+                SystemPallet.accountPath,
+                accountId: accountId,
+                chainId: chain.chainId
+            )
+
+            let accountInfoRequest = BatchStorageSubscriptionRequest(
+                innerRequest: MapSubscriptionRequest(
+                    storagePath: SystemPallet.accountPath,
+                    localKey: accountInfoKey,
+                    keyParamClosure: {
+                        BytesCodable(wrappedValue: accountId)
+                    }
+                ),
+                mappingKey: nil
+            )
+
+            remoteSubscription = CallbackBatchStorageSubscription(
+                requests: [accountInfoRequest],
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: storageRepository,
+                operationQueue: operationQueue,
+                callbackQueue: .main,
+                callbackClosure: { _ in
+                    // we are listening remote subscription via database
                 }
-            ),
-            mappingKey: nil
-        )
+            )
 
-        remoteSubscription = CallbackBatchStorageSubscription(
-            requests: [accountInfoRequest],
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: storageRepository,
-            operationQueue: operationQueue,
-            callbackQueue: .main,
-            callbackClosure: { _ in
-                // we are listening remote subscription via database
-            }
-        )
-
-        remoteSubscription?.subscribe()
+            remoteSubscription?.subscribe()
+        } catch {
+            logger.error("Unexpected error: \(error)")
+        }
     }
 
-    override func updateChain(with newChain: ChainModel) {
-        let oldChainId = currentChain?.chainId
+    override func setupReQuoteSubscription(for _: ChainAssetId, assetOut _: ChainAssetId) {
+        requoteChange.cancel()
 
-        super.updateChain(with: newChain)
-
-        if newChain.chainId != oldChainId {
-            do {
-                clearRemoteSubscription()
-                try setupRemoteSubscription(for: newChain)
-            } catch {
-                presenter?.didReceive(setupError: .remoteSubscription(error))
+        assetsExchangeService.subscribeRequoteService(
+            for: self,
+            ignoreIfAlreadyAdded: true,
+            notifyingIn: .main
+        ) { [weak self] in
+            self?.requoteChange.debounce {
+                self?.presenter?.didReceiveQuoteDataChanged()
             }
         }
     }
 
-    override func setupReQuoteSubscription(for assetIn: ChainAssetId, assetOut: ChainAssetId) {
-        if
-            let reQuoteService = flowState.getReQuoteService(for: assetIn, assetOut: assetOut),
-            !reQuoteService.hasSubscription(for: self) {
-            reQuoteService.subscribeSyncState(
-                self,
-                queue: .main
-            ) { [weak self] oldIsSyncing, newIsSyncing in
-                if oldIsSyncing, !newIsSyncing {
-                    self?.presenter?.didReceiveQuoteDataChanged()
-                }
-            }
+    override func performUpdateOnGraphChange() {
+        if let payChainAsset {
+            provideCanPayFee(for: payChainAsset)
         }
     }
 }
@@ -182,36 +193,35 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?) {
         self.receiveChainAsset = receiveChainAsset
         receiveChainAsset.map {
-            set(receiveChainAsset: $0)
+            setReceiveChainAssetSubscriptions($0)
         }
+
+        assetsExchangeService.throttleRequoteService()
     }
 
     func update(payChainAsset: ChainAsset?) {
+        guard self.payChainAsset?.chainAssetId != payChainAsset?.chainAssetId else {
+            return
+        }
+
+        clearRemoteSubscription()
+
         self.payChainAsset = payChainAsset
 
         if let payChainAsset = payChainAsset {
-            set(payChainAsset: payChainAsset)
+            setupRemoteSubscription(for: payChainAsset.chain)
+
+            setPayChainAssetSubscriptions(payChainAsset)
             provideCanPayFee(for: payChainAsset)
         }
+
+        assetsExchangeService.throttleRequoteService()
     }
 
     func update(feeChainAsset: ChainAsset?) {
         self.feeChainAsset = feeChainAsset
         feeChainAsset.map {
-            set(feeChainAsset: $0)
-        }
-    }
-
-    func retryRemoteSubscription() {
-        guard let chain = currentChain else {
-            return
-        }
-
-        do {
-            clearRemoteSubscription()
-            try setupRemoteSubscription(for: chain)
-        } catch {
-            presenter?.didReceive(setupError: .remoteSubscription(error))
+            setFeeChainAssetSubscriptions($0)
         }
     }
 }
