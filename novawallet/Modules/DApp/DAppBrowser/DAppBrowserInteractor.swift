@@ -257,15 +257,18 @@ private extension DAppBrowserInteractor {
 
     func verifyPhishing(for host: String, completion: ((Bool) -> Void)?) {
         sequentialPhishingVerifier.verify(host: host) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(isNotPhishing):
                 if !isNotPhishing {
-                    self?.bringPhishingDetectedStateAndNotify(for: host)
+                    bringPhishingDetectedStateAndNotify(for: host)
+                    tabManager.removeTab(with: currentTab.uuid)
                 }
 
                 completion?(isNotPhishing)
             case let .failure(error):
-                self?.presenter?.didReceive(error: error)
+                presenter?.didReceive(error: error)
             }
         }
     }
@@ -376,6 +379,7 @@ private extension DAppBrowserInteractor {
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
+        storeTab(currentTab)
         applicationHandler.delegate = self
 
         setupState()

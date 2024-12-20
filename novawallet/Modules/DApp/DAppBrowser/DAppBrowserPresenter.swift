@@ -221,7 +221,13 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceiveTabs(_ models: [DAppBrowserTab]) {
         tabs = models
 
-        view?.didReceiveTabsCount(viewModel: "\(models.count)")
+        let viewModel: DAppBrowserTabsButtonViewModel = if models.count < 100 {
+            .count("\(models.count)")
+        } else {
+            .icon
+        }
+
+        view?.didReceiveTabsCount(viewModel: viewModel)
     }
 
     func didSaveLastTabState() {

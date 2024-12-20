@@ -4,7 +4,8 @@ import SoraFoundation
 struct DAppBrowserWidgetViewFactory {
     static func createView() -> DAppBrowserWidgetViewProtocol? {
         let interactor = DAppBrowserWidgetInteractor(
-            tabManager: DAppBrowserTabManager.shared
+            tabManager: DAppBrowserTabManager.shared,
+            eventCenter: EventCenter.shared
         )
 
         let wireframe = DAppBrowserWidgetWireframe()

@@ -26,7 +26,7 @@ enum DAppBrowserTabTransition {
 
                 let destinationTabId = destintation?.idForTransitioningTab() ?? tabId
 
-                return source?.getTabViewForTransition(for: tabId)
+                return source?.getTabViewForTransition(for: destinationTabId)
             }
         } else {
             let transition = CATransition()

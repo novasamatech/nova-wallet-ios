@@ -1772,3 +1772,5 @@
 "common.close.all" = "Close All";
 "dapp.browser.tab.not.available" = "Webpage not available";
 "common.see.all" = "See All";
+"dapp.widget.close.alert.title" = "Close All DApps?";
+"dapp.widget.close.alert.message" = "All opened tabs in DApp browser will be closed.";
