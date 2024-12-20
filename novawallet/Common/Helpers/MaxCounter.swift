@@ -26,6 +26,6 @@ struct MaxCounter {
 
 extension MaxCounter {
     static func feeCorrection() -> MaxCounter {
-        MaxCounter(maxCount: 3)
+        MaxCounter(maxCount: 2)
     }
 }

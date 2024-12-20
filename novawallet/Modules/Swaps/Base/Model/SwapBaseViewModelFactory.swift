@@ -12,6 +12,10 @@ struct RateParams {
 protocol SwapBaseViewModelFactoryProtocol {
     func rateViewModel(from params: RateParams, locale: Locale) -> String
 
+    func routeViewModel(from metaOperations: [AssetExchangeMetaOperationProtocol]) -> [SwapRouteItemView.ViewModel]
+
+    func executionTimeViewModel(from timeInterval: TimeInterval, locale: Locale) -> String
+
     func priceDifferenceViewModel(
         rateParams: RateParams,
         priceIn: PriceData?,
@@ -19,26 +23,28 @@ protocol SwapBaseViewModelFactoryProtocol {
         locale: Locale
     ) -> DifferenceViewModel?
 
-    func minimalBalanceSwapForFeeMessage(
-        for networkFeeAddition: AssetConversion.AmountWithNative,
-        feeChainAsset: ChainAsset,
-        utilityChainAsset: ChainAsset,
-        utilityPriceData: PriceData?,
+    func feeViewModel(
+        amountInFiat: Decimal,
+        isEditable: Bool,
+        currencyId: Int?,
         locale: Locale
-    ) -> String
+    ) -> NetworkFeeInfoViewModel
 }
 
 class SwapBaseViewModelFactory {
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     let percentForamatter: LocalizableResource<NumberFormatter>
     let priceDifferenceConfig: SwapPriceDifferenceConfig
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         percentForamatter: LocalizableResource<NumberFormatter>,
         priceDifferenceConfig: SwapPriceDifferenceConfig
     ) {
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.percentForamatter = percentForamatter
         self.priceDifferenceConfig = priceDifferenceConfig
     }
@@ -70,47 +76,6 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         ).value(for: locale)
 
         return amountIn.estimatedEqual(to: amountOut)
-    }
-
-    func minimalBalanceSwapForFeeMessage(
-        for networkFeeAddition: AssetConversion.AmountWithNative,
-        feeChainAsset: ChainAsset,
-        utilityChainAsset: ChainAsset,
-        utilityPriceData: PriceData?,
-        locale: Locale
-    ) -> String {
-        let targetAmount = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: feeChainAsset.assetDisplayInfo,
-            value: networkFeeAddition.targetAmount.decimal(precision: feeChainAsset.asset.precision)
-        ).value(for: locale)
-
-        let nativeAmountDecimal = networkFeeAddition.nativeAmount.decimal(precision: utilityChainAsset.asset.precision)
-        let nativeAmountWithoutPrice = balanceViewModelFactoryFacade.amountFromValue(
-            targetAssetInfo: utilityChainAsset.assetDisplayInfo,
-            value: nativeAmountDecimal
-        ).value(for: locale)
-
-        let nativeAmount: String
-
-        if let priceData = utilityPriceData {
-            let price = balanceViewModelFactoryFacade.priceFromAmount(
-                targetAssetInfo: utilityChainAsset.assetDisplayInfo,
-                amount: nativeAmountDecimal,
-                priceData: priceData
-            ).value(for: locale)
-
-            nativeAmount = "\(nativeAmountWithoutPrice) \(price.inParenthesis())"
-        } else {
-            nativeAmount = nativeAmountWithoutPrice
-        }
-
-        return R.string.localizable.swapsPayAssetFeeEdMessage(
-            feeChainAsset.asset.symbol,
-            targetAmount,
-            nativeAmount,
-            utilityChainAsset.asset.symbol,
-            preferredLanguages: locale.rLanguages
-        )
     }
 
     func priceDifferenceViewModel(
@@ -155,5 +120,48 @@ extension SwapBaseViewModelFactory: SwapBaseViewModelFactoryProtocol {
         default:
             return nil
         }
+    }
+
+    func routeViewModel(from metaOperations: [AssetExchangeMetaOperationProtocol]) -> [SwapRouteItemView.ViewModel] {
+        let chains = metaOperations.flatMap { operation in
+            [operation.assetIn.chain, operation.assetOut.chain]
+        }
+
+        var interchangingChains: [ChainModel] = []
+
+        for chain in chains where interchangingChains.last?.chainId != chain.chainId {
+            interchangingChains.append(chain)
+        }
+
+        return interchangingChains.map { chain in
+            SwapRouteItemView.ItemViewModel(
+                title: nil,
+                icon: ImageViewModelFactory.createChainIconOrDefault(from: chain.icon)
+            )
+        }
+    }
+
+    func executionTimeViewModel(from timeInterval: TimeInterval, locale: Locale) -> String {
+        R.string.localizable.commonSecondsFormat(
+            format: Int(timeInterval.rounded(.up)),
+            preferredLanguages: locale.rLanguages
+        ).approximately()
+    }
+
+    func feeViewModel(
+        amountInFiat: Decimal,
+        isEditable: Bool,
+        currencyId: Int?,
+        locale: Locale
+    ) -> NetworkFeeInfoViewModel {
+        let amount = balanceViewModelFactoryFacade.priceFromFiatAmount(
+            amountInFiat,
+            currencyId: currencyId
+        ).value(for: locale)
+
+        return .init(
+            isEditable: isEditable,
+            balanceViewModel: BalanceViewModel(amount: amount, price: nil)
+        )
     }
 }

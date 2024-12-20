@@ -35,7 +35,7 @@ class CrowdloanRemoteSubscriptionService: RemoteSubscriptionService, CrowdloanRe
         completion closure: RemoteSubscriptionClosure?
     ) -> UUID? {
         do {
-            let storagePath = StorageCodingPath.blockNumber
+            let storagePath = SystemPallet.blockNumberPath
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(storagePath, chainId: chainId)
 
             let request = UnkeyedSubscriptionRequest(storagePath: storagePath, localKey: localKey)
@@ -61,7 +61,7 @@ class CrowdloanRemoteSubscriptionService: RemoteSubscriptionService, CrowdloanRe
         completion closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let storagePath = StorageCodingPath.blockNumber
+            let storagePath = SystemPallet.blockNumberPath
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(storagePath, chainId: chainId)
 
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)

@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 typealias AccountAddress = String
 typealias AccountId = Data
@@ -15,6 +16,10 @@ typealias EpochIndex = UInt64
 typealias Moment = UInt32
 typealias EraIndex = UInt32
 typealias EraRange = (start: EraIndex, end: EraIndex)
+typealias Balance = BigUInt
+typealias ExtrinsicIndex = UInt32
+typealias ExtrinsicHash = String
+typealias BlockHash = String
 
 extension AccountId {
     static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {

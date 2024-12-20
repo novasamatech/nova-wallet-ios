@@ -49,10 +49,6 @@ final class GenericLedgerAccountSelectionInteractor {
     ) -> CompoundOperationWrapper<LedgerAccountAmount> {
         let queryFactory = WalletRemoteQueryWrapperFactory(
             requestFactory: requestFactory,
-            assetInfoOperationFactory: AssetStorageInfoOperationFactory(
-                chainRegistry: chainRegistry,
-                operationQueue: operationQueue
-            ),
             runtimeProvider: runtimeProvider,
             connection: connection,
             operationQueue: operationQueue

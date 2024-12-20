@@ -95,13 +95,12 @@ final class AssetHubSwapTests: XCTestCase {
             amountOut: quote.amountOut,
             receiver: AccountId.zeroAccountId(of: 32),
             direction: .sell,
-            slippage: .percent(of: 1),
-            context: nil
+            slippage: .percent(of: 1)
         )
         
         let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 0))
         
-        Logger.shared.info("Max fee: \(String(fee.totalFee.targetAmount))")
+        Logger.shared.info("Max fee: \(String(fee.amount))")
     }
     
     func testFeeForWestmintSiriSellInSiriToken() throws {
@@ -122,13 +121,12 @@ final class AssetHubSwapTests: XCTestCase {
             amountOut: quote.amountOut,
             receiver: AccountId.zeroAccountId(of: 32),
             direction: .sell,
-            slippage: .percent(of: 1),
-            context: nil
+            slippage: .percent(of: 1)
         )
         
         let fee = try fetchFee(for: callArgs, feeAssetId: .init(chainId: KnowChainId.westmint, assetId: 1))
         
-        Logger.shared.info("Max fee: \(String(fee.totalFee.targetAmount))")
+        Logger.shared.info("Max fee: \(String(fee.amount))")
     }
     
     private func performAvailableDirectionsFetch(
@@ -212,59 +210,55 @@ final class AssetHubSwapTests: XCTestCase {
         return try quoteWrapper.targetOperation.extractNoCancellableResultData()
     }
     
-    private func fetchFee(for args: AssetConversion.CallArgs, feeAssetId: ChainAssetId) throws -> AssetConversion.FeeModel {
-        let storageFacade = SubstrateStorageTestFacade()
-        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+    private func fetchFee(for args: AssetConversion.CallArgs, feeAssetId: ChainAssetId) throws -> ExtrinsicFeeProtocol {
+        let substrateStorageFacade = SubstrateStorageTestFacade()
+        let userStorageFacade = UserDataStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: substrateStorageFacade)
         
         let chainId = args.assetIn.chainId
         
+        let wallet = AccountGenerator.generateMetaAccount(generatingChainAccounts: 1)
+        
         guard
             let chain = chainRegistry.getChain(for: chainId),
-            let asset = chain.asset(for: feeAssetId.assetId) else {
+            let asset = chain.asset(for: feeAssetId.assetId),
+            let chainAccount = wallet.fetch(for: chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             throw CommonError.dataCorruption
         }
         
         let feeAsset = ChainAsset(chain: chain, asset: asset)
         
-        let wallet = AccountGenerator.generateMetaAccount(generatingChainAccounts: 1)
-        
         let operationQueue = OperationQueue()
         
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: storageFacade,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            logger: Logger.shared
-        )
+        let extrinsicOperationFactory = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationQueue: operationQueue,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade
+        ).createOperationFactory(account: chainAccount, chain: chain)
         
-        let feeService = try AssetConversionFlowFacade(
-            wallet: wallet,
-            chainRegistry: chainRegistry,
-            userStorageFacade: UserDataStorageTestFacade(),
-            substrateStorageFacade: storageFacade,
-            generalSubscriptonFactory: generalLocalSubscriptionFactory,
-            operationQueue: operationQueue
-        ).createFeeService(for: chain)
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let feeWrapper = extrinsicOperationFactory.estimateFeeOperation({ builder in
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            return try AssetHubExtrinsicConverter.addingOperation(
+                to: builder,
+                chain: chain,
+                args: args,
+                codingFactory: codingFactory
+            )
+        }, payingIn: feeAsset.chainAssetId)
+
+        feeWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let totalWrapper = feeWrapper.insertingHead(operations: [codingFactoryOperation])
         
-        var feeResult: AssetConversion.FeeResult?
+        operationQueue.addOperations(totalWrapper.allOperations, waitUntilFinished: true)
         
-        let expectation = XCTestExpectation()
-        
-        feeService.calculate(in: feeAsset, callArgs: args, runCompletionIn: .main) { result in
-            feeResult = result
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 600)
-        
-        switch feeResult {
-        case let .success(fee):
-            return fee
-        case let .failure(error):
-            throw error
-        case .none:
-            throw CommonError.undefined
-        }
+        return try feeWrapper.targetOperation.extractNoCancellableResultData()
     }
 }
