@@ -3,10 +3,6 @@ import WebKit
 import SoraUI
 
 final class DAppBrowserViewLayout: UIView {
-    private enum Constants {
-        static let toolbarHeight: CGFloat = 44.0
-    }
-
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
 
@@ -75,14 +71,32 @@ final class DAppBrowserViewLayout: UIView {
 
     let tabsButton: RoundedButton = .create { view in
         view.imageWithTitleView?.titleFont = .semiBoldCaption1
+        view.imageWithTitleView?.spacingBetweenLabelAndIcon = Constants.tabsButtonContentSpacing
         view.roundedBackgroundView?.applyStrokedBackgroundStyle()
-        view.roundedBackgroundView?.cornerRadius = 6.0
-        view.roundedBackgroundView?.strokeWidth = 1.2
+        view.roundedBackgroundView?.cornerRadius = Constants.tabsButtonCornerRadius
+        view.roundedBackgroundView?.strokeWidth = Constants.tabsButtonStrokeWidth
         view.roundedBackgroundView?.strokeColor = R.color.colorTextPrimary()!
+
+        view.setContentHuggingPriority(.required, for: .horizontal)
+        view.setContentHuggingPriority(.required, for: .vertical)
+        view.setContentCompressionResistancePriority(.required, for: .horizontal)
+        view.setContentCompressionResistancePriority(.required, for: .vertical)
     }
 
     lazy var tabsButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(customView: tabsButton)
+        let containerView = UIView()
+        containerView.addSubview(tabsButton)
+
+        containerView.snp.makeConstraints { make in
+            make.width.height.equalTo(Constants.tabsButtonSize).priority(.required)
+        }
+
+        tabsButton.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.size.equalTo(Constants.tabsButtonSize).priority(.required)
+        }
+
+        let item = UIBarButtonItem(customView: containerView)
         return item
     }()
 
@@ -156,11 +170,11 @@ private extension DAppBrowserViewLayout {
             make.bottom.equalTo(toolBar.snp.top)
         }
 
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-        tabsButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
-        }
+        let flexibleSpace = UIBarButtonItem(
+            barButtonSystemItem: .flexibleSpace,
+            target: nil,
+            action: nil
+        )
 
         toolBar.items = [
             goBackBarItem,
@@ -176,7 +190,7 @@ private extension DAppBrowserViewLayout {
     }
 }
 
-// MARK: Interface
+// MARK: Internal
 
 extension DAppBrowserViewLayout {
     func setIsToolbarHidden(_ isHidden: Bool) {
@@ -236,5 +250,17 @@ extension DAppBrowserViewLayout {
         webView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+}
+
+// MARK: Constants
+
+private extension DAppBrowserViewLayout {
+    enum Constants {
+        static let toolbarHeight: CGFloat = 44.0
+        static let tabsButtonSize: CGFloat = 24.0
+        static let tabsButtonContentSpacing: CGFloat = 0.0
+        static let tabsButtonCornerRadius: CGFloat = 6.0
+        static let tabsButtonStrokeWidth: CGFloat = 1.2
     }
 }

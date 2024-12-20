@@ -2,6 +2,8 @@ import UIKit
 
 protocol MainTabBarProtocol {
     var view: UIView! { get set }
+
+    func presentedController() -> UIViewController?
 }
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {

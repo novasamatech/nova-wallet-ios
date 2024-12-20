@@ -112,6 +112,10 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
             rootViewController: selectionView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 }

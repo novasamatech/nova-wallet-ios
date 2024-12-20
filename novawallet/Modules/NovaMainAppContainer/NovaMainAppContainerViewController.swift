@@ -1,4 +1,5 @@
 import UIKit
+import SnapKit
 
 final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
     typealias RootViewType = NovaMainAppContainerViewLayout
@@ -54,7 +55,17 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserCloseLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        DAppBrowserLayoutTransitionDependencies(
+        var transform: CGAffineTransform?
+        var presentingController: UIViewController?
+
+        if let presentedViewController = tabBar?.presentedController() {
+            presentingController = presentedViewController.presentingViewController
+            transform = presentingController?.view.transform
+        }
+
+        presentingController?.view.transform = .identity
+
+        return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
                     make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
@@ -67,6 +78,12 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
+                self?.updateModalsLayoutIfNeeded()
+            },
+            transformClosure: {
+                guard let transform else { return }
+
+                presentingController?.view.transform = transform
             }
         )
     }
@@ -107,6 +124,19 @@ private extension NovaMainAppContainerViewController {
                 return self?.rootView
             }
         )
+    }
+
+    func updateModalsLayoutIfNeeded() {
+        if
+            let cardModalController = tabBar?.presentedController() as? CardLayoutPresentationController,
+            let presentingController = cardModalController.presentingViewController {
+            cardModalController.view.frame = CGRect(
+                x: cardModalController.view.frame.minX,
+                y: cardModalController.view.frame.minY,
+                width: presentingController.view.bounds.width,
+                height: presentingController.view.bounds.height
+            )
+        }
     }
 }
 

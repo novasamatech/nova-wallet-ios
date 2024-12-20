@@ -19,6 +19,8 @@ class DAppBrowserWidgetWireframe: NSObject, DAppBrowserWidgetWireframeProtocol {
 
         guard let browserView else { return }
 
+        browserView.view.alpha = 0
+
         view.controller.addChild(browserView)
         view.controller.view.addSubview(browserView.view)
 

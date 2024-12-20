@@ -26,7 +26,10 @@ final class SwipeGovVotingListWireframe: SwipeGovVotingListWireframeProtocol {
             rootViewController: detailsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showConfirmation(

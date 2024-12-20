@@ -33,7 +33,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             rootViewController: selectTokenView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showReceiveTokenSelection(
@@ -55,7 +55,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
             rootViewController: selectTokenView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showSettings(
@@ -160,7 +160,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: transferView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showGetTokensByReceive(
@@ -177,7 +177,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: receiveTokensView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showRouteDetails(

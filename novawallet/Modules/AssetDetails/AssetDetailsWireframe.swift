@@ -39,7 +39,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: transferSetupView.controller)
-        view?.controller.navigationController?.present(navigationController, animated: true)
+        view?.controller.navigationController?.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showReceiveTokens(
@@ -55,7 +55,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: receiveTokensView.controller)
-        view?.controller.navigationController?.present(navigationController, animated: true)
+        view?.controller.navigationController?.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showPurchaseProviders(
@@ -115,7 +115,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: swapsView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     private func present(_ viewController: UIViewController, from view: AssetDetailsViewProtocol?) {

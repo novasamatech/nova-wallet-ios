@@ -20,7 +20,12 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         let navigationController = NovaNavigationController(rootViewController: importController)
 
         let presentingController = tabBarController.topModalViewController
-        presentingController.present(navigationController, animated: true, completion: nil)
+
+        presentingController.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func presentScreenIfNeeded(
@@ -91,7 +96,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         setupPushNotificationsView.controller.isModalInPresentation = true
-        view?.controller.present(
+
+        view?.controller.presentWithCardLayout(
             setupPushNotificationsView.controller,
             animated: true,
             completion: presentationCompletion
