@@ -1788,8 +1788,7 @@
 "swap.route.details.subtitle" = "The way that your token will take through different networks to get the desired token.";
 "common.not.enough.to.pay.fee.message" = "You don\'t have enough balance to pay network fee of %@. Current balance is %@";
 "swap.delivery.fee.error.message" = "Due to crosschain restrictions you should have at least %@ after operation";
-"common.pay.anywhere" = "Pay anywhere";
-"common.nova.card" = "Nova Card";
+"common.manage.debit.card" = "Manage Debit Card";
 "common.estimated.timer" = "Estimated ~%@";
 "card.open.pending.sheet.title" = "Your card is being issued!";
 "card.open.pending.sheet.message" = "It can take up to %@.\nThis window will be closed automatically.";

@@ -1791,8 +1791,7 @@
 "common.fee.amount.prefixed" = "Комиссия: %@";
 "common.not.enough.to.pay.fee.message" = "У вас недостаточно средств для оплаты сетевой комиссии в размере %@. Текущий баланс: %@";
 "swap.delivery.fee.error.message" = "Из-за ограничений межсетевого взаимодействия у вас должно остаться как минимум %@ после операции";
-"common.pay.anywhere" = "Платите везде";
-"common.nova.card" = "Карта Nova";
+"common.manage.debit.card" = "Управление Дебетовой Картой";
 "common.estimated.timer" = "Ожидаемое ~%@";
 "card.open.pending.sheet.title" = "Ваша карта выпускается!";
 "card.open.pending.sheet.message" = "Это может занять до %@.\nЭто окно закроется автоматически.";

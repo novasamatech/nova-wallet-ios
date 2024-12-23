@@ -48,24 +48,13 @@ final class AssetListCardView: ControlView<
 
     private func setupLocalization() {
         let mainTitleString = NSAttributedString(
-            string: R.string.localizable.commonPayAnywhere() + " ",
+            string: R.string.localizable.commonManageDebitCard(preferredLanguages: locale.rLanguages),
             attributes: [
                 .font: UIFont.regularBody,
                 .foregroundColor: R.color.colorTextPrimary()!
             ]
         )
 
-        let secondaryTitle = NSAttributedString(
-            string: R.string.localizable.commonNovaCard(),
-            attributes: [
-                .font: UIFont.regularBody,
-                .foregroundColor: R.color.colorTextSecondary()!
-            ]
-        )
-
-        let title = NSMutableAttributedString(attributedString: mainTitleString)
-        title.append(secondaryTitle)
-
-        titleLabel.attributedText = title
+        titleLabel.attributedText = mainTitleString
     }
 }
