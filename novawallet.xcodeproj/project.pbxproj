@@ -944,6 +944,7 @@
 		2D1D66042CD89573009C6C2F /* AssetListStyleSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */; };
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
+		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
 		2D32BE132C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */; };
 		2D32BE152C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */; };
@@ -1015,6 +1016,9 @@
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2D5FC1A42C5220900013352B /* AccountVoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */; };
+		2D60C9BD2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */; };
+		2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */; };
+		2D60C9C12D1AABA100027EC6 /* ModalCardPresentationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */; };
 		2D6287352C917A2B00060814 /* VotingPowerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287342C917A2B00060814 /* VotingPowerLocal.swift */; };
 		2D6287372C917E3900060814 /* VotingPowerMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287362C917E3900060814 /* VotingPowerMapper.swift */; };
 		2D62873A2C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */; };
@@ -6216,6 +6220,7 @@
 		2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcherView.swift; sourceTree = "<group>"; };
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
+		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
 		2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeInstaller.swift; sourceTree = "<group>"; };
 		2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimationProtocol.swift; sourceTree = "<group>"; };
@@ -6286,6 +6291,9 @@
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVoteFactory.swift; sourceTree = "<group>"; };
+		2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationConfiguration.swift; sourceTree = "<group>"; };
+		2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationHeaderStyle.swift; sourceTree = "<group>"; };
+		2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationFactory.swift; sourceTree = "<group>"; };
 		2D6287342C917A2B00060814 /* VotingPowerLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocal.swift; sourceTree = "<group>"; };
 		2D6287362C917E3900060814 /* VotingPowerMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerMapper.swift; sourceTree = "<group>"; };
 		2D6287392C9180C800060814 /* VotingPowerLocalstorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocalstorageSubscriber.swift; sourceTree = "<group>"; };
@@ -13167,6 +13175,10 @@
 				2D8851D42D0888690099B078 /* CardLayoutTransitionDelegate */,
 				2D8851D72D0888690099B078 /* Transitions */,
 				2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */,
+				2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */,
+				2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */,
+				2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */,
+				2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */,
 				2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */,
 			);
 			path = CardLayoutPresentationController;
@@ -26904,6 +26916,7 @@
 				8434B5FE298D2CC900FACF4C /* GovernanceBaseEditDelegationProtocols.swift in Sources */,
 				844CB56A26F9C57D00396E13 /* WalletLocalStorageSubscriber.swift in Sources */,
 				842A738A27DE14B3006EE1EA /* TransactionLocalStorageHandler.swift in Sources */,
+				2D60C9BD2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift in Sources */,
 				8454C2652632B0EF00657DAD /* EventCodingPath.swift in Sources */,
 				77FDFC482B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift in Sources */,
 				843910D4253F8DAD00E3C217 /* NetworkAvailabilityLayerPresenter.swift in Sources */,
@@ -27305,6 +27318,7 @@
 				845B89262959627A00EE25B0 /* SecurityLayerWireframe.swift in Sources */,
 				777AE2AB2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift in Sources */,
 				8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */,
+				2D60C9C12D1AABA100027EC6 /* ModalCardPresentationFactory.swift in Sources */,
 				0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */,
 				F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */,
 				F4A11B5A272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift in Sources */,
@@ -28256,6 +28270,7 @@
 				84E5D14227E32E8B00D27B1E /* AccountInputView.swift in Sources */,
 				2D6287472C941DFE00060814 /* SwipeGovVotingListItemView.swift in Sources */,
 				2B0FC94B4AE9AFE9532F493F /* ReferralCrowdloanViewFactory.swift in Sources */,
+				2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift in Sources */,
 				84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */,
 				84A70D9929CC7F0200C648AD /* PriceDataChange+Mapping.swift in Sources */,
 				59745D3C9602745E1417D2F6 /* ChainAssetSelectionInteractor.swift in Sources */,
@@ -29444,6 +29459,7 @@
 				2D1A5F552C358E280073773D /* CustomNetworkSetupFactory.swift in Sources */,
 				25E4B008933E2EF7F2FAAA46 /* StakingMoreOptionsViewController.swift in Sources */,
 				20B1463FB1F2431A0C913DCE /* StakingMoreOptionsViewLayout.swift in Sources */,
+				2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */,
 				FF507CA7B1A33AD160DB59DE /* StakingMoreOptionsViewFactory.swift in Sources */,
 				07AB0BC861AA5F134DB9AC26 /* StartStakingInfoProtocols.swift in Sources */,
 				77F085A407EDCCF906FD6E22 /* StartStakingInfoWireframe.swift in Sources */,

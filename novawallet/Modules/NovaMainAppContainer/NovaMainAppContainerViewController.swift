@@ -128,7 +128,7 @@ private extension NovaMainAppContainerViewController {
 
     func updateModalsLayoutIfNeeded() {
         if
-            let cardModalController = tabBar?.presentedController() as? CardLayoutPresentationController,
+            let cardModalController = tabBar?.presentedController(),
             let presentingController = cardModalController.presentingViewController {
             cardModalController.view.frame = CGRect(
                 x: cardModalController.view.frame.minX,

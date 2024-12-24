@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 extension UIViewController {
     func presentWithCardLayout(
@@ -6,26 +7,45 @@ extension UIViewController {
         animated: Bool,
         completion: (() -> Void)? = nil
     ) {
-        let transitioningDelegate = CardLayoutTransitionDelegate()
-        let container = CardLayoutPresentationController(transitionDelegate: transitioningDelegate)
+        viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-        container.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let appearanceAnimator = BlockViewAnimator(
+            duration: 0.25,
+            delay: 0.0,
+            options: [.curveEaseOut]
+        )
+        let dismissalAnimator = BlockViewAnimator(
+            duration: 0.25,
+            delay: 0.0,
+            options: [.curveLinear]
+        )
 
-        container.addChild(viewController)
-        container.view.addSubview(viewController.view)
+        let configuration = ModalCardPresentationConfiguration(
+            contentAppearanceAnimator: appearanceAnimator,
+            contentDissmisalAnimator: dismissalAnimator,
+            style: ModalCardPresentationStyle.defaultStyle,
+            extendUnderSafeArea: true,
+            dismissFinishSpeedFactor: 0.6,
+            dismissCancelSpeedFactor: 0.6
+        )
 
-        viewController.view.snp.makeConstraints { make in
-            make.top.trailing.leading.bottom.equalToSuperview()
+        let presentingController = if let navigationController = self as? UINavigationController {
+            navigationController
+        } else if let navigationController = self.navigationController {
+            navigationController
+        } else {
+            self
         }
-        container.view.layoutIfNeeded()
 
-        container.didMove(toParent: viewController)
+        let factory = ModalCardPresentationFactory(
+            configuration: configuration,
+            presentingViewController: presentingController
+        )
+        viewController.modalTransitioningFactory = factory
+        viewController.modalPresentationStyle = .custom
 
-        container.transitioningDelegate = transitioningDelegate
-        container.modalPresentationStyle = .overCurrentContext
-
-        tabBarController?.present(
-            container,
+        presentingController.present(
+            viewController,
             animated: animated,
             completion: completion
         )
