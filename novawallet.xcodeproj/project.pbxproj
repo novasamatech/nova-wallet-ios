@@ -165,6 +165,7 @@
 		0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */; };
 		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
+		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
 		0C2A3C932CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */; };
 		0C2A3C952CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */; };
@@ -25175,6 +25176,7 @@
 				7778FE3E2B90CCDD0023E801 /* SubstrateStorageVersion.swift in Sources */,
 				7778FE3D2B90CCA20023E801 /* String+Split.swift in Sources */,
 				7778FE502B9108AA0023E801 /* CompoundOperationWrapper+Result.swift in Sources */,
+				0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */,
 				0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */,
 				77EDF9242B96DCEB003266B1 /* ProxyAccountModel.swift in Sources */,
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,

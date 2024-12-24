@@ -61,7 +61,10 @@ extension DAppOperationConfirmInteractor {
 
             let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
 
-            guard let extrinsicAccountId = try? extrinsic.address.toAccountId(using: chain.chainFormat) else {
+            guard
+                let extrinsicAccountId = try? extrinsic.address.toChainAccountIdOrSubstrateGeneric(
+                    using: chain.chainFormat
+                ) else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "address: \(extrinsic.address)")
             }
 
@@ -70,13 +73,6 @@ extension DAppOperationConfirmInteractor {
                 request: chain.accountRequest()
             ) else {
                 throw ChainAccountFetchingError.accountNotExists
-            }
-
-            guard accountResponse.toAddress() == extrinsic.address else {
-                throw DAppOperationConfirmInteractorError.addressMismatch(
-                    actual: extrinsic.address,
-                    expected: accountResponse.toAddress() ?? ""
-                )
             }
 
             guard
