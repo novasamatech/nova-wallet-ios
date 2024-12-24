@@ -51,8 +51,18 @@ extension UILabel.Style {
         font: .semiBoldSubheadline
     )
 
+    static let semiboldBodyButtonAccent = UILabel.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldBody
+    )
+
     static let semiboldBodyPrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
+        font: .semiBoldBody
+    )
+
+    static let semiboldBodySecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
         font: .semiBoldBody
     )
 
@@ -204,6 +214,21 @@ extension UILabel.Style {
     static let title3Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary()!,
         font: .semiBoldTitle3
+    )
+
+    static let boldTitle1Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle1
+    )
+
+    static let boldTitle1Positive = UILabel.Style(
+        textColor: R.color.colorTextPositive()!,
+        font: .boldTitle1
+    )
+
+    static let boldTitle1Negative = UILabel.Style(
+        textColor: R.color.colorTextNegative()!,
+        font: .boldTitle1
     )
 
     static let boldTitle2Primary = UILabel.Style(

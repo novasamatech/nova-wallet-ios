@@ -193,10 +193,12 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         let navigationController = viewController as? UINavigationController
         navigationController?.popToRootViewController(animated: true)
 
+        // TODO: Check navigation logic here
         let operationState = AssetOperationState(
             assetListObservable: .init(state: .init(value: .init())),
             swapCompletionClosure: nil
         )
+
         guard let detailsView = AssetDetailsContainerViewFactory.createView(
             chain: chainAsset.chain,
             asset: chainAsset.asset,

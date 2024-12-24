@@ -132,15 +132,17 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         let completionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
             self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
         }
-        let selectClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
+        let selectClosure: SwapAssetSelectionClosure = { [weak self] chainAsset, state in
             self?.showSwapTokens(
                 from: view,
+                state: state,
                 payAsset: chainAsset,
                 swapCompletionClosure: completionClosure
             )
         }
         guard let swapDirectionsView = SwapAssetsOperationViewFactory.createSelectPayTokenView(
             for: assetListModelObservable,
+            selectionModel: .payForAsset(nil),
             selectClosureStrategy: .callbackAfterDismissal,
             selectClosure: selectClosure
         ) else {
@@ -203,11 +205,12 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     private func showSwapTokens(
         from view: AssetListViewProtocol?,
+        state: SwapTokensFlowStateProtocol,
         payAsset: ChainAsset,
         swapCompletionClosure: SwapCompletionClosure?
     ) {
         guard let swapTokensView = SwapSetupViewFactory.createView(
-            assetListObservable: assetListModelObservable,
+            state: state,
             payChainAsset: payAsset,
             swapCompletionClosure: swapCompletionClosure
         ) else {

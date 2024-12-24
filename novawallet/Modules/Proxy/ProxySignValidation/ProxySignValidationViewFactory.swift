@@ -78,7 +78,6 @@ struct ProxySignValidationViewFactory {
                 remoteFactory: StorageKeyFactory(),
                 operationManager: OperationManagerFacade.sharedManager
             ),
-            assetInfoOperationFactory: assetInfoOperationFactory,
             runtimeProvider: runtimeProvider,
             connection: connection,
             operationQueue: OperationManagerFacade.sharedDefaultQueue

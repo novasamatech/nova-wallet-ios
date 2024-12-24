@@ -194,22 +194,25 @@ class AutocompounDelegateStakeTests: XCTestCase {
         
         let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(for: chainId)
         
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
+        )
+        
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
         )
         
         extrinsicService = ExtrinsicService(
@@ -292,22 +295,25 @@ class AutocompounDelegateStakeTests: XCTestCase {
 
         let operationQueue = OperationQueue()
         
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: account,
             chain: chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: connection,
             runtimeProvider: runtimeService,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
+        )
+        
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
         )
         
         extrinsicService = ExtrinsicService(
