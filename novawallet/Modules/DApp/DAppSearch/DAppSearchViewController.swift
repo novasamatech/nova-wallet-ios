@@ -171,7 +171,10 @@ extension DAppSearchViewController: UITableViewDataSource {
             cell.bind(title: searchTitle ?? "")
             return cell
         case .dapps:
-            guard let dAppViewModel = viewModel?.dApps[indexPath.row] else {
+            guard
+                indexPath.row < viewModel?.dApps.count ?? 0,
+                let dAppViewModel = viewModel?.dApps[indexPath.row]
+            else {
                 return UITableViewCell()
             }
 
@@ -271,7 +274,7 @@ extension DAppSearchViewController: DAppSearchViewProtocol {
     func didReceive(viewModel: DAppListViewModel?) {
         self.viewModel = viewModel
 
-        rootView.categoriesView.bind(categories: viewModel?.categories ?? [])
+        rootView.updateCategoriesView(with: viewModel?.categories ?? [])
 
         rootView.categoriesView.setSelectedIndex(
             viewModel?.selectedCategoryIndex,

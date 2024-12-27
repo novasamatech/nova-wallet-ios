@@ -40,7 +40,7 @@ final class DAppCategoriesView: UIView {
     var chagesStateOnSelect: Bool = true
 
     private var categoryItems: [CategoryChip] = []
-    private var viewModels: [DAppCategoryViewModel] = []
+    var viewModels: [DAppCategoryViewModel] = []
 
     private(set) var selectedIndex: Int?
 
@@ -107,6 +107,7 @@ final class DAppCategoriesView: UIView {
         }
 
         for (index, category) in categories.enumerated() {
+            category.imageViewModel?.cancel(on: categoryItems[index].contentView.imageView)
             category.imageViewModel?.loadImage(
                 on: categoryItems[index].contentView.imageView,
                 targetSize: CGSize(width: 20, height: 20),
