@@ -25,11 +25,16 @@ struct SwapModel {
         let minBalance: Decimal
     }
 
+    struct InsufficientDueFungibilityPreservation {
+        let minBalance: Decimal
+    }
+
     enum InsufficientBalanceReason {
         case amountToHigh(InsufficientDueBalance)
         case feeInNativeAsset(InsufficientDueNativeFee)
         case feeInPayAsset(InsufficientDuePayAssetFee)
         case deliveryFee(InsufficientDueDeliveryFee)
+        case fungibilityPreservation(InsufficientDueFungibilityPreservation)
         case violatingConsumers(InsufficientDueConsumers)
     }
 
@@ -207,6 +212,23 @@ struct SwapModel {
         return .deliveryFee(model)
     }
 
+    func checkEnoughBalanceForFungibilityRestriction() -> InsufficientBalanceReason? {
+        guard
+            let feeModel,
+            feeModel.hasOriginPostSubmissionByAccount,
+            payTokenProviderWillBeKilled else {
+            return nil
+        }
+
+        let minBalance = payAssetExistense?.minBalance.decimal(
+            assetInfo: payChainAsset.assetDisplayInfo
+        ) ?? 0
+
+        let model = InsufficientDueFungibilityPreservation(minBalance: minBalance)
+
+        return .fungibilityPreservation(model)
+    }
+
     func checkBalanceSufficiency() -> InsufficientBalanceReason? {
         if let insufficient = checkEnoughBalanceToSpend() {
             return insufficient
@@ -221,6 +243,10 @@ struct SwapModel {
         }
 
         if let insufficient = checkEnoughBalanceToPayDeliveryFee() {
+            return insufficient
+        }
+
+        if let insufficient = checkEnoughBalanceForFungibilityRestriction() {
             return insufficient
         }
 
@@ -251,6 +277,12 @@ struct SwapModel {
         let totalInNativeAsset = utilityAssetBalance?.balanceCountingEd ?? 0
 
         return totalInNativeAsset.subtractOrZero(feeInNativeAsset) < minBalance
+    }
+
+    var payTokenProviderWillBeKilled: Bool {
+        let minBalance = payAssetExistense?.minBalance ?? 0
+
+        return payAssetTotalBalanceAfterSwap < minBalance
     }
 
     func checkReceiveBalanceAboveMin() -> CannotReceiveReason? {

@@ -10,8 +10,11 @@ struct SwapMaxModel {
     let receiveAssetExistense: AssetBalanceExistence?
     let accountInfo: AccountInfo?
 
-    func minBalanceCoveredByFrozen(in balance: AssetBalance) -> Bool {
-        let minBalance = payAssetExistense?.minBalance ?? 0
+    func minBalanceCoveredByFrozen(
+        in balance: AssetBalance,
+        assetExistence: AssetBalanceExistence?
+    ) -> Bool {
+        let minBalance = assetExistence?.minBalance ?? 0
 
         return balance.transferable + minBalance <= balance.balanceCountingEd
     }
@@ -35,6 +38,15 @@ struct SwapMaxModel {
         accountInfo?.hasConsumers ?? false
     }
 
+    var needMinBalanceDueToFungibility: Bool {
+        /*
+         * We make an assumption that on chains where we have delivery fee
+         * we also have fungibility restrictions
+         */
+
+        feeModel?.hasOriginPostSubmissionByAccount ?? false
+    }
+
     var needMinBalanceDueToPostsubmissionFee: Bool {
         guard
             let payChainAsset, payChainAsset.isUtilityAsset,
@@ -51,10 +63,14 @@ struct SwapMaxModel {
             needMinBalanceDueToReceiveInsufficiency
     }
 
+    var shouldKeepCustomMinBalance: Bool {
+        needMinBalanceDueToFungibility
+    }
+
     private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {
         var maxAmount = balance.transferable
 
-        if shouldKeepNativeMinBalance, !minBalanceCoveredByFrozen(in: balance) {
+        if shouldKeepNativeMinBalance, !minBalanceCoveredByFrozen(in: balance, assetExistence: payAssetExistense) {
             let minBalance = payAssetExistense?.minBalance ?? 0
             maxAmount = maxAmount.subtractOrZero(minBalance)
         }
@@ -68,8 +84,17 @@ struct SwapMaxModel {
     }
 
     private func calculateForCustomAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {
+        var maxAmount = balance.transferable
+
+        if
+            shouldKeepCustomMinBalance,
+            !minBalanceCoveredByFrozen(in: balance, assetExistence: payAssetExistense) {
+            let minBalance = payAssetExistense?.minBalance ?? 0
+            maxAmount = maxAmount.subtractOrZero(minBalance)
+        }
+
         guard let feeModel = feeModel else {
-            return balance.transferable.decimal(precision: payChainAsset.asset.precision)
+            return maxAmount.decimal(precision: payChainAsset.asset.precision)
         }
 
         let fee: Balance = if payChainAsset.chainAssetId == feeChainAsset?.chainAssetId {
@@ -78,9 +103,7 @@ struct SwapMaxModel {
             feeModel.postSubmissionFeeInAssetIn(payChainAsset)
         }
 
-        let maxAmount = balance.transferable.subtractOrZero(fee)
-
-        return maxAmount.decimal(precision: payChainAsset.asset.precision)
+        return maxAmount.subtractOrZero(fee).decimal(precision: payChainAsset.asset.precision)
     }
 
     func calculate() -> Decimal {

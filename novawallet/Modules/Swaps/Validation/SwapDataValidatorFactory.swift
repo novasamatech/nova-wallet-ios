@@ -161,9 +161,20 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     ).value(for: locale)
                 }
 
-                self?.presentable.presentMinBalanceViolatedDueDeliveryFee(
+                self?.presentable.presentMinBalanceViolatedAfterOperation(
                     from: view,
                     minBalance: minBalance ?? "",
+                    locale: locale
+                )
+            case let .fungibilityPreservation(model):
+                let minBalance = viewModelFactory.amountFromValue(
+                    targetAssetInfo: params.payChainAsset.assetDisplayInfo,
+                    value: model.minBalance
+                ).value(for: locale)
+
+                self?.presentable.presentMinBalanceViolatedAfterOperation(
+                    from: view,
+                    minBalance: minBalance,
                     locale: locale
                 )
             }
