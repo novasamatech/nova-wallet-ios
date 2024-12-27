@@ -32,12 +32,22 @@ class DAppBrowserWidgetTransitionBuilder {
 
 private extension DAppBrowserWidgetTransitionBuilder {
     func buildDisappearTransition() throws -> DAppBrowserWidgetTransitionProtocol {
-        guard let layoutDependencies else {
+        guard
+            let layoutDependencies,
+            let childNavigation
+        else {
             throw DAppBrowserWidgetTransitionBuilderError.missingRequiredDependencies
         }
 
+        let dependencies = FadeContentDAppBrowserTransitionDependencies(
+            browserViewClosure: nil,
+            widgetViewClosure: nil,
+            childNavigation: childNavigation,
+            layoutDependencies: layoutDependencies
+        )
+
         return DAppBrowserCloseTransition(
-            dependencies: layoutDependencies
+            dependencies: dependencies
         )
     }
 

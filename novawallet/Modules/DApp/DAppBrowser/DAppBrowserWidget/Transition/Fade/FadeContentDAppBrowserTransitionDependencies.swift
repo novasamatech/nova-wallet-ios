@@ -17,8 +17,8 @@ struct DAppBrowserLayoutTransitionDependencies {
 }
 
 struct FadeContentDAppBrowserTransitionDependencies {
-    let browserViewClosure: () -> UIView?
-    let widgetViewClosure: () -> DAppBrowserWidgetView?
+    let browserViewClosure: (() -> UIView?)?
+    let widgetViewClosure: (() -> DAppBrowserWidgetView?)?
 
     let childNavigation: DAppBrowserChildNavigationClosure
     let layoutDependencies: DAppBrowserLayoutTransitionDependencies
@@ -39,8 +39,8 @@ struct FadeContentDAppBrowserTransitionDependencies {
     )
 
     init(
-        browserViewClosure: @escaping () -> UIView?,
-        widgetViewClosure: @escaping () -> DAppBrowserWidgetView?,
+        browserViewClosure: (() -> UIView?)?,
+        widgetViewClosure: (() -> DAppBrowserWidgetView?)?,
         childNavigation: @escaping DAppBrowserChildNavigationClosure,
         layoutDependencies: DAppBrowserLayoutTransitionDependencies
     ) {

@@ -14,7 +14,7 @@ struct FadeContentDAppBrowserMaximizeTransition {
 
 extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
-        guard let widgetView = dependencies.widgetViewClosure() else {
+        guard let widgetView = dependencies.widgetViewClosure?() else {
             return
         }
 
@@ -32,7 +32,7 @@ extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionP
         )
 
         childNavigation {
-            guard let browserView = dependencies.browserViewClosure() else {
+            guard let browserView = dependencies.browserViewClosure?() else {
                 return
             }
 
