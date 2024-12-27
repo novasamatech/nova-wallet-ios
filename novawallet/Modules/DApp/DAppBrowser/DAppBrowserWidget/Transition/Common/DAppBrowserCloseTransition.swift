@@ -27,7 +27,7 @@ extension DAppBrowserCloseTransition: DAppBrowserWidgetTransitionProtocol {
 
             layoutAnimatables?()
         } completionBlock: { _ in
-            childNavigationClosure {}
+            childNavigationClosure?() {}
         }
     }
 }

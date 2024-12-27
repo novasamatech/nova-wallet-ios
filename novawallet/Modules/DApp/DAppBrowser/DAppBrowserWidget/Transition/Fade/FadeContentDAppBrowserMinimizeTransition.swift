@@ -25,10 +25,10 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionP
 
         if let browserView = dependencies.browserViewClosure?() {
             disappearanceAnimator.animate(view: browserView) { _ in
-                childNavigation {}
+                childNavigation?() {}
             }
         } else {
-            childNavigation {}
+            childNavigation?() {}
         }
 
         let widgetView = dependencies.widgetViewClosure?()

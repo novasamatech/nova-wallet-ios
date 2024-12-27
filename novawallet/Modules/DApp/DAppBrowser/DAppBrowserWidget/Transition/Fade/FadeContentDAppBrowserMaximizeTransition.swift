@@ -31,7 +31,7 @@ extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionP
             completionBlock: nil
         )
 
-        childNavigation {
+        childNavigation?() {
             guard let browserView = dependencies.browserViewClosure?() else {
                 return
             }

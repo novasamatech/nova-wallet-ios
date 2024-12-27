@@ -20,7 +20,7 @@ struct FadeContentDAppBrowserTransitionDependencies {
     let browserViewClosure: (() -> UIView?)?
     let widgetViewClosure: (() -> DAppBrowserWidgetView?)?
 
-    let childNavigation: DAppBrowserChildNavigationClosure
+    let childNavigation: DAppBrowserChildNavigationClosure?
     let layoutDependencies: DAppBrowserLayoutTransitionDependencies
 
     let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
@@ -41,7 +41,7 @@ struct FadeContentDAppBrowserTransitionDependencies {
     init(
         browserViewClosure: (() -> UIView?)?,
         widgetViewClosure: (() -> DAppBrowserWidgetView?)?,
-        childNavigation: @escaping DAppBrowserChildNavigationClosure,
+        childNavigation: DAppBrowserChildNavigationClosure?,
         layoutDependencies: DAppBrowserLayoutTransitionDependencies
     ) {
         self.browserViewClosure = browserViewClosure
