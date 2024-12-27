@@ -217,7 +217,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             return
         }
 
-        let navigationController = ImportantFlowViewFactory.createNavigation(from: swapTokensView.controller)
+        let navigationController = NovaNavigationController(rootViewController: swapTokensView.controller) // ImportantFlowViewFactory.createNavigation(from: swapTokensView.controller)
 
         view?.controller.presentWithCardLayout(
             navigationController,

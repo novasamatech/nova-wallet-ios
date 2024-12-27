@@ -29,22 +29,15 @@ extension UIViewController {
             dismissCancelSpeedFactor: 0.6
         )
 
-        let presentingController = if let navigationController = self as? UINavigationController {
-            navigationController
-        } else if let navigationController = self.navigationController {
-            navigationController
-        } else {
-            self
-        }
-
         let factory = ModalCardPresentationFactory(
             configuration: configuration,
-            presentingViewController: presentingController
+            presentingViewController: self
         )
         viewController.modalTransitioningFactory = factory
         viewController.modalPresentationStyle = .custom
+        viewController.definesPresentationContext = viewController is NovaNavigationController
 
-        presentingController.present(
+        present(
             viewController,
             animated: animated,
             completion: completion
