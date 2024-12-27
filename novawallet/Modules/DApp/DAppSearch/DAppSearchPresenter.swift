@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import Operation_iOS
 
-final class DAppSearchPresenter {
+final class DAppSearchPresenter: DAppSearchingByQuery {
     weak var view: DAppSearchViewProtocol?
     let wireframe: DAppSearchWireframeProtocol
     let interactor: DAppSearchInteractorInputProtocol
@@ -96,16 +96,24 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func selectSearchQuery() {
+        let proceedClosure: () -> Void = { [weak self] in
+            self?.delegate?.didCompleteDAppSearchResult(
+                .query(string: self?.query ?? "")
+            )
+            self?.wireframe.close(from: self?.view)
+        }
+
+        guard search(by: query, in: dAppList).isEmpty else {
+            proceedClosure()
+
+            return
+        }
+
         wireframe.showUnknownDappWarning(
             from: view,
             email: applicationConfig.supportEmail,
             locale: localizationManager.selectedLocale,
-            handler: { [weak self] in
-                self?.delegate?.didCompleteDAppSearchResult(
-                    .query(string: self?.query ?? "")
-                )
-                self?.wireframe.close(from: self?.view)
-            }
+            handler: proceedClosure
         )
     }
 
