@@ -45,7 +45,7 @@ struct SwapMaxModel {
         return feeModel.hasOriginPostSubmissionByAccount
     }
 
-    var shouldKeepMinBalance: Bool {
+    var shouldKeepNativeMinBalance: Bool {
         needMinBalanceDueConsumers ||
             needMinBalanceDueToPostsubmissionFee ||
             needMinBalanceDueToReceiveInsufficiency
@@ -54,7 +54,7 @@ struct SwapMaxModel {
     private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {
         var maxAmount = balance.transferable
 
-        if shouldKeepMinBalance, !minBalanceCoveredByFrozen(in: balance) {
+        if shouldKeepNativeMinBalance, !minBalanceCoveredByFrozen(in: balance) {
             let minBalance = payAssetExistense?.minBalance ?? 0
             maxAmount = maxAmount.subtractOrZero(minBalance)
         }
