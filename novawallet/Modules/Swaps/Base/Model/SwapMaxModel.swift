@@ -6,6 +6,7 @@ struct SwapMaxModel {
     let receiveChainAsset: ChainAsset?
     let balance: AssetBalance?
     let feeModel: AssetExchangeFee?
+    let quote: AssetExchangeQuote?
     let payAssetExistense: AssetBalanceExistence?
     let receiveAssetExistense: AssetBalanceExistence?
     let accountInfo: AccountInfo?
@@ -38,13 +39,8 @@ struct SwapMaxModel {
         accountInfo?.hasConsumers ?? false
     }
 
-    var needMinBalanceDueToFungibility: Bool {
-        /*
-         * We make an assumption that on chains where we have delivery fee
-         * we also have fungibility restrictions
-         */
-
-        feeModel?.hasOriginPostSubmissionByAccount ?? false
+    var needMinBalanceDueToOriginKeepAlive: Bool {
+        quote?.metaOperations.first?.requiresOriginAccountKeepAlive ?? false
     }
 
     var needMinBalanceDueToPostsubmissionFee: Bool {
@@ -58,13 +54,14 @@ struct SwapMaxModel {
     }
 
     var shouldKeepNativeMinBalance: Bool {
-        needMinBalanceDueConsumers ||
+        needMinBalanceDueToOriginKeepAlive ||
+            needMinBalanceDueConsumers ||
             needMinBalanceDueToPostsubmissionFee ||
             needMinBalanceDueToReceiveInsufficiency
     }
 
     var shouldKeepCustomMinBalance: Bool {
-        needMinBalanceDueToFungibility
+        needMinBalanceDueToOriginKeepAlive
     }
 
     private func calculateForNativeAsset(_ payChainAsset: ChainAsset, balance: AssetBalance) -> Decimal {

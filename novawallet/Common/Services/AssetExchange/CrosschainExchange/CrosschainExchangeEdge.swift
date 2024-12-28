@@ -92,11 +92,16 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
             throw ChainModelFetchError.noAsset(assetId: destination.assetId)
         }
 
+        let keepAlive = host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
+            assetIn: assetIn
+        )
+
         return CrosschainExchangeMetaOperation(
             assetIn: assetIn,
             assetOut: assetOut,
             amountIn: amountIn,
-            amountOut: amountOut
+            amountOut: amountOut,
+            requiresOriginAccountKeepAlive: keepAlive
         )
     }
 

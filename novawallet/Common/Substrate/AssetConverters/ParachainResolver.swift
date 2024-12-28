@@ -21,9 +21,9 @@ final class ParachainResolver: ParachainResolving {
 
         switch relaychainId {
         case KnowChainId.polkadot:
-            return .createWithResult(KnowChainId.statemint)
+            return .createWithResult(KnowChainId.polkadotAssetHub)
         case KnowChainId.kusama:
-            return .createWithResult(KnowChainId.statemine)
+            return .createWithResult(KnowChainId.kusamaAssetHub)
         default:
             return .createWithResult(nil)
         }

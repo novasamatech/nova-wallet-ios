@@ -166,6 +166,7 @@
 		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
+		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
 		0C2A3C932CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */; };
 		0C2A3C952CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */; };
@@ -5458,6 +5459,7 @@
 		0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TypeRegistry+Node.swift"; sourceTree = "<group>"; };
 		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
+		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationUpdatibleView.swift; sourceTree = "<group>"; };
 		0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeOperationFactory.swift; sourceTree = "<group>"; };
 		0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectionModel.swift; sourceTree = "<group>"; };
@@ -16698,13 +16700,14 @@
 			path = PerformOperation;
 			sourceTree = "<group>";
 		};
-		84468A05286652EF00BCBE00 /* Operation */ = {
+		84468A05286652EF00BCBE00 /* AssetOperations */ = {
 			isa = PBXGroup;
 			children = (
 				84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */,
 				2D32BE1F2C6CF4A20047F520 /* AssetTransferAggregationFactory.swift */,
+				0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */,
 			);
-			path = Operation;
+			path = AssetOperations;
 			sourceTree = "<group>";
 		};
 		844ADE7C28CB34F600EE29F7 /* AutomationTime */ = {
@@ -19109,6 +19112,7 @@
 		8490154E24ACD521008F705E /* Substrate */ = {
 			isa = PBXGroup;
 			children = (
+				84468A05286652EF00BCBE00 /* AssetOperations */,
 				0CEB6B3F2CA50DB400609DC2 /* AssetConverters */,
 				0CCE3AAD2BF5BBBF00D55F03 /* Operations */,
 				84A3B89C2836CF8F00DE2669 /* Coders */,
@@ -21382,7 +21386,6 @@
 			isa = PBXGroup;
 			children = (
 				84ED6BDC28688C9000B3C558 /* View */,
-				84468A05286652EF00BCBE00 /* Operation */,
 				84E25BEA27E87D3D00290BF1 /* Validation */,
 				8466780D27EB28FF007935D3 /* BaseTransfer */,
 				DA7D18D3AF772CC2385C228C /* TransferSetup */,
@@ -27507,6 +27510,7 @@
 				84B8AA7929F905C800347A37 /* WalletConnectStateInitiating.swift in Sources */,
 				8468B87224F63D3A00B76BC6 /* AddAccount+AccountCreateWireframe.swift in Sources */,
 				9DFB37659A6B911A4D54623E /* AccountConfirmInteractor.swift in Sources */,
+				0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */,
 				84BAFCD626AF64CB00871E86 /* SelectValidatorsViewLayout.swift in Sources */,
 				84C5ADD52812745F006D7388 /* WalletAccountViewModel.swift in Sources */,
 				8863C7AC29D499D30068AD54 /* Web3NameService.swift in Sources */,

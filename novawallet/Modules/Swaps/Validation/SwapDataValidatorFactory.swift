@@ -166,7 +166,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                     minBalance: minBalance ?? "",
                     locale: locale
                 )
-            case let .fungibilityPreservation(model):
+            case let .originKeepAlive(model):
                 let minBalance = viewModelFactory.amountFromValue(
                     targetAssetInfo: params.payChainAsset.assetDisplayInfo,
                     value: model.minBalance

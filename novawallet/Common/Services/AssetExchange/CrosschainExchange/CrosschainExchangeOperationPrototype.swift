@@ -26,7 +26,7 @@ final class CrosschainExchangeOperationPrototype: AssetExchangeBaseOperationProt
 
 private extension CrosschainExchangeOperationPrototype {
     private func isChainWithExpensiveCrossChain(chainId: ChainModel.Id) -> Bool {
-        chainId == KnowChainId.polkadot || chainId == KnowChainId.statemint
+        chainId == KnowChainId.polkadot || chainId == KnowChainId.polkadotAssetHub
     }
 }
 

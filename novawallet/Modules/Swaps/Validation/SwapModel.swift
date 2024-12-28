@@ -25,7 +25,7 @@ struct SwapModel {
         let minBalance: Decimal
     }
 
-    struct InsufficientDueFungibilityPreservation {
+    struct InsufficientDueOriginKeepAlive {
         let minBalance: Decimal
     }
 
@@ -34,7 +34,7 @@ struct SwapModel {
         case feeInNativeAsset(InsufficientDueNativeFee)
         case feeInPayAsset(InsufficientDuePayAssetFee)
         case deliveryFee(InsufficientDueDeliveryFee)
-        case fungibilityPreservation(InsufficientDueFungibilityPreservation)
+        case originKeepAlive(InsufficientDueOriginKeepAlive)
         case violatingConsumers(InsufficientDueConsumers)
     }
 
@@ -212,10 +212,10 @@ struct SwapModel {
         return .deliveryFee(model)
     }
 
-    func checkEnoughBalanceForFungibilityRestriction() -> InsufficientBalanceReason? {
+    func checkEnoughBalanceForOriginKeepAlive() -> InsufficientBalanceReason? {
         guard
-            let feeModel,
-            feeModel.hasOriginPostSubmissionByAccount,
+            let firstOperation = quote?.metaOperations.first,
+            firstOperation.requiresOriginAccountKeepAlive,
             payTokenProviderWillBeKilled else {
             return nil
         }
@@ -224,9 +224,9 @@ struct SwapModel {
             assetInfo: payChainAsset.assetDisplayInfo
         ) ?? 0
 
-        let model = InsufficientDueFungibilityPreservation(minBalance: minBalance)
+        let model = InsufficientDueOriginKeepAlive(minBalance: minBalance)
 
-        return .fungibilityPreservation(model)
+        return .originKeepAlive(model)
     }
 
     func checkBalanceSufficiency() -> InsufficientBalanceReason? {
@@ -246,7 +246,7 @@ struct SwapModel {
             return insufficient
         }
 
-        if let insufficient = checkEnoughBalanceForFungibilityRestriction() {
+        if let insufficient = checkEnoughBalanceForOriginKeepAlive() {
             return insufficient
         }
 
