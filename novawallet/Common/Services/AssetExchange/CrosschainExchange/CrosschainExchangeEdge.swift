@@ -72,6 +72,18 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
         deliveryFeeNotPaidOrFromHolding()
     }
 
+    func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {
+        guard
+            let chainIn = host.allChains[origin.chainId],
+            let chainAssetIn = chainIn.chainAsset(for: origin.assetId) else {
+            return false
+        }
+
+        return host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
+            assetIn: chainAssetIn
+        )
+    }
+
     func beginMetaOperation(
         for amountIn: Balance,
         amountOut: Balance
