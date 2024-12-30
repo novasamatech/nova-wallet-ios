@@ -7,6 +7,7 @@ excluded:
   - novawalletTests
   - novawalletIntegrationTests
   - NovaPushNotificationServiceExtension/R.generated.swift
+  - vendor/bundle
 identifier_name:
   excluded:
     - id
