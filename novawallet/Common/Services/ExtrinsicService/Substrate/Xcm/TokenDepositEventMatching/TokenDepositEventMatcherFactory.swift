@@ -17,7 +17,12 @@ final class TokenDepositEventMatcherFactory: TokenDepositEventMatcherFactoryProt
             typeExtras: chainAsset.asset.typeExtras
         ).mapAssetWithExtras(
             nativeHandler: {
-                NativeTokenDepositEventMatcher(logger: logger)
+                TokenFirstOfDepositEventMatcher(
+                    matchers: [
+                        NativeTokenMintedEventMatcher(logger: logger),
+                        NativeTokenDepositedEventMatcher(logger: logger)
+                    ]
+                )
             },
             statemineHandler: { extras in
                 PalletAssetsTokenDepositEventMatcher(extras: extras, logger: logger)
