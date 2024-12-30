@@ -5,13 +5,13 @@ extension ChainModel {
         switch chainId {
         case KnowChainId.kusama:
             return [NftSource(chainId: chainId, type: .rmrkV2)]
-        case KnowChainId.statemine:
+        case KnowChainId.kusamaAssetHub:
             return [
                 NftSource(chainId: chainId, type: .kodadot)
             ]
         case KnowChainId.polkadot:
             return [NftSource(chainId: chainId, type: .pdc20)]
-        case KnowChainId.statemint:
+        case KnowChainId.polkadotAssetHub:
             return [NftSource(chainId: chainId, type: .kodadot)]
         default:
             return []

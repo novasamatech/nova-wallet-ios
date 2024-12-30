@@ -10,12 +10,14 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
+    let fungibilityPreservationProvider: AssetFungibilityPreservationProviding
 
     init(
         wallet: MetaAccountModel,
         syncService: XcmTransfersSyncServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         pathCostEstimator: AssetsExchangePathCostEstimating,
+        fungibilityPreservationProvider: AssetFungibilityPreservationProviding,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
@@ -27,6 +29,7 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
         self.signingWrapperFactory = signingWrapperFactory
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
+        self.fungibilityPreservationProvider = fungibilityPreservationProvider
 
         super.init(
             chainRegistry: chainRegistry,
@@ -90,6 +93,7 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
             ),
             xcmTransfers: xcmTransfers,
             executionTimeEstimator: AssetExchangeTimeEstimator(chainRegistry: chainRegistry),
+            fungibilityPreservationProvider: fungibilityPreservationProvider,
             operationQueue: operationQueue,
             logger: logger
         )

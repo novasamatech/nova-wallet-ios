@@ -13,6 +13,8 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
 
     func canPayNonNativeFeesInIntermediatePosition() -> Bool
 
+    func requiresOriginKeepAliveOnIntermediatePosition() -> Bool
+
     var type: AssetExchangeEdgeType { get }
 
     func beginMetaOperation(for amountIn: Balance, amountOut: Balance) throws -> AssetExchangeMetaOperationProtocol
