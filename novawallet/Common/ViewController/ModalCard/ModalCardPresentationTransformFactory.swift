@@ -25,9 +25,9 @@ private extension ModalCardPresentationTransformFactory {
         let widthDelta: CGFloat = UIConstants.horizontalInset * 2
         let scale = (sourceView.bounds.width - widthDelta) / sourceView.bounds.width
 
-        let heightDiffAfterScale = (sourceView.bounds.height - (sourceView.bounds.height * scale)) / 2
+        let heightDeltaAfterScale = (sourceView.bounds.height - (sourceView.bounds.height * scale)) / 2
 
-        var yOffset = heightDiffAfterScale + Constants.cardPresenterTopInset
+        var yOffset = heightDeltaAfterScale + Constants.cardPresenterTopInset
 
         if !presenterIsModalCard {
             yOffset -= presentingViewController.presentedViewController?.view?.frame.origin.y ?? 0

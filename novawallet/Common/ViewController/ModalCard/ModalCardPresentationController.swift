@@ -100,6 +100,25 @@ class ModalCardPresentationController: UIPresentationController {
 
         parentPresentationController?.applySourceAppearanceTransform()
     }
+
+    func updateLayout() {
+        guard
+            let presentedView,
+            let root = UIApplication.shared.tabBarController
+        else { return }
+
+        let presentedViewHeight = presentedView.bounds.height
+        var presenetedViewHeightDelta = root.view.bounds.height - presentedViewHeight - topOffset
+
+        let height = presentedViewController.view.frame.height + presenetedViewHeightDelta
+
+        presentedViewController.view.frame = CGRect(
+            x: presentedView.frame.origin.x,
+            y: presentedView.frame.origin.y,
+            width: presentedView.frame.width,
+            height: height
+        )
+    }
 }
 
 // MARK: Private
