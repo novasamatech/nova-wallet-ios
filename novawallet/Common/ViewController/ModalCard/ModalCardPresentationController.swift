@@ -3,13 +3,14 @@ import SoraUI
 
 class ModalCardPresentationController: UIPresentationController {
     let configuration: ModalCardPresentationConfiguration
+    let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
     private var backgroundView: UIView?
 
     var interactiveDismissal: UIPercentDrivenInteractiveTransition?
     var initialTranslation: CGPoint = .zero
 
-    var topOffset: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + 12
+    let topOffset: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + 12
 
     var presenterDelegate: ModalPresenterDelegate? {
         (presentedViewController as? ModalPresenterDelegate) ??
@@ -29,10 +30,12 @@ class ModalCardPresentationController: UIPresentationController {
 
     init(
         presentedViewController: UIViewController,
+        transformFactory: ModalCardPresentationTransformFactoryProtocol,
         presenting presentingViewController: UIViewController?,
         configuration: ModalCardPresentationConfiguration
     ) {
         self.configuration = configuration
+        self.transformFactory = transformFactory
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
 
@@ -70,6 +73,32 @@ class ModalCardPresentationController: UIPresentationController {
         guard let containerView else { return .zero }
 
         return calculatePresentedViewFrame(in: containerView)
+    }
+
+    func applySourceDismissTransform() {
+        guard let sourceView = presentingViewController.view else { return }
+
+        let transform = transformFactory.createDismissingTransform(for: presentingViewController)
+
+        sourceView.transform = transform
+
+        let parentPresentationController = presentingViewController.presentationController
+            as? ModalCardPresentationController
+
+        parentPresentationController?.applySourceDismissTransform()
+    }
+
+    func applySourceAppearanceTransform() {
+        guard let sourceView = presentingViewController.view else { return }
+
+        let transform = transformFactory.createAppearanceTransform(for: presentingViewController)
+
+        sourceView.transform = transform
+
+        let parentPresentationController = presentingViewController.presentationController
+            as? ModalCardPresentationController
+
+        parentPresentationController?.applySourceAppearanceTransform()
     }
 }
 
@@ -130,31 +159,25 @@ private extension ModalCardPresentationController {
 
         let alphaFromValue: CGFloat
         let alphaToValue: CGFloat
-        let transform: CGAffineTransform
         let cornerRadius: CGFloat
 
         if appearing {
             alphaFromValue = 0.0
             alphaToValue = 1.0
-            transform = createAppearBackgroundTransform()
             cornerRadius = Constants.sourceViewCornerRadius
         } else {
             alphaFromValue = 1.0
             alphaToValue = 0.0
-            transform = createDisappearBackgroundTransform()
             cornerRadius = isPresentedByNavigationController ? Constants.sourceViewCornerRadius : 45
         }
 
         let coveredContextView: UIView?
-        let transformedViewController: UIViewController?
 
         if let tabBarController = presentingViewController as? UITabBarController {
             let navController = tabBarController.selectedViewController as? UINavigationController
             coveredContextView = navController?.topViewController?.view ?? tabBarController.view
-            transformedViewController = tabBarController
         } else {
             coveredContextView = presentingViewController.view
-            transformedViewController = presentingViewController
         }
 
         coveredContextView?.layer.masksToBounds = true
@@ -165,7 +188,12 @@ private extension ModalCardPresentationController {
 
             backgroundView?.alpha = alphaToValue
             coveredContextView?.layer.cornerRadius = cornerRadius
-            transformedViewController?.view.transform = transform
+
+            if appearing {
+                applySourceAppearanceTransform()
+            } else {
+                applySourceDismissTransform()
+            }
         }
 
         presentingViewController
@@ -174,35 +202,6 @@ private extension ModalCardPresentationController {
                 alongsideTransition: animationBlock,
                 completion: nil
             )
-    }
-
-    func createAppearBackgroundTransform() -> CGAffineTransform {
-        guard let sourceView = presentingViewController.view else { return .identity }
-
-        let isPresentedByNavigationController: Bool = presentingViewController is UINavigationController
-
-        let widthDelta: CGFloat = UIConstants.horizontalInset * 2
-        let scale = (sourceView.bounds.width - widthDelta) / sourceView.bounds.width
-        let heightDiffAfterScale = (sourceView.bounds.height - (sourceView.bounds.height * scale)) / 2
-        let yOffset = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) - heightDiffAfterScale
-
-        let sourceTransform = sourceView.transform
-        let sourceScaleTransform = CGAffineTransform(
-            scaleX: scale,
-            y: scale
-        )
-        let sourceTranslateTransform = CGAffineTransform(
-            translationX: .zero,
-            y: isPresentedByNavigationController ? -1.5 * yOffset : yOffset
-        )
-
-        return sourceTransform
-            .concatenating(sourceScaleTransform)
-            .concatenating(sourceTranslateTransform)
-    }
-
-    func createDisappearBackgroundTransform() -> CGAffineTransform {
-        CGAffineTransform.identity
     }
 
     func dismiss(animated: Bool) {
@@ -302,9 +301,16 @@ extension ModalCardPresentationController: ModalPresenterProtocol {
 extension ModalCardPresentationController: UIGestureRecognizerDelegate {
     public func gestureRecognizer(
         _: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer
+        shouldRecognizeSimultaneouslyWith second: UIGestureRecognizer
     ) -> Bool {
-        true
+        guard
+            presentingViewController.presentedViewController == nil,
+            !(second.view is UIScrollView)
+        else {
+            return false
+        }
+
+        return true
     }
 }
 

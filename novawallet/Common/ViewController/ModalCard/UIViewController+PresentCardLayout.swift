@@ -35,7 +35,7 @@ extension UIViewController {
         )
         viewController.modalTransitioningFactory = factory
         viewController.modalPresentationStyle = .custom
-        viewController.definesPresentationContext = viewController is NovaNavigationController
+        viewController.definesPresentationContext = true
 
         present(
             viewController,

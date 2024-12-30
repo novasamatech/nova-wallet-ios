@@ -18,6 +18,8 @@ public class ModalCardPresentationFactory: NSObject {
     }
 }
 
+// MARK: UIViewControllerTransitioningDelegate
+
 extension ModalCardPresentationFactory: UIViewControllerTransitioningDelegate {
     public func animationController(
         forPresented _: UIViewController,
@@ -42,6 +44,7 @@ extension ModalCardPresentationFactory: UIViewControllerTransitioningDelegate {
     ) -> UIPresentationController? {
         let presentation = ModalCardPresentationController(
             presentedViewController: presented,
+            transformFactory: ModalCardPresentationTransformFactory(),
             presenting: presentingViewController,
             configuration: configuration
         )
@@ -65,6 +68,8 @@ public final class ModalCardPresentationAppearanceAnimator: NSObject {
         super.init()
     }
 }
+
+// MARK: UIViewControllerAnimatedTransitioning
 
 extension ModalCardPresentationAppearanceAnimator: UIViewControllerAnimatedTransitioning {
     public func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -112,6 +117,8 @@ public final class ModalCardPresentationDismissAnimator: NSObject {
         super.init()
     }
 }
+
+// MARK: UIViewControllerAnimatedTransitioning
 
 extension ModalCardPresentationDismissAnimator: UIViewControllerAnimatedTransitioning {
     public func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {

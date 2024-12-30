@@ -1227,12 +1227,7 @@
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
-		2D8851DB2D0888690099B078 /* CardPresentingTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D62D0888690099B078 /* CardPresentingTransition.swift */; };
-		2D8851DC2D0888690099B078 /* CardLayoutPresentationContoroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */; };
-		2D8851DD2D0888690099B078 /* CardDismissingTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D52D0888690099B078 /* CardDismissingTransition.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
-		2D8851DF2D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */; };
-		2D8851E02D0888690099B078 /* CardLayoutTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
 		2D8BA3712C99A728002ED440 /* SwipeGovVotingListInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */; };
 		2D8EFB242CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8EFB232CF0939B00ED7174 /* WebViewFilesRenderOperationFactory.swift */; };
@@ -1253,6 +1248,7 @@
 		2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */; };
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */; };
+		2D966B432D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */; };
 		2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */; };
 		2DA85A742C7FC5D100591900 /* RoundedGradientBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */; };
 		2DA85A772C7FCCCE00591900 /* SwipeGovViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */; };
@@ -6646,11 +6642,6 @@
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
-		2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutTransitionDelegate.swift; sourceTree = "<group>"; };
-		2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutTransitionDelegateProtocol.swift; sourceTree = "<group>"; };
-		2D8851D52D0888690099B078 /* CardDismissingTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDismissingTransition.swift; sourceTree = "<group>"; };
-		2D8851D62D0888690099B078 /* CardPresentingTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentingTransition.swift; sourceTree = "<group>"; };
-		2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutPresentationContoroller.swift; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
 		2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListInteractorError.swift; sourceTree = "<group>"; };
@@ -6672,6 +6663,7 @@
 		2D95DF5C2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExtrinsicFeeInstaller.swift; sourceTree = "<group>"; };
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeSharedStateStore.swift; sourceTree = "<group>"; };
+		2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationTransformFactory.swift; sourceTree = "<group>"; };
 		2DA85A712C7F6E0900591900 /* SwipeGovBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovBannerView.swift; sourceTree = "<group>"; };
 		2DA85A732C7FC5D100591900 /* RoundedGradientBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedGradientBackgroundView.swift; sourceTree = "<group>"; };
 		2DA85A762C7FCCCE00591900 /* SwipeGovViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovViewModelFactory.swift; sourceTree = "<group>"; };
@@ -6887,7 +6879,6 @@
 		4C57B5C83F5A27949AAE9A87 /* DAppBrowserWidgetViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetViewLayout.swift; sourceTree = "<group>"; };
 		4C602661DE4D6CAC482AF721 /* ParaStkCollatorsSearchViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorsSearchViewFactory.swift; sourceTree = "<group>"; };
 		4C71DEF78B69F017DF460AB7 /* CrowdloanContributionSetupViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupViewController.swift; sourceTree = "<group>"; };
-		4CB3C834CCCD632B6CB30BEB /* Pods_novawalletAll_novawallet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawallet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE605788A0F121ECFC71C30 /* SwapExecutionPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapExecutionPresenter.swift; sourceTree = "<group>"; };
 		4D8246CDA02F544AF9DA2B11 /* ParaStkStakeSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkStakeSetupProtocols.swift; sourceTree = "<group>"; };
 		4DAF102188EF43E4CFB62A5C /* SwipeGovReferendumDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwipeGovReferendumDetailsViewFactory.swift; sourceTree = "<group>"; };
@@ -13733,37 +13724,17 @@
 			path = Presenter;
 			sourceTree = "<group>";
 		};
-		2D8851D42D0888690099B078 /* CardLayoutTransitionDelegate */ = {
+		2D8851DA2D0888690099B078 /* ModalCard */ = {
 			isa = PBXGroup;
 			children = (
-				2D8851D22D0888690099B078 /* CardLayoutTransitionDelegate.swift */,
-				2D8851D32D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift */,
-			);
-			path = CardLayoutTransitionDelegate;
-			sourceTree = "<group>";
-		};
-		2D8851D72D0888690099B078 /* Transitions */ = {
-			isa = PBXGroup;
-			children = (
-				2D8851D52D0888690099B078 /* CardDismissingTransition.swift */,
-				2D8851D62D0888690099B078 /* CardPresentingTransition.swift */,
-			);
-			path = Transitions;
-			sourceTree = "<group>";
-		};
-		2D8851DA2D0888690099B078 /* CardLayoutPresentationController */ = {
-			isa = PBXGroup;
-			children = (
-				2D8851D42D0888690099B078 /* CardLayoutTransitionDelegate */,
-				2D8851D72D0888690099B078 /* Transitions */,
-				2D8851D82D0888690099B078 /* CardLayoutPresentationContoroller.swift */,
 				2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */,
+				2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */,
 				2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */,
 				2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */,
 				2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */,
 				2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */,
 			);
-			path = CardLayoutPresentationController;
+			path = ModalCard;
 			sourceTree = "<group>";
 		};
 		2D8EFB222CF0937F00ED7174 /* WebViewRenderFIlesOperationFactory */ = {
@@ -18985,9 +18956,9 @@
 		8490144124A93CDC008F705E /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				2D8851DA2D0888690099B078 /* CardLayoutPresentationController */,
 				84FD91AE29B08F5F007851D3 /* SearchController */,
 				F5AF5EB89229D84F3701AAAA /* ChainAddressDetails */,
+				2D8851DA2D0888690099B078 /* ModalCard */,
 				84754C862510BAE100854599 /* ModalAlert */,
 				84D8F15324D80C8300AF43E9 /* ModalPicker */,
 				8428769624AE049A00D91AD8 /* SelectionListViewController */,
@@ -27729,12 +27700,7 @@
 				84EBAB0B265E28590015E446 /* ChainDateCalculator.swift in Sources */,
 				2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */,
 				887404B829828D5500EE270A /* LoadMoreFooterView.swift in Sources */,
-				2D8851DB2D0888690099B078 /* CardPresentingTransition.swift in Sources */,
-				2D8851DC2D0888690099B078 /* CardLayoutPresentationContoroller.swift in Sources */,
-				2D8851DD2D0888690099B078 /* CardDismissingTransition.swift in Sources */,
 				2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */,
-				2D8851DF2D0888690099B078 /* CardLayoutTransitionDelegateProtocol.swift in Sources */,
-				2D8851E02D0888690099B078 /* CardLayoutTransitionDelegate.swift in Sources */,
 				84754C9A2513871300854599 /* SNAddressType+Codable.swift in Sources */,
 				84ED6BE82869A18F00B3C558 /* TransferConfirmCrossChainViewFactory.swift in Sources */,
 				88BB0B3D29C1E16300D041C1 /* KiltWeb3n+Ownership.swift in Sources */,
@@ -29444,6 +29410,7 @@
 				EFF8F905CE4E8A212FE79EE4 /* ParaStkYourCollatorsViewController.swift in Sources */,
 				0C1338142AB834750036BCD6 /* QRImageViewModelFactory.swift in Sources */,
 				77DF403D2B7DC91200ABDB53 /* SettingsSubscriber.swift in Sources */,
+				2D966B432D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift in Sources */,
 				84C355BF298A52F1005072CF /* ReferendumsInteractor+Protocol.swift in Sources */,
 				FEEBBD315C4EFD4F8F237887 /* ParaStkYourCollatorsViewFactory.swift in Sources */,
 				C1115B135F9C544C91C06B58 /* ParaStkUnstakeProtocols.swift in Sources */,
