@@ -1,13 +1,21 @@
 import UIKit
 import SoraUI
 
+protocol ModalCardPresentationControllerDelegate: AnyObject {
+    func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool
+    func presentationControllerDidAttemptToDismiss(_: UIPresentationController)
+}
+
 class ModalCardPresentationController: UIPresentationController {
+    private weak var observedScrollView: UIScrollView?
+    private var backgroundView: UIView?
+
     let configuration: ModalCardPresentationConfiguration
     let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
-    private weak var observedScrollView: UIScrollView?
-
-    private var backgroundView: UIView?
+    weak var presentationDelegate: ModalCardPresentationControllerDelegate? {
+        presentedViewController as? ModalCardPresentationControllerDelegate
+    }
 
     var interactiveDismissal: UIPercentDrivenInteractiveTransition?
     var initialTranslation: CGPoint = .zero
@@ -206,7 +214,10 @@ private extension ModalCardPresentationController {
     }
 
     func dismiss(animated: Bool) {
-        presentedViewController.dismiss(animated: animated, completion: nil)
+        finishPresentation(
+            with: { self.presentedViewController.dismiss(animated: animated, completion: nil) },
+            cancelClosure: nil
+        )
     }
 
     func stopPullToDismiss(finished: Bool) {
@@ -216,10 +227,29 @@ private extension ModalCardPresentationController {
 
         if finished {
             interactiveDismissal.completionSpeed = configuration.dismissFinishSpeedFactor
-            interactiveDismissal.finish()
+            finishPresentation(
+                with: interactiveDismissal.finish,
+                cancelClosure: interactiveDismissal.cancel
+            )
         } else {
             interactiveDismissal.completionSpeed = configuration.dismissCancelSpeedFactor
             interactiveDismissal.cancel()
+        }
+    }
+
+    func finishPresentation(
+        with finishClosure: () -> Void,
+        cancelClosure: (() -> Void)?
+    ) {
+        if let presentationDelegate {
+            if presentationDelegate.presentationControllerShouldDismiss(self) {
+                finishClosure()
+            } else {
+                cancelClosure?()
+                presentationDelegate.presentationControllerDidAttemptToDismiss(self)
+            }
+        } else {
+            finishClosure()
         }
     }
 
@@ -280,18 +310,6 @@ private extension ModalCardPresentationController {
         guard let view = panGestureRecognizer.view else { return }
 
         handlePan(from: panGestureRecognizer, on: view)
-    }
-}
-
-// MARK: ModalPresenterProtocol
-
-extension ModalCardPresentationController: ModalPresenterProtocol {
-    func hide(view _: ModalViewProtocol, animated: Bool) {
-        guard interactiveDismissal == nil else {
-            return
-        }
-
-        dismiss(animated: animated)
     }
 }
 

@@ -33,6 +33,7 @@ extension UIViewController {
             configuration: configuration,
             presentingViewController: self
         )
+
         viewController.modalTransitioningFactory = factory
         viewController.modalPresentationStyle = .custom
         viewController.definesPresentationContext = true

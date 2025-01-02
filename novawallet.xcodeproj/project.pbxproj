@@ -1154,7 +1154,7 @@
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2D5FC1A42C5220900013352B /* AccountVoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */; };
 		2D60C9BD2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */; };
-		2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */; };
+		2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift */; };
 		2D60C9C12D1AABA100027EC6 /* ModalCardPresentationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */; };
 		2D6287352C917A2B00060814 /* VotingPowerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287342C917A2B00060814 /* VotingPowerLocal.swift */; };
 		2D6287372C917E3900060814 /* VotingPowerMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287362C917E3900060814 /* VotingPowerMapper.swift */; };
@@ -6569,7 +6569,7 @@
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVoteFactory.swift; sourceTree = "<group>"; };
 		2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationConfiguration.swift; sourceTree = "<group>"; };
-		2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationHeaderStyle.swift; sourceTree = "<group>"; };
+		2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationStyle.swift; sourceTree = "<group>"; };
 		2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationFactory.swift; sourceTree = "<group>"; };
 		2D6287342C917A2B00060814 /* VotingPowerLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerLocal.swift; sourceTree = "<group>"; };
 		2D6287362C917E3900060814 /* VotingPowerMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerMapper.swift; sourceTree = "<group>"; };
@@ -13730,7 +13730,7 @@
 				2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */,
 				2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */,
 				2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */,
-				2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift */,
+				2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift */,
 				2D60C9C02D1AABA100027EC6 /* ModalCardPresentationFactory.swift */,
 				2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */,
 			);
@@ -28952,7 +28952,7 @@
 				84E5D14227E32E8B00D27B1E /* AccountInputView.swift in Sources */,
 				2D6287472C941DFE00060814 /* SwipeGovVotingListItemView.swift in Sources */,
 				2B0FC94B4AE9AFE9532F493F /* ReferralCrowdloanViewFactory.swift in Sources */,
-				2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationHeaderStyle.swift in Sources */,
+				2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift in Sources */,
 				84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */,
 				84A70D9929CC7F0200C648AD /* PriceDataChange+Mapping.swift in Sources */,
 				59745D3C9602745E1417D2F6 /* ChainAssetSelectionInteractor.swift in Sources */,
