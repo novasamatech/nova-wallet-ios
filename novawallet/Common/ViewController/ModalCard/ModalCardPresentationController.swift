@@ -5,28 +5,14 @@ class ModalCardPresentationController: UIPresentationController {
     let configuration: ModalCardPresentationConfiguration
     let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
+    private weak var observedScrollView: UIScrollView?
+
     private var backgroundView: UIView?
 
     var interactiveDismissal: UIPercentDrivenInteractiveTransition?
     var initialTranslation: CGPoint = .zero
 
     let topOffset: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + 12
-
-    var presenterDelegate: ModalPresenterDelegate? {
-        (presentedViewController as? ModalPresenterDelegate) ??
-            (presentedView as? ModalPresenterDelegate) ??
-            (presentedViewController.view as? ModalPresenterDelegate)
-    }
-
-    var sheetPresenterDelegate: ModalSheetPresenterDelegate? {
-        presenterDelegate as? ModalSheetPresenterDelegate
-    }
-
-    var inputView: ModalViewProtocol? {
-        (presentedViewController as? ModalViewProtocol) ??
-            (presentedView as? ModalViewProtocol) ??
-            (presentedViewController.view as? ModalViewProtocol)
-    }
 
     init(
         presentedViewController: UIViewController,
@@ -38,10 +24,6 @@ class ModalCardPresentationController: UIPresentationController {
         self.transformFactory = transformFactory
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        if let modalInputView = inputView {
-            modalInputView.presenter = self
-        }
     }
 
     // MARK: Presentation overridings
@@ -235,12 +217,18 @@ private extension ModalCardPresentationController {
         if finished {
             interactiveDismissal.completionSpeed = configuration.dismissFinishSpeedFactor
             interactiveDismissal.finish()
-
-            presenterDelegate?.presenterDidHide(self)
         } else {
             interactiveDismissal.completionSpeed = configuration.dismissCancelSpeedFactor
             interactiveDismissal.cancel()
         }
+    }
+
+    func canDrag(basedOn scrollView: UIScrollView?) -> Bool {
+        guard let scrollView else { return true }
+
+        let contentOffsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+
+        return contentOffsetY <= 0
     }
 
     // MARK: Interactive dismissal
@@ -251,25 +239,29 @@ private extension ModalCardPresentationController {
 
         switch panGestureRecognizer.state {
         case .began, .changed:
-            if sheetPresenterDelegate?.presenterCanDrag(self) == false {
+            let scrollProgress = max(0.0, (translation.y - initialTranslation.y) / max(1.0, view.bounds.size.height))
+            let progress = min(1.0, scrollProgress)
+            let scrolledFromTop = translation.y <= 0 && scrollProgress == 0
+
+            guard canDrag(basedOn: observedScrollView) else {
+                observedScrollView?.isScrollEnabled = true
+
                 return
             }
 
-            let progress = min(1.0, max(0.0, (translation.y - initialTranslation.y) / max(1.0, view.bounds.size.height)))
+            observedScrollView?.isScrollEnabled = scrolledFromTop
 
             if let interactiveDismissal {
                 interactiveDismissal.update(progress)
             } else {
-                if let presenterDelegate = presenterDelegate, !presenterDelegate.presenterShouldHide(self) {
-                    break
-                }
-
                 interactiveDismissal = UIPercentDrivenInteractiveTransition()
                 initialTranslation = translation
                 presentedViewController.dismiss(animated: true)
                 interactiveDismissal?.update(progress)
             }
         case .cancelled, .ended:
+            observedScrollView?.isScrollEnabled = true
+
             if let interactiveDismissal = interactiveDismissal {
                 let thresholdReached = interactiveDismissal.percentComplete >= configuration.dismissPercentThreshold
                 let shouldDismiss = (thresholdReached && velocity.y >= 0) ||
@@ -282,18 +274,6 @@ private extension ModalCardPresentationController {
     }
 
     // MARK: Action
-
-    @objc func actionDidCancel(gesture _: UITapGestureRecognizer) {
-        guard let presenterDelegate else {
-            dismiss(animated: true)
-            return
-        }
-
-        if presenterDelegate.presenterShouldHide(self) {
-            dismiss(animated: true)
-            presenterDelegate.presenterDidHide(self)
-        }
-    }
 
     @objc func didPan(sender: Any?) {
         guard let panGestureRecognizer = sender as? UIPanGestureRecognizer else { return }
@@ -322,11 +302,12 @@ extension ModalCardPresentationController: UIGestureRecognizerDelegate {
         _: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith second: UIGestureRecognizer
     ) -> Bool {
-        guard
-            presentingViewController.presentedViewController == nil,
-            !(second.view is UIScrollView)
-        else {
+        guard let scrollView = second.view as? UIScrollView else {
             return false
+        }
+
+        if observedScrollView !== scrollView {
+            observedScrollView = scrollView
         }
 
         return true
