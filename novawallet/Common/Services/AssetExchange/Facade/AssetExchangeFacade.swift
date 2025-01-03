@@ -22,6 +22,7 @@ final class AssetExchangeFacade {
                     ),
                     chainRegistry: params.chainRegistry,
                     pathCostEstimator: pathCostEstimator,
+                    fungibilityPreservationProvider: AssetFungibilityPreservationProvider.createFromKnownChains(),
                     signingWrapperFactory: params.signingWrapperFactory,
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,

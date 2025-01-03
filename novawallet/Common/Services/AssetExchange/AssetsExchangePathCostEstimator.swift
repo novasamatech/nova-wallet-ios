@@ -32,7 +32,7 @@ extension AssetsExchangePathCostEstimator: AssetsExchangePathCostEstimating {
     ) -> CompoundOperationWrapper<AssetsExchangePathCost> {
         let operation = ClosureOperation<AssetsExchangePathCost> {
             guard let usdtTiedAsset = self.chainRegistry.getChain(
-                for: KnowChainId.statemint
+                for: KnowChainId.polkadotAssetHub
             )?.chainAssetForSymbol("USDT") else {
                 return .zero
             }

@@ -142,6 +142,7 @@ extension TransferSetupPresenterFactory {
             feeProxy: XcmExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
             resolutionFactory: resolutionFactory,
+            fungibilityPreservationProvider: AssetFungibilityPreservationProvider.createFromKnownChains(),
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

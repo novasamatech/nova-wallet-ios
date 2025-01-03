@@ -58,6 +58,24 @@ extension AccountAddress {
         }
     }
 
+    func toChainAccountIdOrSubstrateGeneric(
+        using conversion: ChainFormat
+    ) throws -> AccountId {
+        switch conversion {
+        case .ethereum:
+            return try extractEthereumAccountId()
+        case let .substrate(prefix):
+            let addressFactory = SS58AddressFactory()
+            let type = try addressFactory.type(fromAddress: self).uint16Value
+
+            guard type == prefix || type == SNAddressType.genericSubstrate.rawValue else {
+                throw AccountAddressConversionError.invalidChainAddress
+            }
+
+            return try addressFactory.accountId(fromAddress: self, type: type)
+        }
+    }
+
     func toSubstrateAccountId(using prefix: UInt16? = nil) throws -> AccountId {
         let factory = SS58AddressFactory()
 

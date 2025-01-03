@@ -227,7 +227,10 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
             let omnipoolExchange = createOmnipoolExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 
-            let stableswapExchange = createStableswapExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
+            let stableswapExchange = createStableswapExchange(
+                from: swapHost,
+                registeringStateIn: exchangeStateRegistrar
+            )
 
             let xykExchange = createXYKExchange(from: swapHost, registeringStateIn: exchangeStateRegistrar)
 

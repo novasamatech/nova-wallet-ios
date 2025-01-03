@@ -3,6 +3,15 @@ import Foundation
 enum AssetExchangeMetaOperationLabel: Equatable {
     case swap
     case transfer
+
+    var isTransfer: Bool {
+        switch self {
+        case .transfer:
+            true
+        case .swap:
+            false
+        }
+    }
 }
 
 protocol AssetExchangeMetaOperationProtocol {
@@ -11,6 +20,7 @@ protocol AssetExchangeMetaOperationProtocol {
     var amountIn: Balance { get }
     var amountOut: Balance { get }
     var label: AssetExchangeMetaOperationLabel { get }
+    var requiresOriginAccountKeepAlive: Bool { get }
 }
 
 class AssetExchangeBaseMetaOperation {
