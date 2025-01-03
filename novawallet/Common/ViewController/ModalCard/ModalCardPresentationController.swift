@@ -84,6 +84,7 @@ private extension ModalCardPresentationController {
 
     func attachPanGesture() {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(sender:)))
+        panGestureRecognizer.cancelsTouchesInView = false
         containerView?.addGestureRecognizer(panGestureRecognizer)
         panGestureRecognizer.delegate = self
     }
@@ -149,12 +150,36 @@ private extension ModalCardPresentationController {
         }
     }
 
-    func canDrag(basedOn scrollView: UIScrollView?) -> Bool {
+    func canDrag(
+        basedOn scrollView: UIScrollView?,
+        with panGesture: UIPanGestureRecognizer
+    ) -> Bool {
         guard let scrollView else { return true }
+        guard let containerView, !containsActiveLongPress(scrollView) else { return false }
+
+        if let tableView = scrollView as? UITableView, tableView.isEditing {
+            let touchPoint = panGesture.location(in: tableView)
+
+            return !tableView.frame.contains(touchPoint)
+        }
 
         let contentOffsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
 
         return contentOffsetY <= 0
+    }
+
+    func containsActiveLongPress(_ scrollView: UIScrollView?) -> Bool {
+        guard let recognizers = scrollView?.gestureRecognizers else { return false }
+
+        return recognizers.contains { recognizer in
+            if let longPress = recognizer as? UILongPressGestureRecognizer {
+                let state = longPress.state
+
+                return state == .began ||
+                    state == .changed
+            }
+            return false
+        }
     }
 
     // MARK: Interactive dismissal
@@ -169,7 +194,7 @@ private extension ModalCardPresentationController {
             let progress = min(1.0, scrollProgress)
             let scrolledFromTop = translation.y <= 0 && scrollProgress == 0
 
-            guard canDrag(basedOn: observedScrollView) else {
+            guard canDrag(basedOn: observedScrollView, with: panGestureRecognizer) else {
                 observedScrollView?.isScrollEnabled = true
 
                 return
