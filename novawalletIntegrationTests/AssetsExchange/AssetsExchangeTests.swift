@@ -8,7 +8,9 @@ final class AssetsExchangeTests: XCTestCase {
         
         guard
             let dotPolkadot = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAsset(),
-            let usdtAssetHubId = params.chainRegistry.getChain(for: KnowChainId.statemint)?.chainAssetForSymbol("USDT")?.chainAssetId else {
+            let usdtAssetHubId = params.chainRegistry.getChain(
+                for: KnowChainId.polkadotAssetHub
+            )?.chainAssetForSymbol("USDT")?.chainAssetId else {
             XCTFail("No chain or asset")
             return
         }
@@ -52,7 +54,9 @@ final class AssetsExchangeTests: XCTestCase {
         guard
             let polkadotUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAssetId(),
             let hydraUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.hydra)?.utilityChainAssetId(),
-            let assetHubUtilityAsset = params.chainRegistry.getChain(for: KnowChainId.statemint)?.utilityChainAssetId() else {
+            let assetHubUtilityAsset = params.chainRegistry.getChain(
+                for: KnowChainId.polkadotAssetHub
+            )?.utilityChainAssetId() else {
             XCTFail("No chain or asset")
             return
         }
@@ -125,7 +129,9 @@ final class AssetsExchangeTests: XCTestCase {
         
         guard
             let dotPolkadot = params.chainRegistry.getChain(for: KnowChainId.polkadot)?.utilityChainAsset(),
-            let usdtAssetHubId = params.chainRegistry.getChain(for: KnowChainId.statemint)?.chainAssetForSymbol("USDT")?.chainAssetId else {
+            let usdtAssetHubId = params.chainRegistry.getChain(
+                for: KnowChainId.polkadotAssetHub
+            )?.chainAssetForSymbol("USDT")?.chainAssetId else {
             XCTFail("No chain or asset")
             return
         }
@@ -233,6 +239,7 @@ final class AssetsExchangeTests: XCTestCase {
                     ),
                     chainRegistry: params.chainRegistry,
                     pathCostEstimator: pathCostEstimator,
+                    fungibilityPreservationProvider: AssetFungibilityPreservationProvider.createFromKnownChains(),
                     signingWrapperFactory: SigningWrapperFactory(),
                     userStorageFacade: params.userDataStorageFacade,
                     substrateStorageFacade: params.substrateStorageFacade,

@@ -10,6 +10,7 @@ protocol CrosschainExchangeHostProtocol {
     var xcmTransfers: XcmTransfers { get }
     var operationQueue: OperationQueue { get }
     var executionTimeEstimator: AssetExchangeTimeEstimating { get }
+    var fungibilityPreservationProvider: AssetFungibilityPreservationProviding { get }
     var logger: LoggerProtocol { get }
 }
 
@@ -22,6 +23,7 @@ final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
     let resolutionFactory: XcmTransferResolutionFactoryProtocol
     let xcmTransfers: XcmTransfers
     let executionTimeEstimator: AssetExchangeTimeEstimating
+    let fungibilityPreservationProvider: AssetFungibilityPreservationProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -34,6 +36,7 @@ final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
         resolutionFactory: XcmTransferResolutionFactoryProtocol,
         xcmTransfers: XcmTransfers,
         executionTimeEstimator: AssetExchangeTimeEstimating,
+        fungibilityPreservationProvider: AssetFungibilityPreservationProviding,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -45,6 +48,7 @@ final class CrosschainExchangeHost: CrosschainExchangeHostProtocol {
         self.resolutionFactory = resolutionFactory
         self.xcmTransfers = xcmTransfers
         self.executionTimeEstimator = executionTimeEstimator
+        self.fungibilityPreservationProvider = fungibilityPreservationProvider
         self.operationQueue = operationQueue
         self.logger = logger
     }

@@ -1,5 +1,4 @@
 import BigInt
-
 import SoraFoundation
 
 protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {

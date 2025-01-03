@@ -123,6 +123,7 @@ class SwapBasePresenter {
             receiveChainAsset: getReceiveChainAsset(),
             balance: payAssetBalance,
             feeModel: fee,
+            quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
             accountInfo: accountInfo

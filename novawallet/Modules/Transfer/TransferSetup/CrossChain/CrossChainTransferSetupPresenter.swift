@@ -200,7 +200,8 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
          *  before paying delivery fee. So make sure we will have at least ed and don't burn any tokens on account kill
          */
         let hasOriginDeliveryFee = (crossChainFee?.senderPart ?? 0) > 0
-        let minimumBalanceValue = hasOriginDeliveryFee && isOriginUtilityTransfer ? originSendingMinBalance ?? 0 : 0
+        let keepAlive = (hasOriginDeliveryFee && isOriginUtilityTransfer) || (requiresOriginKeepAlive ?? false)
+        let minimumBalanceValue = keepAlive ? originSendingMinBalance ?? 0 : 0
 
         let precision = originChainAsset.assetDisplayInfo.assetPrecision
 
@@ -366,6 +367,10 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
+
+    override func getSendingAmount() -> Decimal? {
+        inputResult?.absoluteValue(from: maxTransferrable())
+    }
 }
 
 extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
@@ -420,18 +425,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
 
         let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
-        let sendingAmount = inputResult?.absoluteValue(from: maxTransferrable())
-
-        let originDeliveryFeeSpending = isOriginUtilityTransfer ?
-            crossChainFee?.senderPart.decimal(assetInfo: utilityAssetInfo) :
-            nil
-
-        let crosschainFeeSpending = crossChainFee?.holdingPart.decimal(
-            assetInfo: originChainAsset.assetDisplayInfo
-        )
-
-        let totalSpending = (sendingAmount ?? 0) + (originDeliveryFeeSpending ?? 0) +
-            (crosschainFeeSpending ?? 0)
+        let sendingAmount = getSendingAmount()
 
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
@@ -447,7 +441,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
             ),
 
             dataValidatingFactory.willBeReaped(
-                amount: totalSpending,
+                amount: getTotalSpendingWithoutNetworkFee(),
                 fee: isOriginUtilityTransfer ? networkFee : nil,
                 totalAmount: senderSendingAssetBalance?.balanceCountingEd,
                 minBalance: originSendingMinBalance,
