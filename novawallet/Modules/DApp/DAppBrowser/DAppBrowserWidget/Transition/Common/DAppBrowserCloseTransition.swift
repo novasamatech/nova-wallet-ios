@@ -21,10 +21,6 @@ extension DAppBrowserCloseTransition: DAppBrowserWidgetTransitionProtocol {
         dependencies.blockAnimator.animate {
             containerView?.layoutIfNeeded()
 
-            UIView.performWithoutAnimation {
-                transformClosure?()
-            }
-
             layoutAnimatables?()
         } completionBlock: { _ in
             childNavigationClosure?() {}

@@ -3,16 +3,13 @@ import SoraUI
 struct DAppBrowserLayoutTransitionDependencies {
     let layoutClosure: () -> (UIView?)
     let animatableClosure: (() -> Void)?
-    let transformClosure: (() -> Void)?
 
     init(
         layoutClosure: @escaping () -> UIView?,
-        animatableClosure: (() -> Void)? = nil,
-        transformClosure: (() -> Void)? = nil
+        animatableClosure: (() -> Void)? = nil
     ) {
         self.layoutClosure = layoutClosure
         self.animatableClosure = animatableClosure
-        self.transformClosure = transformClosure
     }
 }
 
