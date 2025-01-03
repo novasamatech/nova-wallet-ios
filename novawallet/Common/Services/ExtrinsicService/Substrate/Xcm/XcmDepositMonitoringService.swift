@@ -19,7 +19,6 @@ final class XcmDepositMonitoringService {
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
     let blockEventsQueryFactory: BlockEventsQueryFactoryProtocol
-    let tokenDepositEventMatchingFactory: TokenDepositEventMatcherFactoryProtocol
     let accountId: AccountId
     let chainAsset: ChainAsset
     let timeout: TimeInterval
@@ -52,7 +51,6 @@ final class XcmDepositMonitoringService {
         self.logger = logger
 
         blockEventsQueryFactory = BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger)
-        tokenDepositEventMatchingFactory = TokenDepositEventMatcherFactory(logger: logger)
     }
 
     private func notifyAboutStateIfNeeded() {
@@ -101,7 +99,7 @@ final class XcmDepositMonitoringService {
     private func fetchBlockAndDetectDeposit(
         for hash: Data,
         accountId: AccountId,
-        eventMatcher: TokenDepositEventMatching
+        tokensDetector: XcmTokensArrivalDetecting
     ) {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -111,15 +109,12 @@ final class XcmDepositMonitoringService {
             blockHash: hash
         )
 
-        let detector = XcmTokensArrivalDetector(logger: logger)
-
         let matchingOperation = ClosureOperation<TokenDepositEvent?> {
             let blockDetails = try blockDetailsWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            return detector.searchForXcmArrival(
+            return tokensDetector.searchForXcmArrival(
                 in: blockDetails,
-                eventMatcher: eventMatcher,
                 accountId: accountId,
                 codingFactory: codingFactory
             )
@@ -202,7 +197,11 @@ final class XcmDepositMonitoringService {
             return
         }
 
-        guard let eventMatcher = tokenDepositEventMatchingFactory.createMatcher(for: chainAsset) else {
+        guard
+            let tokensDetector = XcmTokensArrivalDetector(
+                chainAsset: chainAsset,
+                logger: logger
+            ) else {
             logger.error("Unsupported asset: \(chainAsset.asset.symbol)")
             return
         }
@@ -240,7 +239,7 @@ final class XcmDepositMonitoringService {
                 fetchBlockAndDetectDeposit(
                     for: blockHash,
                     accountId: accountId,
-                    eventMatcher: eventMatcher
+                    tokensDetector: tokensDetector
                 )
             case let .failure(error):
                 logger.error("Remote subscription failed: \(error)")
