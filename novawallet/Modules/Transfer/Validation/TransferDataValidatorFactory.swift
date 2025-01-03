@@ -13,6 +13,14 @@ struct CrossChainValidationAtLeastEdForDeliveryFee {
     let minBalance: BigUInt?
 }
 
+struct CrossChainValidationOriginKeepAlive {
+    let totalSpendingAmount: Decimal?
+    let networkFee: ExtrinsicFeeProtocol?
+    let balance: Balance?
+    let minBalance: Balance?
+    let requiresKeepAlive: Bool?
+}
+
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func willBeReaped(
         amount: Decimal?,
@@ -69,6 +77,11 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 
     func notViolatingMinBalanceWhenDeliveryFeeEnabled(
         for params: CrossChainValidationAtLeastEdForDeliveryFee,
+        locale: Locale
+    ) -> DataValidating
+
+    func notViolatingKeepAlive(
+        for params: CrossChainValidationOriginKeepAlive,
         locale: Locale
     ) -> DataValidating
 
@@ -330,6 +343,48 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             }
 
             return networkFeeDecimal + deliveryFeeDecimal + sendingDecimal + minBalanceDecimal <= balanceDecimal
+        })
+    }
+
+    func notViolatingKeepAlive(
+        for params: CrossChainValidationOriginKeepAlive,
+        locale: Locale
+    ) -> DataValidating {
+        let totalSpendingInPlank = params.totalSpendingAmount?.toSubstrateAmount(
+            precision: assetDisplayInfo.assetPrecision
+        ) ?? 0
+
+        return ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view, let assetInfo = self?.assetDisplayInfo else {
+                return
+            }
+
+            let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetInfo)
+
+            let minBalanceDecimal = params.minBalance?.decimal(assetInfo: assetInfo) ?? 0
+
+            let minBalanceString = tokenFormatter.value(for: locale).stringFromDecimal(minBalanceDecimal) ?? ""
+
+            self?.presentable.presentKeepAliveViolatedForCrosschain(
+                from: view,
+                minBalance: minBalanceString,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            guard
+                let balance = params.balance,
+                let minBalance = params.minBalance,
+                let requiresKeepAlive = params.requiresKeepAlive else {
+                return true
+            }
+
+            if requiresKeepAlive {
+                let feeAmount = params.networkFee?.amountForCurrentAccount ?? 0
+                return totalSpendingInPlank + feeAmount + minBalance <= balance
+            } else {
+                return true
+            }
         })
     }
 

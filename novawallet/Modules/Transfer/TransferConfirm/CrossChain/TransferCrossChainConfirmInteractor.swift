@@ -43,6 +43,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
             resolutionFactory: resolutionFactory,
+            fungibilityPreservationProvider: AssetFungibilityPreservationProvider.createFromKnownChains(),
             walletRemoteWrapper: walletRemoteWrapper,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,

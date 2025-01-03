@@ -21,6 +21,7 @@ protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveOriginSendingMinBalance(_ value: BigUInt)
     func didReceiveDestSendingExistence(_ value: AssetBalanceExistence)
     func didReceiveDestUtilityMinBalance(_ value: BigUInt)
+    func didReceiveRequiresOriginKeepAlive(_ value: Bool)
     func didCompleteSetup(result: Result<Void, Error>)
     func didReceiveError(_ error: Error)
 }

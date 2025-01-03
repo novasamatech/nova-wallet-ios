@@ -158,6 +158,10 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     // MARK: Subsclass
 
+    override func getSendingAmount() -> Decimal? {
+        amount
+    }
+
     override func refreshOriginFee() {
         let assetInfo = originChainAsset.assetDisplayInfo
 
@@ -290,7 +294,7 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
         let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
         let validators: [DataValidating] = baseValidators(
-            for: amount,
+            for: getSendingAmount(),
             recepientAddress: recepientAccountAddress,
             utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale

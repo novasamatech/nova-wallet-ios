@@ -78,6 +78,10 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
         true
     }
 
+    func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {
+        false
+    }
+
     func beginMetaOperation(
         for amountIn: Balance,
         amountOut: Balance
