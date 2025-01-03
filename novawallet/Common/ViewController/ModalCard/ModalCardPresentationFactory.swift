@@ -96,9 +96,15 @@ extension ModalCardPresentationAppearanceAnimator: UIViewControllerAnimatedTrans
             transitionContext.completeTransition(finished)
         }
 
-        animator.animate(
-            block: animationBlock,
-            completionBlock: completionBlock
+        // TODO: Use spring-block animator after UIKit update
+        UIView.animate(
+            withDuration: 0.45,
+            delay: 0,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: 0.4,
+            options: .curveEaseIn,
+            animations: animationBlock,
+            completion: completionBlock
         )
     }
 }

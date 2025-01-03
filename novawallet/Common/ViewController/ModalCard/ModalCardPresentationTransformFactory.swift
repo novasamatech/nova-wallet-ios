@@ -80,6 +80,6 @@ extension ModalCardPresentationTransformFactory: ModalCardPresentationTransformF
 
 private extension ModalCardPresentationTransformFactory {
     enum Constants {
-        static let cardPresenterTopInset: CGFloat = 12
+        static let cardPresenterTopInset: CGFloat = 10
     }
 }

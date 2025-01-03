@@ -14,7 +14,7 @@ public struct ModalCardPresentationConfiguration {
     public let dismissCancelSpeedFactor: CGFloat
 
     public init(
-        contentAppearanceAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(duration: 0.35, delay: 0.0, options: [.curveLinear]),
+        contentAppearanceAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(duration: 0.45, delay: 0.0, options: [.curveLinear]),
         contentDissmisalAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(duration: 0.35, delay: 0.0, options: [.curveLinear]),
         style: ModalCardPresentationStyle = .defaultStyle,
         extendUnderSafeArea: Bool = false,

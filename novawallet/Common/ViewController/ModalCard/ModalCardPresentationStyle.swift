@@ -11,6 +11,6 @@ public struct ModalCardPresentationStyle {
 
 public extension ModalCardPresentationStyle {
     static var defaultStyle: ModalCardPresentationStyle {
-        ModalCardPresentationStyle(backdropColor: UIColor.white.withAlphaComponent(0.1))
+        ModalCardPresentationStyle(backdropColor: UIColor.darkGray.withAlphaComponent(0.3))
     }
 }

@@ -1,17 +1,17 @@
 import UIKit
 import SoraUI
 
-protocol ModalCardPresentationControllerDelegate: AnyObject {
+public protocol ModalCardPresentationControllerDelegate: AnyObject {
     func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool
     func presentationControllerDidAttemptToDismiss(_: UIPresentationController)
 }
 
-class ModalCardPresentationController: UIPresentationController {
+public final class ModalCardPresentationController: UIPresentationController {
     private weak var observedScrollView: UIScrollView?
     private var backgroundView: UIView?
 
-    let configuration: ModalCardPresentationConfiguration
-    let transformFactory: ModalCardPresentationTransformFactoryProtocol
+    private let configuration: ModalCardPresentationConfiguration
+    private let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
     weak var presentationDelegate: ModalCardPresentationControllerDelegate? {
         presentedViewController as? ModalCardPresentationControllerDelegate
@@ -19,8 +19,6 @@ class ModalCardPresentationController: UIPresentationController {
 
     var interactiveDismissal: UIPercentDrivenInteractiveTransition?
     var initialTranslation: CGPoint = .zero
-
-    let topOffset: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + 12
 
     init(
         presentedViewController: UIViewController,
@@ -36,78 +34,28 @@ class ModalCardPresentationController: UIPresentationController {
 
     // MARK: Presentation overridings
 
-    override var shouldPresentInFullscreen: Bool {
+    override public var shouldPresentInFullscreen: Bool {
         false
     }
 
-    override func presentationTransitionWillBegin() {
+    override public func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
 
-        guard let sourceView = presentingViewController.view else { return }
-
-        configureBackgroundView(on: sourceView)
         configurePresentedView()
-
         attachPanGesture()
-
         animateBackground(appearing: true)
     }
 
-    override func dismissalTransitionWillBegin() {
+    override public func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
 
         animateBackground(appearing: false)
     }
 
-    override var frameOfPresentedViewInContainerView: CGRect {
+    override public var frameOfPresentedViewInContainerView: CGRect {
         guard let containerView else { return .zero }
 
         return calculatePresentedViewFrame(in: containerView)
-    }
-
-    func applySourceDismissTransform() {
-        guard let sourceView = presentingViewController.view else { return }
-
-        let transform = transformFactory.createDismissingTransform(for: presentingViewController)
-
-        sourceView.transform = transform
-
-        let parentPresentationController = presentingViewController.presentationController
-            as? ModalCardPresentationController
-
-        parentPresentationController?.applySourceDismissTransform()
-    }
-
-    func applySourceAppearanceTransform() {
-        guard let sourceView = presentingViewController.view else { return }
-
-        let transform = transformFactory.createAppearanceTransform(for: presentingViewController)
-
-        sourceView.transform = transform
-
-        let parentPresentationController = presentingViewController.presentationController
-            as? ModalCardPresentationController
-
-        parentPresentationController?.applySourceAppearanceTransform()
-    }
-
-    func updateLayout() {
-        guard
-            let presentedView,
-            let root = UIApplication.shared.tabBarController
-        else { return }
-
-        let presentedViewHeight = presentedView.bounds.height
-        var presenetedViewHeightDelta = root.view.bounds.height - presentedViewHeight - topOffset
-
-        let height = presentedViewController.view.frame.height + presenetedViewHeightDelta
-
-        presentedViewController.view.frame = CGRect(
-            x: presentedView.frame.origin.x,
-            y: presentedView.frame.origin.y,
-            width: presentedView.frame.width,
-            height: height
-        )
     }
 }
 
@@ -116,13 +64,13 @@ class ModalCardPresentationController: UIPresentationController {
 private extension ModalCardPresentationController {
     func configureBackgroundView(on view: UIView) {
         if let currentBackgroundView = backgroundView {
-            view.insertSubview(currentBackgroundView, at: 0)
+            view.addSubview(currentBackgroundView)
         } else {
             let newBackgroundView = UIView(frame: view.bounds)
 
             newBackgroundView.backgroundColor = configuration.style.backdropColor
 
-            view.insertSubview(newBackgroundView, at: 0)
+            view.addSubview(newBackgroundView)
             backgroundView = newBackgroundView
         }
 
@@ -145,12 +93,12 @@ private extension ModalCardPresentationController {
 
         let finalOrigin = containerView.bounds.offsetBy(
             dx: 0,
-            dy: topOffset
+            dy: Constants.topOffset
         ).origin
 
         let finalFrameSize = CGSize(
             width: containerView.bounds.width,
-            height: (UIApplication.shared.tabBarController?.view.bounds.height ?? 0) - topOffset
+            height: (UIApplication.shared.tabBarController?.view.bounds.height ?? 0) - Constants.topOffset
         )
 
         finalFrame = CGRect(
@@ -159,58 +107,6 @@ private extension ModalCardPresentationController {
         )
 
         return finalFrame
-    }
-
-    // MARK: Animation
-
-    func animateBackground(appearing: Bool) {
-        let isPresentedByNavigationController: Bool = presentingViewController is UINavigationController
-
-        let alphaFromValue: CGFloat
-        let alphaToValue: CGFloat
-        let cornerRadius: CGFloat
-
-        if appearing {
-            alphaFromValue = 0.0
-            alphaToValue = 1.0
-            cornerRadius = Constants.sourceViewCornerRadius
-        } else {
-            alphaFromValue = 1.0
-            alphaToValue = 0.0
-            cornerRadius = isPresentedByNavigationController ? Constants.sourceViewCornerRadius : 45
-        }
-
-        let coveredContextView: UIView?
-
-        if let tabBarController = presentingViewController as? UITabBarController {
-            let navController = tabBarController.selectedViewController as? UINavigationController
-            coveredContextView = navController?.topViewController?.view ?? tabBarController.view
-        } else {
-            coveredContextView = presentingViewController.view
-        }
-
-        coveredContextView?.layer.masksToBounds = true
-        backgroundView?.alpha = alphaFromValue
-
-        let animationBlock: (UIViewControllerTransitionCoordinatorContext) -> Void = { [weak self] _ in
-            guard let self else { return }
-
-            backgroundView?.alpha = alphaToValue
-            coveredContextView?.layer.cornerRadius = cornerRadius
-
-            if appearing {
-                applySourceAppearanceTransform()
-            } else {
-                applySourceDismissTransform()
-            }
-        }
-
-        presentingViewController
-            .transitionCoordinator?
-            .animate(
-                alongsideTransition: animationBlock,
-                completion: nil
-            )
     }
 
     func dismiss(animated: Bool) {
@@ -295,7 +191,8 @@ private extension ModalCardPresentationController {
             if let interactiveDismissal = interactiveDismissal {
                 let thresholdReached = interactiveDismissal.percentComplete >= configuration.dismissPercentThreshold
                 let shouldDismiss = (thresholdReached && velocity.y >= 0) ||
-                    (velocity.y >= configuration.dismissVelocityThreshold && translation.y >= configuration.dismissMinimumOffset)
+                    (velocity.y >= configuration.dismissVelocityThreshold &&
+                        translation.y >= configuration.dismissMinimumOffset)
                 stopPullToDismiss(finished: panGestureRecognizer.state != .cancelled && shouldDismiss)
             }
         default:
@@ -310,6 +207,149 @@ private extension ModalCardPresentationController {
         guard let view = panGestureRecognizer.view else { return }
 
         handlePan(from: panGestureRecognizer, on: view)
+    }
+}
+
+// MARK: Animation
+
+private extension ModalCardPresentationController {
+    func animateBackground(appearing: Bool) {
+        let animatableProperties = createBackgroundAnimationProperties(for: appearing)
+        let coveredContextView = prepareCoveredContextView()
+
+        configureBackgroundView(on: coveredContextView)
+
+        backgroundView?.alpha = animatableProperties.backDropViewInitialAlpha
+
+        let animationBlock: (UIViewControllerTransitionCoordinatorContext) -> Void = { [weak self] _ in
+            guard let self else { return }
+
+            backgroundView?.alpha = animatableProperties.backDropViewFinalAlpha
+            coveredContextView.layer.cornerRadius = animatableProperties.cornerRadius
+
+            if appearing {
+                applySourceAppearanceTransform()
+            } else {
+                applySourceDismissTransform()
+            }
+        }
+
+        let completionBlock: (UIViewControllerTransitionCoordinatorContext) -> Void = { [weak self] context in
+            guard let self, !appearing, !context.isCancelled else { return }
+            completeTransitionAnimation(for: coveredContextView)
+        }
+
+        presentingViewController
+            .transitionCoordinator?
+            .animate(
+                alongsideTransition: animationBlock,
+                completion: completionBlock
+            )
+    }
+
+    func createBackgroundAnimationProperties(for appearing: Bool) -> BackgroundProperties {
+        let presenterPresentedByOther: Bool = presentingViewController.presentingViewController != nil
+
+        let alphaFromValue: CGFloat
+        let alphaToValue: CGFloat
+        let cornerRadius: CGFloat
+
+        if appearing {
+            alphaFromValue = 0.0
+            alphaToValue = 1.0
+            cornerRadius = Constants.sourceViewCornerRadius
+        } else {
+            alphaFromValue = 1.0
+            alphaToValue = 0.0
+            cornerRadius = presenterPresentedByOther
+                ? Constants.destinationViewCornerRadius
+                : UIScreen.main.cornerRadius
+        }
+
+        return BackgroundProperties(
+            cornerRadius: cornerRadius,
+            backDropViewInitialAlpha: alphaFromValue,
+            backDropViewFinalAlpha: alphaToValue
+        )
+    }
+
+    func prepareCoveredContextView() -> UIView {
+        let coveredContextView: UIView
+
+        if
+            let tabBarController = presentingViewController as? UITabBarController,
+            let navController = tabBarController.selectedViewController as? UINavigationController {
+            coveredContextView = navController.view
+        } else {
+            coveredContextView = presentingViewController.navigationController?.view
+                ?? presentingViewController.view
+        }
+
+        coveredContextView.layer.masksToBounds = true
+        coveredContextView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        coveredContextView.layer.cornerCurve = .continuous
+
+        return coveredContextView
+    }
+
+    func completeTransitionAnimation(for coveredContextView: UIView) {
+        let presenterPresentedByOther: Bool = presentingViewController.presentingViewController != nil
+
+        if presenterPresentedByOther {
+            coveredContextView.layer.maskedCorners = presentedView?.layer.maskedCorners ?? []
+            coveredContextView.layer.cornerRadius = presentedView?.layer.cornerRadius ?? 0
+        } else {
+            coveredContextView.layer.cornerRadius = 0
+        }
+    }
+}
+
+// MARK: Public
+
+public extension ModalCardPresentationController {
+    func applySourceDismissTransform() {
+        guard let sourceView = presentingViewController.view else { return }
+
+        let transform = transformFactory.createDismissingTransform(for: presentingViewController)
+
+        sourceView.transform = transform
+
+        let parentPresentationController = presentingViewController.presentationController
+            as? ModalCardPresentationController
+
+        parentPresentationController?.applySourceDismissTransform()
+    }
+
+    func applySourceAppearanceTransform() {
+        guard let sourceView = presentingViewController.view else { return }
+
+        let transform = transformFactory.createAppearanceTransform(for: presentingViewController)
+
+        sourceView.transform = transform
+
+        let parentPresentationController = presentingViewController.presentationController
+            as? ModalCardPresentationController
+
+        parentPresentationController?.applySourceAppearanceTransform()
+    }
+
+    func updateLayout() {
+        guard
+            let presentedView,
+            let root = UIApplication.shared.tabBarController
+        else { return }
+
+        let presentedViewHeight = presentedView.bounds.height
+        let presenetedViewHeightDelta = root.view.bounds.height - presentedViewHeight - Constants.topOffset
+
+        let height = presentedViewController.view.frame.height + presenetedViewHeightDelta
+
+        presentedViewController.view.frame = CGRect(
+            x: presentedView.frame.origin.x,
+            y: presentedView.frame.origin.y,
+            width: presentedView.frame.width,
+            height: height
+        )
     }
 }
 
@@ -336,7 +376,14 @@ extension ModalCardPresentationController: UIGestureRecognizerDelegate {
 
 private extension ModalCardPresentationController {
     enum Constants {
-        static let sourceViewCornerRadius: CGFloat = 12
-        static let destinationViewCornerRadius: CGFloat = 16
+        static let topOffset: CGFloat = (UIApplication.shared.rootContainer?.view.safeAreaInsets.top ?? 0) + 12
+        static let sourceViewCornerRadius: CGFloat = 10
+        static let destinationViewCornerRadius: CGFloat = 12
     }
+}
+
+private struct BackgroundProperties {
+    let cornerRadius: CGFloat
+    let backDropViewInitialAlpha: CGFloat
+    let backDropViewFinalAlpha: CGFloat
 }

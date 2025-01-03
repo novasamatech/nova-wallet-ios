@@ -1113,6 +1113,7 @@
 		2D3EA7DE2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */; };
 		2D3EA7E02CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */; };
 		2D3EA7E22CFF0D540033AFD2 /* DAppSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7E12CFF0D540033AFD2 /* DAppSearchViewModel.swift */; };
+		2D42A0EE2D27E00100EB46CE /* UIScreen+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D42A0ED2D27E00100EB46CE /* UIScreen+Corners.swift */; };
 		2D442CEF2CD0F7DF00A0380F /* AppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */; };
 		2D442CF12CD0F85400A0380F /* IconAppearanceDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */; };
 		2D442CF32CD103ED00A0380F /* BarcodeCreationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */; };
@@ -6529,6 +6530,7 @@
 		2D3EA7DD2CFE36BF0033AFD2 /* DAppCategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCategoryViewModel.swift; sourceTree = "<group>"; };
 		2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCategoryViewModelFactory.swift; sourceTree = "<group>"; };
 		2D3EA7E12CFF0D540033AFD2 /* DAppSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchViewModel.swift; sourceTree = "<group>"; };
+		2D42A0ED2D27E00100EB46CE /* UIScreen+Corners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Corners.swift"; sourceTree = "<group>"; };
 		2D442CEE2CD0F7DF00A0380F /* AppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF02CD0F85400A0380F /* IconAppearanceDepending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAppearanceDepending.swift; sourceTree = "<group>"; };
 		2D442CF22CD103ED00A0380F /* BarcodeCreationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeCreationError.swift; sourceTree = "<group>"; };
@@ -18986,6 +18988,7 @@
 				88DC3E1F292CA9B900DBCE4D /* Style */,
 				F409672526B29B04008CD244 /* UIScrollView+ScrollToPage.swift */,
 				8490144E24A93E2E008F705E /* UIImage+Drawing.swift */,
+				2D42A0ED2D27E00100EB46CE /* UIScreen+Corners.swift */,
 				849014C424AA890D008F705E /* UIFont+Style.swift */,
 				8428766A24ADF51D00D91AD8 /* UIViewController+Content.swift */,
 				84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */,
@@ -27516,6 +27519,7 @@
 				88D02FEA2942ED4F00E26390 /* RoundedButton+Style.swift in Sources */,
 				842BDB2A278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift in Sources */,
 				84FEADF228783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift in Sources */,
+				2D42A0EE2D27E00100EB46CE /* UIScreen+Corners.swift in Sources */,
 				0CE360232C343300006A6CE4 /* PriorityQueue.swift in Sources */,
 				848CC93D28D9F6D8009EB4B0 /* OnChainDispatchTime.swift in Sources */,
 				841E5534282CD9A900C8438F /* StakingType.swift in Sources */,
