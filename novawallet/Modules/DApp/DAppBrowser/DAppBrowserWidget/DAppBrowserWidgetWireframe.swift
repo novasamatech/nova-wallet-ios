@@ -33,10 +33,12 @@ class DAppBrowserWidgetWireframe: NSObject, DAppBrowserWidgetWireframeProtocol {
     }
 
     func showMiniature(from view: (any DAppBrowserParentWidgetViewProtocol)?) {
-        view?.controller.children.forEach {
-            $0.willMove(toParent: nil)
-            $0.view.removeFromSuperview()
-            $0.removeFromParent()
+        view?.controller.children.forEach { child in
+            child.dismiss(animated: true) {
+                child.willMove(toParent: nil)
+                child.view.removeFromSuperview()
+                child.removeFromParent()
+            }
         }
     }
 }

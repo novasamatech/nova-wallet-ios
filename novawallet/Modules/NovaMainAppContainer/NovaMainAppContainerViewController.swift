@@ -55,21 +55,14 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserCloseLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        var transform: CGAffineTransform?
-        var presentingController: UIViewController?
-
-        if let presentedViewController = tabBar?.presentedController() {
-            presentingController = presentedViewController.presentingViewController
-            transform = presentingController?.view.transform
-        }
-
-        presentingController?.view.transform = .identity
+        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
+        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
-                    make.height.equalTo(Constants.minimizedWidgetHeight)
+                    make.bottom.equalToSuperview().inset(-topContainerBottomOffset)
+                    make.height.equalTo(minimizedWidgetHeight)
                 }
 
                 self?.topContainerBottomConstraint?.constant = 0
@@ -79,24 +72,22 @@ private extension NovaMainAppContainerViewController {
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
                 self?.updateModalsLayoutIfNeeded()
-            },
-            transformClosure: {
-                guard let transform else { return }
-
-                presentingController?.view.transform = transform
             }
         )
     }
 
     func browserMinimizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        DAppBrowserLayoutTransitionDependencies(
+        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
+        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
+
+        return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
                 self?.browserWidget?.view.snp.updateConstraints { make in
                     make.bottom.equalToSuperview()
-                    make.height.equalTo(Constants.minimizedWidgetHeight)
+                    make.height.equalTo(minimizedWidgetHeight)
                 }
 
-                self?.topContainerBottomConstraint?.constant = -Constants.topContainerBottomOffset
+                self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
                 return self?.rootView
             },
@@ -111,6 +102,7 @@ private extension NovaMainAppContainerViewController {
 
     func browserMaximizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
         let fullHeight = view.frame.size.height
+        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
@@ -119,7 +111,7 @@ private extension NovaMainAppContainerViewController {
                     make.bottom.equalToSuperview()
                 }
 
-                self?.topContainerBottomConstraint?.constant = -Constants.topContainerBottomOffset
+                self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
                 return self?.rootView
             }
@@ -127,15 +119,12 @@ private extension NovaMainAppContainerViewController {
     }
 
     func updateModalsLayoutIfNeeded() {
-        if
-            let cardModalController = tabBar?.presentedController() as? CardLayoutPresentationController,
-            let presentingController = cardModalController.presentingViewController {
-            cardModalController.view.frame = CGRect(
-                x: cardModalController.view.frame.minX,
-                y: cardModalController.view.frame.minY,
-                width: presentingController.view.bounds.width,
-                height: presentingController.view.bounds.height
-            )
+        var presentedViewController = tabBar?.presentedController()
+
+        while presentedViewController != nil {
+            let presentationController = (presentedViewController?.presentationController as? ModalCardPresentationController)
+            presentationController?.updateLayout()
+            presentedViewController = presentedViewController?.presentedViewController
         }
     }
 }
@@ -157,14 +146,18 @@ extension NovaMainAppContainerViewController {
         topContainerBottomConstraint?.isActive = true
 
         topView.layer.cornerRadius = 16
+        topView.layer.maskedCorners = []
         topView.layer.masksToBounds = true
 
         rootView.addSubview(bottomView)
 
+        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
+        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
+
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(-Constants.topContainerBottomOffset)
-            make.height.equalTo(Constants.minimizedWidgetHeight)
+            make.bottom.equalToSuperview().inset(-topContainerBottomOffset)
+            make.height.equalTo(minimizedWidgetHeight)
         }
     }
 }
@@ -219,8 +212,16 @@ extension NovaMainAppContainerViewController: NovaMainAppContainerViewProtocol {
 
 private extension NovaMainAppContainerViewController {
     enum Constants {
-        static let minimizedWidgetHeight: CGFloat = 78
         static let childSpacing: CGFloat = 6
-        static let topContainerBottomOffset: CGFloat = minimizedWidgetHeight + childSpacing
+
+        static func minimizedWidgetHeight(for view: UIView) -> CGFloat {
+            view.safeAreaInsets.bottom + 44
+        }
+
+        static func topContainerBottomOffset(for view: UIView) -> CGFloat {
+            let minimizedWidgetHeight = minimizedWidgetHeight(for: view)
+
+            return minimizedWidgetHeight + childSpacing
+        }
     }
 }

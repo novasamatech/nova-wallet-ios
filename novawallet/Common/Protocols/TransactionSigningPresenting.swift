@@ -69,7 +69,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
             completion(.failure(HardwareSigningError.signingCancelled))
         }
 
-        controller.present(navigationController, animated: true)
+        controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     func presentParitySignerFlow(

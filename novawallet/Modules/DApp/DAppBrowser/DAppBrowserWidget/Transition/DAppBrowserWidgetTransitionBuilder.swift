@@ -36,8 +36,15 @@ private extension DAppBrowserWidgetTransitionBuilder {
             throw DAppBrowserWidgetTransitionBuilderError.missingRequiredDependencies
         }
 
+        let dependencies = FadeContentDAppBrowserTransitionDependencies(
+            browserViewClosure: nil,
+            widgetViewClosure: nil,
+            childNavigation: childNavigation,
+            layoutDependencies: layoutDependencies
+        )
+
         return DAppBrowserCloseTransition(
-            dependencies: layoutDependencies
+            dependencies: dependencies
         )
     }
 

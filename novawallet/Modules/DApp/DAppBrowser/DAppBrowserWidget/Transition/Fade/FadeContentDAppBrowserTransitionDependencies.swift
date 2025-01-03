@@ -3,24 +3,21 @@ import SoraUI
 struct DAppBrowserLayoutTransitionDependencies {
     let layoutClosure: () -> (UIView?)
     let animatableClosure: (() -> Void)?
-    let transformClosure: (() -> Void)?
 
     init(
         layoutClosure: @escaping () -> UIView?,
-        animatableClosure: (() -> Void)? = nil,
-        transformClosure: (() -> Void)? = nil
+        animatableClosure: (() -> Void)? = nil
     ) {
         self.layoutClosure = layoutClosure
         self.animatableClosure = animatableClosure
-        self.transformClosure = transformClosure
     }
 }
 
 struct FadeContentDAppBrowserTransitionDependencies {
-    let browserViewClosure: () -> UIView?
-    let widgetViewClosure: () -> DAppBrowserWidgetView?
+    let browserViewClosure: (() -> UIView?)?
+    let widgetViewClosure: (() -> DAppBrowserWidgetView?)?
 
-    let childNavigation: DAppBrowserChildNavigationClosure
+    let childNavigation: DAppBrowserChildNavigationClosure?
     let layoutDependencies: DAppBrowserLayoutTransitionDependencies
 
     let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
@@ -39,9 +36,9 @@ struct FadeContentDAppBrowserTransitionDependencies {
     )
 
     init(
-        browserViewClosure: @escaping () -> UIView?,
-        widgetViewClosure: @escaping () -> DAppBrowserWidgetView?,
-        childNavigation: @escaping DAppBrowserChildNavigationClosure,
+        browserViewClosure: (() -> UIView?)?,
+        widgetViewClosure: (() -> DAppBrowserWidgetView?)?,
+        childNavigation: DAppBrowserChildNavigationClosure?,
         layoutDependencies: DAppBrowserLayoutTransitionDependencies
     ) {
         self.browserViewClosure = browserViewClosure

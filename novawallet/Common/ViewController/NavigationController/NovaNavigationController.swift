@@ -29,6 +29,29 @@ class NovaNavigationController: UINavigationController, UINavigationControllerDe
         topViewController
     }
 
+    override init(rootViewController: UIViewController) {
+        super.init(rootViewController: rootViewController)
+
+        definesPresentationContext = false
+    }
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+
+        definesPresentationContext = false
+    }
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+
+        definesPresentationContext = false
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private func setup() {
         delegate = self
 
