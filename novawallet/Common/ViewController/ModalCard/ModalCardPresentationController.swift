@@ -155,10 +155,10 @@ private extension ModalCardPresentationController {
         with panGesture: UIPanGestureRecognizer
     ) -> Bool {
         guard let scrollView else { return true }
-        guard let containerView, !containsActiveLongPress(scrollView) else { return false }
+        guard let presentedView, !containsActiveLongPress(scrollView) else { return false }
 
         if let tableView = scrollView as? UITableView, tableView.isEditing {
-            let touchPoint = panGesture.location(in: tableView)
+            let touchPoint = panGesture.location(in: presentedView)
 
             return !tableView.frame.contains(touchPoint)
         }
