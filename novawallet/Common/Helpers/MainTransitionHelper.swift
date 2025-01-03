@@ -11,9 +11,7 @@ struct MainTransitionHelper {
             presentingController.dismiss(animated: animated, completion: nil)
         }
 
-        guard let tabBarController = UIApplication.shared
-            .delegate?.window??.rootViewController as? UITabBarController
-        else {
+        guard let tabBarController = UIApplication.shared.tabBarController else {
             return
         }
 

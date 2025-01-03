@@ -78,6 +78,8 @@ final class DAppCategoriesView: UIView {
     }
 
     func bind(categories: [DAppCategoryViewModel]) {
+        guard viewModels != categories else { return }
+
         viewModels = categories
 
         if categoryItems.count > categories.count {
@@ -145,12 +147,11 @@ final class DAppCategoriesView: UIView {
     }
 
     private func setSelectedStyle(for categoryChip: CategoryChip) {
-        let templateIcon = categoryChip.contentView.imageView.image?.tinted(
-            with: R.color.colorIconPrimaryNegative()!
-        )
+        let templateIcon = categoryChip.contentView.imageView.image?.withRenderingMode(.alwaysTemplate)
 
         categoryChip.contentView.detailsLabel.textColor = R.color.colorTextPrimaryNegative()!
         categoryChip.contentView.imageView.image = templateIcon
+        categoryChip.contentView.imageView.tintColor = R.color.colorIconPrimaryNegative()!
 
         categoryChip.backgroundView.fillColor = R.color.colorSelectedDAppCategoryBackground()!
     }

@@ -22,6 +22,6 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
             return
         }
         let navigationController = NovaNavigationController(rootViewController: stakingRewardFiltersView.controller)
-        view?.controller.present(navigationController, animated: true, completion: completion)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: completion)
     }
 }

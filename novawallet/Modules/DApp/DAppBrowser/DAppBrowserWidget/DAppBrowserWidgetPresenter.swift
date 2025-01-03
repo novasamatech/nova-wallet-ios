@@ -123,7 +123,16 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetPresenterProtocol {
     }
 
     func closeTabs() {
-        interactor.closeTabs()
+        if browserTabs.count > 1 {
+            wireframe.presentCloseTabsAlert(
+                from: view,
+                with: selectedLocale
+            ) { [weak self] in
+                self?.interactor.closeTabs()
+            }
+        } else {
+            interactor.closeTabs()
+        }
     }
 }
 
@@ -153,6 +162,10 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetInteractorOutputProtocol 
         }
 
         provideModel()
+    }
+
+    func didReceiveWalletChanged() {
+        view?.didChangeWallet()
     }
 }
 

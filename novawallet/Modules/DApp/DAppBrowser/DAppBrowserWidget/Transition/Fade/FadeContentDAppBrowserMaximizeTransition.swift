@@ -24,29 +24,39 @@ extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionP
         let childNavigation = dependencies.childNavigation
         let layoutClosure = dependencies.layoutDependencies.layoutClosure
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
+        let transformClosure = dependencies.layoutDependencies.transformClosure
 
         disappearanceAnimator.animate(
-            view: widgetView.contentContainerView
-        ) { _ in
-            childNavigation {
-                guard let browserView = dependencies.browserViewClosure() else {
-                    return
-                }
+            view: widgetView.contentContainerView,
+            completionBlock: nil
+        )
 
-                let containerView = layoutClosure()
-
-                UIView.animate(
-                    withDuration: 0.25
-                ) {
-                    layoutAnimatables?()
-                    containerView?.layoutIfNeeded()
-                }
-
-                appearanceAnimator.animate(
-                    view: browserView,
-                    completionBlock: nil
-                )
+        childNavigation {
+            guard let browserView = dependencies.browserViewClosure() else {
+                return
             }
+
+            let containerView = layoutClosure()
+
+            UIView.animate(
+                withDuration: 0.45,
+                delay: 0,
+                usingSpringWithDamping: 1,
+                initialSpringVelocity: 0.4,
+                options: .curveEaseIn
+            ) {
+                layoutAnimatables?()
+                containerView?.layoutIfNeeded()
+
+                UIView.performWithoutAnimation {
+                    transformClosure?()
+                }
+            }
+
+            appearanceAnimator.animate(
+                view: browserView,
+                completionBlock: nil
+            )
         }
     }
 }

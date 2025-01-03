@@ -65,7 +65,10 @@ extension AccountCreateWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: advancedView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func confirm(

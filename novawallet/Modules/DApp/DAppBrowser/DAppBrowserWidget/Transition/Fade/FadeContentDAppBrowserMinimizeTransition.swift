@@ -15,11 +15,11 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionP
     func start() {
         let appearanceAnimator = dependencies.appearanceAnimator
         let disappearanceAnimator = dependencies.disappearanceAnimator
-        let blockAnimator = dependencies.blockAnimator
 
         let childNavigation = dependencies.childNavigation
         let layoutClosure = dependencies.layoutDependencies.layoutClosure
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
+        let transformClosure = dependencies.layoutDependencies.transformClosure
 
         let containerView = layoutClosure()
 
@@ -34,11 +34,23 @@ extension FadeContentDAppBrowserMinimizeTransition: DAppBrowserWidgetTransitionP
         let widgetView = dependencies.widgetViewClosure()
         widgetView?.contentContainerView.alpha = 0
 
-        blockAnimator.animate {
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: 0.4,
+            options: .curveEaseIn
+        ) {
             layoutAnimatables?()
             containerView?.layoutIfNeeded()
-        } completionBlock: { _ in
-            guard let widgetView else { return }
+
+            UIView.performWithoutAnimation {
+                transformClosure?()
+            }
+        } completion: { _ in
+            guard let widgetView = dependencies.widgetViewClosure() else {
+                return
+            }
 
             appearanceAnimator.animate(
                 view: widgetView.contentContainerView,

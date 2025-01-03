@@ -2,13 +2,11 @@ import UIKit
 import SoraUI
 
 class DAppBrowserWidgetView: UIView {
-    let backgroundView: OverlayBlurBackgroundView = .create { view in
-        view.sideLength = 16
+    let backgroundView: BlurBackgroundView = .create { view in
+        view.sideLength = Constants.sideLength
         view.cornerCut = [.topLeft, .topRight]
-        view.borderType = .none
-        view.overlayView.fillColor = .clear
-        view.overlayView.strokeColor = R.color.colorCardActionsBorder()!
-        view.overlayView.strokeWidth = 1
+        view.borderWidth = Constants.borderWidth
+        view.borderColor = R.color.colorContainerBorder()!
     }
 
     let contentContainerView = UIView()
@@ -34,7 +32,11 @@ class DAppBrowserWidgetView: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
+// MARK: Private
+
+private extension DAppBrowserWidgetView {
     func setupStyle() {
         backgroundColor = .clear
     }
@@ -52,16 +54,30 @@ class DAppBrowserWidgetView: UIView {
 
         addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-            make.size.equalTo(25)
-            make.leading.equalToSuperview().inset(16.0)
-            make.top.equalToSuperview().inset(8.0)
+            make.size.equalTo(Constants.closeButtonSize)
+            make.leading.equalToSuperview().inset(Constants.closeButtonLeadingInset)
+            make.top.equalToSuperview().inset(Constants.closeButtonTopInset)
         }
 
         contentContainerView.addSubview(title)
         title.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.height.equalTo(22)
-            make.top.equalToSuperview().inset(9)
+            make.height.equalTo(Constants.titleHeight)
+            make.top.equalToSuperview().inset(Constants.titleTopInset)
         }
+    }
+}
+
+// MARK: Constants
+
+private extension DAppBrowserWidgetView {
+    enum Constants {
+        static let sideLength: CGFloat = 16.0
+        static let borderWidth: CGFloat = 1.0
+        static let closeButtonSize: CGFloat = 25.0
+        static let closeButtonTopInset: CGFloat = 8.0
+        static let closeButtonLeadingInset: CGFloat = UIConstants.horizontalInset
+        static let titleHeight: CGFloat = 22.0
+        static let titleTopInset: CGFloat = 9.0
     }
 }
