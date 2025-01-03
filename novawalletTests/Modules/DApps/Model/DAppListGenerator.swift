@@ -5,8 +5,16 @@ final class DAppListGenerator {
     static func createAnyDAppList() -> DAppList {
         DAppList(
             categories: [
-                DAppCategory(identifier: "nft", name: "NFT"),
-                DAppCategory(identifier: "staking", name: "Staking")
+                DAppCategory(
+                    identifier: "nft",
+                    icon: nil,
+                    name: "NFT"
+                ),
+                DAppCategory(
+                    identifier: "staking",
+                    icon: nil,
+                    name: "Staking"
+                )
             ],
             dApps: [
                 DApp(

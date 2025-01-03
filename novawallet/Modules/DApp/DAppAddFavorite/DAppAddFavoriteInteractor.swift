@@ -56,10 +56,47 @@ final class DAppAddFavoriteInteractor {
         let proposedModel = DAppFavorite(
             identifier: browserPage.identifier,
             label: dApp?.name ?? browserPage.title,
-            icon: dApp?.icon?.absoluteString
+            icon: dApp?.icon?.absoluteString,
+            index: nil
         )
 
         presenter?.didReceive(proposedModel: proposedModel)
+    }
+
+    private func fetchWithUpdatedIndexesWrapper() -> CompoundOperationWrapper<[DAppFavorite]> {
+        let fetchAllOperation = dAppsFavoriteRepository.fetchAllOperation(
+            with: RepositoryFetchOptions()
+        )
+
+        let indexUpdateOperation = ClosureOperation<[DAppFavorite]> {
+            let allFavorites = try fetchAllOperation.extractNoCancellableResultData()
+
+            return allFavorites.map { $0.incrementingIndex() }
+        }
+
+        indexUpdateOperation.addDependency(fetchAllOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: indexUpdateOperation,
+            dependencies: [fetchAllOperation]
+        )
+    }
+
+    private func saveFavoriteWrapper(for favorite: DAppFavorite) -> CompoundOperationWrapper<Void> {
+        let fetchWrapper = fetchWithUpdatedIndexesWrapper()
+
+        let saveOperation = dAppsFavoriteRepository.saveOperation(
+            {
+                let allFavorites = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+
+                return allFavorites + [favorite.updatingIndex(to: 0)]
+            },
+            { [] }
+        )
+
+        saveOperation.addDependency(fetchWrapper.targetOperation)
+
+        return fetchWrapper.insertingTail(operation: saveOperation)
     }
 }
 
@@ -69,20 +106,14 @@ extension DAppAddFavoriteInteractor: DAppAddFavoriteInteractorInputProtocol {
     }
 
     func save(favorite: DAppFavorite) {
-        let saveOperation = dAppsFavoriteRepository.saveOperation({ [favorite] }, { [] })
+        let wrapper = saveFavoriteWrapper(for: favorite)
 
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    _ = try saveOperation.extractNoCancellableResultData()
-
-                    self?.presenter?.didCompleteSaveWithResult(.success(()))
-                } catch {
-                    self?.presenter?.didCompleteSaveWithResult(.failure(error))
-                }
-            }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter?.didCompleteSaveWithResult(result)
         }
-
-        operationQueue.addOperation(saveOperation)
     }
 }
