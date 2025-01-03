@@ -15,7 +15,6 @@ extension DAppBrowserCloseTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
         let containerView = dependencies.layoutDependencies.layoutClosure()
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
-        let transformClosure = dependencies.layoutDependencies.transformClosure
         let childNavigationClosure = dependencies.childNavigation
 
         dependencies.blockAnimator.animate {
