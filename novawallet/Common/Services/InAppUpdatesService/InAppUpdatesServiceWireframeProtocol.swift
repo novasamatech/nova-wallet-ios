@@ -15,7 +15,7 @@ final class InAppUpdatesServiceWireframe: InAppUpdatesServiceWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: view.controller)
         navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
-        topViewController.presentWithCardLayout(
+        topViewController.present(
             navigationController,
             animated: true
         )
