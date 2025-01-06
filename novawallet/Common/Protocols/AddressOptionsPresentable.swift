@@ -77,7 +77,7 @@ extension AddressOptionsPresentable {
             return
         }
 
-        view.controller.presentWithCardLayout(
+        view.controller.present(
             controller,
             animated: true,
             completion: nil
