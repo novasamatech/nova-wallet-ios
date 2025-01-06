@@ -1,11 +1,6 @@
 import UIKit
 import SoraUI
 
-public protocol ModalCardPresentationControllerDelegate: AnyObject {
-    func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool
-    func presentationControllerDidAttemptToDismiss(_: UIPresentationController)
-}
-
 public final class ModalCardPresentationController: UIPresentationController {
     private weak var observedScrollView: UIScrollView?
     private var backgroundView: UIView?

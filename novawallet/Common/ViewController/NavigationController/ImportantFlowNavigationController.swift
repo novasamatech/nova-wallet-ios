@@ -26,9 +26,9 @@ class ImportantFlowNavigationController: NovaNavigationController, ControllerBac
     }
 }
 
-// MARK: Internal
+// MARK: ModalCardPresentationControllerDelegate
 
-extension ImportantFlowNavigationController {
+extension ImportantFlowNavigationController: ModalCardPresentationControllerDelegate {
     func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool {
         let containsImportantViews = viewControllers.contains { ($0 as? ImportantViewProtocol) != nil }
         return !containsImportantViews
@@ -55,10 +55,6 @@ extension ImportantFlowNavigationController {
         present(viewModel: viewModel, style: .actionSheet, from: self)
     }
 }
-
-// MARK: ModalCardPresentationControllerDelegate
-
-extension ImportantFlowNavigationController: ModalCardPresentationControllerDelegate {}
 
 // MARK: AlertPresentable
 

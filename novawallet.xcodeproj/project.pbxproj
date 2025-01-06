@@ -1283,6 +1283,7 @@
 		2DBB28932CD432FB00DFA0AD /* CopyAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28922CD432FB00DFA0AD /* CopyAddressPresentable.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
+		2DC304EC2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */; };
 		2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		2DCC875D2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */; };
 		2DCC87602C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */; };
@@ -6702,6 +6703,7 @@
 		2DBB28922CD432FB00DFA0AD /* CopyAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyAddressPresentable.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
+		2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationControllerDelegate.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
 		2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTotalVotesFactory.swift; sourceTree = "<group>"; };
 		2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
@@ -13737,6 +13739,7 @@
 			isa = PBXGroup;
 			children = (
 				2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */,
+				2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */,
 				2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */,
 				2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */,
 				2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift */,
@@ -26650,6 +26653,7 @@
 				844DD65525EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift in Sources */,
 				845FB6732A22285C0003BCA6 /* MultistakingSyncService.swift in Sources */,
 				84AE7ABD27D55E3400495267 /* NftDetailsProgress.swift in Sources */,
+				2DC304EC2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift in Sources */,
 				8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */,
 				8499FE6C27BD319300712589 /* RMRKV2OperationFactory.swift in Sources */,
 				84D184F42A04F5210060C1BD /* StackInfoTableCell+WallectConnect.swift in Sources */,
