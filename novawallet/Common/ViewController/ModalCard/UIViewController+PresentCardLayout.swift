@@ -7,6 +7,10 @@ extension UIViewController {
         animated: Bool,
         completion: (() -> Void)? = nil
     ) {
+        let contextRootViewController = UIApplication.shared.tabBarController ?? UIApplication.shared.rootContainer
+
+        guard let contextRootViewController else { return }
+
         viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         let appearanceAnimator = BlockViewAnimator(
@@ -31,7 +35,8 @@ extension UIViewController {
 
         let factory = ModalCardPresentationFactory(
             configuration: configuration,
-            presentingViewController: self
+            presentingViewController: self,
+            contextRootViewController: contextRootViewController
         )
 
         viewController.modalTransitioningFactory = factory

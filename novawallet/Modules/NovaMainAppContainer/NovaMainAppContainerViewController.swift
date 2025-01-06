@@ -122,7 +122,7 @@ private extension NovaMainAppContainerViewController {
         var presentedViewController = tabBar?.presentedController()
 
         while presentedViewController != nil {
-            let presentationController = (presentedViewController?.presentationController as? ModalCardPresentationController)
+            let presentationController = presentedViewController?.presentationController as? ModalCardPresentationController
             presentationController?.updateLayout()
             presentedViewController = presentedViewController?.presentedViewController
         }

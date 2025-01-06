@@ -4,15 +4,18 @@ import SoraUI
 public class ModalCardPresentationFactory: NSObject {
     let configuration: ModalCardPresentationConfiguration
     let presentingViewController: UIViewController
+    let contextRootViewController: UIViewController
 
     weak var presentation: ModalCardPresentationController?
 
     public init(
         configuration: ModalCardPresentationConfiguration,
-        presentingViewController: UIViewController
+        presentingViewController: UIViewController,
+        contextRootViewController: UIViewController
     ) {
         self.configuration = configuration
         self.presentingViewController = presentingViewController
+        self.contextRootViewController = contextRootViewController
 
         super.init()
     }
@@ -44,6 +47,7 @@ extension ModalCardPresentationFactory: UIViewControllerTransitioningDelegate {
     ) -> UIPresentationController? {
         let presentation = ModalCardPresentationController(
             presentedViewController: presented,
+            contextRootViewController: contextRootViewController,
             transformFactory: ModalCardPresentationTransformFactory(),
             presenting: presentingViewController,
             configuration: configuration

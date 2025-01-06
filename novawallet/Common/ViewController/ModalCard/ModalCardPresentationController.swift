@@ -10,6 +10,7 @@ public final class ModalCardPresentationController: UIPresentationController {
     private weak var observedScrollView: UIScrollView?
     private var backgroundView: UIView?
 
+    private let contextRootViewController: UIViewController
     private let configuration: ModalCardPresentationConfiguration
     private let transformFactory: ModalCardPresentationTransformFactoryProtocol
 
@@ -22,10 +23,12 @@ public final class ModalCardPresentationController: UIPresentationController {
 
     init(
         presentedViewController: UIViewController,
+        contextRootViewController: UIViewController,
         transformFactory: ModalCardPresentationTransformFactoryProtocol,
         presenting presentingViewController: UIViewController?,
         configuration: ModalCardPresentationConfiguration
     ) {
+        self.contextRootViewController = contextRootViewController
         self.configuration = configuration
         self.transformFactory = transformFactory
 
@@ -92,14 +95,24 @@ private extension ModalCardPresentationController {
     func calculatePresentedViewFrame(in containerView: UIView) -> CGRect {
         let finalFrame: CGRect
 
+        let topOffset: CGFloat = containerView.safeAreaInsets.top + Constants.topOffset
+
         let finalOrigin = containerView.bounds.offsetBy(
             dx: 0,
-            dy: Constants.topOffset
+            dy: topOffset
         ).origin
+
+        let presentedByModalCardController = presentingViewController.presentationController is ModalCardPresentationController
+
+        let finalHeight: CGFloat = if presentedByModalCardController {
+            presentingViewController.view.bounds.height
+        } else {
+            presentingViewController.view.bounds.height - topOffset
+        }
 
         let finalFrameSize = CGSize(
             width: containerView.bounds.width,
-            height: (UIApplication.shared.tabBarController?.view.bounds.height ?? 0) - Constants.topOffset
+            height: finalHeight
         )
 
         finalFrame = CGRect(
@@ -361,13 +374,14 @@ public extension ModalCardPresentationController {
     func updateLayout() {
         guard
             let presentedView,
-            let root = UIApplication.shared.tabBarController
+            let containerView
         else { return }
 
         let presentedViewHeight = presentedView.bounds.height
-        let presenetedViewHeightDelta = root.view.bounds.height - presentedViewHeight - Constants.topOffset
+        let topOffset = containerView.safeAreaInsets.top + Constants.topOffset
+        let presenetedViewHeightDelta = contextRootViewController.view.bounds.height - presentedViewHeight - topOffset
 
-        let height = presentedViewController.view.frame.height + presenetedViewHeightDelta
+        let height = presentedView.frame.height + presenetedViewHeightDelta
 
         presentedViewController.view.frame = CGRect(
             x: presentedView.frame.origin.x,
@@ -401,7 +415,7 @@ extension ModalCardPresentationController: UIGestureRecognizerDelegate {
 
 private extension ModalCardPresentationController {
     enum Constants {
-        static let topOffset: CGFloat = (UIApplication.shared.rootContainer?.view.safeAreaInsets.top ?? 0) + 12
+        static let topOffset: CGFloat = 12
         static let sourceViewCornerRadius: CGFloat = 10
         static let destinationViewCornerRadius: CGFloat = 12
     }
