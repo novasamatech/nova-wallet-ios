@@ -225,6 +225,7 @@ private extension DAppBrowserTabManager {
             uuid: persistenceModel.uuid,
             name: persistenceModel.name,
             url: persistenceModel.url,
+            metaId: persistenceModel.metaId,
             createdAt: persistenceModel.createdAt,
             renderModifiedAt: persistenceModel.renderModifiedAt,
             transportStates: transportStates.fetchValue(for: persistenceModel.uuid),
@@ -258,7 +259,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         retrieveWrapper(for: id)
     }
 
-    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
+    func getAllTabs(for metaId: MetaAccountModel.Id) -> CompoundOperationWrapper<[DAppBrowserTab]> {
         let currentTabs = observableTabs.state.fetchAllValues()
 
         guard currentTabs.isEmpty else {
@@ -334,7 +335,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         return resultWrapper.insertingTail(operation: voidResultOperation)
     }
 
-    func removeAll() {
+    func removeAll(for metaId: MetaAccountModel.Id) {
         let wrapper = removeAllWrapper()
 
         execute(

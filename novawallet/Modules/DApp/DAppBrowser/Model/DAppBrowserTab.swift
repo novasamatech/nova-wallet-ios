@@ -5,6 +5,7 @@ struct DAppBrowserTab {
     let uuid: UUID
     let name: String?
     let url: URL
+    let metaId: MetaAccountModel.Id
     let createdAt: Date
     let renderModifiedAt: Date?
     let transportStates: [DAppTransportState]?
@@ -16,6 +17,7 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: name,
             url: url,
+            metaId: metaId,
             createdAt: createdAt,
             renderModifiedAt: renderModifiedAt,
             icon: icon?.absoluteString,
@@ -27,6 +29,7 @@ struct DAppBrowserTab {
         uuid: UUID,
         name: String?,
         url: URL,
+        metaId: MetaAccountModel.Id,
         createdAt: Date,
         renderModifiedAt: Date?,
         transportStates: [DAppTransportState]?,
@@ -36,6 +39,7 @@ struct DAppBrowserTab {
         self.uuid = uuid
         self.name = name
         self.url = url
+        self.metaId = metaId
         self.createdAt = createdAt
         self.renderModifiedAt = renderModifiedAt
         self.transportStates = transportStates
@@ -43,16 +47,22 @@ struct DAppBrowserTab {
         self.icon = icon
     }
 
-    init?(from searchResult: DAppSearchResult) {
+    init?(
+        from searchResult: DAppSearchResult,
+        metaId: MetaAccountModel.Id
+    ) {
         switch searchResult {
         case let .query(query):
-            self.init(from: query)
+            self.init(from: query, metaId: metaId)
         case let .dApp(dApp):
-            self.init(from: dApp)
+            self.init(from: dApp, metaId: metaId)
         }
     }
 
-    init?(from query: String) {
+    init?(
+        from query: String,
+        metaId: MetaAccountModel.Id
+    ) {
         guard let url = DAppBrowserTab.resolveUrl(for: query) else {
             return nil
         }
@@ -65,9 +75,13 @@ struct DAppBrowserTab {
         name = nil
         icon = nil
         self.url = url
+        self.metaId = metaId
     }
 
-    init(from dApp: DApp) {
+    init(
+        from dApp: DApp,
+        metaId: MetaAccountModel.Id
+    ) {
         uuid = UUID()
         createdAt = Date()
         renderModifiedAt = nil
@@ -76,6 +90,7 @@ struct DAppBrowserTab {
         name = dApp.name
         url = dApp.url
         icon = dApp.icon
+        self.metaId = metaId
     }
 
     func updating(
@@ -89,6 +104,7 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: name ?? self.name,
             url: url,
+            metaId: metaId,
             createdAt: createdAt,
             renderModifiedAt: renderModifiedAt ?? self.renderModifiedAt,
             transportStates: transportStates ?? self.transportStates,
@@ -113,6 +129,7 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: dApp.name,
             url: dApp.url,
+            metaId: metaId,
             createdAt: createdAt,
             renderModifiedAt: renderModifiedAt,
             transportStates: nil,
@@ -126,6 +143,7 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: nil,
             url: url,
+            metaId: metaId,
             createdAt: createdAt,
             renderModifiedAt: renderModifiedAt,
             transportStates: nil,
@@ -139,6 +157,7 @@ struct DAppBrowserTab {
             uuid: uuid,
             name: name,
             url: url,
+            metaId: metaId,
             createdAt: createdAt,
             renderModifiedAt: renderModifiedAt,
             transportStates: nil,
@@ -177,6 +196,7 @@ extension DAppBrowserTab {
         let uuid: UUID
         let name: String?
         let url: URL
+        let metaId: String
         let createdAt: Date
         let renderModifiedAt: Date?
         let icon: String?

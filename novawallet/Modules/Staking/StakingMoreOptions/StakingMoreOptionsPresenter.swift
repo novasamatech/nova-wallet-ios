@@ -8,6 +8,8 @@ final class StakingMoreOptionsPresenter {
     let interactor: StakingMoreOptionsInteractorInputProtocol
     let logger: LoggerProtocol
 
+    let metaId: MetaAccountModel.Id
+
     private var moreOptions: [StakingDashboardItemModel] = []
     private var dApps: [DApp] = []
 
@@ -15,12 +17,14 @@ final class StakingMoreOptionsPresenter {
         interactor: StakingMoreOptionsInteractorInputProtocol,
         viewModelFactory: StakingMoreOptionsViewModelFactoryProtocol,
         wireframe: StakingMoreOptionsWireframeProtocol,
+        metaId: MetaAccountModel.Id,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
         self.wireframe = wireframe
+        self.metaId = metaId
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -69,7 +73,9 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
         guard let dApp = dApps[safe: index] else {
             return
         }
-        wireframe.showBrowser(from: view, for: dApp)
+
+        let tab = DAppBrowserTab(from: dApp, metaId: metaId)
+        wireframe.showBrowser(from: view, with: tab)
     }
 }
 

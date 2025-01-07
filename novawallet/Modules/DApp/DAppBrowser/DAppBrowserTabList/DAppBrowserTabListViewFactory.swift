@@ -36,10 +36,13 @@ struct DAppBrowserTabListViewFactory {
         )
         let viewModelFactory = DAppBrowserTabListViewModelFactory(imageViewModelFactory: imageViewModelFactory)
 
+        let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
+
         let presenter = DAppBrowserTabListPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            metaId: wallet.metaId,
             localizationManager: localizationManager
         )
 

@@ -330,7 +330,10 @@ private extension DAppBrowserInteractor {
     }
 
     func proceedWithNewTab(opening dApp: DApp) {
-        let newTab = DAppBrowserTab(from: dApp)
+        let newTab = DAppBrowserTab(
+            from: dApp,
+            metaId: dataSource.wallet.metaId
+        )
 
         let states = transports.compactMap { $0.makeOpaqueState() }
 

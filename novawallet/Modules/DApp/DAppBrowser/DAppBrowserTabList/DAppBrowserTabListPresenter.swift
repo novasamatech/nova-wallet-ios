@@ -7,6 +7,8 @@ final class DAppBrowserTabListPresenter {
     let interactor: DAppBrowserTabListInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
 
+    let metaId: MetaAccountModel.Id
+
     private let viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol
 
     private var tabs: [DAppBrowserTab] = []
@@ -15,11 +17,13 @@ final class DAppBrowserTabListPresenter {
         interactor: DAppBrowserTabListInteractorInputProtocol,
         wireframe: DAppBrowserTabListWireframeProtocol,
         viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol,
+        metaId: MetaAccountModel.Id,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.metaId = metaId
         self.localizationManager = localizationManager
     }
 }
@@ -98,7 +102,7 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtoco
 
 extension DAppBrowserTabListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard let tab = DAppBrowserTab(from: result) else {
+        guard let tab = DAppBrowserTab(from: result, metaId: metaId) else {
             return
         }
 
