@@ -136,13 +136,23 @@ extension NovaMainAppContainerViewController {
         bottomView: UIView,
         topView: UIView
     ) {
-        rootView.addSubview(topView)
+        let topViewContainer: UIView = .create { view in
+            view.clipsToBounds = true
+        }
 
-        topView.snp.makeConstraints { make in
+        rootView.addSubview(topViewContainer)
+
+        topViewContainer.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
         }
 
-        topContainerBottomConstraint = topView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
+        topViewContainer.addSubview(topView)
+
+        topView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        topContainerBottomConstraint = topViewContainer.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
         topContainerBottomConstraint?.isActive = true
 
         topView.layer.cornerRadius = 16
