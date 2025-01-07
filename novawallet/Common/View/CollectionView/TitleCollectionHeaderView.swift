@@ -47,6 +47,14 @@ final class TitleCollectionHeaderView: UICollectionReusableView {
         }
     }
 
+    var buttonWidth: CGFloat = 40.0 {
+        didSet {
+            button.snp.updateConstraints { make in
+                make.width.greaterThanOrEqualTo(buttonWidth)
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -69,13 +77,15 @@ final class TitleCollectionHeaderView: UICollectionReusableView {
 
         displayContentView.addSubview(button)
         button.snp.makeConstraints { make in
-            make.centerY.trailing.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.width.greaterThanOrEqualTo(buttonWidth)
         }
 
         displayContentView.addSubview(titleView)
         titleView.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
-            make.trailing.equalTo(button.snp.leading)
+            make.trailing.lessThanOrEqualTo(button.snp.leading).offset(-8)
         }
     }
 }

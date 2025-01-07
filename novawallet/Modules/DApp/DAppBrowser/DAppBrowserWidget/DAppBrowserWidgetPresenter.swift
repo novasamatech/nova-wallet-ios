@@ -142,26 +142,16 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetInteractorOutputProtocol 
     func didReceive(_ browserTabs: [UUID: DAppBrowserTab]) {
         self.browserTabs = browserTabs
 
-        let initialStateWithTabs = state == .disabled && !browserTabs.isEmpty
-
-        guard !initialStateWithTabs else {
+        switch state {
+        case .disabled where !browserTabs.isEmpty:
             state = .closed
             view?.didReceiveRequestForMinimizing()
-            return
-        }
-
-        switch state {
-        case .disabled:
-            state = .closed
-        case .closed where !browserTabs.isEmpty:
-            state = .fullBrowser
         case .miniature where browserTabs.isEmpty:
             state = .closed
+            provideModel()
         default:
             break
         }
-
-        provideModel()
     }
 
     func didReceiveWalletChanged() {

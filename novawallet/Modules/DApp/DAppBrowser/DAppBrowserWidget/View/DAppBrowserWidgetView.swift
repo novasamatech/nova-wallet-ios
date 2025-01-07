@@ -44,7 +44,8 @@ private extension DAppBrowserWidgetView {
     func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-Constants.borderWidth)
         }
 
         addSubview(contentContainerView)

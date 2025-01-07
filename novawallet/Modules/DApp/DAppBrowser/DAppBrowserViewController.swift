@@ -83,7 +83,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        let isOldLandscape = view.frame.size.width > view.frame.size.height
+        let isOldLandscape = traitCollection.verticalSizeClass == .compact
 
         super.viewWillTransition(to: size, with: coordinator)
 

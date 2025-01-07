@@ -512,15 +512,20 @@ extension TransferSetupPresenter: AddressScanDelegate {
 }
 
 extension TransferSetupPresenter: YourWalletsDelegate {
-    func didSelectYourWallet(address: AccountAddress) {
-        wireframe.hideYourWallets(from: view)
+    func yourWallets(
+        selectionView: YourWalletsPresentationProtocol,
+        didSelect address: AccountAddress
+    ) {
+        wireframe.hideYourWallets(from: selectionView)
 
         childPresenter?.changeRecepient(address: address)
         view?.changeYourWalletsViewState(.inactive)
         recipientAddress = .address(address)
     }
 
-    func didCloseYourWalletSelection() {
+    func yourWalletsDidClose(
+        selectionView _: YourWalletsPresentationProtocol
+    ) {
         view?.changeYourWalletsViewState(.inactive)
     }
 }

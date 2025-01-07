@@ -105,6 +105,12 @@ extension DAppFavoritesPresenter: DAppFavoritesInteractorOutputProtocol {
         let currentFavorites = favorites
         let updatedFavorites = changes.mergeToDict(currentFavorites)
 
+        guard !updatedFavorites.isEmpty else {
+            wireframe.close(from: view)
+
+            return
+        }
+
         favorites = updatedFavorites
 
         guard currentFavorites.count != updatedFavorites.count else { return }
