@@ -43,14 +43,6 @@ extension WebViewPool: WebViewPoolProtocol {
     }
 }
 
-// MARK: Constants
-
-private extension WebViewPool {
-    enum Constants {
-        static let readWriteQueueLabel: String = "WebViewPool.readWriteQueue"
-    }
-}
-
 // MARK: Singleton
 
 extension WebViewPool {

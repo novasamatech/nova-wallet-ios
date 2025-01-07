@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 struct DAppBrowserCloseTransition {
-    private let dependencies: DAppBrowserLayoutTransitionDependencies
+    private let dependencies: FadeContentDAppBrowserTransitionDependencies
 
-    init(dependencies: DAppBrowserLayoutTransitionDependencies) {
+    init(dependencies: FadeContentDAppBrowserTransitionDependencies) {
         self.dependencies = dependencies
     }
 }
@@ -13,11 +13,16 @@ struct DAppBrowserCloseTransition {
 
 extension DAppBrowserCloseTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
-        let containerView = dependencies.layoutClosure()
+        let containerView = dependencies.layoutDependencies.layoutClosure()
+        let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
+        let childNavigationClosure = dependencies.childNavigation
 
-        UIView.animate(withDuration: 0.2) {
+        dependencies.blockAnimator.animate {
             containerView?.layoutIfNeeded()
-            dependencies.animatableClosure?()
+
+            layoutAnimatables?()
+        } completionBlock: { _ in
+            childNavigationClosure?() {}
         }
     }
 }

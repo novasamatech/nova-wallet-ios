@@ -30,6 +30,10 @@ extension AccountSelectionPresentable {
             return
         }
 
-        view?.controller.present(picker, animated: true, completion: nil)
+        view?.controller.present(
+            picker,
+            animated: true,
+            completion: nil
+        )
     }
 }

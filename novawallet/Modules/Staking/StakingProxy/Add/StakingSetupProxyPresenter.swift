@@ -291,14 +291,18 @@ extension StakingSetupProxyPresenter: ModalPickerViewControllerDelegate {
 }
 
 extension StakingSetupProxyPresenter: YourWalletsDelegate {
-    func didSelectYourWallet(address: AccountAddress) {
-        wireframe.hideYourWallets(from: view)
+    func yourWallets(
+        selectionView: YourWalletsPresentationProtocol,
+        didSelect address: AccountAddress
+    ) {
+        wireframe.hideYourWallets(from: selectionView)
+
         view?.didReceiveYourWallets(state: .inactive)
         updateRecepientAddress(address)
         provideInputViewModel()
     }
 
-    func didCloseYourWalletSelection() {
+    func yourWalletsDidClose(selectionView _: YourWalletsPresentationProtocol) {
         view?.didReceiveYourWallets(state: .inactive)
     }
 }

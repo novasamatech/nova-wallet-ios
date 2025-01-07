@@ -19,6 +19,7 @@ protocol DAppBrowserWidgetProtocol {
 protocol DAppBrowserWidgetViewProtocol: ControllerBackedProtocol {
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel)
     func didReceiveRequestForMinimizing()
+    func didChangeWallet()
 }
 
 // MARK: VIEW -> PRESENTER
@@ -46,15 +47,62 @@ protocol DAppBrowserWidgetInteractorInputProtocol: AnyObject {
 
 protocol DAppBrowserWidgetInteractorOutputProtocol: AnyObject {
     func didReceive(_ browserTabs: [UUID: DAppBrowserTab])
+    func didReceiveWalletChanged()
 }
 
 // MARK: PRESENTER -> WIREFRAME
 
-protocol DAppBrowserWidgetWireframeProtocol: AnyObject {
+protocol DAppBrowserWidgetWireframeProtocol: AlertPresentable, DAppBrowserTabsClosePresentable {
     func showBrowser(
         from view: DAppBrowserParentWidgetViewProtocol?,
         with tab: DAppBrowserTab?
     )
 
     func showMiniature(from view: DAppBrowserParentWidgetViewProtocol?)
+}
+
+protocol DAppBrowserTabsClosePresentable {
+    func presentCloseTabsAlert(
+        from view: ControllerBackedProtocol?,
+        with locale: Locale,
+        onClose: @escaping () -> Void
+    )
+}
+
+extension DAppBrowserTabsClosePresentable where Self: AlertPresentable {
+    func presentCloseTabsAlert(
+        from view: ControllerBackedProtocol?,
+        with locale: Locale,
+        onClose: @escaping () -> Void
+    ) {
+        let title = R.string.localizable.dappWidgetCloseAlertTitle(
+            preferredLanguages: locale.rLanguages
+        )
+        let message = R.string.localizable.dappWidgetCloseAlertMessage(
+            preferredLanguages: locale.rLanguages
+        )
+        let cancelActionText = R.string.localizable.commonCancel(
+            preferredLanguages: locale.rLanguages
+        )
+        let closeActionText = R.string.localizable.commonCloseAll(
+            preferredLanguages: locale.rLanguages
+        )
+        let closeAction = AlertPresentableAction(
+            title: closeActionText,
+            style: .destructive
+        ) { onClose() }
+
+        let alertViewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [closeAction],
+            closeAction: cancelActionText
+        )
+
+        present(
+            viewModel: alertViewModel,
+            style: .alert,
+            from: view
+        )
+    }
 }

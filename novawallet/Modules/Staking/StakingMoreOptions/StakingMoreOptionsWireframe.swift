@@ -26,6 +26,6 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 }

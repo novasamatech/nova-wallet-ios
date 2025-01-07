@@ -40,7 +40,7 @@ final class DAppCategoriesView: UIView {
     var chagesStateOnSelect: Bool = true
 
     private var categoryItems: [CategoryChip] = []
-    private var viewModels: [DAppCategoryViewModel] = []
+    var viewModels: [DAppCategoryViewModel] = []
 
     private(set) var selectedIndex: Int?
 
@@ -78,6 +78,8 @@ final class DAppCategoriesView: UIView {
     }
 
     func bind(categories: [DAppCategoryViewModel]) {
+        guard viewModels != categories else { return }
+
         viewModels = categories
 
         if categoryItems.count > categories.count {
@@ -105,6 +107,7 @@ final class DAppCategoriesView: UIView {
         }
 
         for (index, category) in categories.enumerated() {
+            category.imageViewModel?.cancel(on: categoryItems[index].contentView.imageView)
             category.imageViewModel?.loadImage(
                 on: categoryItems[index].contentView.imageView,
                 targetSize: CGSize(width: 20, height: 20),
@@ -145,12 +148,11 @@ final class DAppCategoriesView: UIView {
     }
 
     private func setSelectedStyle(for categoryChip: CategoryChip) {
-        let templateIcon = categoryChip.contentView.imageView.image?.tinted(
-            with: R.color.colorIconPrimaryNegative()!
-        )
+        let templateIcon = categoryChip.contentView.imageView.image?.withRenderingMode(.alwaysTemplate)
 
         categoryChip.contentView.detailsLabel.textColor = R.color.colorTextPrimaryNegative()!
         categoryChip.contentView.imageView.image = templateIcon
+        categoryChip.contentView.imageView.tintColor = R.color.colorIconPrimaryNegative()!
 
         categoryChip.backgroundView.fillColor = R.color.colorSelectedDAppCategoryBackground()!
     }

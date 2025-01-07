@@ -1,9 +1,9 @@
 import Foundation
 import SubstrateSdk
 
-private typealias IndexedDApp = (index: Int, dapp: DApp)
+typealias IndexedDApp = (index: Int, dapp: DApp)
 
-final class DAppListViewModelFactory {
+final class DAppListViewModelFactory: DAppSearchingByQuery {
     private let dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol
     private let walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
 
@@ -272,17 +272,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
     ) -> DAppListViewModel {
-        let dAppsByQuery: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
-            guard let query = query, !query.isEmpty else {
-                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
-            }
-
-            if valueIndex.element.name.localizedCaseInsensitiveContains(query) {
-                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
-            } else {
-                return nil
-            }
-        }
+        let dAppsByQuery: [IndexedDApp] = search(by: query, in: dAppList)
 
         let actualDApps: [IndexedDApp] = dAppsByQuery.filter { indexedDApp in
             guard let category else { return true }

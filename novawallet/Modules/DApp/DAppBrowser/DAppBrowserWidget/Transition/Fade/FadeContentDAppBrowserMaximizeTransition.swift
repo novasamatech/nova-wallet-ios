@@ -14,7 +14,7 @@ struct FadeContentDAppBrowserMaximizeTransition {
 
 extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionProtocol {
     func start() {
-        guard let widgetView = dependencies.widgetViewClosure() else {
+        guard let widgetView = dependencies.widgetViewClosure?() else {
             return
         }
 
@@ -26,27 +26,32 @@ extension FadeContentDAppBrowserMaximizeTransition: DAppBrowserWidgetTransitionP
         let layoutAnimatables = dependencies.layoutDependencies.animatableClosure
 
         disappearanceAnimator.animate(
-            view: widgetView.contentContainerView
-        ) { _ in
-            childNavigation {
-                guard let browserView = dependencies.browserViewClosure() else {
-                    return
-                }
+            view: widgetView.contentContainerView,
+            completionBlock: nil
+        )
 
-                let containerView = layoutClosure()
-
-                UIView.animate(
-                    withDuration: 0.25
-                ) {
-                    layoutAnimatables?()
-                    containerView?.layoutIfNeeded()
-                }
-
-                appearanceAnimator.animate(
-                    view: browserView,
-                    completionBlock: nil
-                )
+        childNavigation?() {
+            guard let browserView = dependencies.browserViewClosure?() else {
+                return
             }
+
+            let containerView = layoutClosure()
+
+            UIView.animate(
+                withDuration: 0.45,
+                delay: 0,
+                usingSpringWithDamping: 1,
+                initialSpringVelocity: 0.4,
+                options: .curveEaseIn
+            ) {
+                layoutAnimatables?()
+                containerView?.layoutIfNeeded()
+            }
+
+            appearanceAnimator.animate(
+                view: browserView,
+                completionBlock: nil
+            )
         }
     }
 }

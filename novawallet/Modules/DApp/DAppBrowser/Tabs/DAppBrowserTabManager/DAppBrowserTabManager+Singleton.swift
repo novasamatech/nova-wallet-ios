@@ -30,6 +30,7 @@ extension DAppBrowserTabManager {
                 logger: logger
             ),
             repository: AnyDataProviderRepository(coreDataRepository),
+            eventCenter: EventCenter.shared,
             operationQueue: operationQueue,
             logger: logger
         )

@@ -24,7 +24,11 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: recommendedView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showRewardPayoutsForNominator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress) {
@@ -35,7 +39,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: rewardPayoutsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showRewardPayoutsForValidator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress) {
@@ -46,7 +50,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: rewardPayoutsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showNominatorValidators(from view: ControllerBackedProtocol?) {
@@ -58,7 +62,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: validatorsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showControllerAccount(from view: ControllerBackedProtocol?) {
@@ -69,7 +73,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: controllerAccount.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showRewardDestination(from view: ControllerBackedProtocol?) {
@@ -81,7 +85,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: displayView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showBondMore(from view: ControllerBackedProtocol?) {
@@ -89,7 +93,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         let navigationController = ImportantFlowViewFactory.createNavigation(
             from: bondMoreView.controller
         )
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showUnbond(from view: ControllerBackedProtocol?) {
@@ -99,7 +103,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: unbondView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showRedeem(from view: ControllerBackedProtocol?) {
@@ -111,7 +115,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             from: redeemView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption) {
@@ -132,7 +136,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showRebagConfirm(from view: ControllerBackedProtocol?) {
@@ -140,7 +144,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             return
         }
         let navigationController = NovaNavigationController(rootViewController: rebagConfirmView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?) {
@@ -149,7 +153,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             state: state
         ) else { return }
         let navigationController = NovaNavigationController(rootViewController: validatorInfoView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showAddProxy(from view: ControllerBackedProtocol?) {
@@ -157,7 +161,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             return
         }
         let navigationController = NovaNavigationController(rootViewController: setupProxyView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 
     func showEditProxies(from view: ControllerBackedProtocol?) {
@@ -166,6 +170,6 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: managmentView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 }

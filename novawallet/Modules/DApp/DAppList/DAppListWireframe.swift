@@ -35,10 +35,9 @@ final class DAppListWireframe: DAppListWireframeProtocol {
     ) {
         let navigationController = NovaNavigationController(rootViewController: view.controller)
 
-        presentingController?.controller.present(
+        presentingController?.controller.presentWithCardLayout(
             navigationController,
-            animated: true,
-            completion: nil
+            animated: true
         )
     }
 }
