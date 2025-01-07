@@ -201,6 +201,7 @@ struct DAppOperationConfirmViewFactory {
             request: request,
             chain: chain,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            serializationFactory: PolkadotExtensionMessageSignFactory(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
