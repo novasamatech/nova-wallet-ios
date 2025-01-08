@@ -93,8 +93,12 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
 
 extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtocol {
     func didReceiveTabs(_ models: [DAppBrowserTab]) {
-        tabs = models
+        if !tabs.isEmpty, models.isEmpty {
+            wireframe.close(from: view)
+            return
+        }
 
+        tabs = models
         provideTabs()
     }
 
