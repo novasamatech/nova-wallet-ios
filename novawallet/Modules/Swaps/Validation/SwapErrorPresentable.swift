@@ -39,7 +39,7 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         locale: Locale
     )
 
-    func presentMinBalanceViolatedDueDeliveryFee(
+    func presentMinBalanceViolatedAfterOperation(
         from view: ControllerBackedProtocol,
         minBalance: String,
         locale: Locale
@@ -128,7 +128,7 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
-    func presentMinBalanceViolatedDueDeliveryFee(
+    func presentMinBalanceViolatedAfterOperation(
         from view: ControllerBackedProtocol,
         minBalance: String,
         locale: Locale

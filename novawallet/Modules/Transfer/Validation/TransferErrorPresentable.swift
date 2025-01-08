@@ -25,6 +25,12 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
         availableBalance: String,
         locale: Locale?
     )
+
+    func presentKeepAliveViolatedForCrosschain(
+        from view: ControllerBackedProtocol,
+        minBalance: String,
+        locale: Locale?
+    )
 }
 
 extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -134,6 +140,22 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable.xcmDeliveryFeeEdErrorMessage(
             availableBalance,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentKeepAliveViolatedForCrosschain(
+        from view: ControllerBackedProtocol,
+        minBalance: String,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.swapDeliveryFeeErrorMessage(
+            minBalance,
             preferredLanguages: locale?.rLanguages
         )
 

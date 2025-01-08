@@ -49,6 +49,10 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
+        if edge.requiresOriginKeepAliveOnIntermediatePosition() {
+            return false
+        }
+
         let canPayFees = (chainAssetIn.isUtilityAsset || feeSupport.canPayFee(inNonNative: chainAssetIn)) &&
             edge.canPayNonNativeFeesInIntermediatePosition()
 
