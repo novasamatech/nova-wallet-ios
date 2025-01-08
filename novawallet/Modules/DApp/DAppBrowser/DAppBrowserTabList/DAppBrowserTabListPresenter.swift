@@ -68,7 +68,16 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     }
 
     func closeAllTabs() {
-        interactor.closeAllTabs()
+        if tabs.count > 1 {
+            wireframe.presentCloseTabsAlert(
+                from: view,
+                with: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.interactor.closeAllTabs()
+            }
+        } else {
+            interactor.closeAllTabs()
+        }
     }
 
     func closeTab(with id: UUID) {
