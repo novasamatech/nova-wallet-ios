@@ -289,10 +289,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             return name.localizedCaseInsensitiveContains(query)
         }
 
-        let availableCategories = Set(dAppsByQuery.flatMap(\.dapp.categories))
-
         let categoryViewModels = dAppList.categories
-            .filter { availableCategories.contains($0.identifier) }
             .map { dappCategoriesViewModelFactory.createViewModel(for: $0) }
 
         let categoriesById = dAppList.categories.reduce(into: [String: DAppCategory]()) { result, category in

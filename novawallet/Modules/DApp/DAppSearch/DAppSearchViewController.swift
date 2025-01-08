@@ -274,7 +274,7 @@ extension DAppSearchViewController: DAppSearchViewProtocol {
     func didReceive(viewModel: DAppListViewModel?) {
         self.viewModel = viewModel
 
-        rootView.updateCategoriesView(with: viewModel?.categories ?? [])
+        rootView.categoriesView.bind(categories: viewModel?.categories ?? [])
 
         rootView.categoriesView.setSelectedIndex(
             viewModel?.selectedCategoryIndex,
