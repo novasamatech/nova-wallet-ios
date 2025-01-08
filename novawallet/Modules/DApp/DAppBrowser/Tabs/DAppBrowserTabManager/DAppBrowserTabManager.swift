@@ -5,16 +5,19 @@ typealias DAppBrowserTabsObservable = Observable<InMemoryCache<UUID, DAppBrowser
 
 final class DAppBrowserTabManager {
     let tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol
+    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
 
     private let fileRepository: WebViewRenderFilesOperationFactoryProtocol
     private let repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>
     private let operationQueue: OperationQueue
     private let observerQueue: DispatchQueue
-    private let eventCenter: EventCenterProtocol
 
     private let logger: LoggerProtocol
 
+    private var metaAccount: MetaAccountModel?
+
     private var browserTabProvider: StreamableProvider<DAppBrowserTab.PersistenceModel>?
+    private var selectedWalletProvider: StreamableProvider<ManagedMetaAccountModel>?
 
     private var transportStates: InMemoryCache<UUID, [DAppTransportState]> = .init()
     private var observableTabs: DAppBrowserTabsObservable = .init(state: .init())
@@ -22,16 +25,16 @@ final class DAppBrowserTabManager {
     init(
         fileRepository: WebViewRenderFilesOperationFactoryProtocol,
         tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         repository: AnyDataProviderRepository<DAppBrowserTab.PersistenceModel>,
-        eventCenter: EventCenterProtocol,
         observerQueue: DispatchQueue = .main,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.repository = repository
         self.tabsSubscriptionFactory = tabsSubscriptionFactory
+        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.fileRepository = fileRepository
-        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.observerQueue = observerQueue
         self.logger = logger
@@ -44,12 +47,7 @@ final class DAppBrowserTabManager {
 
 private extension DAppBrowserTabManager {
     func setup() {
-        eventCenter.add(
-            observer: self,
-            dispatchIn: .main
-        )
-
-        browserTabProvider = subscribeToBrowserTabs(nil)
+        selectedWalletProvider = subscribeSelectedWalletProvider()
     }
 
     func clearInMemory() {
@@ -171,7 +169,10 @@ private extension DAppBrowserTabManager {
             .map(\.uuid)
 
         let rendersClearWrapper = fileRepository.removeRenders(for: tabIds)
-        let deleteOperation = repository.deleteAllOperation()
+        let deleteOperation = repository.saveOperation(
+            { [] },
+            { tabIds.map(\.uuidString) }
+        )
 
         let mappingOperation = ClosureOperation {
             _ = try rendersClearWrapper.targetOperation.extractNoCancellableResultData()
@@ -252,6 +253,26 @@ extension DAppBrowserTabManager: DAppBrowserTabLocalSubscriber, DAppBrowserTabLo
     }
 }
 
+// MARK: WalletListLocalStorageSubscriber
+
+extension DAppBrowserTabManager: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+    func handleSelectedWallet(
+        result: Result<ManagedMetaAccountModel?, any Error>
+    ) {
+        switch result {
+        case let .success(managedMetaAccount):
+            observableTabs.state = .init()
+            metaAccount = managedMetaAccount?.info
+
+            guard let metaAccount else { return }
+
+            browserTabProvider = subscribeToBrowserTabs(metaAccount.metaId)
+        case let .failure(error):
+            logger.error("Failed on WalletList local subscription with error: \(error.localizedDescription)")
+        }
+    }
+}
+
 // MARK: DAppBrowserTabManagerProtocol
 
 extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
@@ -259,11 +280,15 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         retrieveWrapper(for: id)
     }
 
-    func getAllTabs(for metaId: MetaAccountModel.Id) -> CompoundOperationWrapper<[DAppBrowserTab]> {
+    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
         let currentTabs = observableTabs.state.fetchAllValues()
 
         guard currentTabs.isEmpty else {
             return .createWithResult(sorted(currentTabs))
+        }
+
+        guard let metaAccount else {
+            return .createWithResult([])
         }
 
         let fetchTabsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
@@ -275,7 +300,9 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
 
             let persistedTabs = try fetchTabsOperation.extractNoCancellableResultData()
 
-            let tabs = persistedTabs.map { self.map(persistenceModel: $0) }
+            let tabs = persistedTabs
+                .filter { $0.metaId == metaAccount.metaId }
+                .map { self.map(persistenceModel: $0) }
 
             return sorted(tabs)
         }
@@ -335,7 +362,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         return resultWrapper.insertingTail(operation: voidResultOperation)
     }
 
-    func removeAll(for metaId: MetaAccountModel.Id) {
+    func removeAll() {
         let wrapper = removeAllWrapper()
 
         execute(
@@ -367,18 +394,5 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
 
             observer.didReceiveUpdatedTabs(sortedTabs)
         }
-    }
-}
-
-// MARK: EventVisitorProtocol
-
-extension DAppBrowserTabManager: EventVisitorProtocol {
-    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
-        transportStates.removeAllValues()
-
-        observableTabs.state
-            .fetchAllValues()
-            .map { $0.clearingTransportStates() }
-            .forEach { observableTabs.state.store(value: $0, for: $0.uuid) }
     }
 }

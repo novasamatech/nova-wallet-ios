@@ -5,14 +5,9 @@ final class DAppBrowserWidgetInteractor {
     weak var presenter: DAppBrowserWidgetInteractorOutputProtocol?
 
     private let tabManager: DAppBrowserTabManagerProtocol
-    private let eventCenter: EventCenterProtocol
 
-    init(
-        tabManager: DAppBrowserTabManagerProtocol,
-        eventCenter: EventCenterProtocol
-    ) {
+    init(tabManager: DAppBrowserTabManagerProtocol) {
         self.tabManager = tabManager
-        self.eventCenter = eventCenter
     }
 }
 
@@ -23,10 +18,6 @@ extension DAppBrowserWidgetInteractor: DAppBrowserWidgetInteractorInputProtocol 
         tabManager.addObserver(
             self,
             sendOnSubscription: false
-        )
-        eventCenter.add(
-            observer: self,
-            dispatchIn: .main
         )
     }
 
@@ -42,13 +33,5 @@ extension DAppBrowserWidgetInteractor: DAppBrowserTabsObserver {
         let tabsById = tabs.reduce(into: [UUID: DAppBrowserTab]()) { $0[$1.uuid] = $1 }
 
         presenter?.didReceive(tabsById)
-    }
-}
-
-// MARK: EventVisitorProtocol
-
-extension DAppBrowserWidgetInteractor: EventVisitorProtocol {
-    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
-        presenter?.didReceiveWalletChanged()
     }
 }

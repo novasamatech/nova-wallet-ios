@@ -2,8 +2,6 @@ import Foundation
 import Operation_iOS
 
 extension DAppBrowserTabManager {
-    private static let readWriteQueueLabel = "\(String(describing: DAppBrowserTabManager.self)) sync queue"
-
     static let shared: DAppBrowserTabManager = {
         let mapper = DAppBrowserTabMapper()
         let storageFacade = UserDataStorageFacade.shared
@@ -22,15 +20,23 @@ extension DAppBrowserTabManager {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let logger = Logger.shared
 
+        let tabsSubscriptionFactory = PersistentTabLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        let walletListLocalSubscriptionFactory = WalletListLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: logger
+        )
+
         return DAppBrowserTabManager(
             fileRepository: renderFilesRepository,
-            tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactory(
-                storageFacade: storageFacade,
-                operationQueue: operationQueue,
-                logger: logger
-            ),
+            tabsSubscriptionFactory: tabsSubscriptionFactory,
+            walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             repository: AnyDataProviderRepository(coreDataRepository),
-            eventCenter: EventCenter.shared,
             operationQueue: operationQueue,
             logger: logger
         )
