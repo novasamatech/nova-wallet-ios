@@ -96,13 +96,12 @@ private extension DAppListViewModelFactory {
         merging dapps: [IndexedDApp],
         filteredFavorites: [String: DAppFavorite],
         allFavorites: [String: DAppFavorite],
-        categoriesDict: [String: DAppCategory]
+        categoriesDict: [String: DAppCategory],
+        selectedCategory: String? = nil
     ) -> [DAppViewModel] {
         let knownDApps: [String: DApp] = dapps.reduce(into: [:]) { acc, indexedDApp in
             acc[indexedDApp.dapp.identifier] = indexedDApp.dapp
         }
-
-        let knownIdentifiers = Set(knownDApps.keys)
 
         let knownViewModels: [DAppViewModel] = dapps.map { indexedDapp in
             let favorite = allFavorites[indexedDapp.dapp.identifier] != nil
@@ -114,14 +113,20 @@ private extension DAppListViewModelFactory {
             )
         }
 
-        let filteredFavorites = filteredFavorites.values.filter {
-            !knownIdentifiers.contains($0.identifier)
+        let favoritePages: [DAppFavorite]
+
+        if selectedCategory == nil {
+            favoritePages = filteredFavorites.values.filter {
+                knownDApps[$0.identifier] == nil
+            }
+        } else {
+            favoritePages = []
         }
 
         let sortedKnownViewModels = sortedDAppViewModels(from: knownViewModels)
 
         let sortedFavoriteViewModels = createFavorites(
-            from: filteredFavorites,
+            from: favoritePages,
             knownDApps: knownDApps,
             categories: categoriesDict
         )
@@ -273,21 +278,13 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite]
     ) -> DAppListViewModel {
         let dAppsByQuery: [IndexedDApp] = search(by: query, in: dAppList)
-
         let actualDApps: [IndexedDApp] = dAppsByQuery.filter { indexedDApp in
             guard let category else { return true }
 
             return indexedDApp.dapp.categories.contains(category)
         }
 
-        let filteredFavorites = favorites.filter { keyValue in
-            guard let query = query, !query.isEmpty else {
-                return true
-            }
-
-            let name = createFavoriteDAppName(from: keyValue.value)
-            return name.localizedCaseInsensitiveContains(query)
-        }
+        let favoritesByQuery = search(by: query, in: favorites)
 
         let categoryViewModels = dAppList.categories
             .map { dappCategoriesViewModelFactory.createViewModel(for: $0) }
@@ -298,9 +295,10 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 
         let dappViewModels = createViewModels(
             merging: actualDApps,
-            filteredFavorites: filteredFavorites,
+            filteredFavorites: favoritesByQuery,
             allFavorites: favorites,
-            categoriesDict: categoriesById
+            categoriesDict: categoriesById,
+            selectedCategory: category
         )
 
         let selectedCategoryIndex = categoryViewModels.firstIndex(where: { $0.identifier == category })
