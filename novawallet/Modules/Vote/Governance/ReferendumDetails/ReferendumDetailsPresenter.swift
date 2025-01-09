@@ -495,7 +495,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         guard
             let dApp = dApps?[index],
             let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType),
-            let tab = DAppBrowserTab(from: url.absoluteString)
+            let tab = DAppBrowserTab(from: url.absoluteString, metaId: wallet.metaId)
         else {
             return
         }

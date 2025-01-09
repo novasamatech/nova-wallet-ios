@@ -146,16 +146,14 @@ extension DAppBrowserWidgetPresenter: DAppBrowserWidgetInteractorOutputProtocol 
         case .disabled where !browserTabs.isEmpty:
             state = .closed
             view?.didReceiveRequestForMinimizing()
+        case .closed where !browserTabs.isEmpty:
+            view?.didReceiveRequestForMinimizing()
         case .miniature where browserTabs.isEmpty:
             state = .closed
             provideModel()
         default:
             break
         }
-    }
-
-    func didReceiveWalletChanged() {
-        view?.didChangeWallet()
     }
 }
 

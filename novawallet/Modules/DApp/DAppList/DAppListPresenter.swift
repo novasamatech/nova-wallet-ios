@@ -85,12 +85,15 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        guard case let .success(dAppList) = dAppsResult else { return }
+        guard
+            let wallet,
+            case let .success(dAppList) = dAppsResult
+        else { return }
 
         let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
-            DAppBrowserTab(from: dApp)
+            DAppBrowserTab(from: dApp, metaId: wallet.metaId)
         } else if let dApp = favorites?[id] {
-            DAppBrowserTab(from: dApp.identifier)
+            DAppBrowserTab(from: dApp.identifier, metaId: wallet.metaId)
         } else {
             nil
         }
@@ -157,7 +160,9 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard let tab = DAppBrowserTab(from: result) else {
+        guard let wallet else { return }
+
+        guard let tab = DAppBrowserTab(from: result, metaId: wallet.metaId) else {
             return
         }
 

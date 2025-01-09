@@ -10,6 +10,8 @@ final class DAppFavoritesPresenter {
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
+    let metaId: MetaAccountModel.Id
+
     private var favorites: [String: DAppFavorite] = [:]
     private var dAppList: DAppList?
 
@@ -17,12 +19,14 @@ final class DAppFavoritesPresenter {
         interactor: DAppFavoritesInteractorInputProtocol,
         wireframe: DAppFavoritesWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
+        metaId: MetaAccountModel.Id,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.metaId = metaId
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -73,9 +77,9 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
         guard let dAppList else { return }
 
         let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
-            DAppBrowserTab(from: dApp)
+            DAppBrowserTab(from: dApp, metaId: metaId)
         } else {
-            DAppBrowserTab(from: id)
+            DAppBrowserTab(from: id, metaId: metaId)
         }
 
         guard let tab else { return }

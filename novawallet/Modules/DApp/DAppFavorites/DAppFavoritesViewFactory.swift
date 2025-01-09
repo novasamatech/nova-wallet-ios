@@ -33,10 +33,13 @@ struct DAppFavoritesViewFactory {
             dappCategoriesViewModelFactory: categoriesViewModelFactory
         )
 
+        let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
+
         let presenter = DAppFavoritesPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            metaId: wallet.metaId,
             localizationManager: localizationManager,
             logger: logger
         )

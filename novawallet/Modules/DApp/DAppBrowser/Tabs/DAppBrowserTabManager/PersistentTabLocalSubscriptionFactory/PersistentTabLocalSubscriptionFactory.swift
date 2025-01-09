@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol PersistentTabLocalSubscriptionFactoryProtocol {
-    func getTabsProvider(_ identifier: UUID?) -> StreamableProvider<DAppBrowserTab.PersistenceModel>
+    func getTabsProvider(_ metaId: MetaAccountModel.Id?) -> StreamableProvider<DAppBrowserTab.PersistenceModel>
 }
 
 final class PersistentTabLocalSubscriptionFactory {
@@ -10,7 +10,7 @@ final class PersistentTabLocalSubscriptionFactory {
     let logger: LoggerProtocol?
     let operationQueue: OperationQueue
 
-    private(set) var providerStore: [UUID: WeakWrapper] = [:]
+    private(set) var providerStore: [MetaAccountModel.Id: WeakWrapper] = [:]
 
     init(
         storageFacade: StorageFacadeProtocol,
@@ -30,12 +30,12 @@ final class PersistentTabLocalSubscriptionFactory {
 // MARK: PersistentTabLocalSubscriptionFactoryProtocol
 
 extension PersistentTabLocalSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol {
-    func getTabsProvider(_ identifier: UUID?) -> Operation_iOS.StreamableProvider<DAppBrowserTab.PersistenceModel> {
+    func getTabsProvider(_ metaId: MetaAccountModel.Id?) -> Operation_iOS.StreamableProvider<DAppBrowserTab.PersistenceModel> {
         runStoreCleaner()
 
         if
-            let identifier,
-            let provider = providerStore[identifier]?.target as? StreamableProvider<DAppBrowserTab.PersistenceModel>
+            let metaId,
+            let provider = providerStore[metaId]?.target as? StreamableProvider<DAppBrowserTab.PersistenceModel>
         {
             return provider
         }
@@ -43,8 +43,8 @@ extension PersistentTabLocalSubscriptionFactory: PersistentTabLocalSubscriptionF
         let repository: CoreDataRepository<DAppBrowserTab.PersistenceModel, CDDAppBrowserTab>
 
         let mapper = DAppBrowserTabMapper()
-        if let identifier {
-            let filter = NSPredicate.filterFavoriteDApps(by: identifier.uuidString)
+        if let metaId {
+            let filter = NSPredicate.filterDAppBrowserTabs(by: metaId)
             repository = storageFacade.createRepository(
                 filter: filter,
                 sortDescriptors: [],
@@ -58,10 +58,10 @@ extension PersistentTabLocalSubscriptionFactory: PersistentTabLocalSubscriptionF
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(repository.dataMapper),
             predicate: { entity in
-                if let identifier = identifier {
-                    return entity.identifier == identifier.uuidString
+                if let metaId {
+                    entity.metaId == metaId
                 } else {
-                    return true
+                    true
                 }
             }
         )
@@ -81,8 +81,8 @@ extension PersistentTabLocalSubscriptionFactory: PersistentTabLocalSubscriptionF
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        if let identifier {
-            providerStore[identifier] = WeakWrapper(target: provider)
+        if let metaId {
+            providerStore[metaId] = WeakWrapper(target: provider)
         }
 
         return provider

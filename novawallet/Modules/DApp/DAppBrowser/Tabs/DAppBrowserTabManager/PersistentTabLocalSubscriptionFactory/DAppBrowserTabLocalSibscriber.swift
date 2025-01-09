@@ -7,15 +7,15 @@ protocol DAppBrowserTabLocalSubscriber: AnyObject {
     var tabsLocalSubscriptionHandler: DAppBrowserTabLocalSubscriptionHandler { get }
 
     func subscribeToBrowserTabs(
-        _ identifier: UUID?
+        _ metaId: MetaAccountModel.Id?
     ) -> StreamableProvider<DAppBrowserTab.PersistenceModel>
 }
 
 extension DAppBrowserTabLocalSubscriber {
     func subscribeToBrowserTabs(
-        _ identifier: UUID?
+        _ metaId: MetaAccountModel.Id?
     ) -> StreamableProvider<DAppBrowserTab.PersistenceModel> {
-        let provider = tabsSubscriptionFactory.getTabsProvider(identifier)
+        let provider = tabsSubscriptionFactory.getTabsProvider(metaId)
 
         let updateClosure = {
             [weak self] (changes: [DataProviderChange<DAppBrowserTab.PersistenceModel>]) in
