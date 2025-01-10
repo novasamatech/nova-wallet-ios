@@ -268,11 +268,14 @@ class DAppOperationConfirmTests: XCTestCase {
             dAppIcon: nil,
             operationData: jsonRequest
         )
+        
+        let serializationFactory = PolkadotExtensionMessageSignFactory()
 
         let interactor = DAppSignBytesConfirmInteractor(
             request: request,
             chain: chain,
             signingWrapperFactory: signingWrapperFactory,
+            serializationFactory: serializationFactory,
             operationQueue: OperationQueue()
         )
 

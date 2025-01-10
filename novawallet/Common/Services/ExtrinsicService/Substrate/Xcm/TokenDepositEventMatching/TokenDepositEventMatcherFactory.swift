@@ -1,29 +1,29 @@
 import Foundation
 
-protocol TokenDepositEventMatcherFactoryProtocol {
-    func createMatcher(for chainAsset: ChainAsset) -> TokenDepositEventMatching?
-}
-
-final class TokenDepositEventMatcherFactory: TokenDepositEventMatcherFactoryProtocol {
-    let logger: LoggerProtocol
-
-    init(logger: LoggerProtocol) {
-        self.logger = logger
-    }
-
-    func createMatcher(for chainAsset: ChainAsset) -> TokenDepositEventMatching? {
+enum TokenDepositEventMatcherFactory {
+    static func createMatcher(
+        for chainAsset: ChainAsset,
+        logger: LoggerProtocol
+    ) -> [TokenDepositEventMatching]? {
         try? CustomAssetMapper(
             type: chainAsset.asset.type,
             typeExtras: chainAsset.asset.typeExtras
         ).mapAssetWithExtras(
             nativeHandler: {
-                NativeTokenDepositEventMatcher(logger: logger)
+                [
+                    NativeTokenMintedEventMatcher(logger: logger),
+                    NativeTokenDepositedEventMatcher(logger: logger)
+                ]
             },
             statemineHandler: { extras in
-                PalletAssetsTokenDepositEventMatcher(extras: extras, logger: logger)
+                [
+                    PalletAssetsTokenDepositEventMatcher(extras: extras, logger: logger)
+                ]
             },
             ormlHandler: { extras in
-                TokensPalletDepositEventMatcher(extras: extras, logger: logger)
+                [
+                    TokensPalletDepositEventMatcher(extras: extras, logger: logger)
+                ]
             }, evmHandler: { _ in
                 nil
             },

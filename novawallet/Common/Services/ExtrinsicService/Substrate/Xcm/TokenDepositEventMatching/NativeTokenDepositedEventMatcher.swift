@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-final class NativeTokenDepositEventMatcher: TokenDepositEventMatching {
+final class NativeTokenDepositedEventMatcher: TokenDepositEventMatching {
     let logger: LoggerProtocol
 
     init(logger: LoggerProtocol) {
@@ -13,16 +13,16 @@ final class NativeTokenDepositEventMatcher: TokenDepositEventMatching {
         using codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
         do {
-            guard codingFactory.metadata.eventMatches(event, path: BalancesPallet.balancesMinted) else {
+            guard codingFactory.metadata.eventMatches(event, path: BalancesPallet.balancesDeposit) else {
                 return nil
             }
 
-            let mintedEvent = try event.params.map(
-                to: BalancesPallet.MintedEvent.self,
+            let depositEvent = try event.params.map(
+                to: BalancesPallet.DepositEvent.self,
                 with: codingFactory.createRuntimeJsonContext().toRawContext()
             )
 
-            return TokenDepositEvent(accountId: mintedEvent.accountId, amount: mintedEvent.amount)
+            return TokenDepositEvent(accountId: depositEvent.accountId, amount: depositEvent.amount)
         } catch {
             logger.error("Parsing failed: \(error)")
 

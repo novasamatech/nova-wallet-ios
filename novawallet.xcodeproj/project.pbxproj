@@ -168,6 +168,8 @@
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
+		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
+		0C28DF292D2D38CF0016DB8E /* DAppMessageSignFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */; };
 		0C29B5382A4C68A500E35C6D /* AnimationUpdatibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */; };
 		0C2A3C932CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */; };
 		0C2A3C952CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */; };
@@ -571,7 +573,7 @@
 		0CA7CEE62CE0C23B004328F2 /* SystemPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */; };
 		0CA7CEE72CE0C23B004328F2 /* SystemPallet+StoragePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE42CE0C23B004328F2 /* SystemPallet+StoragePath.swift */; };
 		0CA7CEE92CE0C37B004328F2 /* SystemPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE82CE0C37B004328F2 /* SystemPallet.swift */; };
-		0CA7CEEC2CE0CA57004328F2 /* NativeTokenDepositEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEEB2CE0CA57004328F2 /* NativeTokenDepositEventMatcher.swift */; };
+		0CA7CEEC2CE0CA57004328F2 /* NativeTokenMintedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEEB2CE0CA57004328F2 /* NativeTokenMintedEventMatcher.swift */; };
 		0CA7CEEE2CE0CA75004328F2 /* TokenDepositEventMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEED2CE0CA75004328F2 /* TokenDepositEventMatching.swift */; };
 		0CA7CEF02CE0CC13004328F2 /* BalancesPallet+EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEEF2CE0CC13004328F2 /* BalancesPallet+EventCodingPath.swift */; };
 		0CA7CEF22CE0D14F004328F2 /* PalletAssetsTokenDepositEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEF12CE0D14F004328F2 /* PalletAssetsTokenDepositEventMatcher.swift */; };
@@ -5535,6 +5537,8 @@
 		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
+		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
+		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
 		0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationUpdatibleView.swift; sourceTree = "<group>"; };
 		0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeOperationFactory.swift; sourceTree = "<group>"; };
 		0C2A3C942CDC8ADB00A0E2B3 /* SwapAssetSelectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapAssetSelectionModel.swift; sourceTree = "<group>"; };
@@ -5976,7 +5980,7 @@
 		0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemPallet+Events.swift"; sourceTree = "<group>"; };
 		0CA7CEE42CE0C23B004328F2 /* SystemPallet+StoragePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemPallet+StoragePath.swift"; sourceTree = "<group>"; };
 		0CA7CEE82CE0C37B004328F2 /* SystemPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPallet.swift; sourceTree = "<group>"; };
-		0CA7CEEB2CE0CA57004328F2 /* NativeTokenDepositEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositEventMatcher.swift; sourceTree = "<group>"; };
+		0CA7CEEB2CE0CA57004328F2 /* NativeTokenMintedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenMintedEventMatcher.swift; sourceTree = "<group>"; };
 		0CA7CEED2CE0CA75004328F2 /* TokenDepositEventMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDepositEventMatching.swift; sourceTree = "<group>"; };
 		0CA7CEEF2CE0CC13004328F2 /* BalancesPallet+EventCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalancesPallet+EventCodingPath.swift"; sourceTree = "<group>"; };
 		0CA7CEF12CE0D14F004328F2 /* PalletAssetsTokenDepositEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalletAssetsTokenDepositEventMatcher.swift; sourceTree = "<group>"; };
@@ -12083,11 +12087,12 @@
 		0CA7CEEA2CE0CA13004328F2 /* TokenDepositEventMatching */ = {
 			isa = PBXGroup;
 			children = (
-				0CA7CEEB2CE0CA57004328F2 /* NativeTokenDepositEventMatcher.swift */,
+				0CA7CEEB2CE0CA57004328F2 /* NativeTokenMintedEventMatcher.swift */,
 				0CA7CEED2CE0CA75004328F2 /* TokenDepositEventMatching.swift */,
 				0CA7CEF12CE0D14F004328F2 /* PalletAssetsTokenDepositEventMatcher.swift */,
 				0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */,
 				0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */,
+				0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */,
 			);
 			path = TokenDepositEventMatching;
 			sourceTree = "<group>";
@@ -15787,6 +15792,7 @@
 				843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */,
 				843612C62790032400DC739E /* DAppOperationProcessedResult.swift */,
 				84E8BA0A29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift */,
+				0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -26175,7 +26181,7 @@
 				0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */,
 				0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */,
 				849067CA299BCCB700B2983E /* GovernanceRevokeDelegationConfirmPresenter+Update.swift in Sources */,
-				0CA7CEEC2CE0CA57004328F2 /* NativeTokenDepositEventMatcher.swift in Sources */,
+				0CA7CEEC2CE0CA57004328F2 /* NativeTokenMintedEventMatcher.swift in Sources */,
 				0C8AF7AF2B343C6B00005AC9 /* ExtrinsicSenderResolutionFactory.swift in Sources */,
 				0C3205BE2A867A9C002EB914 /* EvmLegacyGasPriceProvider.swift in Sources */,
 				0CE629D92AA9B68C00E250BD /* AssetBalanceViewModel.swift in Sources */,
@@ -26543,6 +26549,7 @@
 				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
 				0C61082A2CD5DE9500909928 /* AssetHubExchangeHost.swift in Sources */,
 				8433B34A29B63661005E5D0F /* ExtrinsicSplitter.swift in Sources */,
+				0C28DF292D2D38CF0016DB8E /* DAppMessageSignFactory.swift in Sources */,
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
 				0C3205DA2A896029002EB914 /* EvmConstantNonceProvider.swift in Sources */,
 				0CF6928C2C231CA5000FC395 /* SharedStatusView.swift in Sources */,
@@ -26667,6 +26674,7 @@
 				0C77B5632A83747200B5AE08 /* StaticValidatorListViewLayout.swift in Sources */,
 				84FFE45B2862076F002432BB /* XcmUnweightedTransferRequest.swift in Sources */,
 				84D1110C26B922D50016D962 /* ConnectionPool.swift in Sources */,
+				0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */,
 				840DFF4F28940444001B11EA /* ChainAddressDetailsModel.swift in Sources */,
 				88E1E898289C024400C123A8 /* UIView+Create.swift in Sources */,
 				84FF268028494D33003EC78D /* ParaStkStakeConfirmPresenter+StartStaking.swift in Sources */,
