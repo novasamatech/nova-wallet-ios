@@ -1,10 +1,27 @@
 import Foundation
 import SubstrateSdk
 
+protocol XcmTokensArrivalDetecting {
+    func searchForXcmArrival(
+        in blockDetails: SubstrateBlockDetails,
+        accountId: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> TokenDepositEvent?
+}
+
 final class XcmTokensArrivalDetector {
     let logger: LoggerProtocol
+    let eventMatchers: [TokenDepositEventMatching]
 
-    init(logger: LoggerProtocol) {
+    init?(chainAsset: ChainAsset, logger: LoggerProtocol) {
+        guard let matchers = TokenDepositEventMatcherFactory.createMatcher(
+            for: chainAsset,
+            logger: logger
+        ) else {
+            return nil
+        }
+
+        eventMatchers = matchers
         self.logger = logger
     }
 }
@@ -12,32 +29,29 @@ final class XcmTokensArrivalDetector {
 private extension XcmTokensArrivalDetector {
     func detectDepositIn(
         events: [Event],
-        eventMatcher: TokenDepositEventMatching,
         accountId: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
-        for event in events {
-            if
-                let deposit = eventMatcher.matchDeposit(event: event, using: codingFactory),
-                deposit.accountId == accountId {
-                return deposit
+        for eventMatcher in eventMatchers {
+            for event in events {
+                if
+                    let deposit = eventMatcher.matchDeposit(event: event, using: codingFactory),
+                    deposit.accountId == accountId {
+                    return deposit
+                }
             }
         }
 
         return nil
     }
-}
 
-extension XcmTokensArrivalDetector {
     func searchForXcmArrivalInInherents(
         in inherentEvents: SubstrateInherentsEvents,
-        eventMatcher: TokenDepositEventMatching,
         accountId: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
         detectDepositIn(
             events: inherentEvents.initialization + inherentEvents.finalization,
-            eventMatcher: eventMatcher,
             accountId: accountId,
             codingFactory: codingFactory
         )
@@ -45,7 +59,6 @@ extension XcmTokensArrivalDetector {
 
     func searchForXcmArrivalInSetValidationData(
         in extrinsicsEvents: SubstrateExtrinsicsEvents,
-        eventMatcher: TokenDepositEventMatching,
         accountId: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
@@ -80,21 +93,20 @@ extension XcmTokensArrivalDetector {
 
         return detectDepositIn(
             events: matchingEvents,
-            eventMatcher: eventMatcher,
             accountId: accountId,
             codingFactory: codingFactory
         )
     }
+}
 
+extension XcmTokensArrivalDetector: XcmTokensArrivalDetecting {
     func searchForXcmArrival(
         in blockDetails: SubstrateBlockDetails,
-        eventMatcher: TokenDepositEventMatching,
         accountId: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent? {
         if let deposit = searchForXcmArrivalInInherents(
             in: blockDetails.inherentsEvents,
-            eventMatcher: eventMatcher,
             accountId: accountId,
             codingFactory: codingFactory
         ) {
@@ -103,7 +115,6 @@ extension XcmTokensArrivalDetector {
 
         return searchForXcmArrivalInSetValidationData(
             in: blockDetails.extrinsicsWithEvents,
-            eventMatcher: eventMatcher,
             accountId: accountId,
             codingFactory: codingFactory
         )
