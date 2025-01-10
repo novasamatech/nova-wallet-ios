@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: 16
+          xcode-version: 16.1
 
       - name: Checkout
         uses: actions/checkout@v4
