@@ -11,6 +11,14 @@ enum DAppBrowserTabTransition {
             guard let tabId else { return }
 
             let options = UIViewController.Transition.ZoomOptions()
+            options.interactiveDismissShouldBegin = { _ in
+                guard let destinationController = destController as? DAppBrowserViewController else {
+                    return true
+                }
+
+                return destinationController.canBeDismissedInteractively()
+            }
+
             options.alignmentRectProvider = { context in
                 guard let destinationController = context.zoomedViewController as? DAppBrowserViewController else {
                     return .zero

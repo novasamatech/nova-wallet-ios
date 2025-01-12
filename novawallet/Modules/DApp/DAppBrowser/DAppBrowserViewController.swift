@@ -36,7 +36,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     var isLandscape: Bool {
-        view.frame.size.width > view.frame.size.height
+        traitCollection.verticalSizeClass == .compact
     }
 
     init(
@@ -102,6 +102,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         configure()
 
         presenter.setup()
+    }
+
+    func canBeDismissedInteractively() -> Bool {
+        !isLandscape
     }
 }
 
@@ -557,13 +561,11 @@ extension DAppBrowserViewController: UIScrollViewDelegate {
 
         if isScrollingUp {
             hideBars()
-
-            scrollYOffset = scrollView.contentOffset.y
         } else if isScrollingDown {
             showBars()
-
-            scrollYOffset = scrollView.contentOffset.y
         }
+
+        scrollYOffset = scrollView.contentOffset.y
     }
 }
 
