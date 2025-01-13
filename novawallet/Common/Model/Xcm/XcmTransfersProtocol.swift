@@ -1,0 +1,12 @@
+import Foundation
+
+protocol XcmTransfersProtocol {
+    func getAssetTransfer(
+        from chainAssetId: ChainAssetId,
+        destinationChainId: ChainModel.Id
+    ) -> XcmAssetTransferProtocol?
+
+    func getReservePath(for chainAssetId: ChainAssetId) -> XcmAsset.ReservePath?
+}
+
+protocol XcmAssetTransferProtocol {}
