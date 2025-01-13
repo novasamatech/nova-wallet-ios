@@ -134,6 +134,30 @@ private extension NovaMainAppContainerViewController {
             presentedViewController = presentedViewController?.presentedViewController
         }
     }
+
+    func makeTransition(
+        for state: DAppBrowserWidgetState,
+        using transitionBuilder: DAppBrowserWidgetTransitionBuilder?
+    ) {
+        let builder = if let transitionBuilder {
+            transitionBuilder
+        } else {
+            DAppBrowserWidgetTransitionBuilder()
+        }
+
+        let widgetLayout = DAppBrowserWidgetLayout(from: state)
+        let transitionDependencies = createTransitionLayoutDependencies(for: widgetLayout)
+
+        builder.setWidgetLayout(transitionDependencies)
+
+        do {
+            let transition = try builder.build(for: widgetLayout)
+
+            transition.start()
+        } catch {
+            logger.error("Failed to build transition: \(error)")
+        }
+    }
 }
 
 // MARK: Internal
@@ -190,30 +214,6 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
             for: state,
             using: transitionBuilder
         )
-    }
-
-    func makeTransition(
-        for state: DAppBrowserWidgetState,
-        using transitionBuilder: DAppBrowserWidgetTransitionBuilder?
-    ) {
-        let builder = if let transitionBuilder {
-            transitionBuilder
-        } else {
-            DAppBrowserWidgetTransitionBuilder()
-        }
-
-        let widgetLayout = DAppBrowserWidgetLayout(from: state)
-        let transitionDependencies = createTransitionLayoutDependencies(for: widgetLayout)
-
-        builder.setWidgetLayout(transitionDependencies)
-
-        do {
-            let transition = try builder.build(for: widgetLayout)
-
-            transition.start()
-        } catch {
-            logger.error("Failed to build transition: \(error)")
-        }
     }
 }
 
