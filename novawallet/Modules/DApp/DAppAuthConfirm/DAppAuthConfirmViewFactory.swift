@@ -10,11 +10,15 @@ struct DAppAuthConfirmViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let viewModelFactory = DAppAuthViewModelFactory(
+            iconViewModelFactory: DAppIconViewModelFactory()
+        )
+
         let presenter = DAppAuthConfirmPresenter(
             wireframe: wireframe,
             request: request,
             delegate: delegate,
-            viewModelFactory: DAppAuthViewModelFactory()
+            viewModelFactory: viewModelFactory
         )
 
         let view = DAppAuthConfirmViewController(

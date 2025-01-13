@@ -3,27 +3,41 @@ import Foundation
 protocol DAppIconViewModelFactoryProtocol {
     func createIconViewModel(for favorite: DAppFavorite) -> ImageViewModelProtocol
     func createIconViewModel(for dApp: DApp) -> ImageViewModelProtocol
+    func createIconViewModel(for dAppAuthRequest: DAppAuthRequest) -> ImageViewModelProtocol
 }
 
 class DAppIconViewModelFactory {
-    private let faviconAPIURLString: String = "https://icons.duckduckgo.com/ip3"
-    private let faviconExtension: String = "ico"
+    private let faviconAPIFormat: String
+
+    init(faviconAPIFormat: String = Constants.ddgFaviconAPIFormat) {
+        self.faviconAPIFormat = faviconAPIFormat
+    }
 }
 
 // MARK: Private
 
 private extension DAppIconViewModelFactory {
     func createFaviconURL(for pageURL: URL) -> URL? {
-        guard let domain = pageURL.host else { return nil }
+        let regex = try? NSRegularExpression(pattern: "(?:https?://)?([^/\\?]+)")
+        let urlString = pageURL.absoluteString
 
-        let resultURLString = [
-            [
-                faviconAPIURLString,
-                domain
-            ].joined(with: .slash),
+        guard
+            let match = regex?.firstMatch(
+                in: urlString,
+                range: NSRange(urlString.startIndex..., in: urlString)
+            ),
+            let range = Range(
+                match.range(at: 1),
+                in: urlString
+            )
+        else { return nil }
 
-            faviconExtension
-        ].joined(with: .dot)
+        let domain = urlString[range]
+
+        let resultURLString = String(
+            format: faviconAPIFormat,
+            String(domain)
+        )
 
         return URL(string: resultURLString)
     }
@@ -67,5 +81,24 @@ extension DAppIconViewModelFactory: DAppIconViewModelFactoryProtocol {
             for: dApp.icon,
             dAppURL: dApp.url
         )
+    }
+
+    func createIconViewModel(for dAppAuthRequest: DAppAuthRequest) -> ImageViewModelProtocol {
+        guard let dAppURL = URL(string: dAppAuthRequest.dApp) else {
+            return StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+        }
+
+        return createImageViewModel(
+            for: dAppAuthRequest.dAppIcon,
+            dAppURL: dAppURL
+        )
+    }
+}
+
+// MARK: Constants
+
+private extension DAppIconViewModelFactory {
+    enum Constants {
+        static let ddgFaviconAPIFormat: String = "https://icons.duckduckgo.com/ip3/%@.ico"
     }
 }
