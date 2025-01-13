@@ -6,9 +6,14 @@ typealias IndexedDApp = (index: Int, dapp: DApp)
 final class DAppListViewModelFactory: DAppSearchingByQuery {
     private let dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol
     private let walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
+    private let dappIconViewModelFactory: DAppIconViewModelFactoryProtocol
 
-    init(dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol) {
+    init(
+        dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol,
+        dappIconViewModelFactory: DAppIconViewModelFactoryProtocol
+    ) {
         self.dappCategoriesViewModelFactory = dappCategoriesViewModelFactory
+        self.dappIconViewModelFactory = dappIconViewModelFactory
     }
 }
 
@@ -21,13 +26,7 @@ private extension DAppListViewModelFactory {
         categories: [String: DAppCategory],
         favorite: Bool
     ) -> DAppViewModel {
-        let imageViewModel: ImageViewModelProtocol
-
-        if let iconUrl = model.icon {
-            imageViewModel = RemoteImageViewModel(url: iconUrl)
-        } else {
-            imageViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
-        }
+        let imageViewModel = dappIconViewModelFactory.createIconViewModel(for: model)
 
         let details = model.categories.map {
             categories[$0]?.name ?? $0
@@ -64,14 +63,7 @@ private extension DAppListViewModelFactory {
         knownDApps: [String: DApp],
         categoriesDict: [String: DAppCategory]
     ) -> DAppViewModel {
-        let imageViewModel: ImageViewModelProtocol
-
-        if let icon = model.icon, let url = URL(string: icon) {
-            imageViewModel = RemoteImageViewModel(url: url)
-        } else {
-            imageViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
-        }
-
+        let imageViewModel = dappIconViewModelFactory.createIconViewModel(for: model)
         let name = createFavoriteDAppName(from: model)
 
         let details = if let knownDApp = knownDApps[model.identifier] {

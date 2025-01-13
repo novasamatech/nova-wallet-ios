@@ -1088,6 +1088,7 @@
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
 		2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */; };
 		2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */; };
+		2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -6513,6 +6514,7 @@
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
 		2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerViewModel.swift; sourceTree = "<group>"; };
 		2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerView.swift; sourceTree = "<group>"; };
+		2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconViewModelFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -13408,6 +13410,7 @@
 			children = (
 				2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */,
 				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
+				2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */,
 			);
 			path = DAppListViewModelFactory;
 			sourceTree = "<group>";
@@ -30101,6 +30104,7 @@
 				AD877F7F77F9CB862DC7D5B3 /* DelegationReferendumVotersWireframe.swift in Sources */,
 				0DD3DB85B0E7FD5692F58787 /* DelegationReferendumVotersPresenter.swift in Sources */,
 				8A2486E62C3915CB6D1FDED8 /* DelegationReferendumVotersInteractor.swift in Sources */,
+				2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */,
 				77740BBE2AD4A7F500E8C06F /* SwapDetailsView.swift in Sources */,
 				0F073C8161B9852DEB1D40CD /* DelegationReferendumVotersViewController.swift in Sources */,
 				D274117F06B12F955073D35B /* DelegationReferendumVotersViewLayout.swift in Sources */,

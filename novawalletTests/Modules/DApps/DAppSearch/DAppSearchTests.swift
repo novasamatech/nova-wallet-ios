@@ -29,7 +29,8 @@ class DAppSearchTests: XCTestCase {
         )
         
         let viewModelFactory = DAppListViewModelFactory(
-            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory()
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
         let presenter = DAppSearchPresenter(

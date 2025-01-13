@@ -21,7 +21,8 @@ struct DAppSearchViewFactory {
         let wireframe = DAppSearchWireframe()
 
         let viewModelFactory = DAppListViewModelFactory(
-            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory()
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
         let presenter = DAppSearchPresenter(
