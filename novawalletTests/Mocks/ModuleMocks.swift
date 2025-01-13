@@ -4332,9 +4332,9 @@ import Operation_iOS
     
     
     
-     func didReceiveTabsCount(viewModel: String)  {
+     func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)  {
         
-    return cuckoo_manager.call("didReceiveTabsCount(viewModel: String)",
+    return cuckoo_manager.call("didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)",
             parameters: (viewModel),
             escapingParameters: (viewModel),
             superclassCall:
@@ -4489,9 +4489,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(viewModel: DAppBrowserModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveTabsCount<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveTabsCount(viewModel: String)", parameterMatchers: matchers))
+	    func didReceiveTabsCount<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabsButtonViewModel)> where M1.MatchedType == DAppBrowserTabsButtonViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabsButtonViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
@@ -4567,9 +4567,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceiveTabsCount<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("didReceiveTabsCount(viewModel: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveTabsCount<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(DAppBrowserTabsButtonViewModel), Void> where M1.MatchedType == DAppBrowserTabsButtonViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabsButtonViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -4655,7 +4655,7 @@ import Operation_iOS
     
     
     
-     func didReceiveTabsCount(viewModel: String)   {
+     func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
