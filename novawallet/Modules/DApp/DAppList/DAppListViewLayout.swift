@@ -69,7 +69,10 @@ private extension DAppListViewLayout {
                     fixedHeight: DAppCategoriesView.preferredHeight,
                     scrollingBehavior: .none
                 )
-                contentInsets.bottom = 8
+                contentInsets.bottom = 12
+            case .banners:
+                section = bannersSectionLayout()
+                contentInsets.bottom = 24
             case .favorites:
                 section = dAppFavoritesSectionLayout()
                 contentInsets.bottom = 24
@@ -103,11 +106,36 @@ private extension DAppListViewLayout {
         }
     }
 
+    func bannersSectionLayout() -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(1)
+            )
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(0.915),
+                heightDimension: .absolute(120.0)
+            ),
+            subitem: item,
+            count: 1
+        )
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .groupPaging
+        section.interGroupSpacing = UIConstants.horizontalInset / 2
+        section.contentInsets = .zero
+        section.contentInsets.leading = UIConstants.horizontalInset
+
+        return section
+    }
+
     func dAppFavoritesSectionLayout() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalWidth(1)
+                heightDimension: .fractionalHeight(1)
             )
         )
         let group = NSCollectionLayoutGroup.horizontal(
