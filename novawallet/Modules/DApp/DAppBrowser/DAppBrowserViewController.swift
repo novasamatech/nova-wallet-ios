@@ -107,6 +107,13 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     func canBeDismissedInteractively() -> Bool {
         !isLandscape
     }
+
+    func willBeDismissedInteractively() {
+        if #available(iOS 16.0, *) {
+            deviceOrientationManager.disableLandscape()
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
 }
 
 // MARK: Private

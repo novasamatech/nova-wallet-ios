@@ -16,7 +16,13 @@ enum DAppBrowserTabTransition {
                     return true
                 }
 
-                return destinationController.canBeDismissedInteractively()
+                let canBeDismissedInteractively: Bool = destinationController.canBeDismissedInteractively()
+
+                if canBeDismissedInteractively {
+                    destinationController.willBeDismissedInteractively()
+                }
+
+                return canBeDismissedInteractively
             }
 
             options.alignmentRectProvider = { context in

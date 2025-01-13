@@ -79,7 +79,14 @@ private extension NovaMainAppContainerViewController {
     func browserMinimizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
         let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
         let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
-        let widgetTopConstraintInset = view.bounds.height - minimizedWidgetHeight
+
+        // We do this in cases when minimizing started before the device orientation
+        // finished transitioning from landscape to portrait
+        let widgetTopConstraintInset = if view.bounds.height > view.bounds.width {
+            view.bounds.height - minimizedWidgetHeight
+        } else {
+            view.bounds.width - minimizedWidgetHeight
+        }
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
