@@ -55,19 +55,21 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserCloseLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
-        let widgetTopConstraintInset = view.bounds.height
+        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
-                self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(-topContainerBottomOffset)
-                    make.top.equalToSuperview().inset(widgetTopConstraintInset)
+                guard let self else { return nil }
+
+                browserWidget?.view.snp.remakeConstraints { make in
+                    make.bottom.equalToSuperview().inset(-minimizedWidgetHeight)
+                    make.top.equalTo(self.rootView.snp.bottom)
+                    make.leading.trailing.equalToSuperview()
                 }
 
-                self?.topContainerBottomConstraint?.constant = 0
+                topContainerBottomConstraint?.constant = 0
 
-                return self?.rootView
+                return rootView
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
@@ -80,24 +82,18 @@ private extension NovaMainAppContainerViewController {
         let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
         let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
-        // We do this in cases when minimizing started before the device orientation
-        // finished transitioning from landscape to portrait
-        let widgetTopConstraintInset = if view.bounds.height > view.bounds.width {
-            view.bounds.height - minimizedWidgetHeight
-        } else {
-            view.bounds.width - minimizedWidgetHeight
-        }
-
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
-                self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview()
-                    make.top.equalToSuperview().inset(widgetTopConstraintInset)
+                guard let self else { return nil }
+
+                browserWidget?.view.snp.remakeConstraints { make in
+                    make.top.equalTo(self.rootView.snp.bottom).inset(minimizedWidgetHeight)
+                    make.bottom.leading.trailing.equalToSuperview()
                 }
 
-                self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
+                topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
-                return self?.rootView
+                return rootView
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = [
@@ -113,9 +109,8 @@ private extension NovaMainAppContainerViewController {
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
-                self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.top.equalToSuperview()
-                    make.bottom.equalToSuperview()
+                self?.browserWidget?.view.snp.remakeConstraints { make in
+                    make.edges.equalToSuperview()
                 }
 
                 self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
@@ -192,13 +187,12 @@ extension NovaMainAppContainerViewController {
 
         rootView.addSubview(bottomView)
 
-        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
-        let widgetTopConstraintInset = UIScreen.main.bounds.height
+        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().inset(-topContainerBottomOffset)
-            make.top.equalToSuperview().inset(widgetTopConstraintInset)
+            make.top.equalTo(rootView.snp.bottom)
         }
     }
 }

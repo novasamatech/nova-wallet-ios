@@ -64,7 +64,12 @@ private extension DAppListBannerView {
 
 extension DAppListBannerView {
     func bind(viewModel: DAppListBannerViewModel) {
-        decorationView.image = viewModel.imageViewModel.image
+        viewModel.imageViewModel.loadImage(
+            on: decorationView,
+            targetSize: decorationView.bounds.size,
+            animated: true
+        )
+
         decorationTitleLabel.text = viewModel.title
         decorationSubtitleLabel.text = viewModel.subtitle
     }
