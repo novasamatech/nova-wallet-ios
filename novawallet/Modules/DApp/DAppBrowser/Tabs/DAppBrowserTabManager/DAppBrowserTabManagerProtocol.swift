@@ -7,6 +7,7 @@ protocol DAppBrowserTabsObserver: AnyObject {
 
 protocol DAppBrowserTabManagerProtocol {
     func retrieveTab(with id: UUID) -> CompoundOperationWrapper<DAppBrowserTab?>
+
     func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]>
 
     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab>
@@ -18,10 +19,22 @@ protocol DAppBrowserTabManagerProtocol {
 
     func removeTab(with id: UUID)
 
-    func removeAll()
+    func removeAll(for metaIds: Set<MetaAccountModel.Id>?)
+
+    func removeAllWrapper(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>>
 
     func addObserver(
         _ observer: DAppBrowserTabsObserver,
         sendOnSubscription: Bool
     )
+}
+
+extension DAppBrowserTabManagerProtocol {
+    func removeAll() {
+        removeAll(for: nil)
+    }
+
+    func removeAllWrapper() -> CompoundOperationWrapper<Set<UUID>> {
+        removeAllWrapper(for: nil)
+    }
 }

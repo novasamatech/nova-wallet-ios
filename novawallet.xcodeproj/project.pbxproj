@@ -1089,8 +1089,10 @@
 		2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */; };
 		2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */; };
 		2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */; };
-		2D20F1C42D364879003E9CF2 /* WalletDeleteStorageCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C32D364879003E9CF2 /* WalletDeleteStorageCleaning.swift */; };
+		2D20F1C42D364879003E9CF2 /* WalletStorageCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C32D364879003E9CF2 /* WalletStorageCleaning.swift */; };
 		2D20F1C72D364938003E9CF2 /* WalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */; };
+		2D20F1C92D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C82D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift */; };
+		2D20F1CC2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1CB2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -6517,8 +6519,10 @@
 		2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerViewModel.swift; sourceTree = "<group>"; };
 		2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerView.swift; sourceTree = "<group>"; };
 		2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconViewModelFactory.swift; sourceTree = "<group>"; };
-		2D20F1C32D364879003E9CF2 /* WalletDeleteStorageCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDeleteStorageCleaning.swift; sourceTree = "<group>"; };
+		2D20F1C32D364879003E9CF2 /* WalletStorageCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleaning.swift; sourceTree = "<group>"; };
 		2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
+		2D20F1C82D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDeleteStorageCleanerFactory.swift; sourceTree = "<group>"; };
+		2D20F1CB2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletStorageCleaner.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -13298,13 +13302,23 @@
 			path = IconRetrieve;
 			sourceTree = "<group>";
 		};
-		2D20F1C52D3648F5003E9CF2 /* WalletDeleteStorageCleaning */ = {
+		2D20F1C52D3648F5003E9CF2 /* WalletStorageCleaning */ = {
 			isa = PBXGroup;
 			children = (
-				2D20F1C32D364879003E9CF2 /* WalletDeleteStorageCleaning.swift */,
+				2D20F1C32D364879003E9CF2 /* WalletStorageCleaning.swift */,
+				2D20F1CB2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift */,
+				2D20F1C82D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift */,
+				2D20F1CA2D36C579003E9CF2 /* Cleaners */,
+			);
+			path = WalletStorageCleaning;
+			sourceTree = "<group>";
+		};
+		2D20F1CA2D36C579003E9CF2 /* Cleaners */ = {
+			isa = PBXGroup;
+			children = (
 				2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */,
 			);
-			path = WalletDeleteStorageCleaning;
+			path = Cleaners;
 			sourceTree = "<group>";
 		};
 		2D32BE112C6A49900047F520 /* FeeManaging */ = {
@@ -17709,7 +17723,7 @@
 				841AAC2E26F73E0C00F0A25E /* LocalStorageKeyFactory.swift */,
 				84D8753928EB0A93004065BD /* GovernanceChainSettings.swift */,
 				0C90C6C12B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift */,
-				2D20F1C52D3648F5003E9CF2 /* WalletDeleteStorageCleaning */,
+				2D20F1C52D3648F5003E9CF2 /* WalletStorageCleaning */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -27589,6 +27603,7 @@
 				84D911AA292C923D0032EF33 /* Data+Fill.swift in Sources */,
 				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
+				2D20F1C92D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift in Sources */,
 				2D62874F2C95C1F500060814 /* ReferendumsObservableState.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				0C63908B2BF073C20015D467 /* CloudBackupSyncMonitoring.swift in Sources */,
@@ -27964,6 +27979,7 @@
 				84B018AC26E01A4100C75E28 /* StakingStateView.swift in Sources */,
 				842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */,
 				84880C4429026C3E00CADB06 /* ReferendumDelegatingLocal.swift in Sources */,
+				2D20F1CC2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift in Sources */,
 				8472C5B2265CF9C500E2481B /* StakingRewardDestConfirmInteractor.swift in Sources */,
 				88F9F696297B082F00F6550D /* SelectableTitleTableViewCell.swift in Sources */,
 				882C29AE28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift in Sources */,
@@ -29943,7 +29959,7 @@
 				0075488169C69B97C0630EB8 /* AssetReceiveProtocols.swift in Sources */,
 				2D1C5D102C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift in Sources */,
 				0DACB56C0BDD4C984FE3C15C /* AssetReceiveWireframe.swift in Sources */,
-				2D20F1C42D364879003E9CF2 /* WalletDeleteStorageCleaning.swift in Sources */,
+				2D20F1C42D364879003E9CF2 /* WalletStorageCleaning.swift in Sources */,
 				D264B2A8A516396051016CAB /* AssetReceivePresenter.swift in Sources */,
 				D3B74ED2525DE12423722DE2 /* AssetReceiveInteractor.swift in Sources */,
 				E6D05825C7512E3CD560B39F /* AssetReceiveViewController.swift in Sources */,

@@ -22,15 +22,18 @@ final class WalletUpdateMediator {
 
     let selectedWalletSettings: SelectedWalletSettings
     let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let removedWalletsCleaner: WalletStorageCleaning
     let operationQueue: OperationQueue
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
         repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        removedWalletsCleaner: WalletStorageCleaning,
         operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.repository = repository
+        self.removedWalletsCleaner = removedWalletsCleaner
         self.operationQueue = operationQueue
     }
 
@@ -210,6 +213,14 @@ extension WalletUpdateMediator: WalletUpdateMediating {
 
         newSelectedWalletOperation.addDependency(proxiedsRemovalOperation)
 
+        var walletsStateCleaningWrapper = removedWalletsCleaner.cleanStorage {
+            let changesResult = try newSelectedWalletOperation.extractNoCancellableResultData()
+
+            return changesResult.changes.removedItems.map(\.info)
+        }
+
+        walletsStateCleaningWrapper.addDependency(operations: [newSelectedWalletOperation])
+
         let saveOperation = repository.saveOperation({
             let changesResult = try newSelectedWalletOperation.extractNoCancellableResultData()
 
@@ -220,7 +231,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             return changesResult.changes.removedItems.map(\.identifier)
         })
 
-        saveOperation.addDependency(newSelectedWalletOperation)
+        saveOperation.addDependency(walletsStateCleaningWrapper.targetOperation)
 
         let selectedWalletUpdateOperation = selectedWalletUpdateOperation(
             in: selectedWalletSettings,
@@ -244,11 +255,17 @@ extension WalletUpdateMediator: WalletUpdateMediating {
         let dependencies = [
             allWalletsOperation,
             proxiedsRemovalOperation,
-            newSelectedWalletOperation,
-            saveOperation,
-            selectedWalletUpdateOperation
+            newSelectedWalletOperation
         ]
+            + walletsStateCleaningWrapper.allOperations
+            + [
+                saveOperation,
+                selectedWalletUpdateOperation
+            ]
 
-        return CompoundOperationWrapper(targetOperation: resultOperation, dependencies: dependencies)
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: dependencies
+        )
     }
 }

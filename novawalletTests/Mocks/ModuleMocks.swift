@@ -4884,6 +4884,21 @@ import Operation_iOS
         
     }
     
+    
+    
+     func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)  {
+        
+    return cuckoo_manager.call("willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)",
+            parameters: (stateRender),
+            escapingParameters: (stateRender),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.willDismissInteractive(stateRender: stateRender))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -4941,6 +4956,11 @@ import Operation_iOS
 	    func showTabs<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabRenderProtocol)> where M1.MatchedType == DAppBrowserTabRenderProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabRenderProtocol)>] = [wrap(matchable: stateRender) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "showTabs(stateRender: DAppBrowserTabRenderProtocol)", parameterMatchers: matchers))
+	    }
+	    
+	    func willDismissInteractive<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabRenderProtocol)> where M1.MatchedType == DAppBrowserTabRenderProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabRenderProtocol)>] = [wrap(matchable: stateRender) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -5019,6 +5039,12 @@ import Operation_iOS
 	        return cuckoo_manager.verify("showTabs(stateRender: DAppBrowserTabRenderProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func willDismissInteractive<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.__DoNotUse<(DAppBrowserTabRenderProtocol), Void> where M1.MatchedType == DAppBrowserTabRenderProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabRenderProtocol)>] = [wrap(matchable: stateRender) { $0 }]
+	        return cuckoo_manager.verify("willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -5085,6 +5111,12 @@ import Operation_iOS
     
     
      func showTabs(stateRender: DAppBrowserTabRenderProtocol)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

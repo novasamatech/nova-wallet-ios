@@ -7,6 +7,7 @@ final class WalletUpdateMediatorTests: XCTestCase {
         let operationQueue: OperationQueue
         let selectedAccountSettings: SelectedWalletSettings
         let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+        let walletStorageCleaner: WalletStorageCleaning
         let walletUpdateMediator: WalletUpdateMediating
 
         init() {
@@ -21,9 +22,11 @@ final class WalletUpdateMediatorTests: XCTestCase {
             let mapper = ManagedMetaAccountMapper()
             let coreDataRepository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
             repository = AnyDataProviderRepository(coreDataRepository)
+            walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(using: operationQueue)
             walletUpdateMediator = WalletUpdateMediator(
                 selectedWalletSettings: selectedAccountSettings,
                 repository: repository,
+                removedWalletsCleaner: walletStorageCleaner,
                 operationQueue: operationQueue
             )
         }
