@@ -1086,6 +1086,9 @@
 		2D1D66022CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66012CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift */; };
 		2D1D66042CD89573009C6C2F /* AssetListStyleSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */; };
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
+		2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */; };
+		2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */; };
+		2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -6509,6 +6512,9 @@
 		2D1D66012CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingfisherIconRetrieveOperationFactory.swift; sourceTree = "<group>"; };
 		2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcherView.swift; sourceTree = "<group>"; };
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
+		2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerViewModel.swift; sourceTree = "<group>"; };
+		2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerView.swift; sourceTree = "<group>"; };
+		2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconViewModelFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -13404,6 +13410,7 @@
 			children = (
 				2D4431E82D0369EB00017951 /* DAppListViewModelFactoryProtocol.swift */,
 				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
+				2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */,
 			);
 			path = DAppListViewModelFactory;
 			sourceTree = "<group>";
@@ -16221,6 +16228,7 @@
 				842BA36A27B64F1000D31EEF /* DAppViewModel.swift */,
 				2D3EA7DF2CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift */,
 				2D4431E12D01130E00017951 /* DAppListSection.swift */,
+				2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */,
 				2D4431EA2D036A0400017951 /* DAppListViewModelFactory */,
 			);
 			path = ViewModel;
@@ -21588,6 +21596,7 @@
 			children = (
 				84EE780327C4CF9E0027357F /* DAppListItemsLoadingView.swift */,
 				84DA03DA275A31B500E8B326 /* DAppListHeaderView.swift */,
+				2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */,
 				2D4431DC2D01094B00017951 /* DAppItemView */,
 				84720731277C370600F593DD /* DAppCategoriesView.swift */,
 				8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */,
@@ -26134,6 +26143,7 @@
 				0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */,
 				84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */,
 				84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */,
+				2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */,
 				84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */,
 				0C38B50E2B7DC42500882A8B /* KodaDotNftOperationFactory.swift in Sources */,
 				84E8BA1F29FFB38600FD9F40 /* EthereumOperationFactory.swift in Sources */,
@@ -28037,6 +28047,7 @@
 				844304622A28C9FA00DE36DE /* MultistakingSyncState.swift in Sources */,
 				0C626D1F2A92AA0F00CDAF4E /* NominationPoolsDataProviding.swift in Sources */,
 				8446F5EC2817107D00B7A86C /* TitleAmountView.swift in Sources */,
+				2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */,
 				84CEAAF726D7B8010021B881 /* SettingsMigrator.swift in Sources */,
 				84ABB32B2A16146600B5E95A /* HistoryItemTableViewCell.swift in Sources */,
 				F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */,
@@ -30093,6 +30104,7 @@
 				AD877F7F77F9CB862DC7D5B3 /* DelegationReferendumVotersWireframe.swift in Sources */,
 				0DD3DB85B0E7FD5692F58787 /* DelegationReferendumVotersPresenter.swift in Sources */,
 				8A2486E62C3915CB6D1FDED8 /* DelegationReferendumVotersInteractor.swift in Sources */,
+				2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */,
 				77740BBE2AD4A7F500E8C06F /* SwapDetailsView.swift in Sources */,
 				0F073C8161B9852DEB1D40CD /* DelegationReferendumVotersViewController.swift in Sources */,
 				D274117F06B12F955073D35B /* DelegationReferendumVotersViewLayout.swift in Sources */,

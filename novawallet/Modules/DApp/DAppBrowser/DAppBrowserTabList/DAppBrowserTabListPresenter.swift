@@ -68,7 +68,16 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
     }
 
     func closeAllTabs() {
-        interactor.closeAllTabs()
+        if tabs.count > 1 {
+            wireframe.presentCloseTabsAlert(
+                from: view,
+                with: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.interactor.closeAllTabs()
+            }
+        } else {
+            interactor.closeAllTabs()
+        }
     }
 
     func closeTab(with id: UUID) {
@@ -84,8 +93,12 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListPresenterProtocol {
 
 extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtocol {
     func didReceiveTabs(_ models: [DAppBrowserTab]) {
-        tabs = models
+        if !tabs.isEmpty, models.isEmpty {
+            wireframe.close(from: view)
+            return
+        }
 
+        tabs = models
         provideTabs()
     }
 

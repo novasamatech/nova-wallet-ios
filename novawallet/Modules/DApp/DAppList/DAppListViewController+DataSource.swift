@@ -30,6 +30,12 @@ extension DAppListViewController {
                     categoriess: models,
                     indexPath: indexPath
                 )
+            case let .banner(model):
+                setupBannerView(
+                    using: collectionView,
+                    banner: model,
+                    indexPath: indexPath
+                )
             case let .favorites(model, _):
                 setupDAppView(
                     using: collectionView,
@@ -115,6 +121,21 @@ private extension DAppListViewController {
         cell.view.delegate = self
         cell.view.chagesStateOnSelect = false
         cell.view.bind(categories: categoriess)
+
+        return cell
+    }
+
+    func setupBannerView(
+        using collectionView: UICollectionView,
+        banner: DAppListBannerViewModel,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell: DAppListBannerView = collectionView.dequeueReusableCellWithType(
+            DAppListBannerView.self,
+            for: indexPath
+        )!
+
+        cell.bind(viewModel: banner)
 
         return cell
     }

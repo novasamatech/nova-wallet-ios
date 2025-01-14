@@ -45,10 +45,9 @@ struct DAppListViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let categoryViewModelFactory = DAppCategoryViewModelFactory()
-
         let viewModelFactory = DAppListViewModelFactory(
-            dappCategoriesViewModelFactory: categoryViewModelFactory
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
         let presenter = DAppListPresenter(

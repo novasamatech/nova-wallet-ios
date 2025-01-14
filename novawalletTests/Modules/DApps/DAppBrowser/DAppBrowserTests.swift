@@ -66,7 +66,10 @@ class DAppBrowserTests: XCTestCase {
         
         let tabManager = DAppBrowserTabManager.shared
         
-        let tab = DAppBrowserTab(from: dAppURL)!
+        let tab = DAppBrowserTab(
+            from: dAppURL,
+            metaId: walletSettings.value.metaId
+        )!
 
         let interactor = DAppBrowserInteractor(
             transports: [transport],

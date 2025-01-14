@@ -48,7 +48,17 @@ final class DAppAddFavoriteInteractor {
         if dApps.count == 1, let dApp = dApps.first {
             provideProposedModelWithMatchedDApp(dApp)
         } else {
-            provideProposedModelWithMatchedDApp(nil)
+            let path = browserPage.url
+                .pathComponents
+                .first { $0 != "/" }
+
+            let dApp = dApps.first {
+                $0.url
+                    .pathComponents
+                    .first { $0 != "/" } == path
+            }
+
+            provideProposedModelWithMatchedDApp(dApp)
         }
     }
 

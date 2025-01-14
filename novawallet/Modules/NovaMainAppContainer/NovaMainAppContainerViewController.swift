@@ -55,19 +55,21 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserCloseLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
         let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
-                self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview().inset(-topContainerBottomOffset)
-                    make.height.equalTo(minimizedWidgetHeight)
+                guard let self else { return nil }
+
+                browserWidget?.view.snp.remakeConstraints { make in
+                    make.bottom.equalToSuperview().inset(-minimizedWidgetHeight)
+                    make.top.equalTo(self.rootView.snp.bottom)
+                    make.leading.trailing.equalToSuperview()
                 }
 
-                self?.topContainerBottomConstraint?.constant = 0
+                topContainerBottomConstraint?.constant = 0
 
-                return self?.rootView
+                return rootView
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
@@ -82,14 +84,16 @@ private extension NovaMainAppContainerViewController {
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
-                self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.bottom.equalToSuperview()
-                    make.height.equalTo(minimizedWidgetHeight)
+                guard let self else { return nil }
+
+                browserWidget?.view.snp.remakeConstraints { make in
+                    make.top.equalTo(self.rootView.snp.bottom).inset(minimizedWidgetHeight)
+                    make.bottom.leading.trailing.equalToSuperview()
                 }
 
-                self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
+                topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
-                return self?.rootView
+                return rootView
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = [
@@ -101,14 +105,12 @@ private extension NovaMainAppContainerViewController {
     }
 
     func browserMaximizeLayoutDependencies() -> DAppBrowserLayoutTransitionDependencies {
-        let fullHeight = view.frame.size.height
         let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
 
         return DAppBrowserLayoutTransitionDependencies(
             layoutClosure: { [weak self] in
-                self?.browserWidget?.view.snp.updateConstraints { make in
-                    make.height.equalTo(fullHeight)
-                    make.bottom.equalToSuperview()
+                self?.browserWidget?.view.snp.remakeConstraints { make in
+                    make.edges.equalToSuperview()
                 }
 
                 self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
@@ -125,6 +127,30 @@ private extension NovaMainAppContainerViewController {
             let presentationController = presentedViewController?.presentationController as? ModalCardPresentationController
             presentationController?.updateLayout()
             presentedViewController = presentedViewController?.presentedViewController
+        }
+    }
+
+    func makeTransition(
+        for state: DAppBrowserWidgetState,
+        using transitionBuilder: DAppBrowserWidgetTransitionBuilder?
+    ) {
+        let builder = if let transitionBuilder {
+            transitionBuilder
+        } else {
+            DAppBrowserWidgetTransitionBuilder()
+        }
+
+        let widgetLayout = DAppBrowserWidgetLayout(from: state)
+        let transitionDependencies = createTransitionLayoutDependencies(for: widgetLayout)
+
+        builder.setWidgetLayout(transitionDependencies)
+
+        do {
+            let transition = try builder.build(for: widgetLayout)
+
+            transition.start()
+        } catch {
+            logger.error("Failed to build transition: \(error)")
         }
     }
 }
@@ -161,13 +187,12 @@ extension NovaMainAppContainerViewController {
 
         rootView.addSubview(bottomView)
 
-        let topContainerBottomOffset = Constants.topContainerBottomOffset(for: view)
         let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().inset(-topContainerBottomOffset)
-            make.height.equalTo(minimizedWidgetHeight)
+            make.top.equalTo(rootView.snp.bottom)
         }
     }
 }
@@ -183,30 +208,6 @@ extension NovaMainAppContainerViewController: DAppBrowserWidgetParentControllerP
             for: state,
             using: transitionBuilder
         )
-    }
-
-    func makeTransition(
-        for state: DAppBrowserWidgetState,
-        using transitionBuilder: DAppBrowserWidgetTransitionBuilder?
-    ) {
-        let builder = if let transitionBuilder {
-            transitionBuilder
-        } else {
-            DAppBrowserWidgetTransitionBuilder()
-        }
-
-        let widgetLayout = DAppBrowserWidgetLayout(from: state)
-        let transitionDependencies = createTransitionLayoutDependencies(for: widgetLayout)
-
-        builder.setWidgetLayout(transitionDependencies)
-
-        do {
-            let transition = try builder.build(for: widgetLayout)
-
-            transition.start()
-        } catch {
-            logger.error("Failed to build transition: \(error)")
-        }
     }
 }
 

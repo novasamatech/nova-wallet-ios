@@ -156,11 +156,17 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
     func close(stateRender: DAppBrowserTabRenderProtocol) {
         interactor.process(stateRender: stateRender)
-
+        view?.didDecideClose()
         wireframe.close(view: view)
     }
 
     func showTabs(stateRender: DAppBrowserTabRenderProtocol) {
+        view?.didDecideClose()
+        interactor.saveLastTabState(render: stateRender)
+    }
+
+    func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol) {
+        view?.didDecideClose()
         interactor.saveLastTabState(render: stateRender)
     }
 
@@ -270,6 +276,7 @@ extension DAppBrowserPresenter: DAppAuthDelegate {
 
 extension DAppBrowserPresenter: DAppPhishingViewDelegate {
     func dappPhishingViewDidHide() {
+        view?.didDecideClose()
         wireframe.close(view: view)
     }
 }

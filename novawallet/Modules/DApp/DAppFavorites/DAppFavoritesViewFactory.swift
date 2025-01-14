@@ -28,9 +28,9 @@ struct DAppFavoritesViewFactory {
 
         let wireframe = DAppFavoritesWireframe()
 
-        let categoriesViewModelFactory = DAppCategoryViewModelFactory()
         let viewModelFactory = DAppListViewModelFactory(
-            dappCategoriesViewModelFactory: categoriesViewModelFactory
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
         let wallet: MetaAccountModel = SelectedWalletSettings.shared.value

@@ -70,10 +70,9 @@ class DAppListTests: XCTestCase {
             logger: Logger.shared
         )
         
-        let dAppCategoryViewModelFactory = DAppCategoryViewModelFactory()
-        
         let viewModelFactory = DAppListViewModelFactory(
-            dappCategoriesViewModelFactory: dAppCategoryViewModelFactory
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
         let presenter = DAppListPresenter(

@@ -6,9 +6,14 @@ typealias IndexedDApp = (index: Int, dapp: DApp)
 final class DAppListViewModelFactory: DAppSearchingByQuery {
     private let dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol
     private let walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
+    private let dappIconViewModelFactory: DAppIconViewModelFactoryProtocol
 
-    init(dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol) {
+    init(
+        dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol,
+        dappIconViewModelFactory: DAppIconViewModelFactoryProtocol
+    ) {
         self.dappCategoriesViewModelFactory = dappCategoriesViewModelFactory
+        self.dappIconViewModelFactory = dappIconViewModelFactory
     }
 }
 
@@ -21,13 +26,7 @@ private extension DAppListViewModelFactory {
         categories: [String: DAppCategory],
         favorite: Bool
     ) -> DAppViewModel {
-        let imageViewModel: ImageViewModelProtocol
-
-        if let iconUrl = model.icon {
-            imageViewModel = RemoteImageViewModel(url: iconUrl)
-        } else {
-            imageViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
-        }
+        let imageViewModel = dappIconViewModelFactory.createIconViewModel(for: model)
 
         let details = model.categories.map {
             categories[$0]?.name ?? $0
@@ -64,14 +63,7 @@ private extension DAppListViewModelFactory {
         knownDApps: [String: DApp],
         categoriesDict: [String: DAppCategory]
     ) -> DAppViewModel {
-        let imageViewModel: ImageViewModelProtocol
-
-        if let icon = model.icon, let url = URL(string: icon) {
-            imageViewModel = RemoteImageViewModel(url: url)
-        } else {
-            imageViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
-        }
-
+        let imageViewModel = dappIconViewModelFactory.createIconViewModel(for: model)
         let name = createFavoriteDAppName(from: model)
 
         let details = if let knownDApp = knownDApps[model.identifier] {
@@ -96,13 +88,12 @@ private extension DAppListViewModelFactory {
         merging dapps: [IndexedDApp],
         filteredFavorites: [String: DAppFavorite],
         allFavorites: [String: DAppFavorite],
-        categoriesDict: [String: DAppCategory]
+        categoriesDict: [String: DAppCategory],
+        selectedCategory: String? = nil
     ) -> [DAppViewModel] {
         let knownDApps: [String: DApp] = dapps.reduce(into: [:]) { acc, indexedDApp in
             acc[indexedDApp.dapp.identifier] = indexedDApp.dapp
         }
-
-        let knownIdentifiers = Set(knownDApps.keys)
 
         let knownViewModels: [DAppViewModel] = dapps.map { indexedDapp in
             let favorite = allFavorites[indexedDapp.dapp.identifier] != nil
@@ -114,14 +105,20 @@ private extension DAppListViewModelFactory {
             )
         }
 
-        let filteredFavorites = filteredFavorites.values.filter {
-            !knownIdentifiers.contains($0.identifier)
+        let favoritePages: [DAppFavorite]
+
+        if selectedCategory == nil {
+            favoritePages = filteredFavorites.values.filter {
+                knownDApps[$0.identifier] == nil
+            }
+        } else {
+            favoritePages = []
         }
 
         let sortedKnownViewModels = sortedDAppViewModels(from: knownViewModels)
 
         let sortedFavoriteViewModels = createFavorites(
-            from: filteredFavorites,
+            from: favoritePages,
             knownDApps: knownDApps,
             categories: categoriesDict
         )
@@ -217,6 +214,30 @@ private extension DAppListViewModelFactory {
         )
     }
 
+    func bannersSection(
+        from dAppList: DAppList,
+        locale: Locale
+    ) -> DAppListSection? {
+        guard !dAppList.dApps.isEmpty else { return nil }
+
+        let title = R.string.localizable.dappDecorationTitle(preferredLanguages: locale.rLanguages)
+        let subtitle = R.string.localizable.dappsDecorationSubtitle(preferredLanguages: locale.rLanguages)
+        let image = R.image.imageDapps()
+
+        let imageViewModel = StaticImageViewModel(image: image!)
+
+        let bannerViewModel = DAppListBannerViewModel(
+            title: title,
+            subtitle: subtitle,
+            imageViewModel: imageViewModel
+        )
+
+        return DAppListSection(
+            title: nil,
+            cells: [.banner(bannerViewModel)]
+        )
+    }
+
     func headerSection(
         for wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool
@@ -273,26 +294,15 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite]
     ) -> DAppListViewModel {
         let dAppsByQuery: [IndexedDApp] = search(by: query, in: dAppList)
-
         let actualDApps: [IndexedDApp] = dAppsByQuery.filter { indexedDApp in
             guard let category else { return true }
 
             return indexedDApp.dapp.categories.contains(category)
         }
 
-        let filteredFavorites = favorites.filter { keyValue in
-            guard let query = query, !query.isEmpty else {
-                return true
-            }
-
-            let name = createFavoriteDAppName(from: keyValue.value)
-            return name.localizedCaseInsensitiveContains(query)
-        }
-
-        let availableCategories = Set(dAppsByQuery.flatMap(\.dapp.categories))
+        let favoritesByQuery = search(by: query, in: favorites)
 
         let categoryViewModels = dAppList.categories
-            .filter { availableCategories.contains($0.identifier) }
             .map { dappCategoriesViewModelFactory.createViewModel(for: $0) }
 
         let categoriesById = dAppList.categories.reduce(into: [String: DAppCategory]()) { result, category in
@@ -301,9 +311,10 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 
         let dappViewModels = createViewModels(
             merging: actualDApps,
-            filteredFavorites: filteredFavorites,
+            filteredFavorites: favoritesByQuery,
             allFavorites: favorites,
-            categoriesDict: categoriesById
+            categoriesDict: categoriesById,
+            selectedCategory: category
         )
 
         let selectedCategoryIndex = categoryViewModels.firstIndex(where: { $0.identifier == category })
@@ -353,6 +364,13 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 
         if let categorySelectSection = categorySelectSection(from: dAppList) {
             viewModels.append(.categorySelect(categorySelectSection))
+        }
+
+        if let bannersSection = bannersSection(
+            from: dAppList,
+            locale: locale
+        ) {
+            viewModels.append(.banners(bannersSection))
         }
 
         if let favoritesSection = favoritesSection(
