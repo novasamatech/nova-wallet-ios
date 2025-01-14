@@ -165,6 +165,11 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         interactor.saveLastTabState(render: stateRender)
     }
 
+    func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol) {
+        view?.didDecideClose()
+        interactor.saveLastTabState(render: stateRender)
+    }
+
     func didLoadPage() {
         interactor.saveTabIfNeeded()
     }

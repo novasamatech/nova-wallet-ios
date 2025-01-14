@@ -4,7 +4,7 @@ struct DAppListBannerViewModel {
     let title: String
     let subtitle: String
 
-    let imageViewModel: StaticImageViewModel
+    let imageViewModel: ImageViewModelProtocol
 }
 
 // MARK: Hashable

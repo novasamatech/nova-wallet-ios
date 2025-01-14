@@ -11,18 +11,24 @@ enum DAppBrowserTabTransition {
             guard let tabId else { return }
 
             let options = UIViewController.Transition.ZoomOptions()
-            options.interactiveDismissShouldBegin = { _ in
+            options.interactiveDismissShouldBegin = { context in
                 guard let destinationController = destController as? DAppBrowserViewController else {
                     return true
                 }
 
-                let canBeDismissedInteractively: Bool = destinationController.canBeDismissedInteractively()
+                let shouldDismiss = atViewEdge(
+                    context.location,
+                    view: destinationController.view
+                )
 
-                if canBeDismissedInteractively {
+                let canBeDismissedInteractively: Bool = destinationController.canBeDismissedInteractively()
+                let willDismiss = shouldDismiss && canBeDismissedInteractively
+
+                if willDismiss {
                     destinationController.willBeDismissedInteractively()
                 }
 
-                return canBeDismissedInteractively
+                return willDismiss
             }
 
             options.alignmentRectProvider = { context in
@@ -58,5 +64,16 @@ enum DAppBrowserTabTransition {
         } else {
             false
         }
+    }
+
+    static func atViewEdge(
+        _ point: CGPoint,
+        view: UIView,
+        edgeWidth: CGFloat = 20
+    ) -> Bool {
+        let atLeftEdge = point.x <= edgeWidth
+        let atRightEdge = point.x >= view.bounds.width - edgeWidth
+
+        return atLeftEdge || atRightEdge
     }
 }

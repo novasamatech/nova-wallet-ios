@@ -109,9 +109,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     func willBeDismissedInteractively() {
-        if #available(iOS 16.0, *) {
-            deviceOrientationManager.disableLandscape()
-            setNeedsUpdateOfSupportedInterfaceOrientations()
+        snapshotWebView { [weak self] image in
+            let render = DAppBrowserTabRender(for: image)
+            self?.presenter.willDismissInteractive(stateRender: render)
         }
     }
 }
@@ -186,8 +186,6 @@ private extension DAppBrowserViewController {
     }
 
     func makeStateRender() {
-        guard let webView = rootView.webView else { return }
-
         snapshotWebView { [weak self] image in
             let render = DAppBrowserTabRender(for: image)
             self?.presenter.process(stateRender: render)

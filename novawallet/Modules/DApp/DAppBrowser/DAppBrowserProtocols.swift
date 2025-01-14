@@ -41,6 +41,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func showSettings(using isDesktop: Bool)
     func close(stateRender: DAppBrowserTabRenderProtocol)
     func showTabs(stateRender: DAppBrowserTabRenderProtocol)
+    func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
