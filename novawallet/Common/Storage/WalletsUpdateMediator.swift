@@ -238,7 +238,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             dependingOn: newSelectedWalletOperation
         )
 
-        selectedWalletUpdateOperation.addDependency(newSelectedWalletOperation)
+        selectedWalletUpdateOperation.addDependency(saveOperation)
 
         let resultOperation = ClosureOperation<WalletUpdateMediatingResult> {
             try saveOperation.extractNoCancellableResultData()
