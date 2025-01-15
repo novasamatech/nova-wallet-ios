@@ -2197,6 +2197,105 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Operation_iOS
+
+
+ class MockWalletStorageCleaning: WalletStorageCleaning, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = WalletStorageCleaning
+    
+     typealias Stubbing = __StubbingProxy_WalletStorageCleaning
+     typealias Verification = __VerificationProxy_WalletStorageCleaning
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: WalletStorageCleaning?
+
+     func enableDefaultImplementation(_ stub: WalletStorageCleaning) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func cleanStorage(for removedItems: @escaping () throws -> [MetaAccountModel]) -> CompoundOperationWrapper<Void> {
+        
+    return cuckoo_manager.call("cleanStorage(for: @escaping () throws -> [MetaAccountModel]) -> CompoundOperationWrapper<Void>",
+            parameters: (removedItems),
+            escapingParameters: (removedItems),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.cleanStorage(for: removedItems))
+        
+    }
+    
+
+	 struct __StubbingProxy_WalletStorageCleaning: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func cleanStorage<M1: Cuckoo.Matchable>(for removedItems: M1) -> Cuckoo.ProtocolStubFunction<(() throws -> [MetaAccountModel]), CompoundOperationWrapper<Void>> where M1.MatchedType == () throws -> [MetaAccountModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<(() throws -> [MetaAccountModel])>] = [wrap(matchable: removedItems) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletStorageCleaning.self, method: "cleanStorage(for: @escaping () throws -> [MetaAccountModel]) -> CompoundOperationWrapper<Void>", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_WalletStorageCleaning: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func cleanStorage<M1: Cuckoo.Matchable>(for removedItems: M1) -> Cuckoo.__DoNotUse<(() throws -> [MetaAccountModel]), CompoundOperationWrapper<Void>> where M1.MatchedType == () throws -> [MetaAccountModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<(() throws -> [MetaAccountModel])>] = [wrap(matchable: removedItems) { $0 }]
+	        return cuckoo_manager.verify("cleanStorage(for: @escaping () throws -> [MetaAccountModel]) -> CompoundOperationWrapper<Void>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class WalletStorageCleaningStub: WalletStorageCleaning {
+    
+
+    
+
+    
+    
+    
+     func cleanStorage(for removedItems: @escaping () throws -> [MetaAccountModel]) -> CompoundOperationWrapper<Void>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Void>).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import Foundation
 
 
  class MockTableSearchViewProtocol: TableSearchViewProtocol, Cuckoo.ProtocolMock {
@@ -4884,6 +4983,21 @@ import Operation_iOS
         
     }
     
+    
+    
+     func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)  {
+        
+    return cuckoo_manager.call("willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)",
+            parameters: (stateRender),
+            escapingParameters: (stateRender),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.willDismissInteractive(stateRender: stateRender))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -4941,6 +5055,11 @@ import Operation_iOS
 	    func showTabs<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabRenderProtocol)> where M1.MatchedType == DAppBrowserTabRenderProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabRenderProtocol)>] = [wrap(matchable: stateRender) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "showTabs(stateRender: DAppBrowserTabRenderProtocol)", parameterMatchers: matchers))
+	    }
+	    
+	    func willDismissInteractive<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabRenderProtocol)> where M1.MatchedType == DAppBrowserTabRenderProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabRenderProtocol)>] = [wrap(matchable: stateRender) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -5019,6 +5138,12 @@ import Operation_iOS
 	        return cuckoo_manager.verify("showTabs(stateRender: DAppBrowserTabRenderProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func willDismissInteractive<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.__DoNotUse<(DAppBrowserTabRenderProtocol), Void> where M1.MatchedType == DAppBrowserTabRenderProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserTabRenderProtocol)>] = [wrap(matchable: stateRender) { $0 }]
+	        return cuckoo_manager.verify("willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -5085,6 +5210,12 @@ import Operation_iOS
     
     
      func showTabs(stateRender: DAppBrowserTabRenderProtocol)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -11,8 +11,6 @@ extension UIViewController {
 
         guard let contextRootViewController else { return }
 
-        viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
         let appearanceAnimator = BlockViewAnimator(
             duration: 0.25,
             delay: 0.0,

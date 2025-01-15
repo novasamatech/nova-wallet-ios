@@ -151,7 +151,7 @@ private extension DAppBrowserTabManager {
         return wrapper.insertingHead(operations: [renderDataOperation])
     }
 
-    func removeTabWrapper(for tabId: UUID) -> CompoundOperationWrapper<Void> {
+    func removeWrapper(for tabId: UUID) -> CompoundOperationWrapper<Void> {
         let deleteOperation = repository.saveOperation(
             { [] },
             { [tabId.uuidString] }
@@ -163,22 +163,18 @@ private extension DAppBrowserTabManager {
         return renderRemoveWrapper.insertingHead(operations: [deleteOperation])
     }
 
-    func removeAllWrapper() -> CompoundOperationWrapper<Void> {
-        let tabIds = observableTabs.state
-            .fetchAllValues()
-            .map(\.uuid)
-
+    func removeWrapper(for tabIds: [UUID]) -> CompoundOperationWrapper<Set<UUID>> {
         let rendersClearWrapper = fileRepository.removeRenders(for: tabIds)
         let deleteOperation = repository.saveOperation(
             { [] },
             { tabIds.map(\.uuidString) }
         )
 
-        let mappingOperation = ClosureOperation {
+        let mappingOperation = ClosureOperation<Set<UUID>> {
             _ = try rendersClearWrapper.targetOperation.extractNoCancellableResultData()
             _ = try deleteOperation.extractNoCancellableResultData()
 
-            return
+            return Set(tabIds)
         }
 
         mappingOperation.addDependency(rendersClearWrapper.targetOperation)
@@ -187,6 +183,59 @@ private extension DAppBrowserTabManager {
         return CompoundOperationWrapper(
             targetOperation: mappingOperation,
             dependencies: rendersClearWrapper.allOperations + [deleteOperation]
+        )
+    }
+
+    func removeAllWrapper(_ metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>> {
+        let tabsWrapper: CompoundOperationWrapper<[DAppBrowserTab]> = if let metaIds {
+            tabsFetchWrapper(for: metaIds)
+        } else {
+            .createWithResult(
+                observableTabs
+                    .state
+                    .fetchAllValues()
+            )
+        }
+
+        let wrapper: CompoundOperationWrapper<Set<UUID>> = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else {
+                return .createWithError(BaseOperationError.parentOperationCancelled)
+            }
+
+            let tabIds = try tabsWrapper.targetOperation.extractNoCancellableResultData().map(\.uuid)
+
+            return removeWrapper(for: tabIds)
+        }
+
+        wrapper.addDependency(wrapper: tabsWrapper)
+
+        return wrapper.insertingHead(operations: tabsWrapper.allOperations)
+    }
+
+    func tabsFetchWrapper(for metaIds: Set<MetaAccountModel.Id>) -> CompoundOperationWrapper<[DAppBrowserTab]> {
+        let fetchTabsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        let resultOperaton = ClosureOperation { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let persistedTabs = try fetchTabsOperation.extractNoCancellableResultData()
+
+            let tabs = persistedTabs
+                .filter { metaIds.contains($0.metaId) }
+                .map { self.map(persistenceModel: $0) }
+
+            return sorted(tabs)
+        }
+
+        resultOperaton.addDependency(fetchTabsOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperaton,
+            dependencies: [fetchTabsOperation]
         )
     }
 
@@ -291,32 +340,11 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             return .createWithResult([])
         }
 
-        let fetchTabsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let resultOperaton = ClosureOperation { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
-            let persistedTabs = try fetchTabsOperation.extractNoCancellableResultData()
-
-            let tabs = persistedTabs
-                .filter { $0.metaId == metaAccount.metaId }
-                .map { self.map(persistenceModel: $0) }
-
-            return sorted(tabs)
-        }
-
-        resultOperaton.addDependency(fetchTabsOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: resultOperaton,
-            dependencies: [fetchTabsOperation]
-        )
+        return tabsFetchWrapper(for: [metaAccount.metaId])
     }
 
     func removeTab(with id: UUID) {
-        let wrapper = removeTabWrapper(for: id)
+        let wrapper = removeWrapper(for: id)
 
         execute(
             wrapper: wrapper,
@@ -362,8 +390,8 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         return resultWrapper.insertingTail(operation: voidResultOperation)
     }
 
-    func removeAll() {
-        let wrapper = removeAllWrapper()
+    func removeAll(for metaIds: Set<MetaAccountModel.Id>?) {
+        let wrapper = removeAllWrapper(for: metaIds)
 
         execute(
             wrapper: wrapper,
@@ -377,6 +405,10 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
                 self?.logger.warning("\(String(describing: self)) Failed on tabs deletion operation")
             }
         }
+    }
+
+    func removeAllWrapper(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<Set<UUID>> {
+        removeAllWrapper(metaIds)
     }
 
     func addObserver(
