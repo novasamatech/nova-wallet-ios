@@ -327,8 +327,8 @@ private extension DAppBrowserViewController {
 
         navigationController?.setNavigationBarHidden(false, animated: true)
 
-        slidingAnimator.animate(block: {
-            self.rootView.setIsToolbarHidden(false)
+        slidingAnimator.animate(block: { [weak self] in
+            self?.rootView.setIsToolbarHidden(false)
         }, completionBlock: nil)
     }
 
@@ -341,8 +341,8 @@ private extension DAppBrowserViewController {
 
         navigationController?.setNavigationBarHidden(true, animated: true)
 
-        slidingAnimator.animate(block: {
-            self.rootView.setIsToolbarHidden(true)
+        slidingAnimator.animate(block: { [weak self] in
+            self?.rootView.setIsToolbarHidden(true)
         }, completionBlock: nil)
     }
 

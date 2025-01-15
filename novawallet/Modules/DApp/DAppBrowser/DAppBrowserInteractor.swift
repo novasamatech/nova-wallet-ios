@@ -407,7 +407,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-            self?.verifyPhishing(for: host) { [weak self] isNotPhishing in
+            self?.verifyPhishing(for: host) { isNotPhishing in
                 if isNotPhishing {
                     let queueMessage = QueueMessage(
                         host: host,
