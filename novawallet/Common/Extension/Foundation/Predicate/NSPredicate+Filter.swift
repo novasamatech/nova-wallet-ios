@@ -229,7 +229,11 @@ extension NSPredicate {
             chainAssetId.assetId
         )
 
-        let storagePredicate = NSPredicate(format: "%K == %@", storage)
+        let storagePredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.storage),
+            storage
+        )
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
             accountPredicate, chainIdPredicate, assetIdPredicate, storagePredicate
