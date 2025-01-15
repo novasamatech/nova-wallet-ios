@@ -94,6 +94,13 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
             chainId: chainId
         )
 
+        let freezesStoragePath = BalancesPallet.freezesPath
+        let freezesLocalKey = try storageKeyFactory.createFromStoragePath(
+            freezesStoragePath,
+            encodableElement: accountId,
+            chainId: chainId
+        )
+
         let accountRequest = MapSubscriptionRequest(storagePath: accountStoragePath, localKey: accountLocalKey) {
             BytesCodable(wrappedValue: accountId)
         }
@@ -108,13 +115,19 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
             localKey: holdsLocalKey
         ) { BytesCodable(wrappedValue: accountId) }
 
+        let freezesRequest = MapSubscriptionRequest(
+            storagePath: freezesStoragePath,
+            localKey: freezesLocalKey
+        ) { BytesCodable(wrappedValue: accountId) }
+
         let handlerFactory = subscriptionHandlingFactory.createNative(
             for: accountId,
             chainAssetId: chainAsset.chainAssetId,
             params: .init(
                 accountLocalStorageKey: accountLocalKey,
                 locksLocalStorageKey: locksLocalKey,
-                holdsLocalStorageKey: holdsLocalKey
+                holdsLocalStorageKey: holdsLocalKey,
+                freezesLocalStorageKey: freezesLocalKey
             ),
             transactionSubscription: transactionSubscription
         )
@@ -122,7 +135,8 @@ final class BalanceRemoteSubscriptionService: RemoteSubscriptionService {
         return [
             SubscriptionSettings(request: accountRequest, handlingFactory: handlerFactory),
             SubscriptionSettings(request: locksRequest, handlingFactory: handlerFactory),
-            SubscriptionSettings(request: holdsRequest, handlingFactory: handlerFactory)
+            SubscriptionSettings(request: holdsRequest, handlingFactory: handlerFactory),
+            SubscriptionSettings(request: freezesRequest, handlingFactory: handlerFactory)
         ]
     }
 

@@ -210,6 +210,32 @@ extension NSPredicate {
         ])
     }
 
+    static func assetLock(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId,
+        storage: String
+    ) -> NSPredicate {
+        let accountPredicate = assetLock(for: accountId)
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainId),
+            chainAssetId.chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetLock.assetId),
+            chainAssetId.assetId
+        )
+
+        let storagePredicate = NSPredicate(format: "%K == %@", storage)
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate, storagePredicate
+        ])
+    }
+
     static func assetHold(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
         let chainIdPredicate = NSPredicate(
             format: "%K == %@",

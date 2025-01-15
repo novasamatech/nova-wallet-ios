@@ -61,7 +61,9 @@ final class EquillibriumLocksUpdater: EquillibriumLocksUpdaterProtocol {
                     chainAssetId: self.chainAssetId,
                     accountId: self.accountId,
                     type: remoteItem.type,
-                    amount: remoteItem.amount
+                    amount: remoteItem.amount,
+                    storage: AssetLockStorage.locks.rawValue,
+                    module: nil
                 )
             }
         }

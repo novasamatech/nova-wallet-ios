@@ -75,6 +75,8 @@
 		0C0E0A9D2B3EFD2500865F10 /* ProxyCallFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A9C2B3EFD2500865F10 /* ProxyCallFilter.swift */; };
 		0C0E0AA02B3F013800865F10 /* BalancesPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0A9F2B3F013800865F10 /* BalancesPallet.swift */; };
 		0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */; };
+		0C0F6D632D38077B00943A7C /* FreezesSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6D622D38077B00943A7C /* FreezesSubscription.swift */; };
+		0C0F6D652D3807D200943A7C /* BalancesPallet+Freezes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6D642D3807D200943A7C /* BalancesPallet+Freezes.swift */; };
 		0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */; };
 		0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */; };
 		0C11D8562CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */; };
@@ -5370,6 +5372,9 @@
 		0C0E0A9C2B3EFD2500865F10 /* ProxyCallFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCallFilter.swift; sourceTree = "<group>"; };
 		0C0E0A9F2B3F013800865F10 /* BalancesPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesPallet.swift; sourceTree = "<group>"; };
 		0C0E0AA22B3F01FD00865F10 /* UniquesPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniquesPallet.swift; sourceTree = "<group>"; };
+		0C0F6D612D37FE0800943A7C /* SubstrateDataModel35.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel35.xcdatamodel; sourceTree = "<group>"; };
+		0C0F6D622D38077B00943A7C /* FreezesSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreezesSubscription.swift; sourceTree = "<group>"; };
+		0C0F6D642D3807D200943A7C /* BalancesPallet+Freezes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalancesPallet+Freezes.swift"; sourceTree = "<group>"; };
 		0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKExchangeEdge.swift; sourceTree = "<group>"; };
@@ -10915,6 +10920,7 @@
 				0C1998E72C49B5B9000EBFB8 /* BalancesPallet+StoragePath.swift */,
 				0CA7CEEF2CE0CC13004328F2 /* BalancesPallet+EventCodingPath.swift */,
 				8454C2692632B8CE00657DAD /* BalancesPallet+Events.swift */,
+				0C0F6D642D3807D200943A7C /* BalancesPallet+Freezes.swift */,
 			);
 			path = BalancesPallet;
 			sourceTree = "<group>";
@@ -17639,6 +17645,7 @@
 				8455F1A12A1F5A6C003F072D /* BatchStorageSubscriptionResult.swift */,
 				0C6941C52B1F51FE00A7CF6D /* RawDataStorageSubscription.swift */,
 				0C1998E52C49B38C000EBFB8 /* HoldsSubscription.swift */,
+				0C0F6D622D38077B00943A7C /* FreezesSubscription.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -28661,6 +28668,7 @@
 				716F0819BAB14322E34E416C /* CrowdloanYourContributionsPresenter.swift in Sources */,
 				F0675F495766D07473B065F7 /* CrowdloanYourContributionsInteractor.swift in Sources */,
 				0C6108412CD74DD200909928 /* AssetExchangeFeeEstimatingFactory.swift in Sources */,
+				0C0F6D652D3807D200943A7C /* BalancesPallet+Freezes.swift in Sources */,
 				845B080D2918D4F8005785D3 /* Democracy+Call.swift in Sources */,
 				8425D0EE28FE9BF1003B782A /* ReferendumVoteAction.swift in Sources */,
 				84E8BA1A29FFB38600FD9F40 /* EthereumBlockObject.swift in Sources */,
@@ -29244,6 +29252,7 @@
 				4453EA83AD59FFD0EF894D58 /* LedgerNetworkSelectionViewLayout.swift in Sources */,
 				CB48D6AC528CF9AAE8766CC5 /* LedgerNetworkSelectionViewFactory.swift in Sources */,
 				47FA7B2E0D9A87E694DA9217 /* LedgerAccountConfirmationProtocols.swift in Sources */,
+				0C0F6D632D38077B00943A7C /* FreezesSubscription.swift in Sources */,
 				33B0D1D29AB3FC3CA23567B6 /* LedgerWalletAccountConfirmationWireframe.swift in Sources */,
 				FF2E6053091276EBBA4D986C /* LedgerAccountConfirmationPresenter.swift in Sources */,
 				97872BDCD915B56F2F2E7E3B /* LedgerWalletAccountConfirmationInteractor.swift in Sources */,
@@ -31276,6 +31285,7 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				0C0F6D612D37FE0800943A7C /* SubstrateDataModel35.xcdatamodel */,
 				0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */,
 				2D65F6DA2CD0C2DC00CC6F72 /* SubstrateDataModel33.xcdatamodel */,
 				0C8FDB7F2CAD022700775D7F /* SubstrateDataModel22.xcdatamodel */,
@@ -31311,7 +31321,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */;
+			currentVersion = 0C0F6D612D37FE0800943A7C /* SubstrateDataModel35.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
