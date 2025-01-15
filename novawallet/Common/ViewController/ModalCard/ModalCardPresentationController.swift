@@ -165,15 +165,18 @@ private extension ModalCardPresentationController {
         guard let scrollView else { return true }
         guard let presentedView, !containsActiveLongPress(scrollView) else { return false }
 
-        if let tableView = scrollView as? UITableView, tableView.isEditing {
-            let touchPoint = panGesture.location(in: presentedView)
+        let touchPoint = panGesture.location(in: presentedView)
 
+        if let tableView = scrollView as? UITableView, tableView.isEditing {
             return !tableView.frame.contains(touchPoint)
         }
 
         let contentOffsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+        let hitView = presentedView.hitTest(touchPoint, with: nil)
+        let shouldDrag = contentOffsetY <= 0
+            || !(hitView?.isDescendant(of: scrollView) ?? true)
 
-        return contentOffsetY <= 0
+        return shouldDrag
     }
 
     func containsActiveLongPress(_ scrollView: UIScrollView?) -> Bool {
