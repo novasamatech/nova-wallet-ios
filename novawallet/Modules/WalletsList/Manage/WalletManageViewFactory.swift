@@ -53,10 +53,15 @@ final class WalletManageViewFactory {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(using: operationQueue)
+
         let walletUpdateMediator = WalletUpdateMediator(
             selectedWalletSettings: SelectedWalletSettings.shared,
             repository: repository,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            removedWalletsCleaner: walletStorageCleaner,
+            operationQueue: operationQueue
         )
 
         return WalletManageInteractor(

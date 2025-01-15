@@ -1,6 +1,8 @@
 import UIKit
 
-protocol YourWalletsViewProtocol: ControllerBackedProtocol {
+protocol YourWalletsPresentationProtocol: ControllerBackedProtocol {}
+
+protocol YourWalletsViewProtocol: YourWalletsPresentationProtocol {
     func update(viewModel: [YourWalletsViewSectionModel])
     func update(header: String)
     func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat
@@ -13,8 +15,8 @@ protocol YourWalletsPresenterProtocol: AnyObject {
 }
 
 protocol YourWalletsDelegate: AnyObject {
-    func didSelectYourWallet(address: AccountAddress)
-    func didCloseYourWalletSelection()
+    func yourWallets(selectionView: YourWalletsPresentationProtocol, didSelect address: AccountAddress)
+    func yourWalletsDidClose(selectionView: YourWalletsPresentationProtocol)
 }
 
 extension YourWalletsDelegate {

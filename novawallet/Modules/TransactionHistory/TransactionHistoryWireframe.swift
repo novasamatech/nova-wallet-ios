@@ -59,6 +59,6 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
 
         let operationNavigationController = NovaNavigationController(rootViewController: viewController)
 
-        navigationController.present(operationNavigationController, animated: true)
+        navigationController.presentWithCardLayout(operationNavigationController, animated: true)
     }
 }

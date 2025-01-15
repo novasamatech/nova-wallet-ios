@@ -1,5 +1,4 @@
 enum DAppGlobalSettingsViewModel: Hashable {
-    case favorite(TitleIconViewModel)
     case desktopModel(DesktopModel)
 
     struct DesktopModel: Hashable {

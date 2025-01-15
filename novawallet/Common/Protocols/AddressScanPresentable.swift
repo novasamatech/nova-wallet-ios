@@ -28,7 +28,11 @@ extension AddressScanPresentable {
             rootViewController: scanView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func hideAddressScan(from view: ControllerBackedProtocol?) {

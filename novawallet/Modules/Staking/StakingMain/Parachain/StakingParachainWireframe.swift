@@ -27,7 +27,11 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: stakeView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showUnstakeTokens(
@@ -47,7 +51,11 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: unstakeView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showYourCollators(from view: ControllerBackedProtocol?) {
@@ -57,7 +65,11 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: collatorsView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showRedeemTokens(from view: ControllerBackedProtocol?) {
@@ -67,7 +79,11 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: redeemView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showUnstakingCollatorSelection(
@@ -107,7 +123,11 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: rebondView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showYieldBoost(from view: ControllerBackedProtocol?, initData: ParaStkYieldBoostInitState) {
@@ -120,6 +140,10 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: yieldBoostView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 }

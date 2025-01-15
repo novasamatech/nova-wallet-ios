@@ -161,11 +161,19 @@ extension YourWalletsPresenter: YourWalletsPresenterProtocol {
     func didSelect(viewModel: YourWalletsCellViewModel.CommonModel) {
         selectedAddress = viewModel.displayAddress.address
         updateSelectedCell()
-        delegate?.didSelectYourWallet(address: viewModel.displayAddress.address)
+
+        if let view {
+            delegate?.yourWallets(
+                selectionView: view,
+                didSelect: viewModel.displayAddress.address
+            )
+        }
     }
 
     func viewWillDisappear() {
-        delegate?.didCloseYourWalletSelection()
+        if let view {
+            delegate?.yourWalletsDidClose(selectionView: view)
+        }
     }
 }
 
