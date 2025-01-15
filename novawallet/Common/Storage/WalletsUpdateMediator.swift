@@ -213,7 +213,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
 
         newSelectedWalletOperation.addDependency(proxiedsRemovalOperation)
 
-        var walletsStateCleaningWrapper = removedWalletsCleaner.cleanStorage {
+        let walletsStateCleaningWrapper = removedWalletsCleaner.cleanStorage {
             let changesResult = try newSelectedWalletOperation.extractNoCancellableResultData()
 
             return changesResult.changes.removedItems.map(\.info)
@@ -231,17 +231,18 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             return changesResult.changes.removedItems.map(\.identifier)
         })
 
-        saveOperation.addDependency(walletsStateCleaningWrapper.targetOperation)
+        saveOperation.addDependency(newSelectedWalletOperation)
 
         let selectedWalletUpdateOperation = selectedWalletUpdateOperation(
             in: selectedWalletSettings,
             dependingOn: newSelectedWalletOperation
         )
 
-        selectedWalletUpdateOperation.addDependency(saveOperation)
+        selectedWalletUpdateOperation.addDependency(newSelectedWalletOperation)
 
         let resultOperation = ClosureOperation<WalletUpdateMediatingResult> {
             try saveOperation.extractNoCancellableResultData()
+            try walletsStateCleaningWrapper.targetOperation.extractNoCancellableResultData()
             let isWalletSwitched = try selectedWalletUpdateOperation.extractNoCancellableResultData()
             let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().selectedWallet
 
@@ -249,6 +250,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
         }
 
         resultOperation.addDependency(saveOperation)
+        resultOperation.addDependency(walletsStateCleaningWrapper.targetOperation)
         resultOperation.addDependency(selectedWalletUpdateOperation)
         resultOperation.addDependency(newSelectedWalletOperation)
 

@@ -7,6 +7,26 @@ extension WalletStorageCleanerFactory {
         operationQueue: OperationQueue,
         storageFacade: UserDataStorageTestFacade
     ) -> WalletStorageCleaning {
+        let browserStateCleaner = createBrowserStateCleaner(
+            operationQueue: operationQueue,
+            storageFacade: storageFacade
+        )
+        let dAppSettingsCleaner = createDAppSettingsCleaner(storageFacade: storageFacade)
+
+        let cleaners = [
+            browserStateCleaner,
+            dAppSettingsCleaner
+        ]
+
+        let mainCleaner = RemovedWalletStorageCleaner(cleanersCascade: cleaners)
+
+        return mainCleaner
+    }
+    
+    private static func createBrowserStateCleaner(
+        operationQueue: OperationQueue,
+        storageFacade: StorageFacadeProtocol
+    ) -> WalletStorageCleaning {
         let mapper = DAppBrowserTabMapper()
 
         let coreDataRepository = storageFacade.createRepository(
@@ -43,12 +63,27 @@ extension WalletStorageCleanerFactory {
             logger: logger
         )
         
-        let walletStorageCleaner = WalletBrowserStateCleaner(
+        let browserStateCleaner = WalletBrowserStateCleaner(
             browserTabManager: tabManager,
             webViewPoolEraser: WebViewPool.shared,
             operationQueue: operationQueue
         )
         
-        return walletStorageCleaner
+        return browserStateCleaner
+    }
+    
+    private static func createDAppSettingsCleaner(storageFacade: StorageFacadeProtocol) -> WalletStorageCleaning {
+        let mapper = DAppSettingsMapper()
+
+        let repository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+        let authorizedDAppRepository = AnyDataProviderRepository(repository)
+        
+        let dappSettingsCleaner = DAppSettingsCleaner(authorizedDAppRepository: authorizedDAppRepository)
+        
+        return dappSettingsCleaner
     }
 }

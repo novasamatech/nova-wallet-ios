@@ -1167,6 +1167,7 @@
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */; };
+		2D5EBEB22D37DE440016AC4E /* DAppSettingsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB12D37DE440016AC4E /* DAppSettingsCleaner.swift */; };
 		2D5FC1A42C5220900013352B /* AccountVoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */; };
 		2D60C9BD2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */; };
 		2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift */; };
@@ -6597,6 +6598,7 @@
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
+		2D5EBEB12D37DE440016AC4E /* DAppSettingsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettingsCleaner.swift; sourceTree = "<group>"; };
 		2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVoteFactory.swift; sourceTree = "<group>"; };
 		2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationConfiguration.swift; sourceTree = "<group>"; };
 		2D60C9BE2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationStyle.swift; sourceTree = "<group>"; };
@@ -13319,6 +13321,7 @@
 			isa = PBXGroup;
 			children = (
 				2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */,
+				2D5EBEB12D37DE440016AC4E /* DAppSettingsCleaner.swift */,
 			);
 			path = Cleaners;
 			sourceTree = "<group>";
@@ -28365,6 +28368,7 @@
 				8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */,
 				8482F62D280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift in Sources */,
 				5DDD2206DF795CF205610455 /* AccountExportPasswordPresenter.swift in Sources */,
+				2D5EBEB22D37DE440016AC4E /* DAppSettingsCleaner.swift in Sources */,
 				800FCAF66DC8A24020D16A9C /* AccountExportPasswordInteractor.swift in Sources */,
 				841E553A282D23AE00C8438F /* StakingRelaychainWireframe.swift in Sources */,
 				0C3205BB2A8679F0002EB914 /* EvmGasPriceProvider.swift in Sources */,
