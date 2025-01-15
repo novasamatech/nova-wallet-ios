@@ -391,7 +391,7 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func removeAll(for metaIds: Set<MetaAccountModel.Id>?) {
-        let wrapper = removeAllWrapper(for: metaIds)
+        let wrapper = removeAllWrapper(metaIds)
 
         execute(
             wrapper: wrapper,
