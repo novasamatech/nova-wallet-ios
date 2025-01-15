@@ -10,22 +10,22 @@ protocol DAppBrowserTabListViewModelFactoryProtocol {
 
 struct DAppBrowserTabListViewModelFactory {
     private let imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol
+    private let dAppIconViewModelFactory: DAppIconViewModelFactoryProtocol
 
-    init(imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol) {
+    init(
+        imageViewModelFactory: WebViewRenderImageViewModelFactoryProtocol,
+        dAppIconViewModelFactory: DAppIconViewModelFactoryProtocol
+    ) {
         self.imageViewModelFactory = imageViewModelFactory
+        self.dAppIconViewModelFactory = dAppIconViewModelFactory
     }
 
     private func createViewModel(
         for tab: DAppBrowserTab,
         locale: Locale
     ) -> DAppBrowserTabViewModel {
-        let iconViewModel: ImageViewModelProtocol? = {
-            guard let iconUrl = tab.icon else { return nil }
-
-            return RemoteImageViewModel(url: iconUrl)
-        }()
-
-        let renderViewModel: ImageViewModelProtocol? = imageViewModelFactory.createViewModel(for: tab.uuid)
+        let iconViewModel = dAppIconViewModelFactory.createIconViewModel(for: tab)
+        let renderViewModel = imageViewModelFactory.createViewModel(for: tab.uuid)
 
         let url = tab.url.host
 

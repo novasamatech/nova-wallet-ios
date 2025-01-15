@@ -92,7 +92,7 @@ extension DAppBrowserWidgetViewController: DAppBrowserWidgetViewProtocol {
     }
 
     func didReceive(_ browserWidgetModel: DAppBrowserWidgetModel) {
-        rootView.browserWidgetView.title.text = browserWidgetModel.title
+        rootView.browserWidgetView.bind(viewModel: browserWidgetModel)
 
         guard state != browserWidgetModel.widgetState else { return }
 

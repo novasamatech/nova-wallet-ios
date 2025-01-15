@@ -30,11 +30,15 @@ struct DAppBrowserTabListViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let dappIconViewModelFactory = DAppIconViewModelFactory()
         let imageViewModelFactory = WebViewRenderImageViewModelFactory(
             fileRepository: FileRepository(),
             renderFetchOperationQueue: operationQueue
         )
-        let viewModelFactory = DAppBrowserTabListViewModelFactory(imageViewModelFactory: imageViewModelFactory)
+        let viewModelFactory = DAppBrowserTabListViewModelFactory(
+            imageViewModelFactory: imageViewModelFactory,
+            dAppIconViewModelFactory: dappIconViewModelFactory
+        )
 
         let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
 

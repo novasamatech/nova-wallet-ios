@@ -4,6 +4,7 @@ protocol DAppIconViewModelFactoryProtocol {
     func createIconViewModel(for favorite: DAppFavorite) -> ImageViewModelProtocol
     func createIconViewModel(for dApp: DApp) -> ImageViewModelProtocol
     func createIconViewModel(for dAppAuthRequest: DAppAuthRequest) -> ImageViewModelProtocol
+    func createIconViewModel(for dAppBrowserTab: DAppBrowserTab) -> ImageViewModelProtocol
 }
 
 class DAppIconViewModelFactory {
@@ -91,6 +92,13 @@ extension DAppIconViewModelFactory: DAppIconViewModelFactoryProtocol {
         return createImageViewModel(
             for: dAppAuthRequest.dAppIcon,
             dAppURL: dAppURL
+        )
+    }
+
+    func createIconViewModel(for dAppBrowserTab: DAppBrowserTab) -> ImageViewModelProtocol {
+        createImageViewModel(
+            for: dAppBrowserTab.icon,
+            dAppURL: dAppBrowserTab.url
         )
     }
 }

@@ -7,10 +7,14 @@ struct DAppBrowserWidgetViewFactory {
 
         let wireframe = DAppBrowserWidgetWireframe()
 
+        let viewModelFactory = DAppBrowserWidgetViewModelFactory(
+            dAppIconViewModelFactory: DAppIconViewModelFactory()
+        )
+
         let presenter = DAppBrowserWidgetPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            browserTabsViewModelFactory: DAppBrowserWidgetViewModelFactory(),
+            browserTabsViewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
 
