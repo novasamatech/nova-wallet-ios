@@ -69,7 +69,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         assetsSearchView.controller.modalTransitionStyle = .crossDissolve
         assetsSearchView.controller.modalPresentationStyle = .fullScreen
 
-        view?.controller.presentWithCardLayout(
+        view?.controller.present(
             assetsSearchView.controller,
             animated: true
         )
