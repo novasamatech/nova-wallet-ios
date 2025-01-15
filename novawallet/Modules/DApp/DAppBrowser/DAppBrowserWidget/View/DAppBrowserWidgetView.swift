@@ -16,9 +16,10 @@ class DAppBrowserWidgetView: UIView {
         view.imageWithTitleView?.iconImage = R.image.iconClose()
     }
 
-    let title: UILabel = .create { view in
-        view.apply(style: .semiboldBodyPrimary)
-        view.textAlignment = .center
+    let title: IconDetailsView = .create { view in
+        view.detailsLabel.apply(style: .semiboldBodyPrimary)
+        view.detailsLabel.textAlignment = .center
+        view.spacing = 7.0
     }
 
     override init(frame: CGRect) {
@@ -31,6 +32,25 @@ class DAppBrowserWidgetView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(viewModel: DAppBrowserWidgetModel) {
+        title.detailsLabel.text = viewModel.title
+
+        if let iconModel = viewModel.icon {
+            title.iconWidth = Constants.iconSize.width
+            title.spacing = Constants.titleIconSpacing
+
+            iconModel.loadImage(
+                on: title.imageView,
+                targetSize: Constants.iconSize,
+                animated: true
+            )
+        } else {
+            title.spacing = 0
+            title.iconWidth = 0
+            title.imageView.image = nil
+        }
     }
 }
 
@@ -80,5 +100,7 @@ private extension DAppBrowserWidgetView {
         static let closeButtonLeadingInset: CGFloat = UIConstants.horizontalInset
         static let titleHeight: CGFloat = 22.0
         static let titleTopInset: CGFloat = 9.0
+        static let iconSize = CGSize(width: 16.0, height: 16.0)
+        static let titleIconSpacing = 7.0
     }
 }

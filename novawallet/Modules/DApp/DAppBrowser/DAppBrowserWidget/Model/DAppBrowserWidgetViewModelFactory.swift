@@ -9,7 +9,17 @@ protocol DAppBrowserWidgetViewModelFactoryProtocol {
     ) -> DAppBrowserWidgetModel
 }
 
-class DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtocol {
+class DAppBrowserWidgetViewModelFactory {
+    private let dAppIconViewModelFactory: DAppIconViewModelFactoryProtocol
+
+    init(dAppIconViewModelFactory: DAppIconViewModelFactoryProtocol) {
+        self.dAppIconViewModelFactory = dAppIconViewModelFactory
+    }
+}
+
+// MARK: DAppBrowserWidgetViewModelFactoryProtocol
+
+extension DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtocol {
     func createViewModel(
         for tabs: [UUID: DAppBrowserTab],
         state: DAppBrowserWidgetState,
@@ -27,8 +37,15 @@ class DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryProtoc
             tabs.values.first?.name ?? tabs.values.first?.url.absoluteString
         }
 
+        let iconViewModel: ImageViewModelProtocol? = if tabs.count == 1, let tab = tabs.values.first {
+            dAppIconViewModelFactory.createIconViewModel(for: tab)
+        } else {
+            nil
+        }
+
         return DAppBrowserWidgetModel(
             title: title,
+            icon: iconViewModel,
             widgetState: state,
             transitionBuilder: transitionBuilder
         )
