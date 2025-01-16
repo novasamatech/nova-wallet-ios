@@ -44,7 +44,7 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     }
 
     private func provideViewModel() {
-        if let dAppList = dAppList, let favorites = favorites {
+        if let dAppList, let favorites {
             let viewModel = viewModelFactory.createDApps(
                 from: selectedCategoryId,
                 query: query,
