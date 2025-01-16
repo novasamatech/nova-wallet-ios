@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 struct NPoolsRedeemViewFactory {
     static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsRedeemViewProtocol? {

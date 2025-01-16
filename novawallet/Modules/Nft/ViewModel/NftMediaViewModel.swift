@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 import Kingfisher
-import SoraUI
+import UIKit_iOS
 
 struct NftMediaDisplaySettings: Equatable {
     let targetSize: CGSize?

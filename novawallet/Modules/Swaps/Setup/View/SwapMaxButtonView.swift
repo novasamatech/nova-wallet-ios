@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 typealias SwapSetupTitleButton = ControlView<UIView, GenericPairValueView<UILabel, UILabel>>
 final class SwapSetupTitleView: GenericTitleValueView<UILabel, SwapSetupTitleButton> {

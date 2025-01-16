@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 import SnapKit
 
 final class NotificationsView: UIView {

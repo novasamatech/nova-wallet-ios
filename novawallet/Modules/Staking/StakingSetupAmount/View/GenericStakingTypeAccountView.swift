@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class GenericStakingTypeAccountView<T>: RowView<
     GenericTitleValueView<GenericPairValueView<T, MultiValueView>, UIImageView>

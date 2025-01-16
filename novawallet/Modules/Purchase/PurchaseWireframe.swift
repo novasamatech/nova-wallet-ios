@@ -1,6 +1,6 @@
 import Foundation
 
-import SoraFoundation
+import Foundation_iOS
 
 final class PurchaseWireframe: PurchaseWireframeProtocol {
     private weak var delegate: PurchaseDelegate?

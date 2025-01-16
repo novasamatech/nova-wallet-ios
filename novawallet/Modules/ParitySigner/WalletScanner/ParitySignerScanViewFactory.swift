@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct ParitySignerScanViewFactory {
     static func createOnboardingView(with type: ParitySignerType) -> QRScannerViewProtocol? {

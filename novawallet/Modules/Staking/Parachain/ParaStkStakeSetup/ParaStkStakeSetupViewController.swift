@@ -1,6 +1,6 @@
 import UIKit
 
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParaStkStakeSetupViewLayout

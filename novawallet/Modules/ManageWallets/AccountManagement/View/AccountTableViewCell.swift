@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import SoraUI
+import UIKit_iOS
 
 protocol AccountTableViewCellDelegate: AnyObject {
     func didSelectInfo(_ cell: AccountTableViewCell)

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 import Cuckoo
 
 class OperationDetailsTests: XCTestCase {

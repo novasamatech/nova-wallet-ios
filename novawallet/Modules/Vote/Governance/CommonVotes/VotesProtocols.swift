@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 protocol VotesViewProtocol: ControllerBackedProtocol {
     func didReceiveViewModels(_ viewModels: LoadableViewModelState<[VotesViewModel]>)

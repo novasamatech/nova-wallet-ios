@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 /**
  *  Class is designed to handle creation of `ChainRegistryProtocol` instance for application.

@@ -1,7 +1,7 @@
 import UIKit
 import SubstrateSdk
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class StakingMainViewController: UIViewController, AdaptiveDesignable, ViewHolder {
     typealias RootViewType = StakingMainViewLayout

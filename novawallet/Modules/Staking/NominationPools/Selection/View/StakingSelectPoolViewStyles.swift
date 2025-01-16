@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 extension RoundedButton.Style {
     static let accentButton = RoundedButton.Style(

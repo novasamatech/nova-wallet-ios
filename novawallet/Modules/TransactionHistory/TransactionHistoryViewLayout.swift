@@ -1,6 +1,6 @@
 import UIKit
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 final class TransactionHistoryViewLayout: UIView {
     private(set) var titleLeft: Constraint?

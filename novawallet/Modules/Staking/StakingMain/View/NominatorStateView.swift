@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     private lazy var timer = CountdownTimer()

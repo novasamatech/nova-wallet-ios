@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 extension StakingRewardFiltersPeriod {
     func title(calendar: Calendar) -> LocalizableResource<String> {

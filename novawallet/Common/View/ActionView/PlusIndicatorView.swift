@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class PlusIndicatorView: ActionControlIndicatorView {
     private let verticalView = UIView()

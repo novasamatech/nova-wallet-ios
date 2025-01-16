@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
-import SoraKeystore
+import Keystore_iOS
 
 class RootTests: XCTestCase {
     func testOnboardingDecision() throws {

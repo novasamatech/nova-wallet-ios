@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 struct StakingRedeemViewModel {
     let walletViewModel: DisplayWalletViewModel

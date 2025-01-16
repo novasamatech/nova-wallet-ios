@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class FullDetailsRow: RowView<GenericTitleValueView<UILabel, UIImageView>> {
     override init(frame: CGRect) {

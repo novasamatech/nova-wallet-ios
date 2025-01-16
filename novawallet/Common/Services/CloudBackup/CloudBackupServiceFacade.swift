@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 final class CloudBackupServiceFacade {

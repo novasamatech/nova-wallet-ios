@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class CheckBoxIconDetailsView: RowView<GenericPairValueView<UIImageView, IconDetailsView>> {
     var attentionImageView: UIImageView {

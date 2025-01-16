@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import IrohaCrypto
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 protocol MetaAccountOperationFactoryProtocol {
     func newSecretsMetaAccountOperation(request: MetaAccountCreationRequest, mnemonic: IRMnemonicProtocol)

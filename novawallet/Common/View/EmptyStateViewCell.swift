@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 class EmptyStateViewCell: UITableViewCell {
     let emptyView = EmptyStateView()

@@ -1,5 +1,5 @@
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveButtonState(title: String, enabled: Bool)

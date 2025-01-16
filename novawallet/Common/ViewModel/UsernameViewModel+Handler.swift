@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension InputViewModel {
     static func createNicknameInputViewModel(for value: String, required: Bool = true) -> InputViewModelProtocol {

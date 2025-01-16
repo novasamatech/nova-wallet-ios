@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingDashboardPresenter {
     weak var view: StakingDashboardViewProtocol?

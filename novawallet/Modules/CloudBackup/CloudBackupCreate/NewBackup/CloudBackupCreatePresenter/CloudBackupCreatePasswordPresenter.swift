@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class CloudBackupCreatePasswordPresenter: BaseCloudBackupCreatePresenter {
     override func createValidation() -> CloudBackup.PasswordValidationType {

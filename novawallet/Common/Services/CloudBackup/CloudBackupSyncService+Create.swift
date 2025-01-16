@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 extension CloudBackupSyncService {
     static func createService() -> CloudBackupSyncService {

@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol CreateWatchOnlyViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveNickname(viewModel: InputViewModelProtocol)

@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 extension RoundedButton {
     func setTitle(_ title: String?) {

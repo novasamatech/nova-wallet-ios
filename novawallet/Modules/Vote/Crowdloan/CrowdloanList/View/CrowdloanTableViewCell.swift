@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class CrowdloanTableViewCell: UITableViewCell {
     var skeletonView: SkrullableView?

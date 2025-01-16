@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 protocol StakingUnbondingsViewDelegate: AnyObject {
     func stakingUnbondingViewDidCancel(_ view: StakingUnbondingsView)

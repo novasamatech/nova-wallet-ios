@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 import Cuckoo
 
 final class SecurityLayerTests: XCTestCase {

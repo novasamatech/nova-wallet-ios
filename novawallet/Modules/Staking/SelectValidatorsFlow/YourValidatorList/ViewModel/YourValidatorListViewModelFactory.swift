@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 protocol YourValidatorListViewModelFactoryProtocol {
     func createViewModel(for model: YourValidatorsModel, locale: Locale) throws -> YourValidatorListViewModel

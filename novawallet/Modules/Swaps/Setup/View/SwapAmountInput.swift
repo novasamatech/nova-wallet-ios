@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class SwapAmountInput: BackgroundedContentControl {
     let textField: UITextField = .create {

@@ -1,7 +1,7 @@
 import Foundation
 @testable import novawallet
 import IrohaCrypto
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import SubstrateSdk
 

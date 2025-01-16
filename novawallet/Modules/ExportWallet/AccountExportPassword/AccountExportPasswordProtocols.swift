@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol AccountExportPasswordViewProtocol: ControllerBackedProtocol {
     func setPasswordInputViewModel(_ viewModel: InputViewModelProtocol)

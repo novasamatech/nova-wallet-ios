@@ -1,7 +1,7 @@
 import UIKit
 import AVFoundation
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 class QRScannerViewController: UIViewController, ViewHolder {
     typealias RootViewType = QRScannerViewLayout

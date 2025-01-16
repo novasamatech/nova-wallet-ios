@@ -1,6 +1,6 @@
 import UIKit
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 final class ImportCloudPasswordInteractor {
     weak var presenter: ImportCloudPasswordInteractorOutputProtocol?

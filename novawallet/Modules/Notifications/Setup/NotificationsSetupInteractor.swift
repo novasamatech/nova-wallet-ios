@@ -1,5 +1,5 @@
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 
 final class NotificationsSetupInteractor {
     weak var presenter: NotificationsSetupInteractorOutputProtocol?

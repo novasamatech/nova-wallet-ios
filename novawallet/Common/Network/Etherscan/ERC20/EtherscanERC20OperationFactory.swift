@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class EtherscanERC20OperationFactory: EtherscanBaseOperationFactory {
     let contractAddress: AccountAddress

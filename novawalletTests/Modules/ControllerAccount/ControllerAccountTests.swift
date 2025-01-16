@@ -2,8 +2,8 @@ import XCTest
 import Cuckoo
 import Operation_iOS
 import SubstrateSdk
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 @testable import novawallet
 
 class ControllerAccountTests: XCTestCase {

@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingRewardDestSetupLayout

@@ -1,7 +1,7 @@
 import Foundation
 import IrohaCrypto
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingRewardDetailsPresenter {
     weak var view: StakingRewardDetailsViewProtocol?

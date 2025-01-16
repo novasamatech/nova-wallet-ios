@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 struct ReferendumsModelFactoryInput {
     let referendums: [ReferendumLocal]

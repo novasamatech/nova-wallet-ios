@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 import SnapKit
 
 final class AccountCreateViewLayout: ScrollableContainerLayoutView {

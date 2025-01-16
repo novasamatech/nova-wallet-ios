@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackView> {
     static let listImageSize = CGSize(width: 24, height: 24)

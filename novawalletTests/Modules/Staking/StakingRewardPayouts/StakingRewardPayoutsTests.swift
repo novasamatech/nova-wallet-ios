@@ -1,7 +1,7 @@
 import XCTest
 import Cuckoo
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 @testable import novawallet
 
 class StakingRewardPayoutsTests: XCTestCase {

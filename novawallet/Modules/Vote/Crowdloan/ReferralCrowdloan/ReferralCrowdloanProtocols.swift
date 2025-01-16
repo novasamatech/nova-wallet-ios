@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol ReferralCrowdloanViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveLearnMore(viewModel: LearnMoreViewModel)

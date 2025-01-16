@@ -1,4 +1,4 @@
-import SoraKeystore
+import Keystore_iOS
 
 protocol OpenScreenUrlParsingServiceFactoryProtocol {
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol?

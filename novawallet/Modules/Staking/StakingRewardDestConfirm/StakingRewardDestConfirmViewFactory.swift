@@ -1,7 +1,7 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 struct StakingRewardDestConfirmViewFactory {
     static func createView(

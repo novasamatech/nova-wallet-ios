@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol ExportGenericViewProtocol: ControllerBackedProtocol {
     func set(viewModel: ExportGenericViewModel)

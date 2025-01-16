@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 final class SharedSettingsMigrator: Migrating {
     let settingsManager: SettingsManagerProtocol

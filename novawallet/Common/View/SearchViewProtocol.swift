@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 protocol SearchViewProtocol: UIView {
     var searchBar: CustomSearchBar { get }

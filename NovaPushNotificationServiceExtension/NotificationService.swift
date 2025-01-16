@@ -1,7 +1,7 @@
 import UserNotifications
 import BigInt
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 final class NotificationService: UNNotificationServiceExtension {
     typealias ContentHandler = (UNNotificationContent) -> Void

@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 struct Web3NameAddressListViewModel {
     let title: LocalizableResource<String>?

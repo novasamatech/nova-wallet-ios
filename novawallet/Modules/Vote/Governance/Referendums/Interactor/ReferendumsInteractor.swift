@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: ReferendumsInteractorOutputProtocol?

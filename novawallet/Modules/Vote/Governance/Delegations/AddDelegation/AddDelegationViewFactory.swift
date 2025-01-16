@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 
 struct AddDelegationViewFactory {
     static func createView(

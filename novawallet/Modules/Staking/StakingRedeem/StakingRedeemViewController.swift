@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingRedeemViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingRedeemLayout

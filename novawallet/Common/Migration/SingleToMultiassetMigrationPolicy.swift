@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 import IrohaCrypto
 
 class SingleToMultiassetMigrationPolicy: NSEntityMigrationPolicy {

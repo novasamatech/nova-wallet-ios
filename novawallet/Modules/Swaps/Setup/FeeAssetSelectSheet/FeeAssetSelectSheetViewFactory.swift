@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct FeeAssetSelectSheetViewFactory {
     static func createView(from viewModel: FeeAssetSelectSheetViewModel) -> MessageSheetViewProtocol {

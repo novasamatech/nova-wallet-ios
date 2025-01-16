@@ -116,7 +116,6 @@ private final class Spacer: UIView {
 #if canImport(SwiftUI) && DEBUG
     import SwiftUI
 
-    @available(iOS 13.0, *)
     struct ExampleView: UIViewControllerRepresentable {
         let closure: (UIView) -> Void
 
@@ -129,7 +128,6 @@ private final class Spacer: UIView {
         func updateUIViewController(_: UIViewControllerType, context _: Context) {}
     }
 
-    @available(iOS 13.0, *)
     struct ExampleView_Preview: PreviewProvider {
         static var previews: some View {
             Group {
@@ -193,7 +191,6 @@ private final class Spacer: UIView {
     // MARK: - Helpers (Private)
 
     private extension UIView {
-        @available(iOS 13.0, *)
         func addBorderRecursively() {
             var colors: [UIColor] = []
             func resetColors() {
@@ -236,7 +233,6 @@ private final class Spacer: UIView {
         }
     }
 
-    @available(iOS 13.0, *)
     private extension UIImageView {
         convenience init(systemName: String, textStyle: UIFont.TextStyle, color: UIColor?) {
             let image = UIImage(systemName: systemName, withConfiguration: UIImage.SymbolConfiguration(textStyle: textStyle))

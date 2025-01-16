@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class WalletManageTableViewCell<V: WalletViewProtocol>: WalletsListTableViewCell<V, UIImageView> {
     private lazy var reorderingAnimator = BlockViewAnimator()

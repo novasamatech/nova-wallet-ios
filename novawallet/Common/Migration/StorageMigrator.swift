@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import SoraKeystore
+import Keystore_iOS
 
 protocol StorageMigrating {
     func requiresMigration() -> Bool

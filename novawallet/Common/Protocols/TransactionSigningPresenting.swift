@@ -1,8 +1,8 @@
 import Foundation
 import IrohaCrypto
-import SoraKeystore
-import SoraUI
-import SoraFoundation
+import Keystore_iOS
+import UIKit_iOS
+import Foundation_iOS
 import SubstrateSdk
 
 typealias TransactionSigningResult = Result<IRSignatureProtocol, Error>

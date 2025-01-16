@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class MessageSheetMigrationBannerView: LedgerMigrationBannerView, MessageSheetContentProtocol {
     typealias ContentViewModel = LocalizableResource<LedgerMigrationBannerView.ViewModel>

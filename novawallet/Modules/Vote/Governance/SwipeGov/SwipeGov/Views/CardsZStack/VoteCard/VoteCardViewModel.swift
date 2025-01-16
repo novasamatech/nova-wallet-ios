@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 struct VoteCardLoadErrorActions {

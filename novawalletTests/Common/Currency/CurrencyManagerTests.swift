@@ -1,7 +1,7 @@
 import XCTest
 import Cuckoo
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 @testable import novawallet
 
 final class CurrencyManagerTests: XCTestCase {

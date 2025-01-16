@@ -1,6 +1,6 @@
 import Foundation
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 struct CloudBackupAddWalletViewFactory {
     static func createViewForAdding() -> UsernameSetupViewProtocol? {

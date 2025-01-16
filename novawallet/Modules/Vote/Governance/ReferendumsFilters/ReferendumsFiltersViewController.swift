@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumsFiltersViewLayout

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 enum ChainAddressDetailsMeasurement {
     static let iconViewSize: CGFloat = 88.0

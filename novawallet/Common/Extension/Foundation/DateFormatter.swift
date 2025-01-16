@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension DateFormatter {
     static var txHistory: LocalizableResource<DateFormatter> {

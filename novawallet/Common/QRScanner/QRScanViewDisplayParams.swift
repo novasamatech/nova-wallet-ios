@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct QRScannerViewDisplayParams {
     let topTitle: LocalizableResource<String>?

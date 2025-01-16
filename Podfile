@@ -1,5 +1,5 @@
 source 'https://cdn.cocoapods.org/'
-platform :ios, '14.0'
+platform :ios, '16.0'
 
 abstract_target 'novawalletAll' do
   use_frameworks!
@@ -8,10 +8,10 @@ abstract_target 'novawalletAll' do
   pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.5.0'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
-  pod 'SoraKeystore', '~> 1.0.0'
-  pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :tag => '1.13.0'
+  pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
+  pod 'UIKit-iOS', :git => 'https://github.com/novasamatech/UIKit-iOS.git', :tag => '1.0.0'
   pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
-  pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
+  pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.0.0'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift', '~> 5.2.4'
   pod 'SnapKit', '~> 5.0.0'
@@ -41,10 +41,10 @@ abstract_target 'novawalletAll' do
 
     pod 'Cuckoo'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.5.0'
-    pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
+    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
-    pod 'SoraKeystore', '~> 1.0.0'
+    pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
     pod 'Sourcery', '~> 1.4'
     pod 'Starscream', :git => 'https://github.com/novasamatech/Starscream.git', :tag => '4.0.12'
@@ -63,8 +63,8 @@ abstract_target 'novawalletAll' do
 
     pod 'SwiftLint'
     pod 'R.swift', :inhibit_warnings => true
-    pod 'SoraFoundation', :git => 'https://github.com/ERussel/Foundation-iOS.git', :tag => '1.1.0'
-    pod 'SoraKeystore', '~> 1.0.0'
+    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.0.0'
+    pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
     pod 'Sourcery', '~> 1.4'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.5.0'

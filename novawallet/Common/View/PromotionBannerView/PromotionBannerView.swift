@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol PromotionBannerViewDelegate: AnyObject {
     func promotionBannerDidRequestClose(view: PromotionBannerView)

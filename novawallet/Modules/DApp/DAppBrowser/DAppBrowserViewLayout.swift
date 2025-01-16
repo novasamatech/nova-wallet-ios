@@ -1,6 +1,6 @@
 import UIKit
 import WebKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppBrowserViewLayout: UIView {
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }

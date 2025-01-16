@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 import IrohaCrypto
 
 final class ValidatorSearchPresenter {

@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class StackAddressCell: RowView<LoadableIconDetailsView> {
     var titleView: LoadableIconDetailsView { rowContentView }

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol AdvancedWalletViewProtocol: ControllerBackedProtocol {
     func setSubstrateCrypto(viewModel: SelectableViewModel<TitleWithSubtitleViewModel>?)

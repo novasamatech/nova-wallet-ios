@@ -78,11 +78,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         willPresent _: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        if #available(iOS 14.0, *) {
-            completionHandler([.banner, .list, .badge, .sound])
-        } else {
-            completionHandler([.alert, .badge, .sound])
-        }
+        completionHandler([.banner, .list, .badge, .sound])
     }
 
     func userNotificationCenter(

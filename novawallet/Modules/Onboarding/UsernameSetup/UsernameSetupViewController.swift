@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class UserNameSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = UsernameSetupViewLayout

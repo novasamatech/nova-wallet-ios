@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class CrowdloanListViewManager: NSObject {
     let tableView: UITableView

@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 final class NftListViewController: UIViewController, ViewHolder {

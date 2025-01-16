@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol TokensManageAddViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAddress(viewModel: InputViewModelProtocol)

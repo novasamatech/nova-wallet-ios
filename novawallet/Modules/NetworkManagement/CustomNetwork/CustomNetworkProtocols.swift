@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol CustomNetworkViewProtocol: ControllerBackedProtocol {
     func didReceiveNetworkType(_ networkType: ChainType, show: Bool)

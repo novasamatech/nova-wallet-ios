@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class TextWithServiceInputView: TextInputView {
     let pasteboardService = PasteboardHandler(pasteboard: UIPasteboard.general)

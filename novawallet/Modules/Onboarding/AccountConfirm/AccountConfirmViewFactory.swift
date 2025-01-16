@@ -1,6 +1,6 @@
 import Foundation
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import IrohaCrypto
 import Operation_iOS
 

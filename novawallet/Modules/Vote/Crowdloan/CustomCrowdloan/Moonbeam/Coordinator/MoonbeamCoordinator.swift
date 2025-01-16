@@ -1,5 +1,5 @@
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class MoonbeamFlowCoordinator: Coordinator {
     let service: MoonbeamBonusServiceProtocol

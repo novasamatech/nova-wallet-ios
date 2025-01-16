@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class ManualBackupChainTableViewCell: PlainBaseTableViewCell<ChainAccountView> {
     var networkIconView: UIImageView { contentDisplayView.networkIconView }

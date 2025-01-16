@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class ProxyDepositView: RowView<IconDetailsGenericView<NetworkFeeInfoView>>, StackTableViewCellProtocol {
     var imageView: UIImageView { rowContentView.imageView }

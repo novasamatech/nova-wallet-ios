@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 final class ICloudBackupServiceFactory {
     let containerId: String

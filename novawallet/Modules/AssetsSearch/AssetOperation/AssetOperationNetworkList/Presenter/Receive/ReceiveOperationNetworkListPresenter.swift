@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 class ReceiveOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let wireframe: ReceiveAssetOperationWireframeProtocol

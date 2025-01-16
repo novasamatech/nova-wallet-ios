@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class SettingsTableViewCell: SettingsBaseTableViewCell<UIImageView> {
     var accessoryArrowView: UIImageView { rightView }

@@ -1,6 +1,6 @@
 import UIKit
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 final class GovernanceDelegateBanner: UIView {
     let gradientBannerView: GradientBannerView = .create {

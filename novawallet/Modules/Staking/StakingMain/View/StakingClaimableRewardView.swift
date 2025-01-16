@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class StakingClaimableRewardView: UIView {
     let backgroundView: BlockBackgroundView = .create { view in

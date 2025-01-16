@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol CheckboxListViewProtocol: AnyObject {
     func update(using checkboxListViewModel: BackupAttentionViewLayout.Model)

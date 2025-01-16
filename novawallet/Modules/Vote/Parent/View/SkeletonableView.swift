@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 struct SkeletonableViewReplica {
     let count: UInt32

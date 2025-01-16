@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol TokensManageViewModelFactoryProtocol {
     func createListViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel

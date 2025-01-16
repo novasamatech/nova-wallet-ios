@@ -1,6 +1,6 @@
 import Foundation
 import AVFoundation
-import SoraFoundation
+import Foundation_iOS
 
 class QRScannerPresenter: QRScannerPresenterProtocol {
     weak var view: QRScannerViewProtocol?

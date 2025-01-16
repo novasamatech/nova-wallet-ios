@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 extension TransferSetupPresenterFactory {
     // swiftlint:disable:next function_body_length

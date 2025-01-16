@@ -1,8 +1,8 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import Operation_iOS
 
 class DAppBrowserTests: XCTestCase {

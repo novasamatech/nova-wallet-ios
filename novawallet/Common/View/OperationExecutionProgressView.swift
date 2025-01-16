@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class OperationExecutionProgressView: UIView {
     let backgroundView: RoundedView = .create { view in

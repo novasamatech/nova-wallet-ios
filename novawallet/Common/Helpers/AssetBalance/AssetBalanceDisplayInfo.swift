@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct AssetBalanceDisplayInfo: Hashable {
     enum Icon: Equatable, Hashable {

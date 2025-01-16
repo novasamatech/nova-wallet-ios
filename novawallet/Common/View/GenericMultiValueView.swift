@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class GenericPairValueView<FView: UIView, SView: UIView>: UIView {
     let fView = FView()

@@ -1,5 +1,5 @@
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 final class NominationPoolBondMoreSetupPresenter: NominationPoolBondMoreBasePresenter {
     weak var view: NominationPoolBondMoreSetupViewProtocol? {

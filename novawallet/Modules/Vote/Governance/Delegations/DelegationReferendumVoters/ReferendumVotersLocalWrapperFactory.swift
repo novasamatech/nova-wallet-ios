@@ -1,5 +1,5 @@
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 typealias ReferendumVoterLocals = GovernanceDelegationAdditions<[ReferendumVoterLocal]>

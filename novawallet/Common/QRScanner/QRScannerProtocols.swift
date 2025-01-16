@@ -1,6 +1,6 @@
 import Foundation
 import AVFoundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol QRScannerViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceive(session: AVCaptureSession)

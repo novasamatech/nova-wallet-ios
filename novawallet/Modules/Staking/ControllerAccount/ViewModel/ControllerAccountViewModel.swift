@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 struct ControllerAccountViewModel {
     let stashViewModel: WalletAccountViewModel

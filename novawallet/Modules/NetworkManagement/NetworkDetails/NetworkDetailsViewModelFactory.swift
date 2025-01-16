@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 class NetworkDetailsViewModelFactory {
     typealias Details = NetworkDetailsViewLayout.Model

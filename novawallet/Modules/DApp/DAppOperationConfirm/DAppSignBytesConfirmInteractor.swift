@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 
 final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {

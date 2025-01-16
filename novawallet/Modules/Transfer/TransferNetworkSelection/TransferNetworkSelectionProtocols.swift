@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol TransferNetworkSelectionViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [LocalizableResource<TransferNetworkSelectionViewModel>])

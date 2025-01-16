@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class ReferendumInfoView: UIView {
     let statusLabel: UILabel = .init(style: .neutralStatusLabel)

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class WalletConnectPresenter: AlertPresentable, ErrorPresentable, WalletConnectErrorPresentable {
     weak var interactor: WalletConnectInteractorInputProtocol?

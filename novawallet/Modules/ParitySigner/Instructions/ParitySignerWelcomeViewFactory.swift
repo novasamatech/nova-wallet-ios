@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct ParitySignerWelcomeViewFactory {
     static func createOnboardingView(with type: ParitySignerType) -> ParitySignerWelcomeViewProtocol? {

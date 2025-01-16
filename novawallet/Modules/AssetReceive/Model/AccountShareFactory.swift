@@ -1,7 +1,7 @@
 import Foundation
 
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 final class AccountShareFactory {
     let chain: ChainModel

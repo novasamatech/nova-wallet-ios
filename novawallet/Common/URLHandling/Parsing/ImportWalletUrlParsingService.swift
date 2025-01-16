@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import IrohaCrypto
-import SoraFoundation
+import Foundation_iOS
 
 enum CreateWalletError: Error, ErrorContentConvertible {
     case emptyMnemonic

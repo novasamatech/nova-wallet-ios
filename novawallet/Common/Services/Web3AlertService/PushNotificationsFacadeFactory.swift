@@ -1,8 +1,8 @@
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import FirebaseCore
 import FirebaseFirestore
-import SoraFoundation
+import Foundation_iOS
 
 protocol PushNotificationsFacadeFactoryProtocol {
     func createSyncService() -> Web3AlertsSyncServiceProtocol

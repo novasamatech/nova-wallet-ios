@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class SwapRouteViewCell: RowView<SwapGenericInfoView<SwapRouteView>>, StackTableViewCellProtocol {
     var titleButton: RoundedButton { rowContentView.titleView }

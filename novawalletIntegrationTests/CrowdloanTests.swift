@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 import IrohaCrypto
 
 class CrowdloanTests: XCTestCase {

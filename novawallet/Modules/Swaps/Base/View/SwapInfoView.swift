@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class SwapGenericInfoView<V: UIView>: GenericTitleValueView<RoundedButton, V>, SkeletonableView {
     var titleButton: RoundedButton { titleView }

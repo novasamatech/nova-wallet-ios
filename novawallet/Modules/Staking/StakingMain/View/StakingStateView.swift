@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 struct StakingStateSkeletonOptions: OptionSet {
     typealias RawValue = UInt8

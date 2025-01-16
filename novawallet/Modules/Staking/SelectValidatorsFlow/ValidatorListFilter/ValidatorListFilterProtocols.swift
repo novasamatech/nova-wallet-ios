@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol ValidatorListFilterWireframeProtocol {
     func close(_ view: ControllerBackedProtocol?)
