@@ -28,8 +28,8 @@ private extension DAppListViewModelFactory {
     ) -> DAppViewModel {
         let imageViewModel = dappIconViewModelFactory.createIconViewModel(for: model)
 
-        let details = model.categories.map {
-            categories[$0]?.name ?? $0
+        let details = model.categories.compactMap {
+            categories[$0]?.name
         }.joined(separator: ", ")
 
         return DAppViewModel(
@@ -79,7 +79,7 @@ private extension DAppListViewModelFactory {
             name: name,
             details: details,
             icon: imageViewModel,
-            isFavorite: true,
+            isFavorite: false,
             order: model.index
         )
     }
@@ -167,7 +167,10 @@ private extension DAppListViewModelFactory {
         )
     }
 
-    func categorySections(from dAppList: DAppList) -> [DAppListSection]? {
+    func categorySections(
+        from dAppList: DAppList,
+        favorites: [String: DAppFavorite]
+    ) -> [DAppListSection]? {
         guard !dAppList.dApps.isEmpty else { return nil }
 
         let dAppsByCategory: [String: [DApp]] = dAppList.dApps.reduce(into: [:]) { acc, dApp in
@@ -180,6 +183,9 @@ private extension DAppListViewModelFactory {
             }
         }
 
+        let categoriesById: [String: DAppCategory] = dAppList.categories
+            .reduce(into: [:]) { $0[$1.identifier] = $1 }
+
         let categorySections: [DAppListSection] = dAppList.categories.compactMap { category in
             guard let dApps = dAppsByCategory[category.identifier] else { return nil }
 
@@ -190,8 +196,8 @@ private extension DAppListViewModelFactory {
             let dAppViewModels = createViewModels(
                 merging: indexedDApps,
                 filteredFavorites: [:],
-                allFavorites: [:],
-                categoriesDict: [category.identifier: category]
+                allFavorites: favorites,
+                categoriesDict: categoriesById
             )
 
             return DAppListSection(
@@ -381,7 +387,10 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             viewModels.append(.favorites(favoritesSection))
         }
 
-        if let categorySections = categorySections(from: dAppList) {
+        if let categorySections = categorySections(
+            from: dAppList,
+            favorites: favorites
+        ) {
             viewModels.append(contentsOf: categorySections.map { .category($0) })
         }
 
