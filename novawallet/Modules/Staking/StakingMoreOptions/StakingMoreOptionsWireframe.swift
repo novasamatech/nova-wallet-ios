@@ -1,8 +1,11 @@
 import Foundation
 
 final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
-    func showBrowser(from view: ControllerBackedProtocol?, for dApp: DApp) {
-        guard let browserView = DAppBrowserViewFactory.createView(for: .dApp(model: dApp)) else {
+    func showBrowser(
+        from view: ControllerBackedProtocol?,
+        with tab: DAppBrowserTab
+    ) {
+        guard let browserView = DAppBrowserViewFactory.createView(selectedTab: tab) else {
             return
         }
 
@@ -24,6 +27,6 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 }

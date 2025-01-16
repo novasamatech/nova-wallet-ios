@@ -100,6 +100,7 @@ extension AssetListViewController: AssetListViewProtocol {
         groupsViewModel = newViewModel
 
         collectionViewManager.updateGroupsViewModel(with: newViewModel)
+        collectionViewManager.updateTokensGroupLayout()
 
         if oldViewModel.listGroupStyle != newViewModel.listGroupStyle {
             collectionViewManager.changeCollectionViewLayout(
@@ -107,7 +108,6 @@ extension AssetListViewController: AssetListViewProtocol {
                 to: newViewModel
             )
         } else {
-            collectionViewManager.updateTokensGroupLayout()
             rootView.collectionView.reloadData()
         }
     }
@@ -228,6 +228,7 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 extension AssetListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
+            collectionViewManager.updateSelectedLocale(with: selectedLocale)
             rootView.collectionView.reloadData()
         }
     }

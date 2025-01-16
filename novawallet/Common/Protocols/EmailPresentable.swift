@@ -67,7 +67,7 @@ private class MFEmailPresenter: NSObject, MFMailComposeViewControllerDelegate {
 
         emailComposer.mailComposeDelegate = self
 
-        view.controller.present(
+        view.controller.presentWithCardLayout(
             emailComposer,
             animated: true,
             completion: nil

@@ -113,23 +113,27 @@ class DAppOperationConfirmTests: XCTestCase {
         
         let operationQueue = OperationQueue()
         
-        let feeEstimatingWrapperFactory = ExtrinsicFeeEstimatingWrapperFactory(
+        let  storageFacade = SubstrateStorageTestFacade()
+        
+        let extrinsicFeeHost = ExtrinsicFeeEstimatorHost(
             account: wallet.fetch(for: chain.accountRequest())!,
             chain: chain,
-            runtimeService: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let  storageFacade = SubstrateStorageTestFacade()
-        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
-            chain: chain,
-            estimatingWrapperFactory: feeEstimatingWrapperFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: storageFacade,
             operationQueue: operationQueue
+        )
+        
+        let feeEstimationRegistry = ExtrinsicFeeEstimationRegistry(
+            chain: chain,
+            estimatingWrapperFactory: ExtrinsicFeeEstimatingWrapperFactory(
+                host: extrinsicFeeHost,
+                customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
+            ),
+            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
+                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
+            )
         )
         
         let metadataHashFactory = MetadataHashOperationFactory(
@@ -264,11 +268,14 @@ class DAppOperationConfirmTests: XCTestCase {
             dAppIcon: nil,
             operationData: jsonRequest
         )
+        
+        let serializationFactory = PolkadotExtensionMessageSignFactory()
 
         let interactor = DAppSignBytesConfirmInteractor(
             request: request,
             chain: chain,
             signingWrapperFactory: signingWrapperFactory,
+            serializationFactory: serializationFactory,
             operationQueue: OperationQueue()
         )
 

@@ -91,10 +91,7 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     private func setupLayout() {
-        balanceTableView.addArrangedSubview(headerCell)
-        balanceTableView.addArrangedSubview(totalCell)
-        balanceTableView.addArrangedSubview(transferrableCell)
-        balanceTableView.addArrangedSubview(lockCell)
+        setupBalanceTableViewLayout()
 
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints {
@@ -143,7 +140,6 @@ final class AssetDetailsViewLayout: UIView {
             $0.leading.greaterThanOrEqualTo(assetView.snp.trailing).offset(8)
             $0.centerY.equalTo(assetView.snp.centerY)
         }
-
         addSubview(containerView)
         containerView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
@@ -153,6 +149,13 @@ final class AssetDetailsViewLayout: UIView {
         containerView.stackView.spacing = Constants.sectionSpace
         containerView.stackView.addArrangedSubview(balanceTableView)
         containerView.stackView.addArrangedSubview(buttonsRow)
+    }
+
+    private func setupBalanceTableViewLayout() {
+        balanceTableView.addArrangedSubview(headerCell)
+        balanceTableView.addArrangedSubview(totalCell)
+        balanceTableView.addArrangedSubview(transferrableCell)
+        balanceTableView.addArrangedSubview(lockCell)
     }
 
     func set(locale: Locale) {

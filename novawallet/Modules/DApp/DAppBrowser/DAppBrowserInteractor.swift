@@ -1,5 +1,6 @@
 import UIKit
 import Operation_iOS
+import SoraFoundation
 
 final class DAppBrowserInteractor {
     struct QueueMessage {
@@ -10,8 +11,9 @@ final class DAppBrowserInteractor {
 
     weak var presenter: DAppBrowserInteractorOutputProtocol?
 
-    private(set) var userQuery: DAppSearchResult
-    let dataSource: DAppBrowserStateDataSource
+    private(set) var currentTab: DAppBrowserTab
+
+    var dataSource: DAppBrowserStateDataSource
     let logger: LoggerProtocol?
     let transports: [DAppBrowserTransportProtocol]
     let sequentialPhishingVerifier: PhishingSiteVerifing
@@ -19,14 +21,19 @@ final class DAppBrowserInteractor {
     let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
     let dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>
     let securedLayer: SecurityLayerServiceProtocol
+    let tabManager: DAppBrowserTabManagerProtocol
+    let applicationHandler: ApplicationHandlerProtocol
+
+    let operationQueue: OperationQueue
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
+    private var tabs: [DAppBrowserTab] = []
 
     private(set) var messageQueue: [QueueMessage] = []
 
     init(
         transports: [DAppBrowserTransportProtocol],
-        userQuery: DAppSearchResult,
+        selectedTab: DAppBrowserTab,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         securedLayer: SecurityLayerServiceProtocol,
@@ -36,26 +43,56 @@ final class DAppBrowserInteractor {
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         operationQueue: OperationQueue,
         sequentialPhishingVerifier: PhishingSiteVerifing,
+        tabManager: DAppBrowserTabManagerProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
-        self.userQuery = userQuery
-        dataSource = DAppBrowserStateDataSource(
-            wallet: wallet,
-            chainRegistry: chainRegistry,
-            dAppSettingsRepository: dAppSettingsRepository,
-            operationQueue: operationQueue,
-            dApp: userQuery.dApp
-        )
+        currentTab = selectedTab
+        self.operationQueue = operationQueue
         self.logger = logger
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
+        self.tabManager = tabManager
+        self.applicationHandler = applicationHandler
         self.securedLayer = securedLayer
+
+        if let existingDataSource = currentTab.transportStates?.first?.dataSource {
+            dataSource = existingDataSource
+        } else {
+            dataSource = DAppBrowserStateDataSource(
+                wallet: wallet,
+                chainRegistry: chainRegistry,
+                dAppSettingsRepository: dAppSettingsRepository,
+                operationQueue: operationQueue,
+                tab: selectedTab
+            )
+        }
+    }
+}
+
+// MARK: Private
+
+private extension DAppBrowserInteractor {
+    func setupState() {
+        if let existingTabStates = currentTab.transportStates {
+            existingTabStates.forEach { state in
+                transports.forEach { transport in
+                    transport.delegate = self
+                    transport.restoreState(from: state)
+                }
+            }
+        } else {
+            transports.forEach { transport in
+                transport.delegate = self
+                transport.start(with: dataSource)
+            }
+        }
     }
 
-    private func subscribeChainRegistry() {
+    func subscribeChainRegistry() {
         dataSource.chainRegistry.chainsSubscribe(
             self,
             runningInQueue: .main,
@@ -72,11 +109,11 @@ final class DAppBrowserInteractor {
                 }
             }
 
-            self?.completeSetupIfNeeded()
+            self?.provideModel()
         }
     }
 
-    private func completeSetupIfNeeded() {
+    func completeSetupIfNeeded() {
         if !dataSource.chainStore.isEmpty {
             transports.forEach { transport in
                 transport.delegate = self
@@ -84,31 +121,6 @@ final class DAppBrowserInteractor {
             }
 
             provideModel()
-        }
-    }
-
-    func resolveUrl() -> URL? {
-        switch userQuery {
-        case let .dApp(model):
-            return model.url
-        case let .query(string):
-            var urlComponents = URLComponents(string: string)
-
-            if urlComponents?.scheme == nil {
-                urlComponents = URLComponents(string: "https://" + string)
-            }
-
-            let isValidUrl = NSPredicate.urlPredicate.evaluate(with: string)
-            if isValidUrl, let inputUrl = urlComponents?.url {
-                return inputUrl
-            } else {
-                let querySet = CharacterSet.urlQueryAllowed
-                guard let searchQuery = string.addingPercentEncoding(withAllowedCharacters: querySet) else {
-                    return nil
-                }
-
-                return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
-            }
         }
     }
 
@@ -148,18 +160,15 @@ final class DAppBrowserInteractor {
     }
 
     func provideModel() {
-        guard let url = resolveUrl() else {
-            presenter?.didReceive(error: DAppBrowserInteractorError.invalidUrl)
-            return
-        }
-
         let wrappers = createTransportWrappers()
 
-        let globalSettingsOperation = createGlobalSettingsOperation(for: url.host)
+        let globalSettingsOperation = createGlobalSettingsOperation(for: currentTab.url.host)
 
-        let desktopOnly = userQuery.dApp?.desktopOnly ?? false
+        let desktopOnly = currentTab.desktopOnly ?? false
 
-        let mapOperation = ClosureOperation<DAppBrowserModel> {
+        let mapOperation = ClosureOperation<DAppBrowserModel> { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
             let transportModels = try wrappers.map { wrapper in
                 try wrapper.targetOperation.extractNoCancellableResultData()
             }
@@ -168,7 +177,11 @@ final class DAppBrowserInteractor {
 
             let isDesktop = dAppSettings?.desktopMode ?? desktopOnly
 
-            return DAppBrowserModel(url: url, isDesktop: isDesktop, transports: transportModels)
+            return DAppBrowserModel(
+                selectedTab: currentTab,
+                isDesktop: isDesktop,
+                transports: transportModels
+            )
         }
 
         wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
@@ -220,7 +233,7 @@ final class DAppBrowserInteractor {
         dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
     }
 
-    private func processMessageIfNeeded() {
+    func processMessageIfNeeded() {
         guard transports.allSatisfy({ $0.isIdle() }), let queueMessage = messageQueue.first else {
             return
         }
@@ -232,7 +245,7 @@ final class DAppBrowserInteractor {
         transport?.process(message: queueMessage.underliningMessage, host: queueMessage.host)
     }
 
-    private func bringPhishingDetectedStateAndNotify(for host: String) {
+    func bringPhishingDetectedStateAndNotify(for host: String) {
         let allPhishing = transports
             .map { $0.bringPhishingDetectedStateIfNeeded() }
             .allSatisfy { !$0 }
@@ -242,15 +255,122 @@ final class DAppBrowserInteractor {
         }
     }
 
-    private func verifyPhishing(for host: String, completion: ((Bool) -> Void)?) {
+    func verifyPhishing(for host: String, completion: ((Bool) -> Void)?) {
         sequentialPhishingVerifier.verify(host: host) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(isNotPhishing):
                 if !isNotPhishing {
-                    self?.bringPhishingDetectedStateAndNotify(for: host)
+                    bringPhishingDetectedStateAndNotify(for: host)
+                    tabManager.removeTab(with: currentTab.uuid)
                 }
 
                 completion?(isNotPhishing)
+            case let .failure(error):
+                presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    func provideTabs() {
+        let allTabsWrapper = tabManager.getAllTabs()
+
+        execute(
+            wrapper: allTabsWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case let .success(tabs):
+                self.tabs = tabs
+
+                // In case we haven't loaded current tab yet so it is not persisted
+                let outputTabs: [DAppBrowserTab] = if tabs.contains(
+                    where: { $0.uuid == self.currentTab.uuid }
+                ) {
+                    tabs
+                } else {
+                    tabs + [currentTab]
+                }
+
+                presenter?.didReceiveTabs(outputTabs)
+            case let .failure(error):
+                presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    func proceedWithTabUpdate(with searchResult: DAppSearchResult) {
+        guard let updatedTab = currentTab.updating(with: searchResult) else {
+            return
+        }
+
+        let updateWrapper = tabManager.updateTab(updatedTab)
+
+        dataSource.replace(tab: updatedTab)
+
+        execute(
+            wrapper: updateWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(updatedTab):
+                self?.currentTab = updatedTab
+                self?.transports.forEach { $0.stop() }
+                self?.completeSetupIfNeeded()
+                self?.provideTabs()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    func proceedWithNewTab(opening dApp: DApp) {
+        let newTab = DAppBrowserTab(
+            from: dApp,
+            metaId: dataSource.wallet.metaId
+        )
+
+        let states = transports.compactMap { $0.makeOpaqueState() }
+
+        storeTab(currentTab.updating(transportStates: states))
+
+        dataSource.replace(tab: newTab)
+
+        let newTabSaveWrapper = tabManager.updateTab(newTab)
+
+        execute(
+            wrapper: newTabSaveWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(model):
+                self?.currentTab = model
+                self?.transports.forEach { $0.stop() }
+                self?.completeSetupIfNeeded()
+                self?.provideTabs()
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    func storeTab(_ tab: DAppBrowserTab) {
+        let tabSaveWrapper = tabManager.updateTab(tab)
+
+        execute(
+            wrapper: tabSaveWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(tab):
+                self?.provideTabs()
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
             }
@@ -258,8 +378,16 @@ final class DAppBrowserInteractor {
     }
 }
 
+// MARK: DAppBrowserInteractorInputProtocol
+
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
+        storeTab(currentTab)
+        applicationHandler.delegate = self
+
+        setupState()
+        provideTabs()
+
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
@@ -271,11 +399,15 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func process(message: Any, host: String, transport name: String) {
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-            self?.verifyPhishing(for: host) { [weak self] isNotPhishing in
+            self?.verifyPhishing(for: host) { isNotPhishing in
                 if isNotPhishing {
                     let queueMessage = QueueMessage(
                         host: host,
@@ -290,18 +422,33 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func processConfirmation(response: DAppOperationResponse, forTransport name: String) {
+    func processConfirmation(
+        response: DAppOperationResponse,
+        forTransport name: String
+    ) {
         transports.first(where: { $0.name == name })?.processConfirmation(response: response)
+    }
+
+    func process(stateRender: DAppBrowserTabRenderProtocol) {
+        let renderUpdateWrapper = tabManager.updateRenderForTab(
+            with: currentTab.uuid,
+            render: stateRender
+        )
+
+        operationQueue.addOperations(
+            renderUpdateWrapper.allOperations,
+            waitUntilFinished: false
+        )
     }
 
     func process(newQuery: DAppSearchResult) {
         sequentialPhishingVerifier.cancelAll()
 
-        userQuery = newQuery
-        dataSource.replace(dApp: userQuery.dApp)
-
-        transports.forEach { $0.stop() }
-        completeSetupIfNeeded()
+        if case let .dApp(dApp) = newQuery {
+            proceedWithNewTab(opening: dApp)
+        } else {
+            proceedWithTabUpdate(with: newQuery)
+        }
     }
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
@@ -335,7 +482,44 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
         dataSource.operationQueue.addOperation(saveOperation)
     }
+
+    func saveTabIfNeeded() {
+        guard !tabs.contains(currentTab) else {
+            return
+        }
+
+        storeTab(currentTab)
+    }
+
+    func saveLastTabState(render: DAppBrowserTabRenderProtocol) {
+        let transportSaveWrapper = createTransportSaveWrapper()
+
+        let renderUpdateWrapper = tabManager.updateRenderForTab(
+            with: currentTab.uuid,
+            render: render
+        )
+
+        renderUpdateWrapper.addDependency(wrapper: transportSaveWrapper)
+
+        let resultWrapper = renderUpdateWrapper.insertingHead(operations: transportSaveWrapper.allOperations)
+
+        execute(
+            wrapper: resultWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] _ in
+            self?.presenter?.didSaveLastTabState()
+        }
+    }
+
+    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
+        let transportStates = transports.compactMap { $0.makeOpaqueState() }
+
+        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    }
 }
+
+// MARK: DAppBrowserTransportDelegate
 
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     func dAppTransport(
@@ -373,6 +557,8 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     }
 }
 
+// MARK: DAppLocalStorageSubscriber
+
 extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionHandler {
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
         switch result {
@@ -381,5 +567,20 @@ extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscripti
         case let .failure(error):
             logger?.error("Unexpected database error: \(error)")
         }
+    }
+}
+
+// MARK: ApplicationHandlerDelegate
+
+extension DAppBrowserInteractor: ApplicationHandlerDelegate {
+    func didReceiveWillResignActive(notification _: Notification) {
+        presenter?.didReceiveRenderRequest()
+
+        let transportSaveWrapper = createTransportSaveWrapper()
+
+        operationQueue.addOperations(
+            transportSaveWrapper.allOperations,
+            waitUntilFinished: false
+        )
     }
 }

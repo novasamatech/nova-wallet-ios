@@ -6,12 +6,13 @@ enum RewardCalculatorParams {
     case noParams
     case inflation(parachainsCount: Int)
     case vara(inflation: BigUInt)
+    case polkadot(inflationPrediction: RuntimeApiInflationPrediction)
 
     var parachainsCount: Int? {
         switch self {
         case let .inflation(parachainsCount):
             return parachainsCount
-        case .noParams, .vara:
+        case .noParams, .vara, .polkadot:
             return nil
         }
     }

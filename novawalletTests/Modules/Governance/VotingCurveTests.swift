@@ -101,7 +101,7 @@ class VotingCurveTests: XCTestCase {
         
         stubs.forEach { expectedX, y in
             let resultX = function.delay(for: y)
-            XCTAssertTrue(resultX == expectedX, "Expected \(expectedX) for input \(y) but got: \(resultX)")
+            XCTAssertTrue(resultX == expectedX, "Expected \(expectedX) for input \(y) but got: \(String(describing: resultX))")
         }
     }
     
@@ -117,7 +117,7 @@ class VotingCurveTests: XCTestCase {
         
         stubs.forEach { x, expectedY in
             let resultY = function.calculateThreshold(for: x)
-            XCTAssertTrue(resultY == expectedY, "Expected \(expectedY) for input \(x) but got: \(resultY)")
+            XCTAssertTrue(resultY == expectedY, "Expected \(expectedY) for input \(x) but got: \(String(describing: resultY))")
         }
     }
 }

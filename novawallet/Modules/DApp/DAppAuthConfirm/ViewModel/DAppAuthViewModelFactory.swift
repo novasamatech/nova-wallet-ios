@@ -6,16 +6,16 @@ protocol DAppAuthViewModelFactoryProtocol {
 }
 
 final class DAppAuthViewModelFactory: DAppAuthViewModelFactoryProtocol {
+    private let iconViewModelFactory: DAppIconViewModelFactoryProtocol
+
+    init(iconViewModelFactory: DAppIconViewModelFactoryProtocol) {
+        self.iconViewModelFactory = iconViewModelFactory
+    }
+
     func createViewModel(from request: DAppAuthRequest) -> DAppAuthViewModel {
         let sourceViewModel = StaticImageViewModel(image: R.image.iconDappExtension()!)
 
-        let destinationViewModel: ImageViewModelProtocol
-
-        if let iconUrl = request.dAppIcon {
-            destinationViewModel = RemoteImageViewModel(url: iconUrl)
-        } else {
-            destinationViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
-        }
+        let destinationViewModel = iconViewModelFactory.createIconViewModel(for: request)
 
         let iconGenerator = NovaIconGenerator()
 

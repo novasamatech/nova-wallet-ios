@@ -4,16 +4,7 @@ class SwapBasePresenter {
     let logger: LoggerProtocol
     let selectedWallet: MetaAccountModel
     let dataValidatingFactory: SwapDataValidatorFactoryProtocol
-
-    init(
-        selectedWallet: MetaAccountModel,
-        dataValidatingFactory: SwapDataValidatorFactoryProtocol,
-        logger: LoggerProtocol
-    ) {
-        self.selectedWallet = selectedWallet
-        self.dataValidatingFactory = dataValidatingFactory
-        self.logger = logger
-    }
+    let priceStore: AssetExchangePriceStoring
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
 
@@ -37,18 +28,16 @@ class SwapBasePresenter {
         return balances[utilityAssetId]
     }
 
-    private(set) var prices: [ChainAssetId: PriceData] = [:]
-
     var payAssetPriceData: PriceData? {
-        getPayChainAsset().flatMap { prices[$0.chainAssetId] }
+        getPayChainAsset().flatMap { priceStore.fetchPrice(for: $0.chainAssetId) }
     }
 
     var receiveAssetPriceData: PriceData? {
-        getReceiveChainAsset().flatMap { prices[$0.chainAssetId] }
+        getReceiveChainAsset().flatMap { priceStore.fetchPrice(for: $0.chainAssetId) }
     }
 
     var feeAssetPriceData: PriceData? {
-        getFeeChainAsset().flatMap { prices[$0.chainAssetId] }
+        getFeeChainAsset().flatMap { priceStore.fetchPrice(for: $0.chainAssetId) }
     }
 
     var assetBalanceExistences: [ChainAssetId: AssetBalanceExistence] = [:]
@@ -71,10 +60,10 @@ class SwapBasePresenter {
         }
     }
 
-    var fee: AssetConversion.FeeModel?
-    var quoteResult: Result<AssetConversion.Quote, Error>?
+    var fee: AssetExchangeFee?
+    var quoteResult: Result<AssetExchangeQuote, Error>?
 
-    var quote: AssetConversion.Quote? {
+    var quote: AssetExchangeQuote? {
         switch quoteResult {
         case let .success(quote):
             return quote
@@ -84,6 +73,18 @@ class SwapBasePresenter {
     }
 
     var accountInfo: AccountInfo?
+
+    init(
+        selectedWallet: MetaAccountModel,
+        dataValidatingFactory: SwapDataValidatorFactoryProtocol,
+        priceStore: AssetExchangePriceStoring,
+        logger: LoggerProtocol
+    ) {
+        self.selectedWallet = selectedWallet
+        self.dataValidatingFactory = dataValidatingFactory
+        self.priceStore = priceStore
+        self.logger = logger
+    }
 
     func getSwapModel() -> SwapModel? {
         guard
@@ -115,12 +116,14 @@ class SwapBasePresenter {
         )
     }
 
-    func getMaxModel() -> SwapMaxModel? {
+    func getMaxModel() -> SwapMaxModel {
         .init(
             payChainAsset: getPayChainAsset(),
             feeChainAsset: getFeeChainAsset(),
+            receiveChainAsset: getReceiveChainAsset(),
             balance: payAssetBalance,
             feeModel: fee,
+            quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
             accountInfo: accountInfo
@@ -151,11 +154,7 @@ class SwapBasePresenter {
         fatalError("Must be implemented by parent class")
     }
 
-    func shouldHandleQuote(for _: AssetConversion.QuoteArgs?) -> Bool {
-        fatalError("Must be implemented by parent class")
-    }
-
-    func shouldHandleFee(for _: TransactionFeeId, feeChainAssetId _: ChainAssetId?) -> Bool {
+    func shouldHandleRoute(for _: AssetConversion.QuoteArgs?) -> Bool {
         fatalError("Must be implemented by parent class")
     }
 
@@ -169,15 +168,14 @@ class SwapBasePresenter {
 
     func handleBaseError(_: SwapBaseError) {}
 
-    func handleNewQuote(_: AssetConversion.Quote, for _: AssetConversion.QuoteArgs) {}
+    func handleNewQuote(_: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {}
 
     func handleNewFee(
-        _: AssetConversion.FeeModel?,
-        transactionFeeId _: TransactionFeeId,
+        _: AssetExchangeFee?,
         feeChainAssetId _: ChainAssetId?
     ) {}
 
-    func handleNewPrice(_: PriceData?, chainAssetId _: ChainAssetId) {}
+    func handleNewPrice(_: PriceData?, priceId _: AssetModel.PriceId) {}
 
     func handleNewBalance(_: AssetBalance?, for _: ChainAssetId) {}
 
@@ -196,46 +194,18 @@ class SwapBasePresenter {
 
         switch error {
         case let .quote(error, args):
-            guard shouldHandleQuote(for: args) else {
+            guard shouldHandleRoute(for: args) else {
                 return
             }
 
             quoteResult = .failure(error)
-        case let .fetchFeeFailed(_, id, feeChainAssetId):
-            guard shouldHandleFee(for: id, feeChainAssetId: feeChainAssetId) else {
-                return
-            }
-
+        case .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
                 self?.estimateFee()
             }
-        case let .price(_, priceId):
-            wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                [self.getPayChainAsset(), self.getReceiveChainAsset(), self.getFeeChainAsset()]
-                    .compactMap { $0 }
-                    .filter { $0.asset.priceId == priceId }
-                    .forEach(interactor.remakePriceSubscription)
-            }
-        case let .assetBalance(_, chainAssetId, _):
-            wireframe.presentRequestStatus(on: view, locale: locale) { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                [self.getPayChainAsset(), self.getReceiveChainAsset(), self.getFeeChainAsset()]
-                    .compactMap { $0 }
-                    .filter { $0.chainAssetId == chainAssetId }
-                    .forEach(interactor.retryAssetBalanceSubscription)
-            }
-        case let .assetBalanceExistense(_, chainAsset):
+        case let .assetBalanceExistence(_, chainAsset):
             wireframe.presentRequestStatus(on: view, locale: locale) {
                 interactor.retryAssetBalanceExistenseFetch(for: chainAsset)
-            }
-        case .accountInfo:
-            wireframe.presentRequestStatus(on: view, locale: locale) {
-                interactor.retryAccountInfoSubscription()
             }
         }
     }
@@ -245,9 +215,9 @@ class SwapBasePresenter {
         interactor: SwapBaseInteractorInputProtocol,
         locale: Locale
     ) -> [DataValidating] {
-        [
+        var baseValidations = [
             dataValidatingFactory.has(
-                fee: swapModel.feeModel?.extrinsicFee,
+                fee: swapModel.feeModel?.originExtrinsicFee(),
                 locale: locale
             ) { [weak self] in
                 self?.estimateFee()
@@ -260,7 +230,7 @@ class SwapBasePresenter {
                 locale: locale
             ),
             dataValidatingFactory.notViolatingMinBalancePaying(
-                fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.extrinsicFee : nil,
+                fee: swapModel.feeChainAsset.isUtilityAsset ? swapModel.feeModel?.originExtrinsicFee() : nil,
                 total: swapModel.utilityAssetBalance?.balanceCountingEd,
                 minBalance: swapModel.feeChainAsset.isUtilityAsset ? swapModel.utilityAssetExistense?.minBalance : 0,
                 asset: swapModel.utilityChainAsset?.assetDisplayInfo ?? swapModel.feeChainAsset.assetDisplayInfo,
@@ -273,70 +243,80 @@ class SwapBasePresenter {
                     self?.applySwapMax()
                 },
                 locale: locale
-            ),
-            dataValidatingFactory.passesRealtimeQuoteValidation(
+            )
+        ]
+
+        // for last operation validation is covered by canReceive
+        if let operations = swapModel.quote?.metaOperations, operations.count > 1 {
+            let intermediateEdValidation = dataValidatingFactory.passesIntermediateEDValidation(
                 params: swapModel,
-                remoteValidatingClosure: { args, completion in
-                    interactor.requestValidatingQuote(for: args, completion: completion)
-                },
-                onQuoteUpdate: { [weak self] quote in
-                    self?.quoteResult = .success(quote)
-                    self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+                remoteValidatingClosure: { closureParams in
+                    interactor.requestValidatingIntermediateED(
+                        for: closureParams.operations.dropLast(),
+                        completion: closureParams.completionClosure
+                    )
                 },
                 locale: locale
             )
-        ]
+
+            baseValidations.append(intermediateEdValidation)
+        }
+
+        let quoteValidation = dataValidatingFactory.passesRealtimeQuoteValidation(
+            params: swapModel,
+            remoteValidatingClosure: { args, completion in
+                interactor.requestValidatingQuote(for: args, completion: completion)
+            },
+            onQuoteUpdate: { [weak self] quote in
+                self?.quoteResult = .success(quote)
+                self?.handleNewQuote(quote, for: swapModel.quoteArgs)
+            },
+            locale: locale
+        )
+
+        baseValidations.append(quoteValidation)
+
+        return baseValidations
     }
 }
 
 extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
-    func didReceive(quote: AssetConversion.Quote, for quoteArgs: AssetConversion.QuoteArgs) {
-        guard shouldHandleQuote(for: quoteArgs), self.quote != quote else {
+    func didReceive(quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
+        guard shouldHandleRoute(for: quoteArgs) else {
             return
         }
+
+        logger.debug("New quote: \(quote)")
 
         quoteResult = .success(quote)
 
         handleNewQuote(quote, for: quoteArgs)
     }
 
-    func didReceive(
-        fee: AssetConversion.FeeModel?,
-        transactionFeeId: TransactionFeeId,
-        feeChainAssetId: ChainAssetId?
-    ) {
-        guard shouldHandleFee(for: transactionFeeId, feeChainAssetId: feeChainAssetId), self.fee != fee else {
+    func didReceive(fee: AssetExchangeFee, feeChainAssetId: ChainAssetId?) {
+        guard self.fee != fee else {
             return
         }
+
+        logger.debug("Did receive new fee: \(fee)")
 
         self.fee = fee
 
-        handleNewFee(fee, transactionFeeId: transactionFeeId, feeChainAssetId: feeChainAssetId)
+        handleNewFee(fee, feeChainAssetId: feeChainAssetId)
     }
 
     func didReceive(baseError: SwapBaseError) {
+        logger.error("Did receive error: \(baseError)")
+
         handleBaseError(baseError)
-    }
-
-    func didReceive(price: PriceData?, priceId: AssetModel.PriceId) {
-        let optChainAssetId = [getPayChainAsset(), getReceiveChainAsset(), getFeeChainAsset()]
-            .compactMap { $0 }
-            .filter { $0.asset.priceId == priceId }
-            .first?.chainAssetId
-
-        guard let chainAssetId = optChainAssetId, prices[chainAssetId] != price else {
-            return
-        }
-
-        prices[chainAssetId] = price
-
-        handleNewPrice(price, chainAssetId: chainAssetId)
     }
 
     func didReceive(balance: AssetBalance?, for chainAsset: ChainAssetId) {
         guard balances[chainAsset] != balance else {
             return
         }
+
+        logger.debug("New balance: \(String(describing: balance))")
 
         balances[chainAsset] = balance
 
@@ -347,6 +327,8 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
         guard assetBalanceExistences[chainAssetId] != existense else {
             return
         }
+
+        logger.debug("New balance existence: \(existense)")
 
         assetBalanceExistences[chainAssetId] = existense
 

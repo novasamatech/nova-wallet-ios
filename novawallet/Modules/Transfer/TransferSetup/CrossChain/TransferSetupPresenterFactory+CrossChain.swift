@@ -106,20 +106,11 @@ extension TransferSetupPresenterFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-
         let walletRemoteSubscriptionService = WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
-            remoteSubscriptionService: walletRemoteSubscriptionService,
-            chainRegistry: chainRegistry,
-            repositoryFactory: repositoryFactory,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
+            remoteSubscriptionService: walletRemoteSubscriptionService
         )
-
-        let senderResolutionFacade = ExtrinsicSenderResolutionFacade(userStorageFacade: UserDataStorageFacade.shared)
 
         let metadataHashOperationFactory = MetadataHashOperationFactory(
             metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
@@ -131,8 +122,9 @@ extension TransferSetupPresenterFactory {
         let extrinsicService = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: senderResolutionFacade,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
 
@@ -150,6 +142,7 @@ extension TransferSetupPresenterFactory {
             feeProxy: XcmExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
             resolutionFactory: resolutionFactory,
+            fungibilityPreservationProvider: AssetFungibilityPreservationProvider.createFromKnownChains(),
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

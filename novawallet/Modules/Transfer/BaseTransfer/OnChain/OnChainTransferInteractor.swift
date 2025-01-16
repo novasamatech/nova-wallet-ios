@@ -559,7 +559,7 @@ extension OnChainTransferInteractor {
                 switch result {
                 case let .success(available):
                     self?.presenter?.didReceiveCustomAssetFeeAvailable(available)
-                case let .failure(error) where error is AssetConversionAggregationFactoryError:
+                case let .failure(error) where error is AssetFeePaymentError:
                     self?.presenter?.didReceiveCustomAssetFeeAvailable(false)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)

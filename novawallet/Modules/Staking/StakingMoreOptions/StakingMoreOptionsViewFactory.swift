@@ -2,7 +2,9 @@ import Foundation
 import SoraFoundation
 
 struct StakingMoreOptionsViewFactory {
-    static func createView(stateObserver: Observable<StakingDashboardModel>) -> StakingMoreOptionsViewProtocol? {
+    static func createView(
+        stateObserver: Observable<StakingDashboardModel>
+    ) -> StakingMoreOptionsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -25,10 +27,13 @@ struct StakingMoreOptionsViewFactory {
             estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
         )
 
+        let wallet: MetaAccountModel = SelectedWalletSettings.shared.value
+
         let presenter = StakingMoreOptionsPresenter(
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             wireframe: wireframe,
+            metaId: wallet.metaId,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

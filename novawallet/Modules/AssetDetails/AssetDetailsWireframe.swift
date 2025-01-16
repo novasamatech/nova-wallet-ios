@@ -5,9 +5,14 @@ import SoraFoundation
 
 final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     let operationState: AssetOperationState
+    let swapState: SwapTokensFlowStateProtocol
 
-    init(operationState: AssetOperationState) {
+    init(
+        operationState: AssetOperationState,
+        swapState: SwapTokensFlowStateProtocol
+    ) {
         self.operationState = operationState
+        self.swapState = swapState
     }
 
     func showPurchaseTokens(
@@ -34,7 +39,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: transferSetupView.controller)
-        view?.controller.navigationController?.present(navigationController, animated: true)
+        view?.controller.navigationController?.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showReceiveTokens(
@@ -50,7 +55,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: receiveTokensView.controller)
-        view?.controller.navigationController?.present(navigationController, animated: true)
+        view?.controller.navigationController?.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showPurchaseProviders(
@@ -101,7 +106,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
 
     func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
         guard let swapsView = SwapSetupViewFactory.createView(
-            assetListObservable: operationState.assetListObservable,
+            state: swapState,
             payChainAsset: chainAsset,
             swapCompletionClosure: operationState.swapCompletionClosure
         ) else {
@@ -110,7 +115,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: swapsView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     private func present(_ viewController: UIViewController, from view: AssetDetailsViewProtocol?) {

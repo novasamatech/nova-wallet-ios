@@ -1,6 +1,9 @@
 import SoraFoundation
 
-private typealias ModalActionsContext = (actions: [LocalizableResource<ActionManageViewModel>], context: ModalPickerClosureContext)
+private typealias ModalActionsContext = (
+    actions: [LocalizableResource<ActionManageViewModel>],
+    context: ModalPickerClosureContext
+)
 
 final class NetworkDetailsPresenter {
     weak var view: NetworkDetailsViewProtocol?
@@ -366,7 +369,6 @@ extension NetworkDetailsPresenter: ModalPickerViewControllerDelegate {
         guard let context = context as? ModalPickerClosureContext else {
             return
         }
-
         context.process(selectedIndex: index)
     }
 }
@@ -378,7 +380,6 @@ extension NetworkDetailsPresenter: Localizable {
         guard let view, view.isSetup else {
             return
         }
-
         provideViewModel()
     }
 }

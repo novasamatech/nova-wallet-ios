@@ -64,7 +64,7 @@ final class ChainModelMapper {
 
         return AssetModel(
             assetId: UInt32(bitPattern: entity.assetId),
-            icon: entity.icon,
+            icon: entity.iconPath,
             name: entity.name,
             symbol: entity.symbol!,
             precision: UInt16(bitPattern: entity.precision),
@@ -112,7 +112,7 @@ final class ChainModelMapper {
             assetEntity.assetId = assetEntityId
             assetEntity.name = asset.name
             assetEntity.precision = Int16(bitPattern: asset.precision)
-            assetEntity.icon = asset.icon
+            assetEntity.iconPath = asset.icon
             assetEntity.symbol = asset.symbol
             assetEntity.priceId = asset.priceId
             assetEntity.type = asset.type
@@ -445,8 +445,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.noSubstrateRuntime = model.noSubstrateRuntime
         entity.hasSwapHub = model.hasSwapHub
         entity.hasSwapHydra = model.hasSwapHydra
-        entity.hasAssetHubTransferFees = model.hasAssetHubTransferFees
-        entity.hasHydrationTransferFees = model.hasHydrationTransferFees
+        entity.hasAssetHubTransferFees = model.hasAssetHubFees
+        entity.hasHydrationTransferFees = model.hasHydrationFees
         entity.hasProxy = model.hasProxy
         entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order

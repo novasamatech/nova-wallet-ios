@@ -162,18 +162,44 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         swapButton.isEnabled = viewModel.hasSwaps
     }
 
-    private func setupStateWithLocks(amount: String) {
+    func startLoadingIfNeeded() {
+        guard skeletonView == nil else {
+            return
+        }
+
+        amountLabel.alpha = 0.0
+
+        setupSkeleton()
+    }
+
+    func stopLoadingIfNeeded() {
+        guard skeletonView != nil else {
+            return
+        }
+
+        skeletonView?.stopSkrulling()
+        skeletonView?.removeFromSuperview()
+        skeletonView = nil
+
+        amountLabel.alpha = 1.0
+    }
+}
+
+// MARK: Private
+
+private extension AssetListTotalBalanceCell {
+    func setupStateWithLocks(amount: String) {
         locksView.isHidden = false
 
         locksView.contentView.detailsView.detailsLabel.text = amount
     }
 
-    private func setupStateWithoutLocks() {
+    func setupStateWithoutLocks() {
         locksView.contentView.detailsView.detailsLabel.text = nil
         locksView.isHidden = true
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         titleLabel.text = R.string.localizable.walletTotalBalance(
             preferredLanguages: locale.rLanguages
         )
@@ -189,7 +215,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         )
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         [shadowView1, shadowView2].forEach { view in
             contentView.addSubview(view)
 
@@ -248,29 +274,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         }
     }
 
-    func startLoadingIfNeeded() {
-        guard skeletonView == nil else {
-            return
-        }
-
-        amountLabel.alpha = 0.0
-
-        setupSkeleton()
-    }
-
-    func stopLoadingIfNeeded() {
-        guard skeletonView != nil else {
-            return
-        }
-
-        skeletonView?.stopSkrulling()
-        skeletonView?.removeFromSuperview()
-        skeletonView = nil
-
-        amountLabel.alpha = 1.0
-    }
-
-    private func setupSkeleton() {
+    func setupSkeleton() {
         let spaceSize = contentView.frame.size
 
         guard spaceSize.width > 0, spaceSize.height > 0 else {
@@ -306,7 +310,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
 
-    private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 96.0, height: 16.0)
 
         let offsetY = Constants.insets.top + titleLabel.font.lineHeight + Constants.amountTitleSpacing +
@@ -328,7 +332,7 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         ]
     }
 
-    private func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
+    func createActionButton(title: String?, icon: UIImage?) -> RoundedButton {
         let button = RoundedButton()
         button.roundedBackgroundView?.fillColor = .clear
         button.roundedBackgroundView?.highlightedFillColor = .clear

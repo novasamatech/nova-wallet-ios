@@ -120,7 +120,7 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testKusamaStatemineCrosschainFee() throws {
         let originChainId = KnowChainId.kusama
-        let destinationChainId = KnowChainId.statemine
+        let destinationChainId = KnowChainId.kusamaAssetHub
         let assetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
@@ -138,7 +138,7 @@ class XcmTransfersFeeTests: XCTestCase {
     }
     
     func testStatemineKusamaCrosschainFee() throws {
-        let originChainId = KnowChainId.statemine
+        let originChainId = KnowChainId.kusamaAssetHub
         let destinationChainId = KnowChainId.kusama
         let assetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
@@ -336,8 +336,9 @@ class XcmTransfersFeeTests: XCTestCase {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
             metadataHashOperationFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: substrateStorageFacade,
             operationQueue: operationQueue
         )
 
@@ -402,8 +403,9 @@ class XcmTransfersFeeTests: XCTestCase {
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            senderResolutionFacade: ExtrinsicSenderResolutionFacadeStub(),
             metadataHashOperationFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
+            substrateStorageFacade: substrateStorageFacade,
             operationQueue: OperationQueue()
         )
 

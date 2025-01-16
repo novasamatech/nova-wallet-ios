@@ -25,6 +25,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let substrateStorageFacade: StorageFacadeProtocol
+    let fungibilityPreservationProvider: AssetFungibilityPreservationProviding
     let operationQueue: OperationQueue
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -72,6 +73,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         feeProxy: XcmExtrinsicFeeProxyProtocol,
         extrinsicService: XcmTransferServiceProtocol,
         resolutionFactory: XcmTransferResolutionFactoryProtocol,
+        fungibilityPreservationProvider: AssetFungibilityPreservationProviding,
         walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -87,6 +89,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         self.feeProxy = feeProxy
         self.extrinsicService = extrinsicService
         self.resolutionFactory = resolutionFactory
+        self.fungibilityPreservationProvider = fungibilityPreservationProvider
         self.walletRemoteWrapper = walletRemoteWrapper
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -232,6 +235,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         setupUtilityAssetPriceProviderIfNeeded()
 
         provideMinBalance()
+        provideOriginRequiresKeepAlive()
 
         presenter?.didCompleteSetup(result: .success(()))
     }
@@ -355,6 +359,14 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
                 }
             }
         }
+    }
+
+    private func provideOriginRequiresKeepAlive() {
+        let keepAlive = fungibilityPreservationProvider.requiresPreservationForCrosschain(
+            assetIn: originChainAsset
+        )
+
+        presenter?.didReceiveRequiresOriginKeepAlive(keepAlive)
     }
 
     private func cancelSetupCall() {

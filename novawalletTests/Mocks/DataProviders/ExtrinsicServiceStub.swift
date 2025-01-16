@@ -112,7 +112,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
         switch txHash {
         case let .success(value):
-            notificationClosure(.success(.inBlock(value)))
+            notificationClosure(.success(.init(extrinsicHash: value, extrinsicStatus: .inBlock(value))))
         case let .failure(error):
             notificationClosure(.failure(error))
         }

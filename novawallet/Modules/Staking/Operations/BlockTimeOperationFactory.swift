@@ -43,26 +43,19 @@ final class BlockTimeOperationFactory {
             dependingOn: codingFactoryOperation
         )
 
-        let minBlockTimeOperation: BaseOperation<BlockTime> = PrimitiveConstantOperation.operation(
-            for: .minimumPeriodBetweenBlocks,
-            dependingOn: codingFactoryOperation
-        )
-
         let mapOperation = ClosureOperation<BlockTime> {
             let optBabeTime = try? babeTimeOperation.extractNoCancellableResultData()
-            let optMinBlockTime = try? minBlockTimeOperation.extractNoCancellableResultData()
 
-            let exptectedBlockTime = (optBabeTime ?? optMinBlockTime) ?? fallbackTime
+            let exptectedBlockTime = optBabeTime ?? fallbackTime
 
             return exptectedBlockTime >= fallbackThreshold ? exptectedBlockTime : fallbackTime
         }
 
         mapOperation.addDependency(babeTimeOperation)
-        mapOperation.addDependency(minBlockTimeOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [babeTimeOperation, minBlockTimeOperation]
+            dependencies: [babeTimeOperation]
         )
     }
 }

@@ -13,18 +13,20 @@ struct AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
             logger: logger
         )
 
         let presenter = createSendPresenter(
-            with: interactor,
-            multichainToken: multichainToken,
-            stateObservable: stateObservable,
-            transferCompletion: transferCompletion,
-            currencyManager: currencyManager
+            dependencies: SendPresenterDependencies(
+                interactor: interactor,
+                multichainToken: multichainToken,
+                stateObservable: stateObservable,
+                transferCompletion: transferCompletion,
+                currencyManager: currencyManager
+            )
         )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
@@ -36,25 +38,22 @@ struct AssetOperationNetworkListViewFactory {
     }
 
     private static func createSendPresenter(
-        with interactor: AssetOperationNetworkListInteractor,
-        multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
-        transferCompletion: TransferCompletionClosure?,
-        currencyManager: CurrencyManager
+        dependencies: SendPresenterDependencies
     ) -> SendOperationNetworkListPresenter {
-        let viewModelFactory = createViewModelFactory(with: currencyManager)
+        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
 
         let wireframe = SendAssetOperationWireframe(
-            stateObservable: stateObservable,
+            stateObservable: dependencies.stateObservable,
             buyTokensClosure: nil,
-            transferCompletion: transferCompletion
+            transferCompletion: dependencies.transferCompletion
         )
 
         return SendOperationNetworkListPresenter(
-            interactor: interactor,
+            interactor: dependencies.interactor,
             wireframe: wireframe,
-            multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory
+            multichainToken: dependencies.multichainToken,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
         )
     }
 
@@ -100,12 +99,14 @@ extension AssetOperationNetworkListViewFactory {
         )
 
         let presenter = createBuyPresenter(
-            with: interactor,
-            multichainToken: multichainToken,
-            stateObservable: stateObservable,
-            selectedAccount: selectedAccount,
-            purchaseProvider: purchaseProvider,
-            currencyManager: currencyManager
+            dependencies: BuyPresenterDependencies(
+                interactor: interactor,
+                multichainToken: multichainToken,
+                stateObservable: stateObservable,
+                selectedAccount: selectedAccount,
+                purchaseProvider: purchaseProvider,
+                currencyManager: currencyManager
+            )
         )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
@@ -117,24 +118,20 @@ extension AssetOperationNetworkListViewFactory {
     }
 
     private static func createBuyPresenter(
-        with interactor: AssetOperationNetworkListInteractor,
-        multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
-        selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol,
-        currencyManager: CurrencyManager
+        dependencies: BuyPresenterDependencies
     ) -> BuyOperationNetworkListPresenter {
-        let viewModelFactory = createViewModelFactory(with: currencyManager)
+        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
 
-        let wireframe = BuyAssetOperationWireframe(stateObservable: stateObservable)
+        let wireframe = BuyAssetOperationWireframe(stateObservable: dependencies.stateObservable)
 
         return BuyOperationNetworkListPresenter(
-            interactor: interactor,
+            interactor: dependencies.interactor,
             wireframe: wireframe,
-            multichainToken: multichainToken,
+            multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
-            selectedAccount: selectedAccount,
-            purchaseProvider: purchaseProvider
+            selectedAccount: dependencies.selectedAccount,
+            purchaseProvider: dependencies.purchaseProvider,
+            localizationManager: LocalizationManager.shared
         )
     }
 }
@@ -160,11 +157,13 @@ extension AssetOperationNetworkListViewFactory {
         )
 
         let presenter = createReceivePresenter(
-            with: interactor,
-            multichainToken: multichainToken,
-            stateObservable: stateObservable,
-            selectedAccount: selectedAccount,
-            currencyManager: currencyManager
+            dependencies: ReceivePresenterDependencies(
+                interactor: interactor,
+                multichainToken: multichainToken,
+                stateObservable: stateObservable,
+                selectedAccount: selectedAccount,
+                currencyManager: currencyManager
+            )
         )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
@@ -176,22 +175,19 @@ extension AssetOperationNetworkListViewFactory {
     }
 
     private static func createReceivePresenter(
-        with interactor: AssetOperationNetworkListInteractor,
-        multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
-        selectedAccount: MetaAccountModel,
-        currencyManager: CurrencyManager
+        dependencies: ReceivePresenterDependencies
     ) -> ReceiveOperationNetworkListPresenter {
-        let viewModelFactory = createViewModelFactory(with: currencyManager)
+        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
 
-        let wireframe = ReceiveAssetOperationWireframe(stateObservable: stateObservable)
+        let wireframe = ReceiveAssetOperationWireframe(stateObservable: dependencies.stateObservable)
 
         return ReceiveOperationNetworkListPresenter(
-            interactor: interactor,
+            interactor: dependencies.interactor,
             wireframe: wireframe,
-            multichainToken: multichainToken,
+            multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
-            selectedAccount: selectedAccount
+            selectedAccount: dependencies.selectedAccount,
+            localizationManager: LocalizationManager.shared
         )
     }
 }
@@ -201,8 +197,8 @@ extension AssetOperationNetworkListViewFactory {
 extension AssetOperationNetworkListViewFactory {
     static func createSwapsView(
         with multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
-        selectClosure: @escaping (ChainAsset) -> Void,
+        state: SwapTokensFlowStateProtocol,
+        selectClosure: @escaping SwapAssetSelectionClosure,
         selectClosureStrategy: SubmoduleNavigationStrategy
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
@@ -211,48 +207,91 @@ extension AssetOperationNetworkListViewFactory {
 
         let logger = Logger.shared
 
-        let interactor = AssetOperationNetworkListInteractor(
+        let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
-            stateObservable: stateObservable,
+            stateObservable: state.assetListObservable,
             logger: logger
         )
 
         let presenter = createSwapPresenter(
-            with: interactor,
-            multichainToken: multichainToken,
-            stateObservable: stateObservable,
-            currencyManager: currencyManager,
-            selectClosure: selectClosure,
-            selectClosureStrategy: selectClosureStrategy
+            dependencies: SwapPresenterDependencies(
+                interactor: interactor,
+                multichainToken: multichainToken,
+                state: state,
+                currencyManager: currencyManager,
+                selectClosure: selectClosure,
+                selectClosureStrategy: selectClosureStrategy
+            )
         )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
 
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }
 
     private static func createSwapPresenter(
-        with interactor: AssetOperationNetworkListInteractor,
-        multichainToken: MultichainToken,
-        stateObservable: AssetListModelObservable,
-        currencyManager: CurrencyManager,
-        selectClosure: @escaping (ChainAsset) -> Void,
-        selectClosureStrategy: SubmoduleNavigationStrategy
+        dependencies: SwapPresenterDependencies
     ) -> SwapOperationNetworkListPresenter {
-        let viewModelFactory = createViewModelFactory(with: currencyManager)
+        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
 
-        let wireframe = SwapAssetsOperationWireframe(stateObservable: stateObservable)
-
-        return SwapOperationNetworkListPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            multichainToken: multichainToken,
-            viewModelFactory: viewModelFactory,
-            selectClosure: selectClosure,
-            selectClosureStrategy: selectClosureStrategy
+        let wireframe = SwapAssetsOperationWireframe(
+            state: dependencies.state,
+            selectClosure: dependencies.selectClosure,
+            selectClosureStrategy: dependencies.selectClosureStrategy
         )
+
+        let presenter = SwapOperationNetworkListPresenter(
+            interactor: dependencies.interactor,
+            wireframe: wireframe,
+            multichainToken: dependencies.multichainToken,
+            viewModelFactory: viewModelFactory,
+            selectClosure: { chainAsset in
+                dependencies.selectClosure(chainAsset, dependencies.state)
+            },
+            selectClosureStrategy: dependencies.selectClosureStrategy,
+            localizationManager: LocalizationManager.shared
+        )
+
+        dependencies.interactor.presenter = presenter
+
+        return presenter
+    }
+}
+
+private extension AssetOperationNetworkListViewFactory {
+    struct SendPresenterDependencies {
+        let interactor: AssetOperationNetworkListInteractor
+        let multichainToken: MultichainToken
+        let stateObservable: AssetListModelObservable
+        let transferCompletion: TransferCompletionClosure?
+        let currencyManager: CurrencyManager
+    }
+
+    struct BuyPresenterDependencies {
+        let interactor: AssetOperationNetworkListInteractor
+        let multichainToken: MultichainToken
+        let stateObservable: AssetListModelObservable
+        let selectedAccount: MetaAccountModel
+        let purchaseProvider: PurchaseProviderProtocol
+        let currencyManager: CurrencyManager
+    }
+
+    struct ReceivePresenterDependencies {
+        let interactor: AssetOperationNetworkListInteractor
+        let multichainToken: MultichainToken
+        let stateObservable: AssetListModelObservable
+        let selectedAccount: MetaAccountModel
+        let currencyManager: CurrencyManager
+    }
+
+    struct SwapPresenterDependencies {
+        let interactor: AssetOperationNetworkListInteractor
+        let multichainToken: MultichainToken
+        let state: SwapTokensFlowStateProtocol
+        let currencyManager: CurrencyManager
+        let selectClosure: SwapAssetSelectionClosure
+        let selectClosureStrategy: SubmoduleNavigationStrategy
     }
 }
