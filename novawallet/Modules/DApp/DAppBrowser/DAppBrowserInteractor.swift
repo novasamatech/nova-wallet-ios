@@ -369,7 +369,7 @@ private extension DAppBrowserInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(tab):
+            case .success:
                 self?.provideTabs()
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)

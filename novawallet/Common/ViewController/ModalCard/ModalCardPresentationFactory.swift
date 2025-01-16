@@ -58,7 +58,9 @@ extension ModalCardPresentationFactory: UIViewControllerTransitioningDelegate {
         return presentation
     }
 
-    public func interactionControllerForDismissal(using _: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForDismissal(
+        using _: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
         presentation?.interactiveDismissal
     }
 }

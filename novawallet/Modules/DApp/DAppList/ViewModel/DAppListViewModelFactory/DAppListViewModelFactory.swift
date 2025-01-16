@@ -69,7 +69,7 @@ private extension DAppListViewModelFactory {
         let details = if let knownDApp = knownDApps[model.identifier] {
             knownDApp.categories.map {
                 categoriesDict[$0]?.name ?? $0
-            }.joined(separator: ", ") ?? knownDApp.identifier
+            }.joined(separator: ", ")
         } else {
             model.identifier
         }

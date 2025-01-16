@@ -187,8 +187,6 @@ extension NovaMainAppContainerViewController {
 
         rootView.addSubview(bottomView)
 
-        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
-
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().inset(-topContainerBottomOffset)

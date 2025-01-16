@@ -7,6 +7,42 @@ struct DAppListViewFactory {
         walletNotificationService: WalletNotificationServiceProtocol,
         proxySyncService: ProxySyncServiceProtocol
     ) -> DAppListViewProtocol? {
+        let interactor = createInteractor(
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
+        )
+
+        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
+
+        let localizationManager = LocalizationManager.shared
+
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
+        )
+
+        let presenter = DAppListPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
+        )
+
+        let view = DAppListViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createInteractor(
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService _: ProxySyncServiceProtocol
+    ) -> DAppListInteractor {
         let appConfig = ApplicationConfig.shared
         let dAppsUrl = appConfig.dAppsListURL
         let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
@@ -41,30 +77,6 @@ struct DAppListViewFactory {
             logger: logger
         )
 
-        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
-
-        let localizationManager = LocalizationManager.shared
-
-        let viewModelFactory = DAppListViewModelFactory(
-            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
-            dappIconViewModelFactory: DAppIconViewModelFactory()
-        )
-
-        let presenter = DAppListPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            viewModelFactory: viewModelFactory,
-            localizationManager: localizationManager
-        )
-
-        let view = DAppListViewController(
-            presenter: presenter,
-            localizationManager: localizationManager
-        )
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return view
+        return interactor
     }
 }
