@@ -57,6 +57,7 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
     }
 
     private func clearSubscriptions() {
+        stateSubscription?.unsubscribe()
         stateSubscription = nil
     }
 
@@ -103,6 +104,9 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
 
                 self?.mutex.unlock()
             }
+
+            stateSubscription?.subscribe()
+
         } catch {
             logger.error("Subscription error: \(error)")
 
@@ -116,10 +120,10 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
             markSyncingImmediate()
 
             logger.debug("Change: \(change)")
-            
+
             if let state = updateState(from: change) {
                 logger.debug("Saving: \(state)")
-                
+
                 saveState(state)
             }
 

@@ -49,7 +49,7 @@ extension Multistaking {
 
     struct DashboardItemMythosStakingPart {
         let stakingOption: OptionWithWallet
-        let state: Multistaking.MythosStakingState?
+        let state: Multistaking.MythosStakingState
     }
 
     struct DashboardItemOffchainPart {
@@ -85,6 +85,20 @@ extension Multistaking {
 
             if parachainState.shouldHaveActiveCollator {
                 return .waiting
+            } else {
+                return .bonded
+            }
+        }
+
+        static func from(mythosState: Multistaking.MythosStakingState) -> DashboardItemOnchainState? {
+            let hasStakingFreeze = mythosState.freezes?.getMythosStakingAmount() != nil
+
+            guard hasStakingFreeze else {
+                return nil
+            }
+
+            if mythosState.userStake != nil {
+                return .active
             } else {
                 return .bonded
             }
