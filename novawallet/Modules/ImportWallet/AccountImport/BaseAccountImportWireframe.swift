@@ -17,7 +17,10 @@ class BaseAccountImportWireframe: BaseAccountImportWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: advancedView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showReadonlyAdvancedSettings(
@@ -34,6 +37,9 @@ class BaseAccountImportWireframe: BaseAccountImportWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: advancedView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 }

@@ -33,8 +33,6 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
-        presentationController?.delegate = self
-
         rootView.accountCell.addTarget(self, action: #selector(actionShowAccountOptions), for: .touchUpInside)
         rootView.confirmButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
         rootView.rejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
@@ -140,7 +138,7 @@ extension DAppOperationConfirmViewController: Localizable {
     }
 }
 
-extension DAppOperationConfirmViewController: UIAdaptivePresentationControllerDelegate {
+extension DAppOperationConfirmViewController: ModalCardPresentationControllerDelegate {
     func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool {
         false
     }

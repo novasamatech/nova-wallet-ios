@@ -7,7 +7,12 @@ final class DAppFavoriteMapper: CoreDataMapperProtocol {
     typealias CoreDataEntity = CDDAppFavorite
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
-        DAppFavorite(identifier: entity.identifier!, label: entity.label, icon: entity.icon)
+        DAppFavorite(
+            identifier: entity.identifier!,
+            label: entity.label,
+            icon: entity.icon,
+            index: Int(entity.index)
+        )
     }
 
     func populate(
@@ -18,6 +23,10 @@ final class DAppFavoriteMapper: CoreDataMapperProtocol {
         entity.identifier = model.identifier
         entity.icon = model.icon
         entity.label = model.label
+
+        if let index = model.index {
+            entity.index = Int64(index)
+        }
     }
 
     var entityIdentifierFieldName: String { #keyPath(CDDAppSettings.identifier) }

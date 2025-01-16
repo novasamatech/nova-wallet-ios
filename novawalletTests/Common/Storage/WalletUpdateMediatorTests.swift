@@ -1,15 +1,17 @@
 import XCTest
 @testable import novawallet
 import Operation_iOS
+import Cuckoo
 
 final class WalletUpdateMediatorTests: XCTestCase {
     struct Common {
         let operationQueue: OperationQueue
         let selectedAccountSettings: SelectedWalletSettings
         let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+        let walletStorageCleaner: WalletStorageCleaning
         let walletUpdateMediator: WalletUpdateMediating
 
-        init() {
+        init(storageCleaner: WalletStorageCleaning? = nil) {
             operationQueue = OperationQueue()
             let facade = UserDataStorageTestFacade()
 
@@ -21,9 +23,18 @@ final class WalletUpdateMediatorTests: XCTestCase {
             let mapper = ManagedMetaAccountMapper()
             let coreDataRepository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
             repository = AnyDataProviderRepository(coreDataRepository)
+            walletStorageCleaner = if let storageCleaner {
+                storageCleaner
+            } else {
+                WalletStorageCleanerFactory.createTestCleaner(
+                    operationQueue: operationQueue,
+                    storageFacade: facade
+                )
+            }
             walletUpdateMediator = WalletUpdateMediator(
                 selectedWalletSettings: selectedAccountSettings,
                 repository: repository,
+                removedWalletsCleaner: walletStorageCleaner,
                 operationQueue: operationQueue
             )
         }
@@ -227,14 +238,6 @@ final class WalletUpdateMediatorTests: XCTestCase {
         
         XCTAssertTrue(common.selectedAccountSettings.value.identifier == selectedWallet.identifier)
         
-        // when
-        
-        let wrapper = common.walletUpdateMediator.saveChanges {
-            .init(newOrUpdatedItems: [], removedItems: [removedWallet])
-        }
-        
-        common.operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-        
         // then
         
         do {
@@ -405,5 +408,46 @@ final class WalletUpdateMediatorTests: XCTestCase {
         } else {
             XCTFail("Selected wallet expected")
         }
+    }
+    
+    func testBrowserStateClearingCalledAndOtherOperationsCompleted() throws {
+        // given
+        
+        let storageCleaner = MockWalletStorageCleaning()
+        let common = Common(storageCleaner: storageCleaner)
+        
+        let wallets = (0..<10).map { index in
+            ManagedMetaAccountModel(
+                info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
+                isSelected: index == 0,
+                order: index
+            )
+        }
+        
+        common.setup(with: wallets)
+        
+        let removedWallet = wallets[0]
+        
+        let walletStorageCleanerExpectation = XCTestExpectation()
+        
+        stub(storageCleaner) { stub in
+            when(stub).cleanStorage(for: any()).then { _ in
+                walletStorageCleanerExpectation.fulfill()
+                
+                return .createWithResult(())
+            }
+        }
+        
+        // when
+        
+        let result = try common.update(with: [], remove: [removedWallet])
+        
+        wait(for: [walletStorageCleanerExpectation], timeout: 5)
+        
+        // then
+        
+        XCTAssertTrue(result.isWalletSwitched)
+        XCTAssertTrue(result.selectedWallet != nil)
+        XCTAssertTrue(common.selectedAccountSettings.value.identifier != removedWallet.identifier)
     }
 }

@@ -852,9 +852,15 @@ final class CloudBackupSyncTests: XCTestCase {
             sortDescriptors: []
         )
         
+        let walletStorageCleaner = WalletStorageCleanerFactory.createTestCleaner(
+            operationQueue: operationQueue,
+            storageFacade: storageFacade
+        )
+        
         let walletsUpdater = WalletUpdateMediator(
             selectedWalletSettings: walletSettingsManager,
             repository: walletsRepository,
+            removedWalletsCleaner: walletStorageCleaner,
             operationQueue: operationQueue
         )
         

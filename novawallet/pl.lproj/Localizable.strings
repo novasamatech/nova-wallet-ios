@@ -1785,3 +1785,8 @@
 "common.fee.amount.prefixed" = "Opłata: %@";
 "common.not.enough.to.pay.fee.message" = "Nie masz wystarczającej ilości środków, aby opłacić opłatę sieciową w wysokości %@. Obecny stan konta to %@";
 "swap.delivery.fee.error.message" = "Ze względu na ograniczenia międzyłańcuchowe powinieneś mieć co najmniej %@ po operacji";
+"common.see.all" = "Zobacz wszystkie";
+"dapp.widget.close.alert.title" = "Zamknąć wszystkie DAppy?";
+"dapp.widget.close.alert.message" = "Wszystkie otwarte karty w przeglądarce DApp zostaną zamknięte.";
+"common.close.all" = "Zamknij wszystkie";
+"dapp.browser.tab.not.available" = "Strona internetowa niedostępna";

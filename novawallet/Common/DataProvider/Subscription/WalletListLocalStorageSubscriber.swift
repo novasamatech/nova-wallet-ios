@@ -9,6 +9,33 @@ protocol WalletListLocalStorageSubscriber where Self: AnyObject {
     func subscribeAllWalletsProvider() -> StreamableProvider<ManagedMetaAccountModel>?
 
     func subscribeWallet(by walletId: String) -> StreamableProvider<ManagedMetaAccountModel>?
+
+    func subscribeSelectedWalletProvider() -> StreamableProvider<ManagedMetaAccountModel>?
+}
+
+private extension WalletListLocalStorageSubscriber {
+    func subscribeWallets(
+        provider: StreamableProvider<ManagedMetaAccountModel>,
+        updateClosure: @escaping ([DataProviderChange<ManagedMetaAccountModel>]) -> Void,
+        failureClosure: @escaping (Error) -> Void
+    ) -> StreamableProvider<ManagedMetaAccountModel>? {
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
+        )
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return provider
+    }
 }
 
 extension WalletListLocalStorageSubscriber {
@@ -27,22 +54,11 @@ extension WalletListLocalStorageSubscriber {
             return
         }
 
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
+        return subscribeWallets(
+            provider: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
         )
-
-        provider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        return provider
     }
 
     func subscribeWallet(by walletId: String) -> StreamableProvider<ManagedMetaAccountModel>? {
@@ -58,26 +74,39 @@ extension WalletListLocalStorageSubscriber {
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.walletListLocalSubscriptionHandler.handleAllWallets(result: .failure(error))
+            self?.walletListLocalSubscriptionHandler.handleWallet(result: .failure(error), for: walletId)
             return
         }
 
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
+        return subscribeWallets(
+            provider: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
         )
+    }
 
-        provider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+    func subscribeSelectedWalletProvider() -> StreamableProvider<ManagedMetaAccountModel>? {
+        guard let provider = try? walletListLocalSubscriptionFactory.getSelectedWalletProvider() else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<ManagedMetaAccountModel>]) in
+            let wallet = changes.reduceToLastChange()
+
+            self?.walletListLocalSubscriptionHandler.handleSelectedWallet(result: .success(wallet))
+            return
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.walletListLocalSubscriptionHandler.handleSelectedWallet(result: .failure(error))
+            return
+        }
+
+        return subscribeWallets(
+            provider: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
         )
-
-        return provider
     }
 }
 

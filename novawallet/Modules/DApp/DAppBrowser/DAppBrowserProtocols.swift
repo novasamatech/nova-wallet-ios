@@ -1,8 +1,13 @@
 import Foundation
 import Operation_iOS
 
-protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
+protocol DAppBrowserTransitionProtocol {
+    func idForTransitioningTab() -> UUID?
+}
+
+protocol DAppBrowserViewProtocol: ControllerBackedProtocol, DAppBrowserTransitionProtocol {
     func didReceive(viewModel: DAppBrowserModel)
+    func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)
     func didReceive(response: DAppScriptResponse, forTransport name: String)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
@@ -10,32 +15,61 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     )
     func didSet(isDesktop: Bool)
     func didSet(canShowSettings: Bool)
+    func didSet(favorite: Bool)
     func didDecideClose()
+    func didReceiveRenderRequest()
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
+
+    func didLoadPage()
+
     func process(page: DAppBrowserPage)
-    func process(message: Any, host: String, transport name: String)
+
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    )
+
+    func process(stateRender: DAppBrowserTabRenderProtocol)
+
+    func actionFavorite(page: DAppBrowserPage)
+
     func activateSearch(with query: String?)
     func showSettings(using isDesktop: Bool)
-    func close()
+    func close(stateRender: DAppBrowserTabRenderProtocol)
+    func showTabs(stateRender: DAppBrowserTabRenderProtocol)
+    func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol)
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
+
     func process(host: String)
-    func process(message: Any, host: String, transport name: String)
+
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    )
+
+    func process(stateRender: DAppBrowserTabRenderProtocol)
+
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
     func processAuth(response: DAppAuthResponse, forTransport name: String)
     func removeFromFavorites(record: DAppFavorite)
     func reload()
     func save(settings: DAppGlobalSettings)
+    func saveTabIfNeeded()
+    func saveLastTabState(render: DAppBrowserTabRenderProtocol)
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
+    func didReceiveTabs(_ models: [DAppBrowserTab])
     func didReceiveDApp(model: DAppBrowserModel)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
@@ -50,20 +84,18 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didDetectPhishing(host: String)
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
     func didChangeGlobal(settings: DAppGlobalSettings)
+    func didReceiveRenderRequest()
+    func didSaveLastTabState()
 }
 
-protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
+protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
+    ErrorPresentable,
+    DAppBrowserSearchPresentable {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
-    )
-
-    func presentSearch(
-        from view: DAppBrowserViewProtocol?,
-        initialQuery: String?,
-        delegate: DAppSearchDelegate
     )
 
     func presentAuth(
@@ -88,7 +120,7 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
         delegate: DAppSettingsDelegate
     )
 
-    func hideSettings(from view: DAppBrowserViewProtocol?)
+    func close(view: ControllerBackedProtocol?)
 
-    func close(view: DAppBrowserViewProtocol?)
+    func showTabs(from view: DAppBrowserViewProtocol?)
 }
