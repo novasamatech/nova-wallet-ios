@@ -27,4 +27,6 @@ extension BalancesPallet {
         let freezeId: FreezeId
         @StringCodable var amount: BigUInt
     }
+
+    typealias Freezes = [Freeze]
 }

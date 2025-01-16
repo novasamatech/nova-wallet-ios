@@ -47,6 +47,11 @@ extension Multistaking {
         let state: Multistaking.NominationPoolState?
     }
 
+    struct DashboardItemMythosStakingPart {
+        let stakingOption: OptionWithWallet
+        let state: Multistaking.MythosStakingState?
+    }
+
     struct DashboardItemOffchainPart {
         let stakingOption: OptionWithWallet
         let maxApy: Decimal
