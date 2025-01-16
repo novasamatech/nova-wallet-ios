@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -23,10 +23,10 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ruq-rw-p1b" customClass="BorderedContainerView" customModule="SoraUI">
-                    <rect key="frame" x="0.0" y="1" width="414" height="40"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ruq-rw-p1b" customClass="BorderedContainerView" customModule="UIKit_iOS">
+                    <rect key="frame" x="0.0" y="21" width="414" height="40"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="SoraUI">
+                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="UIKit_iOS">
                             <rect key="frame" x="16" y="1" width="129.33333333333334" height="20"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
@@ -76,7 +76,7 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="4YV-hB-WfP">
-                    <rect key="frame" x="0.0" y="41" width="414" height="695"/>
+                    <rect key="frame" x="0.0" y="61" width="414" height="675"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="TR3-Bj-3yR"/>
@@ -98,11 +98,6 @@
             <point key="canvasLocation" x="139" y="153"/>
         </view>
     </objects>
-    <designables>
-        <designable name="XwS-f7-PDQ">
-            <size key="intrinsicContentSize" width="129.33333333333334" height="20"/>
-        </designable>
-    </designables>
     <resources>
         <namedColor name="colorBottomSheetBackground">
             <color red="0.094117647058823528" green="0.098039215686274508" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
