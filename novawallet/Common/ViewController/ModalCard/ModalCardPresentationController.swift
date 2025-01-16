@@ -97,7 +97,8 @@ private extension ModalCardPresentationController {
             dy: topOffset
         ).origin
 
-        let presentedByModalCardController = presentingViewController.presentationController is ModalCardPresentationController
+        let presentationController = presentingViewController.presentationController
+        let presentedByModalCardController = presentationController is ModalCardPresentationController
 
         let finalHeight: CGFloat = if presentedByModalCardController {
             presentingViewController.view.bounds.height
