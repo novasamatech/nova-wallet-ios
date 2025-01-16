@@ -72,17 +72,10 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
 
         let bottomMargin = -Constants.cancelBottomMargin * designScaleRatio.height
 
-        if #available(iOS 11.0, *) {
-            cancelButton.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: bottomMargin
-            ).isActive = true
-        } else {
-            cancelButton.bottomAnchor.constraint(
-                equalTo: view.bottomAnchor,
-                constant: bottomMargin
-            ).isActive = true
-        }
+        cancelButton.bottomAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+            constant: bottomMargin
+        ).isActive = true
 
         cancelButton.trailingAnchor.constraint(equalTo: pinView.trailingAnchor).isActive = true
 

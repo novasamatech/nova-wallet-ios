@@ -68,9 +68,7 @@ final class MainTabBarViewController: UITabBarController {
 
         tabBar.standardAppearance = appearance
 
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 

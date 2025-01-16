@@ -35,15 +35,8 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
     var inheritedInsets: UIEdgeInsets {
         var contentInsets: UIEdgeInsets = .zero
 
-        if #available(iOS 11.0, *) {
-            contentInsets.top = view.safeAreaInsets.top
-            contentInsets.bottom = view.safeAreaInsets.bottom
-        } else {
-            contentInsets.top = min(
-                UIApplication.shared.statusBarFrame.size.width,
-                UIApplication.shared.statusBarFrame.size.height
-            )
-        }
+        contentInsets.top = view.safeAreaInsets.top
+        contentInsets.bottom = view.safeAreaInsets.bottom
 
         if let view = viewIfLoaded {
             contentInsets.bottom += containerSize.height - view.bounds.height
@@ -87,7 +80,6 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
         configurePanRecognizer()
     }
 
-    @available(iOS 11.0, *)
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
