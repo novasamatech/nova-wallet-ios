@@ -64,6 +64,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     ) {
         super.willTransition(to: newCollectionEnvironment, with: coordinator)
 
+        // Force layout update after rotation animation completes as a workaround the bug with wrong cell size
         coordinator.animate(alongsideTransition: nil) { [weak self] _ in
             self?.collectionViewManager.invalidateLayout()
         }
