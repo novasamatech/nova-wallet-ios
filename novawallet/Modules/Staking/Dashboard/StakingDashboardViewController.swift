@@ -49,6 +49,17 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
         updateLoadingState()
     }
 
+    override func willTransition(
+        to newCollectionEnvironment: UITraitCollection,
+        with coordinator: UIViewControllerTransitionCoordinator
+    ) {
+        super.willTransition(to: newCollectionEnvironment, with: coordinator)
+
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.rootView.collectionView.collectionViewLayout.invalidateLayout()
+        }
+    }
+
     private func setupCollectionView() {
         rootView.collectionView.registerCellClass(WalletSwitchCollectionViewCell.self)
 

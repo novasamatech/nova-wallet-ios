@@ -166,6 +166,10 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         }
     }
 
+    func invalidateLayout() {
+        collectionViewLayout?.invalidateLayout()
+    }
+
     func updateGroupsViewModel(with model: AssetListViewModel) {
         replaceViewModel(model)
     }

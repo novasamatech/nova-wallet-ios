@@ -58,6 +58,17 @@ final class AssetListViewController: UIViewController, ViewHolder {
         collectionViewManager.updateLoadingState()
     }
 
+    override func willTransition(
+        to newCollectionEnvironment: UITraitCollection,
+        with coordinator: UIViewControllerTransitionCoordinator
+    ) {
+        super.willTransition(to: newCollectionEnvironment, with: coordinator)
+
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.collectionViewManager.invalidateLayout()
+        }
+    }
+
     private func setupCollectionView() {
         collectionViewManager.setupCollectionView()
     }

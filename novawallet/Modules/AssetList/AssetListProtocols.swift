@@ -21,6 +21,7 @@ protocol AssetListCollectionManagerProtocol {
         from oldViewModel: AssetListViewModel,
         to newViewModel: AssetListViewModel
     )
+    func invalidateLayout()
     func updateLoadingState()
 }
 
