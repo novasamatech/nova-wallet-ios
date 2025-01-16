@@ -795,8 +795,8 @@ import UIKit
 import Cuckoo
 @testable import novawallet
 
-import UIKit_iOS
 import UIKit
+import UIKit_iOS
 
 
  class MockLoadableViewProtocol: LoadableViewProtocol, Cuckoo.ProtocolMock {
@@ -1905,8 +1905,8 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import Operation_iOS
 import Keystore_iOS
+import Operation_iOS
 
 
  class MockPushNotificationsServiceFacadeProtocol: PushNotificationsServiceFacadeProtocol, Cuckoo.ProtocolMock {
@@ -11856,8 +11856,8 @@ import IrohaCrypto
 import Cuckoo
 @testable import novawallet
 
-import IrohaCrypto
 import Foundation_iOS
+import IrohaCrypto
 
 
  class MockAccountImportViewProtocol: AccountImportViewProtocol, Cuckoo.ProtocolMock {
@@ -13987,8 +13987,8 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import Operation_iOS
 import Foundation_iOS
+import Operation_iOS
 
 
  class MockAccountManagementViewProtocol: AccountManagementViewProtocol, Cuckoo.ProtocolMock {
@@ -16609,8 +16609,8 @@ import Cuckoo
 import Cuckoo
 @testable import novawallet
 
-import IrohaCrypto
 import Foundation_iOS
+import IrohaCrypto
 
 
  class MockAccountCreateViewProtocol: AccountCreateViewProtocol, Cuckoo.ProtocolMock {
