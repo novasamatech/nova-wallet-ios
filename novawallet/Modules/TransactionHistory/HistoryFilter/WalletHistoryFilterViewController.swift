@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class WalletHistoryFilterViewController: UIViewController, ViewHolder {
     typealias RootViewType = WalletHistoryFilterViewLayout

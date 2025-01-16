@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 enum PushNotificationsServiceFacadeError: Error {
     case serviceUnvailable(String)

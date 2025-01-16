@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 class CrowdloanContributionConfirmVC: UIViewController, ViewHolder {
     typealias RootViewType = CrowdloanContributionConfirmViewLayout

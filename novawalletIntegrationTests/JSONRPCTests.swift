@@ -5,8 +5,8 @@ import Operation_iOS
 import IrohaCrypto
 import BigInt
 import xxHash_Swift
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 class JSONRPCTests: XCTestCase {
     struct RpcInterface: Decodable {

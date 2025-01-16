@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class DAppBrowserViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserViewLayout

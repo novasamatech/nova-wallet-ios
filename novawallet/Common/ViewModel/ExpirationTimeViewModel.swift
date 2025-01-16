@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 enum ExpirationTimeViewModel {
     case normal(time: String)

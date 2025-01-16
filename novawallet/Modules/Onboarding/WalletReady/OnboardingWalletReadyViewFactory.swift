@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct OnboardingWalletReadyViewFactory {
     static func createView(walletName: String) -> OnboardingWalletReadyViewProtocol? {

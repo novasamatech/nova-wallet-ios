@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     struct SignatureResult {

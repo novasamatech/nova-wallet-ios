@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 class WalletsListPresenter {
     weak var baseView: WalletsListViewProtocol?

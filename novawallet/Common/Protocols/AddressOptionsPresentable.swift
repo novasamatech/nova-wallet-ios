@@ -1,6 +1,6 @@
 import UIKit
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct AccountAdditionalOption {
     let title: LocalizableResource<String>

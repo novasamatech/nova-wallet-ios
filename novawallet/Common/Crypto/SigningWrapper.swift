@@ -1,6 +1,6 @@
 import Foundation
 import IrohaCrypto
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
 
 enum SigningWrapperError: Error {

@@ -2,8 +2,8 @@ import XCTest
 @testable import novawallet
 import BigInt
 import Cuckoo
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 class AssetSelectionTests: XCTestCase {
     func testSuccessfullSelection() {

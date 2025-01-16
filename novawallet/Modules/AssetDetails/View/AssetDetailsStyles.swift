@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 extension RoundedButton.Style {
     static let operation = RoundedButton.Style(

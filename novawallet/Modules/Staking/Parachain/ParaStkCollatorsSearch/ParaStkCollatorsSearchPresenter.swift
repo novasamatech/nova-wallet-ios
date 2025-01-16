@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class ParaStkCollatorsSearchPresenter {
     weak var view: ParaStkCollatorsSearchViewProtocol?

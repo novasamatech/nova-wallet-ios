@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 import UIKit
 
 final class ButtonLargeControl: ControlView<RoundedView, IconDetailsGenericView<MultiValueView>> {

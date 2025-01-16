@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 struct MessageSheetCheckmarkContentViewModel {
     let checked: Bool

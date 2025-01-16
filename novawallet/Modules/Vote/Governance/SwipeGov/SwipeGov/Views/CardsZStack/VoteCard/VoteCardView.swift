@@ -1,6 +1,6 @@
 import SnapKit
 import UIKit
-import SoraUI
+import UIKit_iOS
 import CDMarkdownKit
 
 final class VoteCardView: RoundedView {

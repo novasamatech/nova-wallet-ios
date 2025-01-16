@@ -1,6 +1,6 @@
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -541,7 +541,7 @@ public class SecretStoreManagerProtocolStub: SecretStoreManagerProtocol {
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -1227,14 +1227,14 @@ public class JSONRPCEngineStub: JSONRPCEngine {
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -1490,7 +1490,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import IrohaCrypto
@@ -1751,7 +1751,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -2008,7 +2008,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import LocalAuthentication
@@ -2334,7 +2334,7 @@ import UIKit.UIImage
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -2466,7 +2466,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -2567,7 +2567,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -2667,7 +2667,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -3089,10 +3089,10 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 
@@ -3318,10 +3318,10 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 
@@ -3864,7 +3864,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4060,7 +4060,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4288,7 +4288,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4388,7 +4388,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4651,7 +4651,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -4751,7 +4751,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -4914,7 +4914,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -5143,7 +5143,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -5275,7 +5275,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -5375,7 +5375,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 
@@ -5631,7 +5631,7 @@ import Foundation
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS
@@ -5888,7 +5888,7 @@ import Operation_iOS
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import SubstrateSdk
@@ -6020,7 +6020,7 @@ import SubstrateSdk
 
 import Cuckoo
 @testable import novawallet
-@testable import SoraKeystore
+@testable import Keystore_iOS
 
 import Foundation
 import Operation_iOS

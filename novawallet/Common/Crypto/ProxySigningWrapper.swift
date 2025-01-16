@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import IrohaCrypto
-import SoraKeystore
+import Keystore_iOS
 
 enum ProxySigningWrapperError: Error {
     case canceled

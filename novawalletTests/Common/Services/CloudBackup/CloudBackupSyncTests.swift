@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 final class CloudBackupSyncTests: XCTestCase {
     struct LocalWalletsSetupParams {

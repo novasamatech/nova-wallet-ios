@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol StakingRewardDateCellDelegate: AnyObject {
     func datePicker(id: String, selectedDate: Date)

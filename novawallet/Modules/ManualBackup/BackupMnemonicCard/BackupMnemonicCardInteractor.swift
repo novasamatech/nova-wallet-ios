@@ -1,6 +1,6 @@
 import IrohaCrypto
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 import Operation_iOS
 
 final class BackupMnemonicCardInteractor: BackupMnemonicCardInteractorInputProtocol {

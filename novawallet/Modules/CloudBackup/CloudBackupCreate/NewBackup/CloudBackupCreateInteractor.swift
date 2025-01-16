@@ -1,5 +1,5 @@
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 import IrohaCrypto
 import Operation_iOS
 

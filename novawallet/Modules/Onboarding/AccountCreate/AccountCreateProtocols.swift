@@ -1,5 +1,5 @@
 import IrohaCrypto
-import SoraFoundation
+import Foundation_iOS
 
 protocol AccountCreateViewProtocol: ControllerBackedProtocol, CheckboxListViewProtocol {
     func update(with mnemonicCardViewModel: HiddenMnemonicCardView.State)

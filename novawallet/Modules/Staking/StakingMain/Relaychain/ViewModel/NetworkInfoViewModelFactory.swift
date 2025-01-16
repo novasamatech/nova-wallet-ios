@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 struct NetworkInfoViewModelParams {
     let minNominatorBond: BigUInt?

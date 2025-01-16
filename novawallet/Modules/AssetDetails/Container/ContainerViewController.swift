@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 class ContainerViewController: UIViewController, AdaptiveDesignable {
     private enum Constants {

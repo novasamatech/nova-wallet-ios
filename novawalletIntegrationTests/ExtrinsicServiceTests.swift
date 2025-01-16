@@ -1,5 +1,5 @@
 import XCTest
-import SoraKeystore
+import Keystore_iOS
 import BigInt
 import IrohaCrypto
 @testable import novawallet

@@ -1,7 +1,7 @@
 import UIKit
-import SoraFoundation
-import SoraUI
-import SoraKeystore
+import Foundation_iOS
+import UIKit_iOS
+import Keystore_iOS
 
 class MessageSheetViewController<
     I: UIView & MessageSheetGraphicsProtocol,

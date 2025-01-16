@@ -1,6 +1,6 @@
 import UIKit
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func complete(on view: ControllerBackedProtocol?, completionClosure: @escaping () -> Void) {

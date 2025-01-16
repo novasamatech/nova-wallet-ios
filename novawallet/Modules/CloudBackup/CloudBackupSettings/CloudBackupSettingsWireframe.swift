@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 final class CloudBackupSettingsWireframe: CloudBackupSettingsWireframeProtocol {
     func showManualBackup(from view: CloudBackupSettingsViewProtocol?) {

@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class SliderView: UIView {
     private let firstSegment: RoundedView = .create { view in

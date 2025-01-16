@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 import UIKit
 
 final class AssetListNetworkGroupAssetCell: AssetListAssetCell {

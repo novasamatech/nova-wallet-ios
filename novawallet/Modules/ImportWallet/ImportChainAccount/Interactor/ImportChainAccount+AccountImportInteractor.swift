@@ -2,7 +2,7 @@ import UIKit
 import IrohaCrypto
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 extension ImportChainAccount {
     final class AccountImportInteractor: BaseAccountImportInteractor {

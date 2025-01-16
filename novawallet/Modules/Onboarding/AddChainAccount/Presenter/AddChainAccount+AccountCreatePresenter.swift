@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 extension AddChainAccount {
     final class AccountCreatePresenter: BaseAccountCreatePresenter {
         let metaAccountModel: MetaAccountModel

@@ -1,5 +1,5 @@
 import XCTest
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
 import IrohaCrypto
 import Operation_iOS
