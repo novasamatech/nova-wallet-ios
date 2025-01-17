@@ -5,4 +5,16 @@ extension MythosStakingPallet {
     static var userStakePath: StorageCodingPath {
         StorageCodingPath(moduleName: Self.name, itemName: "UserStake")
     }
+
+    static var minStakePath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.name, itemName: "MinStake")
+    }
+
+    static var currentSessionPath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.name, itemName: "CurrentSession")
+    }
+
+    static var stakeUnlockDelayPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.name, constantName: "StakeUnlockDelay")
+    }
 }

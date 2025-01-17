@@ -39,7 +39,14 @@ struct StartStakingInfoViewFactory {
                     type: selectedStakingType ?? mainStakingType
                 )
             )
-        case .unsupported, .nominationPools, .mythos:
+        case .mythos:
+            return createMythosView(
+                for: .init(
+                    chainAsset: chainAsset,
+                    type: selectedStakingType ?? mainStakingType
+                )
+            )
+        case .unsupported, .nominationPools:
             return nil
         }
     }

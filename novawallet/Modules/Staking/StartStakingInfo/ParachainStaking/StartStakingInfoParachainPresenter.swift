@@ -131,7 +131,7 @@ extension StartStakingInfoParachainPresenter {
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
 
-        var nextEraStartTime: TimeInterval? {
+        var rewardDelay: TimeInterval? {
             guard let roundCountdown = roundCountdown,
                   let roundInfo = roundInfo,
                   let rewardPaymentDelay = rewardPaymentDelay else {
@@ -163,7 +163,7 @@ extension StartStakingInfoParachainPresenter {
             return stakingDuration.unstaking
         }
 
-        var eraDuration: TimeInterval? {
+        var rewardTime: TimeInterval? {
             guard let stakingDuration = stakingDuration else {
                 return nil
             }

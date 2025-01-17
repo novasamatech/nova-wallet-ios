@@ -69,42 +69,6 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
 
 final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     ParachainStakingLocalSubscriptionFactoryProtocol {
-    private func getPlainProvider<T: Equatable & Decodable>(
-        for chainId: ChainModel.Id,
-        storagePath: StorageCodingPath
-    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            storagePath,
-            chainId: chainId
-        )
-
-        return try getDataProvider(
-            for: localKey,
-            chainId: chainId,
-            storageCodingPath: storagePath,
-            shouldUseFallback: false
-        )
-    }
-
-    private func getAccountProvider<T: Equatable & Decodable>(
-        for chainId: ChainModel.Id,
-        accountId: AccountId,
-        storagePath: StorageCodingPath
-    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            storagePath,
-            accountId: accountId,
-            chainId: chainId
-        )
-
-        return try getDataProvider(
-            for: localKey,
-            chainId: chainId,
-            storageCodingPath: storagePath,
-            shouldUseFallback: false
-        )
-    }
-
     func getRoundProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedRoundInfo> {

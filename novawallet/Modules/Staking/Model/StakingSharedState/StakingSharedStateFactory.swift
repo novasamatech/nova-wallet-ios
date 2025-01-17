@@ -21,6 +21,10 @@ protocol StakingSharedStateFactoryProtocol {
         consensus: ConsensusType,
         selectedStakingType: StakingType?
     ) throws -> RelaychainStartStakingStateProtocol
+
+    func createMythosStaking(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> MythosStakingSharedStateProtocol
 }
 
 enum StakingSharedStateFactoryError: Error {
@@ -437,6 +441,51 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             npLocalSubscriptionFactory: nominationPoolsService.localSubscriptionFactory,
             activePoolsService: nominationPoolsService.activePoolsService,
             preferredValidatorsProvider: preferredValidatorsProvider,
+            logger: logger
+        )
+    }
+
+    func createMythosStaking(
+        for stakingOption: Multistaking.ChainAssetOption
+    ) throws -> MythosStakingSharedStateProtocol {
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        let serviceFactory = BaseStakingServiceFactory(
+            chainRegisty: chainRegistry,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+
+        let blockTimeService = try serviceFactory.createBlockTimeService(
+            for: stakingOption.chainAsset.chain.chainId
+        )
+
+        return MythosStakingSharedState(
+            stakingOption: stakingOption,
+            chainRegistry: chainRegistry,
+            stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactory(
+                chainRegistry: chainRegistry,
+                storageFacade: storageFacade,
+                operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
+            globalRemoteSubscriptionService: MythosStakingRemoteSubscriptionService(
+                chainRegistry: chainRegistry,
+                repository: repository,
+                syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+                repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
+            blockTimeService: blockTimeService,
+            generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory(
+                chainRegistry: chainRegistry,
+                storageFacade: storageFacade,
+                operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
             logger: logger
         )
     }
