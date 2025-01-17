@@ -20,12 +20,13 @@ struct DAppAddFavoriteViewFactory {
         )
 
         let wireframe = DAppAddFavoriteWireframe()
-
         let localizationManager = LocalizationManager.shared
+        let iconViewModelFactory = DAppIconViewModelFactory()
 
         let presenter = DAppAddFavoritePresenter(
             interactor: interactor,
             wireframe: wireframe,
+            iconViewModelFactory: iconViewModelFactory,
             localizationManager: localizationManager
         )
 

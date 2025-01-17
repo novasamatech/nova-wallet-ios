@@ -7,7 +7,7 @@ protocol YourWalletsPresentable {
         address: AccountAddress?,
         delegate: YourWalletsDelegate
     )
-    func hideYourWallets(from view: ControllerBackedProtocol?)
+    func hideYourWallets(from view: YourWalletsPresentationProtocol)
 }
 
 extension YourWalletsPresentable {
@@ -32,7 +32,7 @@ extension YourWalletsPresentable {
         view?.controller.present(viewController.controller, animated: true)
     }
 
-    func hideYourWallets(from view: ControllerBackedProtocol?) {
-        view?.controller.dismiss(animated: true)
+    func hideYourWallets(from view: YourWalletsPresentationProtocol) {
+        view.controller.dismiss(animated: true)
     }
 }

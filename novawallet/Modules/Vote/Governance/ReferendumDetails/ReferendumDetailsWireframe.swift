@@ -27,7 +27,10 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: fullDetailsView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showVote(
@@ -46,7 +49,10 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: voteSetupView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showVoters(
@@ -65,7 +71,10 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: votersView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showFullDescription(
@@ -82,18 +91,10 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
             rootViewController: detailsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true)
-    }
-
-    func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL) {
-        guard
-            let browser = DAppBrowserViewFactory.createView(
-                for: .query(string: url.absoluteString)
-            ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(browser.controller, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel) {

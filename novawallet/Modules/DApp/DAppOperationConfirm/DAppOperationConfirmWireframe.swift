@@ -12,7 +12,11 @@ class DAppOperationConfirmWireframe: DAppOperationConfirmWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: detailsView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 }
 

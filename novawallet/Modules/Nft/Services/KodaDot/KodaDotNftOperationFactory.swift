@@ -13,9 +13,9 @@ enum KodaDotAssetHubApi {
 
     static func apiForChain(_ chainId: ChainModel.Id) -> URL? {
         switch chainId {
-        case KnowChainId.statemine:
+        case KnowChainId.kusamaAssetHub:
             return KodaDotAssetHubApi.kusamaAssetHub
-        case KnowChainId.statemint:
+        case KnowChainId.polkadotAssetHub:
             return KodaDotAssetHubApi.polkadotAssetHub
         default:
             return nil

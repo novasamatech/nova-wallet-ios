@@ -7,6 +7,7 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
     let chain: ChainModel
     let signingWrapperFactory: SigningWrapperFactoryProtocol
+    let serializationFactory: DAppMessageSignFactoryProtocol
     let operationQueue: OperationQueue
 
     private(set) var account: ChainAccountResponse?
@@ -15,11 +16,13 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
         request: DAppOperationRequest,
         chain: ChainModel,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
+        serializationFactory: DAppMessageSignFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.request = request
         self.chain = chain
         self.signingWrapperFactory = signingWrapperFactory
+        self.serializationFactory = serializationFactory
         self.operationQueue = operationQueue
     }
 
@@ -53,23 +56,6 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
         presenter?.didReceive(feeResult: .success(feeModel))
         presenter?.didReceive(priceResult: .success(nil))
     }
-
-    private func prepareRawBytes() throws -> Data {
-        if case let .stringValue(stringValue) = request.operationData {
-            if stringValue.isHex() {
-                return try Data(hexString: stringValue)
-            } else {
-                guard let data = stringValue.data(using: .utf8) else {
-                    throw CommonError.dataCorruption
-                }
-
-                return data
-            }
-
-        } else {
-            return try JSONEncoder().encode(request.operationData)
-        }
-    }
 }
 
 extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputProtocol {
@@ -98,7 +84,7 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
                 accountResponse: account
             )
 
-            let rawBytes = try prepareRawBytes()
+            let rawBytes = try serializationFactory.serializeSigningMessage(from: request.operationData)
 
             let signingOperation = ClosureOperation<Data> {
                 try signer.sign(rawBytes, context: .rawBytes).rawData()

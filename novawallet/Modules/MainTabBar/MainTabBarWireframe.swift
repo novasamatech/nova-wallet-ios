@@ -20,7 +20,12 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         let navigationController = NovaNavigationController(rootViewController: importController)
 
         let presentingController = tabBarController.topModalViewController
-        presentingController.present(navigationController, animated: true, completion: nil)
+
+        presentingController.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func presentScreenIfNeeded(
@@ -54,7 +59,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
             (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
             if let dappView: DAppListViewProtocol = dappViewController?.contentViewController() {
-                dappView.didReceive(dApp: dApp)
+                dappView.didReceiveDApp(with: dApp.identifier)
             }
         }
     }
@@ -91,7 +96,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         setupPushNotificationsView.controller.isModalInPresentation = true
-        view?.controller.present(
+
+        view?.controller.presentWithCardLayout(
             setupPushNotificationsView.controller,
             animated: true,
             completion: presentationCompletion

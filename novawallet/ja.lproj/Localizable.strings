@@ -1785,3 +1785,8 @@
 "common.fee.amount.prefixed" = "手数料: %@";
 "common.not.enough.to.pay.fee.message" = "ネットワーク手数料%@を支払うための残高が不足しています。現在の残高は%@";
 "swap.delivery.fee.error.message" = "クロスチェーンの制限により、操作後に少なくとも%@を保持している必要があります";
+"common.see.all" = "すべて見る";
+"dapp.widget.close.alert.title" = "すべてのDAppを閉じますか？";
+"dapp.widget.close.alert.message" = "DAppブラウザーで開いているすべてのタブが閉じられます。";
+"common.close.all" = "すべて閉じる";
+"dapp.browser.tab.not.available" = "ウェブページが利用できません";

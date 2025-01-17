@@ -33,6 +33,7 @@ class CrossChainTransferPresenter {
 
     private(set) var networkFee: ExtrinsicFeeProtocol?
     private(set) var crossChainFee: XcmFeeModelProtocol?
+    private(set) var requiresOriginKeepAlive: Bool?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -102,6 +103,31 @@ class CrossChainTransferPresenter {
 
     func askCrossChainFeeRetry() {
         fatalError("Child classes must implement this method")
+    }
+
+    func getSendingAmount() -> Decimal? {
+        fatalError("Child classes must implement this method")
+    }
+
+    func getTotalSpendingWithoutNetworkFee() -> Decimal? {
+        guard let utilityAsset = originChainAsset.chain.utilityAsset() else {
+            return nil
+        }
+
+        let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
+
+        let sendingAmount = getSendingAmount()
+
+        let originDeliveryFeeSpending = isOriginUtilityTransfer ?
+            crossChainFee?.senderPart.decimal(assetInfo: utilityAssetInfo) :
+            nil
+
+        let crosschainFeeSpending = crossChainFee?.holdingPart.decimal(
+            assetInfo: originChainAsset.assetDisplayInfo
+        )
+
+        return (sendingAmount ?? 0) + (originDeliveryFeeSpending ?? 0) +
+            (crosschainFeeSpending ?? 0)
     }
 
     func updateCrossChainFee(_ newValue: XcmFeeModelProtocol?) {
@@ -195,6 +221,17 @@ class CrossChainTransferPresenter {
                 locale: selectedLocale
             ),
 
+            dataValidatingFactory.notViolatingKeepAlive(
+                for: .init(
+                    totalSpendingAmount: getTotalSpendingWithoutNetworkFee(),
+                    networkFee: isOriginUtilityTransfer ? networkFee : nil,
+                    balance: senderSendingAssetBalance?.balanceCountingEd,
+                    minBalance: originSendingMinBalance,
+                    requiresKeepAlive: requiresOriginKeepAlive
+                ),
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.balanceCountingEd,
@@ -282,6 +319,12 @@ class CrossChainTransferPresenter {
 
     func didReceiveDestUtilityMinBalance(_ value: BigUInt) {
         destUtilityMinBalance = value
+    }
+
+    func didReceiveRequiresOriginKeepAlive(_ value: Bool) {
+        logger?.debug("Requires origin keep alive: \(value)")
+
+        requiresOriginKeepAlive = value
     }
 
     func didCompleteSetup(result _: Result<Void, Error>) {}

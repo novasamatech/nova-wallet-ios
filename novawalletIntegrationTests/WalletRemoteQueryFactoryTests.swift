@@ -107,7 +107,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             let accountId = try "F53d3jeyFvb2eYsgAERhjC8mogao4Kg4GsdezrqiT8aj55v".toAccountId()
             let balance = try performQuery(
                 for: accountId,
-                chainId: KnowChainId.statemine,
+                chainId: KnowChainId.kusamaAssetHub,
                 assetId: 7
             )
             Logger.shared.info("Did receive: \(balance)")
@@ -121,7 +121,7 @@ final class WalletRemoteQueryFactoryTests: XCTestCase {
             let accountId = try "Cn1mVjBBvLJUWE8GQoeR7JduGt2GxhUXrx191ob3Si6HA9E".toAccountId()
             let balance = try performQuery(
                 for: accountId,
-                chainId: KnowChainId.statemine,
+                chainId: KnowChainId.kusamaAssetHub,
                 assetId: 7
             )
             Logger.shared.info("Did receive: \(balance)")

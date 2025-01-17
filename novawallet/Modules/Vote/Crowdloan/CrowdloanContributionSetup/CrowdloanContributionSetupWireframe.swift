@@ -101,7 +101,11 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             rootViewController: acalaView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     private func showKaruraCustomFlow(
@@ -126,7 +130,11 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             rootViewController: karuraView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     private func showBifrostCustomFlow(
@@ -150,7 +158,11 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             rootViewController: bifrostView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     private func showAstarCustomFlow(
@@ -174,6 +186,10 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             rootViewController: astarView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 }
