@@ -4,6 +4,7 @@ protocol MainTabBarProtocol {
     var view: UIView! { get set }
 
     func presentedController() -> UIViewController?
+    func topViewController() -> UIViewController?
 }
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {

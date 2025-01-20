@@ -39,6 +39,20 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 
         presenter.setup()
     }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let oldIsLanscape = traitCollection.verticalSizeClass == .compact
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        let newIsLandscape = size.width > size.height
+
+        guard oldIsLanscape != newIsLandscape else { return }
+
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.updateCollectionViewLayoutIfNeeded()
+        }
+    }
 }
 
 // MARK: Private
@@ -118,6 +132,36 @@ private extension NovaMainAppContainerViewController {
                 return self?.rootView
             }
         )
+    }
+
+    func findCollectionView(in view: UIView) -> UICollectionView? {
+        // BFS
+        var queue = [UIView]()
+        queue.append(view)
+
+        while !queue.isEmpty {
+            let view = queue.removeFirst()
+
+            if let collectionView = view as? UICollectionView {
+                return collectionView
+            }
+
+            queue.append(contentsOf: view.subviews)
+        }
+
+        return nil
+    }
+
+    func updateCollectionViewLayoutIfNeeded() {
+        guard
+            let topView = tabBar?.topViewController()?.view,
+            let collectionView = findCollectionView(in: topView)
+        else { return }
+
+        UIView.performWithoutAnimation {
+            collectionView.collectionViewLayout.invalidateLayout()
+            collectionView.layoutIfNeeded()
+        }
     }
 
     func updateModalsLayoutIfNeeded() {
