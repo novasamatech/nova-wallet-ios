@@ -7,6 +7,8 @@ protocol MythosStakingSharedStateProtocol {
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
 
+    var detailsSyncService: MythosStakingDetailsSyncServiceProtocol? { get }
+
     var logger: LoggerProtocol { get }
 
     var sharedOperation: SharedOperationProtocol? { get }
@@ -23,11 +25,14 @@ final class MythosStakingSharedState {
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     weak var sharedOperation: SharedOperationProtocol?
 
     private var globalRemoteSubscription: UUID?
+
+    private(set) var detailsSyncService: MythosStakingDetailsSyncServiceProtocol?
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
@@ -36,6 +41,7 @@ final class MythosStakingSharedState {
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.stakingOption = stakingOption
@@ -44,12 +50,13 @@ final class MythosStakingSharedState {
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.blockTimeService = blockTimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
 extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
-    func setup(for _: AccountId?) {
+    func setup(for accountId: AccountId?) {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         globalRemoteSubscription = globalRemoteSubscriptionService.attachToGlobalData(
@@ -65,6 +72,22 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
         }
 
         blockTimeService.setup()
+
+        if let accountId {
+            detailsSyncService = MythosStakingDetailsSyncService(
+                chainId: chainId,
+                accountId: accountId,
+                chainRegistry: chainRegistry,
+                operationFactory: MythosCollatorOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue,
+                    timeout: JSONRPCTimeout.hour
+                ),
+                operationQueue: operationQueue
+            )
+
+            detailsSyncService?.setup()
+        }
     }
 
     func throttle() {
@@ -80,6 +103,9 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
         }
 
         blockTimeService.throttle()
+
+        detailsSyncService?.throttle()
+        detailsSyncService = nil
     }
 
     func startSharedOperation() -> SharedOperationProtocol {

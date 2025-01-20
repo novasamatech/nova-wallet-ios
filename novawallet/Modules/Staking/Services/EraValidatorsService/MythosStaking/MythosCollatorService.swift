@@ -115,7 +115,7 @@ private extension MythosCollatorService {
                     }
 
                     let collators = wrappedCollators.map(\.wrappedValue)
-                    self?.updateIfNeeded(for: Set(collators))
+                    self?.updateIfNeeded(for: collators)
                 case let .failure(error):
                     self?.logger.error("Unexpected subscription error: \(error)")
                 }
@@ -130,7 +130,7 @@ private extension MythosCollatorService {
         validatorsSubscription = nil
     }
 
-    func updateIfNeeded(for collatorIds: Set<AccountId>) {
+    func updateIfNeeded(for collatorIds: [AccountId]) {
         infoCancellableStore.cancel()
 
         let infoWrapper = operationFactory.createFetchCollatorsInfo(

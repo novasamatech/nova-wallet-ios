@@ -9,7 +9,7 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     }
 
     func showConfirmation(
-        from view: ParaStkStakeSetupViewProtocol?,
+        from view: CollatorStakingSetupViewProtocol?,
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?
@@ -30,7 +30,7 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     }
 
     func showCollatorSelection(
-        from view: ParaStkStakeSetupViewProtocol?,
+        from view: CollatorStakingSetupViewProtocol?,
         delegate: ParaStkSelectCollatorsDelegate
     ) {
         guard let collatorsView = ParaStkSelectCollatorsViewFactory.createView(
@@ -44,7 +44,7 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     }
 
     func showDelegationSelection(
-        from view: ParaStkStakeSetupViewProtocol?,
+        from view: CollatorStakingSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,

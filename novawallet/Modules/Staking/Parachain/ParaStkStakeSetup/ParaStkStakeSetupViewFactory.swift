@@ -8,7 +8,7 @@ struct ParaStkStakeSetupViewFactory {
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
-    ) -> ParaStkStakeSetupViewProtocol? {
+    ) -> CollatorStakingSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -59,7 +59,7 @@ struct ParaStkStakeSetupViewFactory {
 
         let localizableTitle = createTitle(for: initialDelegator, chainAsset: chainAsset)
 
-        let view = ParaStkStakeSetupViewController(
+        let view = CollatorStakingSetupViewController(
             presenter: presenter,
             localizableTitle: localizableTitle,
             localizationManager: localizationManager

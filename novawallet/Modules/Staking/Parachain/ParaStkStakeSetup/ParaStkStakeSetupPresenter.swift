@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 final class ParaStkStakeSetupPresenter {
-    weak var view: ParaStkStakeSetupViewProtocol?
+    weak var view: CollatorStakingSetupViewProtocol?
     let wireframe: ParaStkStakeSetupWireframeProtocol
     let interactor: ParaStkStakeSetupInteractorInputProtocol
 
@@ -297,7 +297,7 @@ final class ParaStkStakeSetupPresenter {
     }
 }
 
-extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
+extension ParaStkStakeSetupPresenter: CollatorStakingSetupPresenterProtocol {
     func setup() {
         setupInitialCollator()
 

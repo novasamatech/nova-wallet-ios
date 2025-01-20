@@ -486,6 +486,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
                 operationManager: OperationManager(operationQueue: repositoryOperationQueue),
                 logger: logger
             ),
+            operationQueue: syncOperationQueue,
             logger: logger
         )
     }

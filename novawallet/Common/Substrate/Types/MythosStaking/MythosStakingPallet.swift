@@ -6,5 +6,10 @@ enum MythosStakingPallet {
 
     struct UserStake: Codable, Equatable {
         @StringCodable var stake: Balance
+        let candidates: [BytesCodable]
+    }
+
+    struct CandidateStakeInfo: Codable, Equatable {
+        @StringCodable var stake: Balance
     }
 }
