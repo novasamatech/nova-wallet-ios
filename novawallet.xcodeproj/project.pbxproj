@@ -107,6 +107,7 @@
 		0C0F6DA22D3E8A1C00943A7C /* MythosSessionCollators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DA12D3E8A1C00943A7C /* MythosSessionCollators.swift */; };
 		0C0F6DA42D3E8EB500943A7C /* MythosCollatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DA32D3E8EB500943A7C /* MythosCollatorService.swift */; };
 		0C0F6DA62D3E9CF000943A7C /* MythosCollatorService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DA52D3E9CF000943A7C /* MythosCollatorService+Fetch.swift */; };
+		0C0F6DAC2D3EB19D00943A7C /* MythosCollatorsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DAB2D3EB19D00943A7C /* MythosCollatorsTests.swift */; };
 		0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */; };
 		0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */; };
 		0C11D8562CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */; };
@@ -5518,6 +5519,7 @@
 		0C0F6DA12D3E8A1C00943A7C /* MythosSessionCollators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosSessionCollators.swift; sourceTree = "<group>"; };
 		0C0F6DA32D3E8EB500943A7C /* MythosCollatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosCollatorService.swift; sourceTree = "<group>"; };
 		0C0F6DA52D3E9CF000943A7C /* MythosCollatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MythosCollatorService+Fetch.swift"; sourceTree = "<group>"; };
+		0C0F6DAB2D3EB19D00943A7C /* MythosCollatorsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosCollatorsTests.swift; sourceTree = "<group>"; };
 		0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKExchangeEdge.swift; sourceTree = "<group>"; };
@@ -11205,6 +11207,14 @@
 			path = MythosStaking;
 			sourceTree = "<group>";
 		};
+		0C0F6DAA2D3EB18300943A7C /* MythosStaking */ = {
+			isa = PBXGroup;
+			children = (
+				0C0F6DAB2D3EB19D00943A7C /* MythosCollatorsTests.swift */,
+			);
+			path = MythosStaking;
+			sourceTree = "<group>";
+		};
 		0C12BC382CEA7E8500AB919D /* Price */ = {
 			isa = PBXGroup;
 			children = (
@@ -16767,6 +16777,7 @@
 		8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0C0F6DAA2D3EB18300943A7C /* MythosStaking */,
 				0C2DA8AB2CC2B120001F79C8 /* AssetsExchange */,
 				0C8FDBA72CAE537800775D7F /* SwipeGov */,
 				0C71046E2C29B60D00487E64 /* MetadataShortener */,
@@ -25878,6 +25889,7 @@
 				F441BE13263986BE0096B67B /* ExtrinsicServiceTests.swift in Sources */,
 				843B6F4F28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift in Sources */,
 				0C8AF7B62B36C75400005AC9 /* Pdc20OperationTests.swift in Sources */,
+				0C0F6DAC2D3EB19D00943A7C /* MythosCollatorsTests.swift in Sources */,
 				84FACB7125F57E4400F32ED4 /* SubstrateStorageTestFacade.swift in Sources */,
 				0C2DA8AD2CC2B156001F79C8 /* AssetsExchangeTests.swift in Sources */,
 				8418167728253B120007684A /* ParachainStakingCollatorsTests.swift in Sources */,
