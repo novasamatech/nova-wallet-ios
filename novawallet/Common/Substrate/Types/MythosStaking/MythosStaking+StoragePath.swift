@@ -17,4 +17,8 @@ extension MythosStakingPallet {
     static var stakeUnlockDelayPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: Self.name, constantName: "StakeUnlockDelay")
     }
+
+    static var candidatesPath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.name, itemName: "Candidates")
+    }
 }
