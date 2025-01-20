@@ -13,6 +13,7 @@ class DAppBrowserWidgetView: UIView {
 
     let closeButton: TriangularedButton = .create { view in
         view.applyEnabledStyle(colored: .clear)
+        view.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         view.imageWithTitleView?.iconImage = R.image.iconClose()
     }
 
@@ -95,9 +96,9 @@ private extension DAppBrowserWidgetView {
     enum Constants {
         static let sideLength: CGFloat = 16.0
         static let borderWidth: CGFloat = 1.0
-        static let closeButtonSize: CGFloat = 25.0
-        static let closeButtonTopInset: CGFloat = 8.0
-        static let closeButtonLeadingInset: CGFloat = UIConstants.horizontalInset
+        static let closeButtonSize: CGFloat = 33.0
+        static let closeButtonTopInset: CGFloat = 4.0
+        static let closeButtonLeadingInset: CGFloat = 12
         static let titleHeight: CGFloat = 22.0
         static let titleTopInset: CGFloat = 9.0
         static let iconSize = CGSize(width: 16.0, height: 16.0)
