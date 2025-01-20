@@ -49,6 +49,7 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
 
         guard oldIsLanscape != newIsLandscape else { return }
 
+        // Force layout update after rotation animation completes as a workaround the bug with wrong cell size
         coordinator.animate(alongsideTransition: nil) { [weak self] _ in
             self?.updateCollectionViewLayoutIfNeeded()
         }
