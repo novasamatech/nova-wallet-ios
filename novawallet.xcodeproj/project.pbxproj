@@ -1064,6 +1064,9 @@
 		2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */; };
 		2D0C3B5D2D1E95650094AF20 /* DAppSearchingByQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */; };
 		2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */; };
+		2D15850A2D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1585092D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift */; };
+		2D15850C2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15850B2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift */; };
+		2D15850F2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */; };
 		2D1A5F552C358E280073773D /* CustomNetworkSetupFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */; };
 		2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */; };
 		2D1A5F5A2C35A8A30073773D /* ChainType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F592C35A8A30073773D /* ChainType.swift */; };
@@ -1090,9 +1093,9 @@
 		2D20F1C02D351B28003E9CF2 /* DAppListBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */; };
 		2D20F1C22D353495003E9CF2 /* DAppIconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */; };
 		2D20F1C42D364879003E9CF2 /* WalletStorageCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C32D364879003E9CF2 /* WalletStorageCleaning.swift */; };
-		2D20F1C72D364938003E9CF2 /* WalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */; };
-		2D20F1C92D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C82D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift */; };
-		2D20F1CC2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1CB2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift */; };
+		2D20F1C72D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */; };
+		2D20F1C92D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */; };
+		2D20F1CC2D36C5D8003E9CF2 /* WalletStorageCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -1167,7 +1170,7 @@
 		2D5A61CD2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */; };
 		2D5A61D02C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */; };
 		2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */; };
-		2D5EBEB22D37DE440016AC4E /* DAppSettingsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB12D37DE440016AC4E /* DAppSettingsCleaner.swift */; };
+		2D5EBEB22D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */; };
 		2D5EBEB42D38F0FD0016AC4E /* AssetListMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB32D38F0FD0016AC4E /* AssetListMeasurement.swift */; };
 		2D5FC1A42C5220900013352B /* AccountVoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */; };
 		2D60C9BD2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */; };
@@ -6497,6 +6500,9 @@
 		2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TabBarController.swift"; sourceTree = "<group>"; };
 		2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchingByQuery.swift; sourceTree = "<group>"; };
 		2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndedReferendumProgressViewModelFactory.swift; sourceTree = "<group>"; };
+		2D1585092D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletStorageCleanerFactory+Remove.swift"; sourceTree = "<group>"; };
+		2D15850B2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletStorageCleanerFactory+Update.swift"; sourceTree = "<group>"; };
+		2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
 		2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupFactory.swift; sourceTree = "<group>"; };
 		2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialCustomChainModel.swift; sourceTree = "<group>"; };
 		2D1A5F592C35A8A30073773D /* ChainType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainType.swift; sourceTree = "<group>"; };
@@ -6523,9 +6529,9 @@
 		2D20F1BF2D351B28003E9CF2 /* DAppListBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerView.swift; sourceTree = "<group>"; };
 		2D20F1C12D353495003E9CF2 /* DAppIconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconViewModelFactory.swift; sourceTree = "<group>"; };
 		2D20F1C32D364879003E9CF2 /* WalletStorageCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleaning.swift; sourceTree = "<group>"; };
-		2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
-		2D20F1C82D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDeleteStorageCleanerFactory.swift; sourceTree = "<group>"; };
-		2D20F1CB2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletStorageCleaner.swift; sourceTree = "<group>"; };
+		2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
+		2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
+		2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleaner.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -6599,7 +6605,7 @@
 		2D5A61CC2C0F58DD006D58E3 /* NetworksEmptyPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksEmptyPlaceholderView.swift; sourceTree = "<group>"; };
 		2D5A61CF2C0FAC5B006D58E3 /* IntegrateNetworksBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrateNetworksBanner.swift; sourceTree = "<group>"; };
 		2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
-		2D5EBEB12D37DE440016AC4E /* DAppSettingsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettingsCleaner.swift; sourceTree = "<group>"; };
+		2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift; sourceTree = "<group>"; };
 		2D5EBEB32D38F0FD0016AC4E /* AssetListMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListMeasurement.swift; sourceTree = "<group>"; };
 		2D5FC1A32C5220900013352B /* AccountVoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVoteFactory.swift; sourceTree = "<group>"; };
 		2D60C9BC2D1AA97C00027EC6 /* ModalCardPresentationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationConfiguration.swift; sourceTree = "<group>"; };
@@ -13245,6 +13251,33 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D1585052D3AA43800E86DA8 /* RemovedWallet */ = {
+			isa = PBXGroup;
+			children = (
+				2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */,
+				2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */,
+			);
+			path = RemovedWallet;
+			sourceTree = "<group>";
+		};
+		2D1585072D3AA4A600E86DA8 /* UpdatedWallet */ = {
+			isa = PBXGroup;
+			children = (
+				2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */,
+			);
+			path = UpdatedWallet;
+			sourceTree = "<group>";
+		};
+		2D1585082D3AA52800E86DA8 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */,
+				2D1585092D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift */,
+				2D15850B2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
 		2D1A5F582C35A8840073773D /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -13313,8 +13346,8 @@
 			isa = PBXGroup;
 			children = (
 				2D20F1C32D364879003E9CF2 /* WalletStorageCleaning.swift */,
-				2D20F1CB2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift */,
-				2D20F1C82D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift */,
+				2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */,
+				2D1585082D3AA52800E86DA8 /* Factory */,
 				2D20F1CA2D36C579003E9CF2 /* Cleaners */,
 			);
 			path = WalletStorageCleaning;
@@ -13323,8 +13356,8 @@
 		2D20F1CA2D36C579003E9CF2 /* Cleaners */ = {
 			isa = PBXGroup;
 			children = (
-				2D20F1C62D364938003E9CF2 /* WalletBrowserStateCleaner.swift */,
-				2D5EBEB12D37DE440016AC4E /* DAppSettingsCleaner.swift */,
+				2D1585072D3AA4A600E86DA8 /* UpdatedWallet */,
+				2D1585052D3AA43800E86DA8 /* RemovedWallet */,
 			);
 			path = Cleaners;
 			sourceTree = "<group>";
@@ -26697,6 +26730,7 @@
 				849014C524AA890D008F705E /* UIFont+Style.swift in Sources */,
 				F40966DC26B29839008CD244 /* SubqueryStakeData.swift in Sources */,
 				0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */,
+				2D15850C2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift in Sources */,
 				8490149924AA7892008F705E /* SharingPresentable.swift in Sources */,
 				84754C9C2513B26000854599 /* AccountPickerTableViewCell.swift in Sources */,
 				8472C5B1265CF9C500E2481B /* StakingRewardDestConfirmViewFactory.swift in Sources */,
@@ -27612,7 +27646,7 @@
 				84D911AA292C923D0032EF33 /* Data+Fill.swift in Sources */,
 				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
-				2D20F1C92D36BD5C003E9CF2 /* WalletDeleteStorageCleanerFactory.swift in Sources */,
+				2D20F1C92D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift in Sources */,
 				2D62874F2C95C1F500060814 /* ReferendumsObservableState.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				0C63908B2BF073C20015D467 /* CloudBackupSyncMonitoring.swift in Sources */,
@@ -27635,7 +27669,7 @@
 				847A25C628D84BE2006AC9F5 /* Referenda.swift in Sources */,
 				0C17BD9B2A43025E004AF9E7 /* Pagination.swift in Sources */,
 				88D02FE82942EB1A00E26390 /* AssetDetailsModel.swift in Sources */,
-				2D20F1C72D364938003E9CF2 /* WalletBrowserStateCleaner.swift in Sources */,
+				2D20F1C72D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift in Sources */,
 				0C0E0A9B2B3E8C8A00865F10 /* ExtrinsicSigningContext.swift in Sources */,
 				77F033A22A84E00F006BC67E /* StakingPoolView.swift in Sources */,
 				77E304A92AEB9F76006FD6F0 /* SwapConfirmInitState.swift in Sources */,
@@ -27988,7 +28022,7 @@
 				84B018AC26E01A4100C75E28 /* StakingStateView.swift in Sources */,
 				842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */,
 				84880C4429026C3E00CADB06 /* ReferendumDelegatingLocal.swift in Sources */,
-				2D20F1CC2D36C5D8003E9CF2 /* RemovedWalletStorageCleaner.swift in Sources */,
+				2D20F1CC2D36C5D8003E9CF2 /* WalletStorageCleaner.swift in Sources */,
 				8472C5B2265CF9C500E2481B /* StakingRewardDestConfirmInteractor.swift in Sources */,
 				88F9F696297B082F00F6550D /* SelectableTitleTableViewCell.swift in Sources */,
 				882C29AE28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift in Sources */,
@@ -28371,7 +28405,7 @@
 				8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */,
 				8482F62D280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift in Sources */,
 				5DDD2206DF795CF205610455 /* AccountExportPasswordPresenter.swift in Sources */,
-				2D5EBEB22D37DE440016AC4E /* DAppSettingsCleaner.swift in Sources */,
+				2D5EBEB22D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift in Sources */,
 				800FCAF66DC8A24020D16A9C /* AccountExportPasswordInteractor.swift in Sources */,
 				841E553A282D23AE00C8438F /* StakingRelaychainWireframe.swift in Sources */,
 				0C3205BB2A8679F0002EB914 /* EvmGasPriceProvider.swift in Sources */,
@@ -29227,6 +29261,7 @@
 				84EDF67729C7AC29002173E6 /* HexCodingWrapper.swift in Sources */,
 				84002A972990491A00A80672 /* GovernanceRemoveVotesInteractorError.swift in Sources */,
 				84720732277C370600F593DD /* DAppCategoriesView.swift in Sources */,
+				2D15850F2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift in Sources */,
 				8892284A28F35410003F8B9E /* ReferendumsViewModel.swift in Sources */,
 				2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */,
 				E2A9BC1477D81DDDE519404C /* DAppOperationConfirmWireframe.swift in Sources */,
@@ -29843,6 +29878,7 @@
 				1A029717AD309487B70FFD02 /* ReferendumDetailsViewFactory.swift in Sources */,
 				9DED20EB20A872E682CB402A /* ReferendumFullDetailsProtocols.swift in Sources */,
 				1269C0103216CDBDA25A5101 /* ReferendumFullDetailsWireframe.swift in Sources */,
+				2D15850A2D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift in Sources */,
 				2B287EEF431ED9FE9510BAA4 /* ReferendumFullDetailsPresenter.swift in Sources */,
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,

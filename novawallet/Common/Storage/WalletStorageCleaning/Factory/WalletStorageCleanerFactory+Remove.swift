@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
 
-final class WalletStorageCleanerFactory {
-    static func createWalletStorageCleaner(using operationQueue: OperationQueue) -> WalletStorageCleaning {
+extension WalletStorageCleanerFactory {
+    static func createRemovedWalletStorageCleaner(using operationQueue: OperationQueue) -> WalletStorageCleaning {
         let browserStateCleaner = createBrowserStateCleaner(using: operationQueue)
         let dAppSettingsCleaner = createDAppSettingsCleaner()
 
@@ -13,7 +13,7 @@ final class WalletStorageCleanerFactory {
             dAppSettingsCleaner
         ]
 
-        let mainCleaner = RemovedWalletStorageCleaner(cleanersCascade: cleaners)
+        let mainCleaner = WalletStorageCleaner(cleanersCascade: cleaners)
 
         return mainCleaner
     }
@@ -24,7 +24,7 @@ final class WalletStorageCleanerFactory {
         let browserTabManager = DAppBrowserTabManager.shared
         let webViewPoolEraser = WebViewPool.shared
 
-        let browserStateCleaner = WalletBrowserStateCleaner(
+        let browserStateCleaner = RemovedWalletBrowserStateCleaner(
             browserTabManager: browserTabManager,
             webViewPoolEraser: webViewPoolEraser,
             operationQueue: operationQueue
@@ -44,7 +44,9 @@ final class WalletStorageCleanerFactory {
         )
         let authorizedDAppRepository = AnyDataProviderRepository(repository)
 
-        let dappSettingsCleaner = DAppSettingsCleaner(authorizedDAppRepository: authorizedDAppRepository)
+        let dappSettingsCleaner = RemovedWalletDAppSettingsCleaner(
+            authorizedDAppRepository: authorizedDAppRepository
+        )
 
         return dappSettingsCleaner
     }

@@ -861,6 +861,7 @@ final class CloudBackupSyncTests: XCTestCase {
             selectedWalletSettings: walletSettingsManager,
             repository: walletsRepository,
             removedWalletsCleaner: walletStorageCleaner,
+            updatedWalletsCleaner: walletStorageCleaner,
             operationQueue: operationQueue
         )
         

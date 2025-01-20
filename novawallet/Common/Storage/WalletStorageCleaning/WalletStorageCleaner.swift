@@ -1,7 +1,12 @@
 import Foundation
 import Operation_iOS
 
-final class RemovedWalletStorageCleaner {
+struct WalletStorageCleaningDependencies {
+    let changedItemsClosure: () throws -> [MetaAccountModel]
+    let allWalletsClosure: (() throws -> [MetaAccountModel.Id: MetaAccountModel])?
+}
+
+final class WalletStorageCleaner {
     private let cleanersCascade: [WalletStorageCleaning]
 
     init(cleanersCascade: [WalletStorageCleaning]) {
@@ -11,11 +16,11 @@ final class RemovedWalletStorageCleaner {
 
 // MARK: WalletStorageCleaning
 
-extension RemovedWalletStorageCleaner: WalletStorageCleaning {
+extension WalletStorageCleaner: WalletStorageCleaning {
     func cleanStorage(
-        for removedItems: @escaping () throws -> [MetaAccountModel]
+        using dependencies: WalletStorageCleaningDependencies
     ) -> CompoundOperationWrapper<Void> {
-        let wrappers = cleanersCascade.map { $0.cleanStorage(for: removedItems) }
+        let wrappers = cleanersCascade.map { $0.cleanStorage(using: dependencies) }
 
         let mergeOperation = ClosureOperation {
             _ = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
@@ -25,11 +30,11 @@ extension RemovedWalletStorageCleaner: WalletStorageCleaning {
 
         wrappers.forEach { mergeOperation.addDependency($0.targetOperation) }
 
-        let dependencies = wrappers.flatMap(\.allOperations)
+        let wrapperDependencies = wrappers.flatMap(\.allOperations)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: dependencies
+            dependencies: wrapperDependencies
         )
     }
 }

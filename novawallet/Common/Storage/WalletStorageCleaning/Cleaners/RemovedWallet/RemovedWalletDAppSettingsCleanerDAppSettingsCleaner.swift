@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class DAppSettingsCleaner {
+final class RemovedWalletDAppSettingsCleaner {
     private let authorizedDAppRepository: AnyDataProviderRepository<DAppSettings>
 
     init(authorizedDAppRepository: AnyDataProviderRepository<DAppSettings>) {
@@ -11,15 +11,15 @@ final class DAppSettingsCleaner {
 
 // MARK: WalletStorageCleaning
 
-extension DAppSettingsCleaner: WalletStorageCleaning {
+extension RemovedWalletDAppSettingsCleaner: WalletStorageCleaning {
     func cleanStorage(
-        for removedItems: @escaping () throws -> [MetaAccountModel]
+        using dependencies: WalletStorageCleaningDependencies
     ) -> CompoundOperationWrapper<Void> {
         let fetchOptions = RepositoryFetchOptions()
         let fetchSettingsOperation = authorizedDAppRepository.fetchAllOperation(with: fetchOptions)
 
         let deletionBlock: () throws -> [String] = {
-            let removedWallets = Set(try removedItems().map(\.metaId))
+            let removedWallets = Set(try dependencies.changedItemsClosure().map(\.metaId))
             let dappSettingsIds = try fetchSettingsOperation.extractNoCancellableResultData()
                 .compactMap(\.metaId)
                 .filter { removedWallets.contains($0) }
