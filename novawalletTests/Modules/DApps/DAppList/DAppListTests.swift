@@ -78,6 +78,7 @@ class DAppListTests: XCTestCase {
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            wallet: walletSettings.value,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )

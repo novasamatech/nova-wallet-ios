@@ -24,6 +24,7 @@ struct DAppListViewFactory {
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            wallet: SelectedWalletSettings.shared.value,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )

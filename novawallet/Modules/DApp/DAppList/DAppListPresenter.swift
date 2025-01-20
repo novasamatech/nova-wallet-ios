@@ -16,16 +16,20 @@ final class DAppListPresenter {
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
     private var hasWalletsListUpdates: Bool = false
 
+    private var dAppOpenTask: (() -> Void)?
+
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        wallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.wallet = wallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -46,6 +50,19 @@ final class DAppListPresenter {
         } catch {
             let errorSection = viewModelFactory.createErrorSection()
             view?.didReceive([errorSection])
+        }
+    }
+
+    private func createDAppOpenTask(
+        tabProvider: @escaping () -> DAppBrowserTab?,
+        routingClosure: @escaping (DAppBrowserTab) -> Void
+    ) -> () -> Void {
+        { [weak self] in
+            guard let tab = tabProvider() else { return }
+
+            routingClosure(tab)
+
+            self?.dAppOpenTask = nil
         }
     }
 }
@@ -85,25 +102,40 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
+        dAppOpenTask = createDAppOpenTask(
+            tabProvider: { [weak self] in
+                guard
+                    let self,
+                    let wallet,
+                    case let .success(dAppList) = dAppsResult
+                else { return nil }
+
+                let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
+                    DAppBrowserTab(from: dApp, metaId: wallet.metaId)
+                } else if let dApp = favorites?[id] {
+                    DAppBrowserTab(from: dApp.identifier, metaId: wallet.metaId)
+                } else {
+                    nil
+                }
+
+                return tab
+            },
+            routingClosure: { [weak self] tab in
+                guard let self else { return }
+
+                wireframe.showNewBrowserStack(
+                    tab,
+                    from: view
+                )
+            }
+        )
+
         guard
             let wallet,
             case let .success(dAppList) = dAppsResult
         else { return }
 
-        let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
-            DAppBrowserTab(from: dApp, metaId: wallet.metaId)
-        } else if let dApp = favorites?[id] {
-            DAppBrowserTab(from: dApp.identifier, metaId: wallet.metaId)
-        } else {
-            nil
-        }
-
-        guard let tab else { return }
-
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
-        )
+        dAppOpenTask?()
     }
 
     func seeAllFavorites() {
@@ -141,6 +173,8 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         self.dAppsResult = dAppsResult
 
+        dAppOpenTask?()
+
         provideSections()
     }
 
@@ -162,14 +196,20 @@ extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
         guard let wallet else { return }
 
-        guard let tab = DAppBrowserTab(from: result, metaId: wallet.metaId) else {
-            return
-        }
+        dAppOpenTask = createDAppOpenTask(
+            tabProvider: {
+                DAppBrowserTab(from: result, metaId: wallet.metaId)
+            },
+            routingClosure: { [weak self] tab in
+                guard let self else { return }
 
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
+                wireframe.showNewBrowserStack(
+                    tab,
+                    from: view
+                )
+            }
         )
+        dAppOpenTask?()
     }
 }
 
