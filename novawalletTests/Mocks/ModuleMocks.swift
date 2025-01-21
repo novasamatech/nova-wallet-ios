@@ -2225,16 +2225,16 @@ import Operation_iOS
     
     
     
-     func cleanStorage(using dependencies: WalletStorageCleaningDependencies) -> CompoundOperationWrapper<Void> {
+     func cleanStorage(using providers: WalletStorageCleaningProviders) -> CompoundOperationWrapper<Void> {
         
-    return cuckoo_manager.call("cleanStorage(using: WalletStorageCleaningDependencies) -> CompoundOperationWrapper<Void>",
-            parameters: (dependencies),
-            escapingParameters: (dependencies),
+    return cuckoo_manager.call("cleanStorage(using: WalletStorageCleaningProviders) -> CompoundOperationWrapper<Void>",
+            parameters: (providers),
+            escapingParameters: (providers),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.cleanStorage(using: dependencies))
+            defaultCall: __defaultImplStub!.cleanStorage(using: providers))
         
     }
     
@@ -2247,9 +2247,9 @@ import Operation_iOS
 	    }
 	    
 	    
-	    func cleanStorage<M1: Cuckoo.Matchable>(using dependencies: M1) -> Cuckoo.ProtocolStubFunction<(WalletStorageCleaningDependencies), CompoundOperationWrapper<Void>> where M1.MatchedType == WalletStorageCleaningDependencies {
-	        let matchers: [Cuckoo.ParameterMatcher<(WalletStorageCleaningDependencies)>] = [wrap(matchable: dependencies) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletStorageCleaning.self, method: "cleanStorage(using: WalletStorageCleaningDependencies) -> CompoundOperationWrapper<Void>", parameterMatchers: matchers))
+	    func cleanStorage<M1: Cuckoo.Matchable>(using providers: M1) -> Cuckoo.ProtocolStubFunction<(WalletStorageCleaningProviders), CompoundOperationWrapper<Void>> where M1.MatchedType == WalletStorageCleaningProviders {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletStorageCleaningProviders)>] = [wrap(matchable: providers) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletStorageCleaning.self, method: "cleanStorage(using: WalletStorageCleaningProviders) -> CompoundOperationWrapper<Void>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -2269,9 +2269,9 @@ import Operation_iOS
 	
 	    
 	    @discardableResult
-	    func cleanStorage<M1: Cuckoo.Matchable>(using dependencies: M1) -> Cuckoo.__DoNotUse<(WalletStorageCleaningDependencies), CompoundOperationWrapper<Void>> where M1.MatchedType == WalletStorageCleaningDependencies {
-	        let matchers: [Cuckoo.ParameterMatcher<(WalletStorageCleaningDependencies)>] = [wrap(matchable: dependencies) { $0 }]
-	        return cuckoo_manager.verify("cleanStorage(using: WalletStorageCleaningDependencies) -> CompoundOperationWrapper<Void>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func cleanStorage<M1: Cuckoo.Matchable>(using providers: M1) -> Cuckoo.__DoNotUse<(WalletStorageCleaningProviders), CompoundOperationWrapper<Void>> where M1.MatchedType == WalletStorageCleaningProviders {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletStorageCleaningProviders)>] = [wrap(matchable: providers) { $0 }]
+	        return cuckoo_manager.verify("cleanStorage(using: WalletStorageCleaningProviders) -> CompoundOperationWrapper<Void>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -2285,7 +2285,7 @@ import Operation_iOS
     
     
     
-     func cleanStorage(using dependencies: WalletStorageCleaningDependencies) -> CompoundOperationWrapper<Void>  {
+     func cleanStorage(using providers: WalletStorageCleaningProviders) -> CompoundOperationWrapper<Void>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Void>).self)
     }
     

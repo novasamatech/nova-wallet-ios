@@ -74,11 +74,14 @@ class DAppListTests: XCTestCase {
             dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
             dappIconViewModelFactory: DAppIconViewModelFactory()
         )
+        
+        let dAppListNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            wallet: walletSettings.value,
+            browserNavigationTaskFactory: dAppListNavigationTaskFactory,
+            initialWallet: walletSettings.value,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
