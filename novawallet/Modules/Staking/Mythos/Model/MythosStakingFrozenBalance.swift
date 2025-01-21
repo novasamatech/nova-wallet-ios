@@ -28,4 +28,8 @@ struct MythosStakingFrozenBalance: Equatable {
         releasing = balanceClosure(MythosStakingPallet.releasingFreezeType, locks)
         candidateBond = balanceClosure(MythosStakingPallet.candidacyBondFreezeType, locks)
     }
+    
+    var total: Balance {
+        staking + releasing + candidateBond
+    }
 }

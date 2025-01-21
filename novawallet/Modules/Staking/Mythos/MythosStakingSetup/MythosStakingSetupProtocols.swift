@@ -3,6 +3,7 @@ import BigInt
 protocol MythosStakingSetupInteractorInputProtocol: AnyObject {
     func setup()
     func applyCollator(with accountId: AccountId)
+    func estimateFee(with model: MythosStakeModel)
 }
 
 protocol MythosStakingSetupInteractorOutputProtocol: AnyObject {
