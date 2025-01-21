@@ -41,14 +41,14 @@ extension DAppListViewController {
                     using: collectionView,
                     dApp: model,
                     indexPath: indexPath,
-                    favorite: true
+                    layoutStyle: .vertical
                 )
             case let .category(model, _):
                 setupDAppView(
                     using: collectionView,
                     dApp: model,
                     indexPath: indexPath,
-                    favorite: false
+                    layoutStyle: .horizontal
                 )
             case .notLoaded:
                 setupLoadingView(
@@ -146,19 +146,14 @@ private extension DAppListViewController {
         using collectionView: UICollectionView,
         dApp: DAppViewModel,
         indexPath: IndexPath,
-        favorite: Bool
+        layoutStyle: DAppItemView.LayoutStyle
     ) -> UICollectionViewCell {
         let cell: DAppItemCollectionViewCell = collectionView.dequeueReusableCellWithType(
             DAppItemCollectionViewCell.self,
             for: indexPath
         )!
 
-        if favorite {
-            cell.view.layoutStyle = .vertical
-        } else {
-            cell.view.layoutStyle = .horizontal
-        }
-
+        cell.view.layoutStyle = layoutStyle
         cell.view.bind(viewModel: dApp)
 
         return cell
