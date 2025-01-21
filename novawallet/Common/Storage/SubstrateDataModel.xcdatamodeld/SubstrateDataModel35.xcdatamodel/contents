@@ -42,6 +42,8 @@
         <attribute name="chainAccountId" optional="YES" attributeType="String"/>
         <attribute name="chainId" optional="YES" attributeType="String"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="module" optional="YES" attributeType="String"/>
+        <attribute name="storage" attributeType="String" defaultValueString="Locks"/>
         <attribute name="type" optional="YES" attributeType="String"/>
     </entity>
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
@@ -225,5 +227,4 @@
         <attribute name="assetIdOut" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO"/>
         <relationship name="transaction" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="CDTransactionItem" inverseName="swap" inverseEntity="CDTransactionItem"/>
     </entity>
-    <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
 </model>

@@ -27,6 +27,9 @@ protocol MultistakingRepositoryFactoryProtocol {
 
     func createNominationPoolsRepository(
     ) -> AnyDataProviderRepository<Multistaking.DashboardItemNominationPoolPart>
+
+    func createMythosRepository(
+    ) -> AnyDataProviderRepository<Multistaking.DashboardItemMythosStakingPart>
 }
 
 final class MultistakingRepositoryFactory {
@@ -83,6 +86,12 @@ extension MultistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol {
     func createParachainRepository(
     ) -> AnyDataProviderRepository<Multistaking.DashboardItemParachainPart> {
         let mapper = StakingDashboardParachainMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createMythosRepository() -> AnyDataProviderRepository<Multistaking.DashboardItemMythosStakingPart> {
+        let mapper = StakingDashboardMythosMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(repository)
     }

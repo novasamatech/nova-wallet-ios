@@ -184,51 +184,48 @@ final class MultistakingSyncService {
         }
     }
 
-    private func createOnchainService(for chainAssetOption: Multistaking.ChainAssetOption) {
-        let stakingOption = chainAssetOption.option
-
+    private func makeOnchainService(
+        for chainAssetOption: Multistaking.ChainAssetOption
+    ) -> OnchainSyncServiceProtocol? {
         switch chainAssetOption.type {
         case .relaychain, .azero, .auraRelaychain:
-            if let service = createRelaychainStaking(
+            createRelaychainStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
-            ) {
-                onchainUpdaters[stakingOption] = service
-
-                addSyncHandler(for: service, stakingOption: stakingOption)
-
-                if isActive {
-                    service.setup()
-                }
-            }
+            )
         case .parachain, .turing:
-            if let service = createParachainStaking(
+            createParachainStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
-            ) {
-                onchainUpdaters[stakingOption] = service
-
-                addSyncHandler(for: service, stakingOption: stakingOption)
-
-                if isActive {
-                    service.setup()
-                }
-            }
+            )
         case .nominationPools:
-            if let service = createPoolsStaking(
+            createPoolsStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
-            ) {
-                onchainUpdaters[stakingOption] = service
-
-                addSyncHandler(for: service, stakingOption: stakingOption)
-
-                if isActive {
-                    service.setup()
-                }
-            }
+            )
+        case .mythos:
+            createMythosStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            )
         case .unsupported:
+            nil
+        }
+    }
+
+    private func createOnchainService(for chainAssetOption: Multistaking.ChainAssetOption) {
+        guard let service = makeOnchainService(for: chainAssetOption) else {
             logger.warning("Trying to create service for unsupported staking")
+            return
+        }
+
+        let stakingOption = chainAssetOption.option
+        onchainUpdaters[stakingOption] = service
+
+        addSyncHandler(for: service, stakingOption: stakingOption)
+
+        if isActive {
+            service.setup()
         }
     }
 
@@ -343,6 +340,32 @@ final class MultistakingSyncService {
             connection: connection,
             runtimeService: runtimeService,
             operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger
+        )
+    }
+
+    private func createMythosStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        guard
+            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        return MythosMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: multistakingRepositoryFactory.createMythosRepository(),
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
+            connection: connection,
+            runtimeService: runtimeService,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger
