@@ -21,10 +21,13 @@ struct DAppListViewFactory {
             dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
+        let dAppNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
+
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            wallet: SelectedWalletSettings.shared.value,
+            browserNavigationTaskFactory: dAppNavigationTaskFactory,
+            initialWallet: SelectedWalletSettings.shared.value,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )

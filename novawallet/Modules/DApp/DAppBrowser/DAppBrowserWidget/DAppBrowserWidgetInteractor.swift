@@ -43,7 +43,7 @@ private extension DAppBrowserWidgetInteractor {
         let walletsBeforeChanges = allWallets
 
         allWallets = changes.mergeToDict(walletsBeforeChanges ?? [:])
-        
+
         guard let walletsBeforeChanges else { return }
 
         let walletCleaningProviders = WalletStorageCleaningProviders(

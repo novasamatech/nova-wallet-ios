@@ -1288,6 +1288,8 @@
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
+		2DB5B1122D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */; };
+		2DB5B1152D3FECB00075EB3F /* DAppListNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
 		2DBB28872CD2934500DFA0AD /* AssetIconURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */; };
 		2DBB28892CD42ACB00DFA0AD /* QRCreationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */; };
@@ -6722,6 +6724,8 @@
 		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
+		2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListNavigationTaskFactory.swift; sourceTree = "<group>"; };
+		2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListNavigationTask.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
 		2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLFactory.swift; sourceTree = "<group>"; };
 		2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperation.swift; sourceTree = "<group>"; };
@@ -13950,6 +13954,15 @@
 				2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */,
 			);
 			path = Image;
+			sourceTree = "<group>";
+		};
+		2DB5B1132D3FEC9E0075EB3F /* DAppListNavigationTaskFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */,
+				2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */,
+			);
+			path = DAppListNavigationTaskFactory;
 			sourceTree = "<group>";
 		};
 		2DBB288A2CD42B5100DFA0AD /* Logo */ = {
@@ -24410,6 +24423,7 @@
 			children = (
 				842BA36927B64F1000D31EEF /* ViewModel */,
 				84DA03D9275A31A000E8B326 /* View */,
+				2DB5B1132D3FEC9E0075EB3F /* DAppListNavigationTaskFactory */,
 				10F3CCA5BA57C68D5AE2B42F /* DAppListProtocols.swift */,
 				3E6E41F045986002E1E26C12 /* DAppListWireframe.swift */,
 				ED66939D92756F608FA11520 /* DAppListPresenter.swift */,
@@ -28961,6 +28975,7 @@
 				845B08062918C3FB005785D3 /* DemocracyProposalCall.swift in Sources */,
 				77895C9F2A8F5D40006870FB /* NominationPoolSearchManager.swift in Sources */,
 				78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */,
+				2DB5B1122D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift in Sources */,
 				849B03682A14FB8C009624D9 /* CoingeckoPriceHistoryData.swift in Sources */,
 				2D1C5D262C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift in Sources */,
 				2D6287652C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift in Sources */,
@@ -30070,6 +30085,7 @@
 				331186FCF0903BA793C6D930 /* DelegationListViewFactory.swift in Sources */,
 				D92FC57638EB959DB3850D3B /* DelegateVotedReferendaProtocols.swift in Sources */,
 				D4184799A74D5F9B28F95E80 /* DelegateVotedReferendaWireframe.swift in Sources */,
+				2DB5B1152D3FECB00075EB3F /* DAppListNavigationTask.swift in Sources */,
 				835AE15B1F58CB87F775272F /* DelegateVotedReferendaPresenter.swift in Sources */,
 				FBB0A83A6F48E4E0EE15E11A /* DelegateVotedReferendaInteractor.swift in Sources */,
 				84B8AA7F29F9064300347A37 /* WalletConnectStateSigning.swift in Sources */,
