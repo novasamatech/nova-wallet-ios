@@ -48,11 +48,11 @@ private extension DAppIconViewModelFactory {
         dAppURL: URL
     ) -> ImageViewModelProtocol {
         if let iconURL {
-            RemoteImageViewModel(url: iconURL)
+            DAppIconImageViewModel.icon(RemoteImageViewModel(url: iconURL))
         } else if let faviconURL = createFaviconURL(for: dAppURL) {
-            RemoteImageViewModel(url: faviconURL)
+            DAppIconImageViewModel.favicon(RemoteImageViewModel(url: faviconURL))
         } else {
-            StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+            DAppIconImageViewModel.icon(StaticImageViewModel(image: R.image.iconDefaultDapp()!))
         }
     }
 }
