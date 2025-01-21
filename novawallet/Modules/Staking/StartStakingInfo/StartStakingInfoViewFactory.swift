@@ -39,7 +39,7 @@ struct StartStakingInfoViewFactory {
                     type: selectedStakingType ?? mainStakingType
                 )
             )
-        case .unsupported, .nominationPools:
+        case .unsupported, .nominationPools, .mythos:
             return nil
         }
     }
