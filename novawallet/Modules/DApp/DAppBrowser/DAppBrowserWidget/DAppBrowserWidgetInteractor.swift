@@ -16,7 +16,7 @@ final class DAppBrowserWidgetInteractor {
     private let logger: LoggerProtocol
 
     private var selectedWalletProvider: StreamableProvider<ManagedMetaAccountModel>?
-    private var allWallets: [MetaAccountModel.Id: ManagedMetaAccountModel] = [:]
+    private var allWallets: [MetaAccountModel.Id: ManagedMetaAccountModel]?
 
     init(
         tabManager: DAppBrowserTabManagerProtocol,
@@ -42,7 +42,9 @@ private extension DAppBrowserWidgetInteractor {
     func processWalletList(_ changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         let walletsBeforeChanges = allWallets
 
-        allWallets = changes.mergeToDict(walletsBeforeChanges)
+        allWallets = changes.mergeToDict(walletsBeforeChanges ?? [:])
+        
+        guard let walletsBeforeChanges else { return }
 
         let walletCleaningProviders = WalletStorageCleaningProviders(
             changesProvider: { changes },
