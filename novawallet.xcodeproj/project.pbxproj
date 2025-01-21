@@ -113,6 +113,9 @@
 		0C0F6DB72D3EE99C00943A7C /* MythosStakingDetailsSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DB62D3EE99C00943A7C /* MythosStakingDetailsSyncService.swift */; };
 		0C0F6DBA2D3EE9C200943A7C /* MythosStakingDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DB92D3EE9C200943A7C /* MythosStakingDetails.swift */; };
 		0C0F6DBE2D3EF50300943A7C /* MythosDelegatorStakeDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DBD2D3EF50300943A7C /* MythosDelegatorStakeDistribution.swift */; };
+		0C0F6DC02D3FBEA800943A7C /* MythosStakingFrozenBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DBF2D3FBEA800943A7C /* MythosStakingFrozenBalance.swift */; };
+		0C0F6DC22D3FED5A00943A7C /* MythosStakingFrozenBalanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DC12D3FED5A00943A7C /* MythosStakingFrozenBalanceStore.swift */; };
+		0C0F6DC42D3FEDC800943A7C /* BaseObservableStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6DC32D3FEDC800943A7C /* BaseObservableStateStore.swift */; };
 		0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */; };
 		0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */; };
 		0C11D8562CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */; };
@@ -5534,6 +5537,9 @@
 		0C0F6DB62D3EE99C00943A7C /* MythosStakingDetailsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingDetailsSyncService.swift; sourceTree = "<group>"; };
 		0C0F6DB92D3EE9C200943A7C /* MythosStakingDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingDetails.swift; sourceTree = "<group>"; };
 		0C0F6DBD2D3EF50300943A7C /* MythosDelegatorStakeDistribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosDelegatorStakeDistribution.swift; sourceTree = "<group>"; };
+		0C0F6DBF2D3FBEA800943A7C /* MythosStakingFrozenBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingFrozenBalance.swift; sourceTree = "<group>"; };
+		0C0F6DC12D3FED5A00943A7C /* MythosStakingFrozenBalanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingFrozenBalanceStore.swift; sourceTree = "<group>"; };
+		0C0F6DC32D3FEDC800943A7C /* BaseObservableStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseObservableStateStore.swift; sourceTree = "<group>"; };
 		0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKExchangeEdge.swift; sourceTree = "<group>"; };
@@ -11266,6 +11272,7 @@
 			isa = PBXGroup;
 			children = (
 				0C0F6DB62D3EE99C00943A7C /* MythosStakingDetailsSyncService.swift */,
+				0C0F6DC12D3FED5A00943A7C /* MythosStakingFrozenBalanceStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -11274,6 +11281,7 @@
 			isa = PBXGroup;
 			children = (
 				0C0F6DB92D3EE9C200943A7C /* MythosStakingDetails.swift */,
+				0C0F6DBF2D3FBEA800943A7C /* MythosStakingFrozenBalance.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -16120,6 +16128,7 @@
 				844304642A28EB0D00DE36DE /* ObservableSyncService.swift */,
 				0C7A3FCF2B6A93B500764603 /* ObservableSubscriptionSyncService.swift */,
 				0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */,
+				0C0F6DC32D3FEDC800943A7C /* BaseObservableStateStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -27483,6 +27492,7 @@
 				8814774229B07E4C001E98A1 /* ResizableImageActionIndicator.swift in Sources */,
 				8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */,
 				778D979B2A24D1D8002BA681 /* BaseAssetsSearchViewLayout.swift in Sources */,
+				0C0F6DC22D3FED5A00943A7C /* MythosStakingFrozenBalanceStore.swift in Sources */,
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
 				880059E328EF128000E87B9B /* ReferendumInfoView.swift in Sources */,
 				84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */,
@@ -28792,6 +28802,7 @@
 				F477CD3A262EE0E7004DF739 /* StakingRewardDetailsViewModelFactory.swift in Sources */,
 				0CAC02FD2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift in Sources */,
 				849ABE7C2628116F00011A2A /* NominationsReducer.swift in Sources */,
+				0C0F6DC42D3FEDC800943A7C /* BaseObservableStateStore.swift in Sources */,
 				846CA77E2709A34D0011124C /* StakingAnalyticsLocalStorageSubscriber.swift in Sources */,
 				0CC0F8272BB53376002C49F6 /* CloudBackupAvailabilityService.swift in Sources */,
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
@@ -29208,6 +29219,7 @@
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
 				849C7BDB2A1B236900434621 /* GladingBaseView.swift in Sources */,
 				84EE2FB32891442F00A98816 /* WalletManageViewFactory.swift in Sources */,
+				0C0F6DC02D3FBEA800943A7C /* MythosStakingFrozenBalance.swift in Sources */,
 				847A6C0B28817E4000477F77 /* AssetListBaseInteractor.swift in Sources */,
 				0C846B8B2BE52FBD000EBFC2 /* VaraRewardParamsService.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,

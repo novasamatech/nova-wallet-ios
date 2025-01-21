@@ -47,7 +47,7 @@ extension AssetLock: Identifiable {
             accountId.toHex(),
             module,
             type.toUTF8String()!
-        ].compactMap { $0 }.joined(separator: String.Separator.dash).data(using: .utf8)!
+        ].compactMap { $0 }.joined(with: String.Separator.dash).data(using: .utf8)!
         return data.sha256().toHex()
     }
 
