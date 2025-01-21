@@ -300,8 +300,20 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             acc[indexedDApp.dapp.identifier] = indexedDApp.dapp
         }
 
+        let actualFavorites = if let category {
+            favoritesByQuery.filter {
+                guard let knownDApp = knownDApps[$0.value.identifier] else {
+                    return false
+                }
+
+                return knownDApp.categories.contains(category)
+            }
+        } else {
+            favoritesByQuery
+        }
+
         let favoritesViewModels = createFavorites(
-            from: Array(favoritesByQuery.values),
+            from: Array(actualFavorites.values),
             knownDApps: knownDApps,
             categories: categoriesById,
             showsFavoriteIcons: true
