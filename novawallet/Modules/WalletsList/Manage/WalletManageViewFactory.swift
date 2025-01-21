@@ -55,18 +55,14 @@ final class WalletManageViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let removedWalletStorageCleaner = WalletStorageCleanerFactory.createRemovedWalletStorageCleaner(
-            using: operationQueue
-        )
-        let updatedWalletStorageCleaner = WalletStorageCleanerFactory.createUpdatedWalletStorageCleaner(
+        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(
             using: operationQueue
         )
 
         let walletUpdateMediator = WalletUpdateMediator(
             selectedWalletSettings: SelectedWalletSettings.shared,
             repository: repository,
-            removedWalletsCleaner: removedWalletStorageCleaner,
-            updatedWalletsCleaner: updatedWalletStorageCleaner,
+            walletsCleaner: walletStorageCleaner,
             operationQueue: operationQueue
         )
 

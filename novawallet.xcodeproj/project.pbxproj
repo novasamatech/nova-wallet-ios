@@ -1064,8 +1064,6 @@
 		2D0B77F72D14392500654497 /* UIApplication+TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */; };
 		2D0C3B5D2D1E95650094AF20 /* DAppSearchingByQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */; };
 		2D141FDC2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */; };
-		2D15850A2D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1585092D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift */; };
-		2D15850C2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15850B2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift */; };
 		2D15850F2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */; };
 		2D1A5F552C358E280073773D /* CustomNetworkSetupFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */; };
 		2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */; };
@@ -6501,8 +6499,6 @@
 		2D0B77F62D14392500654497 /* UIApplication+TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TabBarController.swift"; sourceTree = "<group>"; };
 		2D0C3B5C2D1E95650094AF20 /* DAppSearchingByQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchingByQuery.swift; sourceTree = "<group>"; };
 		2D141FDB2C5AE4230013D952 /* EndedReferendumProgressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndedReferendumProgressViewModelFactory.swift; sourceTree = "<group>"; };
-		2D1585092D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletStorageCleanerFactory+Remove.swift"; sourceTree = "<group>"; };
-		2D15850B2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletStorageCleanerFactory+Update.swift"; sourceTree = "<group>"; };
 		2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
 		2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupFactory.swift; sourceTree = "<group>"; };
 		2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialCustomChainModel.swift; sourceTree = "<group>"; };
@@ -13274,8 +13270,6 @@
 			isa = PBXGroup;
 			children = (
 				2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */,
-				2D1585092D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift */,
-				2D15850B2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -26734,7 +26728,6 @@
 				849014C524AA890D008F705E /* UIFont+Style.swift in Sources */,
 				F40966DC26B29839008CD244 /* SubqueryStakeData.swift in Sources */,
 				0CA5BDE72C414574000A4CDD /* BalanceRemoteSubscriptionService.swift in Sources */,
-				2D15850C2D3AA5BC00E86DA8 /* WalletStorageCleanerFactory+Update.swift in Sources */,
 				8490149924AA7892008F705E /* SharingPresentable.swift in Sources */,
 				84754C9C2513B26000854599 /* AccountPickerTableViewCell.swift in Sources */,
 				8472C5B1265CF9C500E2481B /* StakingRewardDestConfirmViewFactory.swift in Sources */,
@@ -29882,7 +29875,6 @@
 				1A029717AD309487B70FFD02 /* ReferendumDetailsViewFactory.swift in Sources */,
 				9DED20EB20A872E682CB402A /* ReferendumFullDetailsProtocols.swift in Sources */,
 				1269C0103216CDBDA25A5101 /* ReferendumFullDetailsWireframe.swift in Sources */,
-				2D15850A2D3AA58100E86DA8 /* WalletStorageCleanerFactory+Remove.swift in Sources */,
 				2B287EEF431ED9FE9510BAA4 /* ReferendumFullDetailsPresenter.swift in Sources */,
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,

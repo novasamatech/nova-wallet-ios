@@ -13,13 +13,16 @@ final class RemovedWalletDAppSettingsCleaner {
 
 extension RemovedWalletDAppSettingsCleaner: WalletStorageCleaning {
     func cleanStorage(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
         let fetchOptions = RepositoryFetchOptions()
         let fetchSettingsOperation = authorizedDAppRepository.fetchAllOperation(with: fetchOptions)
 
         let deletionBlock: () throws -> [String] = {
-            let removedWallets = Set(try dependencies.changedItemsClosure().map(\.metaId))
+            let removedWallets = try providers.changesProvider()
+                .filter { $0.isDeletion }
+                .map(\.identifier)
+            let removedWalletsSet = Set(removedWallets)
             let dappSettingsIds = try fetchSettingsOperation.extractNoCancellableResultData()
                 .compactMap(\.metaId)
                 .filter { removedWallets.contains($0) }

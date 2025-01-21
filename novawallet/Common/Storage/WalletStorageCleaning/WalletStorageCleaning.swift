@@ -3,6 +3,6 @@ import Operation_iOS
 
 protocol WalletStorageCleaning {
     func cleanStorage(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void>
 }

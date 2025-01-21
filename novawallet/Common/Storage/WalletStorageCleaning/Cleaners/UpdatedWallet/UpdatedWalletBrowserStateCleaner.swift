@@ -52,9 +52,9 @@ private extension UpdatedWalletBrowserStateCleaner {
     }
 
     func createTabIdsWrapper(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Set<UUID>> {
-        let tabsWrapper = createTabsWrapper(using: dependencies)
+        let tabsWrapper = createTabsWrapper(using: providers)
 
         let mappingOperation = ClosureOperation<Set<UUID>> {
             let tabIds = try tabsWrapper.targetOperation
@@ -70,9 +70,9 @@ private extension UpdatedWalletBrowserStateCleaner {
     }
 
     func createTabsWrapper(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<[DAppBrowserTab]> {
-        let metaIdsOperation = createMetaIdsOperation(using: dependencies)
+        let metaIdsOperation = createMetaIdsOperation(using: providers)
 
         let tabsWrapper: CompoundOperationWrapper<[DAppBrowserTab]> = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -92,19 +92,24 @@ private extension UpdatedWalletBrowserStateCleaner {
     }
 
     func createMetaIdsOperation(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> ClosureOperation<Set<MetaAccountModel.Id>> {
         ClosureOperation {
-            let allWallets = try dependencies.allWalletsClosure?() ?? [:]
-            let updatedWallets = try dependencies.changedItemsClosure()
+            let walletsBeforeChanges = try providers.walletsBeforeChangesProvider()
+            let updatedWallets = try providers.changesProvider()
+                .map(\.item)
 
             let cleanTabsWalletIds = updatedWallets
                 .filter {
-                    let currentWallet = allWallets[$0.metaId]
-                    let updatedWallet = $0
+                    guard
+                        let updatedWallet = $0?.info,
+                        let walletBeforeChange = walletsBeforeChanges[updatedWallet.metaId]?.info
+                    else {
+                        return false
+                    }
 
-                    return currentWallet?.chainAccounts != updatedWallet.chainAccounts
-                }.map(\.metaId)
+                    return walletBeforeChange.chainAccounts != updatedWallet.chainAccounts
+                }.compactMap { $0?.info.metaId }
 
             return Set(cleanTabsWalletIds)
         }
@@ -115,9 +120,9 @@ private extension UpdatedWalletBrowserStateCleaner {
 
 extension UpdatedWalletBrowserStateCleaner: WalletStorageCleaning {
     func cleanStorage(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
-        let tabIdsWrapper = createTabIdsWrapper(using: dependencies)
+        let tabIdsWrapper = createTabIdsWrapper(using: providers)
 
         let webViewPoolCleaningOperation = createWebViewCleaningOperation(
             dependingOn: tabIdsWrapper

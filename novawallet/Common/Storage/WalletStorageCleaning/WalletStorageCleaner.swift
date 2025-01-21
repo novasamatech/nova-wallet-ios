@@ -1,9 +1,9 @@
 import Foundation
 import Operation_iOS
 
-struct WalletStorageCleaningDependencies {
-    let changedItemsClosure: () throws -> [MetaAccountModel]
-    let allWalletsClosure: (() throws -> [MetaAccountModel.Id: MetaAccountModel])?
+struct WalletStorageCleaningProviders {
+    let changesProvider: () throws -> [DataProviderChange<ManagedMetaAccountModel>]
+    let walletsBeforeChangesProvider: () throws -> [MetaAccountModel.Id: ManagedMetaAccountModel]
 }
 
 final class WalletStorageCleaner {
@@ -18,9 +18,9 @@ final class WalletStorageCleaner {
 
 extension WalletStorageCleaner: WalletStorageCleaning {
     func cleanStorage(
-        using dependencies: WalletStorageCleaningDependencies
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
-        let wrappers = cleanersCascade.map { $0.cleanStorage(using: dependencies) }
+        let wrappers = cleanersCascade.map { $0.cleanStorage(using: providers) }
 
         let mergeOperation = ClosureOperation {
             _ = try wrappers.map { try $0.targetOperation.extractNoCancellableResultData() }

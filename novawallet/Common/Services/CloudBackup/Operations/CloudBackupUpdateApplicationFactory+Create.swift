@@ -17,18 +17,14 @@ extension CloudBackupUpdateApplicationFactory {
             sortDescriptors: []
         )
 
-        let removedWalletStorageCleaner = WalletStorageCleanerFactory.createRemovedWalletStorageCleaner(
-            using: operationQueue
-        )
-        let updatedWalletStorageCleaner = WalletStorageCleanerFactory.createUpdatedWalletStorageCleaner(
+        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(
             using: operationQueue
         )
 
         let walletsUpdater = WalletUpdateMediator(
             selectedWalletSettings: SelectedWalletSettings.shared,
             repository: walletsRepository,
-            removedWalletsCleaner: removedWalletStorageCleaner,
-            updatedWalletsCleaner: updatedWalletStorageCleaner,
+            walletsCleaner: walletStorageCleaner,
             operationQueue: operationQueue
         )
 
