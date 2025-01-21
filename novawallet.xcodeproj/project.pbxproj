@@ -1291,6 +1291,8 @@
 		2DB5B1122D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* DAppListNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */; };
 		2DB5B1172D3FEF600075EB3F /* CollectionViewRotationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1162D3FEF600075EB3F /* CollectionViewRotationHandling.swift */; };
+		2DB5B1192D400EBF0075EB3F /* ModalPickerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1182D400EBF0075EB3F /* ModalPickerPresentationController.swift */; };
+		2DB5B11B2D40184A0075EB3F /* ModalPickerPresentationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B11A2D40184A0075EB3F /* ModalPickerPresentationFactory.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
 		2DBB28872CD2934500DFA0AD /* AssetIconURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */; };
 		2DBB28892CD42ACB00DFA0AD /* QRCreationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */; };
@@ -6728,6 +6730,8 @@
 		2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListNavigationTask.swift; sourceTree = "<group>"; };
 		2DB5B1162D3FEF600075EB3F /* CollectionViewRotationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewRotationHandling.swift; sourceTree = "<group>"; };
+		2DB5B1182D400EBF0075EB3F /* ModalPickerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerPresentationController.swift; sourceTree = "<group>"; };
+		2DB5B11A2D40184A0075EB3F /* ModalPickerPresentationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerPresentationFactory.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
 		2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLFactory.swift; sourceTree = "<group>"; };
 		2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperation.swift; sourceTree = "<group>"; };
@@ -21619,6 +21623,8 @@
 				84D8F15924D8135200AF43E9 /* ViewModel */,
 				84D8F15824D8134E00AF43E9 /* Cell */,
 				84D8F15424D80CA100AF43E9 /* ModalPickerViewController.swift */,
+				2DB5B1182D400EBF0075EB3F /* ModalPickerPresentationController.swift */,
+				2DB5B11A2D40184A0075EB3F /* ModalPickerPresentationFactory.swift */,
 				84D8F15624D80D5500AF43E9 /* ModalPickerViewController.xib */,
 				84D8F16A24D8263300AF43E9 /* ModalPickerFactory.swift */,
 				84D8F16C24D82C7E00AF43E9 /* ModalPickerConfiguration.swift */,
@@ -28952,6 +28958,7 @@
 				84E8BA0D29FF898600FD9F40 /* BaseExtrinsicOperationFactory.swift in Sources */,
 				270C21973CB61F0BF3D2D1E3 /* CrowdloanListProtocols.swift in Sources */,
 				0C11D85E2CCA470D003EC46D /* AssetsExchangeRouteManager.swift in Sources */,
+				2DB5B11B2D40184A0075EB3F /* ModalPickerPresentationFactory.swift in Sources */,
 				6D61E43A79BDF5EA6CA9E85D /* CrowdloanListWireframe.swift in Sources */,
 				A090FF206B56A0E465C62072 /* CrowdloanListPresenter.swift in Sources */,
 				0CF5F68A2CC7AF84007BAAC5 /* AssetExchangeGraphPath.swift in Sources */,
@@ -29287,6 +29294,7 @@
 				849976CE27B3921800B14A6C /* DAppMetamaskAuthorizedState.swift in Sources */,
 				8445F41328C8C6E0009E61C4 /* ParaStkYieldBoostInitState.swift in Sources */,
 				C122F2FE976FEE9A609A1A93 /* DAppOperationConfirmPresenter.swift in Sources */,
+				2DB5B1192D400EBF0075EB3F /* ModalPickerPresentationController.swift in Sources */,
 				3155B51D1CF150FAFADE88AF /* DAppOperationConfirmInteractor.swift in Sources */,
 				9F3E2D64D77BF89B474BF1E3 /* DAppOperationConfirmViewController.swift in Sources */,
 				7BD09D3022967C4D90AB4693 /* DAppOperationConfirmViewLayout.swift in Sources */,
