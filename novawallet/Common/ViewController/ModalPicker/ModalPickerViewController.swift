@@ -188,8 +188,8 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
         guard let presenter = presenter as? ModalPickerPresenterProtocol else { return }
 
         if indexPath.section == 0, actionType.hasAction {
-            presenter.hide(view: self, animated: true) { [weak self] in
-                self?.delegate?.modalPickerDidSelectAction(context: self?.context)
+            presenter.hide(view: self, animated: true) {
+                self.delegate?.modalPickerDidSelectAction(context: self.context)
             }
         } else {
             let itemSectionIndex = actionType.hasAction ? indexPath.section - 1 : indexPath.section
@@ -206,16 +206,18 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
                 selectedIndex = indexPath.row
                 selectedSection = itemSectionIndex
 
-                presenter.hide(view: self, animated: true) { [weak self] in
-                    guard let self else { return }
-                    if sections.count > 1 {
-                        delegate?.modalPickerDidSelectModel(
-                            at: selectedIndex,
-                            section: selectedSection,
-                            context: context
+                presenter.hide(view: self, animated: true) {
+                    if self.sections.count > 1 {
+                        self.delegate?.modalPickerDidSelectModel(
+                            at: self.selectedIndex,
+                            section: self.selectedSection,
+                            context: self.context
                         )
                     } else {
-                        delegate?.modalPickerDidSelectModelAtIndex(selectedIndex, context: context)
+                        self.delegate?.modalPickerDidSelectModelAtIndex(
+                            self.selectedIndex,
+                            context: self.context
+                        )
                     }
                 }
             }
