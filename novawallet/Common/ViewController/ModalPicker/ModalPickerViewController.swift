@@ -185,7 +185,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
         tableView.deselectRow(at: indexPath, animated: true)
 
         if indexPath.section == 0, actionType.hasAction {
-            presenter.hide(view: self, animated: true) {
+            presenter?.hide(view: self, animated: true) {
                 self.delegate?.modalPickerDidSelectAction(context: self.context)
             }
         } else {
@@ -203,7 +203,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
                 selectedIndex = indexPath.row
                 selectedSection = itemSectionIndex
 
-                presenter.hide(view: self, animated: true) {
+                presenter?.hide(view: self, animated: true) {
                     if self.sections.count > 1 {
                         self.delegate?.modalPickerDidSelectModel(
                             at: self.selectedIndex,
