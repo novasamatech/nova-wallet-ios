@@ -184,13 +184,9 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        // TODO: Fix after migration to UIKit-iOS
-        guard let presenter = presenter as? ModalPickerPresenterProtocol else { return }
-
         if indexPath.section == 0, actionType.hasAction {
-            presenter.hide(view: self, animated: true) {
-                self.delegate?.modalPickerDidSelectAction(context: self.context)
-            }
+            delegate?.modalPickerDidSelectAction(context: context)
+            presenter?.hide(view: self, animated: true)
         } else {
             let itemSectionIndex = actionType.hasAction ? indexPath.section - 1 : indexPath.section
 
@@ -206,19 +202,16 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
                 selectedIndex = indexPath.row
                 selectedSection = itemSectionIndex
 
-                presenter.hide(view: self, animated: true) {
-                    if self.sections.count > 1 {
-                        self.delegate?.modalPickerDidSelectModel(
-                            at: self.selectedIndex,
-                            section: self.selectedSection,
-                            context: self.context
-                        )
-                    } else {
-                        self.delegate?.modalPickerDidSelectModelAtIndex(
-                            self.selectedIndex,
-                            context: self.context
-                        )
-                    }
+                presenter?.hide(view: self, animated: true)
+
+                if sections.count > 1 {
+                    delegate?.modalPickerDidSelectModel(
+                        at: selectedIndex,
+                        section: selectedSection,
+                        context: context
+                    )
+                } else {
+                    delegate?.modalPickerDidSelectModelAtIndex(selectedIndex, context: context)
                 }
             }
         }
