@@ -1551,7 +1551,7 @@ DEPENDENCIES:
   - SnapKit (~> 5.0.0)
   - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
   - SoraKeystore (~> 1.0.0)
-  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `6330672572a5985553da963caaa2cdc2a7d77e8b`)
+  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.14.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.5.0`)
@@ -1644,8 +1644,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
   SoraUI:
-    :commit: 6330672572a5985553da963caaa2cdc2a7d77e8b
     :git: https://github.com/ERussel/UIkit-iOS.git
+    :tag: 1.14.0
   Starscream:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
@@ -1687,8 +1687,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Foundation-iOS.git
     :tag: 1.1.0
   SoraUI:
-    :commit: 6330672572a5985553da963caaa2cdc2a7d77e8b
     :git: https://github.com/ERussel/UIkit-iOS.git
+    :tag: 1.14.0
   Starscream:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
@@ -1771,6 +1771,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: e6558a69dfeb53137b2862ba99a2befb7449dd9e
+PODFILE CHECKSUM: f6a15f672eb764d421692c18845c883c76c9fd0d
 
 COCOAPODS: 1.15.2
