@@ -40,10 +40,7 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            collatorsView.controller,
-            animated: true
-        )
+        view?.controller.navigationController?.pushViewController(collatorsView.controller, animated: true)
     }
 
     func showDelegationSelection(

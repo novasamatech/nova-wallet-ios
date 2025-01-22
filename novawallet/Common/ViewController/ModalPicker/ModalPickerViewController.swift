@@ -184,11 +184,8 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        // TODO: Fix after migration to UIKit-iOS
-        guard let presenter = presenter as? ModalPickerPresenterProtocol else { return }
-
         if indexPath.section == 0, actionType.hasAction {
-            presenter.hide(view: self, animated: true) {
+            presenter?.hide(view: self, animated: true) {
                 self.delegate?.modalPickerDidSelectAction(context: self.context)
             }
         } else {
@@ -206,7 +203,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
                 selectedIndex = indexPath.row
                 selectedSection = itemSectionIndex
 
-                presenter.hide(view: self, animated: true) {
+                presenter?.hide(view: self, animated: true) {
                     if self.sections.count > 1 {
                         self.delegate?.modalPickerDidSelectModel(
                             at: self.selectedIndex,
