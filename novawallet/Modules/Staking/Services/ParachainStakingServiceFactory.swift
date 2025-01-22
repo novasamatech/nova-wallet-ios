@@ -16,7 +16,7 @@ protocol ParachainStakingServiceFactoryProtocol {
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol
 }
 
-final class ParachainStakingServiceFactory: BaseStakingServiceFactory, ParachainStakingServiceFactoryProtocol {
+final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, ParachainStakingServiceFactoryProtocol {
     let stakingProviderFactory: ParachainStakingLocalSubscriptionFactoryProtocol
 
     init(

@@ -445,13 +445,14 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     func createMythosStaking(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> MythosStakingSharedStateProtocol {
         let repositoryFactory = SubstrateRepositoryFactory()
         let repository = repositoryFactory.createChainStorageItemRepository()
 
-        let serviceFactory = BaseStakingServiceFactory(
+        let serviceFactory = MythosStakingServiceFactory(
             chainRegisty: chainRegistry,
             storageFacade: storageFacade,
             eventCenter: eventCenter,
@@ -463,9 +464,25 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             for: stakingOption.chainAsset.chain.chainId
         )
 
+        let collatorService = try serviceFactory.createSelectedCollatorsService(
+            for: stakingOption.chainAsset.chain.chainId
+        )
+
+        let rewardCalculatorService = try serviceFactory.createRewardCalculatorService(
+            for: stakingOption.chainAsset.chainAssetId,
+            stakingType: stakingOption.type,
+            collatorService: collatorService
+        )
+
+        let preferredValidatorsProvider = PreferredValidatorsProvider(
+            remoteUrl: applicationConfig.preferredValidatorsURL
+        )
+
         return MythosStakingSharedState(
             stakingOption: stakingOption,
             chainRegistry: chainRegistry,
+            collatorService: collatorService,
+            rewardCalculatorService: rewardCalculatorService,
             stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactory(
                 chainRegistry: chainRegistry,
                 storageFacade: storageFacade,
@@ -486,6 +503,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
                 operationManager: OperationManager(operationQueue: repositoryOperationQueue),
                 logger: logger
             ),
+            preferredCollatorsProvider: preferredValidatorsProvider,
             operationQueue: syncOperationQueue,
             logger: logger
         )

@@ -14,6 +14,7 @@ final class MythosStakingSetupPresenter {
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
+    private(set) var rewardCalculator: CollatorStakingRewardCalculatorEngineProtocol?
     private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
     private(set) var frozenBalance: MythosStakingFrozenBalance?
@@ -105,17 +106,14 @@ private extension MythosStakingSetupPresenter {
     }
 
     func provideAssetViewModel() {
-        let balanceDecimal = allowedAmountToStake().flatMap { value in
-            Decimal.fromSubstrateAmount(
-                value,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            )
+        let balanceDecimal = allowedAmountToStake().map { value in
+            value.decimal(assetInfo: chainAsset.assetDisplayInfo)
         }
 
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
             inputAmount,
-            balance: balanceDecimal ?? 0.0,
+            balance: balanceDecimal ?? 0,
             priceData: price
         ).value(for: selectedLocale)
 
@@ -150,14 +148,38 @@ private extension MythosStakingSetupPresenter {
     }
 
     func provideRewardsViewModel() {
-        // TODO: Fix when reward calculator is available
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+
+        let amountReturn: Decimal
+        let exitingStake: Decimal
+
+        if
+            let rewardCalculator = rewardCalculator,
+            let collatorId = getCollatorAccount() {
+            let calculatedReturn = try? rewardCalculator.calculateEarnings(
+                amount: 1.0,
+                collatorAccountId: collatorId,
+                period: .year
+            )
+
+            amountReturn = calculatedReturn ?? 0
+
+            let stakeInPlank = existingStakeInPlank() ?? 0
+            exitingStake = stakeInPlank.decimal(assetInfo: chainAsset.assetDisplayInfo)
+        } else {
+            let calculatedReturn = rewardCalculator?.calculateMaxReturn(for: .year)
+            amountReturn = calculatedReturn ?? 0
+            exitingStake = 0
+        }
+
+        let rewardAmount = (inputAmount + exitingStake) * amountReturn
 
         let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
-            0,
+            rewardAmount,
             priceData: price ?? PriceData.zero()
         ).value(for: selectedLocale)
 
-        let aprString = aprFormatter.value(for: selectedLocale).stringFromDecimal(0)
+        let aprString = aprFormatter.value(for: selectedLocale).stringFromDecimal(amountReturn)
 
         let viewModel = StakingRewardInfoViewModel(
             amountViewModel: balanceViewModel,
@@ -368,6 +390,14 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         provideAmountInputViewModelIfInputRate()
     }
 
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
+        logger.debug("Did receive reward calculator")
+
+        rewardCalculator = calculator
+
+        provideRewardsViewModel()
+    }
+
     func didReceiveMinStakeAmount(_ amount: BigUInt) {
         logger.debug("Min stake: \(amount)")
 
@@ -392,6 +422,22 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         logger.debug("Max collators per staker: \(String(describing: details))")
 
         stakingDetails = details
+
+        provideCollatorViewModel()
+    }
+
+    func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?) {
+        logger.debug("Did receive staked collators identities")
+
+        delegationIdentities = identities
+
+        if
+            let collatorAddress = collatorDisplayAddress?.address,
+            let collatorId = getCollatorAccount() {
+            let displayName = identities?[collatorId]?.displayName ?? collatorDisplayAddress?.username
+
+            collatorDisplayAddress = DisplayAddress(address: collatorAddress, username: displayName ?? "")
+        }
 
         provideCollatorViewModel()
     }
@@ -428,8 +474,6 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             }
-        case let .preferredCollator(error):
-            break
         }
     }
 }

@@ -10,6 +10,7 @@ final class MythosStakingSetupInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?
+    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let frozenBalanceStore: MythosStakingFrozenBalanceStore
     let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
@@ -18,6 +19,7 @@ final class MythosStakingSetupInteractor {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -25,7 +27,7 @@ final class MythosStakingSetupInteractor {
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var collatorSubscription: CallbackStorageSubscription<MythosStakingPallet.CandidateInfo>?
-    private let collatorsCancellable = CancellableCallStore()
+    private var delegatorIdentityCancellable = CancellableCallStore()
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -36,12 +38,14 @@ final class MythosStakingSetupInteractor {
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -49,6 +53,7 @@ final class MythosStakingSetupInteractor {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.stakingDetailsService = stakingDetailsService
+        self.rewardService = rewardService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -58,6 +63,7 @@ final class MythosStakingSetupInteractor {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.repositoryFactory = repositoryFactory
+        self.identityProxyFactory = identityProxyFactory
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -70,10 +76,14 @@ final class MythosStakingSetupInteractor {
 
         self.currencyManager = currencyManager
     }
+
+    deinit {
+        delegatorIdentityCancellable.cancel()
+    }
 }
 
-extension MythosStakingSetupInteractor {
-    private func makeAssetBalanceSubscription() {
+private extension MythosStakingSetupInteractor {
+    func makeAssetBalanceSubscription() {
         balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.accountId,
             chainId: chainAsset.chain.chainId,
@@ -81,7 +91,7 @@ extension MythosStakingSetupInteractor {
         )
     }
 
-    private func makeFrozenBalanceSubscription() {
+    func makeFrozenBalanceSubscription() {
         frozenBalanceStore.setup()
 
         frozenBalanceStore.add(
@@ -95,11 +105,11 @@ extension MythosStakingSetupInteractor {
         }
     }
 
-    private func makeMinStakeSubscription() {
+    func makeMinStakeSubscription() {
         minStakeProvider = subscribeToMinStake(for: chainAsset.chain.chainId)
     }
 
-    private func makePriceSubscription() {
+    func makePriceSubscription() {
         if let priceId = chainAsset.asset.priceId {
             priceProvider?.removeObserver(self)
 
@@ -107,17 +117,38 @@ extension MythosStakingSetupInteractor {
         }
     }
 
-    private func makeStakingDetailsSubscription() {
+    func makeStakingDetailsSubscription() {
         stakingDetailsService.add(
             observer: self,
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
+            if let newState, !newState.stakeDistribution.isEmpty {
+                self?.provideIdentities(for: Array(newState.stakeDistribution.keys))
+            }
+
             self?.presenter?.didReceiveDetails(newState)
         }
     }
 
-    private func subscribeRemoteCollator(for accountId: AccountId) {
+    private func provideRewardCalculator() {
+        let operation = rewardService.fetchCalculatorOperation()
+
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(calculator):
+                self?.presenter?.didReceiveRewardCalculator(calculator)
+            case let .failure(error):
+                self?.logger.error("Reward calculator error: \(error)")
+            }
+        }
+    }
+
+    func subscribeRemoteCollator(for accountId: AccountId) {
         collatorSubscription = nil
 
         do {
@@ -156,7 +187,27 @@ extension MythosStakingSetupInteractor {
         }
     }
 
-    private func providePreferredCollator() {
+    func provideIdentities(for delegations: [AccountId]) {
+        delegatorIdentityCancellable.cancel()
+
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { delegations })
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: delegatorIdentityCancellable,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(identities):
+                self?.presenter?.didReceiveDelegationIdentities(identities)
+            case let .failure(error):
+                self?.logger.error("Identities error: \(error)")
+            }
+        }
+    }
+
+    func providePreferredCollator() {
         guard let operationFactory = preferredCollatorFactory else {
             presenter?.didReceivePreferredCollator(nil)
             return
@@ -164,17 +215,17 @@ extension MythosStakingSetupInteractor {
 
         let wrapper = operationFactory.createPreferredCollatorWrapper()
 
-        executeCancellable(
+        execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            backingCallIn: collatorsCancellable,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(optCollator):
                 self?.presenter?.didReceivePreferredCollator(optCollator)
             case let .failure(error):
-                self?.presenter?.didReceiveError(.preferredCollator(error))
+                self?.logger.error("Preferred collator error: \(error)")
+                self?.presenter?.didReceivePreferredCollator(nil)
             }
         }
     }
@@ -182,6 +233,8 @@ extension MythosStakingSetupInteractor {
 
 extension MythosStakingSetupInteractor: MythosStakingSetupInteractorInputProtocol {
     func setup() {
+        feeProxy.delegate = self
+
         makeAssetBalanceSubscription()
         makePriceSubscription()
         makeFrozenBalanceSubscription()
@@ -190,6 +243,7 @@ extension MythosStakingSetupInteractor: MythosStakingSetupInteractorInputProtoco
         makeMinStakeSubscription()
 
         providePreferredCollator()
+        provideRewardCalculator()
     }
 
     func applyCollator(with accountId: AccountId) {
@@ -197,6 +251,20 @@ extension MythosStakingSetupInteractor: MythosStakingSetupInteractorInputProtoco
     }
 
     func estimateFee(with _: MythosStakeModel) {}
+}
+
+extension MythosStakingSetupInteractor: ExtrinsicFeeProxyDelegate {
+    func didReceiveFee(
+        result: Result<ExtrinsicFeeProtocol, Error>,
+        for _: TransactionFeeId
+    ) {
+        switch result {
+        case let .success(model):
+            presenter?.didReceiveFee(model)
+        case let .failure(error):
+            presenter?.didReceiveError(.feeFailed(error))
+        }
+    }
 }
 
 extension MythosStakingSetupInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {

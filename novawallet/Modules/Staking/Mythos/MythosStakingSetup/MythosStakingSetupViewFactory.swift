@@ -1,5 +1,7 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
+import Operation_iOS
 
 struct MythosStakingSetupViewFactory {
     static func createView(
@@ -102,22 +104,33 @@ struct MythosStakingSetupViewFactory {
             chain: chain
         )
 
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
+        )
+
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        let identityProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: state.chainRegistry,
+            identityOperationFactory: identityOperationFactory
+        )
+
         let preferredCollatorFactory: PreferredStakingCollatorFactory? = if initialStakingDetails == nil {
             // add pref collators only for first staking
 
-            // TODO: Add implementation here
-
-            /* PreferredStakingCollatorFactory(
-                 chain: chainAsset.chain,
-                 connection: connection,
-                 runtimeService: runtimeProvider,
-                 collatorService: collatorService,
-                 rewardService: rewardService,
-                 identityProxyFactory: identityProxyFactory,
-                 preferredCollatorProvider: state.preferredCollatorsProvider,
-                 operationQueue: OperationManagerFacade.sharedDefaultQueue
-             ) */
-            nil
+            PreferredStakingCollatorFactory(
+                chain: chain,
+                connection: connection,
+                runtimeService: runtimeProvider,
+                collatorService: state.collatorService,
+                rewardService: state.rewardCalculatorService,
+                identityProxyFactory: identityProxyFactory,
+                preferredCollatorProvider: state.preferredCollatorsProvider,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
         } else {
             nil
         }
@@ -129,12 +142,14 @@ struct MythosStakingSetupViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            rewardService: state.rewardCalculatorService,
             preferredCollatorFactory: preferredCollatorFactory,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             connection: connection,
             runtimeProvider: runtimeProvider,
             repositoryFactory: repositoryFactory,
+            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
