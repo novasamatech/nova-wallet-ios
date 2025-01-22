@@ -8,7 +8,10 @@ final class StartStakingInfoMythosWireframe: StartStakingInfoWireframe {
     }
 
     override func showSetupAmount(from view: ControllerBackedProtocol?) {
-        guard let setupAmount = MythosStakingSetupViewFactory.createView(for: state) else {
+        guard let setupAmount = MythosStakingSetupViewFactory.createView(
+            for: state,
+            initialStakingDetails: nil
+        ) else {
             return
         }
 

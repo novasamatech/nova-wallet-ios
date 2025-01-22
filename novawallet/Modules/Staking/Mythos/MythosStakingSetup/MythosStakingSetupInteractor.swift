@@ -9,7 +9,7 @@ final class MythosStakingSetupInteractor {
     let selectedAccount: ChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let preferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol?
+    let preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?
     let frozenBalanceStore: MythosStakingFrozenBalanceStore
     let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
@@ -36,7 +36,7 @@ final class MythosStakingSetupInteractor {
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        preferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol?,
+        preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         connection: JSONRPCEngine,
@@ -195,6 +195,8 @@ extension MythosStakingSetupInteractor: MythosStakingSetupInteractorInputProtoco
     func applyCollator(with accountId: AccountId) {
         subscribeRemoteCollator(for: accountId)
     }
+
+    func estimateFee(with _: MythosStakeModel) {}
 }
 
 extension MythosStakingSetupInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {

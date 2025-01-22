@@ -1,71 +1,56 @@
 import Foundation
 import SoraFoundation
 
-protocol ParaStkAccountDetailsViewModelFactoryProtocol {
+protocol CollatorStakingAccountViewModelFactoryProtocol {
     func createCollator(
         from collatorAddress: DisplayAddress,
-        delegator: ParachainStaking.Delegator?,
+        stakedAmount: Balance?,
         locale: Locale
     ) -> AccountDetailsSelectionViewModel
 
     func createViewModels(
-        from bonds: [ParachainStaking.Bond],
+        from stakeDistribution: [CollatorStakingAccountViewModelFactory.StakedCollator],
         identities: [AccountId: AccountIdentity]?,
         disabled: Set<AccountId>
     ) -> [LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>]
 
     func createUnstakingViewModels(
-        from scheduledRequests: [ParachainStaking.DelegatorScheduledRequest],
+        from scheduledRequests: [CollatorStakingAccountViewModelFactory.StakedCollator],
         identities: [AccountId: AccountIdentity]?
     ) -> [LocalizableResource<AccountDetailsSelectionViewModel>]
 }
 
-final class ParaStkAccountDetailsViewModelFactory {
+final class CollatorStakingAccountViewModelFactory {
     let formatter: LocalizableResource<TokenFormatter>
-    let chainFormat: ChainFormat
-    let assetPrecision: Int16
+    let chainAsset: ChainAsset
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
 
-    init(
-        formatter: LocalizableResource<TokenFormatter>,
-        chainFormat: ChainFormat,
-        assetPrecision: Int16
-    ) {
-        self.formatter = formatter
-        self.chainFormat = chainFormat
-        self.assetPrecision = assetPrecision
+    var chainFormat: ChainFormat {
+        chainAsset.chain.chainFormat
     }
 
-    init(
-        chainAsset: ChainAsset
-    ) {
-        let assetDisplayInfo = chainAsset.assetDisplayInfo
-        formatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
-        chainFormat = chainAsset.chain.chainFormat
-        assetPrecision = assetDisplayInfo.assetPrecision
+    init(chainAsset: ChainAsset) {
+        self.chainAsset = chainAsset
+        formatter = AssetBalanceFormatterFactory().createTokenFormatter(for: chainAsset.assetDisplayInfo)
     }
 }
 
-extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol {
+extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol {
     func createCollator(
         from collatorAddress: DisplayAddress,
-        delegator: ParachainStaking.Delegator?,
+        stakedAmount: Balance?,
         locale: Locale
     ) -> AccountDetailsSelectionViewModel {
-        let collatorId = try? collatorAddress.address.toAccountId()
         let addressModel = displayAddressFactory.createViewModel(from: collatorAddress)
 
         let details: TitleWithSubtitleViewModel?
 
-        if let delegation = delegator?.delegations.first(where: { $0.owner == collatorId }) {
+        if let stakedAmount {
             let detailsName = R.string.localizable.commonStakedPrefix(
                 preferredLanguages: locale.rLanguages
             )
 
-            let stakedDecimal = Decimal.fromSubstrateAmount(
-                delegation.amount,
-                precision: assetPrecision
-            ) ?? 0
+            let stakedDecimal = stakedAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
             let stakedAmount = formatter.value(for: locale).stringFromDecimal(stakedDecimal) ?? ""
 
@@ -78,22 +63,22 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
     }
 
     func createViewModels(
-        from bonds: [ParachainStaking.Bond],
+        from stakeDistribution: [StakedCollator],
         identities: [AccountId: AccountIdentity]?,
         disabled: Set<AccountId>
-    ) -> [AccountDetailsPickerViewModel] {
-        bonds.map { bond in
+    ) -> [LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>] {
+        stakeDistribution.map { stake in
             let addressViewModel: DisplayAddressViewModel
-            let address = try? bond.owner.toAddress(using: chainFormat)
+            let address = try? stake.collator.toAddress(using: chainFormat)
 
-            if let name = identities?[bond.owner]?.displayName {
+            if let name = identities?[stake.collator]?.displayName {
                 let displayAddress = DisplayAddress(address: address ?? "", username: name)
                 addressViewModel = displayAddressFactory.createViewModel(from: displayAddress)
             } else {
                 addressViewModel = displayAddressFactory.createViewModel(from: address ?? "")
             }
 
-            let amountDecimal = Decimal.fromSubstrateAmount(bond.amount, precision: assetPrecision) ?? 0
+            let amountDecimal = stake.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
             let localizedAmountString = LocalizableResource<String> { [weak self] locale in
                 if let formatter = self?.formatter {
@@ -103,7 +88,7 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 }
             }
 
-            let selectable = !disabled.contains(bond.owner)
+            let selectable = !disabled.contains(stake.collator)
 
             return LocalizableResource { locale in
                 let detailsTitle = R.string.localizable.commonStakedPrefix(preferredLanguages: locale.rLanguages)
@@ -122,12 +107,12 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
     }
 
     func createUnstakingViewModels(
-        from scheduledRequests: [ParachainStaking.DelegatorScheduledRequest],
+        from scheduledRequests: [StakedCollator],
         identities: [AccountId: AccountIdentity]?
     ) -> [LocalizableResource<AccountDetailsSelectionViewModel>] {
         scheduledRequests.map { scheduledRequest in
             let addressViewModel: DisplayAddressViewModel
-            let collatorId = scheduledRequest.collatorId
+            let collatorId = scheduledRequest.collator
             let address = try? collatorId.toAddress(using: chainFormat)
 
             if let name = identities?[collatorId]?.displayName {
@@ -137,10 +122,7 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 addressViewModel = displayAddressFactory.createViewModel(from: address ?? "")
             }
 
-            let amountDecimal = Decimal.fromSubstrateAmount(
-                scheduledRequest.unstakingAmount,
-                precision: assetPrecision
-            ) ?? 0
+            let amountDecimal = scheduledRequest.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
             let amountFormatter = formatter
 
@@ -162,5 +144,12 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 return accountDetails
             }
         }
+    }
+}
+
+extension CollatorStakingAccountViewModelFactory {
+    struct StakedCollator {
+        let collator: AccountId
+        let amount: Balance
     }
 }

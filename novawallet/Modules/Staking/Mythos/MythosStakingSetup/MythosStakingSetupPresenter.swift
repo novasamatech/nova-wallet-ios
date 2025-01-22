@@ -1,17 +1,18 @@
 import Foundation
 import BigInt
 import SubstrateSdk
+import SoraFoundation
 
 final class MythosStakingSetupPresenter {
     weak var view: CollatorStakingSetupViewProtocol?
     let wireframe: MythosStakingSetupWireframeProtocol
     let interactor: MythosStakingSetupInteractorInputProtocol
     let logger: LoggerProtocol
-    
+
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let accountDetailsViewModelFactory: MythosStkAccountDetailsViewModelFactoryProtocol
-    
+    let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
+
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
@@ -23,6 +24,7 @@ final class MythosStakingSetupPresenter {
     private(set) var stakingDetails: MythosStakingDetails?
     private(set) var collatorDisplayAddress: DisplayAddress?
     private(set) var collatorInfo: MythosStakingPallet.CandidateInfo?
+    private(set) var delegationIdentities: [AccountId: AccountIdentity]?
     private(set) var currentBlock: BlockNumber?
 
     private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
@@ -32,22 +34,28 @@ final class MythosStakingSetupPresenter {
         wireframe: MythosStakingSetupWireframeProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
+        initialStakingDetails: MythosStakingDetails?,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
+        stakingDetails = initialStakingDetails
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 }
 
 private extension MythosStakingSetupPresenter {
-    private func getCollatorAccount() -> AccountId? {
+    func getCollatorAccount() -> AccountId? {
         try? collatorDisplayAddress?.address.toAccountId(using: chainAsset.chain.chainFormat)
     }
-    
-    private func getBalanceState() -> MythosStakingBalanceState? {
+
+    func getBalanceState() -> MythosStakingBalanceState? {
         MythosStakingBalanceState(
             balance: balance,
             frozenBalance: frozenBalance,
@@ -55,20 +63,20 @@ private extension MythosStakingSetupPresenter {
             currentBlock: currentBlock
         )
     }
-    
-    private func existingStakeInPlank() -> BigUInt? {
+
+    func existingStakeInPlank() -> BigUInt? {
         if let collatorId = try? collatorDisplayAddress?.address.toAccountId() {
             return stakingDetails?.stakeDistribution[collatorId]?.stake
         } else {
             return nil
         }
     }
-    
-    private func allowedAmountToStake() -> BigUInt? {
+
+    func allowedAmountToStake() -> BigUInt? {
         getBalanceState()?.stakableAmount()
     }
-    
-    private func balanceMinusFee() -> Decimal {
+
+    func balanceMinusFee() -> Decimal {
         let balanceValue = allowedAmountToStake() ?? 0
         let feeValue = fee?.amountForCurrentAccount ?? 0
 
@@ -77,8 +85,8 @@ private extension MythosStakingSetupPresenter {
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? 0
     }
-    
-    private func provideAmountInputViewModel() {
+
+    func provideAmountInputViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
 
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
@@ -88,7 +96,15 @@ private extension MythosStakingSetupPresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
-    private func provideAssetViewModel() {
+    func provideAmountInputViewModelIfInputRate() {
+        guard case .rate = inputResult else {
+            return
+        }
+
+        provideAmountInputViewModel()
+    }
+
+    func provideAssetViewModel() {
         let balanceDecimal = allowedAmountToStake().flatMap { value in
             Decimal.fromSubstrateAmount(
                 value,
@@ -105,12 +121,12 @@ private extension MythosStakingSetupPresenter {
 
         view?.didReceiveAssetBalance(viewModel: viewModel)
     }
-    
-    private func provideMinStakeViewModel() {
+
+    func provideMinStakeViewModel() {
         guard let minStakeDecimal = minStake?.decimal(assetInfo: chainAsset.assetDisplayInfo) else {
             return
         }
-        
+
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             minStakeDecimal,
             priceData: price
@@ -119,12 +135,12 @@ private extension MythosStakingSetupPresenter {
         view?.didReceiveMinStake(viewModel: viewModel)
     }
 
-    private func provideFeeViewModel() {
+    func provideFeeViewModel() {
         guard let feeDecimal = fee?.amount.decimal(assetInfo: chainAsset.assetDisplayInfo) else {
             view?.didReceiveFee(viewModel: nil)
             return
         }
-        
+
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             feeDecimal,
             priceData: price
@@ -133,7 +149,7 @@ private extension MythosStakingSetupPresenter {
         view?.didReceiveFee(viewModel: viewModel)
     }
 
-    private func provideRewardsViewModel() {
+    func provideRewardsViewModel() {
         // TODO: Fix when reward calculator is available
 
         let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
@@ -141,7 +157,7 @@ private extension MythosStakingSetupPresenter {
             priceData: price ?? PriceData.zero()
         ).value(for: selectedLocale)
 
-        let aprString = aprFormatter.value(for: selectedLocale).stringFromDecimal(amountReturn)
+        let aprString = aprFormatter.value(for: selectedLocale).stringFromDecimal(0)
 
         let viewModel = StakingRewardInfoViewModel(
             amountViewModel: balanceViewModel,
@@ -151,11 +167,10 @@ private extension MythosStakingSetupPresenter {
         view?.didReceiveReward(viewModel: viewModel)
     }
 
-    private func provideCollatorViewModel() {
+    func provideCollatorViewModel() {
         if
             let collatorDisplayAddress = collatorDisplayAddress,
             let collator = getCollatorAccount() {
-            
             let collatorViewModel = accountDetailsViewModelFactory.createCollator(
                 from: collatorDisplayAddress,
                 stakedAmount: stakingDetails?.stakeDistribution[collator]?.stake,
@@ -175,7 +190,7 @@ private extension MythosStakingSetupPresenter {
         guard let amount = inputAmount.toSubstrateAmount(precision: precicion) else {
             return
         }
-        
+
         let amountModel = getBalanceState()?.deriveStakeAmountModel(for: amount) ??
             MythosStakeModel.Amount(toLock: amount)
 
@@ -188,84 +203,245 @@ private extension MythosStakingSetupPresenter {
                 of: chainAsset.chain.accountIdSize
             )
         )
-        
+
         interactor.estimateFee(with: stakeModel)
+    }
+
+    func setupInitialCollator() {
+        let optMaxCollator = stakingDetails?.stakeDistribution
+            .max { $0.value.stake < $1.value.stake }?
+            .key
+
+        if
+            let maxCollator = optMaxCollator,
+            let address = try? maxCollator.toAddress(using: chainAsset.chain.chainFormat) {
+            let name = delegationIdentities?[maxCollator]?.displayName
+            collatorDisplayAddress = DisplayAddress(address: address, username: name ?? "")
+        }
+    }
+
+    func changeCollator(with newAddress: DisplayAddress?) {
+        guard
+            let collatorId = try? newAddress?.address.toAccountId(using: chainAsset.chain.chainFormat),
+            newAddress?.address != collatorDisplayAddress?.address else {
+            return
+        }
+
+        collatorDisplayAddress = newAddress
+
+        collatorInfo = nil
+
+        provideCollatorViewModel()
+        provideMinStakeViewModel()
+        provideRewardsViewModel()
+
+        interactor.applyCollator(with: collatorId)
+    }
+
+    func changeCollator(with collatorId: AccountId, name: String?) {
+        guard let newAddress = try? collatorId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return
+        }
+
+        changeCollator(with: DisplayAddress(address: newAddress, username: name ?? ""))
     }
 }
 
 extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
     func setup() {
+        setupInitialCollator()
+
+        provideAmountInputViewModel()
+
+        provideCollatorViewModel()
+        provideAssetViewModel()
+        provideMinStakeViewModel()
+        provideFeeViewModel()
+
         interactor.setup()
+
+        if let collatorId = getCollatorAccount() {
+            interactor.applyCollator(with: collatorId)
+        }
+
+        refreshFee()
     }
 
-    func selectCollator() {}
-    func updateAmount(_: Decimal?) {}
-    func selectAmountPercentage(_: Float) {}
+    func selectCollator() {
+        guard let stakingDetails, !stakingDetails.stakeDistribution.isEmpty else {
+            wireframe.showCollatorSelection(from: view)
+            return
+        }
+
+        let delegations = stakingDetails.stakeDistribution.map { pair in
+            CollatorStakingAccountViewModelFactory.StakedCollator(
+                collator: pair.key,
+                amount: pair.value.stake
+            )
+        }.sorted { $0.amount > $1.amount }
+
+        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
+            from: delegations,
+            identities: delegationIdentities,
+            disabled: []
+        )
+
+        let collatorId = getCollatorAccount()
+
+        let selectedIndex = delegations.firstIndex { $0.collator == collatorId } ?? NSNotFound
+
+        wireframe.showDelegationSelection(
+            from: view,
+            viewModels: accountDetailsViewModels,
+            selectedIndex: selectedIndex,
+            delegate: self,
+            context: delegations as NSArray
+        )
+    }
+
+    func updateAmount(_ newValue: Decimal?) {
+        inputResult = newValue.map { .absolute($0) }
+
+        refreshFee()
+        provideAssetViewModel()
+        provideRewardsViewModel()
+    }
+
+    func selectAmountPercentage(_ percentage: Float) {
+        inputResult = .rate(Decimal(Double(percentage)))
+
+        provideAmountInputViewModel()
+
+        refreshFee()
+        provideAssetViewModel()
+        provideRewardsViewModel()
+    }
+
     func proceed() {}
+}
+
+extension MythosStakingSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let delegations = context as? [CollatorStakingAccountViewModelFactory.StakedCollator] else {
+            return
+        }
+
+        let collatorId = delegations[index].collator
+
+        let displayName = delegationIdentities?[collatorId]?.displayName
+
+        changeCollator(with: collatorId, name: displayName)
+    }
+
+    func modalPickerDidSelectAction(context _: AnyObject?) {
+        wireframe.showCollatorSelection(from: view)
+    }
 }
 
 extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         logger.debug("Balance: \(String(describing: balance))")
-        
+
         self.balance = balance
+
+        provideAssetViewModel()
+        provideAmountInputViewModelIfInputRate()
     }
 
     func didReceivePrice(_ price: PriceData?) {
         logger.debug("Price: \(String(describing: price))")
-        
+
         self.price = price
+
+        provideAssetViewModel()
+        provideMinStakeViewModel()
+        provideFeeViewModel()
+        provideRewardsViewModel()
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         logger.debug("Fee: \(fee)")
-        
+
         self.fee = fee
+
+        provideFeeViewModel()
+        provideAmountInputViewModelIfInputRate()
     }
 
     func didReceiveMinStakeAmount(_ amount: BigUInt) {
         logger.debug("Min stake: \(amount)")
-        
-        self.minStake = amount
+
+        minStake = amount
+
+        provideMinStakeViewModel()
     }
 
     func didReceiveMaxStakersPerCollator(_ maxStakersPerCollator: UInt32) {
         logger.debug("Max stakers per collator: \(maxStakersPerCollator)")
-        
+
         self.maxStakersPerCollator = maxStakersPerCollator
     }
 
     func didReceiveMaxCollatorsPerStaker(_ maxCollatorsPerStaker: UInt32) {
         logger.debug("Max collators per staker: \(maxCollatorsPerStaker)")
-        
+
         self.maxCollatorsPerStaker = maxCollatorsPerStaker
     }
 
     func didReceiveDetails(_ details: MythosStakingDetails?) {
         logger.debug("Max collators per staker: \(String(describing: details))")
-        
-        self.stakingDetails = details
+
+        stakingDetails = details
+
+        provideCollatorViewModel()
     }
 
     func didReceiveCandidateInfo(_ info: MythosStakingPallet.CandidateInfo?) {
         logger.debug("Candidate info: \(String(describing: info))")
-        
-        self.collatorInfo = collatorInfo
+
+        collatorInfo = info
+
+        provideMinStakeViewModel()
+        provideRewardsViewModel()
+        refreshFee()
     }
 
     func didReceivePreferredCollator(_ collator: DisplayAddress?) {
         logger.debug("Preferred Collator: \(String(describing: collator))")
-        
-        self.collatorDisplayAddress = collator
+
+        collatorDisplayAddress = collator
     }
 
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance) {
         logger.debug("Frozen Balance: \(frozenBalance)")
-        
+
         self.frozenBalance = frozenBalance
+
+        provideAmountInputViewModelIfInputRate()
     }
 
     func didReceiveError(_ error: MythosStakingSetupError) {
         logger.debug("Error: \(error)")
+
+        switch error {
+        case .feeFailed:
+            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshFee()
+            }
+        case let .preferredCollator(error):
+            break
+        }
+    }
+}
+
+extension MythosStakingSetupPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            provideAssetViewModel()
+            provideAmountInputViewModel()
+            provideMinStakeViewModel()
+            provideFeeViewModel()
+            provideRewardsViewModel()
+        }
     }
 }

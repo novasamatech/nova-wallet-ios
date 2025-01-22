@@ -10,7 +10,7 @@ final class ParaStkUnstakePresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
-    let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
+    let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
     let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
@@ -36,7 +36,7 @@ final class ParaStkUnstakePresenter {
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,

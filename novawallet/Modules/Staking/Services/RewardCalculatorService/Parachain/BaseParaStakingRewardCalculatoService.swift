@@ -7,7 +7,7 @@ class BaseParaStakingRewardCalculatoService {
     static let queueLabelPrefix = "com.novawallet.parastk.rewcalculator"
 
     struct PendingRequest {
-        let resultClosure: (ParaStakingRewardCalculatorEngineProtocol) -> Void
+        let resultClosure: (CollatorStakingRewardCalculatorEngineProtocol) -> Void
         let queue: DispatchQueue?
     }
 
@@ -112,7 +112,7 @@ class BaseParaStakingRewardCalculatoService {
     private func fetchInfoFactory(
         assigning requestId: UUID,
         runCompletionIn queue: DispatchQueue?,
-        executing closure: @escaping (ParaStakingRewardCalculatorEngineProtocol) -> Void
+        executing closure: @escaping (CollatorStakingRewardCalculatorEngineProtocol) -> Void
     ) {
         let request = PendingRequest(resultClosure: closure, queue: queue)
 
@@ -134,7 +134,7 @@ class BaseParaStakingRewardCalculatoService {
     ) {
         let collatorsOperation = collatorsService.fetchInfoOperation()
 
-        let mapOperation = ClosureOperation<ParaStakingRewardCalculatorEngineProtocol> {
+        let mapOperation = ClosureOperation<CollatorStakingRewardCalculatorEngineProtocol> {
             let selectedCollators = try collatorsOperation.extractNoCancellableResultData()
 
             return ParaStakingRewardCalculatorEngine(
@@ -283,7 +283,7 @@ extension BaseParaStakingRewardCalculatoService {
     }
 }
 
-extension BaseParaStakingRewardCalculatoService: ParaStakingRewardCalculatorServiceProtocol {
+extension BaseParaStakingRewardCalculatoService: CollatorStakingRewardCalculatorServiceProtocol {
     func setup() {
         syncQueue.async {
             guard !self.isActive else {
@@ -308,7 +308,7 @@ extension BaseParaStakingRewardCalculatoService: ParaStakingRewardCalculatorServ
         }
     }
 
-    func fetchCalculatorOperation() -> BaseOperation<ParaStakingRewardCalculatorEngineProtocol> {
+    func fetchCalculatorOperation() -> BaseOperation<CollatorStakingRewardCalculatorEngineProtocol> {
         let requestId = UUID()
 
         return AsyncClosureOperation(

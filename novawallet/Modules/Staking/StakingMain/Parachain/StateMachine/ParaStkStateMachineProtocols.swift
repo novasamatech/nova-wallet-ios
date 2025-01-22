@@ -15,7 +15,7 @@ protocol ParaStkStateProtocol {
     func process(networkInfo: ParachainStaking.NetworkInfo?)
     func process(stakingDuration: ParachainStakingDuration?)
     func process(collatorsInfo: SelectedRoundCollators?)
-    func process(calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?)
+    func process(calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?)
     func process(delegatorState: ParachainStaking.Delegator?)
     func process(delegations: [CollatorSelectionInfo]?)
     func process(scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)

@@ -3,24 +3,50 @@ import SoraFoundation
 
 struct MythosStakingSetupViewFactory {
     static func createView(
-        for state: MythosStakingSharedStateProtocol
+        for state: MythosStakingSharedStateProtocol,
+        initialStakingDetails: MythosStakingDetails?
     ) -> CollatorStakingSetupViewProtocol? {
-        guard let interactor = createInteractor(for: state) else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor(
+                for: state,
+                initialStakingDetails: initialStakingDetails
+            ) else {
             return nil
         }
 
+        let chainAsset = state.stakingOption.chainAsset
+
         let wireframe = MythosStakingSetupWireframe()
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let accountDetailsFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
+
+        let localizationManager = LocalizationManager.shared
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let presenter = MythosStakingSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            chainAsset: chainAsset,
+            balanceViewModelFactory: balanceViewModelFactory,
+            accountDetailsViewModelFactory: accountDetailsFactory,
+            initialStakingDetails: initialStakingDetails,
+            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
+        let localizableTitle = createTitle(for: initialStakingDetails, chainAsset: chainAsset)
+
         let view = CollatorStakingSetupViewController(
             presenter: presenter,
-            localizableTitle: LocalizableResource { _ in "" },
-            localizationManager: LocalizationManager.shared
+            localizableTitle: localizableTitle,
+            localizationManager: localizationManager
         )
 
         presenter.view = view
@@ -29,8 +55,24 @@ struct MythosStakingSetupViewFactory {
         return view
     }
 
+    private static func createTitle(
+        for stakingDetails: MythosStakingDetails?,
+        chainAsset: ChainAsset
+    ) -> LocalizableResource<String> {
+        if stakingDetails != nil {
+            return LocalizableResource { locale in
+                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            }
+        } else {
+            return LocalizableResource { locale in
+                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
+            }
+        }
+    }
+
     private static func createInteractor(
-        for state: MythosStakingSharedStateProtocol
+        for state: MythosStakingSharedStateProtocol,
+        initialStakingDetails: MythosStakingDetails?
     ) -> MythosStakingSetupInteractor? {
         let chain = state.stakingOption.chainAsset.chain
 
@@ -60,6 +102,26 @@ struct MythosStakingSetupViewFactory {
             chain: chain
         )
 
+        let preferredCollatorFactory: PreferredStakingCollatorFactory? = if initialStakingDetails == nil {
+            // add pref collators only for first staking
+
+            // TODO: Add implementation here
+
+            /* PreferredStakingCollatorFactory(
+                 chain: chainAsset.chain,
+                 connection: connection,
+                 runtimeService: runtimeProvider,
+                 collatorService: collatorService,
+                 rewardService: rewardService,
+                 identityProxyFactory: identityProxyFactory,
+                 preferredCollatorProvider: state.preferredCollatorsProvider,
+                 operationQueue: OperationManagerFacade.sharedDefaultQueue
+             ) */
+            nil
+        } else {
+            nil
+        }
+
         return MythosStakingSetupInteractor(
             chainAsset: state.stakingOption.chainAsset,
             selectedAccount: selectedAccount,
@@ -67,7 +129,7 @@ struct MythosStakingSetupViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            preferredCollatorFactory: nil, // TODO: Refactor and integrate preferred collators
+            preferredCollatorFactory: preferredCollatorFactory,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             connection: connection,

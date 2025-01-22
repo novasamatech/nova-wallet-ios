@@ -81,7 +81,10 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
         ) { [weak self] result in
             switch result {
             case let .success(stakeDistribution):
-                self?.stateObservable.state = MythosStakingDetails(stakeDistribution: stakeDistribution)
+                self?.stateObservable.state = MythosStakingDetails(
+                    stakeDistribution: stakeDistribution,
+                    maybeLastUnstake: userStake?.maybeLastUnstake
+                )
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.complete(error)

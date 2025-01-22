@@ -20,7 +20,17 @@ protocol MythosStakingSetupInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: MythosStakingSetupError)
 }
 
-protocol MythosStakingSetupWireframeProtocol: AnyObject {}
+protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+    CollatorStakingDelegationSelectable {
+    func showConfirmation(
+        from view: CollatorStakingSetupViewProtocol?,
+        collator: DisplayAddress,
+        amount: Decimal,
+        initialDelegator: MythosStakingDetails?
+    )
+
+    func showCollatorSelection(from view: CollatorStakingSetupViewProtocol?)
+}
 
 enum MythosStakingSetupError: Error {
     case feeFailed(Error)

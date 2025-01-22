@@ -1,18 +1,18 @@
 import Foundation
 import Operation_iOS
 
-protocol MythosCollatorServiceProtocol: StakingCollatorsServiceProtocol & ApplicationServiceProtocol {
-    func fetchInfoOperation() -> BaseOperation<MythosSessionCollators>
+protocol ParachainStakingCollatorServiceProtocol: StakingCollatorsServiceProtocol & ApplicationServiceProtocol {
+    func fetchInfoOperation() -> BaseOperation<SelectedRoundCollators>
 }
 
-extension MythosCollatorServiceProtocol {
+extension ParachainStakingCollatorServiceProtocol {
     func fetchStakableCollatorsWrapper() -> CompoundOperationWrapper<[AccountId]> {
         let fetchOperation = fetchInfoOperation()
 
         let mappingOperation = ClosureOperation<[AccountId]> {
             let collators = try fetchOperation.extractNoCancellableResultData()
 
-            return collators.compactMap { $0.info != nil ? $0.accountId : nil }
+            return collators.collators.map(\.accountId)
         }
 
         mappingOperation.addDependency(fetchOperation)

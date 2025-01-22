@@ -5,8 +5,8 @@ protocol ParachainStakingSharedStateProtocol: AnyObject {
     var chainRegistry: ChainRegistryProtocol { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol { get }
-    var collatorService: ParachainStakingCollatorServiceProtocol { get }
-    var rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol { get }
+    var collatorService: ParachainStakingCollatorServiceInterfaces { get }
+    var rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
     var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
@@ -25,8 +25,8 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
     let chainRegistry: ChainRegistryProtocol
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
-    let collatorService: ParachainStakingCollatorServiceProtocol
-    let rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol
+    let collatorService: ParachainStakingCollatorServiceInterfaces
+    let rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
@@ -43,8 +43,8 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         chainRegistry: ChainRegistryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol,
-        collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol,
+        collatorService: ParachainStakingCollatorServiceInterfaces,
+        rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,

@@ -10,7 +10,7 @@ final class ParaStkStakeSetupPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
-    let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
+    let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -19,7 +19,7 @@ final class ParaStkStakeSetupPresenter {
     private(set) var minDelegationAmount: BigUInt?
     private(set) var maxDelegations: UInt32?
     private(set) var price: PriceData?
-    private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
+    private(set) var rewardCalculator: CollatorStakingRewardCalculatorEngineProtocol?
 
     private(set) var collatorDisplayAddress: DisplayAddress?
     private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
@@ -37,7 +37,7 @@ final class ParaStkStakeSetupPresenter {
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
@@ -328,8 +328,8 @@ extension ParaStkStakeSetupPresenter: CollatorStakingSetupPresenterProtocol {
                 return
             }
 
-            let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
-                from: delegations,
+            let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModelsFromBonds(
+                delegations,
                 identities: delegationIdentities,
                 disabled: createDisabledCollators()
             )
@@ -385,7 +385,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         provideAssetViewModel()
     }
 
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         rewardCalculator = calculator
 
         provideRewardsViewModel()

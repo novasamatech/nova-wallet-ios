@@ -28,13 +28,7 @@ struct ParaStkStakeSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let assetFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
-
-        let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
-            formatter: assetFormatter,
-            chainFormat: chainAsset.chain.chainFormat,
-            assetPrecision: assetDisplayInfo.assetPrecision
-        )
+        let accountDetailsFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
 
         let localizationManager = LocalizationManager.shared
 
@@ -132,12 +126,10 @@ struct ParaStkStakeSetupViewFactory {
             identityOperationFactory: identityOperationFactory
         )
 
-        let preferredCollatorFactory: ParaStkPreferredCollatorFactory?
-
-        if initialDelegator == nil {
+        let preferredCollatorFactory: PreferredStakingCollatorFactory? = if initialDelegator == nil {
             // add pref collators only for first staking
 
-            preferredCollatorFactory = ParaStkPreferredCollatorFactory(
+            PreferredStakingCollatorFactory(
                 chain: chainAsset.chain,
                 connection: connection,
                 runtimeService: runtimeProvider,
@@ -148,7 +140,7 @@ struct ParaStkStakeSetupViewFactory {
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
         } else {
-            preferredCollatorFactory = nil
+            nil
         }
 
         return ParaStkStakeSetupInteractor(

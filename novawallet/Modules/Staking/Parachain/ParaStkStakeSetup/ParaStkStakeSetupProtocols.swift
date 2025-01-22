@@ -10,7 +10,7 @@ protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
 
 protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
@@ -25,7 +25,7 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
 }
 
 protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    ParachainStakingErrorPresentable {
+    ParachainStakingErrorPresentable, CollatorStakingDelegationSelectable {
     func showConfirmation(
         from view: CollatorStakingSetupViewProtocol?,
         collator: DisplayAddress,
@@ -36,13 +36,5 @@ protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showCollatorSelection(
         from view: CollatorStakingSetupViewProtocol?,
         delegate: ParaStkSelectCollatorsDelegate
-    )
-
-    func showDelegationSelection(
-        from view: CollatorStakingSetupViewProtocol?,
-        viewModels: [AccountDetailsPickerViewModel],
-        selectedIndex: Int,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
     )
 }

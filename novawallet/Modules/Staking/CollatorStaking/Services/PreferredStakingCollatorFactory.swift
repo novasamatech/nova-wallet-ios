@@ -2,17 +2,17 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol ParaStkPreferredCollatorFactoryProtocol {
+protocol PreferredStakingCollatorFactoryProtocol {
     func createPreferredCollatorWrapper() -> CompoundOperationWrapper<DisplayAddress?>
 }
 
-final class ParaStkPreferredCollatorFactory {
+final class PreferredStakingCollatorFactory {
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
-    let collatorService: ParachainStakingCollatorServiceProtocol
-    let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let collatorService: StakingCollatorsServiceProtocol
+    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let preferredCollatorProvider: PreferredValidatorsProviding
     let operationQueue: OperationQueue
 
@@ -20,8 +20,8 @@ final class ParaStkPreferredCollatorFactory {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
+        collatorService: StakingCollatorsServiceProtocol,
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         preferredCollatorProvider: PreferredValidatorsProviding,
         operationQueue: OperationQueue
@@ -68,15 +68,15 @@ final class ParaStkPreferredCollatorFactory {
     }
 }
 
-extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol {
+extension PreferredStakingCollatorFactory: PreferredStakingCollatorFactoryProtocol {
     func createPreferredCollatorWrapper() -> CompoundOperationWrapper<DisplayAddress?> {
         let preferredCollatorsWrapper = preferredCollatorProvider.createPreferredValidatorsWrapper(for: chain)
 
-        let collatorsOperation = collatorService.fetchInfoOperation()
+        let collatorsWrapper = collatorService.fetchStakableCollatorsWrapper()
         let rewardOperation = rewardService.fetchCalculatorOperation()
 
         let mergeOperation = ClosureOperation<AccountId?> {
-            let collators = try collatorsOperation.extractNoCancellableResultData().collators
+            let collators = try collatorsWrapper.targetOperation.extractNoCancellableResultData()
             let rewardsCalculator = try rewardOperation.extractNoCancellableResultData()
             let preferredModel = try preferredCollatorsWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -86,11 +86,11 @@ extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtoc
                 return nil
             }
 
-            let optCollator = collators
-                .filter { preferredCollatorsSet.contains($0.accountId) }
+            return collators
+                .filter { preferredCollatorsSet.contains($0) }
                 .sorted { col1, col2 in
-                    let optApr1 = try? rewardsCalculator.calculateAPR(for: col1.accountId)
-                    let optApr2 = try? rewardsCalculator.calculateAPR(for: col2.accountId)
+                    let optApr1 = try? rewardsCalculator.calculateAPR(for: col1)
+                    let optApr2 = try? rewardsCalculator.calculateAPR(for: col2)
 
                     if let apr1 = optApr1, let apr2 = optApr2 {
                         return apr1 > apr2
@@ -101,20 +101,19 @@ extension ParaStkPreferredCollatorFactory: ParaStkPreferredCollatorFactoryProtoc
                     }
                 }
                 .first
-
-            return optCollator?.accountId
         }
 
         mergeOperation.addDependency(preferredCollatorsWrapper.targetOperation)
-        mergeOperation.addDependency(collatorsOperation)
+        mergeOperation.addDependency(collatorsWrapper.targetOperation)
         mergeOperation.addDependency(rewardOperation)
 
         let resultWrapper = createResultWrapper(dependingOn: mergeOperation)
+
         resultWrapper.addDependency(operations: [mergeOperation])
 
-        let dependencies = preferredCollatorsWrapper.allOperations +
-            [collatorsOperation, rewardOperation, mergeOperation]
-
-        return resultWrapper.insertingHead(operations: dependencies)
+        return resultWrapper
+            .insertingHead(operations: [mergeOperation, rewardOperation])
+            .insertingHead(operations: collatorsWrapper.allOperations)
+            .insertingHead(operations: preferredCollatorsWrapper.allOperations)
     }
 }
