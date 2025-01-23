@@ -33,7 +33,7 @@ Parameters:
 
  
 
-Example usage: fastlane build_app scheme:'polkadot-app' target: 'polkadot-app' configuration: 'Release' 
+Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' 
 
 ### ios test_build
 

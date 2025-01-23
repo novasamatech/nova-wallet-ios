@@ -4,7 +4,7 @@ desc "- 'scheme : <value>' defines scheme to use for build phase"
 desc "- 'target : <value>' defines target to build"
 desc "- 'configuration : <value>' defines configuration for build"
 desc " "
-desc "Example usage: fastlane build_app scheme:'polkadot-app' target: 'polkadot-app' configuration: 'Release' "
+desc "Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' "
 lane :base_build_app do |options|
   scheme = options[:scheme]
   target = options[:target]
