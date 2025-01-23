@@ -15,19 +15,25 @@ private_lane :setup_ci_keychain do
   desc "Prepares certificate and provisioning profile"
   lane :prepare_code_signing do
     begin
-      app_identifier = ENV["IOS_BUNDLE_ID"] || raise("Missing IOS_BUNDLE_ID environment variable")
+      main_app_identifier = ENV["IOS_BUNDLE_ID"] || raise("Missing IOS_BUNDLE_ID environment variable")
+      extension_identifier = "#{main_app_identifier}.NovaPushNotificationServiceExtension"
+
+      app_identifiers = [main_app_identifier, extension_identifier]
       
       setup_ci_keychain
   
-      match_config = {
-        app_identifier: app_identifier,
-        readonly: true,
-        keychain_name: is_ci ? "github_actions_keychain" : nil,
-        keychain_password: is_ci ? ENV["KEYCHAIN_PASSWORD"] : nil
-      }
-      
-      match(match_config.merge(type: "development"))
-      match(match_config.merge(type: "adhoc"))
+      app_identifiers.each do |identifier|
+        match_config = {
+          app_identifier: identifier,
+          readonly: false,
+          force_for_new_devices: true,
+          keychain_name: is_ci ? "github_actions_keychain" : nil,
+          keychain_password: is_ci ? ENV["KEYCHAIN_PASSWORD"] : nil
+        }
+        
+        match(match_config.merge(type: "development"))
+        match(match_config.merge(type: "adhoc"))
+      end
     rescue => ex
       UI.error("Failed to prepare code signing: #{ex.message}")
       raise
@@ -37,7 +43,10 @@ private_lane :setup_ci_keychain do
   desc "Updates signing data using App Store Connect API"
   lane :update_signing_data do
     begin
-      app_identifier = ENV["IOS_BUNDLE_ID"] || raise("Missing IOS_BUNDLE_ID environment variable")
+      main_app_identifier = ENV["IOS_BUNDLE_ID"] || raise("Missing IOS_BUNDLE_ID environment variable")
+      extension_identifier = "#{main_app_identifier}.NovaPushNotificationServiceExtension"
+
+      app_identifiers = [main_app_identifier, extension_identifier]
       # api_key_file = ENV["FASTLANE_API_KEY"] || raise("Missing FASTLANE_API_KEY environment variable")
   
       # setup_ci_keychain
@@ -50,18 +59,19 @@ private_lane :setup_ci_keychain do
       #   duration: 1200,
       #   in_house: false
       # )
-  
-      match_config = {
-        app_identifier: app_identifier,
-        readonly: false,
-        force_for_new_devices: true,
-        keychain_name: is_ci ? "github_actions_keychain" : nil,
-        keychain_password: is_ci ? ENV["KEYCHAIN_PASSWORD"] : nil
-      }
-  
-      match(match_config.merge(type: "development"))
-      match(match_config.merge(type: "adhoc"))
-  
+      
+      app_identifiers.each do |identifier|
+        match_config = {
+          app_identifier: identifier,
+          readonly: false,
+          force_for_new_devices: true,
+          keychain_name: is_ci ? "github_actions_keychain" : nil,
+          keychain_password: is_ci ? ENV["KEYCHAIN_PASSWORD"] : nil
+        }
+    
+        match(match_config.merge(type: "development"))
+        match(match_config.merge(type: "adhoc"))
+      end
     rescue => ex
       UI.error("Failed to update signing data: #{ex.message}")
       raise
