@@ -39,12 +39,37 @@ struct SupportedBluetoothDevice {
     let writeUuid: CBUUID
 }
 
+/* We can find these and new devices here: https://github.com/LedgerHQ/device-sdk-ts/blob/develop/packages/device-management-kit/src/api/device-model/data/StaticDeviceModelDataSource.ts */
 extension SupportedBluetoothDevice {
+    static var ledgers: [SupportedBluetoothDevice] {
+        [
+            ledgerNanoX,
+            ledgerStax,
+            ledgerFlex
+        ]
+    }
+
     static var ledgerNanoX: SupportedBluetoothDevice {
         SupportedBluetoothDevice(
             uuid: CBUUID(string: "13D63400-2C97-0004-0000-4C6564676572"),
             notifyUuid: CBUUID(string: "13D63400-2C97-0004-0001-4C6564676572"),
             writeUuid: CBUUID(string: "13D63400-2C97-0004-0002-4C6564676572")
+        )
+    }
+
+    static var ledgerStax: SupportedBluetoothDevice {
+        SupportedBluetoothDevice(
+            uuid: CBUUID(string: "13D63400-2C97-6004-0000-4C6564676572"),
+            notifyUuid: CBUUID(string: "13D63400-2C97-6004-0001-4C6564676572"),
+            writeUuid: CBUUID(string: "13D63400-2C97-6004-0002-4C6564676572")
+        )
+    }
+
+    static var ledgerFlex: SupportedBluetoothDevice {
+        SupportedBluetoothDevice(
+            uuid: CBUUID(string: "13D63400-2C97-3004-0000-4C6564676572"),
+            notifyUuid: CBUUID(string: "13D63400-2C97-3004-0001-4C6564676572"),
+            writeUuid: CBUUID(string: "13D63400-2C97-3004-0002-4C6564676572")
         )
     }
 }
