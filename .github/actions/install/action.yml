@@ -1,0 +1,57 @@
+name: 'Setup iOS Environment'
+description: 'Installs Xcode, and installs Cocoapods'
+inputs:
+  xcode-version:
+    description: 'The Xcode version to install'
+    required: true
+    default: '15.2'
+  scw_access_key:
+    description: 'Scaleway Access Key'
+    required: true
+  scw_secret_key:
+    description: 'Scaleway Secret Key'
+    required: true
+  scw_default_project_id:
+    description: 'Scaleway Default Project ID'
+    required: true
+  scw_default_organization_id:
+    description: 'Scaleway Default Organization ID'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: scaleway/action-scw-secret@v0
+      with:
+        # ENV_NAME,SECRET_NAME (with path)
+        secret-names: |
+          MATCH_GIT_URL,/dev/ios/MATCH_GIT_URL
+          MATCH_GIT_BASIC_AUTH,/dev/ios/MATCH_GIT_BASIC_AUTH
+          KEYCHAIN_PASSWORD,/dev/ios/KEYCHAIN_PASSWORD
+          MATCH_PASSWORD,/dev/ios/MATCH_PASSWORD
+          CREDENTIAL_FILE_CONTENT,/dev/ios/CREDENTIAL_FILE_CONTENT
+          FIREBASE_APP_ID,/dev/ios/FIREBASE_APP_ID
+        access-key: ${{ inputs.scw_access_key }}
+        secret-key: ${{ inputs.scw_secret_key }}
+        default-project-id: ${{ inputs.scw_default_project_id }}
+        default-organization-id: ${{ inputs.scw_default_organization_id }}
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: ${{ inputs.xcode-version }}
+    
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Get cached Swift Packages managed by Xcode
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - run: bundle exec pod install
+      shell: bash
+
