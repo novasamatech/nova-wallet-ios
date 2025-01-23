@@ -11,7 +11,7 @@ lane :test_build do |options|
     clean: true,
     scheme: scheme,
     workspace: "nova-wallet.xcworkspace",
-    configuration: "DevCI",
+    configuration: "Dev",
     xcargs: "EXCLUDED_ARCHS=arm64 -skipPackagePluginValidation -skipMacroValidation",
     output_directory: "./fastlane/test_output/"
   )
