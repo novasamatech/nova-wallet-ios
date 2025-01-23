@@ -10,8 +10,11 @@ lane :base_build_app do |options|
   target = options[:target]
   configuration = options[:configuration]
   app_identifier = ENV["IOS_BUNDLE_ID"]
+  extension_identifier = "#{app_identifier}.NovaPushNotificationServiceExtension"
+
 
   profile_name = ENV["PROVISIONING_PROFILE_SPECIFIER"]
+  extension_profile_name = "match AdHoc io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
   output_name = scheme
   export_method = "ad-hoc"
   compile_bitcode = false
@@ -33,6 +36,15 @@ lane :base_build_app do |options|
     build_configurations: [configuration]
   )
 
+  update_code_signing_settings(
+    use_automatic_signing: false,
+    targets: ["NovaPushNotificationServiceExtension"],
+    code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+    bundle_identifier: extension_identifier,
+    profile_name: extension_profile_name,
+    build_configurations: [configuration]
+  )
+
   gym(
     scheme: scheme,
     output_name: output_name,
@@ -43,6 +55,7 @@ lane :base_build_app do |options|
       method: export_method,
       provisioningProfiles: {
         app_identifier => profile_name
+        extension_identifier => extension_profile_name
       },
       compileBitcode: compile_bitcode
     }
