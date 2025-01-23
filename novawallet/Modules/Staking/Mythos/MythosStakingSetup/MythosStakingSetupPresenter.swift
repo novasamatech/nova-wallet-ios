@@ -19,7 +19,6 @@ final class MythosStakingSetupPresenter {
     private(set) var balance: AssetBalance?
     private(set) var frozenBalance: MythosStakingFrozenBalance?
     private(set) var minStake: BigUInt?
-    private(set) var maxStakersPerCollator: UInt32?
     private(set) var maxCollatorsPerStaker: UInt32?
     private(set) var price: PriceData?
     private(set) var stakingDetails: MythosStakingDetails?
@@ -56,6 +55,21 @@ private extension MythosStakingSetupPresenter {
         try? collatorDisplayAddress?.address.toAccountId(using: chainAsset.chain.chainFormat)
     }
 
+    func getStakingModel() -> MythosStakeModel? {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        let precicion = chainAsset.assetDisplayInfo.assetPrecision
+
+        guard
+            let collator = getCollatorAccount(),
+            let balanceState = getBalanceState(),
+            let amount = inputAmount.toSubstrateAmount(precision: precicion),
+            let modelAmount = balanceState.deriveStakeAmountModel(for: amount) else {
+            return nil
+        }
+
+        return MythosStakeModel(amount: modelAmount, collator: collator)
+    }
+
     func getBalanceState() -> MythosStakingBalanceState? {
         MythosStakingBalanceState(
             balance: balance,
@@ -66,7 +80,7 @@ private extension MythosStakingSetupPresenter {
     }
 
     func existingStakeInPlank() -> BigUInt? {
-        if let collatorId = try? collatorDisplayAddress?.address.toAccountId() {
+        if let collatorId = getCollatorAccount() {
             return stakingDetails?.stakeDistribution[collatorId]?.stake
         } else {
             return nil
@@ -339,7 +353,18 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
         provideRewardsViewModel()
     }
 
-    func proceed() {}
+    func proceed() {
+        // TODO: Add validations
+        guard let model = getStakingModel() else {
+            return
+        }
+
+        wireframe.showConfirmation(
+            from: view,
+            model: model,
+            initialDelegator: stakingDetails
+        )
+    }
 }
 
 extension MythosStakingSetupPresenter: ModalPickerViewControllerDelegate {
@@ -406,12 +431,6 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         provideMinStakeViewModel()
     }
 
-    func didReceiveMaxStakersPerCollator(_ maxStakersPerCollator: UInt32) {
-        logger.debug("Max stakers per collator: \(maxStakersPerCollator)")
-
-        self.maxStakersPerCollator = maxStakersPerCollator
-    }
-
     func didReceiveMaxCollatorsPerStaker(_ maxCollatorsPerStaker: UInt32) {
         logger.debug("Max collators per staker: \(maxCollatorsPerStaker)")
 
@@ -419,10 +438,12 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
     }
 
     func didReceiveDetails(_ details: MythosStakingDetails?) {
-        logger.debug("Max collators per staker: \(String(describing: details))")
+        logger.debug("Staking details: \(String(describing: details))")
 
         stakingDetails = details
 
+        provideAssetViewModel()
+        provideAmountInputViewModelIfInputRate()
         provideCollatorViewModel()
     }
 
@@ -463,6 +484,16 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
 
         self.frozenBalance = frozenBalance
 
+        provideAssetViewModel()
+        provideAmountInputViewModelIfInputRate()
+    }
+
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
+        logger.debug("Block number: \(blockNumber)")
+
+        currentBlock = blockNumber
+
+        provideAssetViewModel()
         provideAmountInputViewModelIfInputRate()
     }
 

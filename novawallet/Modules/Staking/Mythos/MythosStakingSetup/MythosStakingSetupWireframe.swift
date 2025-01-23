@@ -3,8 +3,7 @@ import Foundation
 final class MythosStakingSetupWireframe: MythosStakingSetupWireframeProtocol {
     func showConfirmation(
         from _: CollatorStakingSetupViewProtocol?,
-        collator _: DisplayAddress,
-        amount _: Decimal,
+        model _: MythosStakeModel,
         initialDelegator _: MythosStakingDetails?
     ) {
         // TODO: Implement in separate task

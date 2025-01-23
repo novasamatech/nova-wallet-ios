@@ -12,11 +12,11 @@ protocol MythosStakingSetupInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol)
     func didReceiveMinStakeAmount(_ amount: BigUInt)
-    func didReceiveMaxStakersPerCollator(_ maxStakersPerCollator: UInt32)
     func didReceiveMaxCollatorsPerStaker(_ maxCollatorsPerStaker: UInt32)
     func didReceiveDetails(_ details: MythosStakingDetails?)
     func didReceiveCandidateInfo(_ info: MythosStakingPallet.CandidateInfo?)
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?)
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceivePreferredCollator(_ collator: DisplayAddress?)
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance)
     func didReceiveError(_ error: MythosStakingSetupError)
@@ -26,8 +26,7 @@ protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable
     CollatorStakingDelegationSelectable {
     func showConfirmation(
         from view: CollatorStakingSetupViewProtocol?,
-        collator: DisplayAddress,
-        amount: Decimal,
+        model: MythosStakeModel,
         initialDelegator: MythosStakingDetails?
     )
 

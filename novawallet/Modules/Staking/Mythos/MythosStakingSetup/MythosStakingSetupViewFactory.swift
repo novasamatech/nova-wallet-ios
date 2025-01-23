@@ -142,6 +142,7 @@ struct MythosStakingSetupViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             rewardService: state.rewardCalculatorService,
             preferredCollatorFactory: preferredCollatorFactory,
             extrinsicService: extrinsicService,

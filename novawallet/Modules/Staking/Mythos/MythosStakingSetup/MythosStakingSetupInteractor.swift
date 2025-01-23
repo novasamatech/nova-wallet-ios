@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class MythosStakingSetupInteractor {
+final class MythosStakingSetupInteractor: RuntimeConstantFetching {
     weak var presenter: MythosStakingSetupInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -10,6 +10,7 @@ final class MythosStakingSetupInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let frozenBalanceStore: MythosStakingFrozenBalanceStore
     let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
@@ -27,6 +28,7 @@ final class MythosStakingSetupInteractor {
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var collatorSubscription: CallbackStorageSubscription<MythosStakingPallet.CandidateInfo>?
+    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var delegatorIdentityCancellable = CancellableCallStore()
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
@@ -38,6 +40,7 @@ final class MythosStakingSetupInteractor {
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?,
         extrinsicService: ExtrinsicServiceProtocol,
@@ -57,6 +60,7 @@ final class MythosStakingSetupInteractor {
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.preferredCollatorFactory = preferredCollatorFactory
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
@@ -79,6 +83,28 @@ final class MythosStakingSetupInteractor {
 
     deinit {
         delegatorIdentityCancellable.cancel()
+    }
+
+    func getExtrinsicBuilderClosure(from model: MythosStakeModel) -> ExtrinsicBuilderClosure {
+        { builder in
+            var resultBuilder = builder
+
+            if model.amount.toLock > 0 {
+                let lockCall = MythosStakingPallet.LockCall(amount: model.amount.toLock)
+                resultBuilder = try resultBuilder.adding(call: lockCall.runtimeCall())
+            }
+
+            let stakeCall = MythosStakingPallet.StakeCall(
+                targets: [
+                    MythosStakingPallet.StakeTarget(
+                        candidate: model.collator,
+                        stake: model.amount.toStake
+                    )
+                ]
+            )
+
+            return try resultBuilder.adding(call: stakeCall.runtimeCall())
+        }
     }
 }
 
@@ -131,7 +157,11 @@ private extension MythosStakingSetupInteractor {
         }
     }
 
-    private func provideRewardCalculator() {
+    func makeBlockNumberSubscription() {
+        blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
+    }
+
+    func provideRewardCalculator() {
         let operation = rewardService.fetchCalculatorOperation()
 
         execute(
@@ -229,6 +259,21 @@ private extension MythosStakingSetupInteractor {
             }
         }
     }
+
+    func provideMaxCandidatesPerStaker() {
+        fetchConstant(
+            for: MythosStakingPallet.maxStakedCandidatesPath,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            switch result {
+            case let .success(maxCandidatesPerStaker):
+                self?.presenter?.didReceiveMaxCollatorsPerStaker(maxCandidatesPerStaker)
+            case let .failure(error):
+                self?.logger.error("Unexpected error: \(error)")
+            }
+        }
+    }
 }
 
 extension MythosStakingSetupInteractor: MythosStakingSetupInteractorInputProtocol {
@@ -238,19 +283,29 @@ extension MythosStakingSetupInteractor: MythosStakingSetupInteractorInputProtoco
         makeAssetBalanceSubscription()
         makePriceSubscription()
         makeFrozenBalanceSubscription()
+        makeBlockNumberSubscription()
 
         makeStakingDetailsSubscription()
         makeMinStakeSubscription()
 
         providePreferredCollator()
         provideRewardCalculator()
+
+        provideMaxCandidatesPerStaker()
     }
 
     func applyCollator(with accountId: AccountId) {
         subscribeRemoteCollator(for: accountId)
     }
 
-    func estimateFee(with _: MythosStakeModel) {}
+    func estimateFee(with model: MythosStakeModel) {
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: model.reuseTxId,
+            payingIn: nil,
+            setupBy: getExtrinsicBuilderClosure(from: model)
+        )
+    }
 }
 
 extension MythosStakingSetupInteractor: ExtrinsicFeeProxyDelegate {
@@ -306,6 +361,22 @@ extension MythosStakingSetupInteractor: PriceLocalStorageSubscriber, PriceLocalS
             presenter?.didReceivePrice(priceData)
         case let .failure(error):
             logger.error("Price subscription failed: \(error)")
+        }
+    }
+}
+
+extension MythosStakingSetupInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleBlockNumber(
+        result: Result<BlockNumber?, Error>,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(blockNumber):
+            if let blockNumber {
+                presenter?.didReceiveBlockNumber(blockNumber)
+            }
+        case let .failure(error):
+            logger.error("Unexpected error: \(error)")
         }
     }
 }
