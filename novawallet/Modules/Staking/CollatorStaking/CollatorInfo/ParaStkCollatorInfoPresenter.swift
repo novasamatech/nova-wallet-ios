@@ -9,7 +9,7 @@ final class ParaStkCollatorInfoPresenter {
     let chain: ChainModel
     let selectedAccount: MetaChainAccountResponse
     let viewModelFactory: ParaStkCollatorInfoViewModelFactoryProtocol
-    let collatorInfo: CollatorSelectionInfo
+    let collatorInfo: CollatorStakingSelectionInfoProtocol
     let logger: LoggerProtocol
 
     private var price: PriceData?
@@ -20,7 +20,7 @@ final class ParaStkCollatorInfoPresenter {
         wireframe: ParaStkCollatorInfoWireframeProtocol,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
-        collatorInfo: CollatorSelectionInfo,
+        collatorInfo: CollatorStakingSelectionInfoProtocol,
         viewModelFactory: ParaStkCollatorInfoViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol

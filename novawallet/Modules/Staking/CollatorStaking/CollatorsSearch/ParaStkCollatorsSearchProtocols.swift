@@ -15,5 +15,8 @@ protocol ParaStkCollatorsSearchInteractorOutputProtocol: AnyObject {}
 
 protocol ParaStkCollatorsSearchWireframeProtocol: AnyObject {
     func complete(on view: ParaStkCollatorsSearchViewProtocol?)
-    func showCollatorInfo(from view: ParaStkCollatorsSearchViewProtocol?, collatorInfo: CollatorSelectionInfo)
+    func showCollatorInfo(
+        from view: ParaStkCollatorsSearchViewProtocol?,
+        collatorInfo: CollatorStakingSelectionInfoProtocol
+    )
 }

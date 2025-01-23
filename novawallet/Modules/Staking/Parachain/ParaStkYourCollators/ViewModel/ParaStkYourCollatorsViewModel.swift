@@ -6,15 +6,8 @@ struct ParaStkYourCollatorsListViewModel {
 }
 
 struct ParaStkYourCollatorListSection {
-    let status: ParaStkDelegationStatus
+    let status: CollatorStakingDelegationStatus
     let collators: [CollatorSelectionViewModel]
-}
-
-enum ParaStkDelegationStatus {
-    case rewarded
-    case notRewarded
-    case notElected
-    case pending
 }
 
 typealias ParaStkYourCollatorsState = GenericViewState<ParaStkYourCollatorsListViewModel>

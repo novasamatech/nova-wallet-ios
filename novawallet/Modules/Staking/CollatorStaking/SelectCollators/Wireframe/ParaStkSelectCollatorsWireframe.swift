@@ -1,37 +1,15 @@
 import Foundation
 
-final class ParaStkSelectCollatorsWireframe: ParaStkSelectCollatorsWireframeProtocol {
+final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, CollatorStakingSelectWireframeProtocol {
     let sharedState: ParachainStakingSharedStateProtocol
 
     init(sharedState: ParachainStakingSharedStateProtocol) {
         self.sharedState = sharedState
     }
 
-    func close(view: ParaStkSelectCollatorsViewProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
-    }
-
-    func showFilters(
-        from view: ParaStkSelectCollatorsViewProtocol?,
-        for sorting: CollatorsSortType,
-        delegate: ParaStkCollatorFiltersDelegate
-    ) {
-        guard let filtersView = ParaStkCollatorFiltersViewFactory.createView(
-            for: sorting,
-            delegate: delegate
-        ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            filtersView.controller,
-            animated: true
-        )
-    }
-
     func showSearch(
         from view: ParaStkSelectCollatorsViewProtocol?,
-        for collatorsInfo: [CollatorSelectionInfo],
+        for collatorsInfo: [CollatorStakingSelectionInfoProtocol],
         delegate: ParaStkSelectCollatorsDelegate
     ) {
         guard
@@ -51,7 +29,7 @@ final class ParaStkSelectCollatorsWireframe: ParaStkSelectCollatorsWireframeProt
 
     func showCollatorInfo(
         from view: ParaStkSelectCollatorsViewProtocol?,
-        collatorInfo: CollatorSelectionInfo
+        collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
         guard let infoView = ParaStkCollatorInfoViewFactory.createView(
             for: sharedState,

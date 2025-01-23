@@ -475,7 +475,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
 }
 
 extension ParaStkStakeSetupPresenter: ParaStkSelectCollatorsDelegate {
-    func didSelect(collator: CollatorSelectionInfo) {
+    func didSelect(collator: CollatorStakingSelectionInfoProtocol) {
         changeCollator(with: collator.accountId, name: collator.identity?.displayName)
     }
 }

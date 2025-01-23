@@ -6,10 +6,10 @@ import BigInt
 final class ParaStkSelectCollatorsPresenter {
     weak var view: ParaStkSelectCollatorsViewProtocol?
     weak var delegate: ParaStkSelectCollatorsDelegate?
-    let wireframe: ParaStkSelectCollatorsWireframeProtocol
+    let wireframe: CollatorStakingSelectWireframeProtocol
     let interactor: ParaStkSelectCollatorsInteractorInputProtocol
 
-    private var allCollators: [CollatorSelectionInfo]?
+    private var allCollators: [CollatorStakingSelectionInfoProtocol]?
     private var collatorsPref: PreferredValidatorsProviderModel?
     private var price: PriceData?
 
@@ -25,7 +25,7 @@ final class ParaStkSelectCollatorsPresenter {
 
     init(
         interactor: ParaStkSelectCollatorsInteractorInputProtocol,
-        wireframe: ParaStkSelectCollatorsWireframeProtocol,
+        wireframe: CollatorStakingSelectWireframeProtocol,
         delegate: ParaStkSelectCollatorsDelegate,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -103,7 +103,7 @@ final class ParaStkSelectCollatorsPresenter {
     }
 
     private func createDetailsViewModel(
-        for collatorInfo: CollatorSelectionInfo
+        for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) -> TitleWithSubtitleViewModel {
         let languages = selectedLocale.rLanguages
 
@@ -128,7 +128,7 @@ final class ParaStkSelectCollatorsPresenter {
     }
 
     private func createSortedByViewModel(
-        for collatorInfo: CollatorSelectionInfo
+        for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) -> TitleWithSubtitleViewModel {
         switch sorting {
         case .rewards:
@@ -147,7 +147,7 @@ final class ParaStkSelectCollatorsPresenter {
     }
 
     private func createViewModel(
-        for collatorInfo: CollatorSelectionInfo
+        for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) throws -> CollatorSelectionViewModel {
         let address = try collatorInfo.accountId.toAddress(using: chainAsset.chain.chainFormat)
         let iconViewModel = try iconGenerator.generateFromAccountId(collatorInfo.accountId)
@@ -203,7 +203,7 @@ final class ParaStkSelectCollatorsPresenter {
         }
     }
 
-    private func applySortingAndSaveResult(_ result: [CollatorSelectionInfo]) {
+    private func applySortingAndSaveResult(_ result: [CollatorStakingSelectionInfoProtocol]) {
         let preferredCollators = collatorsPref?.preferred ?? []
         allCollators = result.sortedByType(sorting, preferredCollators: Set(preferredCollators))
     }
@@ -267,7 +267,7 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 }
 
 extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutputProtocol {
-    func didReceiveAllCollators(_ collators: [CollatorSelectionInfo]) {
+    func didReceiveAllCollators(_ collators: [CollatorStakingSelectionInfoProtocol]) {
         logger.debug("All collators: \(collators)")
 
         applySortingAndSaveResult(collators)

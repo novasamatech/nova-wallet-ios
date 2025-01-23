@@ -13,10 +13,10 @@ final class ParaStkCollatorsSearchPresenter {
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let collatorsInfo: [CollatorSelectionInfo]
+    let collatorsInfo: [CollatorStakingSelectionInfoProtocol]
     let logger: LoggerProtocol
 
-    private var filteredCollatorsInfo: [CollatorSelectionInfo]?
+    private var filteredCollatorsInfo: [CollatorStakingSelectionInfoProtocol]?
 
     weak var delegate: ParaStkSelectCollatorsDelegate?
 
@@ -24,7 +24,7 @@ final class ParaStkCollatorsSearchPresenter {
         interactor: ParaStkCollatorsSearchInteractorInputProtocol,
         wireframe: ParaStkCollatorsSearchWireframeProtocol,
         chainAsset: ChainAsset,
-        collatorsInfo: [CollatorSelectionInfo],
+        collatorsInfo: [CollatorStakingSelectionInfoProtocol],
         delegate: ParaStkSelectCollatorsDelegate,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -56,7 +56,7 @@ final class ParaStkCollatorsSearchPresenter {
     }
 
     private func createDetailsViewModel(
-        for collatorInfo: CollatorSelectionInfo
+        for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) -> TitleWithSubtitleViewModel {
         let languages = selectedLocale.rLanguages
 
@@ -73,7 +73,7 @@ final class ParaStkCollatorsSearchPresenter {
     }
 
     private func createSortedByViewModel(
-        for collatorInfo: CollatorSelectionInfo
+        for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) -> TitleWithSubtitleViewModel {
         let rewards = collatorInfo.apr.flatMap {
             percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
@@ -83,7 +83,7 @@ final class ParaStkCollatorsSearchPresenter {
     }
 
     private func createCollatorViewModel(
-        for collatorInfo: CollatorSelectionInfo
+        for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) throws -> CollatorSelectionViewModel {
         let address = try collatorInfo.accountId.toAddress(using: chainAsset.chain.chainFormat)
         let iconViewModel = try iconGenerator.generateFromAccountId(collatorInfo.accountId)

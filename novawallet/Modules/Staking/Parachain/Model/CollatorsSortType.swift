@@ -9,11 +9,11 @@ enum CollatorsSortType: Equatable {
     static var defaultType: CollatorsSortType { .rewards }
 }
 
-extension Array where Element == CollatorSelectionInfo {
+extension Array where Element == CollatorStakingSelectionInfoProtocol {
     func sortedByType(
         _ type: CollatorsSortType,
         preferredCollators: Set<AccountId>
-    ) -> [CollatorSelectionInfo] {
+    ) -> [CollatorStakingSelectionInfoProtocol] {
         sorted { item1, item2 in
             CompoundComparator.compare(list: [{
                 let isItem1Pref = preferredCollators.contains(item1.accountId)

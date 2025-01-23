@@ -20,7 +20,7 @@ final class ParaStkCollatorsSearchWireframe: ParaStkCollatorsSearchWireframeProt
 
     func showCollatorInfo(
         from view: ParaStkCollatorsSearchViewProtocol?,
-        collatorInfo: CollatorSelectionInfo
+        collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
         guard let infoView = ParaStkCollatorInfoViewFactory.createView(
             for: sharedState,

@@ -19,13 +19,13 @@ protocol ParaStkSelectCollatorsInteractorInputProtocol: AnyObject {
 }
 
 protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
-    func didReceiveAllCollators(_ collators: [CollatorSelectionInfo])
+    func didReceiveAllCollators(_ collators: [CollatorStakingSelectionInfoProtocol])
     func didReceiveCollatorsPref(_ collatorsPref: PreferredValidatorsProviderModel?)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveError(_ error: ParaStkSelectCollatorsInteractorError)
 }
 
-protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol CollatorStakingSelectWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func close(view: ParaStkSelectCollatorsViewProtocol?)
 
     func showFilters(
@@ -36,18 +36,18 @@ protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresent
 
     func showSearch(
         from view: ParaStkSelectCollatorsViewProtocol?,
-        for collatorsInfo: [CollatorSelectionInfo],
+        for collatorsInfo: [CollatorStakingSelectionInfoProtocol],
         delegate: ParaStkSelectCollatorsDelegate
     )
 
     func showCollatorInfo(
         from view: ParaStkSelectCollatorsViewProtocol?,
-        collatorInfo: CollatorSelectionInfo
+        collatorInfo: CollatorStakingSelectionInfoProtocol
     )
 }
 
 protocol ParaStkSelectCollatorsDelegate: AnyObject {
-    func didSelect(collator: CollatorSelectionInfo)
+    func didSelect(collator: CollatorStakingSelectionInfoProtocol)
 }
 
 enum ParaStkSelectCollatorsInteractorError: Error {

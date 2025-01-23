@@ -1,22 +1,16 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
+import Operation_iOS
 
-struct ParaStkCollatorsSearchViewFactory {
+struct ParaStkSelectCollatorsViewFactory {
     static func createView(
-        for state: ParachainStakingSharedStateProtocol,
-        collators: [CollatorSelectionInfo],
-        delegate: ParaStkSelectCollatorsDelegate
-    ) -> ParaStkCollatorsSearchViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
-
-        let chainAsset = state.stakingOption.chainAsset
-
-        let interactor = ParaStkCollatorsSearchInteractor()
-        let wireframe = ParaStkCollatorsSearchWireframe(sharedState: state)
-
-        let localizationManager = LocalizationManager.shared
+        for chainAsset: ChainAsset,
+        delegate: ParaStkSelectCollatorsDelegate,
+        interactor: ParaStkSelectCollatorsInteractor,
+        wireframe: CollatorStakingSelectWireframeProtocol,
+        currencyManager: CurrencyManagerProtocol
+    ) -> ParaStkSelectCollatorsViewProtocol? {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
@@ -24,18 +18,19 @@ struct ParaStkCollatorsSearchViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let presenter = ParaStkCollatorsSearchPresenter(
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = ParaStkSelectCollatorsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chainAsset: chainAsset,
-            collatorsInfo: collators,
             delegate: delegate,
+            chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = ParaStkCollatorsSearchViewController(
+        let view = ParaStkSelectCollatorsViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

@@ -33,7 +33,7 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
         from view: CollatorStakingSetupViewProtocol?,
         delegate: ParaStkSelectCollatorsDelegate
     ) {
-        guard let collatorsView = ParaStkSelectCollatorsViewFactory.createView(
+        guard let collatorsView = ParaStkSelectCollatorsViewFactory.createParachainStakingView(
             with: state,
             delegate: delegate
         ) else {

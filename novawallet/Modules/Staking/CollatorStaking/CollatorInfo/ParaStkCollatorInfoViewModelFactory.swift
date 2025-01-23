@@ -4,13 +4,13 @@ import SoraFoundation
 
 protocol ParaStkCollatorInfoViewModelFactoryProtocol {
     func createStakingAmountsViewModel(
-        from collatorInfo: CollatorSelectionInfo,
+        from collatorInfo: CollatorStakingSelectionInfoProtocol,
         priceData: PriceData?
     ) -> [LocalizableResource<StakingAmountViewModel>]
 
     func createViewModel(
         for selectedAccountId: AccountId,
-        collatorInfo: CollatorSelectionInfo,
+        collatorInfo: CollatorStakingSelectionInfoProtocol,
         delegator: ParachainStaking.Delegator?,
         priceData: PriceData?,
         locale: Locale
@@ -36,7 +36,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
     }
 
     private func createMinimumStakeViewModel(
-        from collatorInfo: CollatorSelectionInfo,
+        from collatorInfo: CollatorStakingSelectionInfoProtocol,
         price: PriceData?,
         locale: Locale
     ) -> BalanceViewModelProtocol {
@@ -47,7 +47,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
     private func detectNotRewarded(
         for _: AccountId,
-        collatorInfo: CollatorSelectionInfo,
+        collatorInfo: CollatorStakingSelectionInfoProtocol,
         delegator: ParachainStaking.Delegator?
     ) -> Bool {
         guard
@@ -63,14 +63,14 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
     private func createExposure(
         for selectedAccountId: AccountId,
-        collatorInfo: CollatorSelectionInfo,
+        collatorInfo: CollatorStakingSelectionInfoProtocol,
         delegator: ParachainStaking.Delegator?,
         priceData: PriceData?,
         locale: Locale
     ) -> ValidatorInfoViewModel.Exposure {
         let formatter = NumberFormatter.quantity.localizableResource().value(for: locale)
 
-        let delegatorsCount = collatorInfo.metadata.delegationCount
+        let delegatorsCount = collatorInfo.delegationCount
 
         let nominators = formatter.string(from: NSNumber(value: delegatorsCount)) ?? ""
 
@@ -81,7 +81,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
         let myNomination: ValidatorInfoViewModel.MyNomination?
 
-        if let snapshot = collatorInfo.snapshot {
+        if let snapshot = collatorInfo.details {
             let isRewarded = snapshot.delegations.contains { $0.owner == selectedAccountId }
             myNomination = ValidatorInfoViewModel.MyNomination(isRewarded: isRewarded)
         } else {
@@ -158,7 +158,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
-        collatorInfo: CollatorSelectionInfo,
+        collatorInfo: CollatorStakingSelectionInfoProtocol,
         delegator: ParachainStaking.Delegator?,
         priceData: PriceData?,
         locale: Locale
@@ -174,7 +174,7 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
 
         let status: ValidatorInfoViewModel.StakingStatus
 
-        if collatorInfo.snapshot != nil {
+        if collatorInfo.details != nil {
             let exposure = createExposure(
                 for: selectedAccountId,
                 collatorInfo: collatorInfo,
@@ -205,7 +205,7 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
     }
 
     func createStakingAmountsViewModel(
-        from collatorInfo: CollatorSelectionInfo,
+        from collatorInfo: CollatorStakingSelectionInfoProtocol,
         priceData: PriceData?
     ) -> [LocalizableResource<StakingAmountViewModel>] {
         let ownStake = Decimal.fromSubstrateAmount(collatorInfo.ownStake, precision: precision) ?? 0

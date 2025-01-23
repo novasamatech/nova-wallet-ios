@@ -82,7 +82,9 @@ final class ParaStkCollatorsOperationFactory {
                 return CollatorSelectionInfo(
                     accountId: collatorId,
                     metadata: metadata,
-                    snapshot: collatorSnapshot,
+                    details: CollatorStakingSelectionInfoDetails(
+                        parachainInfo: collatorSnapshot
+                    ),
                     identity: identity,
                     apr: apr,
                     commission: commission,
@@ -127,7 +129,9 @@ final class ParaStkCollatorsOperationFactory {
                 return CollatorSelectionInfo(
                     accountId: collator.accountId,
                     metadata: metadata,
-                    snapshot: collator.snapshot,
+                    details: CollatorStakingSelectionInfoDetails(
+                        parachainInfo: collator.snapshot
+                    ),
                     identity: identity,
                     apr: apr,
                     commission: commission,

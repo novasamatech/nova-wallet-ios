@@ -17,7 +17,7 @@ final class ParaStkStateViewModelFactory {
 
     private func createDelegationStatus(
         for activeStake: BigUInt,
-        collatorStatuses: [ParaStkDelegationStatus]?,
+        collatorStatuses: [CollatorStakingDelegationStatus]?,
         commonData: ParachainStaking.CommonData
     ) -> NominationViewStatus {
         guard let statuses = collatorStatuses, let roundInfo = commonData.roundInfo else {
@@ -203,7 +203,7 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
         }
 
         let delegationsDict = state.delegatorState.delegationsDict()
-        let collatorsStatuses: [ParaStkDelegationStatus]? = state.delegations?.compactMap { delegation in
+        let collatorsStatuses: [CollatorStakingDelegationStatus]? = state.delegations?.compactMap { delegation in
             guard let stake = delegationsDict[delegation.accountId]?.amount else {
                 return nil
             }

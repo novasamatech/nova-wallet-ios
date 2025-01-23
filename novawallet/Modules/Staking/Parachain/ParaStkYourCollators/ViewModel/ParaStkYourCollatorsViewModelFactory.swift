@@ -32,7 +32,7 @@ final class ParaStkYourCollatorsViewModelFactory {
     private func createCollatorViewModel(
         for model: CollatorSelectionInfo,
         staked: BigUInt,
-        status: ParaStkDelegationStatus,
+        status: CollatorStakingDelegationStatus,
         aprFormatter: NumberFormatter,
         locale: Locale
     ) throws -> CollatorSelectionViewModel {
@@ -63,8 +63,8 @@ final class ParaStkYourCollatorsViewModelFactory {
     }
 
     private func createSectionsFromOrder(
-        _ order: [ParaStkDelegationStatus],
-        mapping: [ParaStkDelegationStatus: [CollatorSelectionViewModel]]
+        _ order: [CollatorStakingDelegationStatus],
+        mapping: [CollatorStakingDelegationStatus: [CollatorSelectionViewModel]]
     ) -> [ParaStkYourCollatorListSection] {
         order.compactMap { status in
             if let collators = mapping[status], !collators.isEmpty {
@@ -95,7 +95,7 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
                 return stake1 > stake2
             })
             .reduce(
-                into: [ParaStkDelegationStatus: [CollatorSelectionViewModel]]()) { result, item in
+                into: [CollatorStakingDelegationStatus: [CollatorSelectionViewModel]]()) { result, item in
                 let delegatorStake = stakes[item.accountId]?.amount ?? 0
                 let status = item.status(for: selectedAccountId, stake: delegatorStake)
 
@@ -110,7 +110,7 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
                 result[status] = (result[status] ?? []) + [viewModel]
             }
 
-        let sectionsOrder: [ParaStkDelegationStatus] = [
+        let sectionsOrder: [CollatorStakingDelegationStatus] = [
             .rewarded, .notRewarded, .notElected, .pending
         ]
 

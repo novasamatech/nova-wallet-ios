@@ -7,9 +7,7 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     var chain: ChainModel { chainAsset.chain }
 
     let chainAsset: ChainAsset
-    let collatorService: ParachainStakingCollatorServiceProtocol
-    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
-    let collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol
+    let stakableCollatorOperationFactory: CollatorStakingStakableFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
@@ -18,19 +16,15 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
 
     init(
         chainAsset: ChainAsset,
-        collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
-        collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
+        stakableCollatorOperationFactory: CollatorStakingStakableFactoryProtocol,
         preferredCollatorsProvider: PreferredValidatorsProviding,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
-        self.collatorService = collatorService
-        self.rewardService = rewardService
+        self.stakableCollatorOperationFactory = stakableCollatorOperationFactory
         self.preferredCollatorsProvider = preferredCollatorsProvider
-        self.collatorOperationFactory = collatorOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -54,10 +48,7 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     }
 
     private func provideElectedCollatorsInfo() {
-        let wrapper = collatorOperationFactory.electedCollatorsInfoOperation(
-            for: collatorService,
-            rewardService: rewardService
-        )
+        let wrapper = stakableCollatorOperationFactory.stakableCollatorsWrapper()
 
         execute(
             wrapper: wrapper,
