@@ -11,8 +11,8 @@ lane :test_build do |options|
     clean: true,
     scheme: scheme,
     workspace: "novawallet.xcworkspace",
-    configuration: "Dev",
-    xcargs: "EXCLUDED_ARCHS=arm64 -skipPackagePluginValidation -skipMacroValidation",
+    configuration: "Debug",
+    xcargs: "EXCLUDED_ARCHS=arm64 -skipPackagePluginValidation -skipMacroValidation ENABLE_TESTABILITY=YES",
     output_directory: "./fastlane/test_output/"
   )
 end
