@@ -4,14 +4,14 @@ extension ParachainStaking {
     final class DelegatorState: BaseState {
         private(set) var delegatorState: ParachainStaking.Delegator
         private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
-        private(set) var delegations: [CollatorSelectionInfo]?
+        private(set) var delegations: [ParachainStkCollatorSelectionInfo]?
 
         init(
             stateMachine: ParaStkStateMachineProtocol?,
             commonData: ParachainStaking.CommonData,
             delegatorState: ParachainStaking.Delegator,
             scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
-            delegations: [CollatorSelectionInfo]?
+            delegations: [ParachainStkCollatorSelectionInfo]?
         ) {
             self.delegatorState = delegatorState
             self.scheduledRequests = scheduledRequests
@@ -39,7 +39,7 @@ extension ParachainStaking {
             }
         }
 
-        override func process(delegations: [CollatorSelectionInfo]?) {
+        override func process(delegations: [ParachainStkCollatorSelectionInfo]?) {
             self.delegations = delegations
 
             stateMachine?.transit(to: self)

@@ -29,4 +29,8 @@ extension MythosStakingPallet {
     static var maxStakedCandidatesPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: Self.name, constantName: "MaxStakedCandidates")
     }
+
+    static var maxStakersPerCandidatePath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.name, constantName: "MaxStakers")
+    }
 }

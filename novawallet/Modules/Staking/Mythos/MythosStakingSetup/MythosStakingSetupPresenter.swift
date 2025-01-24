@@ -305,7 +305,7 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
 
     func selectCollator() {
         guard let stakingDetails, !stakingDetails.stakeDistribution.isEmpty else {
-            wireframe.showCollatorSelection(from: view)
+            wireframe.showCollatorSelection(from: view, delegate: self)
             return
         }
 
@@ -367,6 +367,12 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
     }
 }
 
+extension MythosStakingSetupPresenter: CollatorStakingSelectDelegate {
+    func didSelect(collator: CollatorStakingSelectionInfoProtocol) {
+        changeCollator(with: collator.accountId, name: collator.identity?.displayName)
+    }
+}
+
 extension MythosStakingSetupPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
         guard let delegations = context as? [CollatorStakingAccountViewModelFactory.StakedCollator] else {
@@ -381,7 +387,7 @@ extension MythosStakingSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {
-        wireframe.showCollatorSelection(from: view)
+        wireframe.showCollatorSelection(from: view, delegate: self)
     }
 }
 

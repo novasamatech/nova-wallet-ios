@@ -6,7 +6,7 @@ final class ParaStkYourCollatorsPresenter {
     let wireframe: ParaStkYourCollatorsWireframeProtocol
     let interactor: ParaStkYourCollatorsInteractorInputProtocol
 
-    private var collators: Result<[CollatorSelectionInfo], Error>?
+    private var collators: Result<[ParachainStkCollatorSelectionInfo], Error>?
     private var delegator: Result<ParachainStaking.Delegator?, Error>?
     private var scheduledRequests: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>?
 
@@ -88,7 +88,7 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
 }
 
 extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsInteractorOutputProtocol {
-    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>) {
+    func didReceiveCollators(result: Result<[ParachainStkCollatorSelectionInfo], Error>) {
         collators = result
 
         provideViewModel()

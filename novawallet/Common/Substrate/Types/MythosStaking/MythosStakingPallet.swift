@@ -25,4 +25,9 @@ enum MythosStakingPallet {
     struct CandidateStakeInfo: Codable, Equatable {
         @StringCodable var stake: Balance
     }
+
+    struct CandidateStakerKey {
+        let candidate: AccountId
+        let staker: AccountId
+    }
 }

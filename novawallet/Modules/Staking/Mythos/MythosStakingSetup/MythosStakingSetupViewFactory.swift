@@ -19,7 +19,7 @@ struct MythosStakingSetupViewFactory {
 
         let chainAsset = state.stakingOption.chainAsset
 
-        let wireframe = MythosStakingSetupWireframe()
+        let wireframe = MythosStakingSetupWireframe(state: state)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 

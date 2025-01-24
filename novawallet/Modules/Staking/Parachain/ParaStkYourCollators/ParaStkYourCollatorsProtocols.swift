@@ -15,7 +15,7 @@ protocol ParaStkYourCollatorsInteractorInputProtocol: AnyObject {
 }
 
 protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
-    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>)
+    func didReceiveCollators(result: Result<[ParachainStkCollatorSelectionInfo], Error>)
     func didReceiveDelegator(result: Result<ParachainStaking.Delegator?, Error>)
     func didReceiveScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>)
 }
@@ -23,7 +23,7 @@ protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
 protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable {
     func showCollatorInfo(
         from view: ParaStkYourCollatorsViewProtocol?,
-        collatorInfo: CollatorSelectionInfo
+        collatorInfo: ParachainStkCollatorSelectionInfo
     )
 
     func showManageCollators(
