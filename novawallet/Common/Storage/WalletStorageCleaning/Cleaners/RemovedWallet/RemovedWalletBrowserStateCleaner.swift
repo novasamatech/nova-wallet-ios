@@ -21,7 +21,7 @@ final class RemovedWalletBrowserStateCleaner {
 
 private extension RemovedWalletBrowserStateCleaner {
     func createTabsCleaningWrapper(
-        for removedItems: @escaping () throws -> [MetaAccountModel]
+        for changesProvider: @escaping () throws -> [DataProviderChange<ManagedMetaAccountModel>]
     ) -> CompoundOperationWrapper<Set<UUID>> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -30,7 +30,9 @@ private extension RemovedWalletBrowserStateCleaner {
                 throw BaseOperationError.parentOperationCancelled
             }
 
-            let metaIds = try removedItems().map(\.metaId)
+            let metaIds = try changesProvider()
+                .filter { $0.isDeletion }
+                .map(\.identifier)
 
             return browserTabManager.removeAllWrapper(for: Set(metaIds))
         }
@@ -55,9 +57,9 @@ private extension RemovedWalletBrowserStateCleaner {
 
 extension RemovedWalletBrowserStateCleaner: WalletStorageCleaning {
     func cleanStorage(
-        for removedItems: @escaping () throws -> [MetaAccountModel]
+        using providers: WalletStorageCleaningProviders
     ) -> CompoundOperationWrapper<Void> {
-        let tabsCleaningWrapper = createTabsCleaningWrapper(for: removedItems)
+        let tabsCleaningWrapper = createTabsCleaningWrapper(for: providers.changesProvider)
 
         let webViewPoolCleaningOperation = createWebViewCleaningOperation(
             dependingOn: tabsCleaningWrapper.targetOperation

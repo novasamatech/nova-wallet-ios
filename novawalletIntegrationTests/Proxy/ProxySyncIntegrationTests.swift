@@ -33,12 +33,14 @@ final class ProxySyncIntegrationTests: XCTestCase {
         
         operationQueue.addOperations([saveWalletOperation], waitUntilFinished: true)
         
-        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(using: operationQueue)
+        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(
+            using: operationQueue
+        )
         
         let walletUpdateMediator = WalletUpdateMediator(
             selectedWalletSettings: SelectedWalletSettings(storageFacade: userStorageFacade, operationQueue: operationQueue),
             repository: managedAccountRepository,
-            removedWalletsCleaner: walletStorageCleaner,
+            walletsCleaner: walletStorageCleaner,
             operationQueue: operationQueue
         )
         
