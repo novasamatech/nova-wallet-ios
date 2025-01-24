@@ -26,7 +26,11 @@ final class StakingMoreOptionsInteractor {
                 let dApps = result.dApps.filter {
                     $0.categories.contains(KnownDAppCategory.staking.rawValue) == true
                 }
-                let stakingDApps = DAppList(categories: result.categories, dApps: dApps)
+                let stakingDApps = DAppList(
+                    popular: result.popular,
+                    categories: result.categories,
+                    dApps: dApps
+                )
                 self?.presenter?.didReceive(dAppsResult: .success(stakingDApps))
             } else {
                 self?.presenter?.didReceive(dAppsResult: nil)

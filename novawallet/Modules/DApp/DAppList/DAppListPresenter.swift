@@ -15,6 +15,7 @@ final class DAppListPresenter {
     private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
+    private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
 
     private var dAppNavigationTask: DAppListNavigationTask?
@@ -41,11 +42,15 @@ final class DAppListPresenter {
         guard let wallet else { return }
 
         do {
+            let params = DAppListViewModelFactory.ListSectionsParams(
+                randomizationSeed: randomizationSeed,
+                hasWalletsListUpdates: hasWalletsListUpdates
+            )
             let sections = viewModelFactory.createDAppSections(
                 from: try dAppsResult?.get(),
                 favorites: favorites ?? [:],
                 wallet: wallet,
-                hasWalletsListUpdates: hasWalletsListUpdates,
+                params: params,
                 locale: selectedLocale
             )
 
@@ -139,6 +144,7 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         }
 
         self.dAppsResult = dAppsResult
+        randomizationSeed = Int.random(in: 1 ..< 100)
 
         dAppNavigationTask?(
             cleaner: self,
