@@ -1,15 +1,10 @@
 import UIKit
 import Operation_iOS
 
-final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
-    weak var presenter: ParaStkCollatorInfoInteractorOutputProtocol?
-
-    let chainAsset: ChainAsset
+final class ParaStkCollatorInfoInteractor: CollatorStakingInfoInteractor, AnyProviderAutoCleaning {
     let selectedAccount: MetaChainAccountResponse
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
-    private var priceProvider: StreamableProvider<PriceData>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
 
     init(
@@ -19,11 +14,14 @@ final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
-        self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.currencyManager = currencyManager
+
+        super.init(
+            chainAsset: chainAsset,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager
+        )
     }
 
     private func subscribeDelegator() {
@@ -34,37 +32,13 @@ final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
             accountId: selectedAccount.chainAccount.accountId
         )
     }
-}
 
-extension ParaStkCollatorInfoInteractor: ParaStkCollatorInfoInteractorInputProtocol {
-    func setup() {
-        if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-        } else {
-            presenter?.didReceivePrice(nil)
-        }
-
+    override func onSetup() {
         subscribeDelegator()
     }
 
-    func reload() {
-        priceProvider?.refresh()
-
+    override func onReload() {
         subscribeDelegator()
-    }
-}
-
-extension ParaStkCollatorInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(
-        result: Result<PriceData?, Error>,
-        priceId _: AssetModel.PriceId
-    ) {
-        switch result {
-        case let .success(price):
-            presenter?.didReceivePrice(price)
-        case let .failure(error):
-            presenter?.didReceiveError(error)
-        }
     }
 }
 
@@ -81,16 +55,5 @@ extension ParaStkCollatorInfoInteractor: ParastakingLocalStorageSubscriber, Para
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
-    }
-}
-
-extension ParaStkCollatorInfoInteractor: SelectedCurrencyDepending {
-    func applyCurrency() {
-        guard presenter != nil,
-              let priceId = chainAsset.asset.priceId else {
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

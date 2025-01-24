@@ -1,6 +1,7 @@
 import Foundation
 
 protocol CollatorStakingSelectionInfoProtocol {
+    // TODO: Replace details with the information whether current account is staking with collator
     var details: CollatorStakingSelectionInfoDetails? { get }
     var minRewardableStake: Balance { get }
     var apr: Decimal? { get }

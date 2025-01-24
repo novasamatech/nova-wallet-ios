@@ -3,25 +3,16 @@ import SoraFoundation
 
 struct ParaStkCollatorInfoViewFactory {
     static func createView(
-        for state: ParachainStakingSharedStateProtocol,
-        collatorInfo: CollatorStakingSelectionInfoProtocol
+        for interactor: CollatorStakingInfoInteractor,
+        chainAsset: ChainAsset,
+        collatorInfo: CollatorStakingSelectionInfoProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) -> ParaStkCollatorInfoViewProtocol? {
-        let chainAsset = state.stakingOption.chainAsset
-
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
-            let currencyManager = CurrencyManager.shared,
             let selectedAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
-
-        let interactor = ParaStkCollatorInfoInteractor(
-            chainAsset: chainAsset,
-            selectedAccount: selectedAccount,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currencyManager: currencyManager
-        )
 
         let wireframe = ParaStkCollatorInfoWireframe()
 

@@ -31,7 +31,7 @@ final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, Col
         from view: ParaStkSelectCollatorsViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createView(
+        guard let infoView = ParaStkCollatorInfoViewFactory.createParachainStakingView(
             for: sharedState,
             collatorInfo: collatorInfo
         ) else {

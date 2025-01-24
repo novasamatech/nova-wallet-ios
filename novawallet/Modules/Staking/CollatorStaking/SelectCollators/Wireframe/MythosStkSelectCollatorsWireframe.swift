@@ -14,7 +14,16 @@ final class MythosStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, C
     ) {}
 
     func showCollatorInfo(
-        from _: ParaStkSelectCollatorsViewProtocol?,
-        collatorInfo _: CollatorStakingSelectionInfoProtocol
-    ) {}
+        from view: ParaStkSelectCollatorsViewProtocol?,
+        collatorInfo: CollatorStakingSelectionInfoProtocol
+    ) {
+        guard let infoView = ParaStkCollatorInfoViewFactory.createMythosStakingView(
+            for: state,
+            collatorInfo: collatorInfo
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(infoView.controller, animated: true)
+    }
 }

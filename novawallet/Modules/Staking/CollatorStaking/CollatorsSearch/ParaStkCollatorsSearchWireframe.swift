@@ -22,7 +22,7 @@ final class ParaStkCollatorsSearchWireframe: ParaStkCollatorsSearchWireframeProt
         from view: ParaStkCollatorsSearchViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createView(
+        guard let infoView = ParaStkCollatorInfoViewFactory.createParachainStakingView(
             for: sharedState,
             collatorInfo: collatorInfo
         ) else {
