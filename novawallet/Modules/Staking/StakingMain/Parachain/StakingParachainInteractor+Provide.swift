@@ -10,7 +10,7 @@ extension StakingParachainInteractor {
     }
 
     func provideRewardCalculator(
-        from calculatorService: ParaStakingRewardCalculatorServiceProtocol
+        from calculatorService: CollatorStakingRewardCalculatorServiceProtocol
     ) {
         clear(cancellable: &rewardCalculatorCancellable)
 
@@ -69,7 +69,7 @@ extension StakingParachainInteractor {
 
     func provideNetworkInfo(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol
     ) {
         clear(cancellable: &networkInfoCancellable)
 

@@ -166,11 +166,11 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         if delegationRequests.count > 1 {
             let identities = delegator.delegations?.identitiesDict()
 
-            let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(
+            let accountDetailsViewModelFactory = CollatorStakingAccountViewModelFactory(
                 chainAsset: chainAsset
             )
 
-            let viewModels = accountDetailsViewModelFactory.createUnstakingViewModels(
+            let viewModels = accountDetailsViewModelFactory.createParachainUnstakingViewModels(
                 from: delegationRequests,
                 identities: identities
             )
@@ -275,7 +275,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         }
     }
 
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         stateMachine.state.process(calculatorEngine: calculator)
     }
 

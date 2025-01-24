@@ -8,7 +8,7 @@ enum AssetLockStorage: String {
 
 /**
  * The model is used for legacy Locks and new Freezes data,
- * as the have the same logic: amount can be reused by different entities.
+ * as they have the same logic: amount can be reused by different entities.
  */
 struct AssetLock: Equatable {
     let chainAssetId: ChainAssetId
@@ -47,7 +47,7 @@ extension AssetLock: Identifiable {
             accountId.toHex(),
             module,
             type.toUTF8String()!
-        ].compactMap { $0 }.joined(separator: "-").data(using: .utf8)!
+        ].compactMap { $0 }.joined(with: String.Separator.dash).data(using: .utf8)!
         return data.sha256().toHex()
     }
 

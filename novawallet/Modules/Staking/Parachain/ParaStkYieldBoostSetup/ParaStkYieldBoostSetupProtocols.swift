@@ -32,7 +32,7 @@ protocol ParaStkYieldBoostSetupInteractorInputProtocol: ParaStkYieldBoostSchedul
 protocol ParaStkYieldBoostSetupInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
     ParaStkYieldBoostCancelInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?)

@@ -8,7 +8,7 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
 
     let chainAsset: ChainAsset
     let collatorService: ParachainStakingCollatorServiceProtocol
-    let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -19,7 +19,7 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     init(
         chainAsset: ChainAsset,
         collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         preferredCollatorsProvider: PreferredValidatorsProviding,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,

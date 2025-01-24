@@ -1,6 +1,6 @@
 import Foundation
 
-class BaseStakingServiceFactory {
+class CollatorStakingServiceFactory {
     let chainRegisty: ChainRegistryProtocol
     let storageFacade: StorageFacadeProtocol
     let eventCenter: EventCenterProtocol

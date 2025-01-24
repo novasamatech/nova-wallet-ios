@@ -7,6 +7,13 @@ protocol MythosStakingSharedStateProtocol {
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
 
+    var detailsSyncService: MythosStakingDetailsSyncServiceProtocol? { get }
+
+    var collatorService: MythosCollatorServiceProtocol { get }
+    var rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol { get }
+
+    var preferredCollatorsProvider: PreferredValidatorsProviding { get }
+
     var logger: LoggerProtocol { get }
 
     var sharedOperation: SharedOperationProtocol? { get }
@@ -19,37 +26,51 @@ protocol MythosStakingSharedStateProtocol {
 final class MythosStakingSharedState {
     let stakingOption: Multistaking.ChainAssetOption
     let chainRegistry: ChainRegistryProtocol
+    let collatorService: MythosCollatorServiceProtocol
+    let rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
+    let preferredCollatorsProvider: PreferredValidatorsProviding
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     weak var sharedOperation: SharedOperationProtocol?
 
     private var globalRemoteSubscription: UUID?
 
+    private(set) var detailsSyncService: MythosStakingDetailsSyncServiceProtocol?
+
     init(
         stakingOption: Multistaking.ChainAssetOption,
         chainRegistry: ChainRegistryProtocol,
+        collatorService: MythosCollatorServiceProtocol,
+        rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        preferredCollatorsProvider: PreferredValidatorsProviding,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.stakingOption = stakingOption
         self.chainRegistry = chainRegistry
+        self.collatorService = collatorService
+        self.rewardCalculatorService = rewardCalculatorService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.blockTimeService = blockTimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.preferredCollatorsProvider = preferredCollatorsProvider
+        self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
 extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
-    func setup(for _: AccountId?) {
+    func setup(for accountId: AccountId?) {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         globalRemoteSubscription = globalRemoteSubscriptionService.attachToGlobalData(
@@ -64,7 +85,25 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
             }
         }
 
+        collatorService.setup()
+        rewardCalculatorService.setup()
         blockTimeService.setup()
+
+        if let accountId {
+            detailsSyncService = MythosStakingDetailsSyncService(
+                chainId: chainId,
+                accountId: accountId,
+                chainRegistry: chainRegistry,
+                operationFactory: MythosCollatorOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue,
+                    timeout: JSONRPCTimeout.hour
+                ),
+                operationQueue: operationQueue
+            )
+
+            detailsSyncService?.setup()
+        }
     }
 
     func throttle() {
@@ -79,7 +118,12 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
             )
         }
 
+        collatorService.throttle()
+        rewardCalculatorService.throttle()
         blockTimeService.throttle()
+
+        detailsSyncService?.throttle()
+        detailsSyncService = nil
     }
 
     func startSharedOperation() -> SharedOperationProtocol {

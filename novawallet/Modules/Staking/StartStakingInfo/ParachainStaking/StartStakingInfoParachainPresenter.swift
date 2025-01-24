@@ -81,7 +81,7 @@ extension StartStakingInfoParachainPresenter: StartStakingInfoParachainInteracto
         state.roundInfo = roundInfo
     }
 
-    func didReceive(calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceive(calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         state.maxApy = calculator.calculateMaxEarnings(amount: 1, period: .year)
     }
 

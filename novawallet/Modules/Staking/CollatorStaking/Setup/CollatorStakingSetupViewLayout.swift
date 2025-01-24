@@ -1,6 +1,6 @@
 import UIKit
 
-final class ParaStkStakeSetupViewLayout: UIView {
+final class CollatorStakingSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)

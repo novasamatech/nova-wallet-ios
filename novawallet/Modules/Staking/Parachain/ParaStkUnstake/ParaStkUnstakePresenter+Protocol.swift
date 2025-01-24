@@ -31,8 +31,8 @@ extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
 
         let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
 
-        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
-            from: delegations,
+        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModelsFromBonds(
+            delegations,
             identities: delegationIdentities,
             disabled: Set(disabledCollators)
         )

@@ -11,12 +11,12 @@ protocol ParachainStakingServiceFactoryProtocol {
         stakingType: StakingType,
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
-    ) throws -> ParaStakingRewardCalculatorServiceProtocol
+    ) throws -> CollatorStakingRewardCalculatorServiceProtocol
 
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol
 }
 
-final class ParachainStakingServiceFactory: BaseStakingServiceFactory, ParachainStakingServiceFactoryProtocol {
+final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, ParachainStakingServiceFactoryProtocol {
     let stakingProviderFactory: ParachainStakingLocalSubscriptionFactoryProtocol
 
     init(
@@ -67,7 +67,7 @@ final class ParachainStakingServiceFactory: BaseStakingServiceFactory, Parachain
         stakingType: StakingType,
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
-    ) throws -> ParaStakingRewardCalculatorServiceProtocol {
+    ) throws -> CollatorStakingRewardCalculatorServiceProtocol {
         guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }

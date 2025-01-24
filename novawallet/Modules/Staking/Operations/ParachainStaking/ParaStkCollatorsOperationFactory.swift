@@ -6,13 +6,13 @@ import BigInt
 protocol ParaStkCollatorsOperationFactoryProtocol {
     func electedCollatorsInfoOperation(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]>
 
     func selectedCollatorsInfoOperation(
         for accountIds: [AccountId],
         collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]>
 
     func createMetadataWrapper(
@@ -45,7 +45,7 @@ final class ParaStkCollatorsOperationFactory {
     private func createMappingForSelectedCollatorsOperation(
         for accountIds: [AccountId],
         selectedCollatorsOperation: BaseOperation<SelectedRoundCollators>,
-        rewardEngineOperation: BaseOperation<ParaStakingRewardCalculatorEngineProtocol>,
+        rewardEngineOperation: BaseOperation<CollatorStakingRewardCalculatorEngineProtocol>,
         metadataOperation: BaseOperation<[StorageResponse<ParachainStaking.CandidateMetadata>]>,
         identityOperation: BaseOperation<[AccountAddress: AccountIdentity]>,
         minTechStakeOperation: BaseOperation<BigUInt>,
@@ -96,7 +96,7 @@ final class ParaStkCollatorsOperationFactory {
     // swiftlint:disable:next function_parameter_count
     private func createMappingForElectedCollatorsOperation(
         dependingOn selectedCollatorsOperation: BaseOperation<SelectedRoundCollators>,
-        rewardEngineOperation: BaseOperation<ParaStakingRewardCalculatorEngineProtocol>,
+        rewardEngineOperation: BaseOperation<CollatorStakingRewardCalculatorEngineProtocol>,
         metadataOperation: BaseOperation<[StorageResponse<ParachainStaking.CandidateMetadata>]>,
         identityOperation: BaseOperation<[AccountAddress: AccountIdentity]>,
         minTechStakeOperation: BaseOperation<BigUInt>,
@@ -158,7 +158,7 @@ final class ParaStkCollatorsOperationFactory {
 extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol {
     func electedCollatorsInfoOperation(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let selectedCollatorsOperation = collatorService.fetchInfoOperation()
@@ -219,7 +219,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
     func selectedCollatorsInfoOperation(
         for accountIds: [AccountId],
         collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol
     ) -> CompoundOperationWrapper<[CollatorSelectionInfo]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let selectedCollatorsOperation = collatorService.fetchInfoOperation()

@@ -21,4 +21,12 @@ extension MythosStakingPallet {
     static var candidatesPath: StorageCodingPath {
         StorageCodingPath(moduleName: Self.name, itemName: "Candidates")
     }
+
+    static var candidateStakePath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.name, itemName: "CandidateStake")
+    }
+
+    static var maxStakedCandidatesPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.name, constantName: "MaxStakedCandidates")
+    }
 }

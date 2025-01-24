@@ -23,7 +23,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
-        let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
+        let accountDetailsViewModelFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
         let yieldBoostCollatorViewModelFactory = YieldBoostCollatorSelectionFactory(
             chainFormat: chainAsset.chain.chainFormat
         )

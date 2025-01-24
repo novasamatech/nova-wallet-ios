@@ -74,7 +74,7 @@ extension ParachainStaking {
             stateMachine?.transit(to: self)
         }
 
-        func process(calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?) {
+        func process(calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?) {
             commonData = commonData.byReplacing(calculatorEngine: calculatorEngine)
 
             stateMachine?.transit(to: self)
