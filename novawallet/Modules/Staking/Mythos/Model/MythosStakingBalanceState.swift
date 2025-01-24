@@ -55,13 +55,9 @@ struct MythosStakingBalanceState {
 
         let availableStakedAmount = frozenBalance.total.subtractOrZero(totalStaked + unavailableDueUnstake)
 
-        if availableStakedAmount >= amount {
-            return MythosStakeModel.Amount(toLock: 0, toStake: amount)
-        } else {
-            return MythosStakeModel.Amount(
-                toLock: amount.subtractOrZero(availableStakedAmount),
-                toStake: availableStakedAmount
-            )
-        }
+        return MythosStakeModel.Amount(
+            toLock: amount.subtractOrZero(availableStakedAmount),
+            toStake: amount
+        )
     }
 }
