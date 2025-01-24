@@ -1,7 +1,9 @@
 import UIKit
 import SnapKit
 
-final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
+final class NovaMainAppContainerViewController: UIViewController,
+    ViewHolder,
+    CollectionViewRotationHandling {
     typealias RootViewType = NovaMainAppContainerViewLayout
 
     let presenter: NovaMainAppContainerPresenterProtocol
@@ -38,6 +40,21 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         presenter.setup()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let oldIsLanscape = traitCollection.verticalSizeClass == .compact
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        let newIsLandscape = size.width > size.height
+
+        guard oldIsLanscape != newIsLandscape else { return }
+
+        // Force layout update after rotation animation completes as a workaround the bug with wrong cell size
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.updateCollectionViewLayoutIfNeeded()
+        }
     }
 }
 

@@ -310,6 +310,10 @@ extension DAppBrowserTabManager: WalletListLocalStorageSubscriber, WalletListLoc
     ) {
         switch result {
         case let .success(managedMetaAccount):
+            guard metaAccount?.metaId != managedMetaAccount?.info.metaId else {
+                return
+            }
+
             observableTabs.state = .init()
             metaAccount = managedMetaAccount?.info
 
@@ -329,18 +333,24 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         retrieveWrapper(for: id)
     }
 
-    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
-        let currentTabs = observableTabs.state.fetchAllValues()
+    func getAllTabs(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]> {
+        if let metaIds {
+            return tabsFetchWrapper(for: metaIds)
+        } else {
+            let currentTabs = observableTabs
+                .state
+                .fetchAllValues()
 
-        guard currentTabs.isEmpty else {
-            return .createWithResult(sorted(currentTabs))
+            guard currentTabs.isEmpty else {
+                return .createWithResult(sorted(currentTabs))
+            }
+
+            guard let metaAccount else {
+                return .createWithResult([])
+            }
+
+            return tabsFetchWrapper(for: [metaAccount.metaId])
         }
-
-        guard let metaAccount else {
-            return .createWithResult([])
-        }
-
-        return tabsFetchWrapper(for: [metaAccount.metaId])
     }
 
     func removeTab(with id: UUID) {
@@ -388,6 +398,12 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         resultWrapper.allOperations.forEach { voidResultOperation.addDependency($0) }
 
         return resultWrapper.insertingTail(operation: voidResultOperation)
+    }
+
+    func cleanTransport(for tabIds: Set<UUID>) -> BaseOperation<Void> {
+        ClosureOperation { [weak self] in
+            tabIds.forEach { self?.transportStates.removeValue(for: $0) }
+        }
     }
 
     func removeAll(for metaIds: Set<MetaAccountModel.Id>?) {

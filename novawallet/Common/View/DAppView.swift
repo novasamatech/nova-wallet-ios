@@ -2,7 +2,7 @@ import UIKit
 
 final class DAppView: UIView {
     let iconImageView: DAppIconView = .create {
-        $0.contentInsets = Constants.iconInsets
+        $0.contentInsets = .zero
         $0.backgroundView.cornerRadius = 12
         $0.backgroundView.apply(style: .container)
     }
@@ -88,6 +88,5 @@ extension DAppView {
         static let arrowSize = CGSize(width: 16, height: 16)
         static let horizontalSpace: CGFloat = 12
         static let iconWidth: CGFloat = 48
-        static let iconInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
     }
 }
