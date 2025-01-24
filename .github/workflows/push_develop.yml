@@ -17,24 +17,17 @@ jobs:
     runs-on: macos-14
 
     steps:
-      - uses: maxim-lobanov/setup-xcode@master
-        with:
-          xcode-version: 16.1
-
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
-        uses: actions/cache@v4
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      - name: Install Cocoapods
-        run: pod install --repo-update
+          xcode-version: ${{ env.xcode-version }}
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
       - name: Install the Apple certificate and provisioning profile
