@@ -1,4 +1,4 @@
-app_identifier("io.novafoundation.novawallet")
+app_identifier(["io.novafoundation.novawallet", "io.novafoundation.novawallet.dev"])
 apple_id("stepan@novawallet.io")
 
 itc_team_id("123785817")

@@ -49,7 +49,7 @@ Parameters:
 
  
 
-Example usage: fastlane test_build scheme:'nova-wallet'
+Example usage: fastlane test_build scheme:'novawallet'
 
 ### ios distribute_to_firebase
 
