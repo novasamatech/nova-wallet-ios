@@ -230,7 +230,7 @@ private extension DAppListViewModelFactory {
         _ dApps: [DApp],
         with seed: Int
     ) -> [DApp] {
-        var randomGenerator = PseudoRandomNumberGenerator(seed: seed)
+        var randomGenerator = SeededRandomNumberGenerator(seed: seed)
 
         return dApps.shuffled(using: &randomGenerator)
     }

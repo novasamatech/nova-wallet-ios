@@ -1,4 +1,4 @@
-struct PseudoRandomNumberGenerator: RandomNumberGenerator {
+struct SeededRandomNumberGenerator: RandomNumberGenerator {
     private var seed: UInt64
 
     init(seed: Int) {
