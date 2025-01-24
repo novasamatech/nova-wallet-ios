@@ -28,6 +28,7 @@ platform :ios do
   lane :run_unit_tests do
     test_build(
       scheme: test_scheme,
+      configuration: main_configuration
     )
   end
 
