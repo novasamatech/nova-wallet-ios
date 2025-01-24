@@ -5,7 +5,7 @@ import SoraFoundation
 
 final class ParaStkCollatorsSearchPresenter {
     weak var view: ParaStkCollatorsSearchViewProtocol?
-    let wireframe: ParaStkCollatorsSearchWireframeProtocol
+    let wireframe: CollatorStakingSelectSearchWireframeProtocol
     let interactor: ParaStkCollatorsSearchInteractorInputProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
@@ -22,7 +22,7 @@ final class ParaStkCollatorsSearchPresenter {
 
     init(
         interactor: ParaStkCollatorsSearchInteractorInputProtocol,
-        wireframe: ParaStkCollatorsSearchWireframeProtocol,
+        wireframe: CollatorStakingSelectSearchWireframeProtocol,
         chainAsset: ChainAsset,
         collatorsInfo: [CollatorStakingSelectionInfoProtocol],
         delegate: ParaStkSelectCollatorsDelegate,

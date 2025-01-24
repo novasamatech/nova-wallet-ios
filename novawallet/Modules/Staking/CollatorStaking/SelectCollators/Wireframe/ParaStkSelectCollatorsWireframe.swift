@@ -13,7 +13,7 @@ final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, Col
         delegate: ParaStkSelectCollatorsDelegate
     ) {
         guard
-            let searchView = ParaStkCollatorsSearchViewFactory.createView(
+            let searchView = ParaStkCollatorsSearchViewFactory.createParachainStakingView(
                 for: sharedState,
                 collators: collatorsInfo,
                 delegate: delegate

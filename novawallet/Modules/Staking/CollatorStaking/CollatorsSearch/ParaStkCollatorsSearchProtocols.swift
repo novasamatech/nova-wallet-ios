@@ -13,7 +13,7 @@ protocol ParaStkCollatorsSearchInteractorInputProtocol: AnyObject {}
 
 protocol ParaStkCollatorsSearchInteractorOutputProtocol: AnyObject {}
 
-protocol ParaStkCollatorsSearchWireframeProtocol: AnyObject {
+protocol CollatorStakingSelectSearchWireframeProtocol: AnyObject {
     func complete(on view: ParaStkCollatorsSearchViewProtocol?)
     func showCollatorInfo(
         from view: ParaStkCollatorsSearchViewProtocol?,

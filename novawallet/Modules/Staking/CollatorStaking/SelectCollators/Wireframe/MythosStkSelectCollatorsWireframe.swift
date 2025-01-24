@@ -8,10 +8,24 @@ final class MythosStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, C
     }
 
     func showSearch(
-        from _: ParaStkSelectCollatorsViewProtocol?,
-        for _: [CollatorStakingSelectionInfoProtocol],
-        delegate _: ParaStkSelectCollatorsDelegate
-    ) {}
+        from view: ParaStkSelectCollatorsViewProtocol?,
+        for collatorsInfo: [CollatorStakingSelectionInfoProtocol],
+        delegate: ParaStkSelectCollatorsDelegate
+    ) {
+        guard
+            let searchView = ParaStkCollatorsSearchViewFactory.createMythosStakingView(
+                for: state,
+                collators: collatorsInfo,
+                delegate: delegate
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            searchView.controller,
+            animated: true
+        )
+    }
 
     func showCollatorInfo(
         from view: ParaStkSelectCollatorsViewProtocol?,
