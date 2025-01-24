@@ -3,10 +3,10 @@ import Foundation
 struct MythosCollatorSelectionInfo {
     let accountId: AccountId
     let candidate: MythosStakingPallet.CandidateInfo
-    let details: CollatorStakingSelectionInfoDetails?
     let identity: AccountIdentity?
     let maxRewardedDelegations: UInt32
     let minRewardableStake: Balance
+    let isElected: Bool
     let apr: Decimal?
 }
 
@@ -18,9 +18,15 @@ extension MythosCollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
 
     func status(
         for _: AccountId,
+        delegatorModel: CollatorStakingDelegator?,
         stake _: Balance
     ) -> CollatorStakingDelegationStatus {
-        // TODO: Separate reduced and detailed models
-        .notElected
+        guard isElected else {
+            return .notElected
+        }
+
+        let hasDelegation = delegatorModel?.hasDelegation(to: accountId) ?? false
+
+        return hasDelegation ? .rewarded : .notRewarded
     }
 }

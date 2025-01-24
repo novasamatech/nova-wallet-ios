@@ -203,12 +203,20 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
         }
 
         let delegationsDict = state.delegatorState.delegationsDict()
+        let delegatorModel = CollatorStakingDelegator(
+            parachainDelegator: state.delegatorState
+        )
+
         let collatorsStatuses: [CollatorStakingDelegationStatus]? = state.delegations?.compactMap { delegation in
             guard let stake = delegationsDict[delegation.accountId]?.amount else {
                 return nil
             }
 
-            return delegation.status(for: accountId, stake: stake)
+            return delegation.status(
+                for: accountId,
+                delegatorModel: delegatorModel,
+                stake: stake
+            )
         }
 
         let delegationStatus = createDelegationStatus(

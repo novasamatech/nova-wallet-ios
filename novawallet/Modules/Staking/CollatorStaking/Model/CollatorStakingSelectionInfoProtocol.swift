@@ -1,8 +1,6 @@
 import Foundation
 
 protocol CollatorStakingSelectionInfoProtocol {
-    // TODO: Replace details with the information whether current account is staking with collator
-    var details: CollatorStakingSelectionInfoDetails? { get }
     var minRewardableStake: Balance { get }
     var apr: Decimal? { get }
     var totalStake: Balance { get }
@@ -13,7 +11,13 @@ protocol CollatorStakingSelectionInfoProtocol {
     var maxRewardedDelegations: UInt32 { get }
     var delegationCount: UInt32 { get }
 
-    func status(for selectedAccountId: AccountId, stake: Balance) -> CollatorStakingDelegationStatus
+    var isElected: Bool { get }
+
+    func status(
+        for delegatorAccountId: AccountId,
+        delegatorModel: CollatorStakingDelegator?,
+        stake: Balance
+    ) -> CollatorStakingDelegationStatus
 }
 
 struct CollatorStakingSelectionInfoDetails {

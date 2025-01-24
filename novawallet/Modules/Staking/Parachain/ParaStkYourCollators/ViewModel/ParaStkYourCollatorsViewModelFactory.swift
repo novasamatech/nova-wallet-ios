@@ -87,6 +87,10 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
 
         let stakes = delegator.delegationsDict()
 
+        let collatorStakingDelegator = CollatorStakingDelegator(
+            parachainDelegator: delegator
+        )
+
         let collatorsMapping = try collators
             .sorted(by: {
                 let stake1 = stakes[$0.accountId]?.amount ?? 0
@@ -97,7 +101,11 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
             .reduce(
                 into: [CollatorStakingDelegationStatus: [CollatorSelectionViewModel]]()) { result, item in
                 let delegatorStake = stakes[item.accountId]?.amount ?? 0
-                let status = item.status(for: selectedAccountId, stake: delegatorStake)
+                let status = item.status(
+                    for: selectedAccountId,
+                    delegatorModel: collatorStakingDelegator,
+                    stake: delegatorStake
+                )
 
                 let viewModel = try createCollatorViewModel(
                     for: item,

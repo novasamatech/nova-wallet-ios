@@ -131,10 +131,10 @@ extension MythosStakableCollatorOperationFactory: CollatorStakingStakableFactory
                 return MythosCollatorSelectionInfo(
                     accountId: collatorId,
                     candidate: collatorInfo,
-                    details: nil,
                     identity: identities[collatorId],
                     maxRewardedDelegations: maxStakers,
                     minRewardableStake: minStakeResponse.value?.value ?? 0,
+                    isElected: true,
                     apr: apr
                 )
             }

@@ -2,6 +2,10 @@ import Foundation
 
 struct CollatorStakingDelegator {
     let delegations: [StakingTarget]
+
+    func hasDelegation(to candidate: AccountId) -> Bool {
+        delegations.contains { $0.candidate == candidate }
+    }
 }
 
 extension CollatorStakingDelegator {

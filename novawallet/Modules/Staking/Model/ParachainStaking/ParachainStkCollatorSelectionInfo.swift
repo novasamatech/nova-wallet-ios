@@ -41,16 +41,25 @@ extension Array where Self.Element == ParachainStkCollatorSelectionInfo {
 extension ParachainStkCollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
     var delegationCount: UInt32 { metadata.delegationCount }
 
-    func status(for selectedAccountId: AccountId, stake: BigUInt) -> CollatorStakingDelegationStatus {
+    var isElected: Bool { details != nil }
+
+    func status(
+        for delegatorAccountId: AccountId,
+        delegatorModel: CollatorStakingDelegator?,
+        stake: Balance
+    ) -> CollatorStakingDelegationStatus {
         guard let details else {
             return .notElected
         }
 
-        if details.delegations.contains(where: { $0.owner == selectedAccountId }) {
+        if details.delegations.contains(where: { $0.owner == delegatorAccountId }) {
             return .rewarded
         }
 
-        if metadata.isStakeShouldBeActive(for: stake) {
+        if
+            let delegations = delegatorModel?.delegations,
+            delegations.contains(where: { $0.candidate == accountId }),
+            metadata.isStakeShouldBeActive(for: stake) {
             return .pending
         }
 

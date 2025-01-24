@@ -45,20 +45,22 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
         return balanceViewModelFactory.balanceFromPrice(amount, priceData: price).value(for: locale)
     }
 
-    private func detectNotRewarded(
+    private func fetchStatus(
         for selectedAccountId: AccountId,
         collatorInfo: CollatorStakingSelectionInfoProtocol,
         delegator: CollatorStakingDelegator?
-    ) -> Bool {
+    ) -> CollatorStakingDelegationStatus {
         guard
             let delegator = delegator,
             let delegation = delegator.delegations.first(where: { $0.candidate == collatorInfo.accountId }) else {
-            return false
+            return .notRewarded
         }
 
-        let status = collatorInfo.status(for: selectedAccountId, stake: delegation.amount)
-
-        return status == .notRewarded
+        return collatorInfo.status(
+            for: selectedAccountId,
+            delegatorModel: delegator,
+            stake: delegation.amount
+        )
     }
 
     private func createExposure(
@@ -81,9 +83,16 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
         let myNomination: ValidatorInfoViewModel.MyNomination?
 
-        if let snapshot = collatorInfo.details {
-            let isRewarded = snapshot.delegations.contains { $0.owner == selectedAccountId }
-            myNomination = ValidatorInfoViewModel.MyNomination(isRewarded: isRewarded)
+        let status = fetchStatus(
+            for: selectedAccountId,
+            collatorInfo: collatorInfo,
+            delegator: delegator
+        )
+
+        if status != .notElected {
+            myNomination = ValidatorInfoViewModel.MyNomination(
+                isRewarded: status != .notRewarded
+            )
         } else {
             myNomination = nil
         }
@@ -101,11 +110,9 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
         let minStake = createMinimumStakeViewModel(from: collatorInfo, price: priceData, locale: locale)
 
-        let isNotRewarded = detectNotRewarded(
-            for: selectedAccountId,
-            collatorInfo: collatorInfo,
-            delegator: delegator
-        )
+        let isDelegatedCollator = delegator?.hasDelegation(to: collatorInfo.accountId) ?? false
+
+        let oversubscribed = isDelegatedCollator && status == .notRewarded
 
         return ValidatorInfoViewModel.Exposure(
             nominators: nominators,
@@ -114,7 +121,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
             totalStake: totalStake,
             minRewardableStake: minStake,
             estimatedReward: estimatedReward,
-            oversubscribed: isNotRewarded
+            oversubscribed: oversubscribed
         )
     }
 
@@ -174,7 +181,7 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
 
         let status: ValidatorInfoViewModel.StakingStatus
 
-        if collatorInfo.details != nil {
+        if collatorInfo.isElected {
             let exposure = createExposure(
                 for: selectedAccountId,
                 collatorInfo: collatorInfo,
