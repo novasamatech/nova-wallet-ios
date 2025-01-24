@@ -11,7 +11,8 @@ protocol MythosStakingLocalStorageSubscriber: LocalStorageProviderObserving {
     ) -> AnyDataProvider<DecodedBigUInt>?
 
     func subscribeToCurrentSession(
-        for chainId: ChainModel.Id
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedU32>?
 
     func subscribeToUserState(
@@ -50,6 +51,16 @@ extension MythosStakingLocalStorageSubscriber {
     func subscribeToCurrentSession(
         for chainId: ChainModel.Id
     ) -> AnyDataProvider<DecodedU32>? {
+        subscribeToCurrentSession(
+            for: chainId,
+            callbackQueue: .main
+        )
+    }
+
+    func subscribeToCurrentSession(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedU32>? {
         guard let provider = try? stakingLocalSubscriptionFactory.getCurrentSessionProvider(for: chainId) else {
             return nil
         }
@@ -67,7 +78,9 @@ extension MythosStakingLocalStorageSubscriber {
                     result: .failure(error),
                     chainId: chainId
                 )
-            }
+            },
+            callbackQueue: callbackQueue,
+            options: DataProviderObserverOptions()
         )
 
         return provider
