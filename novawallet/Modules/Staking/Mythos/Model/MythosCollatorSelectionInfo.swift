@@ -12,7 +12,7 @@ struct MythosCollatorSelectionInfo {
 
 extension MythosCollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
     var totalStake: Balance { candidate.stake }
-    var ownStake: Balance { 0 }
+    var ownStake: Balance? { nil }
     var delegatorsStake: Balance { candidate.stake }
     var delegationCount: UInt32 { candidate.stakers }
 

@@ -208,26 +208,39 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
         from collatorInfo: CollatorStakingSelectionInfoProtocol,
         priceData: PriceData?
     ) -> [LocalizableResource<StakingAmountViewModel>] {
-        let ownStake = Decimal.fromSubstrateAmount(collatorInfo.ownStake, precision: precision) ?? 0
-        let delegatorsStake = Decimal.fromSubstrateAmount(collatorInfo.delegatorsStake, precision: precision) ?? 0
-        let totalStake = Decimal.fromSubstrateAmount(collatorInfo.totalStake, precision: precision) ?? 0
+        var list: [LocalizableResource<StakingAmountViewModel>] = []
 
-        return [
-            createStakingAmountRow(
+        if let ownStakeInPlank = collatorInfo.ownStake {
+            let ownStake = Decimal.fromSubstrateAmount(ownStakeInPlank, precision: precision) ?? 0
+
+            let ownStakeRow = createStakingAmountRow(
                 title: createOwnStakeTitle(),
                 amount: ownStake,
                 priceData: priceData
-            ),
-            createStakingAmountRow(
-                title: createDelegatorsStakeTitle(),
-                amount: delegatorsStake,
-                priceData: priceData
-            ),
-            createStakingAmountRow(
-                title: createTotalTitle(),
-                amount: totalStake,
-                priceData: priceData
             )
-        ]
+
+            list.append(ownStakeRow)
+        }
+
+        let delegatorsStake = Decimal.fromSubstrateAmount(collatorInfo.delegatorsStake, precision: precision) ?? 0
+
+        let totalStake = Decimal.fromSubstrateAmount(collatorInfo.totalStake, precision: precision) ?? 0
+
+        let delegatorsStakeRow = createStakingAmountRow(
+            title: createDelegatorsStakeTitle(),
+            amount: delegatorsStake,
+            priceData: priceData
+        )
+
+        let totalStakeRow = createStakingAmountRow(
+            title: createTotalTitle(),
+            amount: totalStake,
+            priceData: priceData
+        )
+
+        list.append(delegatorsStakeRow)
+        list.append(totalStakeRow)
+
+        return list
     }
 }

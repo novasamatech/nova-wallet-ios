@@ -3613,7 +3613,7 @@
 		84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */; };
 		84A3B8A02836D74B00DE2669 /* StorageKeyDecodingProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B89F2836D74B00DE2669 /* StorageKeyDecodingProtocol.swift */; };
 		84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A12836DA2600DE2669 /* LastAccountIdKeyWrapper.swift */; };
-		84A3B8A62836E08600DE2669 /* CollatorSelectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */; };
+		84A3B8A62836E08600DE2669 /* ParachainStkCollatorSelectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A52836E08600DE2669 /* ParachainStkCollatorSelectionInfo.swift */; };
 		84A3B8A82836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */; };
 		84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD328A05820003F6ABF /* HardwareSigningError.swift */; };
 		84A58FD728A10691003F6ABF /* ParitySignerMessageOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */; };
@@ -9064,7 +9064,7 @@
 		84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppEthereumConfirmInteractor.swift; sourceTree = "<group>"; };
 		84A3B89F2836D74B00DE2669 /* StorageKeyDecodingProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyDecodingProtocol.swift; sourceTree = "<group>"; };
 		84A3B8A12836DA2600DE2669 /* LastAccountIdKeyWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastAccountIdKeyWrapper.swift; sourceTree = "<group>"; };
-		84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorSelectionInfo.swift; sourceTree = "<group>"; };
+		84A3B8A52836E08600DE2669 /* ParachainStkCollatorSelectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStkCollatorSelectionInfo.swift; sourceTree = "<group>"; };
 		84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingCandidateMetadata.swift; sourceTree = "<group>"; };
 		84A58FD328A05820003F6ABF /* HardwareSigningError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareSigningError.swift; sourceTree = "<group>"; };
 		84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerMessageOperationFactory.swift; sourceTree = "<group>"; };
@@ -20433,7 +20433,7 @@
 			isa = PBXGroup;
 			children = (
 				841E555C282E72F500C8438F /* ParachainStakingNetworkInfo.swift */,
-				84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */,
+				84A3B8A52836E08600DE2669 /* ParachainStkCollatorSelectionInfo.swift */,
 				846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */,
 			);
 			path = ParachainStaking;
@@ -28950,7 +28950,7 @@
 				886CA9632977E9B300FC255A /* GovernanceDelegateBanner.swift in Sources */,
 				8423ADD226B2C9D000057EDD /* ImportantViewProtocol.swift in Sources */,
 				0CA719832B787FCA000B086E /* HydraFlowState.swift in Sources */,
-				84A3B8A62836E08600DE2669 /* CollatorSelectionInfo.swift in Sources */,
+				84A3B8A62836E08600DE2669 /* ParachainStkCollatorSelectionInfo.swift in Sources */,
 				2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */,
 				8438432E2913B3150048595C /* Gov1OperationFactory.swift in Sources */,
 				843125CD299A71B20063745B /* StackButtonsCell.swift in Sources */,

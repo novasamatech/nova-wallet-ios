@@ -9,7 +9,7 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
 
     func showCollatorInfo(
         from view: ParaStkYourCollatorsViewProtocol?,
-        collatorInfo: CollatorSelectionInfo
+        collatorInfo: ParachainStkCollatorSelectionInfo
     ) {
         guard let infoView = ParaStkCollatorInfoViewFactory.createParachainStakingView(
             for: state,

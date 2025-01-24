@@ -9,17 +9,19 @@ final class ParaStkCollatorFiltersPresenter {
     private var currentSorting: CollatorsSortType
     private var initialSorting: CollatorsSortType
 
-    private let sortingTypes: [CollatorsSortType] = [.rewards, .minStake, .totalStake, .ownStake]
+    private let sortingTypes: [CollatorsSortType]
 
     init(
         wireframe: ParaStkCollatorFiltersWireframeProtocol,
         sorting: CollatorsSortType,
+        sortingTypes: [CollatorsSortType],
         delegate: ParaStkCollatorFiltersDelegate,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
         initialSorting = sorting
         currentSorting = sorting
+        self.sortingTypes = sortingTypes
         self.delegate = delegate
         self.localizationManager = localizationManager
     }

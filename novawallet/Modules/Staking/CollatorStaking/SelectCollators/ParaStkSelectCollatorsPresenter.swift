@@ -142,7 +142,7 @@ final class ParaStkSelectCollatorsPresenter {
         case .totalStake:
             return createDetailsViewModel(for: collatorInfo.totalStake)
         case .ownStake:
-            return createDetailsViewModel(for: collatorInfo.ownStake)
+            return createDetailsViewModel(for: collatorInfo.ownStake ?? 0)
         }
     }
 

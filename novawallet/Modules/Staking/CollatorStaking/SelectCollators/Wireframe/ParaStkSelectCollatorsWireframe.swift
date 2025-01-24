@@ -7,6 +7,24 @@ final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, Col
         self.sharedState = sharedState
     }
 
+    func showFilters(
+        from view: ParaStkSelectCollatorsViewProtocol?,
+        for sorting: CollatorsSortType,
+        delegate: ParaStkCollatorFiltersDelegate
+    ) {
+        guard let filtersView = ParaStkCollatorFiltersViewFactory.createParachainStakingView(
+            for: sorting,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            filtersView.controller,
+            animated: true
+        )
+    }
+
     func showSearch(
         from view: ParaStkSelectCollatorsViewProtocol?,
         for collatorsInfo: [CollatorStakingSelectionInfoProtocol],

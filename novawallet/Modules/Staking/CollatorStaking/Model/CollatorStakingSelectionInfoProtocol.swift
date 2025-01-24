@@ -6,7 +6,7 @@ protocol CollatorStakingSelectionInfoProtocol {
     var minRewardableStake: Balance { get }
     var apr: Decimal? { get }
     var totalStake: Balance { get }
-    var ownStake: Balance { get }
+    var ownStake: Balance? { get }
     var delegatorsStake: Balance { get }
     var accountId: AccountId { get }
     var identity: AccountIdentity? { get }

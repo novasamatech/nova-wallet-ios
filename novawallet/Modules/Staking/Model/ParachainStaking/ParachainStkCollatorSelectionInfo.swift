@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct CollatorSelectionInfo {
+struct ParachainStkCollatorSelectionInfo {
     let accountId: AccountId
     let metadata: ParachainStaking.CandidateMetadata
     let details: CollatorStakingSelectionInfoDetails?
@@ -19,16 +19,16 @@ struct CollatorSelectionInfo {
         metadata.totalCounted
     }
 
-    var ownStake: BigUInt {
+    var ownStake: BigUInt? {
         metadata.bond
     }
 
     var delegatorsStake: BigUInt {
-        totalStake > ownStake ? totalStake - ownStake : 0
+        metadata.totalCounted.subtractOrZero(metadata.bond)
     }
 }
 
-extension Array where Self.Element == CollatorSelectionInfo {
+extension Array where Self.Element == ParachainStkCollatorSelectionInfo {
     func identitiesDict() -> [AccountId: AccountIdentity] {
         reduce(into: [AccountId: AccountIdentity]()) { result, item in
             if let identity = item.identity {
@@ -38,7 +38,7 @@ extension Array where Self.Element == CollatorSelectionInfo {
     }
 }
 
-extension CollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
+extension ParachainStkCollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
     var delegationCount: UInt32 { metadata.delegationCount }
 
     func status(for selectedAccountId: AccountId, stake: BigUInt) -> CollatorStakingDelegationStatus {

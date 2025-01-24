@@ -6,7 +6,7 @@ import BigInt
 protocol ParaStkYourCollatorsViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
-        collators: [CollatorSelectionInfo],
+        collators: [ParachainStkCollatorSelectionInfo],
         delegator: ParachainStaking.Delegator,
         locale: Locale
     ) throws -> ParaStkYourCollatorsListViewModel
@@ -30,7 +30,7 @@ final class ParaStkYourCollatorsViewModelFactory {
     }
 
     private func createCollatorViewModel(
-        for model: CollatorSelectionInfo,
+        for model: ParachainStkCollatorSelectionInfo,
         staked: BigUInt,
         status: CollatorStakingDelegationStatus,
         aprFormatter: NumberFormatter,
@@ -79,7 +79,7 @@ final class ParaStkYourCollatorsViewModelFactory {
 extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
-        collators: [CollatorSelectionInfo],
+        collators: [ParachainStkCollatorSelectionInfo],
         delegator: ParachainStaking.Delegator,
         locale: Locale
     ) throws -> ParaStkYourCollatorsListViewModel {
