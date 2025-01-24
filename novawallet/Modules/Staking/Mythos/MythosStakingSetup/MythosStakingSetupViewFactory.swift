@@ -43,11 +43,14 @@ struct MythosStakingSetupViewFactory {
             logger: Logger.shared
         )
 
-        let localizableTitle = createTitle(for: initialStakingDetails, chainAsset: chainAsset)
+        let localizableTitle = CollatorStakingStakeScreenTitle.setup(
+            hasStake: initialStakingDetails != nil,
+            assetSymbol: chainAsset.asset.symbol
+        )
 
         let view = CollatorStakingSetupViewController(
             presenter: presenter,
-            localizableTitle: localizableTitle,
+            localizableTitle: localizableTitle(),
             localizationManager: localizationManager
         )
 
@@ -55,21 +58,6 @@ struct MythosStakingSetupViewFactory {
         interactor.presenter = presenter
 
         return view
-    }
-
-    private static func createTitle(
-        for stakingDetails: MythosStakingDetails?,
-        chainAsset: ChainAsset
-    ) -> LocalizableResource<String> {
-        if stakingDetails != nil {
-            return LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
-            }
-        } else {
-            return LocalizableResource { locale in
-                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
-            }
-        }
     }
 
     private static func createInteractor(

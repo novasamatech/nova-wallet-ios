@@ -1,6 +1,6 @@
 import UIKit
 
-final class ParaStkStakeConfirmViewLayout: UIView {
+final class CollatorStakingConfirmViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
