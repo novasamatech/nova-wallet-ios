@@ -1,2 +1,2 @@
-skip_build(true)
+skip_build(false)
 devices(["iPhone 16"])
