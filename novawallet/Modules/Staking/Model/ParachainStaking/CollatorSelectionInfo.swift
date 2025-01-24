@@ -65,10 +65,7 @@ extension CollatorStakingSelectionInfoDetails {
         }
 
         delegations = parachainInfo.delegations.map {
-            CollatorStakingSelectionInfoDetails.Delegation(
-                owner: $0.owner,
-                stake: $0.amount
-            )
+            StakingStake(owner: $0.owner, amount: $0.amount)
         }
     }
 }

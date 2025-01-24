@@ -46,7 +46,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
     }
 
     private func detectNotRewarded(
-        for _: AccountId,
+        for selectedAccountId: AccountId,
         collatorInfo: CollatorStakingSelectionInfoProtocol,
         delegator: ParachainStaking.Delegator?
     ) -> Bool {
@@ -56,7 +56,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
             return false
         }
 
-        let status = collatorInfo.status(for: delegation.owner, stake: delegation.amount)
+        let status = collatorInfo.status(for: selectedAccountId, stake: delegation.amount)
 
         return status == .notRewarded
     }

@@ -16,10 +16,5 @@ protocol CollatorStakingSelectionInfoProtocol {
 }
 
 struct CollatorStakingSelectionInfoDetails {
-    struct Delegation {
-        let owner: AccountId
-        let stake: Balance
-    }
-
-    let delegations: [Delegation]
+    let delegations: [StakingStake]
 }
