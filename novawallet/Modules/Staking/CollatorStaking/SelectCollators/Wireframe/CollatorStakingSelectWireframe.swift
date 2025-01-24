@@ -1,7 +1,7 @@
 import Foundation
 
 class CollatorStakingSelectWireframe {
-    func close(view: ParaStkSelectCollatorsViewProtocol?) {
+    func close(view: CollatorStakingSelectViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }
 }

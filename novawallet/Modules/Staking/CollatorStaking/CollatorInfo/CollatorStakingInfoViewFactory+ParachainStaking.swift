@@ -1,10 +1,10 @@
 import Foundation
 
-extension ParaStkCollatorInfoViewFactory {
+extension CollatorStakingInfoViewFactory {
     static func createParachainStakingView(
         for state: ParachainStakingSharedStateProtocol,
         collatorInfo: CollatorStakingSelectionInfoProtocol
-    ) -> ParaStkCollatorInfoViewProtocol? {
+    ) -> CollatorStakingInfoViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard

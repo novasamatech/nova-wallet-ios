@@ -17,9 +17,9 @@ final class MythosStakingSetupWireframe: MythosStakingSetupWireframeProtocol {
 
     func showCollatorSelection(
         from view: CollatorStakingSetupViewProtocol?,
-        delegate: ParaStkSelectCollatorsDelegate
+        delegate: CollatorStakingSelectDelegate
     ) {
-        guard let selectView = ParaStkSelectCollatorsViewFactory.createMythosStakingView(
+        guard let selectView = CollatorStakingSelectViewFactory.createMythosStakingView(
             with: state,
             delegate: delegate
         ) else {

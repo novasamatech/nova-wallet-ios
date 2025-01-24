@@ -3,14 +3,14 @@ import SoraFoundation
 import SubstrateSdk
 import Operation_iOS
 
-struct ParaStkSelectCollatorsViewFactory {
+struct CollatorStakingSelectViewFactory {
     static func createView(
         for chainAsset: ChainAsset,
-        delegate: ParaStkSelectCollatorsDelegate,
-        interactor: ParaStkSelectCollatorsInteractor,
+        delegate: CollatorStakingSelectDelegate,
+        interactor: CollatorStakingSelectInteractor,
         wireframe: CollatorStakingSelectWireframeProtocol,
         currencyManager: CurrencyManagerProtocol
-    ) -> ParaStkSelectCollatorsViewProtocol? {
+    ) -> CollatorStakingSelectViewProtocol? {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
@@ -20,7 +20,7 @@ struct ParaStkSelectCollatorsViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let presenter = ParaStkSelectCollatorsPresenter(
+        let presenter = CollatorStakingSelectPresenter(
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
@@ -30,7 +30,7 @@ struct ParaStkSelectCollatorsViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkSelectCollatorsViewController(
+        let view = CollatorStakingSelectViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

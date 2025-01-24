@@ -1,10 +1,10 @@
 import Foundation
 
-extension ParaStkCollatorInfoViewFactory {
+extension CollatorStakingInfoViewFactory {
     static func createMythosStakingView(
         for state: MythosStakingSharedStateProtocol,
         collatorInfo: CollatorStakingSelectionInfoProtocol
-    ) -> ParaStkCollatorInfoViewProtocol? {
+    ) -> CollatorStakingInfoViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard

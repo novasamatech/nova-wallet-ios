@@ -1,11 +1,11 @@
 import Foundation
 import SoraFoundation
 
-struct ParaStkCollatorFiltersViewFactory {
+struct CollatorStakingSelectFiltersViewFactory {
     static func createMythosStakingView(
         for sorting: CollatorsSortType,
-        delegate: ParaStkCollatorFiltersDelegate
-    ) -> ParaStkCollatorFiltersViewProtocol? {
+        delegate: CollatorStakingSelectFiltersDelegate
+    ) -> CollatorStakingSelectFiltersViewProtocol? {
         createView(
             for: sorting,
             supportedSortingTypes: [.rewards, .totalStake],
@@ -15,8 +15,8 @@ struct ParaStkCollatorFiltersViewFactory {
 
     static func createParachainStakingView(
         for sorting: CollatorsSortType,
-        delegate: ParaStkCollatorFiltersDelegate
-    ) -> ParaStkCollatorFiltersViewProtocol? {
+        delegate: CollatorStakingSelectFiltersDelegate
+    ) -> CollatorStakingSelectFiltersViewProtocol? {
         createView(
             for: sorting,
             supportedSortingTypes: [.rewards, .minStake, .totalStake, .ownStake],
@@ -27,13 +27,13 @@ struct ParaStkCollatorFiltersViewFactory {
     static func createView(
         for sorting: CollatorsSortType,
         supportedSortingTypes: [CollatorsSortType],
-        delegate: ParaStkCollatorFiltersDelegate
-    ) -> ParaStkCollatorFiltersViewProtocol? {
-        let wireframe = ParaStkCollatorFiltersWireframe()
+        delegate: CollatorStakingSelectFiltersDelegate
+    ) -> CollatorStakingSelectFiltersViewProtocol? {
+        let wireframe = CollatorStakingSelectFiltersWireframe()
 
         let localizationManager = LocalizationManager.shared
 
-        let presenter = ParaStkCollatorFiltersPresenter(
+        let presenter = CollatorStakingSelectFiltersPresenter(
             wireframe: wireframe,
             sorting: sorting,
             sortingTypes: supportedSortingTypes,
@@ -41,7 +41,7 @@ struct ParaStkCollatorFiltersViewFactory {
             localizationManager: localizationManager
         )
 
-        let view = ParaStkCollatorFiltersViewController(
+        let view = CollatorStakingSelectFiltersViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

@@ -31,9 +31,9 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
 
     func showCollatorSelection(
         from view: CollatorStakingSetupViewProtocol?,
-        delegate: ParaStkSelectCollatorsDelegate
+        delegate: CollatorStakingSelectDelegate
     ) {
-        guard let collatorsView = ParaStkSelectCollatorsViewFactory.createParachainStakingView(
+        guard let collatorsView = CollatorStakingSelectViewFactory.createParachainStakingView(
             with: state,
             delegate: delegate
         ) else {

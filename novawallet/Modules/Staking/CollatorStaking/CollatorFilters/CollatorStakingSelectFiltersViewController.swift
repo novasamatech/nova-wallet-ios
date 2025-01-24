@@ -1,15 +1,15 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkCollatorFiltersViewController: UIViewController, ViewHolder {
+final class CollatorStakingSelectFiltersViewController: UIViewController, ViewHolder {
     typealias RootViewType = ValidatorListFilterViewLayout
 
-    let presenter: ParaStkCollatorFiltersPresenterProtocol
+    let presenter: CollatorStakingSelectFiltersPresenterProtocol
 
-    private var viewModel: ParaStkCollatorFiltersViewModel?
+    private var viewModel: CollatorStakingSelectFiltersViewModel?
 
     init(
-        presenter: ParaStkCollatorFiltersPresenterProtocol,
+        presenter: CollatorStakingSelectFiltersPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -105,7 +105,7 @@ final class ParaStkCollatorFiltersViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ParaStkCollatorFiltersViewController: UITableViewDataSource {
+extension CollatorStakingSelectFiltersViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         1
     }
@@ -128,7 +128,7 @@ extension ParaStkCollatorFiltersViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension ParaStkCollatorFiltersViewController: UITableViewDelegate {
+extension CollatorStakingSelectFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
 
@@ -154,8 +154,8 @@ extension ParaStkCollatorFiltersViewController: UITableViewDelegate {
     }
 }
 
-extension ParaStkCollatorFiltersViewController: ParaStkCollatorFiltersViewProtocol {
-    func didReceive(viewModel: ParaStkCollatorFiltersViewModel) {
+extension CollatorStakingSelectFiltersViewController: CollatorStakingSelectFiltersViewProtocol {
+    func didReceive(viewModel: CollatorStakingSelectFiltersViewModel) {
         self.viewModel = viewModel
 
         updateActionButtons()
@@ -164,7 +164,7 @@ extension ParaStkCollatorFiltersViewController: ParaStkCollatorFiltersViewProtoc
     }
 }
 
-extension ParaStkCollatorFiltersViewController: Localizable {
+extension CollatorStakingSelectFiltersViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

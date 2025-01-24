@@ -32,7 +32,7 @@ protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable
 
     func showCollatorSelection(
         from view: CollatorStakingSetupViewProtocol?,
-        delegate: ParaStkSelectCollatorsDelegate
+        delegate: CollatorStakingSelectDelegate
     )
 }
 

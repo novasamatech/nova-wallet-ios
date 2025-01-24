@@ -3,11 +3,11 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
-final class ParaStkSelectCollatorsPresenter {
-    weak var view: ParaStkSelectCollatorsViewProtocol?
-    weak var delegate: ParaStkSelectCollatorsDelegate?
+final class CollatorStakingSelectPresenter {
+    weak var view: CollatorStakingSelectViewProtocol?
+    weak var delegate: CollatorStakingSelectDelegate?
     let wireframe: CollatorStakingSelectWireframeProtocol
-    let interactor: ParaStkSelectCollatorsInteractorInputProtocol
+    let interactor: CollatorStakingSelectInteractorInputProtocol
 
     private var allCollators: [CollatorStakingSelectionInfoProtocol]?
     private var collatorsPref: PreferredValidatorsProviderModel?
@@ -24,9 +24,9 @@ final class ParaStkSelectCollatorsPresenter {
     let logger: LoggerProtocol
 
     init(
-        interactor: ParaStkSelectCollatorsInteractorInputProtocol,
+        interactor: CollatorStakingSelectInteractorInputProtocol,
         wireframe: CollatorStakingSelectWireframeProtocol,
-        delegate: ParaStkSelectCollatorsDelegate,
+        delegate: CollatorStakingSelectDelegate,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -209,7 +209,7 @@ final class ParaStkSelectCollatorsPresenter {
     }
 }
 
-extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtocol {
+extension CollatorStakingSelectPresenter: CollatorStakingSelectPresenterProtocol {
     func setup() {
         provideState()
 
@@ -266,7 +266,7 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
     }
 }
 
-extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutputProtocol {
+extension CollatorStakingSelectPresenter: CollatorStakingSelectInteractorOutputProtocol {
     func didReceiveAllCollators(_ collators: [CollatorStakingSelectionInfoProtocol]) {
         logger.debug("All collators: \(collators)")
 
@@ -295,7 +295,7 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutpu
         provideState()
     }
 
-    func didReceiveError(_ error: ParaStkSelectCollatorsInteractorError) {
+    func didReceiveError(_ error: CollatorStakingSelectInteractorError) {
         logger.error("Error: \(error)")
 
         switch error {
@@ -311,7 +311,7 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutpu
     }
 }
 
-extension ParaStkSelectCollatorsPresenter: Localizable {
+extension CollatorStakingSelectPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideState()
@@ -319,7 +319,7 @@ extension ParaStkSelectCollatorsPresenter: Localizable {
     }
 }
 
-extension ParaStkSelectCollatorsPresenter: ParaStkCollatorFiltersDelegate {
+extension CollatorStakingSelectPresenter: CollatorStakingSelectFiltersDelegate {
     func didReceiveCollator(sorting: CollatorsSortType) {
         self.sorting = sorting
 

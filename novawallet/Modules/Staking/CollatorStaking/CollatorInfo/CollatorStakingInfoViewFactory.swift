@@ -1,26 +1,26 @@
 import Foundation
 import SoraFoundation
 
-struct ParaStkCollatorInfoViewFactory {
+struct CollatorStakingInfoViewFactory {
     static func createView(
         for interactor: CollatorStakingInfoInteractor,
         chainAsset: ChainAsset,
         collatorInfo: CollatorStakingSelectionInfoProtocol,
         currencyManager: CurrencyManagerProtocol
-    ) -> ParaStkCollatorInfoViewProtocol? {
+    ) -> CollatorStakingInfoViewProtocol? {
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
-        let wireframe = ParaStkCollatorInfoWireframe()
+        let wireframe = CollatorStakingInfoWireframe()
 
         let localizationManager = LocalizationManager.shared
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let viewModelFactory = ParaStkCollatorInfoViewModelFactory(
+        let viewModelFactory = CollatorStakingInfoViewModelFactory(
             balanceViewModelFactory: BalanceViewModelFactory(
                 targetAssetInfo: assetDisplayInfo,
                 priceAssetInfoFactory: priceAssetInfoFactory
@@ -29,7 +29,7 @@ struct ParaStkCollatorInfoViewFactory {
             chainFormat: chainAsset.chain.chainFormat
         )
 
-        let presenter = ParaStkCollatorInfoPresenter(
+        let presenter = CollatorStakingInfoPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chain: chainAsset.chain,
@@ -40,7 +40,7 @@ struct ParaStkCollatorInfoViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkCollatorInfoViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = CollatorStakingInfoViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         interactor.presenter = presenter

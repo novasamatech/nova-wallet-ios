@@ -8,11 +8,11 @@ final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, Col
     }
 
     func showFilters(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         for sorting: CollatorsSortType,
-        delegate: ParaStkCollatorFiltersDelegate
+        delegate: CollatorStakingSelectFiltersDelegate
     ) {
-        guard let filtersView = ParaStkCollatorFiltersViewFactory.createParachainStakingView(
+        guard let filtersView = CollatorStakingSelectFiltersViewFactory.createParachainStakingView(
             for: sorting,
             delegate: delegate
         ) else {
@@ -26,12 +26,12 @@ final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, Col
     }
 
     func showSearch(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         for collatorsInfo: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate
+        delegate: CollatorStakingSelectDelegate
     ) {
         guard
-            let searchView = ParaStkCollatorsSearchViewFactory.createParachainStakingView(
+            let searchView = CollatorStakingSelectSearchViewFactory.createParachainStakingView(
                 for: sharedState,
                 collators: collatorsInfo,
                 delegate: delegate
@@ -46,10 +46,10 @@ final class ParaStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, Col
     }
 
     func showCollatorInfo(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createParachainStakingView(
+        guard let infoView = CollatorStakingInfoViewFactory.createParachainStakingView(
             for: sharedState,
             collatorInfo: collatorInfo
         ) else {

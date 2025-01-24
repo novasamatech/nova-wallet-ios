@@ -1,14 +1,14 @@
 import Foundation
 import SoraFoundation
 
-final class ParaStkCollatorInfoPresenter {
+final class CollatorStakingInfoPresenter {
     weak var view: ValidatorInfoViewProtocol?
-    let wireframe: ParaStkCollatorInfoWireframeProtocol
-    let interactor: ParaStkCollatorInfoInteractorInputProtocol
+    let wireframe: CollatorStakingInfoWireframeProtocol
+    let interactor: CollatorStakingInfoInteractorInputProtocol
 
     let chain: ChainModel
     let selectedAccount: MetaChainAccountResponse
-    let viewModelFactory: ParaStkCollatorInfoViewModelFactoryProtocol
+    let viewModelFactory: CollatorStakingInfoViewModelFactoryProtocol
     let collatorInfo: CollatorStakingSelectionInfoProtocol
     let logger: LoggerProtocol
 
@@ -16,12 +16,12 @@ final class ParaStkCollatorInfoPresenter {
     private var delegator: CollatorStakingDelegator?
 
     init(
-        interactor: ParaStkCollatorInfoInteractorInputProtocol,
-        wireframe: ParaStkCollatorInfoWireframeProtocol,
+        interactor: CollatorStakingInfoInteractorInputProtocol,
+        wireframe: CollatorStakingInfoWireframeProtocol,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
         collatorInfo: CollatorStakingSelectionInfoProtocol,
-        viewModelFactory: ParaStkCollatorInfoViewModelFactoryProtocol,
+        viewModelFactory: CollatorStakingInfoViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -56,7 +56,7 @@ final class ParaStkCollatorInfoPresenter {
     }
 }
 
-extension ParaStkCollatorInfoPresenter: ValidatorInfoPresenterProtocol {
+extension CollatorStakingInfoPresenter: ValidatorInfoPresenterProtocol {
     func setup() {
         provideViewModel()
 
@@ -103,7 +103,7 @@ extension ParaStkCollatorInfoPresenter: ValidatorInfoPresenterProtocol {
     }
 }
 
-extension ParaStkCollatorInfoPresenter: ParaStkCollatorInfoInteractorOutputProtocol {
+extension CollatorStakingInfoPresenter: CollatorStakingInfoInteractorOutputProtocol {
     func didReceivePrice(_ price: PriceData?) {
         self.price = price
 
@@ -122,7 +122,7 @@ extension ParaStkCollatorInfoPresenter: ParaStkCollatorInfoInteractorOutputProto
     }
 }
 
-extension ParaStkCollatorInfoPresenter: Localizable {
+extension CollatorStakingInfoPresenter: Localizable {
     func applyLocalization() {
         provideViewModel()
     }

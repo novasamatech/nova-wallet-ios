@@ -367,7 +367,7 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
     }
 }
 
-extension MythosStakingSetupPresenter: ParaStkSelectCollatorsDelegate {
+extension MythosStakingSetupPresenter: CollatorStakingSelectDelegate {
     func didSelect(collator: CollatorStakingSelectionInfoProtocol) {
         changeCollator(with: collator.accountId, name: collator.identity?.displayName)
     }

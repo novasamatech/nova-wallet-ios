@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import SoraFoundation
 
-protocol ParaStkCollatorInfoViewModelFactoryProtocol {
+protocol CollatorStakingInfoViewModelFactoryProtocol {
     func createStakingAmountsViewModel(
         from collatorInfo: CollatorStakingSelectionInfoProtocol,
         priceData: PriceData?
@@ -17,7 +17,7 @@ protocol ParaStkCollatorInfoViewModelFactoryProtocol {
     ) throws -> ValidatorInfoViewModel
 }
 
-final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFactory {
+final class CollatorStakingInfoViewModelFactory: BaseValidatorInfoViewModelFactory {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
@@ -162,7 +162,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
     }
 }
 
-extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFactoryProtocol {
+extension CollatorStakingInfoViewModelFactory: CollatorStakingInfoViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
         collatorInfo: CollatorStakingSelectionInfoProtocol,

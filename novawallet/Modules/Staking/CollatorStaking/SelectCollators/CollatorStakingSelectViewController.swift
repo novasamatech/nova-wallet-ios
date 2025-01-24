@@ -2,10 +2,10 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParaStkSelectCollatorsViewLayout
+final class CollatorStakingSelectViewController: UIViewController, ViewHolder {
+    typealias RootViewType = CollatorStakingSelectViewLayout
 
-    let presenter: ParaStkSelectCollatorsPresenterProtocol
+    let presenter: CollatorStakingSelectPresenterProtocol
 
     private var collatorViewModels: [CollatorSelectionViewModel] {
         state?.viewModel?.collators ?? []
@@ -26,7 +26,7 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
     private var state: CollatorSelectionState?
 
     init(
-        presenter: ParaStkSelectCollatorsPresenterProtocol,
+        presenter: CollatorStakingSelectPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -41,7 +41,7 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ParaStkSelectCollatorsViewLayout()
+        view = CollatorStakingSelectViewLayout()
     }
 
     override func viewDidLoad() {
@@ -144,7 +144,7 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
 
 // MARK: - UITableViewDataSource
 
-extension ParaStkSelectCollatorsViewController: UITableViewDataSource {
+extension CollatorStakingSelectViewController: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         collatorViewModels.count
     }
@@ -172,7 +172,7 @@ extension ParaStkSelectCollatorsViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension ParaStkSelectCollatorsViewController: UITableViewDelegate {
+extension CollatorStakingSelectViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -192,18 +192,18 @@ extension ParaStkSelectCollatorsViewController: UITableViewDelegate {
     }
 }
 
-extension ParaStkSelectCollatorsViewController: ErrorStateViewDelegate {
+extension CollatorStakingSelectViewController: ErrorStateViewDelegate {
     func didRetry(errorView _: ErrorStateView) {
         presenter.refresh()
     }
 }
 
-extension ParaStkSelectCollatorsViewController: EmptyStateViewOwnerProtocol {
+extension CollatorStakingSelectViewController: EmptyStateViewOwnerProtocol {
     var emptyStateDelegate: EmptyStateDelegate { self }
     var emptyStateDataSource: EmptyStateDataSource { self }
 }
 
-extension ParaStkSelectCollatorsViewController: EmptyStateDataSource {
+extension CollatorStakingSelectViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         guard let state = state else { return nil }
 
@@ -227,7 +227,7 @@ extension ParaStkSelectCollatorsViewController: EmptyStateDataSource {
     }
 }
 
-extension ParaStkSelectCollatorsViewController: EmptyStateDelegate {
+extension CollatorStakingSelectViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         guard let state = state else { return false }
         switch state {
@@ -239,7 +239,7 @@ extension ParaStkSelectCollatorsViewController: EmptyStateDelegate {
     }
 }
 
-extension ParaStkSelectCollatorsViewController: CollatorSelectionCellDelegate {
+extension CollatorStakingSelectViewController: CollatorSelectionCellDelegate {
     func didTapInfoButton(in cell: CollatorSelectionCell) {
         if let indexPath = rootView.tableView.indexPath(for: cell) {
             presenter.presentCollator(at: indexPath.row)
@@ -247,7 +247,7 @@ extension ParaStkSelectCollatorsViewController: CollatorSelectionCellDelegate {
     }
 }
 
-extension ParaStkSelectCollatorsViewController: ParaStkSelectCollatorsViewProtocol {
+extension CollatorStakingSelectViewController: CollatorStakingSelectViewProtocol {
     func didReceive(state: CollatorSelectionState) {
         self.state = state
 
@@ -259,7 +259,7 @@ extension ParaStkSelectCollatorsViewController: ParaStkSelectCollatorsViewProtoc
     }
 }
 
-extension ParaStkSelectCollatorsViewController: Localizable {
+extension CollatorStakingSelectViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

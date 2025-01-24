@@ -1,7 +1,7 @@
 import Foundation
 
 class CollatorStakingSelectSearchWireframe {
-    func complete(on view: ParaStkCollatorsSearchViewProtocol?) {
+    func complete(on view: CollatorStakingSelectSearchViewProtocol?) {
         let navigationController = view?.controller.navigationController
         let viewControllers = navigationController?.viewControllers ?? []
 

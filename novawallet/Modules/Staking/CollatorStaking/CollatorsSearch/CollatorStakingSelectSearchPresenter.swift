@@ -3,10 +3,10 @@ import BigInt
 import SubstrateSdk
 import SoraFoundation
 
-final class ParaStkCollatorsSearchPresenter {
-    weak var view: ParaStkCollatorsSearchViewProtocol?
+final class CollatorStakingSelectSearchPresenter {
+    weak var view: CollatorStakingSelectSearchViewProtocol?
     let wireframe: CollatorStakingSelectSearchWireframeProtocol
-    let interactor: ParaStkCollatorsSearchInteractorInputProtocol
+    let interactor: CollatorStakingSelectSearchInteractorInputProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var percentFormatter = NumberFormatter.percentSingle.localizableResource()
@@ -18,14 +18,14 @@ final class ParaStkCollatorsSearchPresenter {
 
     private var filteredCollatorsInfo: [CollatorStakingSelectionInfoProtocol]?
 
-    weak var delegate: ParaStkSelectCollatorsDelegate?
+    weak var delegate: CollatorStakingSelectDelegate?
 
     init(
-        interactor: ParaStkCollatorsSearchInteractorInputProtocol,
+        interactor: CollatorStakingSelectSearchInteractorInputProtocol,
         wireframe: CollatorStakingSelectSearchWireframeProtocol,
         chainAsset: ChainAsset,
         collatorsInfo: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate,
+        delegate: CollatorStakingSelectDelegate,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -120,7 +120,7 @@ final class ParaStkCollatorsSearchPresenter {
 
             let headerViewModel = createHeaderViewModel(for: collatorViewModels.count)
 
-            let viewModel = ParaStkCollatorsSearchViewModel(
+            let viewModel = CollatorStakingSelectSearchViewModel(
                 headerViewModel: headerViewModel,
                 cellViewModels: collatorViewModels
             )
@@ -132,7 +132,7 @@ final class ParaStkCollatorsSearchPresenter {
     }
 }
 
-extension ParaStkCollatorsSearchPresenter: ParaStkCollatorsSearchPresenterProtocol {
+extension CollatorStakingSelectSearchPresenter: CollatorStakingSelectSearchPresenterProtocol {
     func setup() {
         provideViewModel()
     }
@@ -187,9 +187,9 @@ extension ParaStkCollatorsSearchPresenter: ParaStkCollatorsSearchPresenterProtoc
     }
 }
 
-extension ParaStkCollatorsSearchPresenter: ParaStkCollatorsSearchInteractorOutputProtocol {}
+extension CollatorStakingSelectSearchPresenter: CollatorStakingSelectSearchInteractorOutputProtocol {}
 
-extension ParaStkCollatorsSearchPresenter: Localizable {
+extension CollatorStakingSelectSearchPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideViewModel()

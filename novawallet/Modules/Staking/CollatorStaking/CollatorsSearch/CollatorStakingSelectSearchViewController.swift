@@ -2,12 +2,12 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class ParaStkCollatorsSearchViewController: UIViewController, ViewHolder {
+final class CollatorStakingSelectSearchViewController: UIViewController, ViewHolder {
     typealias RootViewType = ValidatorSearchViewLayout
 
-    let presenter: ParaStkCollatorsSearchPresenterProtocol
+    let presenter: CollatorStakingSelectSearchPresenterProtocol
 
-    private var viewModel: ParaStkCollatorsSearchViewModel?
+    private var viewModel: CollatorStakingSelectSearchViewModel?
 
     private lazy var searchActivityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
@@ -16,7 +16,7 @@ final class ParaStkCollatorsSearchViewController: UIViewController, ViewHolder {
     }()
 
     init(
-        presenter: ParaStkCollatorsSearchPresenterProtocol,
+        presenter: CollatorStakingSelectSearchPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -74,7 +74,7 @@ final class ParaStkCollatorsSearchViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ParaStkCollatorsSearchViewController: UITableViewDataSource {
+extension CollatorStakingSelectSearchViewController: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         viewModel?.cellViewModels.count ?? 0
     }
@@ -94,7 +94,7 @@ extension ParaStkCollatorsSearchViewController: UITableViewDataSource {
     }
 }
 
-extension ParaStkCollatorsSearchViewController: UITableViewDelegate {
+extension CollatorStakingSelectSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -114,7 +114,7 @@ extension ParaStkCollatorsSearchViewController: UITableViewDelegate {
     }
 }
 
-extension ParaStkCollatorsSearchViewController: UITextFieldDelegate {
+extension CollatorStakingSelectSearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
 
@@ -145,12 +145,12 @@ extension ParaStkCollatorsSearchViewController: UITextFieldDelegate {
     }
 }
 
-extension ParaStkCollatorsSearchViewController: EmptyStateViewOwnerProtocol {
+extension CollatorStakingSelectSearchViewController: EmptyStateViewOwnerProtocol {
     var emptyStateDelegate: EmptyStateDelegate { self }
     var emptyStateDataSource: EmptyStateDataSource { self }
 }
 
-extension ParaStkCollatorsSearchViewController: EmptyStateDataSource {
+extension CollatorStakingSelectSearchViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
 
@@ -178,14 +178,14 @@ extension ParaStkCollatorsSearchViewController: EmptyStateDataSource {
     }
 }
 
-extension ParaStkCollatorsSearchViewController: EmptyStateDelegate {
+extension CollatorStakingSelectSearchViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         guard let viewModel = viewModel else { return true }
         return viewModel.cellViewModels.isEmpty
     }
 }
 
-extension ParaStkCollatorsSearchViewController: CollatorSelectionCellDelegate {
+extension CollatorStakingSelectSearchViewController: CollatorSelectionCellDelegate {
     func didTapInfoButton(in cell: CollatorSelectionCell) {
         if let indexPath = rootView.tableView.indexPath(for: cell) {
             presenter.presentCollatorInfo(at: indexPath.row)
@@ -193,8 +193,8 @@ extension ParaStkCollatorsSearchViewController: CollatorSelectionCellDelegate {
     }
 }
 
-extension ParaStkCollatorsSearchViewController: ParaStkCollatorsSearchViewProtocol {
-    func didReceive(viewModel: ParaStkCollatorsSearchViewModel?) {
+extension CollatorStakingSelectSearchViewController: CollatorStakingSelectSearchViewProtocol {
+    func didReceive(viewModel: CollatorStakingSelectSearchViewModel?) {
         self.viewModel = viewModel
 
         rootView.tableView.reloadData()
@@ -202,7 +202,7 @@ extension ParaStkCollatorsSearchViewController: ParaStkCollatorsSearchViewProtoc
     }
 }
 
-extension ParaStkCollatorsSearchViewController: Localizable {
+extension CollatorStakingSelectSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

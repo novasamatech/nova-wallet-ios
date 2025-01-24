@@ -1,6 +1,6 @@
 import Foundation
 
-struct ParaStkCollatorsSearchViewModel {
+struct CollatorStakingSelectSearchViewModel {
     var headerViewModel: TitleWithSubtitleViewModel?
     var cellViewModels: [CollatorSelectionViewModel]
 }

@@ -1,8 +1,8 @@
-protocol ParaStkSelectCollatorsViewProtocol: ControllerBackedProtocol {
+protocol CollatorStakingSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(state: CollatorSelectionState)
 }
 
-protocol ParaStkSelectCollatorsPresenterProtocol: AnyObject {
+protocol CollatorStakingSelectPresenterProtocol: AnyObject {
     func setup()
     func refresh()
     func presentCollator(at index: Int)
@@ -12,45 +12,45 @@ protocol ParaStkSelectCollatorsPresenterProtocol: AnyObject {
     func clearFilters()
 }
 
-protocol ParaStkSelectCollatorsInteractorInputProtocol: AnyObject {
+protocol CollatorStakingSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
     func retrySubscription()
 }
 
-protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
+protocol CollatorStakingSelectInteractorOutputProtocol: AnyObject {
     func didReceiveAllCollators(_ collators: [CollatorStakingSelectionInfoProtocol])
     func didReceiveCollatorsPref(_ collatorsPref: PreferredValidatorsProviderModel?)
     func didReceivePrice(_ priceData: PriceData?)
-    func didReceiveError(_ error: ParaStkSelectCollatorsInteractorError)
+    func didReceiveError(_ error: CollatorStakingSelectInteractorError)
 }
 
 protocol CollatorStakingSelectWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
-    func close(view: ParaStkSelectCollatorsViewProtocol?)
+    func close(view: CollatorStakingSelectViewProtocol?)
 
     func showFilters(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         for sorting: CollatorsSortType,
-        delegate: ParaStkCollatorFiltersDelegate
+        delegate: CollatorStakingSelectFiltersDelegate
     )
 
     func showSearch(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         for collatorsInfo: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate
+        delegate: CollatorStakingSelectDelegate
     )
 
     func showCollatorInfo(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     )
 }
 
-protocol ParaStkSelectCollatorsDelegate: AnyObject {
+protocol CollatorStakingSelectDelegate: AnyObject {
     func didSelect(collator: CollatorStakingSelectionInfoProtocol)
 }
 
-enum ParaStkSelectCollatorsInteractorError: Error {
+enum CollatorStakingSelectInteractorError: Error {
     case allCollatorsFailed(Error)
     case preferredCollatorsFailed(Error)
     case priceFailed(Error)

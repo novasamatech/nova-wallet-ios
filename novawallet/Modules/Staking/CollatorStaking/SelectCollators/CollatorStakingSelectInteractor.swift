@@ -1,8 +1,8 @@
 import UIKit
 import Operation_iOS
 
-final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
-    weak var presenter: ParaStkSelectCollatorsInteractorOutputProtocol?
+final class CollatorStakingSelectInteractor: AnyProviderAutoCleaning {
+    weak var presenter: CollatorStakingSelectInteractorOutputProtocol?
 
     var chain: ChainModel { chainAsset.chain }
 
@@ -73,7 +73,7 @@ final class ParaStkSelectCollatorsInteractor: AnyProviderAutoCleaning {
     }
 }
 
-extension ParaStkSelectCollatorsInteractor: ParaStkSelectCollatorsInteractorInputProtocol {
+extension CollatorStakingSelectInteractor: CollatorStakingSelectInteractorInputProtocol {
     func setup() {
         provideElectedCollatorsInfo()
         providePreferredCollators()
@@ -91,7 +91,7 @@ extension ParaStkSelectCollatorsInteractor: ParaStkSelectCollatorsInteractorInpu
     }
 }
 
-extension ParaStkSelectCollatorsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension CollatorStakingSelectInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(
         result: Result<PriceData?, Error>,
         priceId _: AssetModel.PriceId
@@ -105,7 +105,7 @@ extension ParaStkSelectCollatorsInteractor: PriceLocalStorageSubscriber, PriceLo
     }
 }
 
-extension ParaStkSelectCollatorsInteractor: SelectedCurrencyDepending {
+extension CollatorStakingSelectInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil, chainAsset.asset.priceId != nil else {
             return

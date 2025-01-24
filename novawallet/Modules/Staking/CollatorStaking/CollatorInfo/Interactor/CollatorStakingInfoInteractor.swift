@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 
 class CollatorStakingInfoInteractor {
-    weak var presenter: ParaStkCollatorInfoInteractorOutputProtocol?
+    weak var presenter: CollatorStakingInfoInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -24,7 +24,7 @@ class CollatorStakingInfoInteractor {
     func onReload() {}
 }
 
-extension CollatorStakingInfoInteractor: ParaStkCollatorInfoInteractorInputProtocol {
+extension CollatorStakingInfoInteractor: CollatorStakingInfoInteractorInputProtocol {
     func setup() {
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)

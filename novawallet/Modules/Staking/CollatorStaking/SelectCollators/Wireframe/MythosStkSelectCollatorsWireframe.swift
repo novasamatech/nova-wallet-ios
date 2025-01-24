@@ -8,11 +8,11 @@ final class MythosStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, C
     }
 
     func showFilters(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         for sorting: CollatorsSortType,
-        delegate: ParaStkCollatorFiltersDelegate
+        delegate: CollatorStakingSelectFiltersDelegate
     ) {
-        guard let filtersView = ParaStkCollatorFiltersViewFactory.createMythosStakingView(
+        guard let filtersView = CollatorStakingSelectFiltersViewFactory.createMythosStakingView(
             for: sorting,
             delegate: delegate
         ) else {
@@ -26,12 +26,12 @@ final class MythosStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, C
     }
 
     func showSearch(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         for collatorsInfo: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate
+        delegate: CollatorStakingSelectDelegate
     ) {
         guard
-            let searchView = ParaStkCollatorsSearchViewFactory.createMythosStakingView(
+            let searchView = CollatorStakingSelectSearchViewFactory.createMythosStakingView(
                 for: state,
                 collators: collatorsInfo,
                 delegate: delegate
@@ -46,10 +46,10 @@ final class MythosStkSelectCollatorsWireframe: CollatorStakingSelectWireframe, C
     }
 
     func showCollatorInfo(
-        from view: ParaStkSelectCollatorsViewProtocol?,
+        from view: CollatorStakingSelectViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createMythosStakingView(
+        guard let infoView = CollatorStakingInfoViewFactory.createMythosStakingView(
             for: state,
             collatorInfo: collatorInfo
         ) else {

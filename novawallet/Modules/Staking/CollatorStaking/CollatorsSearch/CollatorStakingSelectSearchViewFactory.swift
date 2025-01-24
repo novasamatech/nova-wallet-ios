@@ -1,12 +1,12 @@
 import Foundation
 import SoraFoundation
 
-struct ParaStkCollatorsSearchViewFactory {
+struct CollatorStakingSelectSearchViewFactory {
     static func createParachainStakingView(
         for state: ParachainStakingSharedStateProtocol,
         collators: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate
-    ) -> ParaStkCollatorsSearchViewProtocol? {
+        delegate: CollatorStakingSelectDelegate
+    ) -> CollatorStakingSelectSearchViewProtocol? {
         createView(
             for: ParaStkCollatorsSearchWireframe(sharedState: state),
             chainAsset: state.stakingOption.chainAsset,
@@ -18,8 +18,8 @@ struct ParaStkCollatorsSearchViewFactory {
     static func createMythosStakingView(
         for state: MythosStakingSharedStateProtocol,
         collators: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate
-    ) -> ParaStkCollatorsSearchViewProtocol? {
+        delegate: CollatorStakingSelectDelegate
+    ) -> CollatorStakingSelectSearchViewProtocol? {
         createView(
             for: MythosCollatorsSearchWireframe(sharedState: state),
             chainAsset: state.stakingOption.chainAsset,
@@ -32,13 +32,13 @@ struct ParaStkCollatorsSearchViewFactory {
         for wireframe: CollatorStakingSelectSearchWireframeProtocol,
         chainAsset: ChainAsset,
         collators: [CollatorStakingSelectionInfoProtocol],
-        delegate: ParaStkSelectCollatorsDelegate
-    ) -> ParaStkCollatorsSearchViewProtocol? {
+        delegate: CollatorStakingSelectDelegate
+    ) -> CollatorStakingSelectSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let interactor = ParaStkCollatorsSearchInteractor()
+        let interactor = CollatorStakingSelectSearchInteractor()
 
         let localizationManager = LocalizationManager.shared
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -48,7 +48,7 @@ struct ParaStkCollatorsSearchViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let presenter = ParaStkCollatorsSearchPresenter(
+        let presenter = CollatorStakingSelectSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
@@ -59,7 +59,7 @@ struct ParaStkCollatorsSearchViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkCollatorsSearchViewController(
+        let view = CollatorStakingSelectSearchViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

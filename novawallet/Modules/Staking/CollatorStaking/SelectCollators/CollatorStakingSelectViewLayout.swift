@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class ParaStkSelectCollatorsViewLayout: UIView {
+final class CollatorStakingSelectViewLayout: UIView {
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .clear

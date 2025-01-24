@@ -1,6 +1,6 @@
 import Foundation
 
-final class ParaStkCollatorInfoViewController: ValidatorInfoViewController {
+final class CollatorStakingInfoViewController: ValidatorInfoViewController {
     override func applyTitle() {
         title = R.string.localizable.parastkCollatorInfo(
             preferredLanguages: selectedLocale.rLanguages
@@ -48,4 +48,4 @@ final class ParaStkCollatorInfoViewController: ValidatorInfoViewController {
     }
 }
 
-extension ParaStkCollatorInfoViewController: ParaStkCollatorInfoViewProtocol {}
+extension CollatorStakingInfoViewController: CollatorStakingInfoViewProtocol {}

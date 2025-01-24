@@ -1,10 +1,10 @@
 import Foundation
 import SoraFoundation
 
-final class ParaStkCollatorFiltersPresenter {
-    weak var view: ParaStkCollatorFiltersViewProtocol?
-    weak var delegate: ParaStkCollatorFiltersDelegate?
-    let wireframe: ParaStkCollatorFiltersWireframeProtocol
+final class CollatorStakingSelectFiltersPresenter {
+    weak var view: CollatorStakingSelectFiltersViewProtocol?
+    weak var delegate: CollatorStakingSelectFiltersDelegate?
+    let wireframe: CollatorStakingSelectFiltersWireframeProtocol
 
     private var currentSorting: CollatorsSortType
     private var initialSorting: CollatorsSortType
@@ -12,10 +12,10 @@ final class ParaStkCollatorFiltersPresenter {
     private let sortingTypes: [CollatorsSortType]
 
     init(
-        wireframe: ParaStkCollatorFiltersWireframeProtocol,
+        wireframe: CollatorStakingSelectFiltersWireframeProtocol,
         sorting: CollatorsSortType,
         sortingTypes: [CollatorsSortType],
-        delegate: ParaStkCollatorFiltersDelegate,
+        delegate: CollatorStakingSelectFiltersDelegate,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.wireframe = wireframe
@@ -58,7 +58,7 @@ final class ParaStkCollatorFiltersPresenter {
         let canApply = currentSorting != initialSorting
         let canReset = currentSorting != CollatorsSortType.defaultType
 
-        let viewModel = ParaStkCollatorFiltersViewModel(
+        let viewModel = CollatorStakingSelectFiltersViewModel(
             sorting: sortingViewModels,
             canApply: canApply,
             canReset: canReset
@@ -68,7 +68,7 @@ final class ParaStkCollatorFiltersPresenter {
     }
 }
 
-extension ParaStkCollatorFiltersPresenter: ParaStkCollatorFiltersPresenterProtocol {
+extension CollatorStakingSelectFiltersPresenter: CollatorStakingSelectFiltersPresenterProtocol {
     func setup() {
         provideViewModel()
     }
@@ -92,7 +92,7 @@ extension ParaStkCollatorFiltersPresenter: ParaStkCollatorFiltersPresenterProtoc
     }
 }
 
-extension ParaStkCollatorFiltersPresenter: Localizable {
+extension CollatorStakingSelectFiltersPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideViewModel()

@@ -9,10 +9,10 @@ final class ParaStkCollatorsSearchWireframe: CollatorStakingSelectSearchWirefram
     }
 
     func showCollatorInfo(
-        from view: ParaStkCollatorsSearchViewProtocol?,
+        from view: CollatorStakingSelectSearchViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createParachainStakingView(
+        guard let infoView = CollatorStakingInfoViewFactory.createParachainStakingView(
             for: sharedState,
             collatorInfo: collatorInfo
         ) else {

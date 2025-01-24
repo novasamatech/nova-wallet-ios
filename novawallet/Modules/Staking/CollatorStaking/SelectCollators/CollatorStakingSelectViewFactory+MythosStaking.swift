@@ -2,18 +2,18 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-extension ParaStkSelectCollatorsViewFactory {
+extension CollatorStakingSelectViewFactory {
     static func createMythosStakingView(
         with state: MythosStakingSharedStateProtocol,
-        delegate: ParaStkSelectCollatorsDelegate
-    ) -> ParaStkSelectCollatorsViewProtocol? {
+        delegate: CollatorStakingSelectDelegate
+    ) -> CollatorStakingSelectViewProtocol? {
         guard
             let stakableCollatorOperationFactory = createMythosCollatorFactory(for: state),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let interactor = ParaStkSelectCollatorsInteractor(
+        let interactor = CollatorStakingSelectInteractor(
             chainAsset: state.stakingOption.chainAsset,
             stakableCollatorOperationFactory: stakableCollatorOperationFactory,
             preferredCollatorsProvider: state.preferredCollatorsProvider,

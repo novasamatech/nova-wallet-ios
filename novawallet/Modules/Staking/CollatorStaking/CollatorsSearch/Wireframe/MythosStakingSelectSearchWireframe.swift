@@ -8,10 +8,10 @@ final class MythosCollatorsSearchWireframe: CollatorStakingSelectSearchWireframe
     }
 
     func showCollatorInfo(
-        from view: ParaStkCollatorsSearchViewProtocol?,
+        from view: CollatorStakingSelectSearchViewProtocol?,
         collatorInfo: CollatorStakingSelectionInfoProtocol
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createMythosStakingView(
+        guard let infoView = CollatorStakingInfoViewFactory.createMythosStakingView(
             for: sharedState,
             collatorInfo: collatorInfo
         ) else {
