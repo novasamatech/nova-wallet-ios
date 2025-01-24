@@ -2,7 +2,7 @@ import UIKit
 
 final class DAppItemView: UIView {
     let iconImageView: DAppIconView = .create {
-        $0.contentInsets = Constants.iconInsets
+        $0.contentInsets = .zero
         $0.backgroundView.apply(style: .roundedContainer(radius: Constants.iconRadius))
     }
 
@@ -48,7 +48,7 @@ final class DAppItemView: UIView {
 private extension DAppItemView {
     func setupLayout() {
         iconImageView.snp.makeConstraints {
-            $0.size.equalTo(Constants.preferredIconViewSize)
+            $0.size.equalTo(Constants.iconSize)
         }
 
         switch layoutStyle {
@@ -127,7 +127,7 @@ private extension DAppItemView {
 
         iconImageView.bind(
             viewModel: model.icon,
-            size: Constants.iconSize
+            size: model.icon?.proposedTargetSize ?? Constants.iconSize
         )
 
         if model.isFavorite {
@@ -176,18 +176,8 @@ extension DAppItemView {
         static let iconRadius: CGFloat = 12
 
         static let iconSize = CGSize(
-            width: 36,
-            height: 36
-        )
-        static let iconInsets = UIEdgeInsets(
-            top: 6,
-            left: 6,
-            bottom: 6,
-            right: 6
-        )
-        static var preferredIconViewSize = CGSize(
-            width: iconInsets.left + iconSize.width + iconInsets.right,
-            height: iconInsets.top + iconSize.height + iconInsets.bottom
+            width: 48,
+            height: 48
         )
 
         static var favoriteIconSize = CGSize(

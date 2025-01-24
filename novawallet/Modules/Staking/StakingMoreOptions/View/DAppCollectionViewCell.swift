@@ -85,7 +85,7 @@ extension DAppCollectionViewCell: SkeletonableViewCell, SkeletonableView {
 
         let iconOffset = CGPoint(
             x: contentInsets.left,
-            y: contentInsets.top + DAppView.Constants.iconInsets.top
+            y: contentInsets.top
         )
 
         let iconSkeleton = SingleSkeleton.createRow(

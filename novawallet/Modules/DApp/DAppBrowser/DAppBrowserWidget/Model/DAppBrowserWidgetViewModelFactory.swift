@@ -34,7 +34,9 @@ extension DAppBrowserWidgetViewModelFactory: DAppBrowserWidgetViewModelFactoryPr
                 )
             ].joined(with: .space)
         } else {
-            tabs.values.first?.name ?? tabs.values.first?.url.absoluteString
+            tabs.values.first?.name
+                ?? tabs.values.first?.url.host
+                ?? tabs.values.first?.url.absoluteString
         }
 
         let iconViewModel: ImageViewModelProtocol? = if tabs.count == 1, let tab = tabs.values.first {

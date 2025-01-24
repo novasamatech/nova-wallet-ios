@@ -23,6 +23,8 @@ struct ImageViewModelSettings {
 }
 
 protocol ImageViewModelProtocol {
+    var proposedTargetSize: CGSize? { get }
+
     func loadImage(
         on imageView: UIImageView,
         settings: ImageViewModelSettings,
@@ -33,6 +35,8 @@ protocol ImageViewModelProtocol {
 }
 
 extension ImageViewModelProtocol {
+    var proposedTargetSize: CGSize? { nil }
+
     func loadImage(
         on imageView: UIImageView,
         targetSize: CGSize,
