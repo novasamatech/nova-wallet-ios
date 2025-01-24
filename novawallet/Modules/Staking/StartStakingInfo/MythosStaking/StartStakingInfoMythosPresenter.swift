@@ -1,0 +1,125 @@
+import Foundation
+import BigInt
+import SoraFoundation
+
+final class StartStakingInfoMythosPresenter: StartStakingInfoBasePresenter {
+    private var state: State {
+        didSet {
+            if state != oldValue {
+                provideViewModel(state: state)
+            }
+        }
+    }
+
+    var interator: StartStakingInfoMythosInteractorInputProtocol? {
+        baseInteractor as? StartStakingInfoMythosInteractorInputProtocol
+    }
+
+    init(
+        chainAsset: ChainAsset,
+        interactor: StartStakingInfoMythosInteractorInputProtocol,
+        wireframe: StartStakingInfoWireframeProtocol,
+        startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
+        balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        applicationConfig: ApplicationConfigProtocol,
+        logger: LoggerProtocol
+    ) {
+        state = .init(chainAsset: chainAsset, minStake: nil)
+
+        super.init(
+            chainAsset: chainAsset,
+            interactor: interactor,
+            wireframe: wireframe,
+            startStakingViewModelFactory: startStakingViewModelFactory,
+            balanceDerivationFactory: balanceDerivationFactory,
+            localizationManager: localizationManager,
+            applicationConfig: applicationConfig,
+            logger: logger
+        )
+    }
+
+    override func setup() {
+        super.setup()
+        view?.didReceive(viewModel: .loading)
+    }
+}
+
+extension StartStakingInfoMythosPresenter: StartStakingInfoMythosInteractorOutputProtocol {
+    func didReceive(duration: MythosStakingDuration) {
+        logger.debug("Duration: \(duration)")
+
+        state.duration = duration
+    }
+
+    func didReceive(blockNumber: BlockNumber?) {
+        logger.debug("Block number: \(String(describing: blockNumber))")
+
+        state.update(blockNumber: blockNumber)
+    }
+
+    func didReceive(currentSession: SessionIndex) {
+        logger.debug("Current session: \(currentSession)")
+
+        state.currentSession = currentSession
+    }
+
+    func didReceive(minStake: Balance) {
+        logger.debug("Min stake: \(minStake)")
+
+        state.minStake = minStake
+    }
+}
+
+extension StartStakingInfoMythosPresenter {
+    struct State: StartStakingStateProtocol, Equatable {
+        let chainAsset: ChainAsset
+        var minStake: Balance?
+        var duration: MythosStakingDuration?
+        var currentSession: SessionIndex?
+
+        private(set) var blockNumber: BlockNumber?
+
+        var rewardTime: TimeInterval? { duration?.session }
+
+        var unstakingTime: TimeInterval? { duration?.unstaking }
+
+        var rewardDelay: TimeInterval? {
+            sessionCountdown?.timeIntervalTillNextSessionStart()
+        }
+
+        var maxApy: Decimal? {
+            // TODO: Fix when APY implemented
+            0
+        }
+
+        var sessionCountdown: ChainSessionCountdown? {
+            guard let blockNumber, let duration, let currentSession else {
+                return nil
+            }
+            return ChainSessionCountdown(
+                currentSession: currentSession,
+                info: duration.sessionInfo,
+                blockTime: duration.block,
+                currentBlock: blockNumber,
+                createdAtDate: Date()
+            )
+        }
+
+        var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
+
+        var govThresholdAmount: BigUInt? { nil }
+
+        var shouldHaveGovInfo: Bool {
+            chainAsset.chain.hasGovernance
+        }
+
+        var rewardsDestination: DefaultStakingRewardDestination { .manual }
+
+        mutating func update(blockNumber: BlockNumber?) {
+            // TODO: Think how frequently trigger update based on the number
+
+            self.blockNumber = blockNumber
+        }
+    }
+}

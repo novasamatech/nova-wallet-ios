@@ -2,6 +2,32 @@ import Foundation
 import SoraFoundation
 
 extension TimeInterval {
+    func localizedDaysHoursOrFallbackMinutes(
+        for locale: Locale,
+        preposition: String? = nil,
+        separator: String = " ",
+        shortcutHandler: PredefinedTimeShortcutProtocol? = nil,
+        roundsDown: Bool = true
+    ) -> String {
+        let (days, hours) = getDaysAndHours(roundingDown: roundsDown)
+
+        guard days > 0 || hours > 0 else {
+            return localizedDaysHoursMinutes(
+                for: locale,
+                preposition: preposition ?? "",
+                separator: separator
+            )
+        }
+
+        return localizedDaysHours(
+            for: locale,
+            preposition: preposition,
+            separator: separator,
+            shortcutHandler: shortcutHandler,
+            roundsDown: roundsDown
+        )
+    }
+
     func localizedDaysHours(
         for locale: Locale,
         preposition: String? = nil,

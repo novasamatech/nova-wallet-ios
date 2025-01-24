@@ -66,7 +66,7 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
             let localKeyFactory = LocalStorageKeyFactory()
             let localKey = try localKeyFactory.createFromStoragePath(
                 MythosStakingPallet.userStakePath,
-                encodableElement: accountId,
+                accountId: accountId,
                 chainId: chainId
             )
 

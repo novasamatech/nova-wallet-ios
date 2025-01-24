@@ -4,7 +4,7 @@ import SubstrateSdk
 enum MythosStakingPallet {
     static let name = "CollatorStaking"
 
-    struct UserStake: Codable {
+    struct UserStake: Codable, Equatable {
         @StringCodable var stake: Balance
     }
 }
