@@ -76,7 +76,8 @@ extension ParaStkCollatorInfoInteractor: ParastakingLocalStorageSubscriber, Para
     ) {
         switch result {
         case let .success(delegator):
-            presenter?.didReceiveDelegator(delegator)
+            let model = delegator.map { CollatorStakingDelegator(parachainDelegator: $0) }
+            presenter?.didReceiveDelegator(model)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

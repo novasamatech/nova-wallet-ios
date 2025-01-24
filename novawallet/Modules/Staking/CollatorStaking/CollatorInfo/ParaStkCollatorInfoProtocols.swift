@@ -11,7 +11,7 @@ protocol ParaStkCollatorInfoInteractorInputProtocol: AnyObject {
 
 protocol ParaStkCollatorInfoInteractorOutputProtocol: AnyObject {
     func didReceivePrice(_ price: PriceData?)
-    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
+    func didReceiveDelegator(_ delegator: CollatorStakingDelegator?)
     func didReceiveError(_ error: Error)
 }
 

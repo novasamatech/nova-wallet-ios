@@ -13,7 +13,7 @@ final class ParaStkCollatorInfoPresenter {
     let logger: LoggerProtocol
 
     private var price: PriceData?
-    private var delegator: ParachainStaking.Delegator?
+    private var delegator: CollatorStakingDelegator?
 
     init(
         interactor: ParaStkCollatorInfoInteractorInputProtocol,
@@ -110,7 +110,7 @@ extension ParaStkCollatorInfoPresenter: ParaStkCollatorInfoInteractorOutputProto
         provideViewModel()
     }
 
-    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
+    func didReceiveDelegator(_ delegator: CollatorStakingDelegator?) {
         self.delegator = delegator
 
         provideViewModel()
