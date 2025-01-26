@@ -8,11 +8,17 @@ final class MythosStakingSetupWireframe: MythosStakingSetupWireframeProtocol {
     }
 
     func showConfirmation(
-        from _: CollatorStakingSetupViewProtocol?,
-        model _: MythosStakeModel,
-        initialDelegator _: MythosStakingDetails?
+        from view: CollatorStakingSetupViewProtocol?,
+        model: MythosStakingConfirmModel
     ) {
-        // TODO: Implement in separate task
+        guard let confirmView = MythosStakingConfirmViewFactory.createView(
+            for: state,
+            model: model
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
     }
 
     func showCollatorSelection(

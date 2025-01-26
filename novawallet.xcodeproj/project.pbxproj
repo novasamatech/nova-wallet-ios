@@ -151,6 +151,9 @@
 		0C0F6E192D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E182D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift */; };
 		0C0F6E1C2D45F64700943A7C /* MythosStakingBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E1B2D45F64700943A7C /* MythosStakingBaseInteractor.swift */; };
 		0C0F6E1E2D45F93700943A7C /* MythosStakingBaseProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E1D2D45F93700943A7C /* MythosStakingBaseProtocols.swift */; };
+		0C0F6E212D4609F200943A7C /* MythosStakingConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E202D4609F200943A7C /* MythosStakingConfirmModel.swift */; };
+		0C0F6E232D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E222D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift */; };
+		0C0F6E252D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E242D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift */; };
 		0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */; };
 		0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */; };
 		0C11D8562CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */; };
@@ -5617,6 +5620,9 @@
 		0C0F6E182D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingStakeFlowTitle.swift; sourceTree = "<group>"; };
 		0C0F6E1B2D45F64700943A7C /* MythosStakingBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingBaseInteractor.swift; sourceTree = "<group>"; };
 		0C0F6E1D2D45F93700943A7C /* MythosStakingBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingBaseProtocols.swift; sourceTree = "<group>"; };
+		0C0F6E202D4609F200943A7C /* MythosStakingConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingConfirmModel.swift; sourceTree = "<group>"; };
+		0C0F6E222D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MythosStakingConfirm+StartStaking.swift"; sourceTree = "<group>"; };
+		0C0F6E242D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MythosStakingConfirm+StakeMore.swift"; sourceTree = "<group>"; };
 		0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKExchangeEdge.swift; sourceTree = "<group>"; };
@@ -11490,6 +11496,14 @@
 				0C0F6E1B2D45F64700943A7C /* MythosStakingBaseInteractor.swift */,
 			);
 			path = MythosStakingBase;
+			sourceTree = "<group>";
+		};
+		0C0F6E1F2D4609DB00943A7C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C0F6E202D4609F200943A7C /* MythosStakingConfirmModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		0C12BC382CEA7E8500AB919D /* Price */ = {
@@ -24704,11 +24718,14 @@
 		D7E8E642622576ECE1F1A2C9 /* MythosStakingConfirm */ = {
 			isa = PBXGroup;
 			children = (
+				0C0F6E1F2D4609DB00943A7C /* Model */,
 				9F90A8B791F2EFE98C6DFA93 /* MythosStakingConfirmProtocols.swift */,
 				C7639361A3B8C325C29EBF4B /* MythosStakingConfirmWireframe.swift */,
 				35ADC43550D6DE65A50C132E /* MythosStakingConfirmPresenter.swift */,
 				9DC089BF72C9B8A2B481E953 /* MythosStakingConfirmInteractor.swift */,
 				041E6FC51EDD46922FE6C9DD /* MythosStakingConfirmViewFactory.swift */,
+				0C0F6E222D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift */,
+				0C0F6E242D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift */,
 			);
 			path = MythosStakingConfirm;
 			sourceTree = "<group>";
@@ -26617,6 +26634,7 @@
 				84715786291136B100D7D003 /* GovernanceUnlocksViewModel.swift in Sources */,
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
 				773B2E432B756F8600A3BC11 /* Web3AlertLocalModel.swift in Sources */,
+				0C0F6E212D4609F200943A7C /* MythosStakingConfirmModel.swift in Sources */,
 				0C13DFCD2AF8A5A300E5F355 /* SwapMaxModel.swift in Sources */,
 				0CA719892B78AACD000B086E /* HydraRouter+Call.swift in Sources */,
 				0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */,
@@ -26725,6 +26743,7 @@
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */,
 				0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */,
+				0C0F6E252D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift in Sources */,
 				849067CA299BCCB700B2983E /* GovernanceRevokeDelegationConfirmPresenter+Update.swift in Sources */,
 				0CA7CEEC2CE0CA57004328F2 /* NativeTokenMintedEventMatcher.swift in Sources */,
 				0C8AF7AF2B343C6B00005AC9 /* ExtrinsicSenderResolutionFactory.swift in Sources */,
@@ -31002,6 +31021,7 @@
 				6688EC06E774363AA868498F /* NotificationsSetupViewFactory.swift in Sources */,
 				4EC78283864DC05C2D72EA28 /* NotificationsManagementProtocols.swift in Sources */,
 				6F46211C3F13C682FBD0442F /* NotificationsManagementWireframe.swift in Sources */,
+				0C0F6E232D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift in Sources */,
 				18C1C6B62FD0AB1449BF8D6A /* NotificationsManagementPresenter.swift in Sources */,
 				640EC907607A3D5F633D26A7 /* NotificationsManagementInteractor.swift in Sources */,
 				FF90D0EE563E63611644B95B /* NotificationsManagementViewController.swift in Sources */,

@@ -15,8 +15,7 @@ protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable
     CollatorStakingDelegationSelectable {
     func showConfirmation(
         from view: CollatorStakingSetupViewProtocol?,
-        model: MythosStakeModel,
-        initialDelegator: MythosStakingDetails?
+        model: MythosStakingConfirmModel
     )
 
     func showCollatorSelection(

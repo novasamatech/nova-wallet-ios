@@ -19,8 +19,6 @@ extension ParaStkStakeConfirmPresenter {
             minStake = minTechStake
         }
 
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
         return DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 fee: fee,

@@ -355,14 +355,17 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
 
     func proceed() {
         // TODO: Add validations
-        guard let model = getStakingModel() else {
+        guard let stakingModel = getStakingModel(), let collator = collatorDisplayAddress else {
             return
         }
 
         wireframe.showConfirmation(
             from: view,
-            model: model,
-            initialDelegator: stakingDetails
+            model: MythosStakingConfirmModel(
+                stakingDetails: stakingDetails,
+                collator: collator,
+                stakeModel: stakingModel
+            )
         )
     }
 }

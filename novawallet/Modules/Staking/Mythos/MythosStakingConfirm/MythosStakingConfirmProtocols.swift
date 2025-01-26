@@ -1,5 +1,15 @@
-protocol MythosStakingConfirmInteractorInputProtocol: AnyObject {}
+protocol MythosStakingConfirmInteractorInputProtocol: MythosStakingBaseInteractorInputProtocol {
+    func submit(model: MythosStakeModel)
+}
 
-protocol MythosStakingConfirmInteractorOutputProtocol: AnyObject {}
+protocol MythosStakingConfirmInteractorOutputProtocol: MythosStakingBaseInteractorOutputProtocol {
+    func didReceiveSubmition(result: Result<String, Error>)
+}
 
-protocol MythosStakingConfirmWireframeProtocol: AnyObject {}
+protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
+    AddressOptionsPresentable,
+    FeeRetryable,
+    ModalAlertPresenting,
+    MessageSheetPresentable,
+    ExtrinsicSigningErrorHandling,
+    ExtrinsicSubmissionPresenting {}

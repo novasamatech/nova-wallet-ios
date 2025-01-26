@@ -10,6 +10,21 @@ protocol ExtrinsicSubmitMonitorFactoryProtocol {
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
 }
 
+extension ExtrinsicSubmitMonitorFactoryProtocol {
+    func submitAndMonitorWrapper(
+        extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
+        payingIn feeAssetId: ChainAssetId? = nil,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
+        submitAndMonitorWrapper(
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
+            payingIn: feeAssetId,
+            signer: signer,
+            matchingEvents: nil
+        )
+    }
+}
+
 final class ExtrinsicSubmissionMonitorFactory {
     struct SubmissionResult {
         let blockHash: String

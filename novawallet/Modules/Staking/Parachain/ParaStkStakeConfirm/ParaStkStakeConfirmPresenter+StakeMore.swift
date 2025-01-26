@@ -12,7 +12,6 @@ extension ParaStkStakeConfirmPresenter {
 
     func stakeMore(above existingBond: BigUInt, allowedAmountToStake: BigUInt?) {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let precision = assetDisplayInfo.assetPrecision
         let collatorId = try? collator.address.toAccountId()
 
         DataValidationRunner(validators: [
