@@ -429,7 +429,7 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         provideRewardsViewModel()
     }
 
-    func didReceiveMinStakeAmount(_ amount: BigUInt) {
+    func didReceiveMinStakeAmount(_ amount: Balance) {
         logger.debug("Min stake: \(amount)")
 
         minStake = amount
@@ -503,7 +503,7 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         provideAmountInputViewModelIfInputRate()
     }
 
-    func didReceiveError(_ error: MythosStakingSetupError) {
+    func didReceiveBaseError(_ error: MythosStakingBaseError) {
         logger.debug("Error: \(error)")
 
         switch error {
