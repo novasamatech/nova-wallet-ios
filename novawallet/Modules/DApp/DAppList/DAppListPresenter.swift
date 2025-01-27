@@ -136,7 +136,7 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         if let currentResult = self.dAppsResult {
             // ignore error if we already loaded some dapps
-            guard case .success = currentResult, case .failure = dAppsResult else {
+            if case .success = currentResult, case .failure = dAppsResult {
                 return
             }
         }
