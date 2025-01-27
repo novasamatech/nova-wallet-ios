@@ -418,17 +418,19 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
     func createDAppSections(
         from dAppList: DAppList?,
         favorites: [String: DAppFavorite],
-        wallet: MetaAccountModel,
+        wallet: MetaAccountModel?,
         params: DAppListViewModelFactory.ListSectionsParams,
         locale: Locale
     ) -> [DAppListSectionViewModel] {
         var viewModels: [DAppListSectionViewModel] = []
 
-        let headerSection = headerSection(
-            for: wallet,
-            hasWalletsListUpdates: params.hasWalletsListUpdates
-        )
-        viewModels.append(.header(headerSection))
+        if let wallet {
+            let headerSection = headerSection(
+                for: wallet,
+                hasWalletsListUpdates: params.hasWalletsListUpdates
+            )
+            viewModels.append(.header(headerSection))
+        }
 
         guard let dAppList else {
             viewModels.append(

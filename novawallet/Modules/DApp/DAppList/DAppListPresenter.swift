@@ -39,8 +39,6 @@ final class DAppListPresenter {
     }
 
     private func provideSections() {
-        guard let wallet else { return }
-
         do {
             let params = DAppListViewModelFactory.ListSectionsParams(
                 randomizationSeed: randomizationSeed,
