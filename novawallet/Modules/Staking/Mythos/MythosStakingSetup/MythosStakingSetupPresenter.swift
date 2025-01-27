@@ -438,7 +438,20 @@ extension MythosStakingSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {
-        wireframe.showCollatorSelection(from: view, delegate: self)
+        DataValidationRunner(validators: [
+            dataValidationFactory.notExceedsMaxCollators(
+                currentCollators: stakingDetails?.collatorIds,
+                selectedCollator: nil,
+                maxCollatorsAllowed: maxCollatorsPerStaker,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            guard let self else {
+                return
+            }
+
+            wireframe.showCollatorSelection(from: view, delegate: self)
+        }
     }
 }
 

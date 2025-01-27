@@ -63,22 +63,24 @@ extension CollatorStakingValidatorFactoryProtocol {
             )
 
         }, preservesCondition: {
-            guard let selectedCollator else {
-                return false
+            guard let maxCollatorsAllowed else {
+                return true
             }
 
-            guard
-                let currentCollators = currentCollators,
-                !currentCollators.contains(selectedCollator) else {
+            let resolvedCollators = currentCollators ?? []
+
+            let hasCollator: Bool = if let selectedCollator {
+                resolvedCollators.contains(selectedCollator)
+            } else {
+                false
+            }
+
+            guard !hasCollator else {
                 // there were no delegations previously
                 return true
             }
 
-            guard let maxCollatorsAllowed else {
-                return false
-            }
-
-            return currentCollators.count < Int(maxCollatorsAllowed)
+            return resolvedCollators.count < Int(maxCollatorsAllowed)
         })
     }
 }
