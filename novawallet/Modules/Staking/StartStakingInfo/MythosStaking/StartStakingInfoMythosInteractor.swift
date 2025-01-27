@@ -66,6 +66,10 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
         )
     }
 
+    deinit {
+        state.throttle()
+    }
+
     private func performBlockNumberSubscription() {
         let chainId = selectedChainAsset.chain.chainId
         blockNumberProvider = subscribeToBlockNumber(for: chainId)
