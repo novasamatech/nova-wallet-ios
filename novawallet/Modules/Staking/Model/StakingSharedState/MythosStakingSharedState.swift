@@ -8,6 +8,7 @@ protocol MythosStakingSharedStateProtocol {
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
 
     var detailsSyncService: MythosStakingDetailsSyncServiceProtocol? { get }
+    var claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol? { get }
 
     var collatorService: MythosCollatorServiceProtocol { get }
     var rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol { get }
@@ -41,6 +42,7 @@ final class MythosStakingSharedState {
     private var globalRemoteSubscription: UUID?
 
     private(set) var detailsSyncService: MythosStakingDetailsSyncServiceProtocol?
+    private(set) var claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol?
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
@@ -103,6 +105,16 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
             )
 
             detailsSyncService?.setup()
+
+            claimableRewardsService = MythosStakingClaimableRewardsService(
+                chainId: chainId,
+                accountId: accountId,
+                chainRegistry: chainRegistry,
+                stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+                operationQueue: operationQueue
+            )
+
+            claimableRewardsService?.setup()
         }
     }
 
@@ -124,6 +136,9 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
 
         detailsSyncService?.throttle()
         detailsSyncService = nil
+
+        claimableRewardsService?.throttle()
+        claimableRewardsService = nil
     }
 
     func startSharedOperation() -> SharedOperationProtocol {

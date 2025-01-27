@@ -12,6 +12,7 @@ protocol MythosStakingBaseInteractorOutputProtocol: AnyObject {
     func didReceiveMinStakeAmount(_ amount: Balance)
     func didReceiveMaxCollatorsPerStaker(_ maxCollatorsPerStaker: UInt32)
     func didReceiveDetails(_ details: MythosStakingDetails?)
+    func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance)
     func didReceiveBaseError(_ error: MythosStakingBaseError)

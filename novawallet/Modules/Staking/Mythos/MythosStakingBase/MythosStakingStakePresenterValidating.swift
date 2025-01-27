@@ -14,11 +14,13 @@ struct MythosStakePresenterValidatingDep {
     let balance: AssetBalance?
     let minStake: Balance?
     let stakingDetails: MythosStakingDetails?
+    let claimableRewards: MythosStakingClaimableRewards?
     let selectedCollator: AccountId?
     let fee: ExtrinsicFeeProtocol?
     let maxCollatorsPerStaker: UInt32?
     let assetDisplayInfo: AssetBalanceDisplayInfo
     let onFeeRefresh: () -> Void
+    let onClaimRewards: () -> Void
 
     var currenctCollators: Set<AccountId>? {
         stakingDetails.map { Set($0.stakeDistribution.keys) }
@@ -78,6 +80,14 @@ extension MythosStakePresenterValidating {
                 )
             )
         }
+
+        validations.append(
+            dataValidationFactory.noUnclaimedRewards(
+                dep.claimableRewards?.shouldClaim ?? false,
+                claimAction: dep.onClaimRewards,
+                locale: selectedLocale
+            )
+        )
 
         return validations
     }

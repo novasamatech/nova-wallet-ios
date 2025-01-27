@@ -1790,3 +1790,7 @@
 "common.see.all" = "See All";
 "dapp.widget.close.alert.title" = "Close All DApps?";
 "dapp.widget.close.alert.message" = "All opened tabs in DApp browser will be closed.";
+"mythos.staking.unclaimed.rewards.validation.title" = "You have unpaid staking rewards";
+"mythos.staking.unclaimed.rewards.validation.message" = "You cannot make the operation before claiming all unpaid staking reward
+";
+"common.claim" = "Claim";

@@ -23,6 +23,7 @@ final class MythosStakingSetupPresenter {
     private(set) var maxCollatorsPerStaker: UInt32?
     private(set) var price: PriceData?
     private(set) var stakingDetails: MythosStakingDetails?
+    private(set) var claimableRewards: MythosStakingClaimableRewards?
     private(set) var collatorDisplayAddress: DisplayAddress?
     private(set) var collatorInfo: MythosStakingPallet.CandidateInfo?
     private(set) var delegationIdentities: [AccountId: AccountIdentity]?
@@ -294,12 +295,16 @@ private extension MythosStakingSetupPresenter {
             balance: balance,
             minStake: minStake,
             stakingDetails: stakingDetails,
+            claimableRewards: claimableRewards,
             selectedCollator: getCollatorAccount(),
             fee: fee,
             maxCollatorsPerStaker: maxCollatorsPerStaker,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
+            },
+            onClaimRewards: { [weak self] in
+                self?.wireframe.showClaimRewards(from: self?.view)
             }
         )
     }
@@ -499,6 +504,12 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         provideAssetViewModel()
         provideAmountInputViewModelIfInputRate()
         provideCollatorViewModel()
+    }
+
+    func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?) {
+        logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
+
+        self.claimableRewards = claimableRewards
     }
 
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?) {

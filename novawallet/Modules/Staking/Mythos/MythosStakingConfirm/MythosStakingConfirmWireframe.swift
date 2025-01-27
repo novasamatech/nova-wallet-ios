@@ -1,3 +1,9 @@
 import Foundation
 
-final class MythosStakingConfirmWireframe: MythosStakingConfirmWireframeProtocol {}
+final class MythosStakingConfirmWireframe: MythosStakingConfirmWireframeProtocol {
+    let state: MythosStakingSharedStateProtocol
+
+    init(state: MythosStakingSharedStateProtocol) {
+        self.state = state
+    }
+}

@@ -12,6 +12,7 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let frozenBalanceStore: MythosStakingFrozenBalanceStore
     let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
+    let claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
@@ -28,6 +29,7 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching {
         chainAsset: ChainAsset,
         selectedAccount: ChainAccountResponse,
         stakingDetailsService: MythosStakingDetailsSyncServiceProtocol,
+        claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -42,6 +44,7 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.stakingDetailsService = stakingDetailsService
+        self.claimableRewardsService = claimableRewardsService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -135,6 +138,16 @@ private extension MythosStakingBaseInteractor {
         }
     }
 
+    func makeClaimableRewardsSubscription() {
+        claimableRewardsService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, newState in
+            self?.basePresenter?.didReceiveClaimableRewards(newState)
+        }
+    }
+
     func makeBlockNumberSubscription() {
         blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
     }
@@ -165,6 +178,7 @@ extension MythosStakingBaseInteractor: MythosStakingBaseInteractorInputProtocol 
         makeBlockNumberSubscription()
 
         makeStakingDetailsSubscription()
+        makeClaimableRewardsSubscription()
         makeMinStakeSubscription()
 
         provideMaxCandidatesPerStaker()

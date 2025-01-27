@@ -17,7 +17,7 @@ struct MythosStakingConfirmViewFactory {
             return nil
         }
 
-        let wireframe = MythosStakingConfirmWireframe()
+        let wireframe = MythosStakingConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
@@ -71,6 +71,7 @@ struct MythosStakingConfirmViewFactory {
                 for: state.stakingOption.chainAsset.chain.accountRequest()
             ),
             let stakingDetailsService = state.detailsSyncService,
+            let claimableRewardsService = state.claimableRewardsService,
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
@@ -109,12 +110,14 @@ struct MythosStakingConfirmViewFactory {
             chainAsset: state.stakingOption.chainAsset,
             selectedAccount: selectedAccount,
             stakingDetailsService: stakingDetailsService,
+            claimableRewardsService: claimableRewardsService,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             extrinsicSubmitionMonitor: extrinsicSubmissionMonitor,
             signer: signer,
+            sharedOperation: state.sharedOperation,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             runtimeProvider: runtimeProvider,

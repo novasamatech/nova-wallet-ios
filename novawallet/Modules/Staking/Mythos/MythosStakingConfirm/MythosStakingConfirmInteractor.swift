@@ -14,17 +14,20 @@ final class MythosStakingConfirmInteractor: MythosStakingBaseInteractor {
 
     private let extrinsicSubmitionMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     private let signer: SigningWrapperProtocol
+    private let sharedOperation: SharedOperationProtocol?
 
     init(
         chainAsset: ChainAsset,
         selectedAccount: ChainAccountResponse,
         stakingDetailsService: MythosStakingDetailsSyncServiceProtocol,
+        claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         extrinsicSubmitionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signer: SigningWrapperProtocol,
+        sharedOperation: SharedOperationProtocol?,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
@@ -34,11 +37,13 @@ final class MythosStakingConfirmInteractor: MythosStakingBaseInteractor {
     ) {
         self.extrinsicSubmitionMonitor = extrinsicSubmitionMonitor
         self.signer = signer
+        self.sharedOperation = sharedOperation
 
         super.init(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             stakingDetailsService: stakingDetailsService,
+            claimableRewardsService: claimableRewardsService,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
@@ -60,6 +65,8 @@ extension MythosStakingConfirmInteractor: MythosStakingConfirmInteractorInputPro
             signer: signer
         )
 
+        sharedOperation?.markSent()
+
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -70,6 +77,7 @@ extension MythosStakingConfirmInteractor: MythosStakingConfirmInteractorInputPro
 
                 self?.presenter?.didReceiveSubmition(result: .success(status.extrinsicHash))
             } catch {
+                self?.sharedOperation?.markComposing()
                 self?.presenter?.didReceiveSubmition(result: .failure(error))
             }
         }

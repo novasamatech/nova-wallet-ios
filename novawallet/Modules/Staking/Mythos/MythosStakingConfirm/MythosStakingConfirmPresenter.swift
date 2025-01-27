@@ -17,6 +17,7 @@ final class MythosStakingConfirmPresenter {
     private(set) var balance: AssetBalance?
     private(set) var frozenBalance: MythosStakingFrozenBalance?
     private(set) var stakingDetails: MythosStakingDetails?
+    private(set) var claimableRewards: MythosStakingClaimableRewards?
     private(set) var price: PriceData?
     private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var minStake: Balance?
@@ -160,12 +161,16 @@ private extension MythosStakingConfirmPresenter {
             balance: balance,
             minStake: minStake,
             stakingDetails: stakingDetails,
+            claimableRewards: claimableRewards,
             selectedCollator: model.collator,
             fee: fee,
             maxCollatorsPerStaker: maxCollatorsPerStaker,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
+            },
+            onClaimRewards: { [weak self] in
+                self?.wireframe.showClaimRewards(from: self?.view)
             }
         )
     }
@@ -279,6 +284,12 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
         logger.debug("Staking details: \(String(describing: details))")
 
         stakingDetails = details
+    }
+
+    func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?) {
+        logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
+
+        self.claimableRewards = claimableRewards
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {

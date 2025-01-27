@@ -3,21 +3,6 @@ import Foundation
 extension CollatorStakingValidatorFactoryProtocol {
     var basePresentable: BaseErrorPresentable { collatorStakingPresentable }
 
-    func delegatorNotExists(
-        _ hasDelegator: Bool,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.collatorStakingPresentable.presentDelegatorExists(view, locale: locale)
-        }, preservesCondition: {
-            !hasDelegator
-        })
-    }
-
     func hasMinStake(
         amount: Decimal?,
         minStake: Balance?,
@@ -78,6 +63,10 @@ extension CollatorStakingValidatorFactoryProtocol {
             )
 
         }, preservesCondition: {
+            guard let selectedCollator else {
+                return false
+            }
+
             guard
                 let currentCollators = currentCollators,
                 !currentCollators.contains(selectedCollator) else {
@@ -85,7 +74,7 @@ extension CollatorStakingValidatorFactoryProtocol {
                 return true
             }
 
-            guard let maxCollatorsAllowed, let selectedCollator else {
+            guard let maxCollatorsAllowed else {
                 return false
             }
 

@@ -10,11 +10,6 @@ protocol CollatorStakingValidatorFactoryProtocol: BaseDataValidatingFactoryProto
 
     var collatorStakingPresentable: CollatorStakingErrorPresentable { get }
 
-    func delegatorNotExists(
-        _ hasDelegator: Bool,
-        locale: Locale
-    ) -> DataValidating
-
     func hasMinStake(
         amount: Decimal?,
         minStake: Balance?,

@@ -1,3 +1,9 @@
 import Foundation
 
-protocol MythosStakingValidationFactoryProtocol: CollatorStakingValidatorFactoryProtocol {}
+protocol MythosStakingValidationFactoryProtocol: CollatorStakingValidatorFactoryProtocol {
+    func noUnclaimedRewards(
+        _ hasUnclaimedRewards: Bool,
+        claimAction: @escaping () -> Void,
+        locale: Locale
+    ) -> DataValidating
+}

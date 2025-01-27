@@ -79,6 +79,7 @@ struct MythosStakingSetupViewFactory {
                 for: state.stakingOption.chainAsset.chain.accountRequest()
             ),
             let stakingDetailsService = state.detailsSyncService,
+            let claimableRewardsService = state.claimableRewardsService,
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
@@ -135,6 +136,7 @@ struct MythosStakingSetupViewFactory {
             chainAsset: state.stakingOption.chainAsset,
             selectedAccount: selectedAccount,
             stakingDetailsService: stakingDetailsService,
+            claimableRewardsService: claimableRewardsService,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
