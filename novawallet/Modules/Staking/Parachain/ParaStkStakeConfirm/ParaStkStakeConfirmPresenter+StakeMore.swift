@@ -43,6 +43,13 @@ extension ParaStkStakeConfirmPresenter {
                 locale: selectedLocale
             ),
 
+            dataValidatingFactory.notExceedsMaxCollatorsForDelegator(
+                delegator,
+                selectedCollator: collatorId,
+                maxCollatorsAllowed: maxDelegations,
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.notRevokingWhileStakingMore(
                 collator: collatorId,
                 scheduledRequests: scheduledRequests,

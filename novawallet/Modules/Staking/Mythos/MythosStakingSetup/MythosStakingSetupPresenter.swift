@@ -12,6 +12,7 @@ final class MythosStakingSetupPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
+    let dataValidationFactory: MythosStakingValidationFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
     private(set) var rewardCalculator: CollatorStakingRewardCalculatorEngineProtocol?
@@ -33,6 +34,7 @@ final class MythosStakingSetupPresenter {
         interactor: MythosStakingSetupInteractorInputProtocol,
         wireframe: MythosStakingSetupWireframeProtocol,
         chainAsset: ChainAsset,
+        dataValidationFactory: MythosStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         initialStakingDetails: MythosStakingDetails?,
@@ -42,6 +44,7 @@ final class MythosStakingSetupPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAsset = chainAsset
+        self.dataValidationFactory = dataValidationFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         stakingDetails = initialStakingDetails
@@ -281,6 +284,25 @@ private extension MythosStakingSetupPresenter {
 
         changeCollator(with: DisplayAddress(address: newAddress, username: name ?? ""))
     }
+
+    func getValidationDependencies() -> MythosStakePresenterValidatingDep {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+
+        return MythosStakePresenterValidatingDep(
+            inputAmount: inputAmount,
+            allowedAmount: allowedAmountToStake(),
+            balance: balance,
+            minStake: minStake,
+            stakingDetails: stakingDetails,
+            selectedCollator: getCollatorAccount(),
+            fee: fee,
+            maxCollatorsPerStaker: maxCollatorsPerStaker,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            onFeeRefresh: { [weak self] in
+                self?.refreshFee()
+            }
+        )
+    }
 }
 
 extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
@@ -354,19 +376,40 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
     }
 
     func proceed() {
-        // TODO: Add validations
-        guard let stakingModel = getStakingModel(), let collator = collatorDisplayAddress else {
+        guard
+            let stakingModel = getStakingModel(),
+            let collator = collatorDisplayAddress else {
             return
         }
 
-        wireframe.showConfirmation(
-            from: view,
-            model: MythosStakingConfirmModel(
-                stakingDetails: stakingDetails,
-                collator: collator,
-                stakeModel: stakingModel
+        let onSuccess: () -> Void = { [weak self] in
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                model: MythosStakingConfirmModel(
+                    stakingDetails: self?.stakingDetails,
+                    collator: collator,
+                    stakeModel: stakingModel
+                )
             )
-        )
+        }
+
+        let dependencies = getValidationDependencies()
+
+        if stakingDetails != nil {
+            validateStakeMore(
+                for: dependencies,
+                dataValidationFactory: dataValidationFactory,
+                selectedLocale: selectedLocale,
+                onSuccess: onSuccess
+            )
+        } else {
+            validateStartStaking(
+                for: dependencies,
+                dataValidationFactory: dataValidationFactory,
+                selectedLocale: selectedLocale,
+                onSuccess: onSuccess
+            )
+        }
     }
 }
 
@@ -393,6 +436,8 @@ extension MythosStakingSetupPresenter: ModalPickerViewControllerDelegate {
         wireframe.showCollatorSelection(from: view, delegate: self)
     }
 }
+
+extension MythosStakingSetupPresenter: MythosStakePresenterValidating {}
 
 extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {

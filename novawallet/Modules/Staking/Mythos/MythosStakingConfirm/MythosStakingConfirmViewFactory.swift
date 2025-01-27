@@ -6,11 +6,13 @@ struct MythosStakingConfirmViewFactory {
         for state: MythosStakingSharedStateProtocol,
         model: MythosStakingConfirmModel
     ) -> CollatorStakingConfirmViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
             let interactor = createInteractor(for: state),
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = SelectedWalletSettings.shared.value.fetchMetaChainAccount(
-                for: state.stakingOption.chainAsset.chain.accountRequest()
+                for: chainAsset.chain.accountRequest()
             ) else {
             return nil
         }
@@ -19,10 +21,16 @@ struct MythosStakingConfirmViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let assetDisplayInfo = state.stakingOption.chainAsset.assetDisplayInfo
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let dataValidationFactory = MythosStakingValidationFactory(
+            presentable: wireframe,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -30,8 +38,9 @@ struct MythosStakingConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             selectedAccount: selectedAccount,
-            chainAsset: state.stakingOption.chainAsset,
+            chainAsset: chainAsset,
             model: model,
+            dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
@@ -47,6 +56,7 @@ struct MythosStakingConfirmViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidationFactory.view = view
 
         return view
     }

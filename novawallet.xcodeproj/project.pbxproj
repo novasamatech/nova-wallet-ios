@@ -154,6 +154,13 @@
 		0C0F6E212D4609F200943A7C /* MythosStakingConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E202D4609F200943A7C /* MythosStakingConfirmModel.swift */; };
 		0C0F6E232D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E222D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift */; };
 		0C0F6E252D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E242D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift */; };
+		0C0F6E282D4613EC00943A7C /* CollatorStakingValidatorFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E272D4613EC00943A7C /* CollatorStakingValidatorFactoryProtocol.swift */; };
+		0C0F6E2B2D46177300943A7C /* CollatorStakingErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E2A2D46177300943A7C /* CollatorStakingErrorPresentable.swift */; };
+		0C0F6E2D2D46187400943A7C /* CollatorStakingValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E2C2D46187400943A7C /* CollatorStakingValidatorFactory.swift */; };
+		0C0F6E2F2D46471D00943A7C /* MythosStakingValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E2E2D46471D00943A7C /* MythosStakingValidationFactory.swift */; };
+		0C0F6E312D46474C00943A7C /* MythosStakingErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E302D46474C00943A7C /* MythosStakingErrorPresentable.swift */; };
+		0C0F6E332D46478A00943A7C /* MythosStakingValidationFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E322D46478A00943A7C /* MythosStakingValidationFactoryProtocol.swift */; };
+		0C0F6E352D464BFE00943A7C /* MythosStakingStakePresenterValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E342D464BFE00943A7C /* MythosStakingStakePresenterValidating.swift */; };
 		0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */; };
 		0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */; };
 		0C11D8562CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */; };
@@ -5623,6 +5630,13 @@
 		0C0F6E202D4609F200943A7C /* MythosStakingConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingConfirmModel.swift; sourceTree = "<group>"; };
 		0C0F6E222D460E7100943A7C /* MythosStakingConfirm+StartStaking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MythosStakingConfirm+StartStaking.swift"; sourceTree = "<group>"; };
 		0C0F6E242D460EB900943A7C /* MythosStakingConfirm+StakeMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MythosStakingConfirm+StakeMore.swift"; sourceTree = "<group>"; };
+		0C0F6E272D4613EC00943A7C /* CollatorStakingValidatorFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingValidatorFactoryProtocol.swift; sourceTree = "<group>"; };
+		0C0F6E2A2D46177300943A7C /* CollatorStakingErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingErrorPresentable.swift; sourceTree = "<group>"; };
+		0C0F6E2C2D46187400943A7C /* CollatorStakingValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingValidatorFactory.swift; sourceTree = "<group>"; };
+		0C0F6E2E2D46471D00943A7C /* MythosStakingValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingValidationFactory.swift; sourceTree = "<group>"; };
+		0C0F6E302D46474C00943A7C /* MythosStakingErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingErrorPresentable.swift; sourceTree = "<group>"; };
+		0C0F6E322D46478A00943A7C /* MythosStakingValidationFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingValidationFactoryProtocol.swift; sourceTree = "<group>"; };
+		0C0F6E342D464BFE00943A7C /* MythosStakingStakePresenterValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingStakePresenterValidating.swift; sourceTree = "<group>"; };
 		0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKExchangeEdge.swift; sourceTree = "<group>"; };
@@ -11333,6 +11347,7 @@
 		0C0F6DAE2D3EDEE100943A7C /* Mythos */ = {
 			isa = PBXGroup;
 			children = (
+				0C0F6E262D4613A700943A7C /* Validation */,
 				0C0F6DB82D3EE9A700943A7C /* Model */,
 				0C0F6DB52D3EE98400943A7C /* Services */,
 				0C0F6E1A2D45F61700943A7C /* MythosStakingBase */,
@@ -11345,6 +11360,7 @@
 		0C0F6DAF2D3EDF1C00943A7C /* CollatorStaking */ = {
 			isa = PBXGroup;
 			children = (
+				0C0F6E292D4615BB00943A7C /* Validation */,
 				0C0F6DE82D4264F900943A7C /* Model */,
 				0C0F6DD72D413DB800943A7C /* ViewModel */,
 				0C0F6DCC2D4132F500943A7C /* Services */,
@@ -11494,6 +11510,7 @@
 			children = (
 				0C0F6E1D2D45F93700943A7C /* MythosStakingBaseProtocols.swift */,
 				0C0F6E1B2D45F64700943A7C /* MythosStakingBaseInteractor.swift */,
+				0C0F6E342D464BFE00943A7C /* MythosStakingStakePresenterValidating.swift */,
 			);
 			path = MythosStakingBase;
 			sourceTree = "<group>";
@@ -11504,6 +11521,26 @@
 				0C0F6E202D4609F200943A7C /* MythosStakingConfirmModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0C0F6E262D4613A700943A7C /* Validation */ = {
+			isa = PBXGroup;
+			children = (
+				0C0F6E2E2D46471D00943A7C /* MythosStakingValidationFactory.swift */,
+				0C0F6E302D46474C00943A7C /* MythosStakingErrorPresentable.swift */,
+				0C0F6E322D46478A00943A7C /* MythosStakingValidationFactoryProtocol.swift */,
+			);
+			path = Validation;
+			sourceTree = "<group>";
+		};
+		0C0F6E292D4615BB00943A7C /* Validation */ = {
+			isa = PBXGroup;
+			children = (
+				0C0F6E272D4613EC00943A7C /* CollatorStakingValidatorFactoryProtocol.swift */,
+				0C0F6E2A2D46177300943A7C /* CollatorStakingErrorPresentable.swift */,
+				0C0F6E2C2D46187400943A7C /* CollatorStakingValidatorFactory.swift */,
+			);
+			path = Validation;
 			sourceTree = "<group>";
 		};
 		0C12BC382CEA7E8500AB919D /* Price */ = {
@@ -27272,6 +27309,7 @@
 				84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */,
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
 				2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */,
+				0C0F6E2B2D46177300943A7C /* CollatorStakingErrorPresentable.swift in Sources */,
 				77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */,
 				0C77B5692A837D4000B5AE08 /* StaticValidatorListViewFactory.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,
@@ -27844,6 +27882,7 @@
 				84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift in Sources */,
 				84F5105B263AB9F2005D15AE /* NetworkFeeView.swift in Sources */,
 				0CC6C8D82AAB401200AD8D9B /* CustomValidatorsFullList.swift in Sources */,
+				0C0F6E332D46478A00943A7C /* MythosStakingValidationFactoryProtocol.swift in Sources */,
 				84786E2425FBA2A50089DFF7 /* StakingAccountSubscription.swift in Sources */,
 				0CB261E22A9B215B00287305 /* NominationPoolUnstake.swift in Sources */,
 				84754C852510A1A400854599 /* ModalAlertPresenting.swift in Sources */,
@@ -28410,6 +28449,7 @@
 				84B24FAE2A2F6BEB00F9BF59 /* StakingDashboardInactiveCell.swift in Sources */,
 				84F0D9FC299D87A700F82CBC /* GovernanceBalanceConviction.swift in Sources */,
 				84BAD211293A2FB100C55C49 /* TokensManageViewModel.swift in Sources */,
+				0C0F6E2F2D46471D00943A7C /* MythosStakingValidationFactory.swift in Sources */,
 				84EBC55224F660A700459D15 /* EventProtocols.swift in Sources */,
 				AE6F7FE02685E812002BBC3E /* ValidatorListFilterProtocols.swift in Sources */,
 				84C6801624D7036B00006BF5 /* SubtitleActionControl.swift in Sources */,
@@ -29624,6 +29664,7 @@
 				93434E8E407A6C63D8862A21 /* ChainAssetSelectionProtocols.swift in Sources */,
 				84E25BEC27E87D5400290BF1 /* TransferDataValidatorFactory.swift in Sources */,
 				8499FE7127BE214A00712589 /* StorageKeyDecodingOperation.swift in Sources */,
+				0C0F6E312D46474C00943A7C /* MythosStakingErrorPresentable.swift in Sources */,
 				775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */,
 				84E8BA1C29FFB38600FD9F40 /* EthereumTransactionReceipt.swift in Sources */,
 				0C0F6D962D3E5D0700943A7C /* MythosActiveCollators.swift in Sources */,
@@ -29682,6 +29723,7 @@
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,
 				0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */,
+				0C0F6E282D4613EC00943A7C /* CollatorStakingValidatorFactoryProtocol.swift in Sources */,
 				0C6390972BF236AB0015D467 /* CloudBackupSyncState.swift in Sources */,
 				77A6F5BA2A2E2AAD004AFD1A /* BuyAssetOperationWireframe.swift in Sources */,
 				84FBECFF2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift in Sources */,
@@ -29861,6 +29903,7 @@
 				845B811528F43C350040CE84 /* Treasury.swift in Sources */,
 				0C13DFD72AFA50A200E5F355 /* SwapIssueViewModelFactory.swift in Sources */,
 				0C7C886C2A9622F800DD96A1 /* StakingSelectedEntityViewModel.swift in Sources */,
+				0C0F6E2D2D46187400943A7C /* CollatorStakingValidatorFactory.swift in Sources */,
 				0CA81D592CE60AA700166969 /* AssetExchangeEdgeType.swift in Sources */,
 				2D4F55262CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift in Sources */,
 				84C3420B283187D800156569 /* BlockTimeEstimationService.swift in Sources */,
@@ -31089,6 +31132,7 @@
 				DB1FB213FCB39BE3A5780D82 /* ImportCloudPasswordProtocols.swift in Sources */,
 				0C0387512D066474000A2F24 /* AssetExchageUsdtConverter.swift in Sources */,
 				F652C0081A957CCE6266D204 /* ImportCloudPasswordWireframe.swift in Sources */,
+				0C0F6E352D464BFE00943A7C /* MythosStakingStakePresenterValidating.swift in Sources */,
 				6D55D47510FAA4D33E1F1D7C /* ImportCloudPasswordPresenter.swift in Sources */,
 				51B9CE9BD264AB3B83BFB3D0 /* ImportCloudPasswordInteractor.swift in Sources */,
 				93C916ABA2CA86484FB35CCB /* ImportCloudPasswordViewController.swift in Sources */,

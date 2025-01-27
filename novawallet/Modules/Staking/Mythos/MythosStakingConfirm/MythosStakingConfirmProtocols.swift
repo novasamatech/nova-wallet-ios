@@ -11,5 +11,6 @@ protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentab
     FeeRetryable,
     ModalAlertPresenting,
     MessageSheetPresentable,
+    MythosStakingErrorPresentable,
     ExtrinsicSigningErrorHandling,
     ExtrinsicSubmissionPresenting {}

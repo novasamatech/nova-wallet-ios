@@ -44,12 +44,6 @@ extension ParaStkStakeSetupPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.notExceedsMaxCollators(
-                delegator: delegator,
-                maxCollatorsAllowed: maxDelegations,
-                locale: selectedLocale
-            ),
-
             dataValidatingFactory.isActiveCollator(for: collatorMetadata, locale: selectedLocale),
 
             dataValidatingFactory.canStakeBottomDelegations(
@@ -61,7 +55,7 @@ extension ParaStkStakeSetupPresenter {
 
             dataValidatingFactory.hasMinStake(
                 amount: inputAmount,
-                minTechStake: minStake,
+                minStake: minStake,
                 locale: selectedLocale
             ),
 

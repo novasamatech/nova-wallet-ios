@@ -12,15 +12,16 @@ final class MythosStakingConfirmPresenter {
     let logger: LoggerProtocol
     let collator: DisplayAddress
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidationFactory: MythosStakingValidationFactoryProtocol
 
-    private var balance: AssetBalance?
+    private(set) var balance: AssetBalance?
     private(set) var frozenBalance: MythosStakingFrozenBalance?
-    private var stakingDetails: MythosStakingDetails?
-    private var price: PriceData?
-    private var fee: ExtrinsicFeeProtocol?
-    private var minStake: Balance?
-    private var maxCollatorsPerStaker: UInt32?
-    private var currentBlock: BlockNumber?
+    private(set) var stakingDetails: MythosStakingDetails?
+    private(set) var price: PriceData?
+    private(set) var fee: ExtrinsicFeeProtocol?
+    private(set) var minStake: Balance?
+    private(set) var maxCollatorsPerStaker: UInt32?
+    private(set) var currentBlock: BlockNumber?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -31,6 +32,7 @@ final class MythosStakingConfirmPresenter {
         selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         model: MythosStakingConfirmModel,
+        dataValidationFactory: MythosStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -40,6 +42,7 @@ final class MythosStakingConfirmPresenter {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
         self.model = model.stakeModel
+        self.dataValidationFactory = dataValidationFactory
         stakingDetails = model.stakingDetails
         collator = model.collator
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -107,14 +110,6 @@ private extension MythosStakingConfirmPresenter {
         }
     }
 
-    func refreshFee() {
-        fee = nil
-
-        interactor.estimateFee(with: model)
-
-        provideFeeViewModel()
-    }
-
     func presentOptions(for address: AccountAddress) {
         guard let view = view else {
             return
@@ -126,6 +121,14 @@ private extension MythosStakingConfirmPresenter {
             chain: chainAsset.chain,
             locale: selectedLocale
         )
+    }
+
+    func refreshFee() {
+        fee = nil
+
+        interactor.estimateFee(with: model)
+
+        provideFeeViewModel()
     }
 
     func submitExtrinsic() {
@@ -141,6 +144,30 @@ private extension MythosStakingConfirmPresenter {
         provideFeeViewModel()
         provideCollatorViewModel()
         provideHintsViewModel()
+    }
+
+    func getValidationDependencies() -> MythosStakePresenterValidatingDep {
+        let allowedAmount = MythosStakingBalanceState(
+            balance: balance,
+            frozenBalance: frozenBalance,
+            stakingDetails: stakingDetails,
+            currentBlock: currentBlock
+        )?.stakableAmount()
+
+        return MythosStakePresenterValidatingDep(
+            inputAmount: model.amount.toStake.decimal(assetInfo: chainAsset.assetDisplayInfo),
+            allowedAmount: allowedAmount,
+            balance: balance,
+            minStake: minStake,
+            stakingDetails: stakingDetails,
+            selectedCollator: model.collator,
+            fee: fee,
+            maxCollatorsPerStaker: maxCollatorsPerStaker,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            onFeeRefresh: { [weak self] in
+                self?.refreshFee()
+            }
+        )
     }
 }
 
@@ -166,9 +193,25 @@ extension MythosStakingConfirmPresenter: CollatorStakingConfirmPresenterProtocol
     }
 
     func confirm() {
-        // TODO: Add validations
+        let onSuccess: () -> Void = { [weak self] in
+            self?.submitExtrinsic()
+        }
 
-        submitExtrinsic()
+        if stakingDetails != nil {
+            validateStakeMore(
+                for: getValidationDependencies(),
+                dataValidationFactory: dataValidationFactory,
+                selectedLocale: selectedLocale,
+                onSuccess: onSuccess
+            )
+        } else {
+            validateStartStaking(
+                for: getValidationDependencies(),
+                dataValidationFactory: dataValidationFactory,
+                selectedLocale: selectedLocale,
+                onSuccess: onSuccess
+            )
+        }
     }
 }
 
@@ -261,6 +304,8 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
         }
     }
 }
+
+extension MythosStakingConfirmPresenter: MythosStakePresenterValidating {}
 
 extension MythosStakingConfirmPresenter: Localizable {
     func applyLocalization() {

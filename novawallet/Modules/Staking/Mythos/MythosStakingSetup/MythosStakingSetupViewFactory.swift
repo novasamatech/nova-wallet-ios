@@ -32,10 +32,17 @@ struct MythosStakingSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let dataValidationFactory = MythosStakingValidationFactory(
+            presentable: wireframe,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
         let presenter = MythosStakingSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
+            dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
             initialStakingDetails: initialStakingDetails,
@@ -56,6 +63,7 @@ struct MythosStakingSetupViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidationFactory.view = view
 
         return view
     }
