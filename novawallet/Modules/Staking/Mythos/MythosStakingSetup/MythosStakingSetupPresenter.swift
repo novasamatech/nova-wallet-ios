@@ -61,12 +61,12 @@ private extension MythosStakingSetupPresenter {
 
     func getStakingModel() -> MythosStakeModel? {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
-        let precicion = chainAsset.assetDisplayInfo.assetPrecision
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
 
         guard
             let collator = getCollatorAccount(),
             let balanceState = getBalanceState(),
-            let amount = inputAmount.toSubstrateAmount(precision: precicion),
+            let amount = inputAmount.toSubstrateAmount(precision: precision),
             let modelAmount = balanceState.deriveStakeAmountModel(for: amount) else {
             return nil
         }
@@ -169,7 +169,7 @@ private extension MythosStakingSetupPresenter {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         let amountReturn: Decimal
-        let exitingStake: Decimal
+        let existingStake: Decimal
 
         if
             let rewardCalculator = rewardCalculator,
@@ -183,14 +183,14 @@ private extension MythosStakingSetupPresenter {
             amountReturn = calculatedReturn ?? 0
 
             let stakeInPlank = existingStakeInPlank() ?? 0
-            exitingStake = stakeInPlank.decimal(assetInfo: chainAsset.assetDisplayInfo)
+            existingStake = stakeInPlank.decimal(assetInfo: chainAsset.assetDisplayInfo)
         } else {
             let calculatedReturn = rewardCalculator?.calculateMaxReturn(for: .year)
             amountReturn = calculatedReturn ?? 0
-            exitingStake = 0
+            existingStake = 0
         }
 
-        let rewardAmount = (inputAmount + exitingStake) * amountReturn
+        let rewardAmount = (inputAmount + existingStake) * amountReturn
 
         let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
             rewardAmount,
@@ -237,11 +237,11 @@ private extension MythosStakingSetupPresenter {
         fee = nil
         provideFeeViewModel()
 
+        let collator = getCollatorAccount() ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
+
         let stakeModel = MythosStakeModel(
             amount: amountModel,
-            collator: getCollatorAccount() ?? AccountId.zeroAccountId(
-                of: chainAsset.chain.accountIdSize
-            )
+            collator: collator
         )
 
         interactor.estimateFee(with: stakeModel)
@@ -283,7 +283,8 @@ private extension MythosStakingSetupPresenter {
             return
         }
 
-        changeCollator(with: DisplayAddress(address: newAddress, username: name ?? ""))
+        let displayAddress = DisplayAddress(address: newAddress, username: name ?? "")
+        changeCollator(with: displayAddress)
     }
 
     func getValidationDependencies() -> MythosStakePresenterValidatingDep {
