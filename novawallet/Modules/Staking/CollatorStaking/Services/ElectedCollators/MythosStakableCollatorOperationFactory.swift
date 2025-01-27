@@ -126,6 +126,11 @@ extension MythosStakableCollatorOperationFactory: CollatorStakingStakableFactory
                     return nil
                 }
 
+                // full collators are not stakable anymore
+                guard collatorInfo.stakers < maxStakers else {
+                    return nil
+                }
+
                 let apr = try? rewardsEngine.calculateAPR(for: collatorId)
 
                 return MythosCollatorSelectionInfo(
