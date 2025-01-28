@@ -20,6 +20,7 @@ enum MythosStakingPallet {
         @StringCodable var stake: Balance
         let candidates: [BytesCodable]
         let maybeLastUnstake: UserStakeUnavailable?
+        @OptionStringCodable var maybeLastRewardSession: SessionIndex?
     }
 
     struct CandidateStakeInfo: Codable, Equatable {
