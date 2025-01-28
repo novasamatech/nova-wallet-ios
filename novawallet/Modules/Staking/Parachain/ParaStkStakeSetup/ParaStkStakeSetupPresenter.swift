@@ -502,7 +502,20 @@ extension ParaStkStakeSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {
-        wireframe.showCollatorSelection(from: view, delegate: self)
+        DataValidationRunner(validators: [
+            dataValidatingFactory.notExceedsMaxCollatorsForDelegator(
+                delegator,
+                selectedCollator: nil,
+                maxCollatorsAllowed: maxDelegations,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            guard let self else {
+                return
+            }
+
+            wireframe.showCollatorSelection(from: view, delegate: self)
+        }
     }
 }
 

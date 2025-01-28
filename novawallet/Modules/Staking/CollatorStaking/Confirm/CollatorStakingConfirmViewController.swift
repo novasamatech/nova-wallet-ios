@@ -1,15 +1,15 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkStakeConfirmViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParaStkStakeConfirmViewLayout
+final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
+    typealias RootViewType = CollatorStakingConfirmViewLayout
 
-    let presenter: ParaStkStakeConfirmPresenterProtocol
+    let presenter: CollatorStakingConfirmPresenterProtocol
 
     let localizableTitle: LocalizableResource<String>
 
     init(
-        presenter: ParaStkStakeConfirmPresenterProtocol,
+        presenter: CollatorStakingConfirmPresenterProtocol,
         localizableTitle: LocalizableResource<String>,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -27,7 +27,7 @@ final class ParaStkStakeConfirmViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ParaStkStakeConfirmViewLayout()
+        view = CollatorStakingConfirmViewLayout()
     }
 
     override func viewDidLoad() {
@@ -93,7 +93,7 @@ final class ParaStkStakeConfirmViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ParaStkStakeConfirmViewController: ParaStkStakeConfirmViewProtocol {
+extension CollatorStakingConfirmViewController: CollatorStakingConfirmViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -128,7 +128,7 @@ extension ParaStkStakeConfirmViewController: ParaStkStakeConfirmViewProtocol {
     }
 }
 
-extension ParaStkStakeConfirmViewController: Localizable {
+extension CollatorStakingConfirmViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

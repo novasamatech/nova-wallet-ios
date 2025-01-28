@@ -28,6 +28,8 @@ extension ParaStkStakableCollatorsOperationFactory: CollatorStakingStakableFacto
             try wrapper.targetOperation.extractNoCancellableResultData()
         }
 
+        mappingOperation.addDependency(wrapper.targetOperation)
+
         return wrapper.insertingTail(operation: mappingOperation)
     }
 }

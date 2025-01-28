@@ -1,34 +1,30 @@
 import Foundation
 import SoraFoundation
-import SubstrateSdk
-import Operation_iOS
 
-struct MythosStakingSetupViewFactory {
+struct MythosStakingConfirmViewFactory {
     static func createView(
         for state: MythosStakingSharedStateProtocol,
-        initialStakingDetails: MythosStakingDetails?
-    ) -> CollatorStakingSetupViewProtocol? {
+        model: MythosStakingConfirmModel
+    ) -> CollatorStakingConfirmViewProtocol? {
+        let chainAsset = state.stakingOption.chainAsset
+
         guard
+            let interactor = createInteractor(for: state),
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(
-                for: state,
-                initialStakingDetails: initialStakingDetails
+            let selectedAccount = SelectedWalletSettings.shared.value.fetchMetaChainAccount(
+                for: chainAsset.chain.accountRequest()
             ) else {
             return nil
         }
 
-        let chainAsset = state.stakingOption.chainAsset
-
-        let wireframe = MythosStakingSetupWireframe(state: state)
-
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-
-        let accountDetailsFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
+        let wireframe = MythosStakingConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
+            targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -38,26 +34,23 @@ struct MythosStakingSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let presenter = MythosStakingSetupPresenter(
+        let presenter = MythosStakingConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            selectedAccount: selectedAccount,
             chainAsset: chainAsset,
+            model: model,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            accountDetailsViewModelFactory: accountDetailsFactory,
-            initialStakingDetails: initialStakingDetails,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let localizableTitle = CollatorStakingStakeScreenTitle.setup(
-            hasStake: initialStakingDetails != nil,
-            assetSymbol: chainAsset.asset.symbol
-        )
+        let screenTitle = CollatorStakingStakeScreenTitle.confirm(hasStake: model.stakingDetails != nil)
 
-        let view = CollatorStakingSetupViewController(
+        let view = CollatorStakingConfirmViewController(
             presenter: presenter,
-            localizableTitle: localizableTitle(),
+            localizableTitle: screenTitle(),
             localizationManager: localizationManager
         )
 
@@ -69,9 +62,8 @@ struct MythosStakingSetupViewFactory {
     }
 
     private static func createInteractor(
-        for state: MythosStakingSharedStateProtocol,
-        initialStakingDetails: MythosStakingDetails?
-    ) -> MythosStakingSetupInteractor? {
+        for state: MythosStakingSharedStateProtocol
+    ) -> MythosStakingConfirmInteractor? {
         let chain = state.stakingOption.chainAsset.chain
 
         guard
@@ -86,10 +78,6 @@ struct MythosStakingSetupViewFactory {
             return nil
         }
 
-        let repositoryFactory = SubstrateRepositoryFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
-
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
@@ -101,38 +89,24 @@ struct MythosStakingSetupViewFactory {
             chain: chain
         )
 
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(
-                operationQueue: OperationManagerFacade.sharedDefaultQueue
-            )
-        )
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityProxyFactory = IdentityProxyFactory(
-            originChain: chain,
-            chainRegistry: state.chainRegistry,
-            identityOperationFactory: identityOperationFactory
-        )
-
-        let preferredCollatorFactory: PreferredStakingCollatorFactory? = if initialStakingDetails == nil {
-            // add pref collators only for first staking
-
-            PreferredStakingCollatorFactory(
-                chain: chain,
+        let extrinsicSubmissionMonitor = ExtrinsicSubmissionMonitorFactory(
+            submissionService: extrinsicService,
+            statusService: ExtrinsicStatusService(
                 connection: connection,
-                runtimeService: runtimeProvider,
-                collatorService: state.collatorService,
-                rewardService: state.rewardCalculatorService,
-                identityProxyFactory: identityProxyFactory,
-                preferredCollatorProvider: state.preferredCollatorsProvider,
-                operationQueue: OperationManagerFacade.sharedDefaultQueue
-            )
-        } else {
-            nil
-        }
+                runtimeProvider: runtimeProvider,
+                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue)
+            ),
+            operationQueue: operationQueue
+        )
 
-        return MythosStakingSetupInteractor(
+        let signer = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
+            accountResponse: selectedAccount
+        )
+
+        return MythosStakingConfirmInteractor(
             chainAsset: state.stakingOption.chainAsset,
             selectedAccount: selectedAccount,
             stakingDetailsService: stakingDetailsService,
@@ -141,16 +115,14 @@ struct MythosStakingSetupViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            rewardService: state.rewardCalculatorService,
-            preferredCollatorFactory: preferredCollatorFactory,
+            extrinsicSubmitionMonitor: extrinsicSubmissionMonitor,
+            signer: signer,
+            sharedOperation: state.sharedOperation,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
-            connection: connection,
             runtimeProvider: runtimeProvider,
-            repositoryFactory: repositoryFactory,
-            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
     }
