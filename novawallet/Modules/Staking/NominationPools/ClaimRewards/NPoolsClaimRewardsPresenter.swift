@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 final class NPoolsClaimRewardsPresenter {
-    weak var view: NPoolsClaimRewardsViewProtocol?
+    weak var view: StakingClaimRewardsViewProtocol?
     let wireframe: NPoolsClaimRewardsWireframeProtocol
     let interactor: NPoolsClaimRewardsInteractorInputProtocol
     let chainAsset: ChainAsset
@@ -97,7 +97,7 @@ final class NPoolsClaimRewardsPresenter {
     }
 
     private func provideClaimStrategy() {
-        view?.didReceiveClaimStrategy(viewModel: claimRewardsStrategy)
+        view?.didReceiveClaimStrategy(viewModel: claimRewardsStrategy.toViewMode())
     }
 
     private func updateView() {
@@ -120,7 +120,7 @@ final class NPoolsClaimRewardsPresenter {
     }
 }
 
-extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsPresenterProtocol {
+extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
     func setup() {
         updateView()
 

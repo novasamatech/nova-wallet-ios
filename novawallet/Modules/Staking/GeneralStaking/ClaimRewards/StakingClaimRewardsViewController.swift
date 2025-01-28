@@ -1,12 +1,12 @@
 import UIKit
 import SoraFoundation
 
-final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
-    typealias RootViewType = NPoolsClaimRewardsViewLayout
+final class StakingClaimRewardsViewController: UIViewController, ViewHolder {
+    typealias RootViewType = StakingClaimRewardsViewLayout
 
-    let presenter: NPoolsClaimRewardsPresenterProtocol
+    let presenter: StakingClaimRewardsPresenterProtocol
 
-    init(presenter: NPoolsClaimRewardsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: StakingClaimRewardsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
 
         super.init(nibName: nil, bundle: nil)
@@ -20,7 +20,7 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = NPoolsClaimRewardsViewLayout()
+        view = StakingClaimRewardsViewLayout()
     }
 
     override func viewDidLoad() {
@@ -92,7 +92,7 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
+extension StakingClaimRewardsViewController: StakingClaimRewardsViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -109,13 +109,13 @@ extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveClaimStrategy(viewModel: NominationPools.ClaimRewardsStrategy) {
+    func didReceiveClaimStrategy(viewModel: StakingClaimRewardsViewMode) {
         let shouldRestake = viewModel == .restake
         rootView.restakeCell.switchControl.setOn(shouldRestake, animated: false)
     }
 }
 
-extension NPoolsClaimRewardsViewController: Localizable {
+extension StakingClaimRewardsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

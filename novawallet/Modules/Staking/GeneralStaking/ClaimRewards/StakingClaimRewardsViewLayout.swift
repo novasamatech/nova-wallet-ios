@@ -1,6 +1,6 @@
 import UIKit
 
-final class NPoolsClaimRewardsViewLayout: SCLoadableActionLayoutView {
+final class StakingClaimRewardsViewLayout: SCLoadableActionLayoutView {
     let amountView = MultilineBalanceView()
 
     let walletTableView = StackTableView()
