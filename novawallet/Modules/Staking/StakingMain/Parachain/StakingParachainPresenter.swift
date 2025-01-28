@@ -260,7 +260,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         stateMachine.state.process(scheduledRequests: requests ?? [])
     }
 
-    func didReceiveDelegations(_ delegations: [CollatorSelectionInfo]) {
+    func didReceiveDelegations(_ delegations: [ParachainStkCollatorSelectionInfo]) {
         stateMachine.state.process(delegations: delegations)
     }
 

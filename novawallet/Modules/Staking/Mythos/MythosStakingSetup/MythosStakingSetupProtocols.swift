@@ -30,7 +30,10 @@ protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable
         initialDelegator: MythosStakingDetails?
     )
 
-    func showCollatorSelection(from view: CollatorStakingSetupViewProtocol?)
+    func showCollatorSelection(
+        from view: CollatorStakingSetupViewProtocol?,
+        delegate: CollatorStakingSelectDelegate
+    )
 }
 
 enum MythosStakingSetupError: Error {
