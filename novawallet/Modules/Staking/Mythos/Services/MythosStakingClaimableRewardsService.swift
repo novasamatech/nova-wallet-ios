@@ -105,7 +105,7 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
         callStore.cancel()
     }
 
-    private func setupSubscription(for chainId: ChainModel.Id, accountId _: AccountId) {
+    private func setupSubscription(for chainId: ChainModel.Id) {
         currentSessionProvider = subscribeToCurrentSession(
             for: chainId,
             callbackQueue: workQueue
@@ -115,7 +115,7 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
     override func performSyncUp() {
         if currentSessionProvider == nil {
             clearSubscriptionAndRequest()
-            setupSubscription(for: chainId, accountId: accountId)
+            setupSubscription(for: chainId)
         } else {
             callStore.cancel()
             updateState()
@@ -141,7 +141,7 @@ extension MythosStakingClaimableRewardsService: MythosStakingLocalStorageSubscri
 
         switch result {
         case let .success(session):
-            logger.debug("Session: \(session)")
+            logger.debug("Session: \(String(describing: session))")
 
             markSyncingImmediate()
             updateState()
