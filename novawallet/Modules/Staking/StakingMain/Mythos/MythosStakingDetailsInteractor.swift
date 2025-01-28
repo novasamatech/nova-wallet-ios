@@ -1,6 +1,7 @@
 import UIKit
 import Operation_iOS
 import SubstrateSdk
+import SoraFoundation
 
 final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
     weak var presenter: MythosStakingDetailsInteractorOutputProtocol?
@@ -9,11 +10,12 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         sharedState.chainRegistry
     }
 
-    let selectedAccount: ChainAccountResponse
+    let selectedAccount: MetaChainAccountResponse
     let sharedState: MythosStakingSharedStateProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
+    let applicationHandler: ApplicationHandlerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -30,12 +32,17 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         sharedState.stakingOption.chainAsset
     }
 
+    var selectedAccountId: AccountId {
+        selectedAccount.chainAccount.accountId
+    }
+
     init(
-        selectedAccount: ChainAccountResponse,
+        selectedAccount: MetaChainAccountResponse,
         sharedState: MythosStakingSharedStateProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -45,6 +52,7 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.eventCenter = eventCenter
+        self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
         self.logger = logger
         self.currencyManager = currencyManager
@@ -57,13 +65,16 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
 
 extension MythosStakingDetailsInteractor {
     func setupState() {
-        sharedState.setup(for: selectedAccount.accountId)
+        sharedState.setup(for: selectedAccountId)
+
+        presenter?.didReceiveChainAsset(chainAsset)
+        presenter?.didReceiveAccount(selectedAccount)
     }
 
     func makeBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
         balanceProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.accountId,
+            for: selectedAccountId,
             chainId: chain.chainId,
             assetId: chainAsset.asset.assetId
         )
@@ -89,10 +100,20 @@ extension MythosStakingDetailsInteractor {
         }
     }
 
+    func makeClaimableRewardsSubscription() {
+        sharedState.claimableRewardsService?.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, newState in
+            self?.presenter?.didReceiveClaimableRewards(newState)
+        }
+    }
+
     func setupFrozenStore() {
         if frozenBalanceStore == nil {
             frozenBalanceStore = MythosStakingFrozenBalanceStore(
-                accountId: selectedAccount.accountId,
+                accountId: selectedAccountId,
                 chainAssetId: chainAsset.chainAssetId,
                 walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
                 logger: logger
@@ -106,9 +127,7 @@ extension MythosStakingDetailsInteractor {
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            if let newState {
-                self?.presenter?.didReceiveFrozenBalance(newState)
-            }
+            self?.presenter?.didReceiveFrozenBalance(newState)
         }
     }
 
@@ -129,7 +148,7 @@ extension MythosStakingDetailsInteractor {
         }
     }
 
-    func providerRewardsCalculator() {
+    func provideRewardsCalculator() {
         let operation = sharedState.rewardCalculatorService.fetchCalculatorOperation()
 
         execute(
@@ -153,11 +172,16 @@ extension MythosStakingDetailsInteractor: MythosStakingDetailsInteractorInputPro
 
         makeBalanceSubscription()
         makePriceSubscription()
-        makeStakingDetailsSubscription()
         setupFrozenStore()
+        makeStakingDetailsSubscription()
+        makeClaimableRewardsSubscription()
 
-        providerRewardsCalculator()
+        provideRewardsCalculator()
         provideElectedCollators()
+
+        eventCenter.add(observer: self, dispatchIn: .main)
+
+        applicationHandler.delegate = self
     }
 }
 
@@ -172,7 +196,7 @@ extension MythosStakingDetailsInteractor: WalletLocalStorageSubscriber,
         guard
             chainId == chain.chainId,
             assetId == chainAsset.asset.assetId,
-            accountId == selectedAccount.accountId else {
+            accountId == selectedAccountId else {
             return
         }
 
@@ -182,6 +206,23 @@ extension MythosStakingDetailsInteractor: WalletLocalStorageSubscriber,
         case let .failure(error):
             logger.error("Balance subscription error: \(error)")
         }
+    }
+}
+
+extension MythosStakingDetailsInteractor: EventVisitorProtocol {
+    func processEraStakersInfoChanged(event: EraStakersInfoChanged) {
+        guard event.chainId == chain.chainId else {
+            return
+        }
+
+        provideElectedCollators()
+        provideRewardsCalculator()
+    }
+}
+
+extension MythosStakingDetailsInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        priceProvider?.refresh()
     }
 }
 

@@ -27,7 +27,8 @@ extension StakingMainPresenterFactory {
 
         let presenter = MythosStakingDetailsPresenter(
             interactor: interactor,
-            wireframe: wireframe
+            wireframe: wireframe,
+            logger: Logger.shared
         )
 
         presenter.view = view
@@ -41,7 +42,7 @@ extension StakingMainPresenterFactory {
 
         guard
             let currencyManager = CurrencyManager.shared,
-            let selectedAccount = SelectedWalletSettings.shared.value?.fetch(
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: chainAsset.chain.accountRequest()
             ) else {
             return nil
@@ -53,6 +54,7 @@ extension StakingMainPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
+            applicationHandler: ApplicationHandler(),
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared

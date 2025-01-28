@@ -167,6 +167,13 @@
 		0C0F6E412D47431B00943A7C /* MythosStakingClaimRewardsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E402D47431B00943A7C /* MythosStakingClaimRewardsFactory.swift */; };
 		0C0F6E472D47559100943A7C /* MythosClaimRewardsPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E462D47559100943A7C /* MythosClaimRewardsPresenting.swift */; };
 		0C0F6E4A2D47E80B00943A7C /* MythosStakingCommonData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E492D47E80B00943A7C /* MythosStakingCommonData.swift */; };
+		0C0F6E4C2D488E3800943A7C /* MythosStakingBaseState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E4B2D488E3800943A7C /* MythosStakingBaseState.swift */; };
+		0C0F6E4F2D488EF400943A7C /* MythosStakingStateMachineProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E4E2D488EF400943A7C /* MythosStakingStateMachineProtocols.swift */; };
+		0C0F6E512D4891AE00943A7C /* MythosStakingInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E502D4891AE00943A7C /* MythosStakingInitState.swift */; };
+		0C0F6E532D48934400943A7C /* MythosStakingDelegatorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E522D48934400943A7C /* MythosStakingDelegatorState.swift */; };
+		0C0F6E552D4894D100943A7C /* MythosStakingLockedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E542D4894D100943A7C /* MythosStakingLockedState.swift */; };
+		0C0F6E572D48983100943A7C /* MythosStakingDelegatorTransitionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E562D48983100943A7C /* MythosStakingDelegatorTransitionState.swift */; };
+		0C0F6E592D489C5900943A7C /* MythosStakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E582D489C5900943A7C /* MythosStakingStateMachine.swift */; };
 		0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */; };
 		0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */; };
 		0C11D8562CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */; };
@@ -5651,6 +5658,13 @@
 		0C0F6E402D47431B00943A7C /* MythosStakingClaimRewardsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingClaimRewardsFactory.swift; sourceTree = "<group>"; };
 		0C0F6E462D47559100943A7C /* MythosClaimRewardsPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosClaimRewardsPresenting.swift; sourceTree = "<group>"; };
 		0C0F6E492D47E80B00943A7C /* MythosStakingCommonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingCommonData.swift; sourceTree = "<group>"; };
+		0C0F6E4B2D488E3800943A7C /* MythosStakingBaseState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingBaseState.swift; sourceTree = "<group>"; };
+		0C0F6E4E2D488EF400943A7C /* MythosStakingStateMachineProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingStateMachineProtocols.swift; sourceTree = "<group>"; };
+		0C0F6E502D4891AE00943A7C /* MythosStakingInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingInitState.swift; sourceTree = "<group>"; };
+		0C0F6E522D48934400943A7C /* MythosStakingDelegatorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingDelegatorState.swift; sourceTree = "<group>"; };
+		0C0F6E542D4894D100943A7C /* MythosStakingLockedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingLockedState.swift; sourceTree = "<group>"; };
+		0C0F6E562D48983100943A7C /* MythosStakingDelegatorTransitionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingDelegatorTransitionState.swift; sourceTree = "<group>"; };
+		0C0F6E582D489C5900943A7C /* MythosStakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingStateMachine.swift; sourceTree = "<group>"; };
 		0C11D8512CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8532CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraStableswapExchangeEdge.swift; sourceTree = "<group>"; };
 		0C11D8552CC9F9E6003EC46D /* HydraXYKExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKExchangeEdge.swift; sourceTree = "<group>"; };
@@ -11577,8 +11591,23 @@
 			isa = PBXGroup;
 			children = (
 				0C0F6E492D47E80B00943A7C /* MythosStakingCommonData.swift */,
+				0C0F6E4B2D488E3800943A7C /* MythosStakingBaseState.swift */,
+				0C0F6E502D4891AE00943A7C /* MythosStakingInitState.swift */,
+				0C0F6E522D48934400943A7C /* MythosStakingDelegatorState.swift */,
+				0C0F6E542D4894D100943A7C /* MythosStakingLockedState.swift */,
+				0C0F6E562D48983100943A7C /* MythosStakingDelegatorTransitionState.swift */,
 			);
 			path = States;
+			sourceTree = "<group>";
+		};
+		0C0F6E4D2D488ED800943A7C /* StateMachine */ = {
+			isa = PBXGroup;
+			children = (
+				0C0F6E482D47E7AD00943A7C /* States */,
+				0C0F6E4E2D488EF400943A7C /* MythosStakingStateMachineProtocols.swift */,
+				0C0F6E582D489C5900943A7C /* MythosStakingStateMachine.swift */,
+			);
+			path = StateMachine;
 			sourceTree = "<group>";
 		};
 		0C12BC382CEA7E8500AB919D /* Price */ = {
@@ -23629,7 +23658,7 @@
 		8F7A1E3EDBEE67AC353B846D /* Mythos */ = {
 			isa = PBXGroup;
 			children = (
-				0C0F6E482D47E7AD00943A7C /* States */,
+				0C0F6E4D2D488ED800943A7C /* StateMachine */,
 				ABA5068F5423120E26213B28 /* MythosStakingDetailsProtocols.swift */,
 				6747AEB4CCEA363BD12D587C /* MythosStakingDetailsWireframe.swift */,
 				D5138BB19BDFFEB8BBF8B82C /* MythosStakingDetailsPresenter.swift */,
@@ -27189,6 +27218,7 @@
 				84FCCD98292E3610002D2D3D /* JSONRPCError+Evm.swift in Sources */,
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
+				0C0F6E552D4894D100943A7C /* MythosStakingLockedState.swift in Sources */,
 				84796080283B63240084E779 /* LoadableActionView.swift in Sources */,
 				84FD3DBB254104B600A234E3 /* WalletTransactionListUpdated.swift in Sources */,
 				842EBB2928908ADB00B952D8 /* WalletsListTableViewCell.swift in Sources */,
@@ -28572,6 +28602,7 @@
 				8444D137267117A200AF6D8C /* BifrostBonusService.swift in Sources */,
 				84BB3D00267D364D00676FFE /* CompoundOperationWrapper+Dependency.swift in Sources */,
 				8467FD5524EFD254005D486C /* StorageFacadeProtocol.swift in Sources */,
+				0C0F6E4C2D488E3800943A7C /* MythosStakingBaseState.swift in Sources */,
 				84953F682934C8A70033F47D /* EtherscanERC20HistoryInfo.swift in Sources */,
 				84CFF1EF26526FBC00DB7CF7 /* StakingBondMoreConfirmationPresenter.swift in Sources */,
 				0C21D7802AB432B100EB2DBD /* MainTabBarIndex.swift in Sources */,
@@ -28727,6 +28758,7 @@
 				06590486EED4050BADDD32C5 /* AccountManagementPresenter.swift in Sources */,
 				846A68292746234100D1A47A /* ChainConnection.swift in Sources */,
 				849A16452995229F00E235FE /* GovernanceDelegateConfirmPresenter+Updates.swift in Sources */,
+				0C0F6E532D48934400943A7C /* MythosStakingDelegatorState.swift in Sources */,
 				88B1C33F29B9C86D00DCA101 /* BagListCalls.swift in Sources */,
 				8487584127F0842D00495306 /* AddressQRMatcher.swift in Sources */,
 				2D389B102C86FEFB00256C7B /* StackCardUpdatable.swift in Sources */,
@@ -29091,6 +29123,7 @@
 				2D1D66002CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift in Sources */,
 				0C7CF4D62BD4E5350015DD45 /* KeychainProxy.swift in Sources */,
 				9A6A55297F41DAE45071BF57 /* ExportSeedInteractor.swift in Sources */,
+				0C0F6E572D48983100943A7C /* MythosStakingDelegatorTransitionState.swift in Sources */,
 				0CE933C02C068BF2000F3EFE /* AddAccount+ImportOptionsPresenter.swift in Sources */,
 				886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */,
 				C20ED4531583D0C8E38715E0 /* PurchaseProtocols.swift in Sources */,
@@ -30680,6 +30713,7 @@
 				2A0FBBB56C88EB36B5CAE317 /* GovernanceDelegateInfoViewController.swift in Sources */,
 				77ED167C2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift in Sources */,
 				507AFE76D2D4EF2F739AE799 /* GovernanceDelegateInfoViewLayout.swift in Sources */,
+				0C0F6E592D489C5900943A7C /* MythosStakingStateMachine.swift in Sources */,
 				0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */,
 				2D74CA4B2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift in Sources */,
 				B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */,
@@ -30732,6 +30766,7 @@
 				B062216285AFF6AA1E1E78D3 /* GovernanceUnavailableTracksPresenter.swift in Sources */,
 				76B0B7147181747A7CEDDDF6 /* GovernanceUnavailableTracksViewController.swift in Sources */,
 				384653967D27BD0F39F09255 /* GovernanceUnavailableTracksViewLayout.swift in Sources */,
+				0C0F6E4F2D488EF400943A7C /* MythosStakingStateMachineProtocols.swift in Sources */,
 				0CEB6B312CA424C500609DC2 /* XcmV3AssetId.swift in Sources */,
 				0C7104922C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift in Sources */,
 				8863C7B029D49CB70068AD54 /* Web3NameViewModelFactory.swift in Sources */,
@@ -31325,6 +31360,7 @@
 				CB86DDFBAB085C75CA39E98D /* SwipeGovReferendumDetailsInteractor.swift in Sources */,
 				2B0B3DE595860BCA13DD745E /* SwipeGovReferendumDetailsViewController.swift in Sources */,
 				E462E4E84BE98F8CC83827A2 /* SwipeGovReferendumDetailsViewLayout.swift in Sources */,
+				0C0F6E512D4891AE00943A7C /* MythosStakingInitState.swift in Sources */,
 				13C118A723E684D4272845FB /* SwipeGovReferendumDetailsViewFactory.swift in Sources */,
 				00AE6FF475338CEF6C65F3B0 /* SwipeGovVotingConfirmProtocols.swift in Sources */,
 				6919F96BC31D29A3FD1557AE /* SwipeGovVotingConfirmWireframe.swift in Sources */,

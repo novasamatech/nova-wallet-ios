@@ -1,46 +1,17 @@
 import Foundation
 
 struct MythosStakingCommonData {
-    let account: MetaChainAccountResponse
-    let chainAsset: ChainAsset
+    let account: MetaChainAccountResponse?
+    let chainAsset: ChainAsset?
     let balance: AssetBalance?
-    let frozenBalance: MythosStakingFrozenBalance?
     let price: PriceData?
-    let stakingDetails: MythosStakingDetails?
     let collatorsInfo: MythosSessionCollators?
     let stakingDuration: MythosStakingDuration?
     let calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?
     let blockNumber: BlockNumber?
     let currentSession: SessionIndex?
     let totalReward: TotalRewardItem?
-    
-    init(
-        account: MetaChainAccountResponse,
-        chainAsset: ChainAsset,
-        balance: AssetBalance? = nil,
-        frozenBalance: MythosStakingFrozenBalance? = nil,
-        price: PriceData? = nil,
-        stakingDetails: MythosStakingDetails? = nil,
-        collatorsInfo: MythosSessionCollators? = nil,
-        stakingDuration: MythosStakingDuration? = nil,
-        calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol? = nil,
-        blockNumber: BlockNumber? = nil,
-        currentSession: SessionIndex? = nil,
-        totalReward: TotalRewardItem? = nil
-    ) {
-        self.account = account
-        self.chainAsset = chainAsset
-        self.balance = balance
-        self.frozenBalance = frozenBalance
-        self.price = price
-        self.stakingDetails = stakingDetails
-        self.collatorsInfo = collatorsInfo
-        self.stakingDuration = stakingDuration
-        self.calculatorEngine = calculatorEngine
-        self.blockNumber = blockNumber
-        self.currentSession = currentSession
-        self.totalReward = totalReward
-    }
+    let claimableRewards: MythosStakingClaimableRewards?
 
     var roundCountdown: ChainSessionCountdown? {
         if
@@ -61,108 +32,118 @@ struct MythosStakingCommonData {
 }
 
 extension MythosStakingCommonData {
-    func byReplacing(assetBalance: AssetBalance?) -> MythosStakingCommonData {
+    static var empty: MythosStakingCommonData {
+        MythosStakingCommonData(
+            account: nil,
+            chainAsset: nil,
+            balance: nil,
+            price: nil,
+            collatorsInfo: nil,
+            stakingDuration: nil,
+            calculatorEngine: nil,
+            blockNumber: nil,
+            currentSession: nil,
+            totalReward: nil,
+            claimableRewards: nil
+        )
+    }
+
+    func byReplacing(account: MetaChainAccountResponse?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
-    func byReplacing(frozenBalance: MythosStakingFrozenBalance?) -> MythosStakingCommonData {
+
+    func byReplacing(chainAsset: ChainAsset?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
+
+    func byReplacing(balance: AssetBalance?) -> MythosStakingCommonData {
+        MythosStakingCommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            collatorsInfo: collatorsInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            blockNumber: blockNumber,
+            currentSession: currentSession,
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
+        )
+    }
+
     func byReplacing(price: PriceData?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
-    func byReplacing(stakingDetails: MythosStakingDetails?) -> MythosStakingCommonData {
-        MythosStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            frozenBalance: frozenBalance,
-            price: price,
-            stakingDetails: stakingDetails,
-            collatorsInfo: collatorsInfo,
-            stakingDuration: stakingDuration,
-            calculatorEngine: calculatorEngine,
-            blockNumber: blockNumber,
-            currentSession: currentSession,
-            totalReward: totalReward
-        )
-    }
-    
+
     func byReplacing(collatorsInfo: MythosSessionCollators?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
+
     func byReplacing(stakingDuration: MythosStakingDuration?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
+
     func byReplacing(
         calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?
     ) -> MythosStakingCommonData {
@@ -170,66 +151,78 @@ extension MythosStakingCommonData {
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
+
     func byReplacing(blockNumber: BlockNumber?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
+
     func byReplacing(currentSession: SessionIndex?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
-    
+
     func byReplacing(totalReward: TotalRewardItem?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
             balance: balance,
-            frozenBalance: frozenBalance,
             price: price,
-            stakingDetails: stakingDetails,
             collatorsInfo: collatorsInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             blockNumber: blockNumber,
             currentSession: currentSession,
-            totalReward: totalReward
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
+        )
+    }
+
+    func byReplacing(claimableRewards: MythosStakingClaimableRewards?) -> MythosStakingCommonData {
+        MythosStakingCommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            collatorsInfo: collatorsInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            blockNumber: blockNumber,
+            currentSession: currentSession,
+            totalReward: totalReward,
+            claimableRewards: claimableRewards
         )
     }
 }
