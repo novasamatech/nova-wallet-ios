@@ -53,20 +53,8 @@ class MythosStakingBaseState: MythosStakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
-    func process(stakingDuration: MythosStakingDuration?) {
-        commonData = commonData.byReplacing(stakingDuration: stakingDuration)
-
-        stateMachine?.transit(to: self)
-    }
-
     func process(collatorsInfo: MythosSessionCollators?) {
         commonData = commonData.byReplacing(collatorsInfo: collatorsInfo)
-
-        stateMachine?.transit(to: self)
-    }
-
-    func process(calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?) {
-        commonData = commonData.byReplacing(calculatorEngine: calculatorEngine)
 
         stateMachine?.transit(to: self)
     }
@@ -75,20 +63,14 @@ class MythosStakingBaseState: MythosStakingStateProtocol {
 
     func process(frozenBalance _: MythosStakingFrozenBalance?) {}
 
-    func process(blockNumber: BlockNumber?) {
-        commonData = commonData.byReplacing(blockNumber: blockNumber)
-
-        stateMachine?.transit(to: self)
-    }
-
-    func process(currentSession: SessionIndex?) {
-        commonData = commonData.byReplacing(currentSession: currentSession)
-
-        stateMachine?.transit(to: self)
-    }
-
     func process(totalReward: TotalRewardItem?) {
         commonData = commonData.byReplacing(totalReward: totalReward)
+
+        stateMachine?.transit(to: self)
+    }
+
+    func process(totalRewardFilter: StakingRewardFiltersPeriod?) {
+        commonData = commonData.byReplacing(totalRewardFilter: totalRewardFilter)
 
         stateMachine?.transit(to: self)
     }

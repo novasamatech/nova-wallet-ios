@@ -25,9 +25,14 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Presenter
 
+        let priceAssetInfo = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let viewModelFactory = MythosStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfo)
+
         let presenter = MythosStakingDetailsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
             logger: Logger.shared
         )
 

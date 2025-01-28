@@ -14,7 +14,7 @@ extension CollatorStakingDelegator {
             StakingTarget(candidate: $0.owner, amount: $0.amount)
         }
     }
-    
+
     init(mythosDelegator: MythosStakingDetails) {
         delegations = mythosDelegator.stakeDistribution.map { keyValue in
             StakingTarget(candidate: keyValue.key, amount: keyValue.value.stake)

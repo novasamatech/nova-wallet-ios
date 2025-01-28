@@ -4,6 +4,7 @@ final class MythosStakingDetailsPresenter {
     weak var view: StakingMainViewProtocol?
     let wireframe: MythosStakingDetailsWireframeProtocol
     let interactor: MythosStakingDetailsInteractorInputProtocol
+    let viewModelFactory: MythosStkStateViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     let stateMachine: MythosStakingStateMachineProtocol
@@ -11,10 +12,12 @@ final class MythosStakingDetailsPresenter {
     init(
         interactor: MythosStakingDetailsInteractorInputProtocol,
         wireframe: MythosStakingDetailsWireframeProtocol,
+        viewModelFactory: MythosStkStateViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
         self.logger = logger
 
         let stateMachine = MythosStakingStateMachine()
@@ -25,7 +28,10 @@ final class MythosStakingDetailsPresenter {
 }
 
 private extension MythosStakingDetailsPresenter {
-    func provideStateViewModel() {}
+    func provideStateViewModel() {
+        let viewModel = viewModelFactory.createViewModel(from: stateMachine.state)
+        view?.didReceiveStakingState(viewModel: viewModel)
+    }
 }
 
 extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
@@ -41,9 +47,14 @@ extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
 
     func performManageAction(_: StakingManageOption) {}
 
-    func performAlertAction(_: StakingAlert) {}
+    func performAlertAction(_: StakingAlert) {
+        // TODO: Implement in separate task
+    }
 
-    func selectPeriod(_: StakingRewardFiltersPeriod) {}
+    func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
+        stateMachine.state.process(totalRewardFilter: filter)
+        interactor.update(totalRewardFilter: filter)
+    }
 }
 
 extension MythosStakingDetailsPresenter: MythosStakingStateMachineDelegate {
@@ -89,12 +100,6 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         stateMachine.state.process(collatorsInfo: collators)
     }
 
-    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
-        logger.debug("Rewards Calculator: \(String(describing: calculator))")
-
-        stateMachine.state.process(calculatorEngine: calculator)
-    }
-
     func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?) {
         logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
 
@@ -105,5 +110,11 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         logger.debug("Frozen balance: \(String(describing: frozenBalance))")
 
         stateMachine.state.process(frozenBalance: frozenBalance)
+    }
+
+    func didReceiveTotalReward(_ totalReward: TotalRewardItem?) {
+        logger.debug("Total reward: \(totalReward)")
+
+        stateMachine.state.process(totalReward: totalReward)
     }
 }

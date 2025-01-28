@@ -13,11 +13,11 @@ final class MythosStkStateViewModelFactory {
     init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
-    
+
     private func createDelegationStatus(
         for activeStake: Balance,
         collatorStatuses: [CollatorStakingDelegationStatus]?,
-        commonData: MythosStakingCommonData
+        commonData _: MythosStakingCommonData
     ) -> NominationViewStatus {
         guard let statuses = collatorStatuses else {
             return .undefined
@@ -37,7 +37,7 @@ final class MythosStkStateViewModelFactory {
     private func createDelegationViewModel(
         for chainAsset: ChainAsset,
         commonData: MythosStakingCommonData,
-        delegator: MythosStakingDetails,
+        totalStake: Balance,
         viewStatus: NominationViewStatus
     ) -> LocalizableResource<NominationViewModel> {
         let displayInfo = chainAsset.assetDisplayInfo
@@ -46,7 +46,7 @@ final class MythosStkStateViewModelFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let stakedAmount = delegator.staked.decimal(assetInfo: displayInfo)
+        let stakedAmount = totalStake.decimal(assetInfo: displayInfo)
 
         let staked = balanceViewModelFactory.balanceFromPrice(
             stakedAmount,
@@ -65,57 +65,62 @@ final class MythosStkStateViewModelFactory {
             )
         }
     }
-    
+
     private func createStakingRewardViewModel(
         for chainAsset: ChainAsset,
-        commonData: ParachainStaking.CommonData
+        commonData: MythosStakingCommonData
     ) -> LocalizableResource<StakingRewardViewModel> {
+        let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
+            targetAssetInfo: assetInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        if let totalReward = commonData.totalReward {
-            let localizableReward = balanceViewModelFactory.balanceFromPrice(
-                totalReward.amount.decimalValue,
+        let localizedTotalRewards = commonData.totalReward.map { rewards in
+            balanceViewModelFactory.balanceFromPrice(
+                rewards.amount.decimalValue,
                 priceData: commonData.price
             )
+        }
 
-            return LocalizableResource { locale in
-                let reward = localizableReward.value(for: locale)
-                let filter = commonData.totalRewardFilter.map { $0.title(
-                    calendar: self.calendar
-                ) }?.value(for: locale)
+        let localizedClaimableRewards = commonData.claimableRewards.map { claimable in
+            balanceViewModelFactory.balanceFromPrice(
+                claimable.total.decimal(assetInfo: assetInfo),
+                priceData: commonData.price
+            )
+        }
 
-                return StakingRewardViewModel(
-                    totalRewards: .loaded(value: reward),
-                    claimableRewards: nil,
-                    graphics: R.image.imageStakingTypeDirect(),
-                    filter: filter,
-                    hasPrice: chainAsset.asset.hasPrice
-                )
+        let localizedFilter = commonData.totalRewardFilter.map { $0.title(calendar: calendar) }
+
+        let canClaimRewards = commonData.claimableRewards?.shouldClaim ?? false
+
+        return LocalizableResource { locale in
+            let totalRewards = localizedTotalRewards?.value(for: locale)
+            let claimableReward = localizedClaimableRewards?.value(for: locale)
+            let claimableRewardViewModel = claimableReward.map {
+                StakingRewardViewModel.ClaimableRewards(balance: $0, canClaim: canClaimRewards)
             }
-        } else {
-            return LocalizableResource { _ in
-                StakingRewardViewModel(
-                    totalRewards: .loading,
-                    claimableRewards: nil,
-                    graphics: R.image.imageStakingTypeDirect(),
-                    filter: nil,
-                    hasPrice: chainAsset.asset.hasPrice
-                )
-            }
+
+            let filter = localizedFilter?.value(for: locale)
+
+            return StakingRewardViewModel(
+                totalRewards: totalRewards.map { .loaded(value: $0) } ?? .loading,
+                claimableRewards: claimableRewardViewModel.map { .loaded(value: $0) } ?? .loading,
+                graphics: R.image.imageStakingTypePool(),
+                filter: filter,
+                hasPrice: chainAsset.asset.hasPrice
+            )
         }
     }
-    
+
     private func createLockedStateManageOptions(
-        for state: MythosStakingLockedState
+        for _: MythosStakingLockedState
     ) -> [StakingManageOption] {
         [
             .stakeMore
         ]
     }
-    
+
     private func createDelegatorStateManageOptions(
         for state: MythosStakingDelegatorState
     ) -> [StakingManageOption] {
@@ -128,26 +133,59 @@ final class MythosStkStateViewModelFactory {
 }
 
 extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
-    func visit(state: MythosStakingInitState) {
+    func visit(state _: MythosStakingInitState) {
         lastViewModel = .undefined
     }
-    
-    func visit(state: MythosStakingDelegatorTransitionState) {
+
+    func visit(state _: MythosStakingDelegatorTransitionState) {
         lastViewModel = .undefined
     }
-    
+
     func visit(state: MythosStakingLockedState) {
-        
+        guard let chainAsset = state.commonData.chainAsset else {
+            lastViewModel = .undefined
+            return
+        }
+
+        let delegationViewModel = createDelegationViewModel(
+            for: chainAsset,
+            commonData: state.commonData,
+            totalStake: 0,
+            viewStatus: .inactive
+        )
+
+        // TODO: Implement in separate task
+        let unbondings: StakingUnbondingViewModel? = nil
+
+        // TODO: Implement in separate task
+        let alerts: [StakingAlert] = []
+
+        let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
+
+        let actions = createLockedStateManageOptions(for: state)
+
+        lastViewModel = .nominator(
+            viewModel: delegationViewModel,
+            alerts: alerts,
+            reward: reward,
+            unbondings: unbondings,
+            actions: actions
+        )
     }
-    
+
     func visit(state: MythosStakingDelegatorState) {
+        guard let chainAsset = state.commonData.chainAsset else {
+            lastViewModel = .undefined
+            return
+        }
+
         let delegator = CollatorStakingDelegator(mythosDelegator: state.stakingDetails)
-        
-        let electedSet = Set((state.commonData.collatorsInfo ?? []).map({ $0.accountId }))
-        
+
+        let electedSet = Set((state.commonData.collatorsInfo ?? []).map(\.accountId))
+
         let collatorsStatuses: [CollatorStakingDelegationStatus] = delegator.delegations.compactMap { delegation in
             let isElected = electedSet.contains(delegation.candidate)
-            
+
             return MythosStakingCollatorDelegationState(
                 delegatorModel: delegator,
                 accountId: delegation.candidate,
@@ -164,7 +202,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
         let delegationViewModel = createDelegationViewModel(
             for: chainAsset,
             commonData: state.commonData,
-            delegator: state.stakingDetails,
+            totalStake: state.stakingDetails.totalStake,
             viewStatus: delegationStatus
         )
 
@@ -172,7 +210,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
         let unbondings: StakingUnbondingViewModel? = nil
 
         // TODO: Implement in separate task
-        let alerts = []
+        let alerts: [StakingAlert] = []
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 

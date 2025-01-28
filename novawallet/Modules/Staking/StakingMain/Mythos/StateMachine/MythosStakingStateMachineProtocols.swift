@@ -14,14 +14,11 @@ protocol MythosStakingStateProtocol {
     func process(chainAsset: ChainAsset?)
     func process(balance: AssetBalance?)
     func process(price: PriceData?)
-    func process(stakingDuration: MythosStakingDuration?)
     func process(collatorsInfo: MythosSessionCollators?)
-    func process(calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?)
     func process(stakingDetails: MythosStakingDetails?)
     func process(frozenBalance: MythosStakingFrozenBalance?)
-    func process(blockNumber: BlockNumber?)
-    func process(currentSession: SessionIndex?)
     func process(totalReward: TotalRewardItem?)
+    func process(totalRewardFilter: StakingRewardFiltersPeriod?)
     func process(claimableRewards: MythosStakingClaimableRewards?)
 }
 

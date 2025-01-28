@@ -23,6 +23,9 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
 
     var priceProvider: StreamableProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
+    var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
+
+    var totalRewardInterval: StakingRewardFiltersInterval?
 
     var chain: ChainModel {
         chainAsset.chain
@@ -148,21 +151,8 @@ extension MythosStakingDetailsInteractor {
         }
     }
 
-    func provideRewardsCalculator() {
-        let operation = sharedState.rewardCalculatorService.fetchCalculatorOperation()
-
-        execute(
-            operation: operation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(calculator):
-                self?.presenter?.didReceiveRewardCalculator(calculator)
-            case let .failure(error):
-                self?.logger.error("Rewards service fetch failed: \(error)")
-            }
-        }
+    func makeTotalRewardSubscription() {
+        // TODO: Implment total reward subscription
     }
 }
 
@@ -175,13 +165,18 @@ extension MythosStakingDetailsInteractor: MythosStakingDetailsInteractorInputPro
         setupFrozenStore()
         makeStakingDetailsSubscription()
         makeClaimableRewardsSubscription()
+        makeTotalRewardSubscription()
 
-        provideRewardsCalculator()
         provideElectedCollators()
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
         applicationHandler.delegate = self
+    }
+
+    func update(totalRewardFilter: StakingRewardFiltersPeriod) {
+        totalRewardInterval = totalRewardFilter.interval
+        makeTotalRewardSubscription()
     }
 }
 
@@ -216,7 +211,6 @@ extension MythosStakingDetailsInteractor: EventVisitorProtocol {
         }
 
         provideElectedCollators()
-        provideRewardsCalculator()
     }
 }
 
