@@ -24,15 +24,11 @@ class ImportantFlowNavigationController: NovaNavigationController, ControllerBac
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        presentationController?.delegate = self
-    }
 }
 
-extension ImportantFlowNavigationController: UIAdaptivePresentationControllerDelegate, AlertPresentable {
+// MARK: ModalCardPresentationControllerDelegate
+
+extension ImportantFlowNavigationController: ModalCardPresentationControllerDelegate {
     func presentationControllerShouldDismiss(_: UIPresentationController) -> Bool {
         let containsImportantViews = viewControllers.contains { ($0 as? ImportantViewProtocol) != nil }
         return !containsImportantViews
@@ -59,3 +55,7 @@ extension ImportantFlowNavigationController: UIAdaptivePresentationControllerDel
         present(viewModel: viewModel, style: .actionSheet, from: self)
     }
 }
+
+// MARK: AlertPresentable
+
+extension ImportantFlowNavigationController: AlertPresentable {}

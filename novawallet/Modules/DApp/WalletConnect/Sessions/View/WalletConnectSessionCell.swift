@@ -27,7 +27,7 @@ final class WalletConnectSessionCell: PlainBaseTableViewCell<WalletConnectSessio
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
 
-        iconView.contentInsets = DAppIconCellConstants.insets
+        iconView.contentInsets = .zero
 
         contentDisplayView.titleView.setHorizontalAndSpacing(12)
         contentDisplayView.titleView.stackView.alignment = .center
@@ -54,7 +54,7 @@ final class WalletConnectSessionCell: PlainBaseTableViewCell<WalletConnectSessio
     }
 
     func bind(viewModel: WalletConnectSessionListViewModel) {
-        iconView.bind(viewModel: viewModel.iconViewModel, size: DAppIconCellConstants.displaySize)
+        iconView.bind(viewModel: viewModel.iconViewModel, size: DAppIconCellConstants.size)
 
         titleLabel.text = viewModel.title
 

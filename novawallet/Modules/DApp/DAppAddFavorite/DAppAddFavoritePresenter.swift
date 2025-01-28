@@ -5,6 +5,7 @@ final class DAppAddFavoritePresenter {
     weak var view: DAppAddFavoriteViewProtocol?
     let wireframe: DAppAddFavoriteWireframeProtocol
     let interactor: DAppAddFavoriteInteractorInputProtocol
+    let iconViewModelFactory: DAppIconViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
     private(set) var titleViewModel: InputViewModelProtocol?
@@ -15,10 +16,12 @@ final class DAppAddFavoritePresenter {
     init(
         interactor: DAppAddFavoriteInteractorInputProtocol,
         wireframe: DAppAddFavoriteWireframeProtocol,
+        iconViewModelFactory: DAppIconViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.iconViewModelFactory = iconViewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -27,14 +30,7 @@ final class DAppAddFavoritePresenter {
             return
         }
 
-        let iconViewModel: ImageViewModelProtocol
-
-        if let icon = proposedModel.icon, let url = URL(string: icon) {
-            iconViewModel = RemoteImageViewModel(url: url)
-        } else {
-            let defaultIcon = R.image.iconDefaultDapp()!
-            iconViewModel = StaticImageViewModel(image: defaultIcon)
-        }
+        let iconViewModel = iconViewModelFactory.createIconViewModel(for: proposedModel)
 
         view?.didReceive(iconViewModel: iconViewModel)
 
@@ -72,7 +68,12 @@ extension DAppAddFavoritePresenter: DAppAddFavoritePresenterProtocol {
             return
         }
 
-        let favorite = DAppFavorite(identifier: urlString, label: title, icon: proposedModel?.icon)
+        let favorite = DAppFavorite(
+            identifier: urlString,
+            label: title,
+            icon: proposedModel?.icon,
+            index: nil
+        )
         interactor.save(favorite: favorite)
     }
 }

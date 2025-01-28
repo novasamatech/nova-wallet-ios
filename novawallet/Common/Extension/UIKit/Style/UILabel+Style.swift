@@ -116,6 +116,11 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let semiboldCaption1Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCaption1
+    )
+
     static let caption1Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .caption1

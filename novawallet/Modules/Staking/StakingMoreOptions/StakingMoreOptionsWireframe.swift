@@ -1,15 +1,6 @@
 import Foundation
 
 final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
-    func showBrowser(from view: ControllerBackedProtocol?, for dApp: DApp) {
-        guard let browserView = DAppBrowserViewFactory.createView(for: .dApp(model: dApp)) else {
-            return
-        }
-
-        browserView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
-    }
-
     func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
         chainAsset: ChainAsset,
@@ -24,6 +15,6 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(navigationController, animated: true, completion: nil)
     }
 }

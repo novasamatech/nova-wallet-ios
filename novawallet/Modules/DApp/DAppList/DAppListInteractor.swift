@@ -73,25 +73,9 @@ final class DAppListInteractor {
             options: options
         )
     }
-
-    func addToFavorites(dApp: DApp) {
-        let model = DAppFavorite(
-            identifier: dApp.url.absoluteString,
-            label: dApp.name,
-            icon: dApp.icon?.absoluteString
-        )
-
-        let saveOperation = dAppsFavoriteRepository.saveOperation({ [model] }, { [] })
-
-        operationQueue.addOperation(saveOperation)
-    }
-
-    func removeFromFavorites(dAppIdentifier: String) {
-        let saveOperation = dAppsFavoriteRepository.saveOperation({ [] }, { [dAppIdentifier] })
-
-        operationQueue.addOperation(saveOperation)
-    }
 }
+
+// MARK: DAppListInteractorInputProtocol
 
 extension DAppListInteractor: DAppListInteractorInputProtocol {
     func setup() {
@@ -118,11 +102,15 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
     }
 }
 
+// MARK: EventVisitorProtocol
+
 extension DAppListInteractor: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         provideWallet()
     }
 }
+
+// MARK: DAppLocalStorageSubscriber
 
 extension DAppListInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionHandler {
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {

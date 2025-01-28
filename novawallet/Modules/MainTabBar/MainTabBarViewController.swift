@@ -31,6 +31,7 @@ final class MainTabBarViewController: UITabBarController {
 
         delegate = self
 
+        definesPresentationContext = true
         sharedStatusBarPresenter.delegate = self
 
         configureTabBar()
@@ -73,6 +74,8 @@ final class MainTabBarViewController: UITabBarController {
     }
 }
 
+// MARK: UITabBarControllerDelegate
+
 extension MainTabBarViewController: UITabBarControllerDelegate {
     func tabBarController(
         _: UITabBarController,
@@ -87,7 +90,40 @@ extension MainTabBarViewController: UITabBarControllerDelegate {
     }
 }
 
+// MARK: MainTabBarViewProtocol
+
 extension MainTabBarViewController: MainTabBarViewProtocol {
+    func presentedController() -> UIViewController? {
+        if let presentedViewController {
+            return presentedViewController
+        } else {
+            let topViewControllers: [UIViewController]? = viewControllers?.compactMap {
+                ($0 as? UINavigationController)?.topViewController
+            }
+
+            return topViewControllers?
+                .filter { $0.presentedViewController != nil }
+                .first?
+                .presentedViewController
+        }
+    }
+
+    func topViewController() -> UIViewController? {
+        let navigationController = selectedViewController as? UINavigationController
+
+        let topController = if let presentedViewController {
+            presentedViewController
+        } else if let topModalViewController = navigationController?.topModalViewController {
+            topModalViewController
+        } else if let topViewController = navigationController?.topViewController {
+            topViewController
+        } else {
+            navigationController?.viewControllers.first
+        }
+
+        return topController
+    }
+
     func didReplaceView(for newView: UIViewController, for index: Int) {
         guard var newViewControllers = viewControllers else {
             return
@@ -124,11 +160,15 @@ extension MainTabBarViewController: MainTabBarViewProtocol {
     }
 }
 
+// MARK: SharedStatusPresenterDelegate
+
 extension MainTabBarViewController: SharedStatusPresenterDelegate {
     func didTapSharedStatusView() {
         presenter.activateStatusAction()
     }
 }
+
+// MARK: Localizable
 
 extension MainTabBarViewController: Localizable {
     func applyLocalization() {

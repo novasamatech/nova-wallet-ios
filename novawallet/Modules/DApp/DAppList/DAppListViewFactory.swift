@@ -7,7 +7,48 @@ struct DAppListViewFactory {
         walletNotificationService: WalletNotificationServiceProtocol,
         proxySyncService: ProxySyncServiceProtocol
     ) -> DAppListViewProtocol? {
-        let dAppsUrl = ApplicationConfig.shared.dAppsListURL
+        let interactor = createInteractor(
+            walletNotificationService: walletNotificationService,
+            proxySyncService: proxySyncService
+        )
+
+        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
+
+        let localizationManager = LocalizationManager.shared
+
+        let viewModelFactory = DAppListViewModelFactory(
+            dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
+            dappIconViewModelFactory: DAppIconViewModelFactory()
+        )
+
+        let dAppNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
+
+        let presenter = DAppListPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            browserNavigationTaskFactory: dAppNavigationTaskFactory,
+            initialWallet: SelectedWalletSettings.shared.value,
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
+        )
+
+        let view = DAppListViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createInteractor(
+        walletNotificationService: WalletNotificationServiceProtocol,
+        proxySyncService _: ProxySyncServiceProtocol
+    ) -> DAppListInteractor {
+        let appConfig = ApplicationConfig.shared
+        let dAppsUrl = appConfig.dAppsListURL
         let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
             for: dAppsUrl
         )
@@ -16,7 +57,7 @@ struct DAppListViewFactory {
 
         let phishingSiteRepository = SubstrateRepositoryFactory().createPhishingSitesRepository()
         let phishingSyncService = PhishingSitesSyncService(
-            url: ApplicationConfig.shared.phishingDAppsURL,
+            url: appConfig.phishingDAppsURL,
             operationFactory: GitHubOperationFactory(),
             operationQueue: sharedQueue,
             repository: phishingSiteRepository
@@ -40,25 +81,6 @@ struct DAppListViewFactory {
             logger: logger
         )
 
-        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
-
-        let localizationManager = LocalizationManager.shared
-
-        let presenter = DAppListPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
-            localizationManager: localizationManager
-        )
-
-        let view = DAppListViewController(
-            presenter: presenter,
-            localizationManager: localizationManager
-        )
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return view
+        return interactor
     }
 }
