@@ -26,7 +26,7 @@ extension StartStakingInfoViewFactory {
 
         let interactor = createMythosInteractor(state: state, currencyManager: currencyManager)
 
-        let wireframe = StartStakingInfoMythosWireframe()
+        let wireframe = StartStakingInfoMythosWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: stakingOption.chainAsset.assetDisplayInfo,

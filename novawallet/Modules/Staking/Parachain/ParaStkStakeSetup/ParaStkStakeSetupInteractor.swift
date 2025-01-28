@@ -10,8 +10,8 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     let selectedAccount: MetaChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let preferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol?
-    let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?
+    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
@@ -37,8 +37,8 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        preferredCollatorFactory: ParaStkPreferredCollatorFactoryProtocol?,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
+        preferredCollatorFactory: PreferredStakingCollatorFactoryProtocol?,
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         connection: JSONRPCEngine,

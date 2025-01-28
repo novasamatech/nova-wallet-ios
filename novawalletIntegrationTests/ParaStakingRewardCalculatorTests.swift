@@ -33,7 +33,7 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
         for chainId: ChainModel.Id,
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol
-    ) throws -> ParaStakingRewardCalculatorEngineProtocol? {
+    ) throws -> CollatorStakingRewardCalculatorEngineProtocol? {
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),

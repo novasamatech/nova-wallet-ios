@@ -50,7 +50,7 @@ protocol StartStakingInfoParachainInteractorOutputProtocol: StartStakingInfoInte
     func didReceive(networkInfo: ParachainStaking.NetworkInfo?)
     func didReceive(error: ParachainStartStakingInfoError)
     func didReceive(parastakingRound: ParachainStaking.RoundInfo?)
-    func didReceive(calculator: ParaStakingRewardCalculatorEngineProtocol)
+    func didReceive(calculator: CollatorStakingRewardCalculatorEngineProtocol)
     func didReceive(blockNumber: BlockNumber?)
     func didReceive(stakingDuration: ParachainStakingDuration)
     func didReceive(rewardPaymentDelay: UInt32)

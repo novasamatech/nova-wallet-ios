@@ -1,17 +1,16 @@
 import UIKit
-
 import SoraFoundation
 
-final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
-    typealias RootViewType = ParaStkStakeSetupViewLayout
+final class CollatorStakingSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
+    typealias RootViewType = CollatorStakingSetupViewLayout
 
-    let presenter: ParaStkStakeSetupPresenterProtocol
+    let presenter: CollatorStakingSetupPresenterProtocol
     let localizableTitle: LocalizableResource<String>
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
 
     init(
-        presenter: ParaStkStakeSetupPresenterProtocol,
+        presenter: CollatorStakingSetupPresenterProtocol,
         localizableTitle: LocalizableResource<String>,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -29,7 +28,7 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, Impor
     }
 
     override func loadView() {
-        view = ParaStkStakeSetupViewLayout()
+        view = CollatorStakingSetupViewLayout()
     }
 
     override func viewDidLoad() {
@@ -196,7 +195,7 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, Impor
     }
 }
 
-extension ParaStkStakeSetupViewController: ParaStkStakeSetupViewProtocol {
+extension CollatorStakingSetupViewController: CollatorStakingSetupViewProtocol {
     func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?) {
         collatorViewModel = viewModel
 
@@ -228,7 +227,7 @@ extension ParaStkStakeSetupViewController: ParaStkStakeSetupViewProtocol {
     }
 }
 
-extension ParaStkStakeSetupViewController: AmountInputAccessoryViewDelegate {
+extension CollatorStakingSetupViewController: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
         rootView.amountInputView.textField.resignFirstResponder()
 
@@ -240,7 +239,7 @@ extension ParaStkStakeSetupViewController: AmountInputAccessoryViewDelegate {
     }
 }
 
-extension ParaStkStakeSetupViewController: Localizable {
+extension CollatorStakingSetupViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

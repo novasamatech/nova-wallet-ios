@@ -32,12 +32,7 @@ struct ParaStkUnstakeViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let assetFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
-        let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
-            formatter: assetFormatter,
-            chainFormat: chainAsset.chain.chainFormat,
-            assetPrecision: assetDisplayInfo.assetPrecision
-        )
+        let accountDetailsFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
 
         let localizationManager = LocalizationManager.shared
 

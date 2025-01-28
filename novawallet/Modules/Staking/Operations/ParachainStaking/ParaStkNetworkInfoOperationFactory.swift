@@ -5,7 +5,7 @@ import BigInt
 protocol ParaStkNetworkInfoOperationFactoryProtocol {
     func networkStakingOperation(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardCalculatorService: ParaStakingRewardCalculatorServiceProtocol,
+        rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<ParachainStaking.NetworkInfo>
 }
@@ -42,7 +42,7 @@ final class ParaStkNetworkInfoOperationFactory {
 extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactoryProtocol {
     func networkStakingOperation(
         for collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardCalculatorService: ParaStakingRewardCalculatorServiceProtocol,
+        rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<ParachainStaking.NetworkInfo> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
