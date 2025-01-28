@@ -700,6 +700,8 @@
 		0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957242B6A566B009AD757 /* HydraDx+Call.swift */; };
 		0CAB674C2D49136100E3A844 /* StakingClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */; };
 		0CAB674F2D4913E500E3A844 /* StakingClaimRewardsViewMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB674E2D4913E500E3A844 /* StakingClaimRewardsViewMode.swift */; };
+		0CAB67512D49326700E3A844 /* StakingGenericRewardsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB67502D49326700E3A844 /* StakingGenericRewardsViewLayout.swift */; };
+		0CAB67532D49338000E3A844 /* StakingGenericRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB67522D49338000E3A844 /* StakingGenericRewardsViewController.swift */; };
 		0CAB7D9F2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7D9E2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift */; };
 		0CAB7DA12C4714CD0070CE4D /* StakingActivityProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7DA02C4714CD0070CE4D /* StakingActivityProviding.swift */; };
 		0CAB7DA32C471AAE0070CE4D /* DirectStkRecommendingValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB7DA22C471AAE0070CE4D /* DirectStkRecommendingValidationFactory.swift */; };
@@ -6237,6 +6239,8 @@
 		0CA957242B6A566B009AD757 /* HydraDx+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+Call.swift"; sourceTree = "<group>"; };
 		0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimRewardsProtocols.swift; sourceTree = "<group>"; };
 		0CAB674E2D4913E500E3A844 /* StakingClaimRewardsViewMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimRewardsViewMode.swift; sourceTree = "<group>"; };
+		0CAB67502D49326700E3A844 /* StakingGenericRewardsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGenericRewardsViewLayout.swift; sourceTree = "<group>"; };
+		0CAB67522D49338000E3A844 /* StakingGenericRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGenericRewardsViewController.swift; sourceTree = "<group>"; };
 		0CAB7D9E2C46B05F0070CE4D /* PoolStakingRecommendingValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolStakingRecommendingValidationFactory.swift; sourceTree = "<group>"; };
 		0CAB7DA02C4714CD0070CE4D /* StakingActivityProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingActivityProviding.swift; sourceTree = "<group>"; };
 		0CAB7DA22C471AAE0070CE4D /* DirectStkRecommendingValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectStkRecommendingValidationFactory.swift; sourceTree = "<group>"; };
@@ -12719,6 +12723,8 @@
 				0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */,
 				50AFCEE78CDFC4FE3238E158 /* StakingClaimRewardsViewController.swift */,
 				6A7302440137F083F7AEC64E /* StakingClaimRewardsViewLayout.swift */,
+				0CAB67502D49326700E3A844 /* StakingGenericRewardsViewLayout.swift */,
+				0CAB67522D49338000E3A844 /* StakingGenericRewardsViewController.swift */,
 			);
 			path = ClaimRewards;
 			sourceTree = "<group>";
@@ -27010,6 +27016,7 @@
 				0C13DFE12AFBBAF600E5F355 /* SwapBaseViewModelFactory.swift in Sources */,
 				843E9B3627C8B915009C143A /* NftFileDownloadService.swift in Sources */,
 				842B17FF28649CCD0014CC57 /* CrossChainSelectionState.swift in Sources */,
+				0CAB67532D49338000E3A844 /* StakingGenericRewardsViewController.swift in Sources */,
 				8437F7C12924FF6400DB6366 /* EvmSubscriptionMessage.swift in Sources */,
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
 				2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */,
@@ -30777,6 +30784,7 @@
 				5ECC5F9E55FBC5CF2DD8664C /* GovernanceDelegateInfoWireframe.swift in Sources */,
 				D591F555544FB6329BFA835C /* GovernanceDelegateInfoPresenter.swift in Sources */,
 				0CE5BF4A6BC02563113DFDB8 /* GovernanceDelegateInfoInteractor.swift in Sources */,
+				0CAB67512D49326700E3A844 /* StakingGenericRewardsViewLayout.swift in Sources */,
 				2A0FBBB56C88EB36B5CAE317 /* GovernanceDelegateInfoViewController.swift in Sources */,
 				77ED167C2A0CF42E00E1FC8C /* StakingRewardFiltersPeriod.swift in Sources */,
 				507AFE76D2D4EF2F739AE799 /* GovernanceDelegateInfoViewLayout.swift in Sources */,

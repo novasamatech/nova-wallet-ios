@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 final class MythosStkClaimRewardsPresenter {
-    weak var view: StakingClaimRewardsViewProtocol?
+    weak var view: StakingGenericRewardsViewProtocol?
     let wireframe: MythosStkClaimRewardsWireframeProtocol
     let interactor: MythosStkClaimRewardsInteractorInputProtocol
     let chainAsset: ChainAsset
@@ -10,8 +10,6 @@ final class MythosStkClaimRewardsPresenter {
     let dataValidatorFactory: MythosStakingValidationFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let logger: LoggerProtocol
-
-    var claimRewardsStrategy: StakingClaimRewardsStrategy = .freeBalance
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -90,16 +88,11 @@ final class MythosStkClaimRewardsPresenter {
         view?.didReceiveFee(viewModel: viewModel)
     }
 
-    private func provideClaimStrategy() {
-        view?.didReceiveClaimStrategy(viewModel: claimRewardsStrategy)
-    }
-
     private func updateView() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideFee()
-        provideClaimStrategy()
     }
 
     private func refreshFee() {
@@ -110,7 +103,7 @@ final class MythosStkClaimRewardsPresenter {
     }
 }
 
-extension MythosStkClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
+extension MythosStkClaimRewardsPresenter: StakingGenericRewardsPresenterProtocol {
     func setup() {
         updateView()
 
@@ -157,17 +150,6 @@ extension MythosStkClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
             chain: chainAsset.chain,
             locale: selectedLocale
         )
-    }
-
-    func toggleClaimStrategy() {
-        switch claimRewardsStrategy {
-        case .freeBalance:
-            claimRewardsStrategy = .restake
-        case .restake:
-            claimRewardsStrategy = .freeBalance
-        }
-
-        refreshFee()
     }
 }
 

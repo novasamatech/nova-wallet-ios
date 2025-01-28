@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct MythosStkClaimRewardsViewFactory {
-    static func createView(for state: MythosStakingSharedStateProtocol) -> StakingClaimRewardsViewProtocol? {
+    static func createView(for state: MythosStakingSharedStateProtocol) -> StakingGenericRewardsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -45,8 +45,8 @@ struct MythosStkClaimRewardsViewFactory {
             logger: Logger.shared
         )
 
-        let view = StakingClaimRewardsViewController(
-            presenter: presenter,
+        let view = StakingBaseRewardsViewController(
+            basePresenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 
