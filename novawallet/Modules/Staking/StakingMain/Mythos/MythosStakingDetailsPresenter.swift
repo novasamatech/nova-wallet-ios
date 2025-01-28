@@ -96,11 +96,17 @@ extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
         interactor.setup()
     }
 
-    func performRedeemAction() {}
+    func performRedeemAction() {
+        wireframe.showRedeemTokens(from: view)
+    }
 
-    func performRebondAction() {}
+    func performRebondAction() {
+        // not applicable to Mythos staking
+    }
 
-    func performClaimRewards() {}
+    func performClaimRewards() {
+        wireframe.showClaimRewards(from: view)
+    }
 
     func performManageAction(_ action: StakingManageOption) {
         switch action {
@@ -115,8 +121,18 @@ extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
         }
     }
 
-    func performAlertAction(_: StakingAlert) {
-        // TODO: Implement in separate task
+    func performAlertAction(_ alert: StakingAlert) {
+        switch alert {
+        case .redeemUnbonded:
+            performRedeemAction()
+        case .bondedSetValidators:
+            handleStakeMoreAction()
+        case .nominatorChangeValidators:
+            wireframe.showYourCollators(from: view)
+        case .rebag, .waitingNextEra, .nominatorAllOversubscribed, .nominatorLowStake:
+            // not applicable to Mythos staking
+            break
+        }
     }
 
     func selectPeriod(_ filter: StakingRewardFiltersPeriod) {
@@ -181,7 +197,7 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
     }
 
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?) {
-        logger.debug("Total reward: \(totalReward)")
+        logger.debug("Total reward: \(String(describing: totalReward))")
 
         stateMachine.state.process(totalReward: totalReward)
     }

@@ -28,4 +28,6 @@ protocol MythosStakingDetailsWireframeProtocol: AlertPresentable, ErrorPresentab
     )
 
     func showYourCollators(from view: ControllerBackedProtocol?)
+
+    func showRedeemTokens(from view: ControllerBackedProtocol?)
 }

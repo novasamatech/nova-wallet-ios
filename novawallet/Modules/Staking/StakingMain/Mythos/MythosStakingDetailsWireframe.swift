@@ -34,4 +34,8 @@ final class MythosStakingDetailsWireframe: MythosStakingDetailsWireframeProtocol
     func showYourCollators(from _: ControllerBackedProtocol?) {
         // TODO: Implement in a separate task
     }
+
+    func showRedeemTokens(from _: ControllerBackedProtocol?) {
+        // TODO: Implement in a separate task
+    }
 }
