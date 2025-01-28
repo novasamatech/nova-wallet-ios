@@ -5,19 +5,34 @@ final class MythosStakingDetailsPresenter {
     let wireframe: MythosStakingDetailsWireframeProtocol
     let interactor: MythosStakingDetailsInteractorInputProtocol
     let viewModelFactory: MythosStkStateViewModelFactoryProtocol
+    let dataValidationFactory: MythosStakingValidationFactoryProtocol
     let logger: LoggerProtocol
 
     let stateMachine: MythosStakingStateMachineProtocol
+
+    var stakingDetails: MythosStakingDetails? {
+        stateMachine.viewState { (state: MythosStakingDelegatorState) in
+            state.stakingDetails
+        }
+    }
+
+    var claimableRewards: MythosStakingClaimableRewards? {
+        stateMachine.viewState { (state: MythosStakingBaseState) in
+            state.commonData.claimableRewards
+        }
+    }
 
     init(
         interactor: MythosStakingDetailsInteractorInputProtocol,
         wireframe: MythosStakingDetailsWireframeProtocol,
         viewModelFactory: MythosStkStateViewModelFactoryProtocol,
+        dataValidationFactory: MythosStakingValidationFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.dataValidationFactory = dataValidationFactory
         self.logger = logger
 
         let stateMachine = MythosStakingStateMachine()
@@ -32,6 +47,48 @@ private extension MythosStakingDetailsPresenter {
         let viewModel = viewModelFactory.createViewModel(from: stateMachine.state)
         view?.didReceiveStakingState(viewModel: viewModel)
     }
+
+    func ensureRewardsClaimed(_ successClosure: @escaping () -> Void) {
+        guard let view else {
+            return
+        }
+
+        let validator = DataValidationRunner(validators: [
+            dataValidationFactory.noUnclaimedRewards(
+                claimableRewards?.shouldClaim ?? false,
+                claimAction: { [weak self] in
+                    self?.wireframe.showClaimRewards(from: self?.view)
+                },
+                locale: view.selectedLocale
+            )
+        ])
+
+        validator.runValidation {
+            successClosure()
+        }
+    }
+
+    func handleStakeMoreAction() {
+        ensureRewardsClaimed { [weak self] in
+            guard let self = self else { return }
+
+            wireframe.showStakeTokens(
+                from: view,
+                initialDetails: stakingDetails
+            )
+        }
+    }
+
+    func handleUnstakeAction() {
+        ensureRewardsClaimed { [weak self] in
+            guard let self = self else { return }
+
+            wireframe.showUnstakeTokens(
+                from: view,
+                initialDetails: stakingDetails
+            )
+        }
+    }
 }
 
 extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
@@ -45,7 +102,18 @@ extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
 
     func performClaimRewards() {}
 
-    func performManageAction(_: StakingManageOption) {}
+    func performManageAction(_ action: StakingManageOption) {
+        switch action {
+        case .stakeMore:
+            handleStakeMoreAction()
+        case .unstake:
+            handleUnstakeAction()
+        case .setupValidators, .changeValidators, .yourValidator:
+            wireframe.showYourCollators(from: view)
+        default:
+            break
+        }
+    }
 
     func performAlertAction(_: StakingAlert) {
         // TODO: Implement in separate task

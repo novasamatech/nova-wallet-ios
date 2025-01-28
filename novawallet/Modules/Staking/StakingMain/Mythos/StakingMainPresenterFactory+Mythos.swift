@@ -21,7 +21,7 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Router
 
-        let wireframe = MythosStakingDetailsWireframe()
+        let wireframe = MythosStakingDetailsWireframe(state: sharedState)
 
         // MARK: - Presenter
 
@@ -29,15 +29,23 @@ extension StakingMainPresenterFactory {
 
         let viewModelFactory = MythosStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfo)
 
+        let dataValidationFactory = MythosStakingValidationFactory(
+            presentable: wireframe,
+            assetDisplayInfo: stakingOption.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfo
+        )
+
         let presenter = MythosStakingDetailsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            dataValidationFactory: dataValidationFactory,
             logger: Logger.shared
         )
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidationFactory.view = view
 
         return presenter
     }

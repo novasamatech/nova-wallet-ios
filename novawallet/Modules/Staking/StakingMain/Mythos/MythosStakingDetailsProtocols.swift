@@ -15,4 +15,17 @@ protocol MythosStakingDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?)
 }
 
-protocol MythosStakingDetailsWireframeProtocol: AnyObject {}
+protocol MythosStakingDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
+    MythosStakingErrorPresentable, MythosClaimRewardsPresenting {
+    func showStakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDetails: MythosStakingDetails?
+    )
+
+    func showUnstakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDetails: MythosStakingDetails?
+    )
+
+    func showYourCollators(from view: ControllerBackedProtocol?)
+}
