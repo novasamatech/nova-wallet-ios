@@ -447,7 +447,7 @@ private extension DAppBrowserViewController {
 // MARK: DAppBrowserScriptHandlerDelegate
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
-    func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
+    func browserScriptHandler(_ handler: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
         let host = rootView.webView?.url?.host ?? ""
 
         if let transportName = handler.viewModel?.name {

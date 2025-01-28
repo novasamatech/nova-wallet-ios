@@ -17,7 +17,7 @@ final class PayCardWireframe: PayCardWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: sendTransferView.controller)
 
-        view?.controller.present(
+        view?.controller.presentWithCardLayout(
             navigationController,
             animated: true
         )
