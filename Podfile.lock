@@ -1416,38 +1416,38 @@ PODS:
     - SoraFoundation/NotificationHandlers
   - SoraFoundation/ViewModel (1.1.0)
   - SoraKeystore (1.0.0)
-  - SoraUI (1.13.0):
-    - SoraUI/AdaptiveDesign (= 1.13.0)
-    - SoraUI/Animator (= 1.13.0)
-    - SoraUI/Camera (= 1.13.0)
-    - SoraUI/Controls (= 1.13.0)
-    - SoraUI/DetailsView (= 1.13.0)
-    - SoraUI/EmptyState (= 1.13.0)
-    - SoraUI/Helpers (= 1.13.0)
-    - SoraUI/LoadingView (= 1.13.0)
-    - SoraUI/ModalPresentation (= 1.13.0)
-    - SoraUI/PageLoader (= 1.13.0)
-    - SoraUI/PinView (= 1.13.0)
-    - SoraUI/Skrull (= 1.13.0)
-  - SoraUI/AdaptiveDesign (1.13.0)
-  - SoraUI/Animator (1.13.0)
-  - SoraUI/Camera (1.13.0)
-  - SoraUI/Controls (1.13.0):
+  - SoraUI (1.14.0):
+    - SoraUI/AdaptiveDesign (= 1.14.0)
+    - SoraUI/Animator (= 1.14.0)
+    - SoraUI/Camera (= 1.14.0)
+    - SoraUI/Controls (= 1.14.0)
+    - SoraUI/DetailsView (= 1.14.0)
+    - SoraUI/EmptyState (= 1.14.0)
+    - SoraUI/Helpers (= 1.14.0)
+    - SoraUI/LoadingView (= 1.14.0)
+    - SoraUI/ModalPresentation (= 1.14.0)
+    - SoraUI/PageLoader (= 1.14.0)
+    - SoraUI/PinView (= 1.14.0)
+    - SoraUI/Skrull (= 1.14.0)
+  - SoraUI/AdaptiveDesign (1.14.0)
+  - SoraUI/Animator (1.14.0)
+  - SoraUI/Camera (1.14.0)
+  - SoraUI/Controls (1.14.0):
     - SoraUI/Animator
-  - SoraUI/DetailsView (1.13.0):
+  - SoraUI/DetailsView (1.14.0):
     - SoraUI/Controls
-  - SoraUI/EmptyState (1.13.0):
+  - SoraUI/EmptyState (1.14.0):
     - SoraUI/Animator
-  - SoraUI/Helpers (1.13.0)
-  - SoraUI/LoadingView (1.13.0):
+  - SoraUI/Helpers (1.14.0)
+  - SoraUI/LoadingView (1.14.0):
     - SoraUI/Controls
-  - SoraUI/ModalPresentation (1.13.0):
+  - SoraUI/ModalPresentation (1.14.0):
     - SoraUI/Animator
     - SoraUI/Controls
-  - SoraUI/PageLoader (1.13.0)
-  - SoraUI/PinView (1.13.0):
+  - SoraUI/PageLoader (1.14.0)
+  - SoraUI/PinView (1.14.0):
     - SoraUI/Controls
-  - SoraUI/Skrull (1.13.0)
+  - SoraUI/Skrull (1.14.0)
   - Sourcery (1.4.1)
   - Starscream (4.0.12)
   - SubstrateSdk (3.5.0):
@@ -1551,7 +1551,7 @@ DEPENDENCIES:
   - SnapKit (~> 5.0.0)
   - SoraFoundation (from `https://github.com/ERussel/Foundation-iOS.git`, tag `1.1.0`)
   - SoraKeystore (~> 1.0.0)
-  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.13.0`)
+  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.14.0`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
   - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.5.0`)
@@ -1645,7 +1645,7 @@ EXTERNAL SOURCES:
     :tag: 1.1.0
   SoraUI:
     :git: https://github.com/ERussel/UIkit-iOS.git
-    :tag: 1.13.0
+    :tag: 1.14.0
   Starscream:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
@@ -1688,7 +1688,7 @@ CHECKOUT OPTIONS:
     :tag: 1.1.0
   SoraUI:
     :git: https://github.com/ERussel/UIkit-iOS.git
-    :tag: 1.13.0
+    :tag: 1.14.0
   Starscream:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
@@ -1751,7 +1751,7 @@ SPEC CHECKSUMS:
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SoraFoundation: 5b9d3c82d602150d2c2e65481c5eca5f5987c12c
   SoraKeystore: 92cff6e2a12f212dd64ed089970ff7c365247b1c
-  SoraUI: 1d1a25881d1d597f19bc55f82c99ee236cc1ab11
+  SoraUI: b6528310c986fd7d15d0270322455dda78c0ecbf
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
   SubstrateSdk: e5aea1104b89dab2e2989fa9979854e1ca238f46
@@ -1771,6 +1771,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 9ee1d20436848ff58d57387fbd296c1b2d5c555d
+PODFILE CHECKSUM: f6a15f672eb764d421692c18845c883c76c9fd0d
 
 COCOAPODS: 1.15.2

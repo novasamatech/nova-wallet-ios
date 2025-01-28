@@ -8,7 +8,7 @@ struct WalletsListViewModel {
 }
 
 struct WalletsListSectionViewModel {
-    enum SectionType {
+    enum SectionType: Hashable {
         case secrets
         case watchOnly
         case paritySigner

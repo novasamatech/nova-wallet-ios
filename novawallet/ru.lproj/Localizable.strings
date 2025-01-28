@@ -1791,6 +1791,11 @@
 "common.fee.amount.prefixed" = "Комиссия: %@";
 "common.not.enough.to.pay.fee.message" = "У вас недостаточно средств для оплаты сетевой комиссии в размере %@. Текущий баланс: %@";
 "swap.delivery.fee.error.message" = "Из-за ограничений межсетевого взаимодействия у вас должно остаться как минимум %@ после операции";
+"common.see.all" = "Посмотреть все";
+"dapp.widget.close.alert.title" = "Закрыть все DApps?";
+"dapp.widget.close.alert.message" = "Все открытые вкладки в DApp браузере будут закрыты.";
+"common.close.all" = "Закрыть все";
+"dapp.browser.tab.not.available" = "Веб-страница недоступна";
 "common.manage.debit.card" = "Управление Дебетовой Картой";
 "common.estimated.timer" = "Ожидаемое ~%@";
 "card.open.pending.sheet.title" = "Ваша карта выпускается!";

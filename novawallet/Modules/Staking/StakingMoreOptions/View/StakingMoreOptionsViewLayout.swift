@@ -107,7 +107,7 @@ final class StakingMoreOptionsViewLayout: UIView {
         )
 
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 0, leading: 16, bottom: 13, trailing: 16)
+        section.contentInsets = .init(top: 13, leading: 16, bottom: 16, trailing: 16)
         section.interGroupSpacing = 0
 
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
@@ -122,7 +122,7 @@ final class StakingMoreOptionsViewLayout: UIView {
         let decorationItem = NSCollectionLayoutDecorationItem.background(
             elementKind: BlurBackgroundCollectionReusableView.reuseIdentifier
         )
-        decorationItem.contentInsets = .init(top: 44, leading: 16, bottom: 13, trailing: 16)
+        decorationItem.contentInsets = .init(top: 28, leading: 16, bottom: 13, trailing: 16)
 
         section.decorationItems = [
             decorationItem

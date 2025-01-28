@@ -1785,3 +1785,8 @@
 "common.fee.amount.prefixed" = "Tassa: %@";
 "common.not.enough.to.pay.fee.message" = "Non hai abbastanza saldo per pagare la tassa di rete di %@. Il saldo attuale è %@";
 "swap.delivery.fee.error.message" = "A causa delle restrizioni crosschain dovresti avere almeno %@ dopo l'operazione";
+"common.see.all" = "Vedi tutto";
+"dapp.widget.close.alert.title" = "Chiudere tutte le DApp?";
+"dapp.widget.close.alert.message" = "Tutte le schede aperte nel browser DApp saranno chiuse.";
+"common.close.all" = "Chiudi tutto";
+"dapp.browser.tab.not.available" = "Pagina web non disponibile";

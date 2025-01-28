@@ -3,6 +3,7 @@ import Operation_iOS
 
 protocol WalletListLocalSubscriptionFactoryProtocol {
     func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel>
+    func getSelectedWalletProvider() throws -> StreamableProvider<ManagedMetaAccountModel>
     func getWalletsProvider() throws -> StreamableProvider<ManagedMetaAccountModel>
 }
 
@@ -28,11 +29,15 @@ final class WalletListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
     }
 }
 
-extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol {
-    func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel> {
-        clearIfNeeded()
+// MARK: Private
 
-        let cacheKey = "wallet-\(walletId)"
+private extension WalletListLocalSubscriptionFactory {
+    func getWalletProvider(
+        cacheKey: String,
+        with filter: NSPredicate?,
+        predicateClosure: @escaping (ManagedMetaAccountMapper.CoreDataEntity) -> Bool
+    ) throws -> StreamableProvider<ManagedMetaAccountModel> {
+        clearIfNeeded()
 
         if let provider = getProvider(for: cacheKey) as? StreamableProvider<ManagedMetaAccountModel> {
             return provider
@@ -42,7 +47,6 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
 
         let mapper = ManagedMetaAccountMapper()
 
-        let filter = NSPredicate.metaAccountById(walletId)
         let repository = storageFacade.createRepository(
             filter: filter,
             sortDescriptors: [],
@@ -52,7 +56,7 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
-            predicate: { entity in entity.metaId == walletId }
+            predicate: predicateClosure
         )
 
         observable.start { [weak self] error in
@@ -72,42 +76,50 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
 
         return provider
     }
+}
+
+// MARK: WalletListLocalSubscriptionFactoryProtocol
+
+extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol {
+    func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel> {
+        try getWalletProvider(
+            cacheKey: CacheKeys.wallet(with: walletId),
+            with: NSPredicate.metaAccountById(walletId),
+            predicateClosure: { entity in entity.metaId == walletId }
+        )
+    }
+
+    func getSelectedWalletProvider() throws -> StreamableProvider<ManagedMetaAccountModel> {
+        try getWalletProvider(
+            cacheKey: CacheKeys.selectedWallet,
+            with: NSPredicate.selectedMetaAccount(),
+            predicateClosure: { $0.isSelected }
+        )
+    }
 
     func getWalletsProvider() throws -> StreamableProvider<ManagedMetaAccountModel> {
-        clearIfNeeded()
+        try getWalletProvider(
+            cacheKey: CacheKeys.allWallets,
+            with: nil,
+            predicateClosure: { _ in true }
+        )
+    }
+}
 
-        let cacheKey = "all-wallets"
+// MARK: CacheKeys
 
-        if let provider = getProvider(for: cacheKey) as? StreamableProvider<ManagedMetaAccountModel> {
-            return provider
+private extension WalletListLocalSubscriptionFactory {
+    enum CacheKeys {
+        static var allWallets: String {
+            "all-wallets"
         }
 
-        let source = EmptyStreamableSource<ManagedMetaAccountModel>()
-
-        let mapper = ManagedMetaAccountMapper()
-        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
-
-        let observable = CoreDataContextObservable(
-            service: storageFacade.databaseService,
-            mapper: AnyCoreDataMapper(mapper),
-            predicate: { _ in true }
-        )
-
-        observable.start { [weak self] error in
-            if let error = error {
-                self?.logger.error("Did receive error: \(error)")
-            }
+        static var selectedWallet: String {
+            "selected-wallet"
         }
 
-        let provider = StreamableProvider(
-            source: AnyStreamableSource(source),
-            repository: AnyDataProviderRepository(repository),
-            observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
-        )
-
-        saveProvider(provider, for: cacheKey)
-
-        return provider
+        static func wallet(with id: String) -> String {
+            "wallet-\(id)"
+        }
     }
 }

@@ -22,15 +22,19 @@ final class WalletUpdateMediator {
 
     let selectedWalletSettings: SelectedWalletSettings
     let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let walletsCleaner: WalletStorageCleaning
     let operationQueue: OperationQueue
 
+    // TODO: Implement wallet cleaner usage
     init(
         selectedWalletSettings: SelectedWalletSettings,
         repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        walletsCleaner: WalletStorageCleaning,
         operationQueue: OperationQueue
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.repository = repository
+        self.walletsCleaner = walletsCleaner
         self.operationQueue = operationQueue
     }
 
@@ -249,6 +253,9 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             selectedWalletUpdateOperation
         ]
 
-        return CompoundOperationWrapper(targetOperation: resultOperation, dependencies: dependencies)
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: dependencies
+        )
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import SoraUI
 
-final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
+class BaseDAppBrowserWireframe {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
@@ -16,7 +16,11 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
             return
         }
 
-        view?.controller.present(confirmationView.controller, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            confirmationView.controller,
+            animated: true,
+            completion: nil
+        )
     }
 
     func presentSearch(
@@ -71,13 +75,20 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(phishingView.controller, animated: true, completion: nil)
     }
 
-    func presentAddToFavoriteForm(from view: DAppBrowserViewProtocol?, page: DAppBrowserPage) {
+    func presentAddToFavoriteForm(
+        from view: DAppBrowserViewProtocol?,
+        page: DAppBrowserPage
+    ) {
         guard let addFavoriteView = DAppAddFavoriteViewFactory.createView(for: page) else {
             return
         }
 
         let navigationController = NovaNavigationController(rootViewController: addFavoriteView.controller)
-        view?.controller.present(navigationController, animated: true, completion: nil)
+
+        view?.controller.present(
+            navigationController,
+            animated: true
+        )
     }
 
     func presentSettings(
@@ -101,13 +112,33 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(dappSettingsView.controller, animated: true, completion: nil)
     }
 
-    func hideSettings(from view: DAppBrowserViewProtocol?) {
-        if view?.controller.topModalViewController is DAppSettingsViewProtocol {
-            view?.controller.topModalViewController.dismiss(animated: true)
-        }
+    func showTabs(from view: DAppBrowserViewProtocol?) {
+        DAppBrowserTabTransition.setTransition(
+            from: view?.controller,
+            to: nil,
+            tabId: nil
+        )
+
+        view?.controller.navigationController?.popViewController(
+            animated: DAppBrowserTabTransition.animated
+        )
+    }
+}
+
+final class DAppBrowserWireframe: BaseDAppBrowserWireframe, DAppBrowserWireframeProtocol {
+    func close(view: ControllerBackedProtocol?) {
+        view?.controller.navigationController?.dismiss(animated: true)
+    }
+}
+
+final class DAppBrowserChildWireframe: BaseDAppBrowserWireframe, DAppBrowserWireframeProtocol {
+    private let parentView: DAppBrowserParentViewProtocol
+
+    init(parentView: DAppBrowserParentViewProtocol) {
+        self.parentView = parentView
     }
 
-    func close(view: DAppBrowserViewProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
+    func close(view _: ControllerBackedProtocol?) {
+        parentView.minimize()
     }
 }

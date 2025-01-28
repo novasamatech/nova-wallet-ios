@@ -44,6 +44,10 @@ extension ExportGenericWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: advancedView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 }
