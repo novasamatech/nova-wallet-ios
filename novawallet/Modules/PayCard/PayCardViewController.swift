@@ -109,14 +109,14 @@ extension PayCardViewController: WKNavigationDelegate, WKUIDelegate {
 
         return nil
     }
-    
+
     @available(iOS 15.0, *)
     func webView(
-        _ webView: WKWebView,
-        requestMediaCapturePermissionFor origin: WKSecurityOrigin,
-        initiatedByFrame frame: WKFrameInfo,
-        type: WKMediaCaptureType,
-        decisionHandler: @escaping @MainActor (WKPermissionDecision) -> Void
+        _: WKWebView,
+        requestMediaCapturePermissionFor _: WKSecurityOrigin,
+        initiatedByFrame _: WKFrameInfo,
+        type _: WKMediaCaptureType,
+        decisionHandler: @escaping @MainActor(WKPermissionDecision) -> Void
     ) {
         decisionHandler(.grant)
     }
