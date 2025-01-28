@@ -21,12 +21,10 @@ extension MythosCollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
         delegatorModel: CollatorStakingDelegator?,
         stake _: Balance
     ) -> CollatorStakingDelegationStatus {
-        guard isElected else {
-            return .notElected
-        }
-
-        let hasDelegation = delegatorModel?.hasDelegation(to: accountId) ?? false
-
-        return hasDelegation ? .rewarded : .notRewarded
+        MythosStakingCollatorDelegationState(
+            delegatorModel: delegatorModel,
+            accountId: accountId,
+            isElected: isElected
+        ).status
     }
 }
