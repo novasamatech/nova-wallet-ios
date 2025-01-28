@@ -5,7 +5,7 @@ protocol StakingClaimRewardsViewProtocol: SCLoadableControllerProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveClaimStrategy(viewModel: StakingClaimRewardsViewMode)
+    func didReceiveClaimStrategy(viewModel: StakingClaimRewardsStrategy)
 }
 
 protocol StakingClaimRewardsPresenterProtocol: AnyObject {

@@ -4,8 +4,8 @@ protocol NPoolsClaimRewardsInteractorInputProtocol: AnyObject {
     func setup()
     func remakeSubscriptions()
     func retryExistentialDeposit()
-    func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool)
-    func submit(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool)
+    func estimateFee(for strategy: StakingClaimRewardsStrategy, needsMigration: Bool)
+    func submit(for strategy: StakingClaimRewardsStrategy, needsMigration: Bool)
 }
 
 protocol NPoolsClaimRewardsInteractorOutputProtocol: AnyObject {

@@ -22,4 +22,10 @@ extension MythosStakingPallet {
             .init(moduleName: MythosStakingPallet.name, callName: "stake", args: self)
         }
     }
+
+    struct ClaimRewards: Codable {
+        func runtimeCall() -> RuntimeCall<Self> {
+            .init(moduleName: MythosStakingPallet.name, callName: "claim_rewards", args: self)
+        }
+    }
 }

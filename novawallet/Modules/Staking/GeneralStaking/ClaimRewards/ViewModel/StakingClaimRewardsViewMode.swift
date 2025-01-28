@@ -1,6 +1,6 @@
 import Foundation
 
-enum StakingClaimRewardsViewMode {
+enum StakingClaimRewardsStrategy: String {
     case restake
     case freeBalance
 }

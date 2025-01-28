@@ -1,16 +1,14 @@
 import Foundation
 import SoraFoundation
-import BigInt
 
-final class NPoolsClaimRewardsPresenter {
+final class MythosStkClaimRewardsPresenter {
     weak var view: StakingClaimRewardsViewProtocol?
-    let wireframe: NPoolsClaimRewardsWireframeProtocol
-    let interactor: NPoolsClaimRewardsInteractorInputProtocol
+    let wireframe: MythosStkClaimRewardsWireframeProtocol
+    let interactor: MythosStkClaimRewardsInteractorInputProtocol
     let chainAsset: ChainAsset
-    let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
-    let stakingActivity: StakingActivityForValidating
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let selectedAccount: MetaChainAccountResponse
+    let dataValidatorFactory: MythosStakingValidationFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     var claimRewardsStrategy: StakingClaimRewardsStrategy = .freeBalance
@@ -19,41 +17,40 @@ final class NPoolsClaimRewardsPresenter {
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     var assetBalance: AssetBalance?
-    var claimableRewards: BigUInt?
+    var claimableRewards: MythosStakingClaimableRewards?
     var price: PriceData?
-    var existentialDeposit: BigUInt?
+    var existentialDeposit: Balance?
     var fee: ExtrinsicFeeProtocol?
-    var needsMigration: Bool?
 
     init(
-        interactor: NPoolsClaimRewardsInteractorInputProtocol,
-        wireframe: NPoolsClaimRewardsWireframeProtocol,
-        selectedAccount: MetaChainAccountResponse,
+        interactor: MythosStkClaimRewardsInteractorInputProtocol,
+        wireframe: MythosStkClaimRewardsWireframeProtocol,
         chainAsset: ChainAsset,
+        selectedAccount: MetaChainAccountResponse,
+        dataValidatorFactory: MythosStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
-        stakingActivity: StakingActivityForValidating,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.selectedAccount = selectedAccount
         self.dataValidatorFactory = dataValidatorFactory
-        self.stakingActivity = stakingActivity
+        self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
 
     private func provideAmountViewModel() {
-        guard let claimableRewards = claimableRewards?.decimal(precision: chainAsset.asset.precision) else {
+        guard let claimableRewards else {
             return
         }
 
+        let rewardsDecimal = claimableRewards.total.decimal(assetInfo: chainAsset.assetDisplayInfo)
+
         let viewModel = balanceViewModelFactory.balanceFromPrice(
-            claimableRewards,
+            rewardsDecimal,
             priceData: price
         ).value(for: selectedLocale)
 
@@ -79,13 +76,10 @@ final class NPoolsClaimRewardsPresenter {
     }
 
     private func provideFee() {
-        let viewModel: BalanceViewModelProtocol? = fee.flatMap { value in
-            guard let amountDecimal = Decimal.fromSubstrateAmount(
-                value.amount,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) else {
-                return nil
-            }
+        let viewModel: BalanceViewModelProtocol? = fee.map { value in
+            let amountDecimal = value.amount.decimal(
+                assetInfo: chainAsset.assetDisplayInfo
+            )
 
             return balanceViewModelFactory.balanceFromPrice(
                 amountDecimal,
@@ -109,18 +103,14 @@ final class NPoolsClaimRewardsPresenter {
     }
 
     private func refreshFee() {
-        guard let needsMigration else {
-            return
-        }
-
         fee = nil
         provideFee()
 
-        interactor.estimateFee(for: claimRewardsStrategy, needsMigration: needsMigration)
+        interactor.estimateFee()
     }
 }
 
-extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
+extension MythosStkClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
     func setup() {
         updateView()
 
@@ -134,19 +124,6 @@ extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
             dataValidatorFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             },
-            dataValidatorFactory.canMigrateIfNeeded(
-                needsMigration: needsMigration,
-                stakingActivity: stakingActivity,
-                onProgress: .init(
-                    willStart: { [weak self] in
-                        self?.view?.didStartLoading()
-                    },
-                    didComplete: { [weak self] _ in
-                        self?.view?.didStopLoading()
-                    }
-                ),
-                locale: selectedLocale
-            ),
             dataValidatorFactory.canPayFeeInPlank(
                 balance: assetBalance?.transferable,
                 fee: fee,
@@ -159,23 +136,11 @@ extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
                 minBalance: existentialDeposit,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
-            ),
-            dataValidatorFactory.hasProfitAfterClaim(
-                rewards: claimableRewards,
-                fee: fee,
-                chainAsset: chainAsset,
-                locale: selectedLocale
             )
         ]).runValidation { [weak self] in
-            guard
-                let claimRewardsStrategy = self?.claimRewardsStrategy,
-                let needsMigration = self?.needsMigration else {
-                return
-            }
-
             self?.view?.didStartLoading()
 
-            self?.interactor.submit(for: claimRewardsStrategy, needsMigration: needsMigration)
+            self?.interactor.submit()
         }
     }
 
@@ -206,22 +171,14 @@ extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
     }
 }
 
-extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtocol {
-    func didReceive(assetBalance: AssetBalance?) {
-        logger.debug("Asset balance: \(String(describing: assetBalance))")
+extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputProtocol {
+    func didReceiveAssetBalance(_ balance: AssetBalance?) {
+        logger.debug("Balance: \(String(describing: balance))")
 
-        self.assetBalance = assetBalance
+        assetBalance = balance
     }
 
-    func didReceive(claimableRewards: BigUInt?) {
-        logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
-
-        self.claimableRewards = claimableRewards
-
-        provideAmountViewModel()
-    }
-
-    func didReceive(price: PriceData?) {
+    func didReceivePrice(_ price: PriceData?) {
         logger.debug("Price: \(String(describing: price))")
 
         self.price = price
@@ -230,24 +187,44 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         provideFee()
     }
 
-    func didReceive(fee: ExtrinsicFeeProtocol) {
-        logger.debug("Fee: \(String(describing: fee))")
+    func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards) {
+        logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
 
-        self.fee = fee
+        self.claimableRewards = claimableRewards
 
-        provideFee()
+        provideAmountViewModel()
     }
 
-    func didReceive(existentialDeposit: BigUInt?) {
-        logger.debug("Existential deposit: \(String(existentialDeposit ?? 0))")
+    func didReceive(existentialDeposit: Balance?) {
+        logger.debug("Existential deposit: \(String(describing: existentialDeposit))")
 
         self.existentialDeposit = existentialDeposit
     }
 
-    func didReceive(submissionResult: Result<String, Error>) {
+    func didReceiveFeeResult(_ result: Result<ExtrinsicFeeProtocol, Error>) {
+        switch result {
+        case let .success(fee):
+            logger.debug("Fee: \(fee)")
+
+            self.fee = fee
+
+            provideFee()
+        case let .failure(error):
+            logger.error("Fee error: \(error)")
+
+            wireframe.presentFeeStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.refreshFee()
+            }
+        }
+    }
+
+    func didReceiveSubmissionResult(_ result: Result<String, Error>) {
         view?.didStopLoading()
 
-        switch submissionResult {
+        switch result {
         case .success:
             wireframe.presentExtrinsicSubmission(
                 from: view,
@@ -264,36 +241,9 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
             )
         }
     }
-
-    func didReceive(needsMigration: Bool) {
-        logger.debug("Needs migration: \(needsMigration)")
-
-        self.needsMigration = needsMigration
-
-        refreshFee()
-    }
-
-    func didReceive(error: NPoolsClaimRewardsError) {
-        logger.error("Error: \(error)")
-
-        switch error {
-        case .subscription:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeSubscriptions()
-            }
-        case .fee:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .existentialDeposit:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryExistentialDeposit()
-            }
-        }
-    }
 }
 
-extension NPoolsClaimRewardsPresenter: Localizable {
+extension MythosStkClaimRewardsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateView()

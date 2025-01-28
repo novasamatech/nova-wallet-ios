@@ -109,7 +109,7 @@ extension StakingClaimRewardsViewController: StakingClaimRewardsViewProtocol {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveClaimStrategy(viewModel: StakingClaimRewardsViewMode) {
+    func didReceiveClaimStrategy(viewModel: StakingClaimRewardsStrategy) {
         let shouldRestake = viewModel == .restake
         rootView.restakeCell.switchControl.setOn(shouldRestake, animated: false)
     }
