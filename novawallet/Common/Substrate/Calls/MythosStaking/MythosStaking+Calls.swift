@@ -33,7 +33,7 @@ extension MythosStakingPallet {
         @BytesCodable var account: AccountId
 
         func runtimeCall() -> RuntimeCall<Self> {
-            .init(moduleName: MythosStakingPallet.name, callName: "unstake", args: self)
+            .init(moduleName: MythosStakingPallet.name, callName: "unstake_from", args: self)
         }
     }
 

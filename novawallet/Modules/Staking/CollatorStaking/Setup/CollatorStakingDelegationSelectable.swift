@@ -3,7 +3,15 @@ import SoraFoundation
 
 protocol CollatorStakingDelegationSelectable {
     func showDelegationSelection(
-        from view: CollatorStakingSetupViewProtocol?,
+        from view: ControllerBackedProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    )
+
+    func showUndelegationSelection(
+        from view: ControllerBackedProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,
@@ -13,7 +21,7 @@ protocol CollatorStakingDelegationSelectable {
 
 extension CollatorStakingDelegationSelectable {
     func showDelegationSelection(
-        from view: CollatorStakingSetupViewProtocol?,
+        from view: ControllerBackedProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,
@@ -29,6 +37,26 @@ extension CollatorStakingDelegationSelectable {
         guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
             viewModels,
             actionViewModel: actionViewModel,
+            selectedIndex: selectedIndex,
+            delegate: delegate,
+            context: context
+        ) else {
+            return
+        }
+
+        view?.controller.present(infoVew, animated: true, completion: nil)
+    }
+
+    func showUndelegationSelection(
+        from view: ControllerBackedProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    ) {
+        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
+            viewModels,
+            actionViewModel: nil,
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context

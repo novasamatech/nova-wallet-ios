@@ -27,16 +27,10 @@ protocol ParaStkUnstakeInteractorOutputProtocol: ParaStkBaseUnstakeInteractorOut
     func didReceiveMinDelegationAmount(_ amount: BigUInt)
 }
 
-protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable,
+protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable,
+    ParachainStakingErrorPresentable,
+    CollatorStakingDelegationSelectable,
     FeeRetryable {
-    func showUnstakingCollatorSelection(
-        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
-        viewModels: [AccountDetailsPickerViewModel],
-        selectedIndex: Int,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    )
-
     func showUnstakingConfirm(
         from view: CollatorStkPartialUnstakeSetupViewProtocol?,
         collator: DisplayAddress,

@@ -83,10 +83,7 @@ private extension MythosStakingDetailsPresenter {
         ensureRewardsClaimed { [weak self] in
             guard let self = self else { return }
 
-            wireframe.showUnstakeTokens(
-                from: view,
-                initialDetails: stakingDetails
-            )
+            wireframe.showUnstakeTokens(from: view)
         }
     }
 }

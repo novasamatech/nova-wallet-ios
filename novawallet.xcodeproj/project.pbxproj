@@ -1468,7 +1468,6 @@
 		317F15D080D268CC60E36DB0 /* Pods_novawalletAll_novawallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C9DE9CE1202435878C921D8 /* Pods_novawalletAll_novawallet.framework */; };
 		3187CF2169E709F25DFB4C0D /* TokensAddSelectNetworkProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BA9C7259E59AC6CB422F82 /* TokensAddSelectNetworkProtocols.swift */; };
 		319124D11B1376B430B6C2EF /* DAppAuthSettingsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B23BAD22C87DA5F324B44F /* DAppAuthSettingsWireframe.swift */; };
-		31AB73F0C8D27ADCD0A0544B /* MythosStkUnstakeSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC203AB4E166E0261B84C0B /* MythosStkUnstakeSetupViewController.swift */; };
 		32009DBB90D19ACD6D7B7A5C /* InAppUpdatesViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F65E56B70C5AF51A365C2BB /* InAppUpdatesViewFactory.swift */; };
 		3201805BF8FA78BDF9DA6328 /* StakingTypePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76E1F9D7AD364D8AD4CC721 /* StakingTypePresenter.swift */; };
 		3218B290FDE5446C49B8A6A9 /* StakingRewardsNotificationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A34373D4CBAE0648DCCB75A /* StakingRewardsNotificationsPresenter.swift */; };
@@ -1704,7 +1703,6 @@
 		62D28F231DED3F39B2C53F1F /* StakingSetupAmountProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73F89021BEE1F4576128305 /* StakingSetupAmountProtocols.swift */; };
 		63185C6D67EAEB2867069AB9 /* ParitySignerWelcomeProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBB8745F8C36BB107625E8F /* ParitySignerWelcomeProtocols.swift */; };
 		6362476898582D2118E96447 /* StakingProxyManagementInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211CEE2D931F177676D280DC /* StakingProxyManagementInteractor.swift */; };
-		63990CFF9BE6A457663F5AA0 /* MythosStkUnstakeSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678E7F9536BB564908FB093E /* MythosStkUnstakeSetupViewLayout.swift */; };
 		63C96BADE7BF632D81AFB565 /* MythosStkClaimRewardsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1764F0D73F5D0564BA7C30 /* MythosStkClaimRewardsInteractor.swift */; };
 		640A79BD1335394818E70366 /* WalletHistoryFilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6884DFC1AA1B995C21C274C /* WalletHistoryFilterViewController.swift */; };
 		640EC907607A3D5F633D26A7 /* NotificationsManagementInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE878F83551D3FD5FF2E21CC /* NotificationsManagementInteractor.swift */; };
@@ -7308,7 +7306,6 @@
 		67544C56A83D617405414E28 /* GovernanceRevokeDelegationConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmViewLayout.swift; sourceTree = "<group>"; };
 		677A00EEEF99E289E12B7D40 /* Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.dev.xcconfig"; sourceTree = "<group>"; };
 		677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserViewFactory.swift; sourceTree = "<group>"; };
-		678E7F9536BB564908FB093E /* MythosStkUnstakeSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeSetupViewLayout.swift; sourceTree = "<group>"; };
 		67CAEB35921A61A8EC131AF8 /* LedgerDiscoverViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerDiscoverViewFactory.swift; sourceTree = "<group>"; };
 		67F8388B9F018939BCE7357C /* NotificationWalletListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationWalletListPresenter.swift; sourceTree = "<group>"; };
 		68D44AF5C59681B54ECD7658 /* AddDelegationPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDelegationPresenter.swift; sourceTree = "<group>"; };
@@ -10258,7 +10255,6 @@
 		8E5B6667F4FECDFD386F8FE3 /* GovernanceDelegateSearchInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSearchInteractor.swift; sourceTree = "<group>"; };
 		8EB218244A61B9743D9ACF69 /* AdvancedExportPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedExportPresenter.swift; sourceTree = "<group>"; };
 		8EB322463CF5036819A181E0 /* CollatorStakingSelectSearchViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollatorStakingSelectSearchViewController.swift; sourceTree = "<group>"; };
-		8EC203AB4E166E0261B84C0B /* MythosStkUnstakeSetupViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeSetupViewController.swift; sourceTree = "<group>"; };
 		8EE41915478E28D94B8471A0 /* LedgerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
 		8EE72F2B6612508D4783A507 /* DAppAuthSettingsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsProtocols.swift; sourceTree = "<group>"; };
 		8EE81AE154A736A93FF3812B /* GovernanceUnlockConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmViewLayout.swift; sourceTree = "<group>"; };
@@ -15071,8 +15067,6 @@
 				8476E1FCE2DFF0456D154BEC /* MythosStkUnstakeSetupWireframe.swift */,
 				158ED3CDF4CCBE19616575FD /* MythosStkUnstakeSetupPresenter.swift */,
 				7930A37F25E9E073FD5820FA /* MythosStkUnstakeSetupInteractor.swift */,
-				8EC203AB4E166E0261B84C0B /* MythosStkUnstakeSetupViewController.swift */,
-				678E7F9536BB564908FB093E /* MythosStkUnstakeSetupViewLayout.swift */,
 				C14D67CF87B74766CBA219B5 /* MythosStkUnstakeSetupViewFactory.swift */,
 			);
 			path = MythosStkUnstakeSetup;
@@ -31620,8 +31614,6 @@
 				EDC5AACA7BA4A76C7D7E59F0 /* MythosStkUnstakeSetupWireframe.swift in Sources */,
 				B0420093B7E820C0CE2996F7 /* MythosStkUnstakeSetupPresenter.swift in Sources */,
 				0CBB1EA0D929938F74ED2E84 /* MythosStkUnstakeSetupInteractor.swift in Sources */,
-				31AB73F0C8D27ADCD0A0544B /* MythosStkUnstakeSetupViewController.swift in Sources */,
-				63990CFF9BE6A457663F5AA0 /* MythosStkUnstakeSetupViewLayout.swift in Sources */,
 				5B9A3E47786A9991A53A3483 /* MythosStkUnstakeSetupViewFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

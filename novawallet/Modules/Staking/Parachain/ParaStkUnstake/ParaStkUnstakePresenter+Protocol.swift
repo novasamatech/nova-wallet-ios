@@ -41,7 +41,7 @@ extension ParaStkUnstakePresenter: CollatorStkPartialUnstakeSetupPresenterProtoc
 
         let selectedIndex = delegations.firstIndex { $0.owner == collatorId } ?? NSNotFound
 
-        wireframe.showUnstakingCollatorSelection(
+        wireframe.showUndelegationSelection(
             from: view,
             viewModels: accountDetailsViewModels,
             selectedIndex: selectedIndex,

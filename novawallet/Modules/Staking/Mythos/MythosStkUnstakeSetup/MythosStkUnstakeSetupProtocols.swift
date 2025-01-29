@@ -1,9 +1,3 @@
-protocol MythosStkUnstakeSetupViewProtocol: ControllerBackedProtocol {}
-
-protocol MythosStkUnstakeSetupPresenterProtocol: AnyObject {
-    func setup()
-}
-
 protocol MythosStkUnstakeSetupInteractorInputProtocol: MythosStkUnstakeInteractorInputProtocol {}
 
 protocol MythosStkUnstakeSetupInteractorOutputProtocol: MythosStkUnstakeInteractorOutputProtocol {
@@ -11,5 +5,11 @@ protocol MythosStkUnstakeSetupInteractorOutputProtocol: MythosStkUnstakeInteract
 }
 
 protocol MythosStkUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CollatorStakingDelegationSelectable,
     CommonRetryable, FeeRetryable,
-    MythosStakingErrorPresentable {}
+    MythosStakingErrorPresentable, MythosClaimRewardsPresenting {
+    func showConfirm(
+        from view: CollatorStkFullUnstakeSetupViewProtocol?,
+        collator: DisplayAddress
+    )
+}

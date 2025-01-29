@@ -26,11 +26,17 @@ final class MythosStakingDetailsWireframe: MythosStakingDetailsWireframeProtocol
         )
     }
 
-    func showUnstakeTokens(
-        from _: ControllerBackedProtocol?,
-        initialDetails _: MythosStakingDetails?
-    ) {
-        // TODO: Implement in a separate task
+    func showUnstakeTokens(from view: ControllerBackedProtocol?) {
+        guard let unstakeView = MythosStkUnstakeSetupViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: unstakeView.controller)
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showYourCollators(from _: ControllerBackedProtocol?) {

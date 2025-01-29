@@ -4,7 +4,7 @@ import SoraFoundation
 struct MythosStkUnstakeSetupViewFactory {
     static func createView(
         for state: MythosStakingSharedStateProtocol
-    ) -> MythosStkUnstakeSetupViewProtocol? {
+    ) -> CollatorStkFullUnstakeSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -17,7 +17,7 @@ struct MythosStkUnstakeSetupViewFactory {
             return nil
         }
 
-        let wireframe = MythosStkUnstakeSetupWireframe()
+        let wireframe = MythosStkUnstakeSetupWireframe(state: state)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
 
@@ -45,7 +45,10 @@ struct MythosStkUnstakeSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = MythosStkUnstakeSetupViewController(presenter: presenter)
+        let view = CollatorStkFullUnstakeSetupVC(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
@@ -55,10 +58,53 @@ struct MythosStkUnstakeSetupViewFactory {
     }
 
     private static func createInteractor(
-        for _: MythosStakingSharedStateProtocol,
-        chainAsset _: ChainAsset,
-        currencyManager _: CurrencyManagerProtocol
+        for state: MythosStakingSharedStateProtocol,
+        chainAsset: ChainAsset,
+        currencyManager: CurrencyManagerProtocol
     ) -> MythosStkUnstakeSetupInteractor? {
-        nil
+        guard
+            let stakingDetailsService = state.detailsSyncService,
+            let claimableRewardsService = state.claimableRewardsService,
+            let identitiesService = state.collatorIdentitiesSyncService,
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetch(
+                for: chainAsset.chain.accountRequest()
+            ),
+            let connection = state.chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = state.chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeService,
+            engine: connection,
+            operationQueue: operationQueue,
+            userStorageFacade: UserDataStorageFacade.shared,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
+
+        let stakingDurationFactory = MythosStkDurationOperationFactory(
+            chainRegistry: state.chainRegistry,
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
+        )
+
+        return MythosStkUnstakeSetupInteractor(
+            chainAsset: chainAsset,
+            selectedAccount: selectedAccount,
+            stakingDetailsService: stakingDetailsService,
+            claimableRewardsService: claimableRewardsService,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            extrinsicService: extrinsicService,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            stakingDurationFactory: stakingDurationFactory,
+            blocktimeEstimationService: state.blockTimeService,
+            identitySyncService: identitiesService,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
     }
 }

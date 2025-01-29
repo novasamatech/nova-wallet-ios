@@ -22,10 +22,7 @@ protocol MythosStakingDetailsWireframeProtocol: AlertPresentable, ErrorPresentab
         initialDetails: MythosStakingDetails?
     )
 
-    func showUnstakeTokens(
-        from view: ControllerBackedProtocol?,
-        initialDetails: MythosStakingDetails?
-    )
+    func showUnstakeTokens(from view: ControllerBackedProtocol?)
 
     func showYourCollators(from view: ControllerBackedProtocol?)
 
