@@ -71,6 +71,10 @@ extension PayCardPresenter: PayCardPresenterProtocol {
     func processMessage(body: Any, of name: String) {
         interactor.processMessage(body: body, of: name)
     }
+
+    func processPhotoLibraryAuth(errorCode: PayCardWebViewErrorCode) {
+        logger.error("Photo library auth error code \(errorCode)")
+    }
 }
 
 extension PayCardPresenter: PayCardInteractorOutputProtocol {

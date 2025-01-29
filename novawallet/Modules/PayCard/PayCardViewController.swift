@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import Photos
 
 private struct WebViewScript {
     enum InsertionPoint {
@@ -44,6 +45,7 @@ final class PayCardViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupWebView()
+        requestPhotoLibraryAuthorizationIfNeeded()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -70,6 +72,25 @@ final class PayCardViewController: UIViewController, ViewHolder {
         let request = URLRequest(url: resource.url)
 
         rootView.webView.load(request)
+    }
+}
+
+// MARK: Private
+
+private extension PayCardViewController {
+    func requestPhotoLibraryAuthorizationIfNeeded() {
+        PHPhotoLibrary.requestAuthorization(
+            for: .readWrite,
+            handler: handle(phAuthorizationStatus:)
+        )
+    }
+
+    func handle(phAuthorizationStatus: PHAuthorizationStatus) {
+        if
+            !phAuthorizationStatus.isAuthorized,
+            let errorCode = PayCardWebViewErrorCode(rawValue: phAuthorizationStatus.rawValue) {
+            presenter.processPhotoLibraryAuth(errorCode: errorCode)
+        }
     }
 }
 
@@ -135,5 +156,13 @@ extension PayCardViewController: PayCardViewProtocol {
         scriptsHandler?.bind(viewModel: transport)
 
         load(resource: model.resource)
+    }
+}
+
+// MARK: - PHAuthorizationStatus
+
+private extension PHAuthorizationStatus {
+    var isAuthorized: Bool {
+        self == .authorized
     }
 }
