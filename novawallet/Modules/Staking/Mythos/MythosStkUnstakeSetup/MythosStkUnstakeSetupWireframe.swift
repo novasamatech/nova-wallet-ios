@@ -8,9 +8,19 @@ final class MythosStkUnstakeSetupWireframe: MythosStkUnstakeSetupWireframeProtoc
     }
 
     func showConfirm(
-        from _: CollatorStkFullUnstakeSetupViewProtocol?,
-        collator _: DisplayAddress
+        from view: CollatorStkFullUnstakeSetupViewProtocol?,
+        collator: DisplayAddress
     ) {
-        // TODO: Implement in separate task
+        guard let confirmView = MythosStkUnstakeConfirmViewFactory.createView(
+            for: state,
+            selectedCollator: collator
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            confirmView.controller,
+            animated: true
+        )
     }
 }

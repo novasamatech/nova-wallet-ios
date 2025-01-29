@@ -274,7 +274,7 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
 
         stakingDuration = duration
 
-        refreshFee()
+        provideHintsViewModel()
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
