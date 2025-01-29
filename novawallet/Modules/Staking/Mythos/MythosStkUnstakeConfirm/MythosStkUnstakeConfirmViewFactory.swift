@@ -5,7 +5,7 @@ struct MythosStkUnstakeConfirmViewFactory {
     static func createView(
         for state: MythosStakingSharedStateProtocol,
         selectedCollator: DisplayAddress
-    ) -> MythosStkUnstakeConfirmViewProtocol? {
+    ) -> CollatorStkUnstakeConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -27,7 +27,7 @@ struct MythosStkUnstakeConfirmViewFactory {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: priceAssetInfoFactory,
+            targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
@@ -50,7 +50,10 @@ struct MythosStkUnstakeConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view = MythosStkUnstakeConfirmViewController(presenter: presenter)
+        let view = CollatorStkUnstakeConfirmVC(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
@@ -63,7 +66,7 @@ struct MythosStkUnstakeConfirmViewFactory {
         chainAsset: ChainAsset,
         selectedAccount: ChainAccountResponse,
         currencyManager: CurrencyManagerProtocol
-    ) -> MythosStkUnstakeSetupInteractor? {
+    ) -> MythosStkUnstakeConfirmInteractor? {
         guard
             let stakingDetailsService = state.detailsSyncService,
             let claimableRewardsService = state.claimableRewardsService,
@@ -87,20 +90,20 @@ struct MythosStkUnstakeConfirmViewFactory {
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
         )
 
+        let eventsFactory = BlockEventsQueryFactory(operationQueue: operationQueue)
+        let statusService = ExtrinsicStatusService(
+            connection: connection,
+            runtimeProvider: runtimeService,
+            eventsQueryFactory: eventsFactory
+        )
         let submissionFactory = ExtrinsicSubmissionMonitorFactory(
             submissionService: extrinsicService,
-            statusService: ExtrinsicStatusService(
-                connection: connection,
-                runtimeProvider: runtimeService,
-                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue)
-            ),
+            statusService: statusService,
             operationQueue: operationQueue
         )
 
-        let signer = SigningWrapperFactory().createSigningWrapper(
-            for: selectedAccount.metaId,
-            accountResponse: selectedAccount
-        )
+        let signerFactory = SigningWrapperFactory()
+        let signer = signerFactory.createSigningWrapper(for: selectedAccount.metaId, accountResponse: selectedAccount)
 
         return MythosStkUnstakeConfirmInteractor(
             chainAsset: chainAsset,

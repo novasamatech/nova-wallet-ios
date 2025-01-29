@@ -1,9 +1,3 @@
-protocol MythosStkUnstakeConfirmViewProtocol: AnyObject {}
-
-protocol MythosStkUnstakeConfirmPresenterProtocol: AnyObject {
-    func setup()
-}
-
 protocol MythosStkUnstakeConfirmInteractorInputProtocol: MythosStkUnstakeInteractorInputProtocol {
     func submit(model: MythosStkUnstakeModel)
 }
@@ -14,6 +8,7 @@ protocol MythosStkUnstakeConfirmInteractorOutputProtocol: MythosStkUnstakeIntera
 
 protocol MythosStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     AddressOptionsPresentable,
+    CommonRetryable,
     FeeRetryable,
     ModalAlertPresenting,
     MessageSheetPresentable,

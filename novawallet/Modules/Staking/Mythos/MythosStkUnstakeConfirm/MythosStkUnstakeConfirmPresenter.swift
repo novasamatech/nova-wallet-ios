@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 final class MythosStkUnstakeConfirmPresenter {
-    weak var view: MythosStkUnstakeConfirmViewProtocol?
+    weak var view: CollatorStkUnstakeConfirmViewProtocol?
     let wireframe: MythosStkUnstakeConfirmWireframeProtocol
     let interactor: MythosStkUnstakeConfirmInteractorInputProtocol
 
@@ -49,41 +49,263 @@ final class MythosStkUnstakeConfirmPresenter {
 
         self.localizationManager = localizationManager
     }
+
+    func getCollatorId() -> AccountId? {
+        try? selectedCollator.address.toAccountId(using: chainAsset.chain.chainFormat)
+    }
+
+    func unstakingAmount() -> Balance? {
+        guard let collatorId = getCollatorId() else {
+            return nil
+        }
+
+        return stakingDetails?.stakeDistribution[collatorId]?.stake
+    }
+
+    func getUnstakingModel() -> MythosStkUnstakeModel? {
+        guard
+            let collatorId = getCollatorId(),
+            let amount = stakingDetails?.stakeDistribution[collatorId]?.stake else {
+            return nil
+        }
+
+        return MythosStkUnstakeModel(collator: collatorId, amount: amount)
+    }
+
+    private func provideAmountViewModel() {
+        guard let unstakingAmount = unstakingAmount() else {
+            return
+        }
+
+        let amountDecimal = unstakingAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+
+        let viewModel = balanceViewModelFactory.balanceFromPrice(
+            amountDecimal,
+            priceData: price
+        ).value(for: selectedLocale)
+
+        view?.didReceiveAmount(viewModel: viewModel)
+    }
+
+    private func provideWalletViewModel() {
+        do {
+            let viewModel = try walletViewModelFactory.createDisplayViewModel(from: selectedAccount)
+            view?.didReceiveWallet(viewModel: viewModel)
+        } catch {
+            logger.error("Did receive error: \(error)")
+        }
+    }
+
+    private func provideAccountViewModel() {
+        do {
+            let viewModel = try walletViewModelFactory.createViewModel(from: selectedAccount)
+            view?.didReceiveAccount(viewModel: viewModel.rawDisplayAddress())
+        } catch {
+            logger.error("Did receive error: \(error)")
+        }
+    }
+
+    private func provideFeeViewModel() {
+        let viewModel: BalanceViewModelProtocol? = fee.map { value in
+            let amountDecimal = value.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+
+            return balanceViewModelFactory.balanceFromPrice(
+                amountDecimal,
+                priceData: price
+            ).value(for: selectedLocale)
+        }
+
+        view?.didReceiveFee(viewModel: viewModel)
+    }
+
+    private func provideCollatorViewModel() {
+        let viewModel = displayAddressViewModelFactory.createViewModel(from: selectedCollator)
+        view?.didReceiveCollator(viewModel: viewModel)
+    }
+
+    private func provideHintsViewModel() {
+        var hints: [String] = []
+
+        if let stakingDuration = stakingDuration {
+            let durationHint = hintViewModelFactory.unstakeHint(
+                for: stakingDuration.unstaking,
+                locale: selectedLocale
+            )
+
+            hints.append(durationHint)
+        }
+
+        hints.append(hintViewModelFactory.unstakingRewards(for: selectedLocale))
+        hints.append(hintViewModelFactory.unstakingRedeem(for: selectedLocale))
+
+        view?.didReceiveHints(viewModel: hints)
+    }
+
+    private func presentOptions(for address: AccountAddress) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chainAsset.chain,
+            locale: selectedLocale
+        )
+    }
+
+    func refreshFee() {
+        fee = nil
+
+        provideFeeViewModel()
+
+        guard let model = getUnstakingModel() else {
+            return
+        }
+
+        interactor.estimateFee(for: model)
+    }
+
+    func submitExtrinsic() {
+        view?.didStartLoading()
+
+        guard let model = getUnstakingModel() else {
+            return
+        }
+
+        interactor.submit(model: model)
+    }
+
+    func applyCurrentState() {
+        provideAmountViewModel()
+        provideWalletViewModel()
+        provideAccountViewModel()
+        provideCollatorViewModel()
+        provideHintsViewModel()
+    }
+
+    func createValidationRunner() -> DataValidationRunner {
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
+                fee: fee,
+                locale: selectedLocale,
+                onError: { [weak self] in self?.refreshFee() }
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: balance?.transferable,
+                fee: fee,
+                asset: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.noUnclaimedRewards(
+                claimableRewards?.shouldClaim ?? false,
+                claimAction: { [weak self] in
+                    self?.wireframe.showClaimRewards(from: self?.view)
+                },
+                locale: selectedLocale
+            )
+        ])
+    }
 }
 
-extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmPresenterProtocol {
-    func setup() {}
+extension MythosStkUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterProtocol {
+    func setup() {
+        applyCurrentState()
+
+        interactor.setup()
+
+        refreshFee()
+    }
+
+    func selectAccount() {
+        let chainFormat = chainAsset.chain.chainFormat
+
+        guard let address = try? selectedAccount.chainAccount.accountId.toAddress(using: chainFormat) else {
+            return
+        }
+
+        presentOptions(for: address)
+    }
+
+    func selectCollator() {
+        presentOptions(for: selectedCollator.address)
+    }
+
+    func confirm() {
+        let validationRunner = createValidationRunner()
+        validationRunner.runValidation { [weak self] in
+            self?.submitExtrinsic()
+        }
+    }
 }
 
 extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOutputProtocol {
     func didReceiveBalance(_ assetBalance: AssetBalance?) {
-        
+        logger.debug("Balance: \(String(describing: balance))")
+
+        balance = assetBalance
     }
-    
+
     func didReceivePrice(_ price: PriceData?) {
-        
+        logger.debug("Price: \(String(describing: price))")
+
+        self.price = price
+
+        provideAmountViewModel()
     }
-    
+
     func didReceiveStakingDetails(_ details: MythosStakingDetails?) {
-        
+        logger.debug("Details: \(String(describing: details))")
+
+        stakingDetails = details
+
+        provideAmountViewModel()
+        refreshFee()
     }
-    
+
     func didReceiveClaimableRewards(_ rewards: MythosStakingClaimableRewards?) {
-        
+        logger.debug("Claimable rewards: \(String(describing: rewards))")
+
+        claimableRewards = rewards
     }
-    
+
     func didReceiveStakingDuration(_ duration: MythosStakingDuration) {
-        
+        logger.debug("Duration: \(duration)")
+
+        stakingDuration = duration
+
+        refreshFee()
     }
-    
+
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
-        
+        logger.debug("Fee: \(fee)")
+
+        self.fee = fee
+
+        provideFeeViewModel()
     }
-    
+
     func didReceiveBaseError(_ error: MythosStkUnstakeInteractorError) {
-        
+        logger.error("Error: \(error)")
+
+        switch error {
+        case .stakingDurationFailed:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.retryStakingDuration()
+            }
+        case .feeFailed:
+            wireframe.presentFeeStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.refreshFee()
+            }
+        }
     }
-    
+
     func didReceiveSubmissionResult(_ result: Result<ExtrinsicHash, Error>) {
         view?.didStopLoading()
 
@@ -109,7 +331,7 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
 extension MythosStkUnstakeConfirmPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            // TODO: Update implementation
+            applyCurrentState()
         }
     }
 }

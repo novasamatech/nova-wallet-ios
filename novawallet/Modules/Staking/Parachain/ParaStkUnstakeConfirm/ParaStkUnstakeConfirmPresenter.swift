@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 final class ParaStkUnstakeConfirmPresenter {
-    weak var view: ParaStkUnstakeConfirmViewProtocol?
+    weak var view: CollatorStkUnstakeConfirmViewProtocol?
     let wireframe: ParaStkUnstakeConfirmWireframeProtocol
     let interactor: ParaStkUnstakeConfirmInteractorInputProtocol
 
@@ -172,7 +172,7 @@ final class ParaStkUnstakeConfirmPresenter {
     }
 }
 
-extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol {
+extension ParaStkUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterProtocol {
     func setup() {
         applyCurrentState()
 
