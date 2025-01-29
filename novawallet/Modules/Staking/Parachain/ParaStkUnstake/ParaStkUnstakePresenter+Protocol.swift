@@ -1,6 +1,6 @@
 import Foundation
 
-extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
+extension ParaStkUnstakePresenter: CollatorStkPartialUnstakeSetupPresenterProtocol {
     func setup() {
         let optCollatorId = selectInitialCollator()
 

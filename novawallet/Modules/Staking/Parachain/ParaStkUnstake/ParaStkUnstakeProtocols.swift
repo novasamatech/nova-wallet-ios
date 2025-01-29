@@ -1,23 +1,5 @@
 import BigInt
 
-protocol ParaStkUnstakeViewProtocol: ControllerBackedProtocol {
-    func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?)
-    func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
-    func didReceiveMinStake(viewModel: BalanceViewModelProtocol?)
-    func didReceiveTransferable(viewModel: BalanceViewModelProtocol?)
-    func didReceiveHints(viewModel: [String])
-}
-
-protocol ParaStkUnstakePresenterProtocol: AnyObject {
-    func setup()
-    func selectCollator()
-    func updateAmount(_ newValue: Decimal?)
-    func selectAmountPercentage(_ percentage: Float)
-    func proceed()
-}
-
 protocol ParaStkBaseUnstakeInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for callWrapper: UnstakeCallWrapper)
@@ -48,7 +30,7 @@ protocol ParaStkUnstakeInteractorOutputProtocol: ParaStkBaseUnstakeInteractorOut
 protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable,
     FeeRetryable {
     func showUnstakingCollatorSelection(
-        from view: ParaStkUnstakeViewProtocol?,
+        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,
@@ -56,7 +38,7 @@ protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable, Pa
     )
 
     func showUnstakingConfirm(
-        from view: ParaStkUnstakeViewProtocol?,
+        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
         collator: DisplayAddress,
         callWrapper: UnstakeCallWrapper
     )

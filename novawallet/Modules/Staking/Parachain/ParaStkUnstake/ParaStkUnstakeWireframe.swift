@@ -8,7 +8,7 @@ final class ParaStkUnstakeWireframe: ParaStkUnstakeWireframeProtocol {
     }
 
     func showUnstakingCollatorSelection(
-        from view: ParaStkUnstakeViewProtocol?,
+        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,
@@ -28,7 +28,7 @@ final class ParaStkUnstakeWireframe: ParaStkUnstakeWireframeProtocol {
     }
 
     func showUnstakingConfirm(
-        from view: ParaStkUnstakeViewProtocol?,
+        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
         collator: DisplayAddress,
         callWrapper: UnstakeCallWrapper
     ) {

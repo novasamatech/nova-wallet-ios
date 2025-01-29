@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 
 final class ParaStkUnstakePresenter {
-    weak var view: ParaStkUnstakeViewProtocol?
+    weak var view: CollatorStkPartialUnstakeSetupViewProtocol?
     let wireframe: ParaStkUnstakeWireframeProtocol
     let interactor: ParaStkUnstakeInteractorInputProtocol
 
@@ -124,7 +124,11 @@ final class ParaStkUnstakePresenter {
             ).value(for: selectedLocale)
         }
 
-        view?.didReceiveMinStake(viewModel: viewModel)
+        let loadableViewModel: LoadableViewModelState<BalanceViewModelProtocol> = viewModel.map {
+            .loaded(value: $0)
+        } ?? .loading
+
+        view?.didReceiveMinStake(viewModel: loadableViewModel)
     }
 
     func provideTransferableViewModel() {
