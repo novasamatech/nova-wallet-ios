@@ -5,5 +5,6 @@ final class CollatorStkFullUnstakeSetupLayout: CollatorStkBaseUnstakeSetupLayout
         super.setupLayout()
 
         amountInputView.isUserInteractionEnabled = false
+        amountInputView.applyDisabledStyle()
     }
 }

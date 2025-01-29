@@ -680,6 +680,7 @@
 		0CA72A862D4A2CFE00B3FD02 /* CollatorStkBaseUnstakeSetupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A852D4A2CFE00B3FD02 /* CollatorStkBaseUnstakeSetupVC.swift */; };
 		0CA72A882D4A2DA000B3FD02 /* CollatorStkPartialUnstakeSetupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A872D4A2DA000B3FD02 /* CollatorStkPartialUnstakeSetupVC.swift */; };
 		0CA72A8A2D4A38DE00B3FD02 /* CollatorStkFullUnstakeSetupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A892D4A38DE00B3FD02 /* CollatorStkFullUnstakeSetupVC.swift */; };
+		0CA72A8C2D4A67E000B3FD02 /* NewAmountInputView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A8B2D4A67E000B3FD02 /* NewAmountInputView+Style.swift */; };
 		0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */; };
 		0CA7CEE22CE0BBE9004328F2 /* SubstrateEventsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */; };
 		0CA7CEE62CE0C23B004328F2 /* SystemPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */; };
@@ -6234,6 +6235,7 @@
 		0CA72A852D4A2CFE00B3FD02 /* CollatorStkBaseUnstakeSetupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkBaseUnstakeSetupVC.swift; sourceTree = "<group>"; };
 		0CA72A872D4A2DA000B3FD02 /* CollatorStkPartialUnstakeSetupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkPartialUnstakeSetupVC.swift; sourceTree = "<group>"; };
 		0CA72A892D4A38DE00B3FD02 /* CollatorStkFullUnstakeSetupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkFullUnstakeSetupVC.swift; sourceTree = "<group>"; };
+		0CA72A8B2D4A67E000B3FD02 /* NewAmountInputView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NewAmountInputView+Style.swift"; sourceTree = "<group>"; };
 		0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+AssetHubSwapMatching.swift"; sourceTree = "<group>"; };
 		0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateEventsRepository.swift; sourceTree = "<group>"; };
 		0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemPallet+Events.swift"; sourceTree = "<group>"; };
@@ -16437,6 +16439,7 @@
 				840DCBF525E0059D00D45C6A /* AmountInputView+Inspectable.swift */,
 				8401620A25E144D50087A5F3 /* AmountInputAccessoryView.swift */,
 				84D1ABE127E1E8060073C631 /* NewAmountInputView.swift */,
+				0CA72A8B2D4A67E000B3FD02 /* NewAmountInputView+Style.swift */,
 			);
 			path = AmountInputView;
 			sourceTree = "<group>";
@@ -30737,6 +30740,7 @@
 				B30FEC6F62918BC6F38396A2 /* ReferendumVoteConfirmViewController.swift in Sources */,
 				773B2E472B757CFD00A3BC11 /* PushNotificationsStatusService.swift in Sources */,
 				840AE2E129C9A24C008FF665 /* EtherscanTxHistoryResponse.swift in Sources */,
+				0CA72A8C2D4A67E000B3FD02 /* NewAmountInputView+Style.swift in Sources */,
 				0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */,
 				163709FEE6203813261DD771 /* ReferendumVoteConfirmViewLayout.swift in Sources */,
 				71533ED31DD45841CA8296A3 /* ReferendumVoteConfirmViewFactory.swift in Sources */,
