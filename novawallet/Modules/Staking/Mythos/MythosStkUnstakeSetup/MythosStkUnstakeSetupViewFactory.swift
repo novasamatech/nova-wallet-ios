@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct MythosStkUnstakeSetupViewFactory {
     static func createView(
@@ -18,12 +19,37 @@ struct MythosStkUnstakeSetupViewFactory {
 
         let wireframe = MythosStkUnstakeSetupWireframe()
 
-        let presenter = MythosStkUnstakeSetupPresenter(interactor: interactor, wireframe: wireframe)
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+
+        let priceInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceInfoFactory
+        )
+
+        let dataValidatingFactory = MythosStakingValidationFactory(
+            presentable: wireframe,
+            assetDisplayInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceInfoFactory
+        )
+
+        let presenter = MythosStkUnstakeSetupPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chainAsset: chainAsset,
+            balanceViewModelFactory: balanceViewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
+            accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactory(chainAsset: chainAsset),
+            hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
         let view = MythosStkUnstakeSetupViewController(presenter: presenter)
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }

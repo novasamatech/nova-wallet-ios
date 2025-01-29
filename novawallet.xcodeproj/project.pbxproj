@@ -672,6 +672,7 @@
 		0CA72A752D49EB8500B3FD02 /* MythosStkUnstakeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A742D49EB8500B3FD02 /* MythosStkUnstakeModel.swift */; };
 		0CA72A772D49EE0600B3FD02 /* MythosStkUnstakeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A762D49EE0600B3FD02 /* MythosStkUnstakeInteractor.swift */; };
 		0CA72A792D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A782D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift */; };
+		0CA72A7B2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A7A2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift */; };
 		0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */; };
 		0CA7CEE22CE0BBE9004328F2 /* SubstrateEventsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */; };
 		0CA7CEE62CE0C23B004328F2 /* SystemPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */; };
@@ -6222,6 +6223,7 @@
 		0CA72A742D49EB8500B3FD02 /* MythosStkUnstakeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeModel.swift; sourceTree = "<group>"; };
 		0CA72A762D49EE0600B3FD02 /* MythosStkUnstakeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeInteractor.swift; sourceTree = "<group>"; };
 		0CA72A782D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingIdentitiesSyncService.swift; sourceTree = "<group>"; };
+		0CA72A7A2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingHintsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+AssetHubSwapMatching.swift"; sourceTree = "<group>"; };
 		0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateEventsRepository.swift; sourceTree = "<group>"; };
 		0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemPallet+Events.swift"; sourceTree = "<group>"; };
@@ -11507,6 +11509,7 @@
 			children = (
 				0C0F6DD82D413DEB00943A7C /* CollatorStakingAccountViewModelFactory.swift */,
 				0C0F6E182D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift */,
+				0CA72A7A2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -26896,6 +26899,7 @@
 				77F9FB092A9D971000820625 /* NominationPoolBondMoreSetupInteractor.swift in Sources */,
 				8490146D24A9487A008F705E /* ErrorPresentable+AlertText.swift in Sources */,
 				8460E71C284D41E7002896E9 /* ParaStkUnstakePresenter+Protocol.swift in Sources */,
+				0CA72A7B2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift in Sources */,
 				0C38B5002B7A82F100882A8B /* TransactionPaymentPallet.swift in Sources */,
 				84FBECF92927403100FBEB83 /* EvmAssetContractId.swift in Sources */,
 				842EBB2F28909A7900B952D8 /* RoundedIconTitleHeaderView.swift in Sources */,

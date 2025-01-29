@@ -11,7 +11,7 @@ final class ParaStkUnstakePresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
-    let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
+    let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -37,7 +37,7 @@ final class ParaStkUnstakePresenter {
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
-        hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
+        hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
@@ -183,7 +183,12 @@ final class ParaStkUnstakePresenter {
         var hints: [String] = []
 
         if let stakingDuration = stakingDuration {
-            hints.append(hintViewModelFactory.unstakeHint(for: stakingDuration, locale: selectedLocale))
+            let durationHint = hintViewModelFactory.unstakeHintForParachainDuration(
+                stakingDuration,
+                locale: selectedLocale
+            )
+
+            hints.append(durationHint)
         }
 
         hints.append(hintViewModelFactory.unstakingRewards(for: selectedLocale))

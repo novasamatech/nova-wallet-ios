@@ -1,4 +1,4 @@
-protocol MythosStkUnstakeSetupViewProtocol: AnyObject {}
+protocol MythosStkUnstakeSetupViewProtocol: ControllerBackedProtocol {}
 
 protocol MythosStkUnstakeSetupPresenterProtocol: AnyObject {
     func setup()
@@ -10,4 +10,6 @@ protocol MythosStkUnstakeSetupInteractorOutputProtocol: MythosStkUnstakeInteract
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?)
 }
 
-protocol MythosStkUnstakeSetupWireframeProtocol: AnyObject {}
+protocol MythosStkUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable, FeeRetryable,
+    MythosStakingErrorPresentable {}

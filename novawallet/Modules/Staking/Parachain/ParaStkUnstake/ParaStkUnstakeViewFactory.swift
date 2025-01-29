@@ -43,7 +43,7 @@ struct ParaStkUnstakeViewFactory {
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
-            hintViewModelFactory: ParaStkHintsViewModelFactory(),
+            hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
             initialDelegator: initialDelegator,
             initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities,

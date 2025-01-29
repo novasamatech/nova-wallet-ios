@@ -48,7 +48,7 @@ struct ParaStkUnstakeConfirmViewFactory {
             callWrapper: callWrapper,
             dataValidatingFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            hintViewModelFactory: ParaStkHintsViewModelFactory(),
+            hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
