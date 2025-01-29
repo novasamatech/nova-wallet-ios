@@ -18,8 +18,10 @@ final class MythosStakingDetailsWireframe: MythosStakingDetailsWireframeProtocol
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            stakeView.controller,
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: stakeView.controller)
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
             animated: true
         )
     }

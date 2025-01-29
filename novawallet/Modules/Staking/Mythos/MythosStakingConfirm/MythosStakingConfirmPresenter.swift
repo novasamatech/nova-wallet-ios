@@ -226,11 +226,7 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
 
         switch result {
         case .success:
-            wireframe.presentExtrinsicSubmission(
-                from: view,
-                completionAction: .dismiss,
-                locale: selectedLocale
-            )
+            wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
             applyCurrentState()
             refreshFee()

@@ -1,3 +1,5 @@
+import Foundation
+
 protocol MythosStakingConfirmInteractorInputProtocol: MythosStakingBaseInteractorInputProtocol {
     func submit(model: MythosStakeModel)
 }
@@ -14,4 +16,6 @@ protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentab
     MythosStakingErrorPresentable,
     ExtrinsicSigningErrorHandling,
     ExtrinsicSubmissionPresenting,
-    MythosClaimRewardsPresenting {}
+    MythosClaimRewardsPresenting {
+    func complete(on view: CollatorStakingConfirmViewProtocol?, locale: Locale)
+}
