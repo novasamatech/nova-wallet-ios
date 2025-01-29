@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-class MythosStakingBaseInteractor: RuntimeConstantFetching {
+class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning {
     weak var basePresenter: MythosStakingBaseInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -94,6 +94,8 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching {
 
 private extension MythosStakingBaseInteractor {
     func makeAssetBalanceSubscription() {
+        clear(streamableProvider: &balanceProvider)
+
         balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.accountId,
             chainId: chainAsset.chain.chainId,
@@ -120,9 +122,9 @@ private extension MythosStakingBaseInteractor {
     }
 
     func makePriceSubscription() {
-        if let priceId = chainAsset.asset.priceId {
-            priceProvider?.removeObserver(self)
+        clear(streamableProvider: &priceProvider)
 
+        if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }

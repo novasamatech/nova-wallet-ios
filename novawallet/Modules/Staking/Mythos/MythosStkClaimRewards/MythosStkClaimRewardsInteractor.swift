@@ -105,7 +105,7 @@ private extension MythosStkClaimRewardsInteractor {
 
     func getExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure {
         { builder in
-            try builder.adding(call: MythosStakingPallet.ClaimRewards().runtimeCall())
+            try builder.adding(call: MythosStakingPallet.ClaimRewardsCall().runtimeCall())
         }
     }
 }

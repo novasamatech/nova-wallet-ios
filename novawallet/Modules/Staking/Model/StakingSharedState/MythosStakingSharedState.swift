@@ -1,4 +1,6 @@
 import Foundation
+import SubstrateSdk
+import Operation_iOS
 
 protocol MythosStakingSharedStateProtocol {
     var stakingOption: Multistaking.ChainAssetOption { get }
@@ -9,6 +11,7 @@ protocol MythosStakingSharedStateProtocol {
 
     var detailsSyncService: MythosStakingDetailsSyncServiceProtocol? { get }
     var claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol? { get }
+    var collatorIdentitiesSyncService: MythosStakingIdentitiesSyncServiceProtocol? { get }
 
     var collatorService: MythosCollatorServiceProtocol { get }
     var rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol { get }
@@ -43,6 +46,7 @@ final class MythosStakingSharedState {
 
     private(set) var detailsSyncService: MythosStakingDetailsSyncServiceProtocol?
     private(set) var claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol?
+    private(set) var collatorIdentitiesSyncService: MythosStakingIdentitiesSyncServiceProtocol?
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
@@ -71,6 +75,70 @@ final class MythosStakingSharedState {
     }
 }
 
+private extension MythosStakingSharedState {
+    func setupStakingDetailsSyncService(for accountId: AccountId) {
+        let chainId = stakingOption.chainAsset.chain.chainId
+
+        detailsSyncService = MythosStakingDetailsSyncService(
+            chainId: chainId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            operationFactory: MythosCollatorOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue,
+                timeout: JSONRPCTimeout.hour
+            ),
+            operationQueue: operationQueue
+        )
+
+        detailsSyncService?.setup()
+    }
+
+    func setupClaimableRewardsService(for accountId: AccountId) {
+        let chainId = stakingOption.chainAsset.chain.chainId
+
+        claimableRewardsService = MythosStakingClaimableRewardsService(
+            chainId: chainId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            operationQueue: operationQueue
+        )
+
+        claimableRewardsService?.setup()
+    }
+
+    func setupCollatorIdentitiesService(for accountId: AccountId) {
+        let chain = stakingOption.chainAsset.chain
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let identitiesOperationFactory = IdentityOperationFactory(
+            requestFactory: requestFactory
+        )
+
+        let identitiesProxyFactory = IdentityProxyFactory(
+            originChain: chain,
+            chainRegistry: chainRegistry,
+            identityOperationFactory: identitiesOperationFactory
+        )
+
+        collatorIdentitiesSyncService = MythosStakingIdentitiesSyncService(
+            chainId: chain.chainId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            operationFactory: identitiesProxyFactory,
+            operationQueue: operationQueue
+        )
+
+        collatorIdentitiesSyncService?.setup()
+    }
+}
+
 extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
     func setup(for accountId: AccountId?) {
         let chainId = stakingOption.chainAsset.chain.chainId
@@ -92,29 +160,11 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
         blockTimeService.setup()
 
         if let accountId {
-            detailsSyncService = MythosStakingDetailsSyncService(
-                chainId: chainId,
-                accountId: accountId,
-                chainRegistry: chainRegistry,
-                operationFactory: MythosCollatorOperationFactory(
-                    chainRegistry: chainRegistry,
-                    operationQueue: operationQueue,
-                    timeout: JSONRPCTimeout.hour
-                ),
-                operationQueue: operationQueue
-            )
+            setupStakingDetailsSyncService(for: accountId)
 
-            detailsSyncService?.setup()
+            setupClaimableRewardsService(for: accountId)
 
-            claimableRewardsService = MythosStakingClaimableRewardsService(
-                chainId: chainId,
-                accountId: accountId,
-                chainRegistry: chainRegistry,
-                stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-                operationQueue: operationQueue
-            )
-
-            claimableRewardsService?.setup()
+            setupCollatorIdentitiesService(for: accountId)
         }
     }
 
@@ -139,6 +189,9 @@ extension MythosStakingSharedState: MythosStakingSharedStateProtocol {
 
         claimableRewardsService?.throttle()
         claimableRewardsService = nil
+
+        collatorIdentitiesSyncService?.throttle()
+        collatorIdentitiesSyncService = nil
     }
 
     func startSharedOperation() -> SharedOperationProtocol {
