@@ -124,11 +124,19 @@ final class MythosStkStateViewModelFactory {
     private func createDelegatorStateManageOptions(
         for state: MythosStakingDelegatorState
     ) -> [StakingManageOption] {
-        [
-            .stakeMore,
-            .unstake,
-            .changeValidators(count: state.stakingDetails.stakeDistribution.count)
-        ]
+        let collatorsCount = state.stakingDetails.stakeDistribution.count
+
+        if collatorsCount > 0 {
+            return [
+                .stakeMore,
+                .unstake,
+                .changeValidators(count: state.stakingDetails.stakeDistribution.count)
+            ]
+        } else {
+            return [
+                .stakeMore
+            ]
+        }
     }
 }
 
