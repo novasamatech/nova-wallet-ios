@@ -107,10 +107,10 @@ extension MythosStakingDetailsInteractor {
 
     func makeBlockNumberProvider() {
         clear(dataProvider: &blockNumberProvider)
-        
+
         blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
     }
-    
+
     func makePriceSubscription() {
         clear(streamableProvider: &priceProvider)
 
