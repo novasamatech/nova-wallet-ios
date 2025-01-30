@@ -228,6 +228,8 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
         case .success:
             wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
+            logger.error("Submission error: \(error)")
+
             applyCurrentState()
             refreshFee()
 
