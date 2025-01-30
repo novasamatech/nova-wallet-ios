@@ -2,27 +2,13 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol MythosStakingAccountSubscriptionServiceProtocol {
-    func attachToAccountData(
-        for chainAccountId: ChainAccountId,
-        queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
-    ) -> UUID?
-
-    func detachFromAccountData(
-        for subscriptionId: UUID,
-        chainAccountId: ChainAccountId,
-        queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
-    )
-}
-
-final class MythosStakingAccountSubscriptionService: RemoteSubscriptionService,
-    MythosStakingAccountSubscriptionServiceProtocol {
+final class MythosStakingAccountSubscriptionService: RemoteSubscriptionService {
     private static let storagePaths: [StorageCodingPath] = [
         MythosStakingPallet.releaseQueuesPath
     ]
+}
 
+extension MythosStakingAccountSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol {
     func attachToAccountData(
         for chainAccountId: ChainAccountId,
         queue: DispatchQueue?,

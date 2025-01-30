@@ -686,6 +686,7 @@
 		0CA72A932D4B4A1D00B3FD02 /* RemoteSubscriptionService+AccountData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A922D4B4A1D00B3FD02 /* RemoteSubscriptionService+AccountData.swift */; };
 		0CA72A952D4B4C5900B3FD02 /* ChainAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A942D4B4C5900B3FD02 /* ChainAccountId.swift */; };
 		0CA72A972D4B507D00B3FD02 /* AccountRemoteSubscriptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A962D4B507D00B3FD02 /* AccountRemoteSubscriptionModel.swift */; };
+		0CA72A992D4B70E300B3FD02 /* StakingRemoteSubscriptionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A982D4B70E300B3FD02 /* StakingRemoteSubscriptionProtocols.swift */; };
 		0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */; };
 		0CA7CEE22CE0BBE9004328F2 /* SubstrateEventsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */; };
 		0CA7CEE62CE0C23B004328F2 /* SystemPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */; };
@@ -6251,6 +6252,7 @@
 		0CA72A922D4B4A1D00B3FD02 /* RemoteSubscriptionService+AccountData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RemoteSubscriptionService+AccountData.swift"; sourceTree = "<group>"; };
 		0CA72A942D4B4C5900B3FD02 /* ChainAccountId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountId.swift; sourceTree = "<group>"; };
 		0CA72A962D4B507D00B3FD02 /* AccountRemoteSubscriptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRemoteSubscriptionModel.swift; sourceTree = "<group>"; };
+		0CA72A982D4B70E300B3FD02 /* StakingRemoteSubscriptionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRemoteSubscriptionProtocols.swift; sourceTree = "<group>"; };
 		0CA7821B2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+AssetHubSwapMatching.swift"; sourceTree = "<group>"; };
 		0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateEventsRepository.swift; sourceTree = "<group>"; };
 		0CA7CEE32CE0C23B004328F2 /* SystemPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemPallet+Events.swift"; sourceTree = "<group>"; };
@@ -21711,6 +21713,7 @@
 				0CA72A922D4B4A1D00B3FD02 /* RemoteSubscriptionService+AccountData.swift */,
 				0CA72A902D4B48B900B3FD02 /* MythosStakingAccountSubscriptionService.swift */,
 				0CA72A962D4B507D00B3FD02 /* AccountRemoteSubscriptionModel.swift */,
+				0CA72A982D4B70E300B3FD02 /* StakingRemoteSubscriptionProtocols.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -30088,6 +30091,7 @@
 				2D5702A12C9E094D00673CB7 /* CardsZStackViewModel.swift in Sources */,
 				771901B02AE97DA500D9C918 /* SwapConfirmViewModels.swift in Sources */,
 				2D8F0ED52CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift in Sources */,
+				0CA72A992D4B70E300B3FD02 /* StakingRemoteSubscriptionProtocols.swift in Sources */,
 				DC682E96D056C069902B9C31 /* DAppSearchViewController.swift in Sources */,
 				0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */,
 				286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */,

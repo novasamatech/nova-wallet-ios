@@ -4,7 +4,7 @@ protocol ParachainStakingSharedStateProtocol: AnyObject {
     var stakingOption: Multistaking.ChainAssetOption { get }
     var chainRegistry: ChainRegistryProtocol { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
-    var accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol { get }
+    var accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol { get }
     var collatorService: ParachainStakingCollatorServiceInterfaces { get }
     var rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
@@ -24,7 +24,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
     let stakingOption: Multistaking.ChainAssetOption
     let chainRegistry: ChainRegistryProtocol
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
-    let accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
+    let accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol
     let collatorService: ParachainStakingCollatorServiceInterfaces
     let rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
@@ -42,7 +42,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         stakingOption: Multistaking.ChainAssetOption,
         chainRegistry: ChainRegistryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        accountRemoteSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol,
+        accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol,
         collatorService: ParachainStakingCollatorServiceInterfaces,
         rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,

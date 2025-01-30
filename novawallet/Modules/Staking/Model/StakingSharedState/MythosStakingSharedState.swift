@@ -34,7 +34,7 @@ final class MythosStakingSharedState {
     let rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
-    let accountRemoteSubscriptionService: MythosStakingAccountSubscriptionServiceProtocol
+    let accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
@@ -57,7 +57,7 @@ final class MythosStakingSharedState {
         rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
-        accountRemoteSubscriptionService: MythosStakingAccountSubscriptionServiceProtocol,
+        accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         preferredCollatorsProvider: PreferredValidatorsProviding,
