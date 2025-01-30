@@ -55,8 +55,11 @@ struct MythosStakingBalanceState {
 
         let availableStakedAmount = frozenBalance.staking.subtractOrZero(totalStaked + unavailableDueUnstake)
 
+        // we must have unstaking amount + newStake at least for stake newState
+        let toLock = amount.subtractOrZero(availableStakedAmount) + unavailableDueUnstake
+        
         return MythosStakeModel.Amount(
-            toLock: amount.subtractOrZero(availableStakedAmount),
+            toLock: toLock,
             toStake: amount
         )
     }
