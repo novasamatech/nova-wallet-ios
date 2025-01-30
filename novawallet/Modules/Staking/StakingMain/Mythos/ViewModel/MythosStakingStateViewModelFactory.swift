@@ -171,7 +171,7 @@ extension MythosStkStateViewModelFactory {
             nil
         }
 
-        return StakingUnbondingViewModel(eraCountdown: countdown, items: items)
+        return StakingUnbondingViewModel(eraCountdown: countdown, items: items, canCancelUnbonding: false)
     }
 }
 

@@ -151,7 +151,11 @@ final class StakingNPoolsViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: params.eraCountdown, items: viewModels)
+        return StakingUnbondingViewModel(
+            eraCountdown: params.eraCountdown,
+            items: viewModels,
+            canCancelUnbonding: false
+        )
     }
 
     private func createRewardsViewModel(
