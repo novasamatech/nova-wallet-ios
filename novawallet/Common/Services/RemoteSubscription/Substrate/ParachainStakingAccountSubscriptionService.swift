@@ -16,11 +16,18 @@ extension ParachainStaking.AccountSubscriptionService: StakingRemoteAccountSubsc
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
-        attachToAccountDataWithStoragePaths(
+        let subscriptionHandlingFactory = ParaStkAccountSubscribeHandlingFactory(
+            chainId: chainAccountId.chainId,
+            accountId: chainAccountId.accountId,
+            chainRegistry: chainRegistry
+        )
+
+        return attachToAccountDataWithStoragePaths(
             Self.storagePaths,
             chainAccountId: chainAccountId,
             queue: queue,
-            closure: closure
+            closure: closure,
+            subscriptionHandlingFactory: subscriptionHandlingFactory
         )
     }
 

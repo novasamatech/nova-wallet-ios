@@ -23,7 +23,8 @@ extension RemoteSubscriptionService {
         _ paths: [StorageCodingPath],
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
+        closure: RemoteSubscriptionClosure?,
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
     ) -> UUID? {
         do {
             let localKeyFactory = LocalStorageKeyFactory()
@@ -46,7 +47,8 @@ extension RemoteSubscriptionService {
                 chainId: chainId,
                 cacheKey: cacheKey,
                 queue: queue,
-                closure: closure
+                closure: closure,
+                subscriptionHandlingFactory: subscriptionHandlingFactory
             )
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))

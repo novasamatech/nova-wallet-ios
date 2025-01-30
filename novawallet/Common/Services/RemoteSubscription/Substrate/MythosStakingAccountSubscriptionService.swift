@@ -18,7 +18,8 @@ extension MythosStakingAccountSubscriptionService: StakingRemoteAccountSubscript
             Self.storagePaths,
             chainAccountId: chainAccountId,
             queue: queue,
-            closure: closure
+            closure: closure,
+            subscriptionHandlingFactory: nil
         )
     }
 
