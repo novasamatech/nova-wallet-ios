@@ -17,7 +17,6 @@ final class MythosStkClaimRewardsPresenter {
     var assetBalance: AssetBalance?
     var claimableRewards: MythosStakingClaimableRewards?
     var price: PriceData?
-    var existentialDeposit: Balance?
     var fee: ExtrinsicFeeProtocol?
 
     init(
@@ -122,13 +121,6 @@ extension MythosStkClaimRewardsPresenter: StakingGenericRewardsPresenterProtocol
                 fee: fee,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
-            ),
-            dataValidatorFactory.notViolatingMinBalancePaying(
-                fee: fee,
-                total: assetBalance?.balanceCountingEd,
-                minBalance: existentialDeposit,
-                asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
             )
         ]).runValidation { [weak self] in
             self?.view?.didStartLoading()
@@ -175,12 +167,6 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputP
         self.claimableRewards = claimableRewards
 
         provideAmountViewModel()
-    }
-
-    func didReceive(existentialDeposit: Balance?) {
-        logger.debug("Existential deposit: \(String(describing: existentialDeposit))")
-
-        self.existentialDeposit = existentialDeposit
     }
 
     func didReceiveFeeResult(_ result: Result<ExtrinsicFeeProtocol, Error>) {

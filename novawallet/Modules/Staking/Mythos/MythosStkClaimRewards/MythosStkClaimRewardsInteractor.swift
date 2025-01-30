@@ -10,7 +10,6 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning, RuntimeCon
     let feeProxy: ExtrinsicFeeProxyProtocol
     let submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
-    let runtimeService: RuntimeCodingServiceProtocol
     let logger: LoggerProtocol
     let operationQueue: OperationQueue
 
@@ -33,7 +32,6 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning, RuntimeCon
         feeProxy: ExtrinsicFeeProxyProtocol,
         submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
-        runtimeService: RuntimeCodingServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol,
@@ -47,7 +45,6 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning, RuntimeCon
         self.feeProxy = feeProxy
         self.submissionMonitor = submissionMonitor
         self.signingWrapper = signingWrapper
-        self.runtimeService = runtimeService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.rewardsSyncService = rewardsSyncService
@@ -88,21 +85,6 @@ private extension MythosStkClaimRewardsInteractor {
         }
     }
 
-    func provideExistentialDeposit() {
-        fetchConstant(
-            for: .existentialDeposit,
-            runtimeCodingService: runtimeService,
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] (result: Result<Balance, Error>) in
-            switch result {
-            case let .success(existentialDeposit):
-                self?.presenter?.didReceive(existentialDeposit: existentialDeposit)
-            case let .failure(error):
-                self?.logger.error("Existential deposit failed: \(error)")
-            }
-        }
-    }
-
     func getExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure {
         { builder in
             try builder.adding(call: MythosStakingPallet.ClaimRewardsCall().runtimeCall())
@@ -117,8 +99,6 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
         makeAssetBalanceSubscription()
         makePriceSubscription()
         makeClaimableRewardsSubscription()
-
-        provideExistentialDeposit()
     }
 
     func estimateFee() {

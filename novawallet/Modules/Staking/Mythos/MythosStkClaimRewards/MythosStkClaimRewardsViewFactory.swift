@@ -106,7 +106,6 @@ struct MythosStkClaimRewardsViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             submissionMonitor: submissionMonitor,
             signingWrapper: signingWrapper,
-            runtimeService: runtimeService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             rewardsSyncService: rewardsSyncService,
