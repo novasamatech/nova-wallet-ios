@@ -10,10 +10,19 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         sharedState.chainRegistry
     }
 
+    var stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol {
+        sharedState.stakingLocalSubscriptionFactory
+    }
+
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+        sharedState.generalLocalSubscriptionFactory
+    }
+
     let selectedAccount: MetaChainAccountResponse
     let sharedState: MythosStakingSharedStateProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let operationQueue: OperationQueue
@@ -23,9 +32,14 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
 
     var priceProvider: StreamableProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
+    var releaseQueueProvider: AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>?
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
+    var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
 
     var totalRewardInterval: StakingRewardFiltersInterval?
+
+    let blockTimeReqStore = CancellableCallStore()
+    let collatorReqStore = CancellableCallStore()
 
     var chain: ChainModel {
         chainAsset.chain
@@ -44,6 +58,7 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         sharedState: MythosStakingSharedStateProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -54,6 +69,7 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         self.sharedState = sharedState
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.blockTimeOperationFactory = blockTimeOperationFactory
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -62,6 +78,7 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
     }
 
     deinit {
+        clearRequests()
         sharedState.throttle()
     }
 }
@@ -74,6 +91,11 @@ extension MythosStakingDetailsInteractor {
         presenter?.didReceiveAccount(selectedAccount)
     }
 
+    func clearRequests() {
+        blockTimeReqStore.cancel()
+        collatorReqStore.cancel()
+    }
+
     func makeBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
         balanceProvider = subscribeToAssetBalanceProvider(
@@ -83,6 +105,12 @@ extension MythosStakingDetailsInteractor {
         )
     }
 
+    func makeBlockNumberProvider() {
+        clear(dataProvider: &blockNumberProvider)
+        
+        blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+    }
+    
     func makePriceSubscription() {
         clear(streamableProvider: &priceProvider)
 
@@ -113,6 +141,13 @@ extension MythosStakingDetailsInteractor {
         }
     }
 
+    func makeReleaseQueueSubscription() {
+        releaseQueueProvider = subscribeToReleaseQueue(
+            for: chain.chainId,
+            accountId: selectedAccountId
+        )
+    }
+
     func setupFrozenStore() {
         if frozenBalanceStore == nil {
             frozenBalanceStore = MythosStakingFrozenBalanceStore(
@@ -135,11 +170,14 @@ extension MythosStakingDetailsInteractor {
     }
 
     func provideElectedCollators() {
+        collatorReqStore.cancel()
+
         let operation = sharedState.collatorService.fetchInfoOperation()
 
         execute(
             operation: operation,
             inOperationQueue: operationQueue,
+            backingCallIn: collatorReqStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
@@ -148,6 +186,34 @@ extension MythosStakingDetailsInteractor {
             case let .failure(error):
                 self?.logger.error("Elected collators fetch failed: \(error)")
             }
+        }
+    }
+
+    func provideBlockTime() {
+        do {
+            blockTimeReqStore.cancel()
+
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
+            let wrapper = blockTimeOperationFactory.createBlockTimeOperation(
+                from: runtimeService,
+                blockTimeEstimationService: sharedState.blockTimeService
+            )
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: blockTimeReqStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(blockTime):
+                    self?.presenter?.didReceiveBlockTime(blockTime)
+                case let .failure(error):
+                    self?.logger.error("Block time request failed: \(error)")
+                }
+            }
+        } catch {
+            logger.error("Block time error: \(error)")
         }
     }
 
@@ -165,6 +231,8 @@ extension MythosStakingDetailsInteractor: MythosStakingDetailsInteractorInputPro
         setupFrozenStore()
         makeStakingDetailsSubscription()
         makeClaimableRewardsSubscription()
+        makeReleaseQueueSubscription()
+        makeBlockNumberProvider()
         makeTotalRewardSubscription()
 
         provideElectedCollators()
@@ -177,6 +245,50 @@ extension MythosStakingDetailsInteractor: MythosStakingDetailsInteractorInputPro
     func update(totalRewardFilter: StakingRewardFiltersPeriod) {
         totalRewardInterval = totalRewardFilter.interval
         makeTotalRewardSubscription()
+    }
+}
+
+extension MythosStakingDetailsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleBlockNumber(
+        result: Result<BlockNumber?, Error>,
+        chainId: ChainModel.Id
+    ) {
+        guard chain.chainId == chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(blockNumber):
+            if let blockNumber {
+                provideBlockTime()
+
+                presenter?.didReceiveBlockNumber(blockNumber)
+            }
+        case let .failure(error):
+            logger.error("Block subscription error: \(error)")
+        }
+    }
+}
+
+extension MythosStakingDetailsInteractor: MythosStakingLocalStorageSubscriber,
+    MythosStakingLocalStorageHandler {
+    func handleReleaseQueue(
+        result: Result<MythosStakingPallet.ReleaseQueue?, Error>,
+        chainId: ChainModel.Id,
+        accountId: AccountId
+    ) {
+        guard
+            chainId == chain.chainId,
+            accountId == selectedAccountId else {
+            return
+        }
+
+        switch result {
+        case let .success(releaseQueue):
+            presenter?.didReceiveReleaseQueue(releaseQueue)
+        case let .failure(error):
+            logger.error("Balance subscription error: \(error)")
+        }
     }
 }
 

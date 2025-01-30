@@ -27,10 +27,10 @@ enum MythosStakingPallet {
         @StringCodable var stake: Balance
     }
 
-    struct ReleaseRequest: Decodable {
-        @StringCodable var blockNumber: BlockNumber
+    struct ReleaseRequest: Decodable, Equatable {
+        @StringCodable var block: BlockNumber
         @StringCodable var amount: Balance
     }
 
-    typealias ReleaseRequests = [ReleaseRequest]
+    typealias ReleaseQueue = [ReleaseRequest]
 }

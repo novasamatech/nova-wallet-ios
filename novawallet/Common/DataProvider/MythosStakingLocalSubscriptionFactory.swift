@@ -3,6 +3,7 @@ import Operation_iOS
 
 extension MythosStakingPallet {
     typealias DecodedUserStake = ChainStorageDecodedItem<MythosStakingPallet.UserStake>
+    typealias DecodedReleaseQueue = ChainStorageDecodedItem<MythosStakingPallet.ReleaseQueue>
 }
 
 protocol MythosStakingLocalSubscriptionFactoryProtocol {
@@ -18,6 +19,11 @@ protocol MythosStakingLocalSubscriptionFactoryProtocol {
         for chainId: ChainModel.Id,
         accountId: AccountId
     ) throws -> AnyDataProvider<MythosStakingPallet.DecodedUserStake>
+
+    func getReleaseQueueProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>
 }
 
 final class MythosStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -48,6 +54,17 @@ final class MythosStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFac
             for: chainId,
             accountId: accountId,
             storagePath: MythosStakingPallet.userStakePath
+        )
+    }
+
+    func getReleaseQueueProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue> {
+        try getAccountProvider(
+            for: chainId,
+            accountId: accountId,
+            storagePath: MythosStakingPallet.releaseQueuesPath
         )
     }
 }

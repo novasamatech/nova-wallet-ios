@@ -13,8 +13,10 @@ final class MythosStkStateViewModelFactory {
     init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
+}
 
-    private func createDelegationStatus(
+extension MythosStkStateViewModelFactory {
+    func createDelegationStatus(
         for activeStake: Balance,
         collatorStatuses: [CollatorStakingDelegationStatus]?,
         commonData _: MythosStakingCommonData
@@ -34,7 +36,7 @@ final class MythosStkStateViewModelFactory {
         }
     }
 
-    private func createDelegationViewModel(
+    func createDelegationViewModel(
         for chainAsset: ChainAsset,
         commonData: MythosStakingCommonData,
         totalStake: Balance,
@@ -66,7 +68,7 @@ final class MythosStkStateViewModelFactory {
         }
     }
 
-    private func createStakingRewardViewModel(
+    func createStakingRewardViewModel(
         for chainAsset: ChainAsset,
         commonData: MythosStakingCommonData
     ) -> LocalizableResource<StakingRewardViewModel> {
@@ -113,7 +115,7 @@ final class MythosStkStateViewModelFactory {
         }
     }
 
-    private func createLockedStateManageOptions(
+    func createLockedStateManageOptions(
         for _: MythosStakingLockedState
     ) -> [StakingManageOption] {
         [
@@ -121,7 +123,7 @@ final class MythosStkStateViewModelFactory {
         ]
     }
 
-    private func createDelegatorStateManageOptions(
+    func createDelegatorStateManageOptions(
         for state: MythosStakingDelegatorState
     ) -> [StakingManageOption] {
         let collatorsCount = state.stakingDetails.stakeDistribution.count
@@ -137,6 +139,39 @@ final class MythosStkStateViewModelFactory {
                 .stakeMore
             ]
         }
+    }
+
+    func createUnstakingScheduleViewModel(
+        for chainAsset: ChainAsset,
+        releaseQueue: MythosStakingPallet.ReleaseQueue,
+        currentBlock: BlockNumber?,
+        blockTime: BlockTime?
+    ) -> StakingUnbondingViewModel? {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let balanceFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let items = releaseQueue
+            .sorted { $0.block < $1.block }
+            .map { request in
+                let unstakingDecimal = request.amount.decimal(assetInfo: assetDisplayInfo)
+                let tokenAmount = balanceFactory.amountFromValue(unstakingDecimal)
+
+                return StakingUnbondingItemViewModel(
+                    amount: tokenAmount,
+                    unbondingEra: request.block
+                )
+            }
+
+        let countdown: EraCountdownDisplayProtocol? = if let currentBlock, let blockTime {
+            BlockCountdownDisplay(activeEra: currentBlock, blockTime: blockTime)
+        } else {
+            nil
+        }
+
+        return StakingUnbondingViewModel(eraCountdown: countdown, items: items)
     }
 }
 
@@ -162,8 +197,16 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             viewStatus: .inactive
         )
 
-        // TODO: Implement in separate task
-        let unbondings: StakingUnbondingViewModel? = nil
+        let unbondings: StakingUnbondingViewModel? = if let releaseQueue = state.commonData.releaseQueue {
+            createUnstakingScheduleViewModel(
+                for: chainAsset,
+                releaseQueue: releaseQueue,
+                currentBlock: state.commonData.blockNumber,
+                blockTime: state.commonData.blockTime
+            )
+        } else {
+            nil
+        }
 
         // TODO: Implement in separate task
         let alerts: [StakingAlert] = []
@@ -214,8 +257,16 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             viewStatus: delegationStatus
         )
 
-        // TODO: Implement in separate task
-        let unbondings: StakingUnbondingViewModel? = nil
+        let unbondings: StakingUnbondingViewModel? = if let releaseQueue = state.commonData.releaseQueue {
+            createUnstakingScheduleViewModel(
+                for: chainAsset,
+                releaseQueue: releaseQueue,
+                currentBlock: state.commonData.blockNumber,
+                blockTime: state.commonData.blockTime
+            )
+        } else {
+            nil
+        }
 
         // TODO: Implement in separate task
         let alerts: [StakingAlert] = []
