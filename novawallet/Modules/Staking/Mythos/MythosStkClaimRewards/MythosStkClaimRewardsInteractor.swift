@@ -1,13 +1,12 @@
 import UIKit
 import Operation_iOS
 
-final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning, RuntimeConstantFetching {
+final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
     weak var presenter: MythosStkClaimRewardsInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let extrinsicService: ExtrinsicServiceProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
     let submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
     let logger: LoggerProtocol
@@ -29,7 +28,6 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning, RuntimeCon
         selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
         submissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -42,7 +40,6 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning, RuntimeCon
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
         self.extrinsicService = extrinsicService
-        self.feeProxy = feeProxy
         self.submissionMonitor = submissionMonitor
         self.signingWrapper = signingWrapper
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -94,8 +91,6 @@ private extension MythosStkClaimRewardsInteractor {
 
 extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputProtocol {
     func setup() {
-        feeProxy.delegate = self
-
         makeAssetBalanceSubscription()
         makePriceSubscription()
         makeClaimableRewardsSubscription()
@@ -104,12 +99,9 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
     func estimateFee() {
         let closure = getExtrinsicBuilderClosure()
 
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: "claim",
-            payingIn: nil,
-            setupBy: closure
-        )
+        extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
+            self?.presenter?.didReceiveFeeResult(result)
+        }
     }
 
     func submit() {
@@ -132,12 +124,6 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
                 self?.presenter?.didReceiveSubmissionResult(.failure(error))
             }
         }
-    }
-}
-
-extension MythosStkClaimRewardsInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<ExtrinsicFeeProtocol, Error>, for _: TransactionFeeId) {
-        presenter?.didReceiveFeeResult(result)
     }
 }
 

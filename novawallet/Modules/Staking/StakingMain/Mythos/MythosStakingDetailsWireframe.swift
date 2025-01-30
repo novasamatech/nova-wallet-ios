@@ -43,7 +43,16 @@ final class MythosStakingDetailsWireframe: MythosStakingDetailsWireframeProtocol
         // TODO: Implement in a separate task
     }
 
-    func showRedeemTokens(from _: ControllerBackedProtocol?) {
-        // TODO: Implement in a separate task
+    func showRedeemTokens(from view: ControllerBackedProtocol?) {
+        guard let redeemView = MythosStakingRedeemViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: redeemView.controller)
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 }
