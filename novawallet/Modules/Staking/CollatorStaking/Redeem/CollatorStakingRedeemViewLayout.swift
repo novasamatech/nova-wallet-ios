@@ -1,6 +1,6 @@
 import UIKit
 
-final class ParaStkRedeemViewLayout: UIView {
+final class CollatorStakingRedeemViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
