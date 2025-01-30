@@ -34,7 +34,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
     let logger: LoggerProtocol
 
     private var globalRemoteSubscription: UUID?
-    private var accountRemoteSubscription: UUID?
+    private var accountRemoteSubscription: AccountRemoteSubscriptionModel?
 
     weak var sharedOperation: SharedOperationProtocol?
 
@@ -80,9 +80,9 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         }
 
         if let accountId = accountId {
-            accountRemoteSubscription = accountRemoteSubscriptionService.attachToAccountData(
-                for: chainId,
-                accountId: accountId,
+            let chainAccountId = ChainAccountId(chainId: chainId, accountId: accountId)
+            let subscriptionId = accountRemoteSubscriptionService.attachToAccountData(
+                for: chainAccountId,
                 queue: .main
             ) { [weak self] result in
                 switch result {
@@ -91,6 +91,13 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
                 case let .failure(error):
                     self?.logger.error("Parachain account remote subscription failed: \(error)")
                 }
+            }
+
+            if let subscriptionId {
+                accountRemoteSubscription = AccountRemoteSubscriptionModel(
+                    subscriptionId: subscriptionId,
+                    chainAccountId: chainAccountId
+                )
             }
         }
 
@@ -111,10 +118,10 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
             )
         }
 
-        if let accountRemoteSubscription = accountRemoteSubscription {
-            globalRemoteSubscriptionService.detachFromGlobalData(
-                for: accountRemoteSubscription,
-                chainId: chainId,
+        if let accountRemoteSubscription {
+            accountRemoteSubscriptionService.detachFromAccountData(
+                for: accountRemoteSubscription.subscriptionId,
+                chainAccountId: accountRemoteSubscription.chainAccountId,
                 queue: nil,
                 closure: nil
             )
