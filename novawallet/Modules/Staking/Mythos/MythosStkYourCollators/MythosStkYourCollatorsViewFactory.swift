@@ -11,11 +11,11 @@ struct MythosStkYourCollatorsViewFactory {
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: chainAsset.chain.accountRequest()
             ),
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor(for: state, chainAsset: chainAsset) else {
             return nil
         }
 
-        let interactor = MythosStkYourCollatorsInteractor()
         let wireframe = MythosStkYourCollatorsWireframe(state: state)
 
         let assetInfo = chainAsset.assetDisplayInfo
@@ -36,7 +36,8 @@ struct MythosStkYourCollatorsViewFactory {
             wireframe: wireframe,
             selectedAccount: selectedAccount,
             viewModelFactory: viewModelFactory,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = CollatorStkYourCollatorsViewController(
@@ -48,5 +49,19 @@ struct MythosStkYourCollatorsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        for state: MythosStakingSharedStateProtocol,
+        chainAsset _: ChainAsset
+    ) -> MythosStkYourCollatorsInteractor? {
+        guard let detailsService = state.detailsSyncService else {
+            return nil
+        }
+        
+        return MythosStkYourCollatorsInteractor(
+            stakingDetailsService: state.detailsSyncService,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
     }
 }

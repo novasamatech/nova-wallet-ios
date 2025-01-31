@@ -3,7 +3,10 @@ protocol MythosStkYourCollatorsInteractorInputProtocol: AnyObject {
     func retry()
 }
 
-protocol MythosStkYourCollatorsInteractorOutputProtocol: AnyObject {}
+protocol MythosStkYourCollatorsInteractorOutputProtocol: AnyObject {
+    func didReceiveStakingDetails(_ details: MythosStakingDetails?)
+    func didReceiveCollators(_ collators: [CollatorStakingSelectionInfoProtocol]?)
+}
 
 protocol MythosStkYourCollatorsWireframeProtocol: AnyObject, CollatorStkManageCollatorsPresentable {
     func showCollatorInfo(

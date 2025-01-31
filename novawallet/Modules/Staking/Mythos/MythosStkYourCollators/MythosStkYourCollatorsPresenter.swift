@@ -11,18 +11,21 @@ final class MythosStkYourCollatorsPresenter {
 
     let selectedAccount: MetaChainAccountResponse
     let viewModelFactory: CollatorStkYourCollatorsViewModelFactory
+    let logger: LoggerProtocol
 
     init(
         interactor: MythosStkYourCollatorsInteractorInputProtocol,
         wireframe: MythosStkYourCollatorsWireframeProtocol,
         selectedAccount: MetaChainAccountResponse,
         viewModelFactory: CollatorStkYourCollatorsViewModelFactory,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.selectedAccount = selectedAccount
         self.viewModelFactory = viewModelFactory
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 }
@@ -88,7 +91,23 @@ extension MythosStkYourCollatorsPresenter: CollatorStkYourCollatorsPresenterProt
     }
 }
 
-extension MythosStkYourCollatorsPresenter: MythosStkYourCollatorsInteractorOutputProtocol {}
+extension MythosStkYourCollatorsPresenter: MythosStkYourCollatorsInteractorOutputProtocol {
+    func didReceiveStakingDetails(_ details: MythosStakingDetails?) {
+        logger.debug("Details: \(String(describing: details))")
+
+        stakingDetails = details
+
+        provideViewModel()
+    }
+
+    func didReceiveCollators(_ collators: [CollatorStakingSelectionInfoProtocol]?) {
+        logger.debug("Collators: \(String(describing: collators))")
+
+        self.collators = collators
+
+        provideViewModel()
+    }
+}
 
 extension MythosStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
