@@ -7,7 +7,6 @@ protocol PayCardViewProtocol: ControllerBackedProtocol {
 protocol PayCardPresenterProtocol: AnyObject {
     func setup()
     func processMessage(body: Any, of name: String)
-    func processPhotoLibraryAuth(errorCode: PayCardWebViewErrorCode)
 }
 
 protocol PayCardInteractorInputProtocol: AnyObject {
