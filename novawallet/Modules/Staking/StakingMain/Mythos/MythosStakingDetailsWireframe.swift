@@ -39,8 +39,17 @@ final class MythosStakingDetailsWireframe: MythosStakingDetailsWireframeProtocol
         )
     }
 
-    func showYourCollators(from _: ControllerBackedProtocol?) {
-        // TODO: Implement in a separate task
+    func showYourCollators(from view: ControllerBackedProtocol?) {
+        guard let collatorsView = MythosStkYourCollatorsViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: collatorsView.controller)
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showRedeemTokens(from view: ControllerBackedProtocol?) {

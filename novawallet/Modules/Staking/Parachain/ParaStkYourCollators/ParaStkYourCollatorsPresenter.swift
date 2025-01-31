@@ -77,10 +77,10 @@ extension ParaStkYourCollatorsPresenter: CollatorStkYourCollatorsPresenterProtoc
     }
 
     func selectCollator(viewModel: CollatorSelectionViewModel) {
-        guard
-            let accountId = try? viewModel.collator.address.toAccountId(),
-            let collators = try? collators?.get(),
-            let collatorInfo = collators.first(where: { $0.accountId == accountId }) else {
+        let collators = try? collators?.get()
+        let optCollatorInfo = collators?.first { $0.accountId == viewModel.identifier }
+
+        guard let collatorInfo = optCollatorInfo else {
             return
         }
 

@@ -9,17 +9,12 @@ protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
     func didReceiveScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>)
 }
 
-protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable {
+protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable,
+    ParachainStakingErrorPresentable,
+    CollatorStkManageCollatorsPresentable {
     func showCollatorInfo(
         from view: CollatorStkYourCollatorsViewProtocol?,
         collatorInfo: ParachainStkCollatorSelectionInfo
-    )
-
-    func showManageCollators(
-        from view: CollatorStkYourCollatorsViewProtocol?,
-        options: [StakingManageOption],
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
     )
 
     func showStakeMore(

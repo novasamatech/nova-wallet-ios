@@ -161,6 +161,7 @@ final class CollatorStakingSelectPresenter {
         let sortedByViewModel = createSortedByViewModel(for: collatorInfo)
 
         return CollatorSelectionViewModel(
+            identifier: collatorInfo.accountId,
             iconViewModel: iconViewModel,
             collator: titleViewModel,
             detailsName: detailsViewModel.title,

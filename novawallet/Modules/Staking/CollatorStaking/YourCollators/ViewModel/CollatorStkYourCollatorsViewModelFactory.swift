@@ -52,6 +52,7 @@ final class CollatorStkYourCollatorsViewModelFactory {
         let rewards = model.apr.flatMap { aprFormatter.stringFromDecimal($0) } ?? ""
 
         return CollatorSelectionViewModel(
+            identifier: model.accountId,
             iconViewModel: iconViewModel,
             collator: titleViewModel,
             detailsName: detailsName,
