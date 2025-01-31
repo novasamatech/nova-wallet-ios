@@ -637,4 +637,15 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
 
         present(alertController, animated: true, completion: nil)
     }
+
+    @available(iOS 15.0, *)
+    func webView(
+        _: WKWebView,
+        requestMediaCapturePermissionFor _: WKSecurityOrigin,
+        initiatedByFrame _: WKFrameInfo,
+        type _: WKMediaCaptureType,
+        decisionHandler: @escaping @MainActor(WKPermissionDecision) -> Void
+    ) {
+        decisionHandler(.grant)
+    }
 }
