@@ -493,6 +493,7 @@
 		0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */; };
 		0C6FE7FB2D4C898E00E5B651 /* CollatorStkYourCollatorsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6FE7FA2D4C898E00E5B651 /* CollatorStkYourCollatorsProtocols.swift */; };
 		0C6FE7FE2D4C926400E5B651 /* CollatorStkManageCollatorsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6FE7FD2D4C926400E5B651 /* CollatorStkManageCollatorsPresentable.swift */; };
+		0C6FE8002D4CCD6900E5B651 /* IdentityProxyFactory+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6FE7FF2D4CCD6900E5B651 /* IdentityProxyFactory+Init.swift */; };
 		0C7071292C1F600F0080DDCD /* OnLauchAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7071282C1F600F0080DDCD /* OnLauchAction.swift */; };
 		0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */; };
 		0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104682C2966C000487E64 /* LedgerConversionTests.swift */; };
@@ -6043,6 +6044,7 @@
 		0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		0C6FE7FA2D4C898E00E5B651 /* CollatorStkYourCollatorsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkYourCollatorsProtocols.swift; sourceTree = "<group>"; };
 		0C6FE7FD2D4C926400E5B651 /* CollatorStkManageCollatorsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkManageCollatorsPresentable.swift; sourceTree = "<group>"; };
+		0C6FE7FF2D4CCD6900E5B651 /* IdentityProxyFactory+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IdentityProxyFactory+Init.swift"; sourceTree = "<group>"; };
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
 		0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLaunchActionsQueue.swift; sourceTree = "<group>"; };
 		0C7104682C2966C000487E64 /* LedgerConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerConversionTests.swift; sourceTree = "<group>"; };
@@ -13229,6 +13231,7 @@
 			children = (
 				84A15488262888CA0050D557 /* IdentityOperationFactory.swift */,
 				0CCE3AAE2BF5BE4300D55F03 /* IdentityProxyFactory.swift */,
+				0C6FE7FF2D4CCD6900E5B651 /* IdentityProxyFactory+Init.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -28409,6 +28412,7 @@
 				848CCB502833D1D900A1FD00 /* StakingRelaychainStatics.swift in Sources */,
 				2DA85A722C7F6E0900591900 /* SwipeGovBannerView.swift in Sources */,
 				AEA0C8AE267B818900F9666F /* SelectedValidatorListViewLayout.swift in Sources */,
+				0C6FE8002D4CCD6900E5B651 /* IdentityProxyFactory+Init.swift in Sources */,
 				2D1C5D242C25ACE200E2DBDD /* CustomNetworkAddPresenter.swift in Sources */,
 				84D8F15524D80CA100AF43E9 /* ModalPickerViewController.swift in Sources */,
 				84EE780427C4CF9E0027357F /* DAppListItemsLoadingView.swift in Sources */,

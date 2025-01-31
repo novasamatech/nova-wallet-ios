@@ -53,15 +53,36 @@ struct MythosStkYourCollatorsViewFactory {
 
     private static func createInteractor(
         for state: MythosStakingSharedStateProtocol,
-        chainAsset _: ChainAsset
+        chainAsset: ChainAsset
     ) -> MythosStkYourCollatorsInteractor? {
-        guard let detailsService = state.detailsSyncService else {
+        guard
+            let detailsService = state.detailsSyncService,
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = state.chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
             return nil
         }
-        
-        return MythosStkYourCollatorsInteractor(
-            stakingDetailsService: state.detailsSyncService,
+
+        let identityProxyFactory = IdentityProxyFactory.createDefaultProxy(
+            from: chainAsset.chain,
+            chainRegistry: state.chainRegistry
+        )
+
+        let collatorsFactory = MythosStakableCollatorOperationFactory(
+            collatorService: state.collatorService,
+            rewardsService: state.rewardCalculatorService,
+            runtimeProvider: runtimeProvider,
+            connection: connection,
+            identityFactory: identityProxyFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        return MythosStkYourCollatorsInteractor(
+            chain: chainAsset.chain,
+            stakingDetailsService: detailsService,
+            collatorsOperationFactory: collatorsFactory,
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
     }
 }
