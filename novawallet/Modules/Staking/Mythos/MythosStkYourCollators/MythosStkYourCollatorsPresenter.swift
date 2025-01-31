@@ -100,12 +100,25 @@ extension MythosStkYourCollatorsPresenter: MythosStkYourCollatorsInteractorOutpu
         provideViewModel()
     }
 
-    func didReceiveCollators(_ collators: [CollatorStakingSelectionInfoProtocol]?) {
-        logger.debug("Collators: \(String(describing: collators))")
+    func didReceiveCollatorsResult(_ result: Result<[CollatorStakingSelectionInfoProtocol], Error>) {
+        switch result {
+        case let .success(collators):
+            logger.debug("Collators: \(collators)")
 
-        self.collators = collators
+            self.collators = collators
 
-        provideViewModel()
+            provideViewModel()
+        case let .failure(error):
+            logger.debug("Collators error: \(error)")
+
+            collators = nil
+
+            let errorDescription = R.string.localizable.commonErrorNoDataRetrieved(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            view?.reload(state: .error(errorDescription))
+        }
     }
 }
 

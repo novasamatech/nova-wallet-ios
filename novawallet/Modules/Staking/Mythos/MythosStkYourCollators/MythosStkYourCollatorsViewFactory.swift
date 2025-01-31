@@ -81,8 +81,7 @@ struct MythosStkYourCollatorsViewFactory {
             stakingDetailsService: detailsService,
             collatorsOperationFactory: collatorsFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

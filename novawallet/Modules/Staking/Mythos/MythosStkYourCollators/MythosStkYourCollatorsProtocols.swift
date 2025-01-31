@@ -5,7 +5,7 @@ protocol MythosStkYourCollatorsInteractorInputProtocol: AnyObject {
 
 protocol MythosStkYourCollatorsInteractorOutputProtocol: AnyObject {
     func didReceiveStakingDetails(_ details: MythosStakingDetails?)
-    func didReceiveCollators(_ collators: [CollatorStakingSelectionInfoProtocol]?)
+    func didReceiveCollatorsResult(_ result: Result<[CollatorStakingSelectionInfoProtocol], Error>)
 }
 
 protocol MythosStkYourCollatorsWireframeProtocol: AnyObject, CollatorStkManageCollatorsPresentable {

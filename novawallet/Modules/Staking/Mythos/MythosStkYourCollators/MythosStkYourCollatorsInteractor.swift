@@ -8,7 +8,6 @@ final class MythosStkYourCollatorsInteractor {
     let collatorsOperationFactory: MythosStakableCollatorOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol
 
     let collatorsReqStore = CancellableCallStore()
 
@@ -17,15 +16,13 @@ final class MythosStkYourCollatorsInteractor {
         stakingDetailsService: MythosStakingDetailsSyncServiceProtocol,
         collatorsOperationFactory: MythosStakableCollatorOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.stakingDetailsService = stakingDetailsService
         self.collatorsOperationFactory = collatorsOperationFactory
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
-        self.logger = logger
     }
 
     deinit {
@@ -52,7 +49,7 @@ private extension MythosStkYourCollatorsInteractor {
 
         let collatorIds = stakingDetailsService.currentDetails?.collatorIds ?? []
         guard !collatorIds.isEmpty else {
-            presenter?.didReceiveCollators([])
+            presenter?.didReceiveCollatorsResult(.success([]))
             return
         }
 
@@ -64,12 +61,7 @@ private extension MythosStkYourCollatorsInteractor {
             backingCallIn: collatorsReqStore,
             runningCallbackIn: .main
         ) { [weak self] result in
-            switch result {
-            case let .success(collators):
-                self?.presenter?.didReceiveCollators(collators)
-            case let .failure(error):
-                self?.logger.debug("Collators error: \(error)")
-            }
+            self?.presenter?.didReceiveCollatorsResult(result)
         }
     }
 }
