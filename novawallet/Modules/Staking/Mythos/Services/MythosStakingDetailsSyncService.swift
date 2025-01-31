@@ -3,6 +3,8 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol MythosStakingDetailsSyncServiceProtocol: ApplicationServiceProtocol {
+    var currentDetails: MythosStakingDetails? { get }
+
     func add(
         observer: AnyObject,
         sendStateOnSubscription: Bool,
@@ -27,6 +29,16 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
     private var subscription: CallbackStorageSubscription<MythosStakingPallet.UserStake>?
 
     private var stateObservable: Observable<MythosStakingDetails?> = .init(state: nil)
+
+    var currentDetails: MythosStakingDetails? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return stateObservable.state
+    }
 
     init(
         chainId: ChainModel.Id,

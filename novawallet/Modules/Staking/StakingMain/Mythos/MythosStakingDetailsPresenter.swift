@@ -90,6 +90,8 @@ private extension MythosStakingDetailsPresenter {
 
 extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
     func setup() {
+        view?.didReceiveStatics(viewModel: StakingParachainStatics())
+
         interactor.setup()
     }
 

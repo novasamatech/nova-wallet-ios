@@ -2,7 +2,7 @@ import Foundation
 
 struct MythosCollatorSelectionInfo {
     let accountId: AccountId
-    let candidate: MythosStakingPallet.CandidateInfo
+    let candidate: MythosStakingPallet.CandidateInfo?
     let identity: AccountIdentity?
     let maxRewardedDelegations: UInt32
     let minRewardableStake: Balance
@@ -11,10 +11,10 @@ struct MythosCollatorSelectionInfo {
 }
 
 extension MythosCollatorSelectionInfo: CollatorStakingSelectionInfoProtocol {
-    var totalStake: Balance { candidate.stake }
+    var totalStake: Balance { candidate?.stake ?? 0 }
     var ownStake: Balance? { nil }
-    var delegatorsStake: Balance { candidate.stake }
-    var delegationCount: UInt32 { candidate.stakers }
+    var delegatorsStake: Balance { candidate?.stake ?? 0 }
+    var delegationCount: UInt32 { candidate?.stakers ?? 0 }
 
     func status(
         for _: AccountId,

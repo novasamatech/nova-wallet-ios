@@ -2,6 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct CollatorSelectionViewModel {
+    let identifier: AccountId
     let iconViewModel: DrawableIcon
     let collator: DisplayAddressViewModel
     let detailsName: String
