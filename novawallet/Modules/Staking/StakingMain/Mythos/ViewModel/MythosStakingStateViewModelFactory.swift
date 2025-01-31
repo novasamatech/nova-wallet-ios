@@ -145,7 +145,7 @@ extension MythosStkStateViewModelFactory {
         for chainAsset: ChainAsset,
         releaseQueue: MythosStakingPallet.ReleaseQueue?,
         currentBlock: BlockNumber?,
-        blockTime: BlockTime?
+        blockTime: TimeInterval?
     ) -> StakingUnbondingViewModel? {
         guard let releaseQueue else {
             return nil
@@ -205,7 +205,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             for: chainAsset,
             releaseQueue: state.commonData.releaseQueue,
             currentBlock: state.commonData.blockNumber,
-            blockTime: state.commonData.blockTime
+            blockTime: state.commonData.duration?.block
         )
 
         let alerts: [StakingAlert] = createAlerts(
@@ -264,7 +264,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             for: chainAsset,
             releaseQueue: state.commonData.releaseQueue,
             currentBlock: state.commonData.blockNumber,
-            blockTime: state.commonData.blockTime
+            blockTime: state.commonData.duration?.block
         )
 
         let alerts: [StakingAlert] = createAlerts(
