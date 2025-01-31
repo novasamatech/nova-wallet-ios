@@ -143,10 +143,14 @@ extension MythosStkStateViewModelFactory {
 
     func createUnstakingScheduleViewModel(
         for chainAsset: ChainAsset,
-        releaseQueue: MythosStakingPallet.ReleaseQueue,
+        releaseQueue: MythosStakingPallet.ReleaseQueue?,
         currentBlock: BlockNumber?,
         blockTime: BlockTime?
     ) -> StakingUnbondingViewModel? {
+        guard let releaseQueue else {
+            return nil
+        }
+
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
@@ -197,19 +201,18 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             viewStatus: .inactive
         )
 
-        let unbondings: StakingUnbondingViewModel? = if let releaseQueue = state.commonData.releaseQueue {
-            createUnstakingScheduleViewModel(
-                for: chainAsset,
-                releaseQueue: releaseQueue,
-                currentBlock: state.commonData.blockNumber,
-                blockTime: state.commonData.blockTime
-            )
-        } else {
-            nil
-        }
+        let unbondings: StakingUnbondingViewModel? = createUnstakingScheduleViewModel(
+            for: chainAsset,
+            releaseQueue: state.commonData.releaseQueue,
+            currentBlock: state.commonData.blockNumber,
+            blockTime: state.commonData.blockTime
+        )
 
-        // TODO: Implement in separate task
-        let alerts: [StakingAlert] = []
+        let alerts: [StakingAlert] = createAlerts(
+            for: nil,
+            releaseQueue: state.commonData.releaseQueue,
+            commonData: state.commonData
+        )
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 
@@ -257,19 +260,18 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             viewStatus: delegationStatus
         )
 
-        let unbondings: StakingUnbondingViewModel? = if let releaseQueue = state.commonData.releaseQueue {
-            createUnstakingScheduleViewModel(
-                for: chainAsset,
-                releaseQueue: releaseQueue,
-                currentBlock: state.commonData.blockNumber,
-                blockTime: state.commonData.blockTime
-            )
-        } else {
-            nil
-        }
+        let unbondings: StakingUnbondingViewModel? = createUnstakingScheduleViewModel(
+            for: chainAsset,
+            releaseQueue: state.commonData.releaseQueue,
+            currentBlock: state.commonData.blockNumber,
+            blockTime: state.commonData.blockTime
+        )
 
-        // TODO: Implement in separate task
-        let alerts: [StakingAlert] = []
+        let alerts: [StakingAlert] = createAlerts(
+            for: collatorsStatuses,
+            releaseQueue: state.commonData.releaseQueue,
+            commonData: state.commonData
+        )
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 
