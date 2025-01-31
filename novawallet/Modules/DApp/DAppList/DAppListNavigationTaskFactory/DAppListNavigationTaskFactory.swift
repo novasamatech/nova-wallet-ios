@@ -32,9 +32,8 @@ extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
     ) -> DAppListNavigationTask {
         DAppListNavigationTask(
-            tabProvider: { [weak self] in
+            tabProvider: {
                 guard
-                    let self,
                     let wallet,
                     case let .success(dAppList) = dAppResultProvider()
                 else { return nil }

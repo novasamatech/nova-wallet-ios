@@ -108,6 +108,22 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         )
     }
 
+    func provideNavigation(for model: DAppNavigation) {
+        guard let wallet else {
+            return
+        }
+
+        dAppNavigationTask = browserNavigationTaskFactory.createSearchResultNavigationTask(
+            model.searchResult,
+            wallet: wallet
+        )
+
+        dAppNavigationTask?(
+            cleaner: self,
+            view: view
+        )
+    }
+
     func seeAllFavorites() {
         wireframe.showFavorites(from: view)
     }

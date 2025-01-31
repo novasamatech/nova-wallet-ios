@@ -46,7 +46,9 @@ final class OpenDAppUrlParsingService: OpenScreenUrlParsingServiceProtocol, AnyP
             case let .success(list):
                 if let dApp = list?.dApps.first(where: { URL.hostsEqual($0.url, dAppUrl) }) {
                     self.dAppsProvider.removeObserver(self)
-                    completion(.success(.dApp(dApp)))
+
+                    let model = DAppNavigation(dApp: dApp, requestedUrl: dAppUrl)
+                    completion(.success(.dApp(model)))
                 }
             case .failure:
                 completion(.failure(.openDAppScreen(.loadListFailed)))
