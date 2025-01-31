@@ -8,7 +8,7 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     }
 
     func showCollatorInfo(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         collatorInfo: ParachainStkCollatorSelectionInfo
     ) {
         guard let infoView = CollatorStakingInfoViewFactory.createParachainStakingView(
@@ -22,7 +22,7 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     }
 
     func showManageCollators(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         options: [StakingManageOption],
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
@@ -39,7 +39,7 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     }
 
     func showStakeMore(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
         delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
@@ -57,7 +57,7 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     }
 
     func showUnstake(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
         delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?

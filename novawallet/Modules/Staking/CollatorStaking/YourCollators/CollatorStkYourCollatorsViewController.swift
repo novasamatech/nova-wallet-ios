@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class ParaStkYourCollatorsViewController: UIViewController, ViewHolder {
+final class CollatorStkYourCollatorsViewController: UIViewController, ViewHolder {
     private enum Constants {
         static let warningHeaderMargins = UIEdgeInsets(
             top: 8.0,
@@ -28,7 +28,7 @@ final class ParaStkYourCollatorsViewController: UIViewController, ViewHolder {
 
     typealias RootViewType = YourValidatorListViewLayout
 
-    let presenter: ParaStkYourCollatorsPresenterProtocol
+    let presenter: CollatorStkYourCollatorsPresenterProtocol
 
     private var viewState: ParaStkYourCollatorsState?
 
@@ -54,7 +54,7 @@ final class ParaStkYourCollatorsViewController: UIViewController, ViewHolder {
     let counterFormater: LocalizableResource<NumberFormatter>
 
     init(
-        presenter: ParaStkYourCollatorsPresenterProtocol,
+        presenter: CollatorStkYourCollatorsPresenterProtocol,
         localizationManager: LocalizationManagerProtocol,
         counterFormater: LocalizableResource<NumberFormatter> = NumberFormatter.quantity.localizableResource()
     ) {
@@ -134,7 +134,7 @@ final class ParaStkYourCollatorsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ParaStkYourCollatorsViewController: UITableViewDataSource {
+extension CollatorStkYourCollatorsViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         viewState?.viewModel?.sections.count ?? 0
     }
@@ -157,7 +157,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDataSource {
     }
 }
 
-extension ParaStkYourCollatorsViewController: UITableViewDelegate {
+extension CollatorStkYourCollatorsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -247,7 +247,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
     private func configureNotElectedSection(
         for headerView: UIView?,
         tableView: UITableView,
-        viewModel: ParaStkYourCollatorListSection,
+        viewModel: CollatorStkYourCollatorListSection,
         section: Int
     ) -> UIView? {
         let sectionView: YourValidatorListStatusSectionView = (headerView as? YourValidatorListStatusSectionView)
@@ -265,7 +265,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
     private func configurePendingSection(
         for headerView: UIView?,
         tableView: UITableView,
-        viewModel: ParaStkYourCollatorListSection,
+        viewModel: CollatorStkYourCollatorListSection,
         section: Int
     ) -> UIView? {
         let sectionView: YourValidatorListStatusSectionView = (headerView as? YourValidatorListStatusSectionView)
@@ -395,7 +395,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
     }
 }
 
-extension ParaStkYourCollatorsViewController: ParaStkYourCollatorsViewProtocol {
+extension CollatorStkYourCollatorsViewController: CollatorStkYourCollatorsViewProtocol {
     func reload(state: ParaStkYourCollatorsState) {
         viewState = state
 
@@ -405,18 +405,18 @@ extension ParaStkYourCollatorsViewController: ParaStkYourCollatorsViewProtocol {
     }
 }
 
-extension ParaStkYourCollatorsViewController: ErrorStateViewDelegate {
+extension CollatorStkYourCollatorsViewController: ErrorStateViewDelegate {
     func didRetry(errorView _: ErrorStateView) {
         presenter.retry()
     }
 }
 
-extension ParaStkYourCollatorsViewController: EmptyStateViewOwnerProtocol {
+extension CollatorStkYourCollatorsViewController: EmptyStateViewOwnerProtocol {
     var emptyStateDelegate: EmptyStateDelegate { self }
     var emptyStateDataSource: EmptyStateDataSource { self }
 }
 
-extension ParaStkYourCollatorsViewController: EmptyStateDataSource {
+extension CollatorStkYourCollatorsViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         guard let state = viewState else { return nil }
 
@@ -440,7 +440,7 @@ extension ParaStkYourCollatorsViewController: EmptyStateDataSource {
     }
 }
 
-extension ParaStkYourCollatorsViewController: EmptyStateDelegate {
+extension CollatorStkYourCollatorsViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         guard let state = viewState else { return false }
         switch state {
@@ -452,7 +452,7 @@ extension ParaStkYourCollatorsViewController: EmptyStateDelegate {
     }
 }
 
-extension ParaStkYourCollatorsViewController: Localizable {
+extension CollatorStkYourCollatorsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

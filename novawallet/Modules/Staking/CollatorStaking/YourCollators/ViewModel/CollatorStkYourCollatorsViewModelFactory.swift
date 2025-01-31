@@ -3,16 +3,16 @@ import SubstrateSdk
 import SoraFoundation
 import BigInt
 
-protocol ParaStkYourCollatorsViewModelFactoryProtocol {
+protocol CollatorStkYourCollatorsViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
-        collators: [ParachainStkCollatorSelectionInfo],
-        delegator: ParachainStaking.Delegator,
+        collators: [CollatorStakingSelectionInfoProtocol],
+        delegator: CollatorStakingDelegator,
         locale: Locale
-    ) throws -> ParaStkYourCollatorsListViewModel
+    ) throws -> CollatorStkYourCollatorsListViewModel
 }
 
-final class ParaStkYourCollatorsViewModelFactory {
+final class CollatorStkYourCollatorsViewModelFactory {
     let balanceViewModeFactory: BalanceViewModelFactoryProtocol
     let assetPrecision: Int16
     let chainFormat: ChainFormat
@@ -30,7 +30,7 @@ final class ParaStkYourCollatorsViewModelFactory {
     }
 
     private func createCollatorViewModel(
-        for model: ParachainStkCollatorSelectionInfo,
+        for model: CollatorStakingSelectionInfoProtocol,
         staked: BigUInt,
         status: CollatorStakingDelegationStatus,
         aprFormatter: NumberFormatter,
@@ -65,10 +65,10 @@ final class ParaStkYourCollatorsViewModelFactory {
     private func createSectionsFromOrder(
         _ order: [CollatorStakingDelegationStatus],
         mapping: [CollatorStakingDelegationStatus: [CollatorSelectionViewModel]]
-    ) -> [ParaStkYourCollatorListSection] {
+    ) -> [CollatorStkYourCollatorListSection] {
         order.compactMap { status in
             if let collators = mapping[status], !collators.isEmpty {
-                return ParaStkYourCollatorListSection(status: status, collators: collators)
+                return CollatorStkYourCollatorListSection(status: status, collators: collators)
             } else {
                 return nil
             }
@@ -76,34 +76,30 @@ final class ParaStkYourCollatorsViewModelFactory {
     }
 }
 
-extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol {
+extension CollatorStkYourCollatorsViewModelFactory: CollatorStkYourCollatorsViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
-        collators: [ParachainStkCollatorSelectionInfo],
-        delegator: ParachainStaking.Delegator,
+        collators: [CollatorStakingSelectionInfoProtocol],
+        delegator: CollatorStakingDelegator,
         locale: Locale
-    ) throws -> ParaStkYourCollatorsListViewModel {
+    ) throws -> CollatorStkYourCollatorsListViewModel {
         let aprFormatter = NumberFormatter.percent
 
         let stakes = delegator.delegationsDict()
 
-        let collatorStakingDelegator = CollatorStakingDelegator(
-            parachainDelegator: delegator
-        )
-
         let collatorsMapping = try collators
             .sorted(by: {
-                let stake1 = stakes[$0.accountId]?.amount ?? 0
-                let stake2 = stakes[$1.accountId]?.amount ?? 0
+                let stake1 = stakes[$0.accountId] ?? 0
+                let stake2 = stakes[$1.accountId] ?? 0
 
                 return stake1 > stake2
             })
             .reduce(
                 into: [CollatorStakingDelegationStatus: [CollatorSelectionViewModel]]()) { result, item in
-                let delegatorStake = stakes[item.accountId]?.amount ?? 0
+                let delegatorStake = stakes[item.accountId] ?? 0
                 let status = item.status(
                     for: selectedAccountId,
-                    delegatorModel: collatorStakingDelegator,
+                    delegatorModel: delegator,
                     stake: delegatorStake
                 )
 
@@ -128,7 +124,7 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
         let notElectedCollators = collatorsMapping[.notElected] ?? []
         let hasCollatorWithoutReward = !notRewardedCollators.isEmpty || !notElectedCollators.isEmpty
 
-        return ParaStkYourCollatorsListViewModel(
+        return CollatorStkYourCollatorsListViewModel(
             hasCollatorWithoutRewards: hasCollatorWithoutReward,
             sections: sections
         )

@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 final class ParaStkYourCollatorsPresenter {
-    weak var view: ParaStkYourCollatorsViewProtocol?
+    weak var view: CollatorStkYourCollatorsViewProtocol?
     let wireframe: ParaStkYourCollatorsWireframeProtocol
     let interactor: ParaStkYourCollatorsInteractorInputProtocol
 
@@ -11,13 +11,13 @@ final class ParaStkYourCollatorsPresenter {
     private var scheduledRequests: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>?
 
     let selectedAccount: MetaChainAccountResponse
-    let viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol
+    let viewModelFactory: CollatorStkYourCollatorsViewModelFactory
 
     init(
         interactor: ParaStkYourCollatorsInteractorInputProtocol,
         wireframe: ParaStkYourCollatorsWireframeProtocol,
         selectedAccount: MetaChainAccountResponse,
-        viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol,
+        viewModelFactory: CollatorStkYourCollatorsViewModelFactory,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -34,10 +34,11 @@ final class ParaStkYourCollatorsPresenter {
                 return
             }
 
+            let collatorDelegator = CollatorStakingDelegator(parachainDelegator: delegator)
             let viewModel = try viewModelFactory.createViewModel(
                 for: selectedAccount.chainAccount.accountId,
                 collators: collators,
-                delegator: delegator,
+                delegator: collatorDelegator,
                 locale: selectedLocale
             )
 
@@ -53,7 +54,7 @@ final class ParaStkYourCollatorsPresenter {
     }
 }
 
-extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
+extension ParaStkYourCollatorsPresenter: CollatorStkYourCollatorsPresenterProtocol {
     func setup() {
         provideViewModel()
 
@@ -69,7 +70,7 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
 
         wireframe.showManageCollators(
             from: view,
-            options: [.stakeMore, .unstake],
+            options: options,
             delegate: self,
             context: options as NSArray
         )
