@@ -95,8 +95,8 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppSelectNavigationTask(
-            dAppId: id,
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
+            id,
             wallet: wallet,
             favoritesProvider: { [weak self] in self?.favorites },
             dAppResultProvider: { [weak self] in self?.dAppsResult }
@@ -113,9 +113,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             return
         }
 
-        dAppNavigationTask = browserNavigationTaskFactory.createSearchResultNavigationTask(
-            model.searchResult,
-            wallet: wallet
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
+            model,
+            wallet: wallet,
+            dAppResultProvider: { [weak self] in self?.dAppsResult }
         )
 
         dAppNavigationTask?(

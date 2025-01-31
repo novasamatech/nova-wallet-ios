@@ -1,10 +1,16 @@
 import Foundation
 
 protocol DAppListNavigationTaskFactoryProtocol {
-    func createDAppSelectNavigationTask(
-        dAppId: String,
+    func createDAppNavigationTaskById(
+        _ dAppId: String,
         wallet: MetaAccountModel?,
         favoritesProvider: @escaping () -> [String: DAppFavorite]?,
+        dAppResultProvider: @escaping () -> Result<DAppList, Error>?
+    ) -> DAppListNavigationTask
+
+    func createDAppNavigationTaskByModel(
+        _ model: DAppNavigation,
+        wallet: MetaAccountModel?,
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
     ) -> DAppListNavigationTask
 
@@ -25,8 +31,8 @@ final class DAppListNavigationTaskFactory {
 // MARK: DAppListNavigationTaskFactoryProtocol
 
 extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
-    func createDAppSelectNavigationTask(
-        dAppId: String,
+    func createDAppNavigationTaskById(
+        _ dAppId: String,
         wallet: MetaAccountModel?,
         favoritesProvider: @escaping () -> [String: DAppFavorite]?,
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
@@ -55,6 +61,39 @@ extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
                     tab,
                     from: view
                 )
+            }
+        )
+    }
+
+    func createDAppNavigationTaskByModel(
+        _ model: DAppNavigation,
+        wallet: MetaAccountModel?,
+        dAppResultProvider: @escaping () -> Result<DAppList, Error>?
+    ) -> DAppListNavigationTask {
+        DAppListNavigationTask(
+            tabProvider: {
+                guard
+                    let wallet,
+                    case let .success(dAppList) = dAppResultProvider(),
+                    let dApp = dAppList.dApps.first(
+                        where: { URL.hostsEqual($0.url, model.url) }
+                    )
+                else {
+                    return nil
+                }
+
+                let searchResult: DAppSearchResult = if dApp.url == model.url {
+                    .dApp(model: dApp)
+                } else {
+                    .query(string: model.url.absoluteString)
+                }
+
+                return DAppBrowserTab(from: searchResult, metaId: wallet.metaId)
+            },
+            routingClosure: { [weak self] tab, view in
+                guard let self else { return }
+
+                wireframe.showNewBrowserStack(tab, from: view)
             }
         )
     }
