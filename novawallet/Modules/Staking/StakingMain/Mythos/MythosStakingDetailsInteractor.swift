@@ -229,7 +229,6 @@ extension MythosStakingDetailsInteractor {
         do {
             durationReqStore.cancel()
 
-            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
             let wrapper = durationOperationFactory.createDurationOperation(
                 for: chain.chainId,
                 blockTimeEstimationService: sharedState.blockTimeService
@@ -273,6 +272,7 @@ extension MythosStakingDetailsInteractor: MythosStakingDetailsInteractorInputPro
 
         provideElectedCollators()
         provideNetworkInfo()
+        provideStakingDuration()
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
@@ -297,8 +297,6 @@ extension MythosStakingDetailsInteractor: GeneralLocalStorageSubscriber, General
         switch result {
         case let .success(blockNumber):
             if let blockNumber {
-                provideStakingDuration()
-
                 presenter?.didReceiveBlockNumber(blockNumber)
             }
         case let .failure(error):
@@ -361,6 +359,14 @@ extension MythosStakingDetailsInteractor: EventVisitorProtocol {
 
         provideElectedCollators()
         provideNetworkInfo()
+    }
+
+    func processBlockTimeChanged(event: BlockTimeChanged) {
+        guard event.chainId == chain.chainId else {
+            return
+        }
+
+        provideStakingDuration()
     }
 }
 
