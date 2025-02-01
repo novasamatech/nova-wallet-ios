@@ -141,7 +141,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
         #endif
     }
 
