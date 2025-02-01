@@ -83,67 +83,65 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
     }
 
     func performSync(at blockHash: Data?) {
-        let chainId = chainModel.chainId
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            completeImmediate(ChainRegistryError.connectionUnavailable)
-            return
-        }
+        do {
+            let chainId = chainModel.chainId
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            completeImmediate(ChainRegistryError.runtimeMetadaUnavailable)
-            return
-        }
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-        pendingCall.cancel()
+            pendingCall.cancel()
 
-        let proxyListWrapper = proxyOperationFactory.fetchProxyList(
-            requestFactory: requestFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            at: blockHash
-        )
+            let proxyListWrapper = proxyOperationFactory.fetchProxyList(
+                requestFactory: requestFactory,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
+                at: blockHash
+            )
 
-        let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)
+            let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)
 
-        let changesOperation = changesOperation(
-            proxyListWrapper: proxyListWrapper,
-            metaAccountsWrapper: walletsWrapper,
-            identityProxyFactory: identityProxyFactory,
-            chainModel: chainModel
-        )
+            let changesOperation = changesOperation(
+                proxyListWrapper: proxyListWrapper,
+                metaAccountsWrapper: walletsWrapper,
+                identityProxyFactory: identityProxyFactory,
+                chainModel: chainModel
+            )
 
-        let updateWrapper = walletUpdateMediator.saveChanges {
-            try changesOperation.targetOperation.extractNoCancellableResultData()
-        }
-
-        updateWrapper.addDependency(wrapper: changesOperation)
-
-        let compoundWrapper = CompoundOperationWrapper(
-            targetOperation: updateWrapper.targetOperation,
-            dependencies: changesOperation.allOperations + updateWrapper.dependencies
-        )
-
-        executeCancellable(
-            wrapper: compoundWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: pendingCall,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case let .success(update):
-                DispatchQueue.main.async {
-                    self?.eventCenter.notify(with: WalletsChanged(source: .byProxyService))
-
-                    if update.isWalletSwitched {
-                        self?.eventCenter.notify(with: SelectedWalletSwitched())
-                    }
-                }
-
-                self?.completeImmediate(nil)
-            case let .failure(error):
-                self?.completeImmediate(error)
+            let updateWrapper = walletUpdateMediator.saveChanges {
+                try changesOperation.targetOperation.extractNoCancellableResultData()
             }
+
+            updateWrapper.addDependency(wrapper: changesOperation)
+
+            let compoundWrapper = CompoundOperationWrapper(
+                targetOperation: updateWrapper.targetOperation,
+                dependencies: changesOperation.allOperations + updateWrapper.dependencies
+            )
+
+            executeCancellable(
+                wrapper: compoundWrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: pendingCall,
+                runningCallbackIn: workingQueue,
+                mutex: mutex
+            ) { [weak self] result in
+                switch result {
+                case let .success(update):
+                    DispatchQueue.main.async {
+                        self?.eventCenter.notify(with: WalletsChanged(source: .byProxyService))
+
+                        if update.isWalletSwitched {
+                            self?.eventCenter.notify(with: SelectedWalletSwitched())
+                        }
+                    }
+
+                    self?.completeImmediate(nil)
+                case let .failure(error):
+                    self?.completeImmediate(error)
+                }
+            }
+        } catch {
+            completeImmediate(error)
         }
     }
 

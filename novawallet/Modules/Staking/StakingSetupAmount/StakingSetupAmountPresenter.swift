@@ -462,8 +462,8 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .assetBalance, .price, .locks:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .assetBalance(internalError), let .price(internalError), let .locks(internalError):
+            wireframe.presentRequestStatus(on: view, error: internalError, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         case let .fee(_, feeId):
@@ -476,16 +476,16 @@ extension StakingSetupAmountPresenter: StakingSetupAmountInteractorOutputProtoco
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
             }
-        case .recommendation:
+        case let .recommendation(internalError):
             guard setupMethod.isRecommendation else {
                 return
             }
 
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            wireframe.presentRequestStatus(on: view, error: internalError, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeRecommendationSetup()
             }
-        case .existentialDeposit:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .existentialDeposit(internalError):
+            wireframe.presentRequestStatus(on: view, error: internalError, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryExistentialDeposit()
             }
         }

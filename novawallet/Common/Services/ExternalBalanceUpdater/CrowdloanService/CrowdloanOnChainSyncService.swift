@@ -119,58 +119,54 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            logger.error("Connection for chainId: \(chainId) is unavailable")
-            completeImmediate(ChainRegistryError.connectionUnavailable)
-            return
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            logger.error("Runtime metadata for chainId: \(chainId) is unavailable")
-            completeImmediate(ChainRegistryError.runtimeMetadaUnavailable)
-            return
-        }
+            let fetchCrowdloansOperation = operationFactory.fetchCrowdloansOperation(
+                connection: connection,
+                runtimeService: runtimeService
+            )
+            let contributionsFetchOperation = contributionsFetchOperation(
+                dependingOn: fetchCrowdloansOperation,
+                connection: connection,
+                runtimeService: runtimeService,
+                accountId: accountId
+            )
+            let changesWrapper = createChangesOperationWrapper(
+                dependingOn: contributionsFetchOperation,
+                chainId: chainId,
+                accountId: accountId
+            )
+            let saveOperation = createSaveOperation(dependingOn: changesWrapper)
 
-        let fetchCrowdloansOperation = operationFactory.fetchCrowdloansOperation(
-            connection: connection,
-            runtimeService: runtimeService
-        )
-        let contributionsFetchOperation = contributionsFetchOperation(
-            dependingOn: fetchCrowdloansOperation,
-            connection: connection,
-            runtimeService: runtimeService,
-            accountId: accountId
-        )
-        let changesWrapper = createChangesOperationWrapper(
-            dependingOn: contributionsFetchOperation,
-            chainId: chainId,
-            accountId: accountId
-        )
-        let saveOperation = createSaveOperation(dependingOn: changesWrapper)
+            saveOperation.completionBlock = {
+                guard !saveOperation.isCancelled else {
+                    return
+                }
 
-        saveOperation.completionBlock = {
-            guard !saveOperation.isCancelled else {
-                return
+                do {
+                    try saveOperation.extractNoCancellableResultData()
+                    self.syncOperationWrapper = nil
+                    self.complete(nil)
+                } catch {
+                    self.syncOperationWrapper = nil
+                    self.complete(error)
+                }
             }
 
-            do {
-                try saveOperation.extractNoCancellableResultData()
-                self.syncOperationWrapper = nil
-                self.complete(nil)
-            } catch {
-                self.syncOperationWrapper = nil
-                self.complete(error)
-            }
+            let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation, changesWrapper]
+
+            let syncWrapper = CompoundOperationWrapper(
+                targetOperation: saveOperation,
+                dependencies: operations
+            )
+            syncOperationWrapper = syncWrapper
+            operationManager.enqueue(operations: syncWrapper.allOperations, in: .transient)
+        } catch {
+            logger.error("Sync up failed: \(error)")
+            completeImmediate(error)
         }
-
-        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation, changesWrapper]
-
-        let syncWrapper = CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: operations
-        )
-        syncOperationWrapper = syncWrapper
-        operationManager.enqueue(operations: syncWrapper.allOperations, in: .transient)
     }
 
     override func stopSyncUp() {

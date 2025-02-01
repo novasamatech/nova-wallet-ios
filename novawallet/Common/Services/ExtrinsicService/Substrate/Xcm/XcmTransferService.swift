@@ -61,13 +61,8 @@ final class XcmTransferService {
         for chain: ChainModel,
         chainAccount: ChainAccountResponse
     ) throws -> ExtrinsicOperationFactoryProtocol {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
 
         if let customFeeEstimatingFactory {
             return ExtrinsicServiceFactory(

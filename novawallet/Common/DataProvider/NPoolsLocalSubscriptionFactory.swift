@@ -224,11 +224,11 @@ extension NPoolsLocalSubscriptionFactory: NPoolsLocalSubscriptionFactoryProtocol
         }
 
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
+            throw ChainRegistryError.connectionUnavailable(chainId)
         }
 
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
+            throw ChainRegistryError.runtimeMetadaUnavailable(chainId)
         }
 
         let repository = SubstrateRepositoryFactory(

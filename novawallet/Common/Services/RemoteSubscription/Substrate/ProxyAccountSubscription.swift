@@ -59,12 +59,9 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
     }
 
     private func subscribeRemote(for accountId: AccountId) throws {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
+
+        let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             Proxy.proxyList,

@@ -32,13 +32,9 @@ final class GovernanceServiceFactory: GovernanceServiceFactoryProtocol {
     }
 
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
-        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chainId)
 
-        guard let connection = chainRegisty.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegisty.getConnectionOrError(for: chainId)
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 

@@ -52,7 +52,9 @@ extension XcmTransferService {
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.origin.chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            return CompoundOperationWrapper.createWithError(
+                ChainRegistryError.runtimeMetadaUnavailable(request.origin.chain.chainId)
+            )
         }
 
         let destinationAssetWrapper = createMultilocationAssetWrapper(

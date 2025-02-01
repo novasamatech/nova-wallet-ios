@@ -304,18 +304,18 @@ private extension SwipeGovSetupPresenter {
 
     func processError(_ error: SwipeGovSetupInteractorError) {
         switch error {
-        case .assetBalanceFailed,
-             .priceFailed,
-             .blockNumberSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .assetBalanceFailed(internalError),
+             let .priceFailed(internalError),
+             let .blockNumberSubscriptionFailed(internalError):
+            wireframe.presentRequestStatus(on: view, error: internalError, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
-        case .blockTimeFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .blockTimeFailed(internalError):
+            wireframe.presentRequestStatus(on: view, error: internalError, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshBlockTime()
             }
-        case .stateDiffFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .stateDiffFailed(internalError):
+            wireframe.presentRequestStatus(on: view, error: internalError, locale: selectedLocale) { [weak self] in
                 self?.refreshLockDiff()
             }
         case let .votingPowerSaveFailed(error):

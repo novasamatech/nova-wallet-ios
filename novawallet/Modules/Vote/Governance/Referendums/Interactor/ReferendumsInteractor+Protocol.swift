@@ -63,12 +63,16 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
             clear(cancellable: &unlockScheduleCancellable)
 
             guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-                presenter?.didReceiveError(.unlockScheduleFetchFailed(ChainRegistryError.connectionUnavailable))
+                presenter?.didReceiveError(
+                    .unlockScheduleFetchFailed(ChainRegistryError.connectionUnavailable(chain.chainId))
+                )
                 return
             }
 
             guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-                presenter?.didReceiveError(.unlockScheduleFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+                presenter?.didReceiveError(
+                    .unlockScheduleFetchFailed(ChainRegistryError.runtimeMetadaUnavailable(chain.chainId))
+                )
                 return
             }
 

@@ -85,7 +85,9 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            basePresenter?.didReceiveBaseError(.blockTimeFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            basePresenter?.didReceiveBaseError(.blockTimeFailed(
+                ChainRegistryError.runtimeMetadaUnavailable(chain.chainId)
+            ))
             return
         }
 
@@ -223,7 +225,9 @@ extension GovernanceDelegateInteractor {
         clear(cancellable: &lockDiffCancellable)
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            basePresenter?.didReceiveBaseError(.stateDiffFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            basePresenter?.didReceiveBaseError(
+                .stateDiffFailed(ChainRegistryError.runtimeMetadaUnavailable(chain.chainId))
+            )
             return
         }
 

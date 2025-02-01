@@ -229,13 +229,8 @@ extension TransactionSubscription: TransactionSubscribing {
         do {
             logger.debug("Did start fetching block: \(blockHash.toHex(includePrefix: true))")
 
-            guard let connection = chainRegistry.getConnection(for: chainModel.chainId) else {
-                throw ChainRegistryError.connectionUnavailable
-            }
-
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainModel.chainId) else {
-                throw ChainRegistryError.runtimeMetadaUnavailable
-            }
+            let connection = try chainRegistry.getConnectionOrError(for: chainModel.chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainModel.chainId)
 
             try performProcessing(blockHash: blockHash, connection: connection, runtimeService: runtimeService)
         } catch {

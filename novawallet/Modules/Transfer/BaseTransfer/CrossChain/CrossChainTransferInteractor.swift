@@ -131,68 +131,71 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func createAssetExtractionWrapper() -> CompoundOperationWrapper<CrossChainAssetsStorageInfo> {
-        guard
-            let originProvider = chainRegistry.getRuntimeProvider(for: originChainAsset.chain.chainId),
-            let destinationProvider = chainRegistry.getRuntimeProvider(for: destinationChainAsset.chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
+        do {
+            let originProvider = try chainRegistry.getRuntimeProviderOrError(for: originChainAsset.chain.chainId)
+            let destinationProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: destinationChainAsset.chain.chainId
+            )
 
-        let originSendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: originChainAsset.asset,
-            runtimeProvider: originProvider
-        )
+            let originSendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+                from: originChainAsset.asset,
+                runtimeProvider: originProvider
+            )
 
-        let destSendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: destinationChainAsset.asset,
-            runtimeProvider: destinationProvider
-        )
-
-        var dependencies = originSendingAssetWrapper.allOperations + destSendingAssetWrapper.allOperations
-
-        let originUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
-
-        if !isSendingUtility, let asset = originChainAsset.chain.utilityAssets().first {
-            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(from: asset, runtimeProvider: originProvider)
-
-            originUtilityAssetWrapper = wrapper
-
-            dependencies.append(contentsOf: wrapper.allOperations)
-        } else {
-            originUtilityAssetWrapper = nil
-        }
-
-        let destUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
-
-        if !isReceivingUtility, let utilityAsset = destinationChainAsset.chain.utilityAssets().first {
-            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-                from: utilityAsset,
+            let destSendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+                from: destinationChainAsset.asset,
                 runtimeProvider: destinationProvider
             )
 
-            destUtilityAssetWrapper = wrapper
+            var dependencies = originSendingAssetWrapper.allOperations + destSendingAssetWrapper.allOperations
 
-            dependencies.append(contentsOf: wrapper.allOperations)
-        } else {
-            destUtilityAssetWrapper = nil
+            let originUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
+
+            if !isSendingUtility, let asset = originChainAsset.chain.utilityAssets().first {
+                let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(from: asset, runtimeProvider: originProvider)
+
+                originUtilityAssetWrapper = wrapper
+
+                dependencies.append(contentsOf: wrapper.allOperations)
+            } else {
+                originUtilityAssetWrapper = nil
+            }
+
+            let destUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
+
+            if !isReceivingUtility, let utilityAsset = destinationChainAsset.chain.utilityAssets().first {
+                let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+                    from: utilityAsset,
+                    runtimeProvider: destinationProvider
+                )
+
+                destUtilityAssetWrapper = wrapper
+
+                dependencies.append(contentsOf: wrapper.allOperations)
+            } else {
+                destUtilityAssetWrapper = nil
+            }
+
+            let mergeOperation = ClosureOperation<CrossChainAssetsStorageInfo> {
+                let originSending = try originSendingAssetWrapper.targetOperation.extractNoCancellableResultData()
+                let destSending = try destSendingAssetWrapper.targetOperation.extractNoCancellableResultData()
+                let originUtility = try originUtilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+                let destUtility = try destUtilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+
+                return CrossChainAssetsStorageInfo(
+                    originSending: originSending,
+                    originUtility: originUtility,
+                    destinationSending: destSending,
+                    destinationUtility: destUtility
+                )
+            }
+
+            dependencies.forEach { mergeOperation.addDependency($0) }
+
+            return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+        } catch {
+            return .createWithError(error)
         }
-
-        let mergeOperation = ClosureOperation<CrossChainAssetsStorageInfo> {
-            let originSending = try originSendingAssetWrapper.targetOperation.extractNoCancellableResultData()
-            let destSending = try destSendingAssetWrapper.targetOperation.extractNoCancellableResultData()
-            let originUtility = try originUtilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
-            let destUtility = try destUtilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
-
-            return CrossChainAssetsStorageInfo(
-                originSending: originSending,
-                originUtility: originUtility,
-                destinationSending: destSending,
-                destinationUtility: destUtility
-            )
-        }
-
-        dependencies.forEach { mergeOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 
     private func createSetupWrapper() -> CompoundOperationWrapper<(XcmTransferParties, CrossChainAssetsStorageInfo)> {

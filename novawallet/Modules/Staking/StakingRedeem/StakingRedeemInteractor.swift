@@ -87,36 +87,33 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
         _ stash: AccountAddress,
         completionClosure: @escaping (Result<SlashingSpans?, Error>) -> Void
     ) {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            completionClosure(.failure(ChainRegistryError.connectionUnavailable))
-            return
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+            let registryService = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
 
-        guard let registryService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            completionClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
+            let wrapper = slashesOperationFactory.createSlashingSpansOperationForStash(
+                { try stash.toAccountId() },
+                engine: connection,
+                runtimeService: registryService
+            )
 
-        let wrapper = slashesOperationFactory.createSlashingSpansOperationForStash(
-            { try stash.toAccountId() },
-            engine: connection,
-            runtimeService: registryService
-        )
-
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async {
-                if let result = wrapper.targetOperation.result {
-                    completionClosure(result)
-                } else {
-                    completionClosure(.failure(BaseOperationError.unexpectedDependentResult))
+            wrapper.targetOperation.completionBlock = {
+                DispatchQueue.main.async {
+                    if let result = wrapper.targetOperation.result {
+                        completionClosure(result)
+                    } else {
+                        completionClosure(.failure(BaseOperationError.unexpectedDependentResult))
+                    }
                 }
             }
-        }
 
-        operationManager.enqueue(
-            operations: wrapper.allOperations,
-            in: .transient
-        )
+            operationManager.enqueue(
+                operations: wrapper.allOperations,
+                in: .transient
+            )
+        } catch {
+            completionClosure(.failure(error))
+        }
     }
 
     private func estimateFee(with numberOfSlasingSpans: UInt32) {
@@ -196,7 +193,7 @@ extension StakingRedeemInteractor: StakingRedeemInteractorInputProtocol {
             }
         } else {
             presenter.didReceiveExistentialDeposit(
-                result: .failure(ChainRegistryError.runtimeMetadaUnavailable)
+                result: .failure(ChainRegistryError.runtimeMetadaUnavailable(chainAsset.chain.chainId))
             )
         }
 

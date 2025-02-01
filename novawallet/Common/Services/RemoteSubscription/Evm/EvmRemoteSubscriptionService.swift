@@ -56,9 +56,7 @@ class EvmRemoteSubscriptionService {
             return subscriptionId
         }
 
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
         let container: EvmRemoteSubscriptionProtocol
 

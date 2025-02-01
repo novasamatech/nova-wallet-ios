@@ -81,7 +81,9 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .directStakingMinStake(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(
+                error: .directStakingMinStake(ChainRegistryError.runtimeMetadaUnavailable(chainId))
+            )
             return
         }
 
@@ -145,45 +147,42 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
     }
 
     private func provideEraCompletionTime() {
-        clear(cancellable: &eraCompletionTimeCancellable)
+        do {
+            clear(cancellable: &eraCompletionTimeCancellable)
 
-        let chainId = selectedChainAsset.chain.chainId
+            let chainId = selectedChainAsset.chain.chainId
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .eraCountdown(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceive(error: .eraCountdown(ChainRegistryError.connectionUnavailable))
-            return
-        }
+            let operationWrapper = eraCoundownOperationFactory.fetchCountdownOperationWrapper(
+                for: connection,
+                runtimeService: runtimeService
+            )
 
-        let operationWrapper = eraCoundownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
+            operationWrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.eraCompletionTimeCancellable === operationWrapper else {
+                        return
+                    }
 
-        operationWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.eraCompletionTimeCancellable === operationWrapper else {
-                    return
-                }
+                    self?.eraCompletionTimeCancellable = nil
 
-                self?.eraCompletionTimeCancellable = nil
-
-                do {
-                    let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(eraCountdown: result)
-                } catch {
-                    self?.presenter?.didReceive(error: .eraCountdown(error))
+                    do {
+                        let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceive(eraCountdown: result)
+                    } catch {
+                        self?.presenter?.didReceive(error: .eraCountdown(error))
+                    }
                 }
             }
+
+            eraCompletionTimeCancellable = operationWrapper
+
+            operationQueue.addOperations(operationWrapper.allOperations, waitUntilFinished: false)
+        } catch {
+            presenter?.didReceive(error: .eraCountdown(error))
         }
-
-        eraCompletionTimeCancellable = operationWrapper
-
-        operationQueue.addOperations(operationWrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideRewardCalculator() {

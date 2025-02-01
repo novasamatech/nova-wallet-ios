@@ -17,11 +17,8 @@ extension AssetExchangeTimeEstimator: AssetExchangeTimeEstimating {
     func totalTimeWrapper(for chainIds: [ChainModel.Id]) -> CompoundOperationWrapper<TimeInterval> {
         do {
             let wrappers: [CompoundOperationWrapper<BlockTime>] = try chainIds.compactMap { chainId in
-                guard
-                    let chain = chainRegistry.getChain(for: chainId),
-                    let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-                    throw ChainRegistryError.runtimeMetadaUnavailable
-                }
+                let chain = try chainRegistry.getChainOrError(for: chainId)
+                let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
                 let operationFactory = BlockTimeOperationFactory(chain: chain)
 

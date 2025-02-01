@@ -77,83 +77,83 @@ final class UniquesSyncService: BaseNftSyncService {
     }
 
     override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let operationManager = OperationManager(operationQueue: operationQueue)
+            let operationManager = OperationManager(operationQueue: operationQueue)
 
-        let codingFactoryClosure = { try codingFactoryOperation.extractNoCancellableResultData() }
+            let codingFactoryClosure = { try codingFactoryOperation.extractNoCancellableResultData() }
 
-        let accountKeysWrapper = operationFactory.createAccountKeysWrapper(
-            for: ownerId,
-            connection: connection,
-            operationManager: operationManager,
-            codingFactoryClosure: codingFactoryClosure
-        )
+            let accountKeysWrapper = operationFactory.createAccountKeysWrapper(
+                for: ownerId,
+                connection: connection,
+                operationManager: operationManager,
+                codingFactoryClosure: codingFactoryClosure
+            )
 
-        accountKeysWrapper.addDependency(operations: [codingFactoryOperation])
+            accountKeysWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let classIdsClosure: () throws -> [UInt32] = {
-            let accountKeys = try accountKeysWrapper.targetOperation.extractNoCancellableResultData()
-            return accountKeys.map(\.classId)
-        }
-
-        let instanceWrapper = operationFactory.createInstanceMetadataWrapper(
-            for: classIdsClosure,
-            instanceIdsClosure: {
+            let classIdsClosure: () throws -> [UInt32] = {
                 let accountKeys = try accountKeysWrapper.targetOperation.extractNoCancellableResultData()
-                return accountKeys.map(\.instanceId)
-            },
-            connection: connection,
-            operationManager: operationManager,
-            codingFactoryClosure: codingFactoryClosure
-        )
+                return accountKeys.map(\.classId)
+            }
 
-        instanceWrapper.addDependency(wrapper: accountKeysWrapper)
+            let instanceWrapper = operationFactory.createInstanceMetadataWrapper(
+                for: classIdsClosure,
+                instanceIdsClosure: {
+                    let accountKeys = try accountKeysWrapper.targetOperation.extractNoCancellableResultData()
+                    return accountKeys.map(\.instanceId)
+                },
+                connection: connection,
+                operationManager: operationManager,
+                codingFactoryClosure: codingFactoryClosure
+            )
 
-        let classWrapper = operationFactory.createClassMetadataWrapper(
-            for: classIdsClosure,
-            connection: connection,
-            operationManager: operationManager,
-            codingFactoryClosure: codingFactoryClosure
-        )
+            instanceWrapper.addDependency(wrapper: accountKeysWrapper)
 
-        classWrapper.addDependency(wrapper: accountKeysWrapper)
+            let classWrapper = operationFactory.createClassMetadataWrapper(
+                for: classIdsClosure,
+                connection: connection,
+                operationManager: operationManager,
+                codingFactoryClosure: codingFactoryClosure
+            )
 
-        let classDetailsWrapper = operationFactory.createClassDetails(
-            for: classIdsClosure,
-            connection: connection,
-            operationManager: operationManager,
-            codingFactoryClosure: codingFactoryClosure
-        )
+            classWrapper.addDependency(wrapper: accountKeysWrapper)
 
-        classDetailsWrapper.addDependency(wrapper: accountKeysWrapper)
+            let classDetailsWrapper = operationFactory.createClassDetails(
+                for: classIdsClosure,
+                connection: connection,
+                operationManager: operationManager,
+                codingFactoryClosure: codingFactoryClosure
+            )
 
-        let remoteMapOperation = createRemoteMapOperation(
-            dependingOn: accountKeysWrapper,
-            instanceWrapper: instanceWrapper,
-            classWrapper: classWrapper,
-            classDetailsWrapper: classDetailsWrapper,
-            chainId: chainId,
-            ownerId: ownerId
-        )
+            classDetailsWrapper.addDependency(wrapper: accountKeysWrapper)
 
-        remoteMapOperation.addDependency(accountKeysWrapper.targetOperation)
-        remoteMapOperation.addDependency(instanceWrapper.targetOperation)
-        remoteMapOperation.addDependency(classWrapper.targetOperation)
-        remoteMapOperation.addDependency(classDetailsWrapper.targetOperation)
+            let remoteMapOperation = createRemoteMapOperation(
+                dependingOn: accountKeysWrapper,
+                instanceWrapper: instanceWrapper,
+                classWrapper: classWrapper,
+                classDetailsWrapper: classDetailsWrapper,
+                chainId: chainId,
+                ownerId: ownerId
+            )
 
-        let dependencies = [codingFactoryOperation] + accountKeysWrapper.allOperations +
-            instanceWrapper.allOperations + classWrapper.allOperations +
-            classDetailsWrapper.allOperations
+            remoteMapOperation.addDependency(accountKeysWrapper.targetOperation)
+            remoteMapOperation.addDependency(instanceWrapper.targetOperation)
+            remoteMapOperation.addDependency(classWrapper.targetOperation)
+            remoteMapOperation.addDependency(classDetailsWrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: remoteMapOperation, dependencies: dependencies)
+            let dependencies = [codingFactoryOperation] + accountKeysWrapper.allOperations +
+                instanceWrapper.allOperations + classWrapper.allOperations +
+                classDetailsWrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: remoteMapOperation, dependencies: dependencies)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }

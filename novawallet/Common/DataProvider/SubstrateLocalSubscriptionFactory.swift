@@ -119,9 +119,7 @@ class SubstrateLocalSubscriptionFactory {
             return AnyDataProvider(dataProvider)
         }
 
-        guard let runtimeCodingProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeCodingProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
         let repository = InMemoryDataProviderRepository<ChainStorageDecodedItem<T>>()
 

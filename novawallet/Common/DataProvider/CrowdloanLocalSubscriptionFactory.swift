@@ -42,13 +42,9 @@ final class CrowdloanLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory
             return AnyDataProvider(dataProvider)
         }
 
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
         let repository = InMemoryDataProviderRepository<DecodedCrowdloanFunds>()
 

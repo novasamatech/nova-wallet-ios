@@ -174,7 +174,7 @@ class RemoteSubscriptionService {
     ) -> CompoundOperationWrapper<StorageSubscriptionContainer> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             return CompoundOperationWrapper.createWithError(
-                ChainRegistryError.runtimeMetadaUnavailable
+                ChainRegistryError.runtimeMetadaUnavailable(chainId)
             )
         }
 
@@ -243,9 +243,7 @@ class RemoteSubscriptionService {
         remoteLocalKeys: [SubscriptionStorageKeys],
         subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol
     ) throws -> StorageSubscriptionContainer {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
         let subscriptions = remoteLocalKeys.map { keysPair in
             subscriptionHandlingFactory.createHandler(

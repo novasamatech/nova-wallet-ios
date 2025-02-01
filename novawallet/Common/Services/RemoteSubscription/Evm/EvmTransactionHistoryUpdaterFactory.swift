@@ -58,9 +58,7 @@ extension EvmTransactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFacto
     ) throws -> EvmNativeTransactionHistoryUpdaterProtocol {
         let repository = SubstrateRepositoryFactory(storageFacade: storageFacade).createTxRepository()
 
-        guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getOneShotConnectionOrError(for: chainAssetId.chainId)
 
         let operationFactory = EvmWebSocketOperationFactory(connection: connection)
 

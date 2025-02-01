@@ -278,7 +278,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
     private func provideConstants(for chain: ChainModel) {
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            let error = ChainRegistryError.runtimeMetadaUnavailable
+            let error = ChainRegistryError.runtimeMetadaUnavailable(chain.chainId)
             presenter?.didReceiveBlockDuration(result: .failure(error))
             presenter?.didReceiveLeasingPeriod(result: .failure(error))
             presenter?.didReceiveLeasingOffset(result: .failure(error))
@@ -404,12 +404,16 @@ extension CrowdloanListInteractor {
         }
 
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            notifyCrowdolansFetchWithError(error: ChainRegistryError.connectionUnavailable)
+            notifyCrowdolansFetchWithError(
+                error: ChainRegistryError.connectionUnavailable(chain.chainId)
+            )
             return
         }
 
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            notifyCrowdolansFetchWithError(error: ChainRegistryError.runtimeMetadaUnavailable)
+            notifyCrowdolansFetchWithError(
+                error: ChainRegistryError.runtimeMetadaUnavailable(chain.chainId)
+            )
             return
         }
 

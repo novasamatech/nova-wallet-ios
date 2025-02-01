@@ -249,7 +249,9 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(.blockTimeFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceiveError(
+                .blockTimeFetchFailed(ChainRegistryError.runtimeMetadaUnavailable(chain.chainId))
+            )
             return
         }
 
@@ -292,12 +294,16 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         }
 
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.connectionUnavailable))
+            presenter?.didReceiveError(
+                .referendumsFetchFailed(ChainRegistryError.connectionUnavailable(chain.chainId))
+            )
             return
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceiveError(
+                .referendumsFetchFailed(ChainRegistryError.runtimeMetadaUnavailable(chain.chainId))
+            )
             return
         }
 

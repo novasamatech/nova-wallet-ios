@@ -96,16 +96,23 @@ extension CommonRetryable where Self: AlertPresentable {
 
     func presentRequestStatus(
         on view: ControllerBackedProtocol?,
+        error: Error? = nil,
         locale: Locale?,
         retryAction: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+        let content: ErrorContent = if let contentError = error as? ErrorContentConvertible {
+            contentError.toErrorContent(for: locale)
+        } else {
+            ErrorContent(
+                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
+                message: R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+            )
+        }
 
         presentRequestStatus(
             on: view,
-            title: title,
-            message: message,
+            title: content.title,
+            message: content.message,
             locale: locale,
             retryAction: retryAction
         )
@@ -113,17 +120,24 @@ extension CommonRetryable where Self: AlertPresentable {
 
     func presentRequestStatus(
         on view: ControllerBackedProtocol?,
+        error: Error? = nil,
         locale: Locale?,
         retryAction: @escaping () -> Void,
         skipAction: @escaping () -> Void
     ) {
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+        let content: ErrorContent = if let contentError = error as? ErrorContentConvertible {
+            contentError.toErrorContent(for: locale)
+        } else {
+            ErrorContent(
+                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
+                message: R.string.localizable.commonRequestRetry(preferredLanguages: locale?.rLanguages)
+            )
+        }
 
         presentRequestStatus(
             on: view,
-            title: title,
-            message: message,
+            title: content.title,
+            message: content.message,
             locale: locale,
             retryAction: retryAction,
             skipAction: skipAction

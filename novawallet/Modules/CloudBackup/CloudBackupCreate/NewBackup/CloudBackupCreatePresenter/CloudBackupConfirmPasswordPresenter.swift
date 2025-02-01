@@ -63,8 +63,8 @@ extension CloudBackupConfirmPasswordPresenter: CloudBackupCreateInteractorOutput
         view?.didStopLoading()
 
         switch error {
-        case .mnemonicCreation, .walletCreation, .walletSave:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .mnemonicCreation(error), let .walletCreation(error), let .walletSave(error):
+            wireframe.presentRequestStatus(on: view, error: error, locale: selectedLocale) { [weak self] in
                 self?.initiateWalletCreation()
             }
         case .backup:

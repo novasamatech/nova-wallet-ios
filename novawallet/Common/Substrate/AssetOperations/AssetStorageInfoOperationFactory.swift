@@ -185,45 +185,42 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
         chainId: ChainModel.Id,
         asset: AssetModel
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
-        switch assetStorageInfo {
-        case .native:
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-            }
+        do {
+            switch assetStorageInfo {
+            case .native:
+                let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-            return createNativeAssetExistenceOperation(for: runtimeService)
-        case let .statemine(info):
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-            }
+                return createNativeAssetExistenceOperation(for: runtimeService)
+            case let .statemine(info):
+                let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-            guard let connection = chainRegistry.getConnection(for: chainId) else {
-                return .createWithError(ChainRegistryError.connectionUnavailable)
-            }
+                let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-            return createAssetsExistenceOperation(
-                for: .init(info: info),
-                connection: connection,
-                runtimeService: runtimeService
-            )
-        case let .orml(info):
-            let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
-            return CompoundOperationWrapper.createWithResult(assetExistence)
-        case .erc20, .evmNative:
-            let assetExistence = AssetBalanceExistence(minBalance: 0, isSelfSufficient: true)
-            return CompoundOperationWrapper.createWithResult(assetExistence)
-        case .equilibrium:
-            guard asset.isUtility else {
-                return CompoundOperationWrapper.createWithResult(.init(minBalance: 0, isSelfSufficient: true))
-            }
+                return createAssetsExistenceOperation(
+                    for: .init(info: info),
+                    connection: connection,
+                    runtimeService: runtimeService
+                )
+            case let .orml(info):
+                let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
+                return CompoundOperationWrapper.createWithResult(assetExistence)
+            case .erc20, .evmNative:
+                let assetExistence = AssetBalanceExistence(minBalance: 0, isSelfSufficient: true)
+                return CompoundOperationWrapper.createWithResult(assetExistence)
+            case .equilibrium:
+                guard asset.isUtility else {
+                    return CompoundOperationWrapper.createWithResult(.init(minBalance: 0, isSelfSufficient: true))
+                }
 
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+                let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+                return existentialDepositConstantOperation(
+                    path: .equilibriumExistentialDepositBasic,
+                    for: runtimeService
+                )
             }
-            return existentialDepositConstantOperation(
-                path: .equilibriumExistentialDepositBasic,
-                for: runtimeService
-            )
+        } catch {
+            return .createWithError(error)
         }
     }
 }

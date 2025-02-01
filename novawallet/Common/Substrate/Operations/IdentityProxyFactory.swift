@@ -29,13 +29,9 @@ final class IdentityProxyFactory {
     private func deriveIdentityParams() throws -> IdentityChainParams {
         let identityChainId = originChain.identityChain ?? originChain.chainId
 
-        guard let connection = chainRegistry.getConnection(for: identityChainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: identityChainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: identityChainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: identityChainId)
 
         return .init(connection: connection, runtimeService: runtimeService)
     }

@@ -144,20 +144,20 @@ extension SwipeGovReferendumDetailsPresenter: SwipeGovReferendumDetailsInteracto
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .referendumFailed, .blockNumberFailed, .metadataFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .referendumFailed(error), let .blockNumberFailed(error), let .metadataFailed(error):
+            wireframe.presentRequestStatus(on: view, error: error, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
-        case .actionDetailsFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .actionDetailsFailed(error):
+            wireframe.presentRequestStatus(on: view, error: error, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshActionDetails()
             }
-        case .identitiesFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .identitiesFailed(error):
+            wireframe.presentRequestStatus(on: view, error: error, locale: selectedLocale) { [weak self] in
                 self?.refreshIdentities()
             }
-        case .blockTimeFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+        case let .blockTimeFailed(error):
+            wireframe.presentRequestStatus(on: view, error: error, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshBlockTime()
             }
         }

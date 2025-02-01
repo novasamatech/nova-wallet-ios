@@ -209,7 +209,9 @@ final class AssetsBalanceUpdater {
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            return CompoundOperationWrapper.createWithError(
+                ChainRegistryError.runtimeMetadaUnavailable(chainAssetId.chainId)
+            )
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

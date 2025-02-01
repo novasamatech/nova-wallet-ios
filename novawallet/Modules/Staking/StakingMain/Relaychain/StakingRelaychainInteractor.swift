@@ -225,7 +225,9 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         let chainId = chain.chainId
 
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable)
+            presenter?.didReceive(
+                networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable(chainId)
+            )
             return
         }
 
@@ -266,12 +268,16 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         let chainId = chain.chainId
 
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(
+                eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable(chainId))
+            )
             return
         }
 
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
+            presenter?.didReceive(
+                eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable(chainId))
+            )
             return
         }
 

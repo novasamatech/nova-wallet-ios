@@ -43,13 +43,8 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         for chainId: ChainModel.Id,
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     ) throws -> EraValidatorServiceProtocol {
-        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        guard let connection = chainRegisty.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chainId)
+        let connection = try chainRegisty.getConnectionOrError(for: chainId)
 
         return EraValidatorService(
             chainId: chainId,
@@ -71,13 +66,9 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol {
         let chainId = chainAsset.chain.chainId
-        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
 
-        guard let connection = chainRegisty.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chainId)
+        let connection = try chainRegisty.getConnectionOrError(for: chainId)
 
         let rewardCalculatorFactory = RewardCalculatorEngineFactory(
             chainId: chainId,
@@ -120,13 +111,8 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
     }
 
     private func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
-        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        guard let connection = chainRegisty.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chainId)
+        let connection = try chainRegisty.getConnectionOrError(for: chainId)
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 

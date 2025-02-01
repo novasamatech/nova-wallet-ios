@@ -200,12 +200,12 @@ extension Gov1SubscriptionFactory: GovernanceSubscriptionFactoryProtocol {
             }
 
             guard let connection = chainRegistry.getConnection(for: chainId) else {
-                notificationClosure(.failure(ChainRegistryError.connectionUnavailable))
+                notificationClosure(.failure(ChainRegistryError.connectionUnavailable(chainId)))
                 return
             }
 
             guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-                notificationClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
+                notificationClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable(chainId)))
                 return
             }
 
@@ -263,12 +263,12 @@ extension Gov1SubscriptionFactory: GovernanceSubscriptionFactoryProtocol {
             }
 
             guard let connection = chainRegistry.getConnection(for: chainId) else {
-                notificationClosure(.failure(ChainRegistryError.connectionUnavailable))
+                notificationClosure(.failure(ChainRegistryError.connectionUnavailable(chainId)))
                 return
             }
 
             guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-                notificationClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
+                notificationClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable(chainId)))
                 return
             }
 

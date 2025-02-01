@@ -65,7 +65,7 @@ class HoldsSubscription: StorageChildSubscribing {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
             logger.error("Runtime metadata unavailable for chain: \(chainAssetId.chainId)")
             return CompoundOperationWrapper.createWithError(
-                ChainRegistryError.runtimeMetadaUnavailable
+                ChainRegistryError.runtimeMetadaUnavailable(chainAssetId.chainId)
             )
         }
 

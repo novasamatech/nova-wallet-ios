@@ -47,32 +47,29 @@ final class StakingRewardPayoutsInteractor {
     }
 
     private func fetchEraCompletionTime() {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            presenter.didReceive(eraCountdownResult: .failure(ChainRegistryError.connectionUnavailable))
-            return
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            presenter.didReceive(eraCountdownResult: .failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
+            let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
+                for: connection,
+                runtimeService: runtimeService
+            )
 
-        let operationWrapper = eraCountdownOperationFactory.fetchCountdownOperationWrapper(
-            for: connection,
-            runtimeService: runtimeService
-        )
-
-        operationWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceive(eraCountdownResult: .success(result))
-                } catch {
-                    self?.presenter.didReceive(eraCountdownResult: .failure(error))
+            operationWrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    do {
+                        let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter.didReceive(eraCountdownResult: .success(result))
+                    } catch {
+                        self?.presenter.didReceive(eraCountdownResult: .failure(error))
+                    }
                 }
             }
+            operationManager.enqueue(operations: operationWrapper.allOperations, in: .transient)
+        } catch {
+            presenter.didReceive(eraCountdownResult: .failure(error))
         }
-        operationManager.enqueue(operations: operationWrapper.allOperations, in: .transient)
     }
 }
 

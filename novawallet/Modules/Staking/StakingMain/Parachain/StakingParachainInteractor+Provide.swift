@@ -77,7 +77,7 @@ extension StakingParachainInteractor {
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
+            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable(chainId))
             return
         }
 
@@ -116,12 +116,12 @@ extension StakingParachainInteractor {
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
+            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable(chainId))
             return
         }
 
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
+            presenter?.didReceiveError(ChainRegistryError.connectionUnavailable(chainId))
             return
         }
 

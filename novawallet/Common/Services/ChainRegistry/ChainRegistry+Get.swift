@@ -1,9 +1,10 @@
 import Foundation
+import SubstrateSdk
 
 extension ChainRegistryProtocol {
     func getConnectionOrError(for chainId: ChainModel.Id) throws -> ChainConnection {
         guard let connection = getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
+            throw ChainRegistryError.connectionUnavailable(chainId)
         }
 
         return connection
@@ -11,7 +12,7 @@ extension ChainRegistryProtocol {
 
     func getRuntimeProviderOrError(for chainId: ChainModel.Id) throws -> RuntimeProviderProtocol {
         guard let runtimeProvider = getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
+            throw ChainRegistryError.runtimeMetadaUnavailable(chainId)
         }
 
         return runtimeProvider
@@ -23,5 +24,13 @@ extension ChainRegistryProtocol {
         }
 
         return chain
+    }
+
+    func getOneShotConnectionOrError(for chainId: ChainModel.Id) throws -> JSONRPCEngine {
+        guard let connection = getOneShotConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable(chainId)
+        }
+
+        return connection
     }
 }

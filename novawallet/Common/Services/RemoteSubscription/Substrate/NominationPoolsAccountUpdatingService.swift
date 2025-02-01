@@ -185,13 +185,9 @@ final class NominationPoolsAccountUpdatingFactory: NominationPoolsAccountUpdatin
         for accountId: AccountId,
         chainAsset: ChainAsset
     ) throws -> NominationPoolsAccountUpdatingService {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
 
         return .init(
             accountId: accountId,

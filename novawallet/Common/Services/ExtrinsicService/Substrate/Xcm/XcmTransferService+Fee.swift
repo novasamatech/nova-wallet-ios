@@ -9,11 +9,9 @@ extension XcmTransferService {
         message: Xcm.Message,
         maxWeight: BigUInt
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
         do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
+
             let moduleWrapper = createModuleResolutionWrapper(for: .xcmpallet, runtimeProvider: runtimeProvider)
 
             guard let chainAccount = wallet.fetch(for: chain.accountRequest()) else {
@@ -172,7 +170,7 @@ extension XcmTransferService {
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<BigUInt> {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            let error = ChainRegistryError.connectionUnavailable
+            let error = ChainRegistryError.connectionUnavailable(chainId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
@@ -232,7 +230,7 @@ extension XcmTransferService {
         sendingFromOrigin: Bool
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.fromChainId) else {
-            let error = ChainRegistryError.runtimeMetadaUnavailable
+            let error = ChainRegistryError.runtimeMetadaUnavailable(request.fromChainId)
             return CompoundOperationWrapper.createWithError(error)
         }
 

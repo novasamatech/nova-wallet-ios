@@ -47,9 +47,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         blockNumber: Core.BlockNumber,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
-        guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getOneShotConnectionOrError(for: chainId)
 
         let accountId = try holder.toEthereumAccountId()
 
@@ -80,9 +78,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         blockNumber: Core.BlockNumber,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
-        guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getOneShotConnectionOrError(for: chainAssetId.chainId)
 
         let accountId = try holder.toEthereumAccountId()
 

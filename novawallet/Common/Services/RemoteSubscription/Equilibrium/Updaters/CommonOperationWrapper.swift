@@ -12,7 +12,9 @@ enum CommonOperationWrapper {
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainModelId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            return CompoundOperationWrapper.createWithError(
+                ChainRegistryError.runtimeMetadaUnavailable(chainModelId)
+            )
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -48,7 +50,9 @@ enum CommonOperationWrapper {
         chainRegistry: ChainRegistryProtocol
     ) -> CompoundOperationWrapper<[T?]> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainModelId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            return CompoundOperationWrapper.createWithError(
+                ChainRegistryError.runtimeMetadaUnavailable(chainModelId)
+            )
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

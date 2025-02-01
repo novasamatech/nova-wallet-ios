@@ -244,9 +244,7 @@ final class StakingSharedStateFactory {
             logger: logger
         )
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
 
         let remoteOperationFactory = NominationPoolsOperationFactory(operationQueue: syncOperationQueue)
 

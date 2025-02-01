@@ -50,13 +50,8 @@ final class ParaStkYieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryPr
             return AnySingleValueProvider(provider)
         }
 
-        guard let connection = chainRegistry.getConnection(for: chainAssetId.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chainAssetId.chainId)
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAssetId.chainId)
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),

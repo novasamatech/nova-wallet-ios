@@ -52,41 +52,41 @@ final class ParaIdOperationFactory: ParaIdOperationFactoryProtocol {
             return CompoundOperationWrapper.createWithResult(paraId)
         }
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
-        }
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        let wrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<ParaId>>>
+            let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+            let wrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<ParaId>>>
 
-        wrapper = storageRequestFactory.queryItem(
-            engine: connection,
-            factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: .parachainId
-        )
+            wrapper = storageRequestFactory.queryItem(
+                engine: connection,
+                factory: { try coderFactoryOperation.extractNoCancellableResultData() },
+                storagePath: .parachainId
+            )
 
-        wrapper.addDependency(operations: [coderFactoryOperation])
+            wrapper.addDependency(operations: [coderFactoryOperation])
 
-        let updateOperation = ClosureOperation<ParaId> { [weak self] in
-            let response = try wrapper.targetOperation.extractNoCancellableResultData()
+            let updateOperation = ClosureOperation<ParaId> { [weak self] in
+                let response = try wrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let paraId = response.value?.value else {
-                throw CommonError.undefined
+                guard let paraId = response.value?.value else {
+                    throw CommonError.undefined
+                }
+
+                self?.setParaId(paraId, for: chainId)
+
+                return paraId
             }
 
-            self?.setParaId(paraId, for: chainId)
+            updateOperation.addDependency(wrapper.targetOperation)
 
-            return paraId
+            let dependencies = [coderFactoryOperation] + wrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: updateOperation, dependencies: dependencies)
+        } catch {
+            return .createWithError(error)
         }
-
-        updateOperation.addDependency(wrapper.targetOperation)
-
-        let dependencies = [coderFactoryOperation] + wrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: updateOperation, dependencies: dependencies)
     }
 }

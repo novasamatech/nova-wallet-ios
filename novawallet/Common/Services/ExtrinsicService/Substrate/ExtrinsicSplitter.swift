@@ -245,7 +245,9 @@ extension ExtrinsicSplitter: ExtrinsicSplitting {
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            return CompoundOperationWrapper.createWithError(
+                ChainRegistryError.runtimeMetadaUnavailable(chain.chainId)
+            )
         }
 
         guard internalCalls.count > 1 else {

@@ -99,12 +99,16 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
         let chain = chainAsset.chain
 
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            presenter?.didReceive(error: .accountBalanceFetch(ChainRegistryError.connectionUnavailable))
+            presenter?.didReceive(
+                error: .accountBalanceFetch(ChainRegistryError.connectionUnavailable(chain.chainId))
+            )
             return
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceive(error: .accountBalanceFetch(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(
+                error: .accountBalanceFetch(ChainRegistryError.runtimeMetadaUnavailable(chain.chainId))
+            )
             return
         }
 

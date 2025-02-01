@@ -122,23 +122,26 @@ extension SwipeGovVotingListPresenter: SwipeGovVotingListInteractorOutputProtoco
         let selectedLocale = localizationManager.selectedLocale
 
         switch error {
-        case .assetBalanceFailed:
+        case let .assetBalanceFailed(error):
             wireframe.presentRequestStatus(
                 on: view,
+                error: error,
                 locale: selectedLocale
             ) { [weak self] in
                 self?.interactor.subscribeBalance()
             }
-        case .metadataFailed:
+        case let .metadataFailed(error):
             wireframe.presentRequestStatus(
                 on: view,
+                error: error,
                 locale: selectedLocale
             ) { [weak self] in
                 self?.interactor.subscribeMetadata()
             }
-        case .votingBasket:
+        case let .votingBasket(error):
             wireframe.presentRequestStatus(
                 on: view,
+                error: error,
                 locale: selectedLocale
             ) { [weak self] in
                 self?.interactor.subscribeVotingItems()

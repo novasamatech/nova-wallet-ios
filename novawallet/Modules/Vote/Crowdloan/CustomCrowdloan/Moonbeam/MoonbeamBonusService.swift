@@ -273,50 +273,45 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         contribution: BigUInt,
         closure: @escaping (Result<MultiSignature?, Error>) -> Void
     ) {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            closure(.failure(ChainRegistryError.connectionUnavailable))
-            return
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            closure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
-        guard let accountId = try? address.toAccountId() else {
-            closure(.failure(SS58AddressFactoryError.unexpectedAddress))
-            return
-        }
+            let accountId = try address.toAccountId()
 
-        let previousContributionOperation = operationFactory.fetchContributionOperation(
-            connection: connection,
-            runtimeService: runtimeService,
-            accountId: accountId,
-            index: crowdloan.fundInfo.index
-        )
+            let previousContributionOperation = operationFactory.fetchContributionOperation(
+                connection: connection,
+                runtimeService: runtimeService,
+                accountId: accountId,
+                index: crowdloan.fundInfo.index
+            )
 
-        let signatureOperation = createMakeSignatureOperation(
-            dependingOn: previousContributionOperation.targetOperation,
-            contribution: contribution
-        )
-        previousContributionOperation.allOperations.forEach {
-            signatureOperation.addDependency($0)
-        }
-
-        signatureOperation.completionBlock = {
-            do {
-                let signatureString = try signatureOperation.extractNoCancellableResultData()
-                let signatureData = try Data(hexString: signatureString)
-                closure(.success(MultiSignature.sr25519(data: signatureData)))
-            } catch {
-                closure(.failure(error))
+            let signatureOperation = createMakeSignatureOperation(
+                dependingOn: previousContributionOperation.targetOperation,
+                contribution: contribution
+            )
+            previousContributionOperation.allOperations.forEach {
+                signatureOperation.addDependency($0)
             }
-        }
 
-        operationManager.enqueue(
-            operations: previousContributionOperation.allOperations + [signatureOperation],
-            in: .transient
-        )
+            signatureOperation.completionBlock = {
+                do {
+                    let signatureString = try signatureOperation.extractNoCancellableResultData()
+                    let signatureData = try Data(hexString: signatureString)
+                    closure(.success(MultiSignature.sr25519(data: signatureData)))
+                } catch {
+                    closure(.failure(error))
+                }
+            }
+
+            operationManager.enqueue(
+                operations: previousContributionOperation.allOperations + [signatureOperation],
+                in: .transient
+            )
+        } catch {
+            closure(.failure(error))
+        }
     }
 }
 

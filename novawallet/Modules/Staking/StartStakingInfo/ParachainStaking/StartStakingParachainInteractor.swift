@@ -76,7 +76,9 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         let chainId = selectedChainAsset.chain.chainId
 
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .networkInfo(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(
+                error: .networkInfo(ChainRegistryError.runtimeMetadaUnavailable(chainId))
+            )
             return
         }
 
@@ -141,49 +143,45 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
     }
 
     private func provideStakingDurationInfo() {
-        clear(cancellable: &durationCancellable)
+        do {
+            clear(cancellable: &durationCancellable)
 
-        let blockTimeService = state.blockTimeService
+            let blockTimeService = state.blockTimeService
 
-        let chainId = selectedChainAsset.chain.chainId
+            let chainId = selectedChainAsset.chain.chainId
 
-        guard
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .stakingDuration(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceive(error: .stakingDuration(ChainRegistryError.connectionUnavailable))
-            return
-        }
+            let wrapper = durationOperationFactory.createDurationOperation(
+                from: runtimeService,
+                connection: connection,
+                blockTimeEstimationService: blockTimeService
+            )
 
-        let wrapper = durationOperationFactory.createDurationOperation(
-            from: runtimeService,
-            connection: connection,
-            blockTimeEstimationService: blockTimeService
-        )
+            wrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.durationCancellable === wrapper else {
+                        return
+                    }
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.durationCancellable === wrapper else {
-                    return
-                }
+                    self?.durationCancellable = nil
 
-                self?.durationCancellable = nil
-
-                do {
-                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(stakingDuration: info)
-                } catch {
-                    self?.presenter?.didReceive(error: .stakingDuration(error))
+                    do {
+                        let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceive(stakingDuration: info)
+                    } catch {
+                        self?.presenter?.didReceive(error: .stakingDuration(error))
+                    }
                 }
             }
+
+            durationCancellable = wrapper
+
+            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        } catch {
+            presenter?.didReceive(error: .stakingDuration(error))
         }
-
-        durationCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideRewardPaymentDelay() {
@@ -193,7 +191,9 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
 
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceive(error: .rewardPaymentDelay(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(
+                error: .rewardPaymentDelay(ChainRegistryError.runtimeMetadaUnavailable(chainId))
+            )
             return
         }
 

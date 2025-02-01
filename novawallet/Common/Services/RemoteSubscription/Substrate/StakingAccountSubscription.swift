@@ -140,9 +140,7 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         }
 
         do {
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-                throw ChainRegistryError.runtimeMetadaUnavailable
-            }
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
             let requests = try createRequest(for: stashItem)
 
@@ -215,9 +213,7 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         }
 
         do {
-            guard let connection = chainRegistry.getConnection(for: chainId) else {
-                throw ChainRegistryError.connectionUnavailable
-            }
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
             let storageParams = keysList.map { $0.remote.toHex(includePrefix: true) }
 

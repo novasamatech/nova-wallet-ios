@@ -10,37 +10,37 @@ protocol AssetCanPayFeeWrapperFactoryProtocol {
 
 extension AssetCanPayFeeWrapperFactoryProtocol {
     func createAssetHubCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
 
-        return AssetHubSwapOperationFactory(
-            chain: chainAsset.chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).canPayFee(in: chainAsset.chainAssetId)
+            return AssetHubSwapOperationFactory(
+                chain: chainAsset.chain,
+                runtimeService: runtimeService,
+                connection: connection,
+                operationQueue: operationQueue
+            ).canPayFee(in: chainAsset.chainAssetId)
+        } catch {
+            return .createWithError(error)
+        }
     }
 
     func createHydraCanPayFee(for chainAsset: ChainAsset) -> CompoundOperationWrapper<Bool> {
-        guard let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.connectionUnavailable)
-        }
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainAsset.chain.chainId)
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
+            let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
 
-        return HydraTokensFactory.createWithDefaultPools(
-            chain: chainAsset.chain,
-            runtimeService: runtimeService,
-            connection: connection,
-            operationQueue: operationQueue
-        ).canPayFee(in: chainAsset.chainAssetId)
+            return HydraTokensFactory.createWithDefaultPools(
+                chain: chainAsset.chain,
+                runtimeService: runtimeService,
+                connection: connection,
+                operationQueue: operationQueue
+            ).canPayFee(in: chainAsset.chainAssetId)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }
 

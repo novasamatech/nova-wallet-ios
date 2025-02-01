@@ -138,7 +138,7 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
         } else {
-            let error = ChainRegistryError.runtimeMetadaUnavailable
+            let error = ChainRegistryError.runtimeMetadaUnavailable(chainAsset.chain.chainId)
             presenter.didReceiveExistentialDeposit(result: .failure(error))
             presenter.didReceiveStakingDuration(result: .failure(error))
         }

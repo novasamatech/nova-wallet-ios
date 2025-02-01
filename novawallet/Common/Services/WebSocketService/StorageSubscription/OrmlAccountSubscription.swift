@@ -40,7 +40,7 @@ final class OrmlAccountSubscription {
     ) -> CompoundOperationWrapper<OrmlAccount?> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
             return CompoundOperationWrapper.createWithError(
-                ChainRegistryError.runtimeMetadaUnavailable
+                ChainRegistryError.runtimeMetadaUnavailable(chainAssetId.chainId)
             )
         }
 
