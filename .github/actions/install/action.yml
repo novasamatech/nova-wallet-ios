@@ -63,5 +63,5 @@ runs:
           ${{ runner.os }}-spm-
     
     - name: Install Cocoapods
-      run: pod install --repo-update
+      run: bundle exec pod install --repo-update
       shell: bash
