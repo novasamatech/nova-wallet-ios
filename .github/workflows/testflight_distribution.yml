@@ -1,0 +1,35 @@
+name: Distribute TestFlight Build
+
+concurrency:
+  group: "testflight-build"
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+
+env:
+  XCODE_VERSION: '16.1'
+  IOS_BUNDLE_ID: io.novafoundation.novawallet
+  PROVISIONING_PROFILE_SPECIFIER: 'match AdHoc io.novafoundation.novawallet'
+  CODE_SIGN_IDENTITY: 'Apple Distribution'
+
+jobs:
+  distribute_testflight:
+    runs-on: macos-15
+    name: Distribute TestFlight Build
+    if: github.actor == 'stepanLav'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup iOS Environment
+      uses: ./.github/actions/install
+      with:
+        xcode-version: ${{ env.XCODE_VERSION }}
+        scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+        scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+        scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+        scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
+
+    - name: Distribute TestFlight build
+      run: bundle exec fastlane distribute_testflight
