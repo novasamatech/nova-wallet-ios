@@ -11,7 +11,7 @@ env:
   scheme: default
   platform: iOS Simulator
   device: iPhone 16
-  xcode-version: 16
+  xcode-version: 16.1
 
 jobs:
   build:
