@@ -29,11 +29,23 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
         case .orml where chainAsset.chain.hasHydrationFees:
             let hydraState = setupHydraFlowState()
             let hydraQuoteFactory = HydraQuoteFactory(flowState: hydraState)
+            let tokensFactory = HydraTokensFactory.createWithDefaultPools(
+                chain: chainAsset.chain,
+                runtimeService: host.runtimeProvider,
+                connection: host.connection,
+                operationQueue: host.operationQueue
+            )
+
+            let quoteFactory = HydraFeeQuoteFactory(
+                realQuoteFactory: hydraQuoteFactory,
+                tokensFactory: tokensFactory,
+                operationQueue: host.operationQueue
+            )
 
             return ExtrinsicAssetConversionFeeEstimator(
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
-                quoteFactory: hydraQuoteFactory
+                quoteFactory: quoteFactory
             )
         case .statemine where chainAsset.chain.hasAssetHubFees:
             let assetHubQuoteFactory = AssetHubSwapOperationFactory(
