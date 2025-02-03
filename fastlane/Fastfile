@@ -14,13 +14,13 @@ platform :ios do
   import ("lines/line_signing.rb")
 
   # shared variables
-  main_target = "novawallet.app"
-  main_scheme = "novawallet.app"
+  main_target = "novawallet"
+  main_scheme = "novawallet"
   main_configuration = "Dev"
 
-  test_scheme = "novawallet.app"
+  test_scheme = "novawallet"
 
-  testflight_distribution_scheme = "novawallet.app"
+  testflight_distribution_scheme = "novawallet"
   testflight_distribution_configuration = "Release"
 
   desc "Runs unit tests"
