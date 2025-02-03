@@ -46,18 +46,20 @@ private_lane :setup_ci_keychain do
       extension_identifier = "#{main_app_identifier}.NovaPushNotificationServiceExtension"
 
       app_identifiers = [main_app_identifier, extension_identifier]
-      # api_key_file = ENV["FASTLANE_API_KEY"] || raise("Missing FASTLANE_API_KEY environment variable")
+      api_key_file = ENV["ASC_KEY_BASE64"] || raise("Missing ASC_KEY_BASE64 environment variable")
+      api_key_id = ENV["ASC_KEY_ID"] || raise("Missing ASC_KEY_ID environment variable")
+      api_key_issuer_id = ENV["ASC_ISSUER_ID"] || raise("Missing ASC_ISSUER_ID environment variable")
   
-      # setup_ci_keychain
+      setup_ci_keychain
   
-      # app_store_connect_api_key(
-      #   key_id: "",
-      #   issuer_id: "",
-      #   key_content: api_key_file,
-      #   is_key_content_base64: true,
-      #   duration: 1200,
-      #   in_house: false
-      # )
+      app_store_connect_api_key(
+        key_id: api_key_id,
+        issuer_id: api_key_issuer_id,
+        key_content: api_key_file,
+        is_key_content_base64: true,
+        duration: 1200,
+        in_house: false
+      )
       
       app_identifiers.each do |identifier|
         match_config = {
