@@ -2,7 +2,7 @@ desc "Run tests"
 desc "Parameters:"
 desc "- 'scheme : <value>' to define scheme to test"
 desc " "
-desc "Example usage: fastlane test_build scheme:'nova-wallet'"
+desc "Example usage: fastlane test_build scheme:'novawallet'"
 lane :test_build do |options|
   scheme = options[:scheme]
 
