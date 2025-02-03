@@ -22,6 +22,7 @@ lane :base_build_app do |options|
   export_method = "ad-hoc"
   compile_bitcode = false
   xcodeproj_path = "./#{target}.xcodeproj"
+  xcodeproj_notification_path = "./#{notification_target}.xcodeproj"
 
   clean_build_artifacts
 
@@ -41,7 +42,7 @@ lane :base_build_app do |options|
 
   update_code_signing_settings(
     use_automatic_signing: false,
-    targets: [notification_service_identifier],
+    targets: [xcodeproj_notification_path],
     code_sign_identity: code_sign_identity,
     bundle_identifier: notification_service_identifier,
     profile_name: notification_profile_name,
