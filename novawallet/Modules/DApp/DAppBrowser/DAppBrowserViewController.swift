@@ -586,6 +586,10 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         didChangeUrl(url)
     }
 
+    func webView(_: WKWebView, didFinish _: WKNavigation!) {
+        presenter.didLoadPage()
+    }
+
     func webView(
         _ webView: WKWebView,
         createWebViewWith _: WKWebViewConfiguration,
