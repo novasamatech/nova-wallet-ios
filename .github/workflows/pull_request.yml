@@ -34,7 +34,7 @@ jobs:
 
       - name: Push Notifications Setup
         env:
-          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
+          GOOGLE_SERVICE_INFO: ${{ env.GOOGLE_DEV_SERVICE_FILE_CONTENT }}
         run: |
           GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
 
