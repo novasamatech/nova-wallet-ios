@@ -40,9 +40,9 @@ lane :base_build_app do |options|
 
   update_code_signing_settings(
     use_automatic_signing: false,
-    targets: notification_service_extension,
+    targets: [notification_service_extension],
     code_sign_identity: code_sign_identity,
-    bundle_identifier: extension_identifier,
+    bundle_identifier: notification_service_extension,
     profile_name: extension_profile_name,
     build_configurations: [configuration]
   )
