@@ -46,7 +46,8 @@ platform :ios do
       scheme: main_scheme,
       target: main_target,
       configuration: main_configuration,
-      app_identifier: dev_app_identifier
+      app_identifier: dev_app_identifier,
+      notification_service_extension: dev_notification_service_extension
     )
   end
 
@@ -86,7 +87,8 @@ platform :ios do
       target: main_target,
       configuration:  testflight_distribution_configuration,
       build_number: new_build_number,
-      app_identifier: main_app_identifier
+      app_identifier: main_app_identifier,
+      notification_service_extension: testflight_notification_service_extension
     )
     upload_testflight(
       scheme: testflight_distribution_scheme,
