@@ -31,9 +31,13 @@ Parameters:
 
 - 'configuration : <value>' defines configuration for build
 
+- 'notification_service_extension : <value>' defines notification service extension to build
+
+- 'app_identifier : <value>' defines app identifier to build
+
  
 
-Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' 
+Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' app_identifier: 'io.novafoundation.novawallet' 
 
 ### ios test_build
 
@@ -111,6 +115,16 @@ Load ASC API Key information to use in subsequent lanes
 
 Prepares certificate and provisioning profile
 
+Parameters:
+
+- 'app_identifiers : <value>' defines app identifiers to prepare
+
+- 'notification_service_extension : <value>' defines notification service extension to prepare
+
+ 
+
+Example usage: fastlane prepare_code_signing app_identifiers:['one', 'two'] notification_service_extension: 'one.notificationServiceExtension' 
+
 ### ios update_signing_data
 
 ```sh
@@ -118,6 +132,16 @@ Prepares certificate and provisioning profile
 ```
 
 Updates signing data using App Store Connect API
+
+Parameters:
+
+- 'app_identifiers : <value>' defines app identifiers to update
+
+- 'notification_service_extension : <value>' defines notification service extension to update
+
+ 
+
+Example usage: fastlane update_signing app_identifiers:['io.novafoundation.novawallet', 'io.novafoundation.novawallet.notificationServiceExtension'] notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' 
 
 ### ios run_unit_tests
 

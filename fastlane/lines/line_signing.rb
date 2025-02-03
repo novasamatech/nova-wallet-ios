@@ -13,19 +13,23 @@ private_lane :setup_ci_keychain do
   end
   
   desc "Prepares certificate and provisioning profile"
-  lane :prepare_code_signing do
+  desc "Parameters:"
+  desc "- 'app_identifiers : <value>' defines app identifiers to prepare"
+  desc "- 'notification_service_extension : <value>' defines notification service extension to prepare"
+  desc " "
+  desc "Example usage: fastlane prepare_code_signing app_identifiers:['one', 'two'] notification_service_extension: 'one.notificationServiceExtension' "
+  lane :prepare_code_signing do |options|
     begin
-      main_app_identifier = ENV["IOS_BUNDLE_ID"] || raise("Missing IOS_BUNDLE_ID environment variable")
-      extension_identifier = "#{main_app_identifier}.NovaPushNotificationServiceExtension"
-
-      app_identifiers = [main_app_identifier, extension_identifier]
+      app_identifier = options[:app_identifiers]
+      notification_service_identifier = options[:notification_service_extension]
+      identifiers = [app_identifier, notification_service_identifier]
       
       setup_ci_keychain
   
-      app_identifiers.each do |identifier|
+      identifiers.each do |identifier|
         match_config = {
           app_identifier: identifier,
-          readonly: true,
+          readonly: false,
           keychain_name: is_ci ? "github_actions_keychain" : nil,
           keychain_password: is_ci ? ENV["KEYCHAIN_PASSWORD"] : nil
         }
@@ -40,12 +44,17 @@ private_lane :setup_ci_keychain do
   end
   
   desc "Updates signing data using App Store Connect API"
-  lane :update_signing_data do
+  desc "Parameters:"
+  desc "- 'app_identifiers : <value>' defines app identifiers to update"
+  desc "- 'notification_service_extension : <value>' defines notification service extension to update"
+  desc " "
+  desc "Example usage: fastlane update_signing app_identifiers:['io.novafoundation.novawallet', 'io.novafoundation.novawallet.notificationServiceExtension'] notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' "
+  lane :update_signing_data do |options|
     begin
-      main_app_identifier = ENV["IOS_BUNDLE_ID"] || raise("Missing IOS_BUNDLE_ID environment variable")
-      extension_identifier = "#{main_app_identifier}.NovaPushNotificationServiceExtension"
+      app_identifiers = options[:app_identifiers]
+      notification_service_extension = options[:notification_service_extension]
+      identifiers = [app_identifiers, notification_service_extension]
 
-      app_identifiers = [main_app_identifier, extension_identifier]
       api_key_file = ENV["ASC_KEY_BASE64"] || raise("Missing ASC_KEY_BASE64 environment variable")
       api_key_id = ENV["ASC_KEY_ID"] || raise("Missing ASC_KEY_ID environment variable")
       api_key_issuer_id = ENV["ASC_ISSUER_ID"] || raise("Missing ASC_ISSUER_ID environment variable")
@@ -61,7 +70,7 @@ private_lane :setup_ci_keychain do
         in_house: false
       )
       
-      app_identifiers.each do |identifier|
+      identifiers.each do |identifier|
         match_config = {
           app_identifier: identifier,
           readonly: false,

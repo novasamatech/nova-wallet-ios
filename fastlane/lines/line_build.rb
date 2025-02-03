@@ -3,18 +3,20 @@ desc "Parameters:"
 desc "- 'scheme : <value>' defines scheme to use for build phase"
 desc "- 'target : <value>' defines target to build"
 desc "- 'configuration : <value>' defines configuration for build"
+desc "- 'notification_service_extension : <value>' defines notification service extension to build"
+desc "- 'app_identifier : <value>' defines app identifier to build"
 desc " "
-desc "Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' "
+desc "Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' app_identifier: 'io.novafoundation.novawallet' "
 lane :base_build_app do |options|
   scheme = options[:scheme]
   target = options[:target]
+  app_identifier = options[:app_identifier]
   configuration = options[:configuration]
-  app_identifier = ENV["IOS_BUNDLE_ID"]
-  extension_identifier = "#{app_identifier}.NovaPushNotificationServiceExtension"
-
-
-  profile_name = ENV["PROVISIONING_PROFILE_SPECIFIER"]
-  extension_profile_name = "#{profile_name}.NovaPushNotificationServiceExtension"
+  notification_service_extension = options[:notification_service_extension]
+  provisioning_profile = "match AdHoc"
+  profile_name = "#{provisioning_profile} #{app_identifier}"
+  extension_profile_name = "#{provisioning_profile} #{notification_service_extension}"
+  code_sign_identity = "Apple Distribution"
   output_name = scheme
   export_method = "ad-hoc"
   compile_bitcode = false
@@ -30,7 +32,7 @@ lane :base_build_app do |options|
   update_code_signing_settings(
     use_automatic_signing: false,
     targets: [target],
-    code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+    code_sign_identity: code_sign_identity,
     bundle_identifier: app_identifier,
     profile_name: profile_name,
     build_configurations: [configuration]
@@ -38,8 +40,8 @@ lane :base_build_app do |options|
 
   update_code_signing_settings(
     use_automatic_signing: false,
-    targets: ["NovaPushNotificationServiceExtension"],
-    code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+    targets: notification_service_extension,
+    code_sign_identity: code_sign_identity,
     bundle_identifier: extension_identifier,
     profile_name: extension_profile_name,
     build_configurations: [configuration]

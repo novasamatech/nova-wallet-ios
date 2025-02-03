@@ -10,9 +10,6 @@ on:
 
 env:
   XCODE_VERSION: '16.1'
-  IOS_BUNDLE_ID: io.novafoundation.novawallet
-  PROVISIONING_PROFILE_SPECIFIER: 'match AdHoc io.novafoundation.novawallet'
-  CODE_SIGN_IDENTITY: 'Apple Distribution'
 
 jobs:
   distribute_testflight:

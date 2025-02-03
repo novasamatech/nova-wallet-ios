@@ -9,9 +9,6 @@ concurrency:
 
 env:
   XCODE_VERSION: '16.1'
-  IOS_BUNDLE_ID: io.novafoundation.novawallet.dev
-  PROVISIONING_PROFILE_SPECIFIER: 'match Development io.novafoundation.novawallet.dev'
-  CODE_SIGN_IDENTITY: 'iPhone Developer'
   BUILD_NUMBER: ${{ github.run_number }}
 
 jobs:
