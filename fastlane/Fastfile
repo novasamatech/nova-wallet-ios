@@ -18,14 +18,15 @@ platform :ios do
   main_scheme = "novawallet"
   main_configuration = "Debug"
   main_app_identifier = "io.novafoundation.novawallet"
+  notification_target = "NovaPushNotificationServiceExtension"
 
   test_scheme = "novawallet"
   dev_app_identifier = "io.novafoundation.novawallet.dev"
-  dev_notification_service_extension = "io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+  dev_notification_service_identifier = "io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
 
   testflight_distribution_scheme = "novawallet"
   testflight_distribution_configuration = "Release"
-  testflight_notification_service_extension = "io.novafoundation.novawallet.notificationServiceExtension"
+  testflight_notification_service_identifier = "io.novafoundation.novawallet.notificationServiceExtension"
 
   desc "Runs unit tests"
   desc "Example usage: fastlane run_unit_tests"
@@ -40,14 +41,15 @@ platform :ios do
   lane :build_app_ci do
     prepare_code_signing(
       app_identifiers: dev_app_identifier,
-      notification_service_extension: dev_notification_service_extension
+      notification_service_identifier: dev_notification_service_identifier
     )
     base_build_app(
       scheme: main_scheme,
       target: main_target,
       configuration: main_configuration,
       app_identifier: dev_app_identifier,
-      notification_service_extension: dev_notification_service_extension
+      notification_service_identifier: dev_notification_service_identifier,
+      notification_target: notification_target
     )
   end
 
@@ -59,14 +61,15 @@ platform :ios do
   lane :distribute_app_to_firebase do |options|
     prepare_code_signing(
       app_identifiers: dev_app_identifier,
-      notification_service_extension: dev_notification_service_extension
+      notification_service_identifier: dev_notification_service_identifier
     )
     base_build_app(
       scheme: main_scheme,
       target: main_target,
       configuration: main_configuration,
       app_identifier: dev_app_identifier,
-      notification_service_extension: dev_notification_service_extension
+      notification_service_identifier: dev_notification_service_identifier,
+      notification_target: notification_target
     )
     distribute_to_firebase(
       release_notes: options[:release_notes]
@@ -79,7 +82,7 @@ platform :ios do
     load_asc_api_key
     prepare_code_signing(
       app_identifiers: main_app_identifier,
-      notification_service_extension: testflight_notification_service_extension
+      notification_service_identifier: testflight_notification_service_identifier
     )
     new_build_number = latest_testflight_build_number + 1
     base_build_app(
@@ -88,7 +91,8 @@ platform :ios do
       configuration:  testflight_distribution_configuration,
       build_number: new_build_number,
       app_identifier: main_app_identifier,
-      notification_service_extension: testflight_notification_service_extension
+      notification_service_identifier: testflight_notification_service_identifier,
+      notification_target: notification_target
     )
     upload_testflight(
       scheme: testflight_distribution_scheme,
@@ -102,7 +106,7 @@ platform :ios do
   lane :update_signing do
     update_signing_data(
       app_identifiers: [main_app_identifier, dev_app_identifier],
-      notification_service_extension: [dev_notification_service_extension, testflight_notification_service_extension]
+      notification_service_identifier: [dev_notification_service_identifier, testflight_notification_service_identifier]
     )
   end
 end

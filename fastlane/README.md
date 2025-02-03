@@ -31,13 +31,13 @@ Parameters:
 
 - 'configuration : <value>' defines configuration for build
 
-- 'notification_service_extension : <value>' defines notification service extension to build
+- 'notification_service_identifier : <value>' defines notification service extension to build
 
 - 'app_identifier : <value>' defines app identifier to build
 
  
 
-Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' app_identifier: 'io.novafoundation.novawallet' 
+Example usage: fastlane build_app scheme:'novawallet' target: 'novawallet' configuration: 'Release' notification_service_identifier: 'io.novafoundation.novawallet.notificationServiceExtension' app_identifier: 'io.novafoundation.novawallet' 
 
 ### ios test_build
 
@@ -119,11 +119,11 @@ Parameters:
 
 - 'app_identifiers : <value>' defines app identifiers to prepare
 
-- 'notification_service_extension : <value>' defines notification service extension to prepare
+- 'notification_service_identifier : <value>' defines notification service extension to prepare
 
  
 
-Example usage: fastlane prepare_code_signing app_identifiers:['one', 'two'] notification_service_extension: 'one.notificationServiceExtension' 
+Example usage: fastlane prepare_code_signing app_identifiers:['one', 'two'] notification_service_identifier: 'one.notificationServiceExtension' 
 
 ### ios update_signing_data
 
@@ -137,11 +137,11 @@ Parameters:
 
 - 'app_identifiers : <value>' defines app identifiers to update
 
-- 'notification_service_extension : <value>' defines notification service extension to update
+- 'notification_service_identifier : <value>' defines notification service extension to update
 
  
 
-Example usage: fastlane update_signing app_identifiers:['io.novafoundation.novawallet', 'io.novafoundation.novawallet.notificationServiceExtension'] notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' 
+Example usage: fastlane update_signing app_identifiers:['io.novafoundation.novawallet', 'io.novafoundation.novawallet.notificationServiceExtension'] notification_service_identifier: 'io.novafoundation.novawallet.notificationServiceExtension' 
 
 ### ios run_unit_tests
 

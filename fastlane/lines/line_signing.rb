@@ -15,13 +15,13 @@ private_lane :setup_ci_keychain do
   desc "Prepares certificate and provisioning profile"
   desc "Parameters:"
   desc "- 'app_identifiers : <value>' defines app identifiers to prepare"
-  desc "- 'notification_service_extension : <value>' defines notification service extension to prepare"
+  desc "- 'notification_service_identifier : <value>' defines notification service extension to prepare"
   desc " "
-  desc "Example usage: fastlane prepare_code_signing app_identifiers:['one', 'two'] notification_service_extension: 'one.notificationServiceExtension' "
+  desc "Example usage: fastlane prepare_code_signing app_identifiers:['one', 'two'] notification_service_identifier: 'one.notificationServiceExtension' "
   lane :prepare_code_signing do |options|
     begin
       app_identifier = options[:app_identifiers]
-      notification_service_identifier = options[:notification_service_extension]
+      notification_service_identifier = options[:notification_service_identifier]
       identifiers = [app_identifier, notification_service_identifier]
       
       setup_ci_keychain
@@ -46,14 +46,14 @@ private_lane :setup_ci_keychain do
   desc "Updates signing data using App Store Connect API"
   desc "Parameters:"
   desc "- 'app_identifiers : <value>' defines app identifiers to update"
-  desc "- 'notification_service_extension : <value>' defines notification service extension to update"
+  desc "- 'notification_service_identifier : <value>' defines notification service extension to update"
   desc " "
-  desc "Example usage: fastlane update_signing app_identifiers:['io.novafoundation.novawallet', 'io.novafoundation.novawallet.notificationServiceExtension'] notification_service_extension: 'io.novafoundation.novawallet.notificationServiceExtension' "
+  desc "Example usage: fastlane update_signing app_identifiers:['io.novafoundation.novawallet', 'io.novafoundation.novawallet.notificationServiceExtension'] notification_service_identifier: 'io.novafoundation.novawallet.notificationServiceExtension' "
   lane :update_signing_data do |options|
     begin
       app_identifiers = options[:app_identifiers]
-      notification_service_extension = options[:notification_service_extension]
-      identifiers = [app_identifiers, notification_service_extension]
+      notification_service_identifier = options[:notification_service_identifier]
+      identifiers = [app_identifiers, notification_service_identifier]
 
       api_key_file = ENV["ASC_KEY_BASE64"] || raise("Missing ASC_KEY_BASE64 environment variable")
       api_key_id = ENV["ASC_KEY_ID"] || raise("Missing ASC_KEY_ID environment variable")
