@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import BigInt
 
 protocol HydraPoolTokensFactoryProtocol {
     func availableDirections() -> CompoundOperationWrapper<[ChainAssetId: Set<ChainAssetId>]>
@@ -13,7 +12,6 @@ protocol HydraPoolTokensFactoryProtocol {
 
 protocol HydraTokensFactoryProtocol: HydraPoolTokensFactoryProtocol {
     func canPayFee(in chainAssetId: ChainAssetId) -> CompoundOperationWrapper<Bool>
-    func fallbackFeePrice(for chainAssetId: ChainAssetId) -> CompoundOperationWrapper<BigRational?>
 }
 
 final class HydraTokensFactory {
@@ -137,59 +135,6 @@ extension HydraTokensFactory: HydraTokensFactoryProtocol {
         return allFeeRemoteAssets
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: mappingOperation)
-    }
-
-    func fallbackFeePrice(for chainAssetId: ChainAssetId) -> CompoundOperationWrapper<BigRational?> {
-        do {
-            let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-            let requestFactory = StorageRequestFactory(
-                remoteFactory: StorageKeyFactory(),
-                operationManager: OperationManager(operationQueue: operationQueue)
-            )
-
-            let fetchWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BigUInt>>]>
-            fetchWrapper = requestFactory.queryItems(
-                engine: connection,
-                keyParams: {
-                    let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                    let conversion = try HydraDxTokenConverter.convertToRemote(
-                        chainAsset: chainAsset,
-                        codingFactory: codingFactory
-                    )
-
-                    let remoteAssetId = conversion.remoteAssetId
-
-                    return [StringScaleMapper(value: remoteAssetId)]
-
-                }, factory: {
-                    try codingFactoryOperation.extractNoCancellableResultData()
-                },
-                storagePath: HydraDx.feeCurrenciesPath
-            )
-
-            fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mapOperation = ClosureOperation<BigRational?> {
-                let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-
-                guard let price = responses.first?.value?.value else {
-                    return nil
-                }
-
-                return .fixedU128(value: price)
-            }
-
-            mapOperation.addDependency(fetchWrapper.targetOperation)
-
-            return fetchWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: mapOperation)
-        } catch {
-            return .createWithError(error)
-        }
     }
 }
 
