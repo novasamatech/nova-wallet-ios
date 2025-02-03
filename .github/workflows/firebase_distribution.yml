@@ -1,0 +1,77 @@
+name: Distribute to Firebase
+
+on:
+  workflow_dispatch:
+    inputs:
+      groups:
+        description: 'Groups to distribute the app to'
+        required: true
+        default: 'external-users'
+      appVersion:
+        description: 'App version to distribute'
+        required: true
+      releaseNotes:
+        description: 'Release notes for the distribution'
+        required: true
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+env:
+  XCODE_VERSION: '16.1'
+  IOS_BUNDLE_ID: io.novafoundation.novawallet.dev
+  PROVISIONING_PROFILE_SPECIFIER: 'match AdHoc io.novafoundation.novawallet.dev'
+  CODE_SIGN_IDENTITY: 'Apple Distribution'
+  BUILD_NUMBER: ${{ github.run_number }}
+  FIREBASE_GROUPS: dev-team
+  RELEASE_NOTES: ${{ github.event.head_commit.message }}
+  APP_VERSION: ${{ secrets.IOS_APP_VERSION }}
+
+jobs:
+  build:
+    name: Archive, export and upload to Firebase
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Variables if triggered by workflow_dispatch
+        if: github.event.inputs.groups
+        run: |
+          echo "FIREBASE_GROUPS=${{ inputs.groups }}" >> $GITHUB_ENV
+          echo "RELEASE_NOTES=${{ inputs.releaseNotes }}" >> $GITHUB_ENV
+          echo "APP_VERSION=${{ inputs.appVersion }}" >> $GITHUB_ENV
+
+      - name: Setup iOS Environment
+        uses: ./.github/actions/install
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          scw_access_key: ${{ secrets.SCW_ACCESS_KEY }}
+          scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+          scw_default_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          scw_default_organization_id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
+
+      - name: Push Notifications Setup
+        env:
+          GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_FILE_CONTENT }}
+        run: |
+          GOOGLE_SERVICE_PATH=./novawallet/GoogleService-Info-Dev.plist
+
+          echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
+
+      - name: Bump version
+        uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
+        with:
+          info-plist-path: './novawallet/Info.plist'
+          bundle-short-version-string: ${{ secrets.IOS_APP_VERSION }}
+          bundle-version: ${{github.run_number}}
+          print-file: true
+
+      - name: Distribute to Firebase
+        run: |
+          bundle exec fastlane distribute_app_to_firebase release_notes:"${{ env.RELEASE_NOTES }}"
