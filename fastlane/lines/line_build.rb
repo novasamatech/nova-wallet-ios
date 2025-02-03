@@ -14,7 +14,7 @@ lane :base_build_app do |options|
 
 
   profile_name = ENV["PROVISIONING_PROFILE_SPECIFIER"]
-  extension_profile_name = "match Development io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+  extension_profile_name = "#{profile_name}.NovaPushNotificationServiceExtension"
   output_name = scheme
   export_method = "ad-hoc"
   compile_bitcode = false
