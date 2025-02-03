@@ -31,6 +31,17 @@ runs:
           MATCH_PASSWORD,/dev/ios/MATCH_PASSWORD
           CREDENTIAL_FILE_CONTENT,/dev/ios/CREDENTIAL_FILE_CONTENT
           FIREBASE_APP_ID,/dev/ios/FIREBASE_APP_ID
+          MERCURYO_PRODUCTION_SECRET,/dev/ios/MERCURYO_PRODUCTION_SECRET
+          MERCURYO_TEST_SECRET,/dev/ios/MERCURYO_TEST_SECRET
+          MOONBEAM_HISTORY_API_KEY,/dev/ios/MOONBEAM_HISTORY_API_KEY
+          MOONRIVER_HISTORY_API_KEY,/dev/ios/MOONRIVER_HISTORY_API_KEY
+          ETHERSCAN_HISTORY_API_KEY,/dev/ios/ETHERSCAN_HISTORY_API_KEY
+          ACALA_AUTH_TOKEN,/dev/ios/ACALA_AUTH_TOKEN
+          ACALA_TEST_AUTH_TOKEN,/dev/ios/ACALA_TEST_AUTH_TOKEN
+          MOONBEAM_API_KEY,/dev/ios/MOONBEAM_API_KEY
+          MOONBEAM_TEST_API_KEY,/dev/ios/MOONBEAM_TEST_API_KEY
+          WC_PROJECT_ID,/dev/ios/WC_PROJECT_ID
+          POLKASSEMBLY_SUMMARY_API_KEY,/dev/ios/POLKASSEMBLY_SUMMARY_API_KEY
         access-key: ${{ inputs.scw_access_key }}
         secret-key: ${{ inputs.scw_secret_key }}
         default-project-id: ${{ inputs.scw_default_project_id }}
@@ -51,7 +62,7 @@ runs:
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
-
-    - run: bundle exec pod install
+    
+    - name: Install Cocoapods
+      run: pod install --repo-update
       shell: bash
-
