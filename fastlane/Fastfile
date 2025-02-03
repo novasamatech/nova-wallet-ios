@@ -1,0 +1,60 @@
+opt_out_usage
+default_platform(:ios)
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "10"
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+platform :ios do
+  # imports
+  import ("lines/line_build.rb")
+  import ("lines/line_tests.rb")
+  import ("lines/line_firebase_distribute.rb")
+
+  # shared variables
+  main_target = "default"
+  main_scheme = "default"
+  main_configuration = "DevCI"
+
+  test_scheme = "default"
+
+  firebase_distribution_scheme = "default"
+  firebase_distribution_configuration = "Release"
+
+  testflight_distribution_scheme = "default"
+  testflight_distribution_configuration = "Release"
+
+  desc "Runs unit tests for development scheme"
+  desc "Example usage: fastlane run_unit_tests"
+  lane :run_unit_tests do
+    test_build(
+      scheme: test_scheme,
+    )
+  end
+
+  desc "Build app for CI"
+  lane :build_app_ci do
+    prepare_code_signing
+    base_build_app(
+      scheme: main_scheme,
+      target: main_target,
+      configuration: main_configuration
+    )
+  end
+
+  desc "Distribute app to Firebase"
+  desc "Parameters:"
+  desc "- 'release_notes : <value>' to define release notes"
+  desc " "
+  desc "Example usage: fastlane distribute_app_to_firebase release_notes:'Release notes'"
+  lane :distribute_app_to_firebase do |options|
+    prepare_code_signing
+    base_build_app(
+      scheme: firebase_distribution_scheme,
+      target: main_target,
+      configuration: firebase_distribution_configuration
+    )
+    distribute_to_firebase(
+      release_notes: options[:release_notes]
+    )
+  end
+end
