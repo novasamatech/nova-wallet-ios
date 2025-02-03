@@ -54,7 +54,7 @@ lane :base_build_app do |options|
     export_options: {
       method: export_method,
       provisioningProfiles: {
-        app_identifier => profile_name
+        app_identifier => profile_name,
         extension_identifier => extension_profile_name
       },
       compileBitcode: compile_bitcode
