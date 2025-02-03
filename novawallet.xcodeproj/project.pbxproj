@@ -392,11 +392,8 @@
 		0C6D66AB2A8C0B6700AAB988 /* BaseSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6D66AA2A8C0B6700AAB988 /* BaseSigner.swift */; };
 		0C6F0C9E2A69723B007170C6 /* StartStakingStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */; };
 		0C6FE8082D4D206100E5B651 /* DAppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6FE8072D4D206100E5B651 /* DAppNavigation.swift */; };
-<<<<<<< HEAD
 		0C6FE80C2D50C6AC00E5B651 /* HydraFeeRateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6FE80B2D50C6AC00E5B651 /* HydraFeeRateFactory.swift */; };
-=======
 		0C6FE80A2D507AB100E5B651 /* URLOriginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6FE8092D507AB100E5B651 /* URLOriginTests.swift */; };
->>>>>>> develop
 		0C7071292C1F600F0080DDCD /* OnLauchAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7071282C1F600F0080DDCD /* OnLauchAction.swift */; };
 		0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */; };
 		0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104682C2966C000487E64 /* LedgerConversionTests.swift */; };
@@ -5791,11 +5788,8 @@
 		0C6D66AA2A8C0B6700AAB988 /* BaseSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSigner.swift; sourceTree = "<group>"; };
 		0C6F0C9C2A69723B007170C6 /* StartStakingStateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartStakingStateProtocol.swift; sourceTree = "<group>"; };
 		0C6FE8072D4D206100E5B651 /* DAppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppNavigation.swift; sourceTree = "<group>"; };
-<<<<<<< HEAD
 		0C6FE80B2D50C6AC00E5B651 /* HydraFeeRateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraFeeRateFactory.swift; sourceTree = "<group>"; };
-=======
 		0C6FE8092D507AB100E5B651 /* URLOriginTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLOriginTests.swift; sourceTree = "<group>"; };
->>>>>>> develop
 		0C7071282C1F600F0080DDCD /* OnLauchAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLauchAction.swift; sourceTree = "<group>"; };
 		0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLaunchActionsQueue.swift; sourceTree = "<group>"; };
 		0C7104682C2966C000487E64 /* LedgerConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerConversionTests.swift; sourceTree = "<group>"; };
