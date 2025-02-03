@@ -16,7 +16,7 @@ platform :ios do
   # shared variables
   main_target = "novawallet"
   main_scheme = "novawallet"
-  main_configuration = "Dev"
+  main_configuration = "Debug"
 
   test_scheme = "novawallet"
 
