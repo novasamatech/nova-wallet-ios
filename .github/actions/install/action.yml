@@ -25,8 +25,7 @@ runs:
       with:
         # ENV_NAME,SECRET_NAME (with path)
         secret-names: |
-          MATCH_GIT_URL,/dev/ios/MATCH_GIT_URL
-          MATCH_GIT_BASIC_AUTH,/dev/ios/MATCH_GIT_BASIC_AUTH
+          MATCH_GIT_BASIC_AUTHORIZATION,/dev/ios/MATCH_GIT_BASIC_AUTH
           KEYCHAIN_PASSWORD,/dev/ios/KEYCHAIN_PASSWORD
           MATCH_PASSWORD,/dev/ios/MATCH_PASSWORD
           CREDENTIAL_FILE_CONTENT,/dev/ios/CREDENTIAL_FILE_CONTENT
