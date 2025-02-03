@@ -25,8 +25,7 @@ private_lane :setup_ci_keychain do
       app_identifiers.each do |identifier|
         match_config = {
           app_identifier: identifier,
-          readonly: false,
-          force_for_new_devices: true,
+          readonly: true,
           keychain_name: is_ci ? "github_actions_keychain" : nil,
           keychain_password: is_ci ? ENV["KEYCHAIN_PASSWORD"] : nil
         }
