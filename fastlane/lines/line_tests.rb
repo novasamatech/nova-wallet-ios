@@ -10,7 +10,7 @@ lane :test_build do |options|
   scan(
     clean: true,
     scheme: scheme,
-    workspace: "nova-wallet.xcworkspace",
+    workspace: "novawallet.xcworkspace",
     configuration: "Dev",
     xcargs: "EXCLUDED_ARCHS=arm64 -skipPackagePluginValidation -skipMacroValidation",
     output_directory: "./fastlane/test_output/"
