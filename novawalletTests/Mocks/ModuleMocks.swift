@@ -4880,16 +4880,16 @@ import Operation_iOS
     
     
     
-     func process(message: Any, host: String, transport name: String)  {
+     func process(message: Any, transport name: String)  {
         
-    return cuckoo_manager.call("process(message: Any, host: String, transport: String)",
-            parameters: (message, host, name),
-            escapingParameters: (message, host, name),
+    return cuckoo_manager.call("process(message: Any, transport: String)",
+            parameters: (message, name),
+            escapingParameters: (message, name),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.process(message: message, host: host, transport: name))
+            defaultCall: __defaultImplStub!.process(message: message, transport: name))
         
     }
     
@@ -5022,9 +5022,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(page: DAppBrowserPage)", parameterMatchers: matchers))
 	    }
 	    
-	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String, String)> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(message: Any, host: String, transport: String)", parameterMatchers: matchers))
+	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(message: M1, transport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String)> where M1.MatchedType == Any, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(message: Any, transport: String)", parameterMatchers: matchers))
 	    }
 	    
 	    func process<M1: Cuckoo.Matchable>(stateRender: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserTabRenderProtocol)> where M1.MatchedType == DAppBrowserTabRenderProtocol {
@@ -5097,9 +5097,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.__DoNotUse<(Any, String, String), Void> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
-	        return cuckoo_manager.verify("process(message: Any, host: String, transport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(message: M1, transport name: M2) -> Cuckoo.__DoNotUse<(Any, String), Void> where M1.MatchedType == Any, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return cuckoo_manager.verify("process(message: Any, transport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5173,7 +5173,7 @@ import Operation_iOS
     
     
     
-     func process(message: Any, host: String, transport name: String)   {
+     func process(message: Any, transport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
