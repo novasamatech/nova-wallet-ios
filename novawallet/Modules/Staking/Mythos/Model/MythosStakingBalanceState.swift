@@ -41,9 +41,9 @@ struct MythosStakingBalanceState {
     }
 
     func stakableAmount() -> Balance {
-        let frozenButNotStaked = frozenBalance.total.subtractOrZero(totalStaked)
+        let frozenButNotStaked = frozenBalance.staking.subtractOrZero(totalStaked)
 
-        let availableAmount = balance.freeInPlank.subtractOrZero(totalStaked) + frozenButNotStaked
+        let availableAmount = balance.freeInPlank.subtractOrZero(frozenBalance.total) + frozenButNotStaked
 
         return availableAmount.subtractOrZero(unavailableDueUnstake)
     }
@@ -53,7 +53,7 @@ struct MythosStakingBalanceState {
             return nil
         }
 
-        let availableStakedAmount = frozenBalance.total.subtractOrZero(totalStaked + unavailableDueUnstake)
+        let availableStakedAmount = frozenBalance.staking.subtractOrZero(totalStaked + unavailableDueUnstake)
 
         return MythosStakeModel.Amount(
             toLock: amount.subtractOrZero(availableStakedAmount),

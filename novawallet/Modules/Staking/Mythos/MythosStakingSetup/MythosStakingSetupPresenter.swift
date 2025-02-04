@@ -555,7 +555,9 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
     func didReceivePreferredCollator(_ collator: DisplayAddress?) {
         logger.debug("Preferred Collator: \(String(describing: collator))")
 
-        collatorDisplayAddress = collator
+        if collator != nil, collatorDisplayAddress == nil {
+            changeCollator(with: collator)
+        }
     }
 
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance) {
