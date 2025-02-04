@@ -16,6 +16,12 @@ protocol MythosStakingLocalStorageHandler {
         chainId: ChainModel.Id,
         accountId: AccountId
     )
+
+    func handleReleaseQueue(
+        result: Result<MythosStakingPallet.ReleaseQueue?, Error>,
+        chainId: ChainModel.Id,
+        accountId: AccountId
+    )
 }
 
 extension MythosStakingLocalStorageHandler {
@@ -31,6 +37,12 @@ extension MythosStakingLocalStorageHandler {
 
     func handleUserStake(
         result _: Result<MythosStakingPallet.UserStake?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {}
+
+    func handleReleaseQueue(
+        result _: Result<MythosStakingPallet.ReleaseQueue?, Error>,
         chainId _: ChainModel.Id,
         accountId _: AccountId
     ) {}

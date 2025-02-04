@@ -61,11 +61,14 @@ extension StakingMainPresenterFactory {
             return nil
         }
 
+        let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chainAsset.chain)
+
         return MythosStakingDetailsInteractor(
             selectedAccount: selectedAccount,
             sharedState: state,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            blockTimeOperationFactory: blockTimeOperationFactory,
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
             currencyManager: currencyManager,

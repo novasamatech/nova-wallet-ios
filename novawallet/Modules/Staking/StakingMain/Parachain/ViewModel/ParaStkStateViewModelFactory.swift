@@ -102,7 +102,11 @@ final class ParaStkStateViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: roundCountdown, items: viewModels)
+        return StakingUnbondingViewModel(
+            eraCountdown: roundCountdown,
+            items: viewModels,
+            canCancelUnbonding: true
+        )
     }
 
     private func createStakingRewardViewModel(

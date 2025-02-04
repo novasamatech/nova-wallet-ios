@@ -2,32 +2,24 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-extension ParachainStaking {
-    final class AccountSubscriptionService: RemoteSubscriptionService {
-        private static let storagePaths: [StorageCodingPath] = [
-            ParachainStaking.delegatorStatePath
-        ]
-    }
+final class MythosStakingAccountSubscriptionService: RemoteSubscriptionService {
+    private static let storagePaths: [StorageCodingPath] = [
+        MythosStakingPallet.releaseQueuesPath
+    ]
 }
 
-extension ParachainStaking.AccountSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol {
+extension MythosStakingAccountSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol {
     func attachToAccountData(
         for chainAccountId: ChainAccountId,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
-        let subscriptionHandlingFactory = ParaStkAccountSubscribeHandlingFactory(
-            chainId: chainAccountId.chainId,
-            accountId: chainAccountId.accountId,
-            chainRegistry: chainRegistry
-        )
-
-        return attachToAccountDataWithStoragePaths(
+        attachToAccountDataWithStoragePaths(
             Self.storagePaths,
             chainAccountId: chainAccountId,
             queue: queue,
             closure: closure,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
+            subscriptionHandlingFactory: nil
         )
     }
 

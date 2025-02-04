@@ -187,6 +187,12 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         stateMachine.state.process(claimableRewards: claimableRewards)
     }
 
+    func didReceiveReleaseQueue(_ releaseQueue: MythosStakingPallet.ReleaseQueue?) {
+        logger.debug("Release queue: \(String(describing: releaseQueue))")
+
+        stateMachine.state.process(releaseQueue: releaseQueue)
+    }
+
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance?) {
         logger.debug("Frozen balance: \(String(describing: frozenBalance))")
 
@@ -197,5 +203,17 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         logger.debug("Total reward: \(String(describing: totalReward))")
 
         stateMachine.state.process(totalReward: totalReward)
+    }
+
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
+        logger.debug("Block: \(blockNumber)")
+
+        stateMachine.state.process(blockNumber: blockNumber)
+    }
+
+    func didReceiveBlockTime(_ blockTime: BlockTime) {
+        logger.debug("Block time: \(blockTime)")
+
+        stateMachine.state.process(blockTime: blockTime)
     }
 }
