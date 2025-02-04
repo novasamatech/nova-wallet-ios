@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "Fotoğraf kütüphanesine erişim, adreslerle, Polkadot Vault işlemleriyle QR kodunu seçmek veya WalletConnect üzerinden bağlanmak için kullanılır";
 "NSPhotoLibraryAddUsageDescription" = "Transfer talebini QR kodu olarak kaydedin";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth, Ledger Nano X cihazlarıyla iletişim kurmak için kullanılır";
+"NSMicrophoneUsageDescription" = "Mikrofon, KYC medya oturumu için kullanılır";
