@@ -1,19 +1,19 @@
 import UIKit
-
 import SoraFoundation
 
-final class ParaStkUnstakeViewController: UIViewController, ViewHolder, ImportantViewProtocol {
-    typealias RootViewType = ParaStkUnstakeViewLayout
+class CollatorStkBaseUnstakeSetupVC<V: CollatorStkBaseUnstakeSetupLayout>: UIViewController,
+    ViewHolder, ImportantViewProtocol {
+    typealias RootViewType = V
 
-    let presenter: ParaStkUnstakePresenterProtocol
+    let basePresenter: CollatorStkBaseUnstakeSetupPresenterProtocol
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
 
     init(
-        presenter: ParaStkUnstakePresenterProtocol,
+        basePresenter: CollatorStkBaseUnstakeSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.presenter = presenter
+        self.basePresenter = basePresenter
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -25,7 +25,7 @@ final class ParaStkUnstakeViewController: UIViewController, ViewHolder, Importan
     }
 
     override func loadView() {
-        view = ParaStkUnstakeViewLayout()
+        view = V()
     }
 
     override func viewDidLoad() {
@@ -36,44 +36,15 @@ final class ParaStkUnstakeViewController: UIViewController, ViewHolder, Importan
 
         updateActionButtonState()
 
-        presenter.setup()
+        onViewDidLoad()
+
+        basePresenter.setup()
     }
 
-    private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
+    func onViewDidLoad() {}
+    func onSetupLocalization() {}
 
-        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
-
-        setupAmountInputAccessoryView()
-
-        rootView.collatorTitleLabel.text = R.string.localizable.parachainStakingCollator(
-            preferredLanguages: languages
-        )
-
-        applyCollator(viewModel: collatorViewModel)
-
-        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
-            preferredLanguages: languages
-        )
-
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonStakedPrefix(
-            preferredLanguages: languages
-        )
-
-        rootView.transferableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
-
-        rootView.minStakeView.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
-            preferredLanguages: languages
-        )
-
-        rootView.networkFeeView.locale = selectedLocale
-
-        updateActionButtonState()
-    }
-
-    private func updateActionButtonState() {
+    func updateActionButtonState() {
         if collatorViewModel == nil {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
@@ -103,6 +74,42 @@ final class ParaStkUnstakeViewController: UIViewController, ViewHolder, Importan
             preferredLanguages: selectedLocale.rLanguages
         )
         rootView.actionButton.invalidateLayout()
+    }
+}
+
+private extension CollatorStkBaseUnstakeSetupVC {
+    private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
+
+        rootView.collatorTitleLabel.text = R.string.localizable.parachainStakingCollator(
+            preferredLanguages: languages
+        )
+
+        applyCollator(viewModel: collatorViewModel)
+
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonStakedPrefix(
+            preferredLanguages: languages
+        )
+
+        rootView.transferableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
+            preferredLanguages: languages
+        )
+
+        rootView.minStakeView.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.networkFeeView.locale = selectedLocale
+
+        onSetupLocalization()
+
+        updateActionButtonState()
     }
 
     private func applyAssetBalance(viewModel: AssetBalanceViewModelProtocol) {
@@ -136,52 +143,22 @@ final class ParaStkUnstakeViewController: UIViewController, ViewHolder, Importan
         }
     }
 
-    private func setupAmountInputAccessoryView() {
-        let accessoryView = UIFactory.default.createAmountAccessoryView(
-            for: self,
-            locale: selectedLocale
-        )
-
-        rootView.amountInputView.textField.inputAccessoryView = accessoryView
-    }
-
     private func setupHandlers() {
-        rootView.collatorActionView.addTarget(
-            self,
-            action: #selector(actionSelectCollator),
-            for: .touchUpInside
-        )
+        let selectCollatorAction = UIAction { [weak self] _ in
+            self?.basePresenter.selectCollator()
+        }
 
-        rootView.amountInputView.addTarget(
-            self,
-            action: #selector(actionAmountChange),
-            for: .editingChanged
-        )
+        rootView.collatorActionView.addAction(selectCollatorAction, for: .touchUpInside)
 
-        rootView.actionButton.addTarget(
-            self,
-            action: #selector(actionProceed),
-            for: .touchUpInside
-        )
-    }
+        let proceedAction = UIAction { [weak self] _ in
+            self?.basePresenter.proceed()
+        }
 
-    @objc func actionAmountChange() {
-        let amount = rootView.amountInputView.inputViewModel?.decimalAmount
-        presenter.updateAmount(amount)
-
-        updateActionButtonState()
-    }
-
-    @objc func actionSelectCollator() {
-        presenter.selectCollator()
-    }
-
-    @objc func actionProceed() {
-        presenter.proceed()
+        rootView.actionButton.addAction(proceedAction, for: .touchUpInside)
     }
 }
 
-extension ParaStkUnstakeViewController: ParaStkUnstakeViewProtocol {
+extension CollatorStkBaseUnstakeSetupVC: CollatorStkBaseUnstakeSetupViewProtocol {
     func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?) {
         collatorViewModel = viewModel
 
@@ -198,14 +175,15 @@ extension ParaStkUnstakeViewController: ParaStkUnstakeViewProtocol {
         rootView.networkFeeView.bind(viewModel: viewModel)
     }
 
-    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
-        rootView.amountInputView.bind(inputViewModel: inputViewModel)
+    func didReceiveMinStake(viewModel: LoadableViewModelState<BalanceViewModelProtocol>?) {
+        if let viewModel {
+            rootView.minStakeView.isHidden = false
 
-        updateActionButtonState()
-    }
+            rootView.minStakeView.bind(viewModel: viewModel.value)
 
-    func didReceiveMinStake(viewModel: BalanceViewModelProtocol?) {
-        rootView.minStakeView.bind(viewModel: viewModel)
+        } else {
+            rootView.minStakeView.isHidden = true
+        }
     }
 
     func didReceiveTransferable(viewModel: BalanceViewModelProtocol?) {
@@ -215,21 +193,15 @@ extension ParaStkUnstakeViewController: ParaStkUnstakeViewProtocol {
     func didReceiveHints(viewModel: [String]) {
         rootView.hintListView.bind(texts: viewModel)
     }
-}
 
-extension ParaStkUnstakeViewController: AmountInputAccessoryViewDelegate {
-    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
-        rootView.amountInputView.textField.resignFirstResponder()
+    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
+        rootView.amountInputView.bind(inputViewModel: inputViewModel)
 
-        presenter.selectAmountPercentage(percentage)
-    }
-
-    func didSelectDone(on _: AmountInputAccessoryView) {
-        rootView.amountInputView.textField.resignFirstResponder()
+        updateActionButtonState()
     }
 }
 
-extension ParaStkUnstakeViewController: Localizable {
+extension CollatorStkBaseUnstakeSetupVC: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

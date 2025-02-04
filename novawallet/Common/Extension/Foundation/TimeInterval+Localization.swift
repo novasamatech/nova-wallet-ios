@@ -109,10 +109,13 @@ extension TimeInterval {
             components.append(minutesString)
         }
 
-        return [
-            preposition,
-            components.joined(separator: separator)
-        ].joined(with: .space)
+        let timeString = components.joined(separator: separator)
+
+        if !preposition.isEmpty {
+            return preposition + " " + timeString
+        } else {
+            return timeString
+        }
     }
 
     func localizedDaysHoursIncludingZero(for locale: Locale) -> String {

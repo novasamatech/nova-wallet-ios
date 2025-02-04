@@ -14,10 +14,11 @@ final class StakingClaimRewardsViewController: StakingGenericRewardsViewControll
         super.onViewDidLoad()
 
         setupHandlers()
-        setupLocalization()
     }
 
-    private func setupLocalization() {
+    override func onSetupLocalization() {
+        super.onSetupLocalization()
+
         rootView.restakeCell.titleLabel.text = R.string.localizable.stakingRestakeTitle_v2_2_0(
             preferredLanguages: selectedLocale.rLanguages
         )

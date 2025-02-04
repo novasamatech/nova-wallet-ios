@@ -23,9 +23,29 @@ extension MythosStakingPallet {
         }
     }
 
-    struct ClaimRewards: Codable {
+    struct ClaimRewardsCall: Codable {
         func runtimeCall() -> RuntimeCall<Self> {
             .init(moduleName: MythosStakingPallet.name, callName: "claim_rewards", args: self)
+        }
+    }
+
+    struct UnstakeCall: Codable {
+        @BytesCodable var account: AccountId
+
+        func runtimeCall() -> RuntimeCall<Self> {
+            .init(moduleName: MythosStakingPallet.name, callName: "unstake_from", args: self)
+        }
+    }
+
+    struct UnlockCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case maybeAmount = "maybe_amount"
+        }
+
+        @OptionStringCodable var maybeAmount: Balance?
+
+        func runtimeCall() -> RuntimeCall<Self> {
+            .init(moduleName: MythosStakingPallet.name, callName: "unlock", args: self)
         }
     }
 }

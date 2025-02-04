@@ -19,6 +19,11 @@ protocol MythosStakingLocalStorageSubscriber: LocalStorageProviderObserving {
         for chainId: ChainModel.Id,
         accountId: AccountId
     ) -> AnyDataProvider<MythosStakingPallet.DecodedUserStake>?
+
+    func subscribeToReleaseQueue(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>?
 }
 
 extension MythosStakingLocalStorageSubscriber {
@@ -108,6 +113,38 @@ extension MythosStakingLocalStorageSubscriber {
             },
             failureClosure: { [weak self] error in
                 self?.stakingLocalSubscriptionHandler.handleUserStake(
+                    result: .failure(error),
+                    chainId: chainId,
+                    accountId: accountId
+                )
+            }
+        )
+
+        return provider
+    }
+
+    func subscribeToReleaseQueue(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>? {
+        guard let provider = try? stakingLocalSubscriptionFactory.getReleaseQueueProvider(
+            for: chainId,
+            accountId: accountId
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] value in
+                self?.stakingLocalSubscriptionHandler.handleReleaseQueue(
+                    result: .success(value),
+                    chainId: chainId,
+                    accountId: accountId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleReleaseQueue(
                     result: .failure(error),
                     chainId: chainId,
                     accountId: accountId

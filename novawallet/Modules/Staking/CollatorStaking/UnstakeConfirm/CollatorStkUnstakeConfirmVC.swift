@@ -1,12 +1,12 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParaStkUnstakeConfirmViewLayout
+final class CollatorStkUnstakeConfirmVC: UIViewController, ViewHolder {
+    typealias RootViewType = CollatorStkUnstakeConfirmLayout
 
-    let presenter: ParaStkUnstakeConfirmPresenterProtocol
+    let presenter: CollatorStkUnstakeConfirmPresenterProtocol
 
-    init(presenter: ParaStkUnstakeConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: CollatorStkUnstakeConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
@@ -19,7 +19,7 @@ final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ParaStkUnstakeConfirmViewLayout()
+        view = CollatorStkUnstakeConfirmLayout()
     }
 
     override func viewDidLoad() {
@@ -87,7 +87,7 @@ final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ParaStkUnstakeConfirmViewController: ParaStkUnstakeConfirmViewProtocol {
+extension CollatorStkUnstakeConfirmVC: CollatorStkUnstakeConfirmViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -122,7 +122,7 @@ extension ParaStkUnstakeConfirmViewController: ParaStkUnstakeConfirmViewProtocol
     }
 }
 
-extension ParaStkUnstakeConfirmViewController: Localizable {
+extension CollatorStkUnstakeConfirmVC: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

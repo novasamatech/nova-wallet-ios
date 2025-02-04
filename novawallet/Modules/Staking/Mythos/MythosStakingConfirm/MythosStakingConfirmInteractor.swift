@@ -75,10 +75,10 @@ extension MythosStakingConfirmInteractor: MythosStakingConfirmInteractorInputPro
             do {
                 let status = try result.getSuccessExtrinsicStatus()
 
-                self?.presenter?.didReceiveSubmition(result: .success(status.extrinsicHash))
+                self?.presenter?.didReceiveSubmissionResult(.success(status.extrinsicHash))
             } catch {
                 self?.sharedOperation?.markComposing()
-                self?.presenter?.didReceiveSubmition(result: .failure(error))
+                self?.presenter?.didReceiveSubmissionResult(.failure(error))
             }
         }
     }

@@ -273,10 +273,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
             newUnbondingsView.locale = selectedLocale
             newUnbondingsView.delegate = self
 
-            if let canCancel = staticsViewModel?.canCancelUnbonding {
-                newUnbondingsView.canCancel = canCancel
-            }
-
             if let stateView = stateContainerView {
                 stackView.insertArranged(view: newUnbondingsView, after: stateView)
             } else {
@@ -497,7 +493,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
 
         networkInfoView.statics = viewModel
         actionsView?.statics = viewModel
-        unbondingsView?.canCancel = viewModel.canCancelUnbonding
 
         if let stateView = stateView as? StakingStateView {
             stateView.statics = viewModel

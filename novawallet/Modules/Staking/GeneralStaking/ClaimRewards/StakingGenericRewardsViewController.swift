@@ -40,6 +40,7 @@ class StakingGenericRewardsViewController<V: StakingGenericRewardsViewLayout>: U
     }
 
     func onViewDidLoad() {}
+    func onSetupLocalization() {}
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
@@ -58,6 +59,8 @@ class StakingGenericRewardsViewController<V: StakingGenericRewardsViewLayout>: U
         )
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
+
+        onSetupLocalization()
     }
 
     private func setupHandlers() {

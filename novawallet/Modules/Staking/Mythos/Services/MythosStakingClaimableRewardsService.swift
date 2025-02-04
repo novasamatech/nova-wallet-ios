@@ -52,6 +52,7 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
 
     deinit {
         currentSessionProvider = nil
+        userStakeProvider = nil
         callStore.cancel()
     }
 

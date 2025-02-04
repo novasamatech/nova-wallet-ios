@@ -12,6 +12,9 @@ protocol MythosStakingDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveElectedCollators(_ collators: MythosSessionCollators)
     func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?)
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance?)
+    func didReceiveReleaseQueue(_ releaseQueue: MythosStakingPallet.ReleaseQueue?)
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber)
+    func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?)
 }
 
@@ -22,10 +25,7 @@ protocol MythosStakingDetailsWireframeProtocol: AlertPresentable, ErrorPresentab
         initialDetails: MythosStakingDetails?
     )
 
-    func showUnstakeTokens(
-        from view: ControllerBackedProtocol?,
-        initialDetails: MythosStakingDetails?
-    )
+    func showUnstakeTokens(from view: ControllerBackedProtocol?)
 
     func showYourCollators(from view: ControllerBackedProtocol?)
 

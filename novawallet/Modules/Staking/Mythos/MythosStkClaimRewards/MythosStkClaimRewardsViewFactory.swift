@@ -52,6 +52,7 @@ struct MythosStkClaimRewardsViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidationFactory.view = view
 
         return view
     }

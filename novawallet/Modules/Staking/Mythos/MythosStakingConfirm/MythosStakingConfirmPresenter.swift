@@ -221,13 +221,15 @@ extension MythosStakingConfirmPresenter: CollatorStakingConfirmPresenterProtocol
 }
 
 extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputProtocol {
-    func didReceiveSubmition(result: Result<String, Error>) {
+    func didReceiveSubmissionResult(_ result: Result<String, Error>) {
         view?.didStopLoading()
 
         switch result {
         case .success:
             wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
+            logger.error("Submission error: \(error)")
+
             applyCurrentState()
             refreshFee()
 
