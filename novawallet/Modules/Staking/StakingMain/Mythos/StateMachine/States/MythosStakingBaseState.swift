@@ -63,6 +63,12 @@ class MythosStakingBaseState: MythosStakingStateProtocol {
 
     func process(frozenBalance _: MythosStakingFrozenBalance?) {}
 
+    func process(releaseQueue: MythosStakingPallet.ReleaseQueue?) {
+        commonData = commonData.byReplacing(releaseQueue: releaseQueue)
+
+        stateMachine?.transit(to: self)
+    }
+
     func process(totalReward: TotalRewardItem?) {
         commonData = commonData.byReplacing(totalReward: totalReward)
 
@@ -77,6 +83,18 @@ class MythosStakingBaseState: MythosStakingStateProtocol {
 
     func process(claimableRewards: MythosStakingClaimableRewards?) {
         commonData = commonData.byReplacing(claimableRewards: claimableRewards)
+
+        stateMachine?.transit(to: self)
+    }
+
+    func process(blockNumber: BlockNumber) {
+        commonData = commonData.byReplacing(blockNumber: blockNumber)
+
+        stateMachine?.transit(to: self)
+    }
+
+    func process(blockTime: BlockTime) {
+        commonData = commonData.byReplacing(blockTime: blockTime)
 
         stateMachine?.transit(to: self)
     }

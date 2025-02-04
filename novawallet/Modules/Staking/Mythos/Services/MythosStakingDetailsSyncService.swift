@@ -59,7 +59,15 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
         guard let collatorsIds = userStake?.candidates.map(\.wrappedValue) else {
             stateObservable.state = nil
             completeImmediate(nil)
+            return
+        }
 
+        guard !collatorsIds.isEmpty else {
+            stateObservable.state = MythosStakingDetails(
+                stakeDistribution: [:],
+                maybeLastUnstake: userStake?.maybeLastUnstake
+            )
+            completeImmediate(nil)
             return
         }
 
@@ -87,7 +95,8 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
                 )
                 self?.completeImmediate(nil)
             case let .failure(error):
-                self?.complete(error)
+                self?.logger.error("Update failed: \(error)")
+                self?.completeImmediate(error)
             }
         }
     }

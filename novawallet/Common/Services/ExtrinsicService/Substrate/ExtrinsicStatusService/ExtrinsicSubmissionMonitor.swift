@@ -34,7 +34,7 @@ final class ExtrinsicSubmissionMonitorFactory {
     let submissionService: ExtrinsicServiceProtocol
     let statusService: ExtrinsicStatusServiceProtocol
     let operationQueue: OperationQueue
-    let processingQueue = DispatchQueue(label: "io.web3citizenship.extrinsic.monitor.\(UUID().uuidString)")
+    let processingQueue = DispatchQueue(label: "io.novawallet.extrinsic.monitor.\(UUID().uuidString)")
 
     init(
         submissionService: ExtrinsicServiceProtocol,
