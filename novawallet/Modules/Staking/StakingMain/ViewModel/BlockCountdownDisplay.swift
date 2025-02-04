@@ -2,10 +2,10 @@ import Foundation
 
 final class BlockCountdownDisplay {
     let activeEra: EraIndex
-    let blockTime: BlockTime
+    let blockTime: TimeInterval
     let createdAtDate: Date
 
-    init(activeEra: EraIndex, blockTime: BlockTime, createdAtDate: Date = Date()) {
+    init(activeEra: EraIndex, blockTime: TimeInterval, createdAtDate: Date = Date()) {
         self.activeEra = activeEra
         self.blockTime = blockTime
         self.createdAtDate = createdAtDate
@@ -18,7 +18,7 @@ extension BlockCountdownDisplay: EraCountdownDisplayProtocol {
             return 0
         }
 
-        let remainedTime = TimeInterval(targetEra - activeEra) * blockTime.timeInterval
+        let remainedTime = TimeInterval(targetEra - activeEra) * blockTime
         let elapsedTime = Date().timeIntervalSince(createdAtDate)
 
         return max(remainedTime - elapsedTime, 0)

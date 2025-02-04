@@ -11,7 +11,8 @@ struct MythosStakingCommonData {
     let claimableRewards: MythosStakingClaimableRewards?
     let releaseQueue: MythosStakingPallet.ReleaseQueue?
     let blockNumber: BlockNumber?
-    let blockTime: BlockTime?
+    let duration: MythosStakingDuration?
+    let networkInfo: MythosStakingNetworkInfo?
 }
 
 extension MythosStakingCommonData {
@@ -27,7 +28,8 @@ extension MythosStakingCommonData {
             claimableRewards: nil,
             releaseQueue: nil,
             blockNumber: nil,
-            blockTime: nil
+            duration: nil,
+            networkInfo: nil
         )
     }
 
@@ -43,7 +45,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -59,7 +62,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -75,7 +79,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -91,7 +96,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -107,7 +113,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -123,7 +130,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -139,7 +147,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -155,7 +164,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -171,7 +181,8 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
@@ -187,11 +198,12 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 
-    func byReplacing(blockTime: BlockTime?) -> MythosStakingCommonData {
+    func byReplacing(duration: MythosStakingDuration?) -> MythosStakingCommonData {
         MythosStakingCommonData(
             account: account,
             chainAsset: chainAsset,
@@ -203,7 +215,25 @@ extension MythosStakingCommonData {
             claimableRewards: claimableRewards,
             releaseQueue: releaseQueue,
             blockNumber: blockNumber,
-            blockTime: blockTime
+            duration: duration,
+            networkInfo: networkInfo
+        )
+    }
+
+    func byReplacing(networkInfo: MythosStakingNetworkInfo?) -> MythosStakingCommonData {
+        MythosStakingCommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            collatorsInfo: collatorsInfo,
+            totalReward: totalReward,
+            totalRewardFilter: totalRewardFilter,
+            claimableRewards: claimableRewards,
+            releaseQueue: releaseQueue,
+            blockNumber: blockNumber,
+            duration: duration,
+            networkInfo: networkInfo
         )
     }
 }

@@ -14,7 +14,8 @@ protocol MythosStakingDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance?)
     func didReceiveReleaseQueue(_ releaseQueue: MythosStakingPallet.ReleaseQueue?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
-    func didReceiveBlockTime(_ blockTime: BlockTime)
+    func didReceiveStakingDuration(_ stakingDuration: MythosStakingDuration)
+    func didReceiveNetworkInfo(_ info: MythosStakingNetworkInfo)
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?)
 }
 

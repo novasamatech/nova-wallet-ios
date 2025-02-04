@@ -22,7 +22,8 @@ protocol MythosStakingStateProtocol {
     func process(claimableRewards: MythosStakingClaimableRewards?)
     func process(releaseQueue: MythosStakingPallet.ReleaseQueue?)
     func process(blockNumber: BlockNumber)
-    func process(blockTime: BlockTime)
+    func process(duration: MythosStakingDuration)
+    func process(networkInfo: MythosStakingNetworkInfo)
 }
 
 protocol MythosStakingStateMachineProtocol: AnyObject {

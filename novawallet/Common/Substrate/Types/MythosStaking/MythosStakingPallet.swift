@@ -37,4 +37,23 @@ enum MythosStakingPallet {
     }
 
     typealias ReleaseQueue = [ReleaseRequest]
+
+    struct CandidateStakeKey: JSONListConvertible {
+        let candidate: AccountId
+        let staker: AccountId
+
+        init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
+            let expectedFieldsCount = 2
+            let actualFieldsCount = jsonList.count
+            guard expectedFieldsCount == actualFieldsCount else {
+                throw JSONListConvertibleError.unexpectedNumberOfItems(
+                    expected: expectedFieldsCount,
+                    actual: actualFieldsCount
+                )
+            }
+
+            candidate = try jsonList[0].map(to: BytesCodable.self, with: context).wrappedValue
+            staker = try jsonList[1].map(to: BytesCodable.self, with: context).wrappedValue
+        }
+    }
 }

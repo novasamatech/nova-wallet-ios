@@ -35,11 +35,14 @@ extension StakingMainPresenterFactory {
             priceAssetInfoFactory: priceAssetInfo
         )
 
+        let networkInfoFactory = CollatorStkNetworkInfoViewModelFactory(priceAssetInfoFactory: priceAssetInfo)
+
         let presenter = MythosStakingDetailsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             dataValidationFactory: dataValidationFactory,
+            networkInfoViewModelFactory: networkInfoFactory,
             logger: Logger.shared
         )
 
@@ -63,12 +66,22 @@ extension StakingMainPresenterFactory {
 
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chainAsset.chain)
 
+        let durationFactory = MythosStkDurationOperationFactory(
+            chainRegistry: state.chainRegistry,
+            blockTimeOperationFactory: blockTimeOperationFactory
+        )
+
+        let networkInfoFactory = MythosStkNetworkInfoOperationFactory(
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         return MythosStakingDetailsInteractor(
             selectedAccount: selectedAccount,
             sharedState: state,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockTimeOperationFactory: blockTimeOperationFactory,
+            networkInfoFactory: networkInfoFactory,
+            durationOperationFactory: durationFactory,
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
             currencyManager: currencyManager,
