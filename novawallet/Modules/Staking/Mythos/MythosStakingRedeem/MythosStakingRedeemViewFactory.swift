@@ -1,12 +1,14 @@
 import Foundation
 import SoraFoundation
 
-struct MythosStkClaimRewardsViewFactory {
-    static func createView(for state: MythosStakingSharedStateProtocol) -> StakingGenericRewardsViewProtocol? {
+struct MythosStakingRedeemViewFactory {
+    static func createView(
+        for state: MythosStakingSharedStateProtocol
+    ) -> CollatorStakingRedeemViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
-            let selectedAccount = SelectedWalletSettings.shared.value.fetchMetaChainAccount(
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: chainAsset.chain.accountRequest()
             ),
             let currencyManager = CurrencyManager.shared,
@@ -19,40 +21,40 @@ struct MythosStkClaimRewardsViewFactory {
             return nil
         }
 
-        let wireframe = MythosStkClaimRewardsWireframe()
+        let wireframe = MythosStakingRedeemWireframe()
 
-        let priceAssetInfo = PriceAssetInfoFactory(currencyManager: currencyManager)
-
-        let dataValidationFactory = MythosStakingValidationFactory(
-            presentable: wireframe,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfo
-        )
-
+        let assetInfo = chainAsset.assetDisplayInfo
+        let priceInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfo
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceInfoFactory
         )
 
-        let presenter = MythosStkClaimRewardsPresenter(
+        let dataValidatingFactory = MythosStakingValidationFactory(
+            presentable: wireframe,
+            assetDisplayInfo: assetInfo,
+            priceAssetInfoFactory: priceInfoFactory
+        )
+
+        let presenter = MythosStakingRedeemPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
-            dataValidatorFactory: dataValidationFactory,
+            dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
-        let view = StakingBaseRewardsViewController(
-            basePresenter: presenter,
+        let view = CollatorStakingRedeemViewController(
+            presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
         interactor.presenter = presenter
-        dataValidationFactory.view = view
+        dataValidatingFactory.view = view
 
         return view
     }
@@ -62,9 +64,8 @@ struct MythosStkClaimRewardsViewFactory {
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
         currencyManager: CurrencyManagerProtocol
-    ) -> MythosStkClaimRewardsInteractor? {
+    ) -> MythosStakingRedeemInteractor? {
         guard
-            let rewardsSyncService = state.claimableRewardsService,
             let runtimeService = state.chainRegistry.getRuntimeProvider(
                 for: chainAsset.chain.chainId
             ),
@@ -99,7 +100,7 @@ struct MythosStkClaimRewardsViewFactory {
             operationQueue: operationQueue
         )
 
-        return MythosStkClaimRewardsInteractor(
+        return MythosStakingRedeemInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             extrinsicService: extrinsicService,
@@ -107,7 +108,8 @@ struct MythosStkClaimRewardsViewFactory {
             signingWrapper: signingWrapper,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            rewardsSyncService: rewardsSyncService,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             operationQueue: operationQueue,
             currencyManager: currencyManager,
             logger: Logger.shared

@@ -1,18 +1,5 @@
 import Foundation
 
-protocol ParaStkRedeemViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol)
-    func didReceiveWallet(viewModel: DisplayWalletViewModel)
-    func didReceiveAccount(viewModel: DisplayAddressViewModel)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-}
-
-protocol ParaStkRedeemPresenterProtocol: AnyObject {
-    func setup()
-    func selectAccount()
-    func confirm()
-}
-
 protocol ParaStkRedeemInteractorInputProtocol: PendingExtrinsicInteracting {
     func setup()
     func estimateFee(for collatorIds: Set<AccountId>)

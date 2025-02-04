@@ -48,4 +48,10 @@ extension MythosStakingPallet {
             .init(moduleName: MythosStakingPallet.name, callName: "unlock", args: self)
         }
     }
+
+    struct ReleaseCall: Codable {
+        func runtimeCall() -> RuntimeCall<Self> {
+            .init(moduleName: MythosStakingPallet.name, callName: "release", args: self)
+        }
+    }
 }

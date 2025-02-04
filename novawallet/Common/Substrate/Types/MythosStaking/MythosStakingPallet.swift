@@ -30,6 +30,10 @@ enum MythosStakingPallet {
     struct ReleaseRequest: Decodable, Equatable {
         @StringCodable var block: BlockNumber
         @StringCodable var amount: Balance
+
+        func isRedeemable(at currentBlock: BlockNumber) -> Bool {
+            block <= currentBlock
+        }
     }
 
     typealias ReleaseQueue = [ReleaseRequest]
