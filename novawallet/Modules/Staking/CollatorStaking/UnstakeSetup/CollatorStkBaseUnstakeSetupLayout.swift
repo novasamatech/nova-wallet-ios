@@ -1,6 +1,6 @@
 import UIKit
 
-final class ParaStkUnstakeViewLayout: UIView {
+class CollatorStkBaseUnstakeSetupLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
@@ -56,7 +56,7 @@ final class ParaStkUnstakeViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)

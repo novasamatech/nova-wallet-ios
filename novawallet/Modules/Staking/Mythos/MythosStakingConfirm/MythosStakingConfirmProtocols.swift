@@ -1,9 +1,11 @@
+import Foundation
+
 protocol MythosStakingConfirmInteractorInputProtocol: MythosStakingBaseInteractorInputProtocol {
     func submit(model: MythosStakeModel)
 }
 
 protocol MythosStakingConfirmInteractorOutputProtocol: MythosStakingBaseInteractorOutputProtocol {
-    func didReceiveSubmition(result: Result<String, Error>)
+    func didReceiveSubmissionResult(_ result: Result<String, Error>)
 }
 
 protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
@@ -14,4 +16,6 @@ protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentab
     MythosStakingErrorPresentable,
     ExtrinsicSigningErrorHandling,
     ExtrinsicSubmissionPresenting,
-    MythosClaimRewardsPresenting {}
+    MythosClaimRewardsPresenting {
+    func complete(on view: CollatorStakingConfirmViewProtocol?, locale: Locale)
+}

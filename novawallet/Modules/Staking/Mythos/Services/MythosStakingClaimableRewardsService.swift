@@ -26,6 +26,7 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
 
     private var stateObservable: Observable<MythosStakingClaimableRewards?> = .init(state: nil)
     private var currentSessionProvider: AnyDataProvider<DecodedU32>?
+    private var userStakeProvider: AnyDataProvider<MythosStakingPallet.DecodedUserStake>?
 
     init(
         chainId: ChainModel.Id,
@@ -51,6 +52,7 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
 
     deinit {
         currentSessionProvider = nil
+        userStakeProvider = nil
         callStore.cancel()
     }
 
@@ -99,23 +101,35 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
         }
     }
 
+    private func updateIfNotInProgress() {
+        guard !callStore.hasCall else {
+            return
+        }
+
+        markSyncingImmediate()
+        updateState()
+    }
+
     private func clearSubscriptionAndRequest() {
         clear(dataProvider: &currentSessionProvider)
+        clear(dataProvider: &userStakeProvider)
 
         callStore.cancel()
     }
 
-    private func setupSubscription(for chainId: ChainModel.Id) {
+    private func setupSubscription(for chainId: ChainModel.Id, accountId: AccountId) {
         currentSessionProvider = subscribeToCurrentSession(
             for: chainId,
             callbackQueue: workQueue
         )
+
+        userStakeProvider = subscribeToUserState(for: chainId, accountId: accountId)
     }
 
     override func performSyncUp() {
         if currentSessionProvider == nil {
             clearSubscriptionAndRequest()
-            setupSubscription(for: chainId)
+            setupSubscription(for: chainId, accountId: accountId)
         } else {
             callStore.cancel()
             updateState()
@@ -143,8 +157,30 @@ extension MythosStakingClaimableRewardsService: MythosStakingLocalStorageSubscri
         case let .success(session):
             logger.debug("Session: \(String(describing: session))")
 
-            markSyncingImmediate()
-            updateState()
+            updateIfNotInProgress()
+        case let .failure(error):
+            logger.error("Unexpected subscription error: \(error)")
+
+            clearSubscriptionAndRequest()
+        }
+    }
+
+    func handleUserStake(
+        result: Result<MythosStakingPallet.UserStake?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        switch result {
+        case let .success(stakingState):
+            logger.debug("Staking state: \(String(describing: stakingState))")
+
+            updateIfNotInProgress()
         case let .failure(error):
             logger.error("Unexpected subscription error: \(error)")
 

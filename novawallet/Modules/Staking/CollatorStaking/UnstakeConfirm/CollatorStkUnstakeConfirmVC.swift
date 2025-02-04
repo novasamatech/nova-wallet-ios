@@ -1,14 +1,13 @@
 import UIKit
 import SoraFoundation
 
-final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
-    typealias RootViewType = NPoolsClaimRewardsViewLayout
+final class CollatorStkUnstakeConfirmVC: UIViewController, ViewHolder {
+    typealias RootViewType = CollatorStkUnstakeConfirmLayout
 
-    let presenter: NPoolsClaimRewardsPresenterProtocol
+    let presenter: CollatorStkUnstakeConfirmPresenterProtocol
 
-    init(presenter: NPoolsClaimRewardsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: CollatorStkUnstakeConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
-
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -20,7 +19,7 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = NPoolsClaimRewardsViewLayout()
+        view = CollatorStkUnstakeConfirmLayout()
     }
 
     override func viewDidLoad() {
@@ -35,7 +34,7 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingClaimRewards(preferredLanguages: languages)
+        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
@@ -50,12 +49,8 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.restakeCell.titleLabel.text = R.string.localizable.stakingRestakeTitle_v2_2_0(
-            preferredLanguages: languages
-        )
-
-        rootView.restakeCell.subtitleLabel.text = R.string.localizable.stakingRestakeMessage(
-            preferredLanguages: languages
+        rootView.collatorCell.titleLabel.text = R.string.localizable.parachainStakingCollator(
+            preferredLanguages: selectedLocale.rLanguages
         )
     }
 
@@ -72,10 +67,10 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.restakeCell.switchControl.addTarget(
+        rootView.collatorCell.addTarget(
             self,
-            action: #selector(actionToggleClaimStrategy),
-            for: .valueChanged
+            action: #selector(actionSelectCollator),
+            for: .touchUpInside
         )
     }
 
@@ -87,12 +82,12 @@ final class NPoolsClaimRewardsViewController: UIViewController, ViewHolder {
         presenter.selectAccount()
     }
 
-    @objc private func actionToggleClaimStrategy() {
-        presenter.toggleClaimStrategy()
+    @objc private func actionSelectCollator() {
+        presenter.selectCollator()
     }
 }
 
-extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
+extension CollatorStkUnstakeConfirmVC: CollatorStkUnstakeConfirmViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -109,13 +104,25 @@ extension NPoolsClaimRewardsViewController: NPoolsClaimRewardsViewProtocol {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveClaimStrategy(viewModel: NominationPools.ClaimRewardsStrategy) {
-        let shouldRestake = viewModel == .restake
-        rootView.restakeCell.switchControl.setOn(shouldRestake, animated: false)
+    func didReceiveCollator(viewModel: DisplayAddressViewModel) {
+        rootView.collatorCell.titleLabel.lineBreakMode = viewModel.lineBreakMode
+        rootView.collatorCell.bind(viewModel: viewModel.cellViewModel)
+    }
+
+    func didReceiveHints(viewModel: [String]) {
+        rootView.hintListView.bind(texts: viewModel)
+    }
+
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
     }
 }
 
-extension NPoolsClaimRewardsViewController: Localizable {
+extension CollatorStkUnstakeConfirmVC: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

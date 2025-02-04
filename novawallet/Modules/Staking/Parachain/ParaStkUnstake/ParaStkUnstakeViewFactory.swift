@@ -8,7 +8,7 @@ struct ParaStkUnstakeViewFactory {
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
-    ) -> ParaStkUnstakeViewProtocol? {
+    ) -> CollatorStkPartialUnstakeSetupViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -43,7 +43,7 @@ struct ParaStkUnstakeViewFactory {
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
-            hintViewModelFactory: ParaStkHintsViewModelFactory(),
+            hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
             initialDelegator: initialDelegator,
             initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities,
@@ -51,7 +51,7 @@ struct ParaStkUnstakeViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkUnstakeViewController(
+        let view = CollatorStkPartialUnstakeSetupVC(
             presenter: presenter,
             localizationManager: localizationManager
         )

@@ -20,14 +20,17 @@ enum MythosStakingPallet {
         @StringCodable var stake: Balance
         let candidates: [BytesCodable]
         let maybeLastUnstake: UserStakeUnavailable?
+        @OptionStringCodable var maybeLastRewardSession: SessionIndex?
     }
 
     struct CandidateStakeInfo: Codable, Equatable {
         @StringCodable var stake: Balance
     }
 
-    struct CandidateStakerKey {
-        let candidate: AccountId
-        let staker: AccountId
+    struct ReleaseRequest: Decodable, Equatable {
+        @StringCodable var block: BlockNumber
+        @StringCodable var amount: Balance
     }
+
+    typealias ReleaseQueue = [ReleaseRequest]
 }

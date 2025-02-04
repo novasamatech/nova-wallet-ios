@@ -24,7 +24,8 @@ extension ParachainStaking {
                 Self.globalDataStoragePaths,
                 chainId: chainId,
                 queue: queue,
-                closure: closure
+                closure: closure,
+                subscriptionHandlingFactory: nil
             )
         }
 

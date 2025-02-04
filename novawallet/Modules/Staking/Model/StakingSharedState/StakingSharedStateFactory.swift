@@ -496,6 +496,13 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
                 repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
                 logger: logger
             ),
+            accountRemoteSubscriptionService: MythosStakingAccountSubscriptionService(
+                chainRegistry: chainRegistry,
+                repository: repository,
+                syncOperationManager: OperationManager(operationQueue: syncOperationQueue),
+                repositoryOperationManager: OperationManager(operationQueue: repositoryOperationQueue),
+                logger: logger
+            ),
             blockTimeService: blockTimeService,
             generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory(
                 chainRegistry: chainRegistry,

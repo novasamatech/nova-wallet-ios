@@ -1,13 +1,19 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParaStkUnstakeConfirmViewLayout
+typealias StakingBaseRewardsViewController = StakingGenericRewardsViewController<StakingGenericRewardsViewLayout>
 
-    let presenter: ParaStkUnstakeConfirmPresenterProtocol
+class StakingGenericRewardsViewController<V: StakingGenericRewardsViewLayout>: UIViewController, ViewHolder {
+    typealias RootViewType = V
 
-    init(presenter: ParaStkUnstakeConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
-        self.presenter = presenter
+    let basePresenter: StakingGenericRewardsPresenterProtocol
+
+    init(
+        basePresenter: StakingGenericRewardsPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.basePresenter = basePresenter
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -19,7 +25,7 @@ final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ParaStkUnstakeConfirmViewLayout()
+        view = RootViewType()
     }
 
     override func viewDidLoad() {
@@ -28,13 +34,18 @@ final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
         setupHandlers()
         setupLocalization()
 
-        presenter.setup()
+        onViewDidLoad()
+
+        basePresenter.setup()
     }
+
+    func onViewDidLoad() {}
+    func onSetupLocalization() {}
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingUnbond_v190(preferredLanguages: languages)
+        title = R.string.localizable.stakingClaimRewards(preferredLanguages: languages)
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
@@ -49,9 +60,7 @@ final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string.localizable.parachainStakingCollator(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        onSetupLocalization()
     }
 
     private func setupHandlers() {
@@ -66,28 +75,18 @@ final class ParaStkUnstakeConfirmViewController: UIViewController, ViewHolder {
             action: #selector(actionSelectAccount),
             for: .touchUpInside
         )
-
-        rootView.collatorCell.addTarget(
-            self,
-            action: #selector(actionSelectCollator),
-            for: .touchUpInside
-        )
     }
 
     @objc private func actionConfirm() {
-        presenter.confirm()
+        basePresenter.confirm()
     }
 
     @objc private func actionSelectAccount() {
-        presenter.selectAccount()
-    }
-
-    @objc private func actionSelectCollator() {
-        presenter.selectCollator()
+        basePresenter.selectAccount()
     }
 }
 
-extension ParaStkUnstakeConfirmViewController: ParaStkUnstakeConfirmViewProtocol {
+extension StakingGenericRewardsViewController: StakingGenericRewardsViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -103,26 +102,9 @@ extension ParaStkUnstakeConfirmViewController: ParaStkUnstakeConfirmViewProtocol
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
-
-    func didReceiveCollator(viewModel: DisplayAddressViewModel) {
-        rootView.collatorCell.titleLabel.lineBreakMode = viewModel.lineBreakMode
-        rootView.collatorCell.bind(viewModel: viewModel.cellViewModel)
-    }
-
-    func didReceiveHints(viewModel: [String]) {
-        rootView.hintListView.bind(texts: viewModel)
-    }
-
-    func didStartLoading() {
-        rootView.actionLoadableView.startLoading()
-    }
-
-    func didStopLoading() {
-        rootView.actionLoadableView.stopLoading()
-    }
 }
 
-extension ParaStkUnstakeConfirmViewController: Localizable {
+extension StakingGenericRewardsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
