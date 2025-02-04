@@ -18,8 +18,7 @@ final class MythosStkStateViewModelFactory {
 extension MythosStkStateViewModelFactory {
     func createDelegationStatus(
         for activeStake: Balance,
-        collatorStatuses: [CollatorStakingDelegationStatus]?,
-        commonData _: MythosStakingCommonData
+        collatorStatuses: [CollatorStakingDelegationStatus]?
     ) -> NominationViewStatus {
         guard let statuses = collatorStatuses else {
             return .undefined
@@ -249,8 +248,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
 
         let delegationStatus = createDelegationStatus(
             for: state.stakingDetails.totalStake,
-            collatorStatuses: collatorsStatuses,
-            commonData: state.commonData
+            collatorStatuses: collatorsStatuses
         )
 
         let delegationViewModel = createDelegationViewModel(
