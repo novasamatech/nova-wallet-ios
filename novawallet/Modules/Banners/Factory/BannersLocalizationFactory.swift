@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol BannersLocalizationFactoryProtocol {
-    func createWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersLocalizedResources?>
+    func createOperation(for locale: Locale) -> BaseOperation<BannersLocalizedResources?>
 }
 
 class BannersLocalizationFactory {
@@ -40,7 +40,7 @@ class BannersLocalizationFactory {
 // MARK: BannersLocalizationFactoryProtocol
 
 extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
-    func createWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersLocalizedResources?> {
+    func createOperation(for locale: Locale) -> BaseOperation<BannersLocalizedResources?> {
         guard let url = createLocalizationURL(for: locale) else {
             return .createWithResult(nil)
         }
@@ -50,7 +50,16 @@ extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
 
         localizationProvider = provider
 
-        return provider.fetch(with: nil)
+        return AsyncClosureOperation { closure in
+            _ = provider.fetch { result in
+                guard let result else {
+                    closure(.failure(BaseOperationError.parentOperationCancelled))
+                    return
+                }
+
+                closure(result)
+            }
+        }
     }
 }
 

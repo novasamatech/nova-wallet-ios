@@ -8,6 +8,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppListViewLayout
 
     let presenter: DAppListPresenterProtocol
+    let bannersViewProvider: BannersViewProviderProtocol
 
     var loadingView: DAppListLoadingView? {
         guard sectionViewModels.loaded else {
@@ -26,9 +27,12 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: DAppListPresenterProtocol,
+        bannersViewProvider: BannersViewProviderProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.bannersViewProvider = bannersViewProvider
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -70,7 +74,7 @@ private extension DAppListViewController {
     func configureCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
-        rootView.collectionView.registerCellClass(DAppListBannerView.self)
+        rootView.collectionView.registerCellClass(CollectionViewContainerCell<UIView>.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppListLoadingView.self)

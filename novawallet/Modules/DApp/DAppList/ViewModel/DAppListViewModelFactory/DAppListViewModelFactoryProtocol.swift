@@ -23,6 +23,7 @@ protocol DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite],
         wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool,
+        bannersAvailable: Bool,
         locale: Locale
     ) -> [DAppListSectionViewModel]
 }

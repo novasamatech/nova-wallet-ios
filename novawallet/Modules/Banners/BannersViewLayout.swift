@@ -1,9 +1,17 @@
 import UIKit
 
 final class BannersViewLayout: UIView {
-    let collectionView: UICollectionView = .create { view in
-        view.isPagingEnabled = true
-    }
+    lazy var collectionView: UICollectionView = {
+        let layout = createCompositionalLayout()
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: layout
+        )
+        collectionView.isPagingEnabled = true
+        collectionView.showsHorizontalScrollIndicator = false
+
+        return collectionView
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

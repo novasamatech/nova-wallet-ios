@@ -2,7 +2,11 @@ import Foundation
 import SoraFoundation
 
 struct BannersViewFactory {
-    static func createView(domain: Banners.Domain) -> BannersViewProtocol? {
+    static func createView(
+        domain: Banners.Domain,
+        output: BannersModuleOutputProtocol,
+        inputOwner: BannersModuleInputOwnerProtocol
+    ) -> BannersViewProtocol? {
         let appConfig = ApplicationConfig.shared
         let jsonDataProviderFactory = JsonDataProviderFactory.shared
 
@@ -37,7 +41,10 @@ struct BannersViewFactory {
         let view = BannersViewController(presenter: presenter)
 
         presenter.view = view
+        presenter.moduleOutput = output
         interactor.presenter = presenter
+
+        inputOwner.bannersModule = presenter
 
         return view
     }

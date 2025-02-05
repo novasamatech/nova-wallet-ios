@@ -3,6 +3,7 @@ import SoraFoundation
 
 final class BannersPresenter {
     weak var view: BannersViewProtocol?
+    weak var moduleOutput: BannersModuleOutputProtocol?
 
     private let wireframe: BannersWireframeProtocol
     private let interactor: BannersInteractorInputProtocol
@@ -50,6 +51,8 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         localizedResources = bannersFetchResult.localizedResources
 
         provideBanners()
+
+        moduleOutput?.didReceiveBanners(available: !bannersFetchResult.banners.isEmpty)
     }
 
     func didReceive(_ localizedResources: BannersLocalizedResources?) {
@@ -63,6 +66,18 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
             from: view,
             locale: selectedLocale
         )
+    }
+}
+
+// MARK: BannersModuleInputProtocol
+
+extension BannersPresenter: BannersModuleInputProtocol {
+    var bannersAvailable: Bool {
+        banners?.isEmpty != true
+    }
+
+    func refresh() {
+        interactor.refresh(for: selectedLocale)
     }
 }
 

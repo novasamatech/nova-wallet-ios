@@ -3,8 +3,10 @@ import SubstrateSdk
 import SoraFoundation
 import Operation_iOS
 
-final class DAppListPresenter {
+final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     weak var view: DAppListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol
@@ -46,6 +48,7 @@ final class DAppListPresenter {
                 favorites: favorites ?? [:],
                 wallet: wallet,
                 hasWalletsListUpdates: hasWalletsListUpdates,
+                bannersAvailable: bannersModule?.bannersAvailable ?? false,
                 locale: selectedLocale
             )
 
@@ -66,6 +69,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func activateAccount() {
@@ -175,6 +179,14 @@ extension DAppListPresenter: DAppSearchDelegate {
             cleaner: self,
             view: view
         )
+    }
+}
+
+// MARK: BannersModuleOutputProtocol
+
+extension DAppListPresenter: BannersModuleOutputProtocol {
+    func didReceiveBanners(available _: Bool) {
+        provideSections()
     }
 }
 

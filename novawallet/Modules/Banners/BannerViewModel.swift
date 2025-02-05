@@ -1,7 +1,7 @@
 import Foundation
 
 struct BannerViewModel {
-    let id: UUID
+    let id: String
     let title: String
     let details: String
     let backgroundImage: ImageViewModelProtocol

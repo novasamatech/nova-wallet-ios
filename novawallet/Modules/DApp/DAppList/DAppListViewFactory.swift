@@ -32,8 +32,17 @@ struct DAppListViewFactory {
             localizationManager: localizationManager
         )
 
+        guard let bannersModule = BannersViewFactory.createView(
+            domain: .dApps,
+            output: presenter,
+            inputOwner: presenter
+        ) else {
+            return nil
+        }
+
         let view = DAppListViewController(
             presenter: presenter,
+            bannersViewProvider: bannersModule,
             localizationManager: localizationManager
         )
 

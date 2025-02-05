@@ -1,6 +1,6 @@
 import Foundation
 
-typealias BannersLocalizedResources = [UUID: BannerResources]
+typealias BannersLocalizedResources = [String: BannerResources]
 
 struct BannerResources: Codable, Equatable {
     let title: String

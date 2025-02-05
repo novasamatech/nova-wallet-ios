@@ -200,30 +200,6 @@ private extension DAppListViewModelFactory {
         )
     }
 
-    func bannersSection(
-        from dAppList: DAppList,
-        locale: Locale
-    ) -> DAppListSection? {
-        guard !dAppList.dApps.isEmpty else { return nil }
-
-        let title = R.string.localizable.dappDecorationTitle(preferredLanguages: locale.rLanguages)
-        let subtitle = R.string.localizable.dappsDecorationSubtitle(preferredLanguages: locale.rLanguages)
-        let image = R.image.imageDapps()
-
-        let imageViewModel = StaticImageViewModel(image: image!)
-
-        let bannerViewModel = DAppListBannerViewModel(
-            title: title,
-            subtitle: subtitle,
-            imageViewModel: imageViewModel
-        )
-
-        return DAppListSection(
-            title: nil,
-            cells: [.banner(bannerViewModel)]
-        )
-    }
-
     func headerSection(
         for wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool
@@ -348,6 +324,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite],
         wallet: MetaAccountModel,
         hasWalletsListUpdates: Bool,
+        bannersAvailable: Bool,
         locale: Locale
     ) -> [DAppListSectionViewModel] {
         var viewModels: [DAppListSectionViewModel] = []
@@ -374,10 +351,11 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             viewModels.append(.categorySelect(categorySelectSection))
         }
 
-        if let bannersSection = bannersSection(
-            from: dAppList,
-            locale: locale
-        ) {
+        if bannersAvailable {
+            let bannersSection = DAppListSection(
+                title: nil,
+                cells: [.banner]
+            )
             viewModels.append(.banners(bannersSection))
         }
 

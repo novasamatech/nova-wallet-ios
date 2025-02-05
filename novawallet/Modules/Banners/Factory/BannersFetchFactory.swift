@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol BannersFetchOperationFactoryProtocol {
-    func createWrapper() -> CompoundOperationWrapper<[Banner]?>
+    func createOperation() -> BaseOperation<[Banner]?>
 }
 
 class BannersFetchOperationFactory {
@@ -37,20 +37,39 @@ class BannersFetchOperationFactory {
 // MARK: BannersFetchOperationFactoryProtocol
 
 extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
-    func createWrapper() -> CompoundOperationWrapper<[Banner]?> {
+    func createOperation() -> BaseOperation<[Banner]?> {
         guard let url = createURL() else {
             return .createWithResult(nil)
         }
 
-        if let bannersProvider {
-            return bannersProvider.fetch(with: nil)
-        } else {
-            let provider: AnySingleValueProvider<[Banner]>
-            provider = jsonDataProviderFactory.getJson(for: url)
+        let resultClosure: (
+            (Result<[Banner]?, Error>)?,
+            (Result<[Banner]?, Error>) -> Void
+        ) -> Void = { result, closure in
+            guard let result else {
+                closure(.failure(BaseOperationError.parentOperationCancelled))
 
-            bannersProvider = provider
+                return
+            }
 
-            return provider.fetch(with: nil)
+            closure(result)
+        }
+
+        return AsyncClosureOperation { [weak self] closure in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            if let bannersProvider {
+                _ = bannersProvider.fetch { resultClosure($0, closure) }
+            } else {
+                let provider: AnySingleValueProvider<[Banner]>
+                provider = jsonDataProviderFactory.getJson(for: url)
+
+                bannersProvider = provider
+
+                _ = provider.fetch { resultClosure($0, closure) }
+            }
         }
     }
 }

@@ -34,6 +34,6 @@ class BannerViewModelFactory: BannerViewModelFactoryProtocol {
             )
         }
 
-        return viewModels.isEmpty ? .loaded(value: viewModels) : nil
+        return viewModels.isEmpty ? nil : .loaded(value: viewModels)
     }
 }
