@@ -24,6 +24,7 @@ final class BannersViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupCollectionView()
         presenter.setup()
     }
 
@@ -41,12 +42,20 @@ extension BannersViewController: BannersViewProtocol {
     func update(with viewModel: LoadableViewModelState<[BannerViewModel]>?) {
         viewModels = viewModel
         rootView.collectionView.reloadData()
+
+        if case let .loaded(banners) = viewModel {
+            rootView.setBackgroundImage(banners.first?.backgroundImage)
+        }
     }
 }
 
 // MARK: UICollectionViewDataSource
 
 extension BannersViewController: UICollectionViewDataSource {
+    func numberOfSections(in _: UICollectionView) -> Int {
+        1
+    }
+
     func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         guard let viewModels else { return 0 }
 
@@ -56,15 +65,18 @@ extension BannersViewController: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard
-            let cell = collectionView.dequeueReusableCellWithType(BannerCollectionViewCell.self, for: indexPath),
-            case let .loaded(viewModels) = viewModels
-        else {
-            return UICollectionViewCell()
-        }
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            BannerCollectionViewCell.self,
+            for: indexPath
+        )!
 
-        cell.view.configure(with: viewModels[indexPath.item])
+        if case let .loaded(viewModels) = viewModels {
+            cell.view.configure(with: viewModels[indexPath.item])
+        }
 
         return cell
     }

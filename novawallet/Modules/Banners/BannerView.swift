@@ -3,21 +3,11 @@ import SoraUI
 
 class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
     override func prepareForReuse() {
-        view.viewModel?.backgroundImage.cancel(on: view.backgroundImageView)
-        view.viewModel?.contentImage.cancel(on: view.contentImageView)
+//        view.viewModel?.contentImage.cancel(on: view.contentImageView)
     }
 }
 
 class BannerView: UIView {
-    let containerView: UIView = .create { view in
-        view.layer.cornerRadius = 12
-        view.clipsToBounds = true
-    }
-
-    let backgroundImageView: UIImageView = .create { view in
-        view.contentMode = .scaleAspectFill
-    }
-
     let contentImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
     }
@@ -44,27 +34,16 @@ class BannerView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(containerView)
-        containerView.addSubview(backgroundImageView)
-//        containerView.addSubview(contentImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(detailsLabel)
-
-        containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview().inset(8.0)
-        }
-
-        backgroundImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+//        addSubview(contentImageView)
+        addSubview(titleLabel)
+        addSubview(detailsLabel)
 
         titleLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(16.0)
         }
 
         detailsLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).inset(8.0)
+            make.top.equalTo(titleLabel.snp.bottom).inset(-8.0)
             make.leading.equalTo(titleLabel)
         }
     }
@@ -72,13 +51,7 @@ class BannerView: UIView {
     func configure(with viewModel: BannerViewModel) {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
-        containerView.clipsToBounds = viewModel.clipsToBounds
-
-        viewModel.backgroundImage.loadImage(
-            on: backgroundImageView,
-            targetSize: bounds.size,
-            animated: false
-        )
+        clipsToBounds = viewModel.clipsToBounds
 
 //        viewModel.contentImage.loadImage(
 //            on: contentImageView,

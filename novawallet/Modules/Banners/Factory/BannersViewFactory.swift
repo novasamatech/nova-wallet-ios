@@ -1,4 +1,5 @@
 import Foundation
+import Kingfisher
 import SoraFoundation
 
 struct BannersViewFactory {
@@ -10,10 +11,21 @@ struct BannersViewFactory {
         let appConfig = ApplicationConfig.shared
         let jsonDataProviderFactory = JsonDataProviderFactory.shared
 
+        let imageManager = KingfisherManager.shared
+        let remoteImageProvider = CommonRemoteImageProvider(imageManager: imageManager)
+        let imageRetrieveOperationFactory = ImageRetrieveOperationFactory(
+            imageManager: imageManager,
+            remoteProvider: remoteImageProvider
+        )
+
+        let operationManager = OperationManagerFacade.sharedManager
+
         let bannersFactory = BannersFetchOperationFactory(
             domain: domain,
             bannersContentPath: appConfig.bannersContentPath,
-            jsonDataProviderFactory: jsonDataProviderFactory
+            jsonDataProviderFactory: jsonDataProviderFactory,
+            imageRetrieveOperationFactory: imageRetrieveOperationFactory,
+            operationManager: operationManager
         )
         let localizationFactory = BannersLocalizationFactory(
             domain: domain,

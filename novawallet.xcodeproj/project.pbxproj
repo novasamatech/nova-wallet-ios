@@ -1086,8 +1086,7 @@
 		2D1C5D262C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D252C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift */; };
 		2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */; };
 		2D1C5D2A2C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */; };
-		2D1D66002CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D65FF2CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift */; };
-		2D1D66022CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66012CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift */; };
+		2D1D66022CD82330009C6C2F /* ImageRetrieveOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */; };
 		2D1D66042CD89573009C6C2F /* AssetListStyleSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */; };
 		2D1D66062CD92209009C6C2F /* QRDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1D66052CD92209009C6C2F /* QRDisplayView.swift */; };
 		2D20F1BE2D351936003E9CF2 /* DAppListBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */; };
@@ -1179,6 +1178,10 @@
 		2D5D0CD82D51EBFF000E32F6 /* BannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */; };
 		2D5D0CDA2D51ED6E000E32F6 /* BannerViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD92D51ED6E000E32F6 /* BannerViewModelFactory.swift */; };
 		2D5D0CDC2D51FAEF000E32F6 /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */; };
+		2D5D0CDE2D53D405000E32F6 /* RemoteImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CDD2D53D405000E32F6 /* RemoteImageProvider.swift */; };
+		2D5D0CE12D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE02D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift */; };
+		2D5D0CE32D53D514000E32F6 /* CommonRemoteImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE22D53D514000E32F6 /* CommonRemoteImageProvider.swift */; };
+		2D5D0CE72D53D745000E32F6 /* CommonImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE62D53D745000E32F6 /* CommonImageInfo.swift */; };
 		2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */; };
 		2D5EBEB22D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */; };
 		2D5EBEB42D38F0FD0016AC4E /* AssetListMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB32D38F0FD0016AC4E /* AssetListMeasurement.swift */; };
@@ -1308,7 +1311,7 @@
 		2DBB28892CD42ACB00DFA0AD /* QRCreationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */; };
 		2DBB288D2CD42C5200DFA0AD /* QRCreationOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB288C2CD42C5200DFA0AD /* QRCreationOperationFactory.swift */; };
 		2DBB288F2CD42E8D00DFA0AD /* IconType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB288E2CD42E8D00DFA0AD /* IconType.swift */; };
-		2DBB28912CD42ED800DFA0AD /* IconInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28902CD42ED800DFA0AD /* IconInfo.swift */; };
+		2DBB28912CD42ED800DFA0AD /* ChainLogoImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28902CD42ED800DFA0AD /* ChainLogoImageInfo.swift */; };
 		2DBB28932CD432FB00DFA0AD /* CopyAddressPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28922CD432FB00DFA0AD /* CopyAddressPresentable.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
@@ -6539,8 +6542,7 @@
 		2D1C5D252C25ACE900E2DBDD /* CustomNetworkEditPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditPresenter.swift; sourceTree = "<group>"; };
 		2D1C5D272C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkEditInteractor.swift; sourceTree = "<group>"; };
 		2D1C5D292C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkPresenterProtocols.swift; sourceTree = "<group>"; };
-		2D1D65FF2CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconRetrieveOperationFactory.swift; sourceTree = "<group>"; };
-		2D1D66012CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingfisherIconRetrieveOperationFactory.swift; sourceTree = "<group>"; };
+		2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRetrieveOperationFactory.swift; sourceTree = "<group>"; };
 		2D1D66032CD89573009C6C2F /* AssetListStyleSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcherView.swift; sourceTree = "<group>"; };
 		2D1D66052CD92209009C6C2F /* QRDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDisplayView.swift; sourceTree = "<group>"; };
 		2D20F1BD2D351936003E9CF2 /* DAppListBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListBannerViewModel.swift; sourceTree = "<group>"; };
@@ -6631,6 +6633,10 @@
 		2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewModel.swift; sourceTree = "<group>"; };
 		2D5D0CD92D51ED6E000E32F6 /* BannerViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewModelFactory.swift; sourceTree = "<group>"; };
 		2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
+		2D5D0CDD2D53D405000E32F6 /* RemoteImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageProvider.swift; sourceTree = "<group>"; };
+		2D5D0CE02D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainLogoRemoteImageProvider.swift; sourceTree = "<group>"; };
+		2D5D0CE22D53D514000E32F6 /* CommonRemoteImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonRemoteImageProvider.swift; sourceTree = "<group>"; };
+		2D5D0CE62D53D745000E32F6 /* CommonImageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonImageInfo.swift; sourceTree = "<group>"; };
 		2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
 		2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift; sourceTree = "<group>"; };
 		2D5EBEB32D38F0FD0016AC4E /* AssetListMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListMeasurement.swift; sourceTree = "<group>"; };
@@ -6760,7 +6766,7 @@
 		2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperation.swift; sourceTree = "<group>"; };
 		2DBB288C2CD42C5200DFA0AD /* QRCreationOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperationFactory.swift; sourceTree = "<group>"; };
 		2DBB288E2CD42E8D00DFA0AD /* IconType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconType.swift; sourceTree = "<group>"; };
-		2DBB28902CD42ED800DFA0AD /* IconInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconInfo.swift; sourceTree = "<group>"; };
+		2DBB28902CD42ED800DFA0AD /* ChainLogoImageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainLogoImageInfo.swift; sourceTree = "<group>"; };
 		2DBB28922CD432FB00DFA0AD /* CopyAddressPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyAddressPresentable.swift; sourceTree = "<group>"; };
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
@@ -13367,13 +13373,15 @@
 			path = Interactor;
 			sourceTree = "<group>";
 		};
-		2D1D65FE2CD80A33009C6C2F /* IconRetrieve */ = {
+		2D1D65FE2CD80A33009C6C2F /* ImageRetrieve */ = {
 			isa = PBXGroup;
 			children = (
-				2D1D65FF2CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift */,
-				2D1D66012CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift */,
+				2D5D0CDF2D53D426000E32F6 /* RemoteImageProvider */,
+				2D1D66012CD82330009C6C2F /* ImageRetrieveOperationFactory.swift */,
+				2D5D0CE62D53D745000E32F6 /* CommonImageInfo.swift */,
+				2DBB28902CD42ED800DFA0AD /* ChainLogoImageInfo.swift */,
 			);
-			path = IconRetrieve;
+			path = ImageRetrieve;
 			sourceTree = "<group>";
 		};
 		2D20F1C52D3648F5003E9CF2 /* WalletStorageCleaning */ = {
@@ -13664,6 +13672,32 @@
 				2D5D0CD22D51422C000E32F6 /* BannersFetchFactory.swift */,
 			);
 			path = Factory;
+			sourceTree = "<group>";
+		};
+		2D5D0CDF2D53D426000E32F6 /* RemoteImageProvider */ = {
+			isa = PBXGroup;
+			children = (
+				2D5D0CE42D53D6C1000E32F6 /* ChainLogoRemoteImageProvider */,
+				2D5D0CE52D53D6D0000E32F6 /* CommonRemoteImageProvider */,
+				2D5D0CDD2D53D405000E32F6 /* RemoteImageProvider.swift */,
+			);
+			path = RemoteImageProvider;
+			sourceTree = "<group>";
+		};
+		2D5D0CE42D53D6C1000E32F6 /* ChainLogoRemoteImageProvider */ = {
+			isa = PBXGroup;
+			children = (
+				2D5D0CE02D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift */,
+			);
+			path = ChainLogoRemoteImageProvider;
+			sourceTree = "<group>";
+		};
+		2D5D0CE52D53D6D0000E32F6 /* CommonRemoteImageProvider */ = {
+			isa = PBXGroup;
+			children = (
+				2D5D0CE22D53D514000E32F6 /* CommonRemoteImageProvider.swift */,
+			);
+			path = CommonRemoteImageProvider;
 			sourceTree = "<group>";
 		};
 		2D6287382C91805B00060814 /* Subscriptions */ = {
@@ -14028,7 +14062,6 @@
 				84BC703E289DBE6C008A9758 /* QRWithLogoCreationOperation.swift */,
 				2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */,
 				2DBB288E2CD42E8D00DFA0AD /* IconType.swift */,
-				2DBB28902CD42ED800DFA0AD /* IconInfo.swift */,
 			);
 			path = Logo;
 			sourceTree = "<group>";
@@ -18803,7 +18836,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2D1D65FE2CD80A33009C6C2F /* IconRetrieve */,
+				2D1D65FE2CD80A33009C6C2F /* ImageRetrieve */,
 				0CCDB2E92B74DA33007BC5D6 /* Graphs */,
 				0C9C642B2A8CE2D4004DC078 /* SystemAccounts */,
 				0C463FCE2A592ACD003E71C9 /* Effects */,
@@ -26007,6 +26040,7 @@
 				84C11F172840BD46007F7C05 /* ParaStkCollatorsOperationFactory.swift in Sources */,
 				8428766724ADF22000D91AD8 /* TransformAnimator+Common.swift in Sources */,
 				8419F054295ED55000A14E05 /* LocalChainExternalApi.swift in Sources */,
+				2D5D0CDE2D53D405000E32F6 /* RemoteImageProvider.swift in Sources */,
 				8476D39F27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift in Sources */,
 				0CE9338E2C019998000F3EFE /* MetaAccountModelType+ExtrinsicLimit.swift in Sources */,
 				77F9FB0D2A9D9C5600820625 /* NominationPoolBondMoreBaseProtocols.swift in Sources */,
@@ -26188,7 +26222,7 @@
 				8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */,
 				0C13D3132A80D06B0054BB6F /* StakingRecommendationValidationFactory.swift in Sources */,
 				77A0B2ED2A3B7F3300CBF653 /* DAppCollectionViewCell.swift in Sources */,
-				2D1D66022CD82330009C6C2F /* KingfisherIconRetrieveOperationFactory.swift in Sources */,
+				2D1D66022CD82330009C6C2F /* ImageRetrieveOperationFactory.swift in Sources */,
 				77DB70EE2B709E4300288F26 /* Web3AlertRemoteModel.swift in Sources */,
 				8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */,
 				84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */,
@@ -27273,7 +27307,7 @@
 				88D997B028ABC8C0006135A5 /* YourContributionsTableViewCell.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
 				0C7CF4CC2BD374930015DD45 /* CloudBackupFileManaging.swift in Sources */,
-				2DBB28912CD42ED800DFA0AD /* IconInfo.swift in Sources */,
+				2DBB28912CD42ED800DFA0AD /* ChainLogoImageInfo.swift in Sources */,
 				88C5F07C297EE79C001CCADE /* Release.swift in Sources */,
 				845B89222959620000EE25B0 /* SecurityLayerPresenter.swift in Sources */,
 				0C746DBC2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift in Sources */,
@@ -28158,6 +28192,7 @@
 				849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */,
 				0C6108432CD755A300909928 /* AssetExchangeGraphProxy.swift in Sources */,
 				849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */,
+				2D5D0CE12D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift in Sources */,
 				84B8AA7329F8EFC700347A37 /* DAppInteractionError.swift in Sources */,
 				8485035029FBC84300AE6909 /* WalletConnectSignModelFactory.swift in Sources */,
 				2D1C5D162C24553200E2DBDD /* NetworkNodeAddPresenter.swift in Sources */,
@@ -28183,6 +28218,7 @@
 				8499FE7B27BE58A000712589 /* IdentityMapper.swift in Sources */,
 				845B89262959627A00EE25B0 /* SecurityLayerWireframe.swift in Sources */,
 				777AE2AB2ABCB4A5004989C0 /* HtmlParsingOperationFactory.swift in Sources */,
+				2D5D0CE32D53D514000E32F6 /* CommonRemoteImageProvider.swift in Sources */,
 				8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */,
 				2D60C9C12D1AABA100027EC6 /* ModalCardPresentationFactory.swift in Sources */,
 				0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */,
@@ -28582,7 +28618,6 @@
 				8463A73825E3AA47003B8160 /* AccountInfo.swift in Sources */,
 				ABA3D873BBECB7F4BD670872 /* ExportSeedPresenter.swift in Sources */,
 				8476D39B27F43E30004D9A7A /* PhishingSiteVerifier.swift in Sources */,
-				2D1D66002CD80A4D009C6C2F /* IconRetrieveOperationFactory.swift in Sources */,
 				0C7CF4D62BD4E5350015DD45 /* KeychainProxy.swift in Sources */,
 				9A6A55297F41DAE45071BF57 /* ExportSeedInteractor.swift in Sources */,
 				0CE933C02C068BF2000F3EFE /* AddAccount+ImportOptionsPresenter.swift in Sources */,
@@ -29313,6 +29348,7 @@
 				84350AD4284580F50031EF24 /* StakingTotalStakePresentable.swift in Sources */,
 				6B393DCF67CF97FDA580C69B /* DAppSearchPresenter.swift in Sources */,
 				84540172292F907B00213402 /* BlurBackgroundView.swift in Sources */,
+				2D5D0CE72D53D745000E32F6 /* CommonImageInfo.swift in Sources */,
 				2D5702A12C9E094D00673CB7 /* CardsZStackViewModel.swift in Sources */,
 				771901B02AE97DA500D9C918 /* SwapConfirmViewModels.swift in Sources */,
 				2D8F0ED52CEFCF5E00A22074 /* DAppBrowserTabListViewModelFactory.swift in Sources */,

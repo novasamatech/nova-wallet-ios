@@ -41,16 +41,26 @@ private extension BannersInteractor {
     }
 
     func createFullFetchWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersFetchResult> {
-        let bannersFetchOperation = bannersFactory.createOperation()
+        let backgroundImageInfo = CommonImageInfo(
+            size: CGSize(width: 343, height: 126),
+            scale: UIScreen.main.scale
+        )
+        let contentImageInfo = CommonImageInfo(
+            size: CGSize(width: 40, height: 40),
+            scale: UIScreen.main.scale
+        )
+        let bannersFetchWrapper = bannersFactory.createWrapper(
+            backgroundImageInfo: backgroundImageInfo,
+            contentImageInfo: contentImageInfo
+        )
         let localizationFetchOperation = localizationFactory.createOperation(for: locale)
 
         let mergeOperation: ClosureOperation<BannersFetchResult> = ClosureOperation {
-            guard
-                let banners = try bannersFetchOperation.extractNoCancellableResultData(),
-                let localizations = try localizationFetchOperation.extractNoCancellableResultData()
-            else {
+            guard let localizations = try localizationFetchOperation.extractNoCancellableResultData() else {
                 throw BaseOperationError.parentOperationCancelled
             }
+
+            let banners = try bannersFetchWrapper.targetOperation.extractNoCancellableResultData()
 
             return BannersFetchResult(
                 banners: banners,
@@ -58,12 +68,14 @@ private extension BannersInteractor {
             )
         }
 
-        mergeOperation.addDependency(bannersFetchOperation)
+        mergeOperation.addDependency(bannersFetchWrapper.targetOperation)
         mergeOperation.addDependency(localizationFetchOperation)
+
+        let dependencies = bannersFetchWrapper.allOperations + [localizationFetchOperation]
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [bannersFetchOperation, localizationFetchOperation]
+            dependencies: dependencies
         )
     }
 }

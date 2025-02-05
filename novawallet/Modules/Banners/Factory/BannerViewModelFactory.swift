@@ -21,15 +21,12 @@ class BannerViewModelFactory: BannerViewModelFactoryProtocol {
                 return nil
             }
 
-            let backgroundImageViewModel = RemoteImageViewModel(url: banner.background)
-            let contentImageViewModel = RemoteImageViewModel(url: banner.image)
-
             return BannerViewModel(
                 id: banner.id,
                 title: localizedContent.title,
                 details: localizedContent.details,
-                backgroundImage: backgroundImageViewModel,
-                contentImage: contentImageViewModel,
+                backgroundImage: banner.background,
+                contentImage: banner.image,
                 clipsToBounds: banner.clipsToBounds
             )
         }
