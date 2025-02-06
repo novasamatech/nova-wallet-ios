@@ -41,6 +41,14 @@ extension BannersPresenter: BannersPresenterProtocol {
         provideBanners()
         interactor.setup(with: selectedLocale)
     }
+
+    func action(for bannerId: String) {
+        guard let banner = banners?.first(where: { $0.id == bannerId }) else {
+            return
+        }
+
+        print(banner)
+    }
 }
 
 // MARK: BannersInteractorOutputProtocol

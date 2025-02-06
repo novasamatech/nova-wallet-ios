@@ -178,12 +178,12 @@ private extension BannersFetchOperationFactory {
 
 extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
     func createWrapper(
-        backgroundImageInfo _: CommonImageInfo,
+        backgroundImageInfo: CommonImageInfo,
         contentImageInfo: CommonImageInfo
     ) -> CompoundOperationWrapper<[Banner]> {
         let bannersFetchOperation = createBannersFetchOperation()
         let backgroundImageFetchOperationsWrapper = createImagesFetchWrapper(
-            with: contentImageInfo,
+            with: backgroundImageInfo,
             imageURLKeyPath: \.background,
             dependingOn: bannersFetchOperation
         )

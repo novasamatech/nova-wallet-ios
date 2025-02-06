@@ -1173,7 +1173,7 @@
 		2D5D0CCD2D50CCE5000E32F6 /* BannerLocalizedResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CCC2D50CCE5000E32F6 /* BannerLocalizedResources.swift */; };
 		2D5D0CCF2D50CDCF000E32F6 /* BannersModuleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */; };
 		2D5D0CD12D513C72000E32F6 /* BannersLocalizationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD02D513C72000E32F6 /* BannersLocalizationFactory.swift */; };
-		2D5D0CD32D51422C000E32F6 /* BannersFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD22D51422C000E32F6 /* BannersFetchFactory.swift */; };
+		2D5D0CD32D51422C000E32F6 /* BannersFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD22D51422C000E32F6 /* BannersFetchOperationFactory.swift */; };
 		2D5D0CD52D514904000E32F6 /* BannersFetchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD42D514904000E32F6 /* BannersFetchResult.swift */; };
 		2D5D0CD82D51EBFF000E32F6 /* BannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */; };
 		2D5D0CDA2D51ED6E000E32F6 /* BannerViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CD92D51ED6E000E32F6 /* BannerViewModelFactory.swift */; };
@@ -1182,6 +1182,7 @@
 		2D5D0CE12D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE02D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift */; };
 		2D5D0CE32D53D514000E32F6 /* CommonRemoteImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE22D53D514000E32F6 /* CommonRemoteImageProvider.swift */; };
 		2D5D0CE72D53D745000E32F6 /* CommonImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE62D53D745000E32F6 /* CommonImageInfo.swift */; };
+		2D5D0CE92D54A24C000E32F6 /* BannerBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */; };
 		2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */; };
 		2D5EBEB22D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */; };
 		2D5EBEB42D38F0FD0016AC4E /* AssetListMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5EBEB32D38F0FD0016AC4E /* AssetListMeasurement.swift */; };
@@ -6628,7 +6629,7 @@
 		2D5D0CCC2D50CCE5000E32F6 /* BannerLocalizedResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerLocalizedResources.swift; sourceTree = "<group>"; };
 		2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersModuleConfiguration.swift; sourceTree = "<group>"; };
 		2D5D0CD02D513C72000E32F6 /* BannersLocalizationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersLocalizationFactory.swift; sourceTree = "<group>"; };
-		2D5D0CD22D51422C000E32F6 /* BannersFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersFetchFactory.swift; sourceTree = "<group>"; };
+		2D5D0CD22D51422C000E32F6 /* BannersFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersFetchOperationFactory.swift; sourceTree = "<group>"; };
 		2D5D0CD42D514904000E32F6 /* BannersFetchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersFetchResult.swift; sourceTree = "<group>"; };
 		2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewModel.swift; sourceTree = "<group>"; };
 		2D5D0CD92D51ED6E000E32F6 /* BannerViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewModelFactory.swift; sourceTree = "<group>"; };
@@ -6637,6 +6638,7 @@
 		2D5D0CE02D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainLogoRemoteImageProvider.swift; sourceTree = "<group>"; };
 		2D5D0CE22D53D514000E32F6 /* CommonRemoteImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonRemoteImageProvider.swift; sourceTree = "<group>"; };
 		2D5D0CE62D53D745000E32F6 /* CommonImageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonImageInfo.swift; sourceTree = "<group>"; };
+		2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerBackgroundView.swift; sourceTree = "<group>"; };
 		2D5EBEAF2D37D4090016AC4E /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
 		2D5EBEB12D37DE440016AC4E /* RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletDAppSettingsCleanerDAppSettingsCleaner.swift; sourceTree = "<group>"; };
 		2D5EBEB32D38F0FD0016AC4E /* AssetListMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListMeasurement.swift; sourceTree = "<group>"; };
@@ -13669,7 +13671,7 @@
 				1C3B52CE31FA87AD252994D5 /* BannersViewFactory.swift */,
 				2D5D0CD92D51ED6E000E32F6 /* BannerViewModelFactory.swift */,
 				2D5D0CD02D513C72000E32F6 /* BannersLocalizationFactory.swift */,
-				2D5D0CD22D51422C000E32F6 /* BannersFetchFactory.swift */,
+				2D5D0CD22D51422C000E32F6 /* BannersFetchOperationFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -14563,6 +14565,7 @@
 				93660F2A367CEBD932F080B1 /* BannersInteractor.swift */,
 				A00DD977BD9CE066B1B11569 /* BannersViewController.swift */,
 				2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */,
+				2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */,
 				FF591D1C38E7FDF839AF5783 /* BannersViewLayout.swift */,
 			);
 			path = Banners;
@@ -27045,6 +27048,7 @@
 				841E5532282CD86C00C8438F /* StakingMainPresenterFactory.swift in Sources */,
 				84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */,
 				8473B4762A20722E003DE213 /* StakingDashboardRelaychainMapper.swift in Sources */,
+				2D5D0CE92D54A24C000E32F6 /* BannerBackgroundView.swift in Sources */,
 				849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */,
 				0C6108362CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift in Sources */,
 				84A70D9B29CCECC100C648AD /* GovMetadataOperationFactory.swift in Sources */,
@@ -30466,7 +30470,7 @@
 				37FB290D01ADAA67155C9755 /* StakingSelectPoolPresenter.swift in Sources */,
 				CC8C6FFB98086AFBE38BDB82 /* StakingSelectPoolInteractor.swift in Sources */,
 				621E843DCEA85A00B419926F /* StakingSelectPoolViewController.swift in Sources */,
-				2D5D0CD32D51422C000E32F6 /* BannersFetchFactory.swift in Sources */,
+				2D5D0CD32D51422C000E32F6 /* BannersFetchOperationFactory.swift in Sources */,
 				A3FD763479AAB9290A612A1C /* StakingSelectPoolViewLayout.swift in Sources */,
 				2F73FA6B6061F343E2F033F0 /* StakingSelectPoolViewFactory.swift in Sources */,
 				6C56D43878A36E0AB7451DF6 /* NominationPoolSearchProtocols.swift in Sources */,

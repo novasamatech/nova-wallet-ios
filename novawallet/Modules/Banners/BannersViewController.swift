@@ -1,11 +1,15 @@
 import UIKit
+import Foundation
 
 final class BannersViewController: UIViewController, ViewHolder {
     typealias RootViewType = BannersViewLayout
 
     let presenter: BannersPresenterProtocol
 
-    private var viewModels: LoadableViewModelState<[BannerViewModel]>?
+    private var viewModels: [BannerViewModel]?
+
+    private var lastContentOffset: CGFloat = 0
+    private var lastCurrentPage: Int = 0
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
@@ -40,11 +44,15 @@ final class BannersViewController: UIViewController, ViewHolder {
 
 extension BannersViewController: BannersViewProtocol {
     func update(with viewModel: LoadableViewModelState<[BannerViewModel]>?) {
-        viewModels = viewModel
-        rootView.collectionView.reloadData()
-
-        if case let .loaded(banners) = viewModel {
+        switch viewModel {
+        case let .cached(banners), let .loaded(banners):
+            viewModels = banners
+            rootView.collectionView.reloadData()
             rootView.setBackgroundImage(banners.first?.backgroundImage)
+            rootView.setDisplayContent()
+        case .loading, .none:
+            viewModels = nil
+            rootView.setLoading()
         }
     }
 }
@@ -52,31 +60,24 @@ extension BannersViewController: BannersViewProtocol {
 // MARK: UICollectionViewDataSource
 
 extension BannersViewController: UICollectionViewDataSource {
-    func numberOfSections(in _: UICollectionView) -> Int {
-        1
-    }
-
     func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
-        guard let viewModels else { return 0 }
-
-        return switch viewModels {
-        case .loading: 1
-        case let .loaded(value), let .cached(value): value.count
-        }
+        viewModels?.count ?? 0
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        guard let viewModels, viewModels.count > indexPath.item else {
+            return UICollectionViewCell()
+        }
+
         let cell = collectionView.dequeueReusableCellWithType(
             BannerCollectionViewCell.self,
             for: indexPath
         )!
 
-        if case let .loaded(viewModels) = viewModels {
-            cell.view.configure(with: viewModels[indexPath.item])
-        }
+        cell.view.configure(with: viewModels[indexPath.item])
 
         return cell
     }
@@ -84,4 +85,107 @@ extension BannersViewController: UICollectionViewDataSource {
 
 // MARK: UICollectionViewDelegate
 
-extension BannersViewController: UICollectionViewDelegate {}
+extension BannersViewController: UICollectionViewDelegate {
+    func collectionView(
+        _: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        guard let bannerId = viewModels?[indexPath.item].id else { return }
+
+        presenter.action(for: bannerId)
+    }
+}
+
+// MARK: UICollectionViewDelegateFlowLayout
+
+extension BannersViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(
+        _: UICollectionView,
+        layout _: UICollectionViewLayout,
+        sizeForItemAt _: IndexPath
+    ) -> CGSize {
+        CGSize(
+            width: rootView.backgroundView.bounds.width,
+            height: rootView.backgroundView.bounds.height
+        )
+    }
+}
+
+// MARK: UIScrollViewDelegate
+
+extension BannersViewController: UIScrollViewDelegate {
+    func updateAppearance(
+        for cells: [UICollectionViewCell],
+        in scrollView: UIScrollView
+    ) {
+        let containerWidth = scrollView.bounds.width
+        let offset = scrollView.contentOffset
+
+        cells.forEach { cell in
+            let distanceFromCenter = abs((cell.frame.midX - offset.x) - containerWidth / 2)
+            let maxDistance = containerWidth / 2
+            let opacity = 1 - (distanceFromCenter / maxDistance)
+            cell.alpha = opacity
+        }
+    }
+
+    func updateBackground(for scrollView: UIScrollView) {
+        let pageWidth = scrollView.bounds.width
+        let currentOffset = scrollView.contentOffset.x
+
+        let isScrollingForward = currentOffset > lastContentOffset
+        lastContentOffset = currentOffset
+
+        let pageIndex = Int(currentOffset / pageWidth)
+
+        let roundedPageIndex = if isScrollingForward {
+            Int(floor(currentOffset / pageWidth))
+        } else {
+            Int(ceil(currentOffset / pageWidth))
+        }
+
+        let isMovingToNextPage = roundedPageIndex > lastCurrentPage
+        lastCurrentPage = roundedPageIndex
+
+        let rawProgress = (currentOffset - CGFloat(pageIndex) * pageWidth) / pageWidth
+
+        let progress = if isMovingToNextPage {
+            rawProgress
+        } else {
+            1 - rawProgress
+        }
+
+        let targetPageIndex = if isScrollingForward {
+            Int(ceil(currentOffset / pageWidth))
+        } else {
+            Int(floor(currentOffset / pageWidth))
+        }
+
+        guard
+            let viewModels = viewModels,
+            !viewModels.isEmpty,
+            targetPageIndex < viewModels.count
+        else { return }
+
+        let backgroundImage = viewModels[targetPageIndex].backgroundImage
+
+        rootView.backgroundView.changeBackground(to: backgroundImage) {
+            progress
+        }
+
+        print("Scrolling progress: \(progress)")
+        print("Target image index: \(roundedPageIndex)")
+        print("Current page: \(pageIndex)")
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let cells = rootView.collectionView.visibleCells
+
+        updateAppearance(
+            for: cells,
+            in: scrollView
+        )
+
+        updateBackground(for: scrollView)
+    }
+}

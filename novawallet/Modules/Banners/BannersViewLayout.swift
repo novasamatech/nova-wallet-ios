@@ -1,23 +1,40 @@
 import UIKit
 
+protocol BannersViewLayoutDelegate: AnyObject {
+    func didInvalidateVisibleItems(
+        _ items: [NSCollectionLayoutVisibleItem],
+        offset: CGPoint,
+        environment: NSCollectionLayoutEnvironment
+    )
+}
+
 final class BannersViewLayout: UIView {
+    weak var delegate: BannersViewLayoutDelegate?
+
     let containerView: UIView = .create { view in
         view.layer.cornerRadius = 12
         view.clipsToBounds = true
     }
 
-    let backgroundImageView: UIImageView = .create { view in
-        view.contentMode = .scaleAspectFill
-    }
+    let backgroundView = BannerBackgroundView()
 
     lazy var collectionView: UICollectionView = {
-        let layout = createCompositionalLayout()
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        layout.sectionInset = .zero
+
         let collectionView = UICollectionView(
             frame: .zero,
             collectionViewLayout: layout
         )
         collectionView.backgroundColor = .clear
+        collectionView.bounces = false
+        collectionView.alwaysBounceVertical = false
+        collectionView.alwaysBounceHorizontal = false
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isPagingEnabled = true
 
         return collectionView
     }()
@@ -44,50 +61,15 @@ private extension BannersViewLayout {
             make.edges.equalToSuperview()
         }
 
-        containerView.addSubview(backgroundImageView)
-        backgroundImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        containerView.addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.bottom.equalToSuperview().inset(8)
         }
 
         containerView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-    }
-
-    func createCompositionalLayout() -> UICollectionViewLayout {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .fractionalHeight(1.0)
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(126)
-        )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-        let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .groupPaging
-        section.visibleItemsInvalidationHandler = { [weak self] items, offset, environment in
-            self?.updateCellAppearance(items: items, offset: offset, environment: environment)
-        }
-
-        return UICollectionViewCompositionalLayout(section: section)
-    }
-
-    func updateCellAppearance(
-        items: [NSCollectionLayoutVisibleItem],
-        offset: CGPoint,
-        environment: NSCollectionLayoutEnvironment
-    ) {
-        let containerWidth = environment.container.contentSize.width
-        items.forEach { item in
-            let distanceFromCenter = abs((item.frame.midX - offset.x) - containerWidth / 2)
-            let maxDistance = containerWidth / 2
-            let opacity = 1 - (distanceFromCenter / maxDistance)
-            item.alpha = opacity
         }
     }
 }
@@ -96,6 +78,10 @@ private extension BannersViewLayout {
 
 extension BannersViewLayout {
     func setBackgroundImage(_ image: UIImage?) {
-        backgroundImageView.image = image
+        backgroundView.setBackground(image)
     }
+
+    func setLoading() {}
+
+    func setDisplayContent() {}
 }

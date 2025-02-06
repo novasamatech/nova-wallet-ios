@@ -48,6 +48,7 @@ protocol BannersViewProtocol: ControllerBackedProtocol, BannersViewProviderProto
 
 protocol BannersPresenterProtocol: AnyObject {
     func setup()
+    func action(for bannerId: String)
 }
 
 protocol BannersInteractorInputProtocol: AnyObject {
