@@ -25,4 +25,13 @@ enum UrlHandlingAction {
 
         self = handlingAction
     }
+
+    var path: String {
+        switch self {
+        case let .open(screen: screen):
+            return "/open/\(screen)"
+        case let .create(screen: screen):
+            return "/create/\(screen)"
+        }
+    }
 }
