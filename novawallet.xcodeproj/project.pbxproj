@@ -11371,6 +11371,15 @@
 			path = NominationPools;
 			sourceTree = "<group>";
 		};
+		0C2F8C542D547059003A9DA0 /* UniversalLink */ = {
+			isa = PBXGroup;
+			children = (
+				0C2F8C4E2D53C325003A9DA0 /* UniversalLinkFactory.swift */,
+				0C2F8C502D53C4B6003A9DA0 /* UniversalLink.swift */,
+			);
+			path = UniversalLink;
+			sourceTree = "<group>";
+		};
 		0C2FDF172AEB8292006A6C59 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -17701,14 +17710,13 @@
 		8467FCFA24E59C3E005D486C /* URLHandling */ = {
 			isa = PBXGroup;
 			children = (
+				0C2F8C542D547059003A9DA0 /* UniversalLink */,
 				774A98122B0D3638009146CA /* Parsing */,
 				8467FCFB24E5C3BD005D486C /* URLHandlingService.swift */,
 				8467FCFD24E5C50B005D486C /* KeystoreImportService.swift */,
 				0C21D77B2AB42A3500EB2DBD /* ScreenOpenService.swift */,
 				0C21D77D2AB42D4100EB2DBD /* UrlHandlingAction.swift */,
 				0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */,
-				0C2F8C4E2D53C325003A9DA0 /* UniversalLinkFactory.swift */,
-				0C2F8C502D53C4B6003A9DA0 /* UniversalLink.swift */,
 			);
 			path = URLHandling;
 			sourceTree = "<group>";

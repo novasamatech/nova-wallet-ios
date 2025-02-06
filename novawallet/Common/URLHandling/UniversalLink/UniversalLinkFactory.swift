@@ -45,7 +45,7 @@ final class UniversalLinkFactory: UniversalLinkFactoryProtocol {
         if let urlType = UniversalLink.GovScreen.urlGovType(chainModel, type: type) {
             let typeQueryItem = URLQueryItem(
                 name: UniversalLink.GovScreen.QueryKey.governanceType,
-                value: String(referendumId)
+                value: String(urlType.rawValue)
             )
 
             queryItems.append(typeQueryItem)
