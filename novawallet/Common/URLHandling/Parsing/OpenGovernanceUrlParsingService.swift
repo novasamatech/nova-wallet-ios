@@ -17,12 +17,16 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
         case democracy = 1
     }
 
+    let defaultChainId: ChainModel.Id
+
     init(
         chainRegistry: ChainRegistryProtocol,
-        settings: SettingsManagerProtocol
+        settings: SettingsManagerProtocol,
+        defaultChainId: ChainModel.Id = KnowChainId.polkadot
     ) {
         self.chainRegistry = chainRegistry
         self.settings = settings
+        self.defaultChainId = defaultChainId
     }
 
     func cancel() {
@@ -43,17 +47,13 @@ final class OpenGovernanceUrlParsingService: OpenScreenUrlParsingServiceProtocol
             $0[$1.name.lowercased()] = $1.value ?? ""
         }
 
-        guard let chainId = queryItems[QueryKey.chainid],
-              !chainId.isEmpty else {
-            completion(.failure(.openGovScreen(.invalidChainId)))
-            return
-        }
-
         guard let referendumIndexString = queryItems[QueryKey.referendumIndex],
               let referendumIndex = UInt32(referendumIndexString) else {
             completion(.failure(.openGovScreen(.invalidReferendumId)))
             return
         }
+
+        let chainId = queryItems[QueryKey.chainid] ?? defaultChainId
 
         handle(
             for: chainId,
