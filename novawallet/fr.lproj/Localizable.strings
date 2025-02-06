@@ -1790,3 +1790,4 @@
 "dapp.widget.close.alert.message" = "Toutes les onglets ouverts dans le navigateur DApp seront fermés.";
 "common.close.all" = "Fermer tout";
 "dapp.browser.tab.not.available" = "Page web non disponible";
+"dapp.list.section.popular" = "Populaires";

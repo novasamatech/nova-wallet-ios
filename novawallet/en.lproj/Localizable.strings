@@ -1790,4 +1790,4 @@
 "common.see.all" = "See All";
 "dapp.widget.close.alert.title" = "Close All DApps?";
 "dapp.widget.close.alert.message" = "All opened tabs in DApp browser will be closed.";
-"dapp.list.section.popular" = "Popular DApps";
+"dapp.list.section.popular" = "Popular";

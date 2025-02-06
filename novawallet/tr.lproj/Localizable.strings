@@ -1790,3 +1790,4 @@
 "dapp.widget.close.alert.message" = "DApp tarayıcısındaki tüm açık sekmeler kapatılacak.";
 "common.close.all" = "Hepsini Kapat";
 "dapp.browser.tab.not.available" = "Web sayfası mevcut değil";
+"dapp.list.section.popular" = "Popüler";

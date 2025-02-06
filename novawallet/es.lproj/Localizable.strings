@@ -1790,3 +1790,4 @@
 "dapp.widget.close.alert.message" = "Todas las pestañas abiertas en el navegador DApp se cerrarán.";
 "common.close.all" = "Cerrar todo";
 "dapp.browser.tab.not.available" = "Página web no disponible";
+"dapp.list.section.popular" = "Populares";
