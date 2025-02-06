@@ -1790,4 +1790,4 @@
 "dapp.widget.close.alert.message" = "DAppブラウザーで開いているすべてのタブが閉じられます。";
 "common.close.all" = "すべて閉じる";
 "dapp.browser.tab.not.available" = "ウェブページが利用できません";
-"dapp.list.section.popular" = "人気のDApps";
+"dapp.list.section.popular" = "人気のある";

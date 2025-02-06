@@ -1790,4 +1790,4 @@
 "dapp.widget.close.alert.message" = "Wszystkie otwarte karty w przeglądarce DApp zostaną zamknięte.";
 "common.close.all" = "Zamknij wszystkie";
 "dapp.browser.tab.not.available" = "Strona internetowa niedostępna";
-"dapp.list.section.popular" = "Popularne DApps";
+"dapp.list.section.popular" = "Popularne";
