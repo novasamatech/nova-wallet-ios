@@ -1790,3 +1790,4 @@
 "dapp.widget.close.alert.message" = "Semua tab yang terbuka di browser DApp akan ditutup.";
 "common.close.all" = "Tutup Semua";
 "dapp.browser.tab.not.available" = "Halaman web tidak tersedia";
+"dapp.list.section.popular" = "DApps Populer";

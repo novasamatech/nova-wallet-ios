@@ -1790,3 +1790,4 @@
 "dapp.widget.close.alert.message" = "Все открытые вкладки в DApp браузере будут закрыты.";
 "common.close.all" = "Закрыть все";
 "dapp.browser.tab.not.available" = "Веб-страница недоступна";
+"dapp.list.section.popular" = "Популярные DApps";

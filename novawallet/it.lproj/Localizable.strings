@@ -1790,3 +1790,4 @@
 "dapp.widget.close.alert.message" = "Tutte le schede aperte nel browser DApp saranno chiuse.";
 "common.close.all" = "Chiudi tutto";
 "dapp.browser.tab.not.available" = "Pagina web non disponibile";
+"dapp.list.section.popular" = "DApp popolari";
