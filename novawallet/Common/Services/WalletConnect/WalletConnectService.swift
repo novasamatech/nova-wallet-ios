@@ -411,11 +411,13 @@ private final class DefaultWebSocket: WebSocketConnecting {
                 )
             case .cancelled:
                 self?.markDisconnectedAndNotify(error: nil)
-            case .reconnectSuggested:
-                self?.protectedRestart()
+            case let .reconnectSuggested(isBetter):
+                if isBetter {
+                    self?.protectedRestartIfDisconnected()
+                }
             case let .viabilityChanged(isViable):
-                if !isViable {
-                    self?.markDisconnectedAndNotify(error: nil)
+                if isViable {
+                    self?.protectedRestartIfDisconnected()
                 }
             case let .error(error):
                 self?.markDisconnectedAndNotify(error: error)
@@ -437,10 +439,15 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket = nil
     }
 
-    private func protectedRestart() {
+    private func protectedRestartIfDisconnected() {
         mutex.lock()
+        
+        guard connectionState == .notConnected else {
+            return
+        }
 
-        stopWebsocket()
+        connectionState = .connecting
+        
         startWebsocket()
 
         mutex.unlock()
