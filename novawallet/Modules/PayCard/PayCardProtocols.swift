@@ -22,7 +22,7 @@ protocol PayCardInteractorOutputProtocol: AnyObject {
     func didReceiveCardStatus(_ cardStatus: PayCardStatus)
 }
 
-protocol PayCardWireframeProtocol: AlertPresentable {
+protocol PayCardWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showSend(
         from view: ControllerBackedProtocol?,
         with transferModel: PayCardTopupModel,

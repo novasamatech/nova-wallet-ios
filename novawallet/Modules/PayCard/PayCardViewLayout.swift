@@ -5,6 +5,7 @@ final class PayCardViewLayout: UIView {
     let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()
+        configuration.allowsInlineMediaPlayback = true
 
         let preferences = WKWebpagePreferences()
         preferences.preferredContentMode = .mobile
