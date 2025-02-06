@@ -115,9 +115,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
     func process(
         message: Any,
-        host: String,
         transport name: String
     ) {
+        let host = browserPage?.url.host ?? ""
+
         interactor.process(
             message: message,
             host: host,

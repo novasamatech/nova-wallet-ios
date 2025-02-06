@@ -36,7 +36,7 @@ final class LedgerConnectionManager: NSObject {
     @Atomic(defaultValue: [])
     private var devices: [BluetoothLedgerDevice]
 
-    private var supportedDevices: [SupportedBluetoothDevice] = [SupportedBluetoothDevice.ledgerNanoX]
+    private var supportedDevices: [SupportedBluetoothDevice] = SupportedBluetoothDevice.ledgers
     private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.map(\.uuid) }
     private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.map(\.notifyUuid) }
 

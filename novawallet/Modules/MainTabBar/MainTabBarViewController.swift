@@ -108,6 +108,22 @@ extension MainTabBarViewController: MainTabBarViewProtocol {
         }
     }
 
+    func topViewController() -> UIViewController? {
+        let navigationController = selectedViewController as? UINavigationController
+
+        let topController = if let presentedViewController {
+            presentedViewController
+        } else if let topModalViewController = navigationController?.topModalViewController {
+            topModalViewController
+        } else if let topViewController = navigationController?.topViewController {
+            topViewController
+        } else {
+            navigationController?.viewControllers.first
+        }
+
+        return topController
+    }
+
     func didReplaceView(for newView: UIViewController, for index: Int) {
         guard var newViewControllers = viewControllers else {
             return

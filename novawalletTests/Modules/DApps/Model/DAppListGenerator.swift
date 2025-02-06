@@ -4,6 +4,11 @@ import Foundation
 final class DAppListGenerator {
     static func createAnyDAppList() -> DAppList {
         DAppList(
+            popular: [
+                DAppPopular(
+                    url: URL(string: "https://polkadot.js/apps")!
+                )
+            ],
             categories: [
                 DAppCategory(
                     identifier: "nft",

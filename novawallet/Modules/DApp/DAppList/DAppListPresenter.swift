@@ -7,6 +7,7 @@ final class DAppListPresenter {
     weak var view: DAppListViewProtocol?
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
+    let browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
@@ -14,31 +15,40 @@ final class DAppListPresenter {
     private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
+    private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
+
+    private var dAppNavigationTask: DAppListNavigationTask?
 
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol,
+        initialWallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.browserNavigationTaskFactory = browserNavigationTaskFactory
+        wallet = initialWallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 
     private func provideSections() {
-        guard let wallet else { return }
-
         do {
+            let params = DAppListViewModelFactory.ListSectionsParams(
+                randomizationSeed: randomizationSeed,
+                hasWalletsListUpdates: hasWalletsListUpdates
+            )
             let sections = viewModelFactory.createDAppSections(
                 from: try dAppsResult?.get(),
                 favorites: favorites ?? [:],
                 wallet: wallet,
-                hasWalletsListUpdates: hasWalletsListUpdates,
+                params: params,
                 locale: selectedLocale
             )
 
@@ -85,24 +95,33 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        guard
-            let wallet,
-            case let .success(dAppList) = dAppsResult
-        else { return }
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
+            id,
+            wallet: wallet,
+            favoritesProvider: { [weak self] in self?.favorites },
+            dAppResultProvider: { [weak self] in self?.dAppsResult }
+        )
 
-        let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
-            DAppBrowserTab(from: dApp, metaId: wallet.metaId)
-        } else if let dApp = favorites?[id] {
-            DAppBrowserTab(from: dApp.identifier, metaId: wallet.metaId)
-        } else {
-            nil
+        dAppNavigationTask?(
+            cleaner: self,
+            view: view
+        )
+    }
+
+    func provideNavigation(for model: DAppNavigation) {
+        guard let wallet else {
+            return
         }
 
-        guard let tab else { return }
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
+            model,
+            wallet: wallet,
+            dAppResultProvider: { [weak self] in self?.dAppsResult }
+        )
 
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
+        dAppNavigationTask?(
+            cleaner: self,
+            view: view
         )
     }
 
@@ -134,12 +153,18 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         if let currentResult = self.dAppsResult {
             // ignore error if we already loaded some dapps
-            guard case .success = currentResult, case .failure = dAppsResult else {
+            if case .success = currentResult, case .failure = dAppsResult {
                 return
             }
         }
 
         self.dAppsResult = dAppsResult
+        randomizationSeed = Int.random(in: 1 ..< 100)
+
+        dAppNavigationTask?(
+            cleaner: self,
+            view: view
+        )
 
         provideSections()
     }
@@ -162,14 +187,23 @@ extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
         guard let wallet else { return }
 
-        guard let tab = DAppBrowserTab(from: result, metaId: wallet.metaId) else {
-            return
-        }
-
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
+        let navigationTask = browserNavigationTaskFactory.createSearchResultNavigationTask(
+            result,
+            wallet: wallet
         )
+
+        navigationTask(
+            cleaner: self,
+            view: view
+        )
+    }
+}
+
+// MARK: DAppListNavigationTaskCleaning
+
+extension DAppListPresenter: DAppListNavigationTaskCleaning {
+    func cleanCompletedTask() {
+        dAppNavigationTask = nil
     }
 }
 

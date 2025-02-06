@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class WalletBrowserStateCleaner {
+final class RemovedWalletBrowserStateCleaner {
     private let browserTabManager: DAppBrowserTabManagerProtocol
     private let webViewPoolEraser: WebViewPoolEraserProtocol
     private let operationQueue: OperationQueue
@@ -19,7 +19,7 @@ final class WalletBrowserStateCleaner {
 
 // MARK: Private
 
-private extension WalletBrowserStateCleaner {
+private extension RemovedWalletBrowserStateCleaner {
     func createTabsCleaningWrapper(
         for removedItems: @escaping () throws -> [MetaAccountModel]
     ) -> CompoundOperationWrapper<Set<UUID>> {
@@ -53,7 +53,7 @@ private extension WalletBrowserStateCleaner {
 
 // MARK: WalletStorageCleaning
 
-extension WalletBrowserStateCleaner: WalletStorageCleaning {
+extension RemovedWalletBrowserStateCleaner: WalletStorageCleaning {
     func cleanStorage(
         for removedItems: @escaping () throws -> [MetaAccountModel]
     ) -> CompoundOperationWrapper<Void> {

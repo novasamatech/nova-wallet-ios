@@ -8,7 +8,7 @@ protocol ScreenOpenDelegate: AnyObject {
 enum UrlHandlingScreen {
     case staking
     case gov(Referenda.ReferendumIndex)
-    case dApp(DApp)
+    case dApp(DAppNavigation)
     case error(UrlHandlingScreenError)
 }
 
