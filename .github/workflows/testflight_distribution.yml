@@ -43,7 +43,7 @@ jobs:
 
         echo "$GOOGLE_SERVICE_INFO" > $GOOGLE_SERVICE_PATH
 
-    - name: Get version
+    - name: Set version from input
       if: ${{ inputs.version }}
       run: |
         echo "IOS_APP_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
