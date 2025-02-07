@@ -22,12 +22,18 @@ lane :base_build_app do |options|
   export_method = "ad-hoc"
   compile_bitcode = false
   xcodeproj_path = "./#{target}.xcodeproj"
+  notification_path = "./NovaPushNotificationServiceExtension"
 
   clean_build_artifacts
 
   increment_build_number(
-    build_number: options[:build_number] || ENV["BUILD_NUMBER"],
+    build_number: options[:build_number],
     xcodeproj: xcodeproj_path
+  )
+
+  increment_build_number(
+    build_number: options[:build_number],
+    xcodeproj: notification_path
   )
 
   update_code_signing_settings(
