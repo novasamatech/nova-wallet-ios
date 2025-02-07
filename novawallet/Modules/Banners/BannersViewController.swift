@@ -109,26 +109,19 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
             height: rootView.backgroundView.bounds.height
         )
     }
+
+    func collectionView(
+        _: UICollectionView,
+        layout _: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt _: Int
+    ) -> CGFloat {
+        .zero
+    }
 }
 
 // MARK: UIScrollViewDelegate
 
 extension BannersViewController: UIScrollViewDelegate {
-    func updateAppearance(
-        for cells: [UICollectionViewCell],
-        in scrollView: UIScrollView
-    ) {
-        let containerWidth = scrollView.bounds.width
-        let offset = scrollView.contentOffset
-
-        cells.forEach { cell in
-            let distanceFromCenter = abs((cell.frame.midX - offset.x) - containerWidth / 2)
-            let maxDistance = containerWidth / 2
-            let opacity = 1 - (distanceFromCenter / maxDistance)
-            cell.alpha = opacity
-        }
-    }
-
     func updateBackground(for scrollView: UIScrollView) {
         let pageWidth = scrollView.bounds.width
         let currentOffset = scrollView.contentOffset.x
@@ -180,11 +173,6 @@ extension BannersViewController: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let cells = rootView.collectionView.visibleCells
-
-        updateAppearance(
-            for: cells,
-            in: scrollView
-        )
 
         updateBackground(for: scrollView)
     }

@@ -1303,6 +1303,7 @@
 		2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */; };
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
+		2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* DAppListNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */; };
@@ -6759,6 +6760,7 @@
 		2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppBrowserTabManager+Singleton.swift"; sourceTree = "<group>"; };
 		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
+		2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersCollectionViewLayout.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* DAppListNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* DAppListNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListNavigationTask.swift; sourceTree = "<group>"; };
@@ -14048,6 +14050,16 @@
 			path = Image;
 			sourceTree = "<group>";
 		};
+		2DB538622D561B050044BF6F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */,
+				2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */,
+				2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		2DB5B1132D3FEC9E0075EB3F /* DAppListNavigationTaskFactory */ = {
 			isa = PBXGroup;
 			children = (
@@ -14558,14 +14570,13 @@
 			children = (
 				2D5D0CD62D514BBB000E32F6 /* Factory */,
 				2D5D0CC92D50CBCF000E32F6 /* Model */,
+				2DB538622D561B050044BF6F /* View */,
 				2CC9ADA9846C199380AF58D6 /* BannersProtocols.swift */,
 				90D0CB9381AF203E5730CD35 /* BannersWireframe.swift */,
 				6C1CBCD5B3AE3E88244C50F5 /* BannersPresenter.swift */,
 				2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */,
 				93660F2A367CEBD932F080B1 /* BannersInteractor.swift */,
 				A00DD977BD9CE066B1B11569 /* BannersViewController.swift */,
-				2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */,
-				2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */,
 				FF591D1C38E7FDF839AF5783 /* BannersViewLayout.swift */,
 			);
 			path = Banners;
@@ -28363,6 +28374,7 @@
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
 				8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */,
 				845B822926F0BB6700D25C72 /* CrowdloanChainSettings.swift in Sources */,
+				2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */,
 				0CF5F68C2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift in Sources */,
 				0C13D2FA2A7D473B0054BB6F /* DirectStakingRestrictionsBuilder.swift in Sources */,
 				0CE933922C043F00000F3EFE /* CloudBackupSyncMediatorFactory.swift in Sources */,

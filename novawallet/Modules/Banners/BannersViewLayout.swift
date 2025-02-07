@@ -19,11 +19,10 @@ final class BannersViewLayout: UIView {
     let backgroundView = BannerBackgroundView()
 
     lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
+        let layout = BannersCollectionViewLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        layout.sectionInset = .zero
+        layout.minimumInteritemSpacing = 0
 
         let collectionView = UICollectionView(
             frame: .zero,
@@ -31,8 +30,6 @@ final class BannersViewLayout: UIView {
         )
         collectionView.backgroundColor = .clear
         collectionView.bounces = false
-        collectionView.alwaysBounceVertical = false
-        collectionView.alwaysBounceHorizontal = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
 
