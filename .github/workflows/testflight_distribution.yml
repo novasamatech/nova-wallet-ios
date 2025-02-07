@@ -15,7 +15,7 @@ on:
 
 env:
   XCODE_VERSION: '16.1'
-  IOS_APP_VERSION: ${{ secrets.IOS_APP_VERSION }}
+  IOS_APP_VERSION: '9.4.0'
 
 jobs:
   distribute_testflight:
