@@ -48,7 +48,7 @@ jobs:
       run: |
         echo "IOS_APP_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
 
-    - name: Bump version
+    - name: Update version
       uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
       with:
         info-plist-path: './novawallet/Info.plist'
