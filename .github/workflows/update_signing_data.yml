@@ -10,11 +10,11 @@ on:
     - cron: '0 10 * * *' # 10:00 AM every day
 
 env:
-  XCODE_VERSION: '16.1'
+  XCODE_VERSION: '16.2'
 
 jobs:
   update_signing_data:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 

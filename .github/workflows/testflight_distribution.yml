@@ -14,7 +14,7 @@ on:
 
 
 env:
-  XCODE_VERSION: '16.1'
+  XCODE_VERSION: '16.2'
   IOS_APP_VERSION: '9.4.0'
   BUILD_NUMBER: ${{ github.run_number }}
 
