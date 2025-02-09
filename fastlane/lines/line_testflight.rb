@@ -2,7 +2,7 @@ desc "Submit a new build to Apple TestFlight"
 desc "Example usage: fastlane upload_testflight"
 lane :upload_testflight do |options|
   upload_to_testflight(
-    skip_waiting_for_build_processing: false,
+    skip_waiting_for_build_processing: true,
     apple_id: "1597119355",
   )
 end

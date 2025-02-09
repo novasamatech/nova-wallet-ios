@@ -49,21 +49,5 @@ jobs:
       run: |
         echo "IOS_APP_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
 
-    - name: Update notification service version
-      uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
-      with:
-        info-plist-path: './NovaPushNotificationServiceExtension/Info.plist'
-        bundle-short-version-string: ${{ env.IOS_APP_VERSION }}
-        bundle-version: ${{ env.BUILD_NUMBER }}
-        print-file: true
-
-    - name: Update app version
-      uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
-      with:
-        info-plist-path: './novawallet/Info.plist'
-        bundle-short-version-string: ${{ env.IOS_APP_VERSION }}
-        bundle-version: ${{ env.BUILD_NUMBER }}
-        print-file: true
-
     - name: Distribute TestFlight build
       run: bundle exec fastlane distribute_testflight

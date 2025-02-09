@@ -89,7 +89,12 @@ platform :ios do
       version: ENV["IOS_APP_VERSION"]
     )
     new_build_number = latest_build + 1
-    
+
+    increment_version_number(
+      build_number: ENV["IOS_APP_VERSION"],
+      xcodeproj: "./#{main_target}.xcodeproj"
+    )
+
     base_build_app(
       scheme: testflight_distribution_scheme,
       target: main_target,
