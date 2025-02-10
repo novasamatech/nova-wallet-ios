@@ -1791,3 +1791,5 @@
 "common.close.all" = "Összes bezárása";
 "dapp.browser.tab.not.available" = "Weboldal nem érhető el";
 "dapp.list.section.popular" = "Népszerűek";
+"swaps.max.price.diff.error.title" = "Magas árhatás észlelve (%@)";
+"swaps.max.price.diff.error.message" = "Ennek a csereügyletnek a végrehajtása jelentős csúszást és pénzügyi veszteségeket eredményez. Fontolja meg a kereskedés méretének csökkentését vagy a kereskedés több tranzakcióra osztását.";

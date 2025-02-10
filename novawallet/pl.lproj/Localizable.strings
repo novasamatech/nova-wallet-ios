@@ -1791,3 +1791,5 @@
 "common.close.all" = "Zamknij wszystkie";
 "dapp.browser.tab.not.available" = "Strona internetowa niedostępna";
 "dapp.list.section.popular" = "Popularne";
+"swaps.max.price.diff.error.title" = "Wykryto wysoki wpływ na cenę (%@)";
+"swaps.max.price.diff.error.message" = "Wykonanie tej zamiany spowoduje znaczący poślizg cenowy i straty finansowe. Rozważ zmniejszenie wielkości swojego handlu lub podzielenie go na kilka transakcji.";
