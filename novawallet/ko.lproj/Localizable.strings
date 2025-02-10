@@ -1791,3 +1791,5 @@
 "common.close.all" = "모두 닫기";
 "dapp.browser.tab.not.available" = "웹페이지를 사용할 수 없음";
 "dapp.list.section.popular" = "인기 있는";
+"swaps.max.price.diff.error.title" = "높은 가격 영향이 감지됨 (%@)";
+"swaps.max.price.diff.error.message" = "이 스왑을 실행하면 상당한 슬리패지와 재정적 손실이 발생할 것입니다. 거래 크기를 줄이거나 거래를 여러 개로 나누는 것을 고려하세요.";

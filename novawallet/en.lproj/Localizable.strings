@@ -1792,4 +1792,4 @@
 "dapp.widget.close.alert.message" = "All opened tabs in DApp browser will be closed.";
 "dapp.list.section.popular" = "Popular";
 "swaps.max.price.diff.error.title" = "High price impact detected (%@)";
-"swaps.max.price.diff.error.message" = "Executing this swap may result in significant slippage and potential losses. Consider reducing your trade size or splitting into multiple transactions.";
+"swaps.max.price.diff.error.message" = "Executing this swap will result in significant slippage and financial losses. Consider reducing your trade size of splitting your trade into multiple transactions.";
