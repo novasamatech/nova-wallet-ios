@@ -2,8 +2,10 @@ import Foundation
 import SoraUI
 
 class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
-    override func prepareForReuse() {
-//        view.viewModel?.contentImage.cancel(on: view.contentImageView)
+    func bind(with viewModel: BannerViewModel) {
+        view.bind(with: viewModel)
+        clipsToBounds = viewModel.clipsToBounds
+        layer.masksToBounds = viewModel.clipsToBounds
     }
 }
 
@@ -34,29 +36,32 @@ class BannerView: UIView {
     }
 
     private func setupLayout() {
-//        addSubview(contentImageView)
-        addSubview(titleLabel)
-        addSubview(detailsLabel)
+        let textContainer = UIStackView.vStack(
+            alignment: .leading,
+            spacing: 8.0,
+            [titleLabel, detailsLabel]
+        )
 
-        titleLabel.snp.makeConstraints { make in
+        addSubview(textContainer)
+        addSubview(contentImageView)
+
+        textContainer.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(16.0)
+            make.trailing.equalToSuperview().inset(127.0)
         }
 
-        detailsLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).inset(-8.0)
-            make.leading.equalTo(titleLabel)
+        contentImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(-8.0)
+            make.bottom.equalToSuperview().inset(-8.0)
+            make.trailing.equalToSuperview()
         }
     }
 
-    func configure(with viewModel: BannerViewModel) {
+    func bind(with viewModel: BannerViewModel) {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
+        contentImageView.image = viewModel.contentImage
         clipsToBounds = viewModel.clipsToBounds
-
-//        viewModel.contentImage.loadImage(
-//            on: contentImageView,
-//            targetSize: bounds.size,
-//            animated: false
-//        )
+        layer.masksToBounds = viewModel.clipsToBounds
     }
 }

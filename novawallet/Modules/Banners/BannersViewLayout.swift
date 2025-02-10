@@ -1,22 +1,14 @@
 import UIKit
 
-protocol BannersViewLayoutDelegate: AnyObject {
-    func didInvalidateVisibleItems(
-        _ items: [NSCollectionLayoutVisibleItem],
-        offset: CGPoint,
-        environment: NSCollectionLayoutEnvironment
-    )
-}
-
 final class BannersViewLayout: UIView {
-    weak var delegate: BannersViewLayoutDelegate?
-
     let containerView: UIView = .create { view in
         view.layer.cornerRadius = 12
         view.clipsToBounds = true
     }
 
     let backgroundView = BannerBackgroundView()
+
+    lazy var pageControl = ExtendedPageControl()
 
     lazy var collectionView: UICollectionView = {
         let layout = BannersCollectionViewLayout()
@@ -66,7 +58,12 @@ private extension BannersViewLayout {
 
         containerView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges.equalTo(backgroundView)
+        }
+
+        containerView.addSubview(pageControl)
+        pageControl.snp.makeConstraints { make in
+            make.bottom.leading.equalTo(backgroundView).inset(16)
         }
     }
 }

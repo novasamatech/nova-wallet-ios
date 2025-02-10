@@ -50,6 +50,7 @@ extension BannersViewController: BannersViewProtocol {
             rootView.collectionView.reloadData()
             rootView.setBackgroundImage(banners.first?.backgroundImage)
             rootView.setDisplayContent()
+            rootView.pageControl.numberOfPages = banners.count
         case .loading, .none:
             viewModels = nil
             rootView.setLoading()
@@ -77,7 +78,7 @@ extension BannersViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        cell.view.configure(with: viewModels[indexPath.item])
+        cell.bind(with: viewModels[indexPath.item])
 
         return cell
     }
@@ -104,10 +105,7 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt _: IndexPath
     ) -> CGSize {
-        CGSize(
-            width: rootView.backgroundView.bounds.width,
-            height: rootView.backgroundView.bounds.height
-        )
+        rootView.backgroundView.bounds.size
     }
 
     func collectionView(
@@ -137,7 +135,13 @@ extension BannersViewController: UIScrollViewDelegate {
             Int(ceil(currentOffset / pageWidth))
         }
 
-        let isMovingToNextPage = roundedPageIndex > lastCurrentPage
+        let targetPageIndex = if isScrollingForward {
+            Int(ceil(currentOffset / pageWidth))
+        } else {
+            Int(floor(currentOffset / pageWidth))
+        }
+
+        let isMovingToNextPage = targetPageIndex > lastCurrentPage
         lastCurrentPage = roundedPageIndex
 
         let rawProgress = (currentOffset - CGFloat(pageIndex) * pageWidth) / pageWidth
@@ -146,12 +150,6 @@ extension BannersViewController: UIScrollViewDelegate {
             rawProgress
         } else {
             1 - rawProgress
-        }
-
-        let targetPageIndex = if isScrollingForward {
-            Int(ceil(currentOffset / pageWidth))
-        } else {
-            Int(floor(currentOffset / pageWidth))
         }
 
         guard
@@ -166,14 +164,14 @@ extension BannersViewController: UIScrollViewDelegate {
             progress
         }
 
+        rootView.pageControl.currentPage = targetPageIndex
+
         print("Scrolling progress: \(progress)")
-        print("Target image index: \(roundedPageIndex)")
+        print("Target image index: \(targetPageIndex)")
         print("Current page: \(pageIndex)")
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let cells = rootView.collectionView.visibleCells
-
         updateBackground(for: scrollView)
     }
 }

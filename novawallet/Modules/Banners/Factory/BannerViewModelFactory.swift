@@ -16,7 +16,7 @@ class BannerViewModelFactory: BannerViewModelFactoryProtocol {
             return .loading
         }
 
-        var viewModels: [BannerViewModel] = banners.compactMap { banner in
+        let viewModels: [BannerViewModel] = banners.compactMap { banner in
             guard let localizedContent = localizedResources[banner.id] else {
                 return nil
             }
@@ -29,10 +29,6 @@ class BannerViewModelFactory: BannerViewModelFactoryProtocol {
                 contentImage: banner.image,
                 clipsToBounds: banner.clipsToBounds
             )
-        }
-
-        if !viewModels.isEmpty {
-            viewModels.append(viewModels.first!)
         }
 
         return viewModels.isEmpty ? nil : .loaded(value: viewModels)
