@@ -1791,3 +1791,5 @@
 "common.close.all" = "Chiudi tutto";
 "dapp.browser.tab.not.available" = "Pagina web non disponibile";
 "dapp.list.section.popular" = "Popolari";
+"swaps.max.price.diff.error.title" = "Alto impatto sul prezzo rilevato (%@)";
+"swaps.max.price.diff.error.message" = "Eseguire questo swap comporterà uno slippage significativo e perdite finanziarie. Considera di ridurre la dimensione del tuo scambio o di dividere il tuo scambio in più transazioni.";
