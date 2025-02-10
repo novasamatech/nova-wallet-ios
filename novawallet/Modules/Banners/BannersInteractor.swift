@@ -1,21 +1,28 @@
 import UIKit
 import Operation_iOS
 import SoraFoundation
+import SoraKeystore
 
 final class BannersInteractor {
     weak var presenter: BannersInteractorOutputProtocol?
 
+    private let domain: Banners.Domain
     private let bannersFactory: BannersFetchOperationFactoryProtocol
     private let localizationFactory: BannersLocalizationFactoryProtocol
+    private let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
 
     init(
+        domain: Banners.Domain,
         bannersFactory: BannersFetchOperationFactoryProtocol,
         localizationFactory: BannersLocalizationFactoryProtocol,
+        settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
+        self.domain = domain
         self.bannersFactory = bannersFactory
         self.localizationFactory = localizationFactory
+        self.settingsManager = settingsManager
         self.operationQueue = operationQueue
     }
 }
@@ -55,8 +62,11 @@ private extension BannersInteractor {
         )
         let localizationFetchOperation = localizationFactory.createOperation(for: locale)
 
-        let mergeOperation: ClosureOperation<BannersFetchResult> = ClosureOperation {
-            guard let localizations = try localizationFetchOperation.extractNoCancellableResultData() else {
+        let mergeOperation: ClosureOperation<BannersFetchResult> = ClosureOperation { [weak self] in
+            guard
+                let self,
+                let localizations = try localizationFetchOperation.extractNoCancellableResultData()
+            else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
@@ -64,6 +74,7 @@ private extension BannersInteractor {
 
             return BannersFetchResult(
                 banners: banners,
+                closedBannerIds: settingsManager.closedBannerIds?[domain],
                 localizedResources: localizations
             )
         }
@@ -106,5 +117,17 @@ extension BannersInteractor: BannersInteractorInputProtocol {
 
     func refresh(for locale: Locale) {
         fetchBanners(for: locale)
+    }
+
+    func closeBanner(with id: String) {
+        var closedBannerIds = settingsManager.closedBannerIds?[domain] ?? Set()
+        closedBannerIds.insert(id)
+
+        var dict = settingsManager.closedBannerIds ?? [:]
+        dict[domain] = closedBannerIds
+
+        settingsManager.closedBannerIds = dict
+
+        presenter?.didReceive(closedBannerIds)
     }
 }

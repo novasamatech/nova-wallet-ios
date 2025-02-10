@@ -10,6 +10,7 @@ final class BannersPresenter {
     private let viewModelFactory: BannerViewModelFactoryProtocol
 
     private var banners: [Banner]?
+    private var closedBannerIds: Set<String>?
     private var localizedResources: BannersLocalizedResources?
 
     init(
@@ -27,6 +28,7 @@ final class BannersPresenter {
     private func provideBanners() {
         let viewModel = viewModelFactory.createBannerViewModels(
             for: banners,
+            closedBannerIds: closedBannerIds,
             localizedResources: localizedResources
         )
 
@@ -49,6 +51,10 @@ extension BannersPresenter: BannersPresenterProtocol {
 
         print(banner)
     }
+
+    func closeBanner(with id: String) {
+        interactor.closeBanner(with: id)
+    }
 }
 
 // MARK: BannersInteractorOutputProtocol
@@ -56,6 +62,7 @@ extension BannersPresenter: BannersPresenterProtocol {
 extension BannersPresenter: BannersInteractorOutputProtocol {
     func didReceive(_ bannersFetchResult: BannersFetchResult) {
         banners = bannersFetchResult.banners
+        closedBannerIds = bannersFetchResult.closedBannerIds
         localizedResources = bannersFetchResult.localizedResources
 
         provideBanners()
@@ -63,8 +70,13 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         moduleOutput?.didReceiveBanners(available: !bannersFetchResult.banners.isEmpty)
     }
 
-    func didReceive(_ localizedResources: BannersLocalizedResources?) {
-        self.localizedResources = localizedResources
+    func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?) {
+        localizedResources = updatedLocalizedResources
+        provideBanners()
+    }
+
+    func didReceive(_ updatedClosedBannerIds: Set<String>?) {
+        closedBannerIds = updatedClosedBannerIds
         provideBanners()
     }
 

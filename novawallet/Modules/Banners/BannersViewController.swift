@@ -31,12 +31,59 @@ final class BannersViewController: UIViewController, ViewHolder {
         setupCollectionView()
         presenter.setup()
     }
+}
 
-    private func setupCollectionView() {
+// MARK: Private
+
+private extension BannersViewController {
+    func setupCollectionView() {
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
 
         rootView.collectionView.registerCellClass(BannerCollectionViewCell.self)
+    }
+
+    func calculateTransitionProgress(state: ScrollState) -> CGFloat {
+        let roundedDownPage = state.rawPageIndex.rounded(.down)
+        let rawProgress = abs((state.currentOffset - roundedDownPage * state.pageWidth) / state.pageWidth)
+
+        let changesPage: Bool = (state.scrollingForward && (state.rawPageIndex > CGFloat(lastCurrentPage)))
+            || (!state.scrollingForward && state.rawPageIndex < CGFloat(lastCurrentPage))
+
+        return if changesPage {
+            state.scrollingForward
+                ? (rawProgress == 0 ? 1.0 : rawProgress)
+                : (1 - rawProgress)
+        } else {
+            state.scrollingForward
+                ? (rawProgress == 0 ? rawProgress : 1 - rawProgress)
+                : rawProgress
+        }
+    }
+
+    func updateBackground(for scrollView: UIScrollView) {
+        let state = ScrollState(
+            scrollView: scrollView,
+            lastOffset: lastContentOffset,
+            lastPage: lastCurrentPage
+        )
+
+        lastContentOffset = state.currentOffset
+
+        let progress = calculateTransitionProgress(state: state)
+
+        guard
+            let viewModels = viewModels,
+            !viewModels.isEmpty,
+            state.targetPageIndex < viewModels.count
+        else { return }
+
+        let backgroundImage = viewModels[state.targetPageIndex].backgroundImage
+
+        rootView.backgroundView.changeBackground(to: backgroundImage) {
+            progress
+        }
+        rootView.pageControl.currentPage = state.targetPageIndex
     }
 }
 
@@ -120,58 +167,51 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
 // MARK: UIScrollViewDelegate
 
 extension BannersViewController: UIScrollViewDelegate {
-    func updateBackground(for scrollView: UIScrollView) {
-        let pageWidth = scrollView.bounds.width
-        let currentOffset = scrollView.contentOffset.x
-
-        let isScrollingForward = currentOffset > lastContentOffset
-        lastContentOffset = currentOffset
-
-        let pageIndex = Int(currentOffset / pageWidth)
-
-        let roundedPageIndex = if isScrollingForward {
-            Int(floor(currentOffset / pageWidth))
-        } else {
-            Int(ceil(currentOffset / pageWidth))
-        }
-
-        let targetPageIndex = if isScrollingForward {
-            Int(ceil(currentOffset / pageWidth))
-        } else {
-            Int(floor(currentOffset / pageWidth))
-        }
-
-        let isMovingToNextPage = targetPageIndex > lastCurrentPage
-        lastCurrentPage = roundedPageIndex
-
-        let rawProgress = (currentOffset - CGFloat(pageIndex) * pageWidth) / pageWidth
-
-        let progress = if isMovingToNextPage {
-            rawProgress
-        } else {
-            1 - rawProgress
-        }
-
-        guard
-            let viewModels = viewModels,
-            !viewModels.isEmpty,
-            targetPageIndex < viewModels.count
-        else { return }
-
-        let backgroundImage = viewModels[targetPageIndex].backgroundImage
-
-        rootView.backgroundView.changeBackground(to: backgroundImage) {
-            progress
-        }
-
-        rootView.pageControl.currentPage = targetPageIndex
-
-        print("Scrolling progress: \(progress)")
-        print("Target image index: \(targetPageIndex)")
-        print("Current page: \(pageIndex)")
-    }
-
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateBackground(for: scrollView)
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        lastCurrentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
+    }
+}
+
+// MARK: ScrollState
+
+private extension BannersViewController {
+    struct ScrollState {
+        private let lastPage: Int
+        private let lastOffset: CGFloat
+
+        let currentOffset: CGFloat
+        let pageWidth: CGFloat
+
+        var rawPageIndex: CGFloat {
+            currentOffset / pageWidth
+        }
+
+        var scrollingForward: Bool {
+            currentOffset > lastOffset
+        }
+
+        var targetPageIndex: Int {
+            if CGFloat(lastPage) == rawPageIndex {
+                lastPage
+            } else {
+                max(lastPage + (rawPageIndex > CGFloat(lastPage) ? 1 : -1), 0)
+            }
+        }
+
+        init(
+            scrollView: UIScrollView,
+            lastOffset: CGFloat,
+            lastPage: Int
+        ) {
+            currentOffset = scrollView.contentOffset.x
+            pageWidth = scrollView.bounds.width
+
+            self.lastOffset = lastOffset
+            self.lastPage = lastPage
+        }
     }
 }

@@ -4,13 +4,11 @@ import UIKit
 class ExtendedPageControl: UIControl {
     private var dots: [UIView] = []
 
-    private lazy var stackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.alignment = .center
-        stack.spacing = Constants.spacing
-        return stack
-    }()
+    private lazy var stackView: UIStackView = .create { view in
+        view.axis = .horizontal
+        view.alignment = .center
+        view.spacing = Constants.spacing
+    }
 
     var numberOfPages: Int = 0 {
         didSet {

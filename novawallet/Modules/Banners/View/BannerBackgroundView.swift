@@ -2,22 +2,18 @@ import Foundation
 import UIKit
 
 class BannerBackgroundView: UIView {
-    private let fImageView: UIImageView = .create { view in
+    private let backgroundImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFill
     }
 
-    private let sImageView: UIImageView = .create { view in
+    private let transitionImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFill
+        view.alpha = 0
     }
-
-    private var currentTransitingImage: UIImage?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         setupLayout()
-
-        sImageView.isHidden = true
     }
 
     @available(*, unavailable)
@@ -27,8 +23,8 @@ class BannerBackgroundView: UIView {
 
     private func setupLayout() {
         [
-            fImageView,
-            sImageView
+            backgroundImageView,
+            transitionImageView
         ].forEach { view in
             addSubview(view)
 
@@ -44,27 +40,22 @@ class BannerBackgroundView: UIView {
     ) {
         let progress = progressClosure()
 
-        if progress > 0, progress < 1 {
-            if let currentTransitingImage {
-                sImageView.image = currentTransitingImage
-            } else {
-                currentTransitingImage = image
-                sImageView.image = image
-            }
+        if progress >= 0, transitionImageView.image == nil {
+            transitionImageView.image = image
+        }
 
-            sImageView.alpha = min(progress, 1)
-            sImageView.isHidden = false
-        } else {
-            fImageView.image = currentTransitingImage
-            sImageView.alpha = 0.0
-            sImageView.isHidden = true
-            sImageView.image = nil
+        transitionImageView.alpha = progress
 
-            currentTransitingImage = nil
+        if progress == 1 {
+            backgroundImageView.image = image
+            transitionImageView.image = nil
+            transitionImageView.alpha = 0
         }
     }
 
     func setBackground(_ image: UIImage?) {
-        fImageView.image = image
+        backgroundImageView.image = image
+        transitionImageView.image = nil
+        transitionImageView.alpha = 0
     }
 }

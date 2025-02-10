@@ -1209,6 +1209,7 @@
 		2D62876A2C99A10000060814 /* SwipeGovRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */; };
 		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D62ED2D2D5A0AFE001EF17D /* ExtendedPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */; };
+		2D62ED2E2D5A257D001EF17D /* BannersModuleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
@@ -25804,6 +25805,7 @@
 				7778FE5F2B910BC10023E801 /* NumberFormatter.swift in Sources */,
 				77EF9A7F2B9F141D0034D619 /* Web3Alert+ChainId.swift in Sources */,
 				77AE4FA02B905C0C00426519 /* ChainAsset.swift in Sources */,
+				2D62ED2E2D5A257D001EF17D /* BannersModuleConfiguration.swift in Sources */,
 				77AE4FAC2B905EDB00426519 /* UInt64+TimeInterval.swift in Sources */,
 				77AE4F942B90595800426519 /* UserDataStorageFacade.swift in Sources */,
 				7778FE4C2B9107D20023E801 /* CompoundOperationWrapper+Dependency.swift in Sources */,

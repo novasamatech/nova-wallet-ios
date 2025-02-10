@@ -49,17 +49,20 @@ protocol BannersViewProtocol: ControllerBackedProtocol, BannersViewProviderProto
 protocol BannersPresenterProtocol: AnyObject {
     func setup()
     func action(for bannerId: String)
+    func closeBanner(with id: String)
 }
 
 protocol BannersInteractorInputProtocol: AnyObject {
     func setup(with locale: Locale)
     func refresh(for locale: Locale)
     func updateResources(for locale: Locale)
+    func closeBanner(with id: String)
 }
 
 protocol BannersInteractorOutputProtocol: AnyObject {
     func didReceive(_ bannersFetchResult: BannersFetchResult)
-    func didReceive(_ localizedResources: BannersLocalizedResources?)
+    func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?)
+    func didReceive(_ updatedClosedBannerIds: Set<String>?)
     func didReceive(_ error: Error)
 }
 
