@@ -9,6 +9,8 @@ final class BannersPresenter {
     private let interactor: BannersInteractorInputProtocol
     private let viewModelFactory: BannerViewModelFactoryProtocol
 
+    private let closeActionAvailable: Bool
+
     private var banners: [Banner]?
     private var closedBannerIds: Set<String>?
     private var localizedResources: BannersLocalizedResources?
@@ -17,18 +19,21 @@ final class BannersPresenter {
         interactor: BannersInteractorInputProtocol,
         wireframe: BannersWireframeProtocol,
         viewModelFactory: BannerViewModelFactoryProtocol,
+        closeActionAvailable: Bool,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.closeActionAvailable = closeActionAvailable
         self.localizationManager = localizationManager
     }
 
     private func provideBanners() {
-        let viewModel = viewModelFactory.createBannerViewModels(
+        let viewModel = viewModelFactory.createLoadableWidgetViewModel(
             for: banners,
             closedBannerIds: closedBannerIds,
+            closeAvailable: closeActionAvailable,
             localizedResources: localizedResources
         )
 
@@ -53,6 +58,8 @@ extension BannersPresenter: BannersPresenterProtocol {
     }
 
     func closeBanner(with id: String) {
+        guard closeActionAvailable else { return }
+
         interactor.closeBanner(with: id)
     }
 }
@@ -77,7 +84,17 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
 
     func didReceive(_ updatedClosedBannerIds: Set<String>?) {
         closedBannerIds = updatedClosedBannerIds
-        provideBanners()
+
+        guard let viewModel = viewModelFactory.createWidgetViewModel(
+            for: banners,
+            closedBannerIds: closedBannerIds,
+            closeAvailable: closeActionAvailable,
+            localizedResources: localizedResources
+        ) else {
+            return
+        }
+
+        view?.didCloseBanner(updatedViewModel: viewModel)
     }
 
     func didReceive(_ error: any Error) {

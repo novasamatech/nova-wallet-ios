@@ -12,6 +12,8 @@ final class BannersInteractor {
     private let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
 
+    private var tmpCloseIds = Set<String>()
+
     init(
         domain: Banners.Domain,
         bannersFactory: BannersFetchOperationFactoryProtocol,
@@ -116,18 +118,20 @@ extension BannersInteractor: BannersInteractorInputProtocol {
     }
 
     func refresh(for locale: Locale) {
+        tmpCloseIds.removeAll()
         fetchBanners(for: locale)
     }
 
     func closeBanner(with id: String) {
-        var closedBannerIds = settingsManager.closedBannerIds?[domain] ?? Set()
-        closedBannerIds.insert(id)
+//        var closedBannerIds = settingsManager.closedBannerIds?[domain] ?? Set()
+//        closedBannerIds.insert(id)
+//
+//        var dict = settingsManager.closedBannerIds ?? [:]
+//        dict[domain] = closedBannerIds
+//
+//        settingsManager.closedBannerIds = dict
+        tmpCloseIds.insert(id)
 
-        var dict = settingsManager.closedBannerIds ?? [:]
-        dict[domain] = closedBannerIds
-
-        settingsManager.closedBannerIds = dict
-
-        presenter?.didReceive(closedBannerIds)
+        presenter?.didReceive(tmpCloseIds)
     }
 }

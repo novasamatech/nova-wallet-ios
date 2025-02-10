@@ -43,7 +43,8 @@ extension BannersViewProviderProtocol {
 // MARK: Inner Interfaces
 
 protocol BannersViewProtocol: ControllerBackedProtocol, BannersViewProviderProtocol {
-    func update(with viewModel: LoadableViewModelState<[BannerViewModel]>?)
+    func update(with viewModel: LoadableViewModelState<BannersWidgetviewModel>?)
+    func didCloseBanner(updatedViewModel: BannersWidgetviewModel)
 }
 
 protocol BannersPresenterProtocol: AnyObject {

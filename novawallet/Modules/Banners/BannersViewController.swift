@@ -10,6 +10,7 @@ final class BannersViewController: UIViewController, ViewHolder {
 
     private var lastContentOffset: CGFloat = 0
     private var lastCurrentPage: Int = 0
+    private var bannerToClose: String?
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
@@ -29,6 +30,7 @@ final class BannersViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupCollectionView()
+        setupActions()
         presenter.setup()
     }
 }
@@ -36,6 +38,33 @@ final class BannersViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension BannersViewController {
+    func setupActions() {
+        rootView.closeButton.addTarget(
+            self,
+            action: #selector(actionClose),
+            for: .touchUpInside
+        )
+    }
+
+    func setup(with widgetModel: BannersWidgetviewModel) {
+        viewModels = widgetModel.banners
+        rootView.collectionView.reloadData()
+
+        rootView.collectionView.scrollToItem(
+            at: IndexPath(item: 0, section: 0),
+            at: .centeredHorizontally,
+            animated: true
+        )
+
+        rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
+        rootView.setCloseButton(available: widgetModel.showsCloseButton)
+        rootView.setDisplayContent()
+        rootView.pageControl.numberOfPages = widgetModel.banners.count
+        rootView.pageControl.currentPage = 0
+        lastContentOffset = 0
+        lastCurrentPage = 0
+    }
+
     func setupCollectionView() {
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
@@ -67,7 +96,6 @@ private extension BannersViewController {
             lastOffset: lastContentOffset,
             lastPage: lastCurrentPage
         )
-
         lastContentOffset = state.currentOffset
 
         let progress = calculateTransitionProgress(state: state)
@@ -78,45 +106,88 @@ private extension BannersViewController {
             state.targetPageIndex < viewModels.count
         else { return }
 
-        let backgroundImage = viewModels[state.targetPageIndex].backgroundImage
+        let targetPageindex = state.targetPageIndex % viewModels.count
+
+        let backgroundImage = viewModels[targetPageindex].backgroundImage
 
         rootView.backgroundView.changeBackground(to: backgroundImage) {
             progress
         }
-        rootView.pageControl.currentPage = state.targetPageIndex
+        rootView.pageControl.currentPage = targetPageindex
+    }
+
+    // MARK: Actions
+
+    @objc func actionClose() {
+        guard
+            let viewModels,
+            lastCurrentPage < viewModels.count
+        else { return }
+
+        let banner = viewModels[lastCurrentPage]
+
+        presenter.closeBanner(with: banner.id)
     }
 }
 
 // MARK: BannersViewProtocol
 
 extension BannersViewController: BannersViewProtocol {
-    func update(with viewModel: LoadableViewModelState<[BannerViewModel]>?) {
+    func update(with viewModel: LoadableViewModelState<BannersWidgetviewModel>?) {
         switch viewModel {
-        case let .cached(banners), let .loaded(banners):
-            viewModels = banners
-            rootView.collectionView.reloadData()
-            rootView.setBackgroundImage(banners.first?.backgroundImage)
-            rootView.setDisplayContent()
-            rootView.pageControl.numberOfPages = banners.count
+        case let .cached(model), let .loaded(model):
+            setup(with: model)
         case .loading, .none:
             viewModels = nil
             rootView.setLoading()
         }
+    }
+
+    func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
+        viewModels = updatedViewModel.banners
+
+        let nextItemIndex = if lastCurrentPage < updatedViewModel.banners.count {
+            lastCurrentPage
+        } else {
+            0
+        }
+
+        rootView.pageControl.numberOfPages = updatedViewModel.banners.count
+        rootView.pageControl.currentPage = nextItemIndex
+
+        let nextIndexPath = IndexPath(
+            item: nextItemIndex,
+            section: 0
+        )
+
+        rootView.collectionView.reloadData()
+        rootView.collectionView.scrollToItem(
+            at: nextIndexPath,
+            at: .centeredHorizontally,
+            animated: true
+        )
     }
 }
 
 // MARK: UICollectionViewDataSource
 
 extension BannersViewController: UICollectionViewDataSource {
-    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
-        viewModels?.count ?? 0
+    func collectionView(
+        _: UICollectionView,
+        numberOfItemsInSection _: Int
+    ) -> Int {
+        guard let viewModels else {
+            return 0
+        }
+
+        return viewModels.count + 1
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let viewModels, viewModels.count > indexPath.item else {
+        guard let viewModels else {
             return UICollectionViewCell()
         }
 
@@ -125,7 +196,8 @@ extension BannersViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        cell.bind(with: viewModels[indexPath.item])
+        let currentModelIndex = indexPath.item % viewModels.count
+        cell.bind(with: viewModels[currentModelIndex])
 
         return cell
     }
@@ -169,10 +241,29 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
 extension BannersViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateBackground(for: scrollView)
+        setOffsets(for: scrollView)
+    }
+
+    func setOffsets(for scrollView: UIScrollView) {
+        guard let viewModels else { return }
+
+        let itemWidth = scrollView.bounds.width
+        if scrollView.contentOffset.x > itemWidth * CGFloat(viewModels.count) {
+            rootView.collectionView.contentOffset.x -= itemWidth * CGFloat(viewModels.count)
+        }
+        if scrollView.contentOffset.x <= 0 {
+            rootView.collectionView.contentOffset.x += itemWidth * CGFloat(viewModels.count)
+        }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        lastCurrentPage = Int(scrollView.contentOffset.x / scrollView.bounds.width)
+        guard let viewModels else { return }
+
+        lastCurrentPage = Int(
+            round(
+                Double(scrollView.contentOffset.x) / Double(scrollView.bounds.width)
+            )
+        ) % viewModels.count
     }
 }
 

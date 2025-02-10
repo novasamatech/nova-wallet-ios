@@ -1,5 +1,10 @@
 import UIKit
 
+struct BannersWidgetviewModel {
+    let showsCloseButton: Bool
+    let banners: [BannerViewModel]
+}
+
 struct BannerViewModel {
     let id: String
     let title: String

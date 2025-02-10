@@ -13663,6 +13663,7 @@
 			isa = PBXGroup;
 			children = (
 				2D5D0CCA2D50CBE4000E32F6 /* Banner.swift */,
+				2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */,
 				2D5D0CD42D514904000E32F6 /* BannersFetchResult.swift */,
 				2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */,
 				2D5D0CCC2D50CCE5000E32F6 /* BannerLocalizedResources.swift */,
@@ -14578,7 +14579,6 @@
 				2CC9ADA9846C199380AF58D6 /* BannersProtocols.swift */,
 				90D0CB9381AF203E5730CD35 /* BannersWireframe.swift */,
 				6C1CBCD5B3AE3E88244C50F5 /* BannersPresenter.swift */,
-				2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */,
 				93660F2A367CEBD932F080B1 /* BannersInteractor.swift */,
 				A00DD977BD9CE066B1B11569 /* BannersViewController.swift */,
 				FF591D1C38E7FDF839AF5783 /* BannersViewLayout.swift */,

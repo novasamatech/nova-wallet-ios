@@ -50,6 +50,7 @@ struct BannersViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            closeActionAvailable: bannerAvailability(for: domain),
             localizationManager: LocalizationManager.shared
         )
 
@@ -62,5 +63,12 @@ struct BannersViewFactory {
         inputOwner.bannersModule = presenter
 
         return view
+    }
+
+    private static func bannerAvailability(for domain: Banners.Domain) -> Bool {
+        switch domain {
+        case .dApps: true
+        case .assets: true
+        }
     }
 }

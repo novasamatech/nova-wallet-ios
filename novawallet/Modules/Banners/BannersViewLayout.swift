@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class BannersViewLayout: UIView {
     let containerView: UIView = .create { view in
@@ -7,6 +8,11 @@ final class BannersViewLayout: UIView {
     }
 
     let backgroundView = BannerBackgroundView()
+
+    let closeButton: RoundedButton = .create { button in
+        button.applyIconStyle()
+        button.imageWithTitleView?.iconImage = R.image.iconCloseWithBg()!
+    }
 
     lazy var pageControl = ExtendedPageControl()
 
@@ -65,6 +71,13 @@ private extension BannersViewLayout {
         pageControl.snp.makeConstraints { make in
             make.bottom.leading.equalTo(backgroundView).inset(16)
         }
+
+        containerView.addSubview(closeButton)
+        closeButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+            make.top.equalTo(backgroundView).inset(10)
+            make.trailing.equalTo(backgroundView).inset(16)
+        }
     }
 }
 
@@ -73,6 +86,10 @@ private extension BannersViewLayout {
 extension BannersViewLayout {
     func setBackgroundImage(_ image: UIImage?) {
         backgroundView.setBackground(image)
+    }
+
+    func setCloseButton(available: Bool) {
+        closeButton.isHidden = !available
     }
 
     func setLoading() {}
