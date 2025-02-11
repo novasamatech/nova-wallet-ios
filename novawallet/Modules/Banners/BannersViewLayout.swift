@@ -27,8 +27,9 @@ final class BannersViewLayout: UIView {
             collectionViewLayout: layout
         )
         collectionView.backgroundColor = .clear
-        collectionView.bounces = false
+        collectionView.alwaysBounceVertical = false
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.isPagingEnabled = true
 
         return collectionView

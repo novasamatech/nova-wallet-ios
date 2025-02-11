@@ -40,6 +40,8 @@ class BannerBackgroundView: UIView {
     ) {
         let progress = progressClosure()
 
+        print("TRANSITION PROGRESS: \(progress)")
+
         if progress >= 0, transitionImageView.image == nil {
             transitionImageView.image = image
         }

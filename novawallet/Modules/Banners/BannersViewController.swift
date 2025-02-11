@@ -76,8 +76,17 @@ private extension BannersViewController {
         let roundedDownPage = state.rawPageIndex.rounded(.down)
         let rawProgress = abs((state.currentOffset - roundedDownPage * state.pageWidth) / state.pageWidth)
 
-        let changesPage: Bool = (state.scrollingForward && (state.rawPageIndex > CGFloat(lastCurrentPage)))
-            || (!state.scrollingForward && state.rawPageIndex < CGFloat(lastCurrentPage))
+        let draggedToNext = (
+            state.scrollingForward &&
+            (state.rawPageIndex > CGFloat(lastCurrentPage))
+        )
+        let draggedToPrevious = (
+            !state.scrollingForward &&
+            state.rawPageIndex < CGFloat(lastCurrentPage)
+        )
+        let changesPage: Bool = draggedToNext
+            || draggedToPrevious
+            || (!state.scrollingForward && roundedDownPage > CGFloat(lastCurrentPage))
 
         return if changesPage {
             state.scrollingForward
@@ -90,9 +99,10 @@ private extension BannersViewController {
         }
     }
 
-    func updateBackground(for scrollView: UIScrollView) {
+    func updateBackground(for offset: CGFloat) {
         let state = ScrollState(
-            scrollView: scrollView,
+            scrollOffset: offset,
+            pageWidth: rootView.collectionView.bounds.width,
             lastOffset: lastContentOffset,
             lastPage: lastCurrentPage
         )
@@ -102,11 +112,11 @@ private extension BannersViewController {
 
         guard
             let viewModels = viewModels,
-            !viewModels.isEmpty,
-            state.targetPageIndex < viewModels.count
+            !viewModels.isEmpty
         else { return }
 
-        let targetPageindex = state.targetPageIndex % viewModels.count
+        let rawTargetPage = state.targetPageIndex
+        let targetPageindex = rawTargetPage % viewModels.count
 
         let backgroundImage = viewModels[targetPageindex].backgroundImage
 
@@ -114,6 +124,21 @@ private extension BannersViewController {
             progress
         }
         rootView.pageControl.currentPage = targetPageindex
+    }
+
+    func calculateOffset(for scrollView: UIScrollView) -> CGFloat {
+        guard let viewModels else { return scrollView.contentOffset.x }
+
+        let itemWidth = scrollView.bounds.width
+
+        if scrollView.contentOffset.x > itemWidth * CGFloat(viewModels.count) {
+            return rootView.collectionView.contentOffset.x - itemWidth * CGFloat(viewModels.count)
+        }
+        if scrollView.contentOffset.x < 0 {
+            return rootView.collectionView.contentOffset.x + itemWidth * CGFloat(viewModels.count)
+        }
+
+        return scrollView.contentOffset.x
     }
 
     // MARK: Actions
@@ -240,20 +265,11 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
 
 extension BannersViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        updateBackground(for: scrollView)
-        setOffsets(for: scrollView)
-    }
+        let offset = calculateOffset(for: scrollView)
 
-    func setOffsets(for scrollView: UIScrollView) {
-        guard let viewModels else { return }
+        scrollView.contentOffset.x = offset
 
-        let itemWidth = scrollView.bounds.width
-        if scrollView.contentOffset.x > itemWidth * CGFloat(viewModels.count) {
-            rootView.collectionView.contentOffset.x -= itemWidth * CGFloat(viewModels.count)
-        }
-        if scrollView.contentOffset.x <= 0 {
-            rootView.collectionView.contentOffset.x += itemWidth * CGFloat(viewModels.count)
-        }
+        updateBackground(for: offset)
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -288,19 +304,21 @@ private extension BannersViewController {
         var targetPageIndex: Int {
             if CGFloat(lastPage) == rawPageIndex {
                 lastPage
+            } else if rawPageIndex - CGFloat(lastPage) > 1 {
+                Int(floor(rawPageIndex))
             } else {
-                max(lastPage + (rawPageIndex > CGFloat(lastPage) ? 1 : -1), 0)
+                lastPage + (rawPageIndex > CGFloat(lastPage) ? 1 : -1)
             }
         }
 
         init(
-            scrollView: UIScrollView,
+            scrollOffset: CGFloat,
+            pageWidth: CGFloat,
             lastOffset: CGFloat,
             lastPage: Int
         ) {
-            currentOffset = scrollView.contentOffset.x
-            pageWidth = scrollView.bounds.width
-
+            currentOffset = scrollOffset
+            self.pageWidth = pageWidth
             self.lastOffset = lastOffset
             self.lastPage = lastPage
         }

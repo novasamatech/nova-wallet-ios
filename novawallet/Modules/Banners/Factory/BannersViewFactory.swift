@@ -67,7 +67,7 @@ struct BannersViewFactory {
 
     private static func bannerAvailability(for domain: Banners.Domain) -> Bool {
         switch domain {
-        case .dApps: true
+        case .dApps: false
         case .assets: true
         }
     }
