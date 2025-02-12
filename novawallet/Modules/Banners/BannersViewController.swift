@@ -40,6 +40,13 @@ final class BannersViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension BannersViewController {
+    func setupCollectionView() {
+        rootView.collectionView.dataSource = self
+        rootView.collectionView.delegate = self
+
+        rootView.collectionView.registerCellClass(BannerCollectionViewCell.self)
+    }
+    
     func setupActions() {
         rootView.closeButton.addTarget(
             self,
@@ -53,7 +60,6 @@ private extension BannersViewController {
 
         rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
         rootView.setCloseButton(available: widgetModel.showsCloseButton)
-        rootView.setDisplayContent()
         rootView.pageControl.numberOfPages = widgetModel.banners.count
         rootView.pageControl.currentPage = 0
     }
@@ -68,7 +74,7 @@ private extension BannersViewController {
             pageByActualOffset: 1
         )
 
-        let indexPath = if let loopedViewModels {
+        let indexPath = if loopedViewModels != nil {
             IndexPath(item: 1, section: 0)
         } else {
             IndexPath(item: 0, section: 0)
@@ -98,13 +104,6 @@ private extension BannersViewController {
 
         loopedViewModels?.insert(last, at: 0)
         loopedViewModels?.append(first)
-    }
-
-    func setupCollectionView() {
-        rootView.collectionView.dataSource = self
-        rootView.collectionView.delegate = self
-
-        rootView.collectionView.registerCellClass(BannerCollectionViewCell.self)
     }
 
     func calculateTransitionProgress(
@@ -239,6 +238,7 @@ extension BannersViewController: BannersViewProtocol {
         switch viewModel {
         case let .cached(model), let .loaded(model):
             setup(with: model)
+            rootView.setLoaded()
         case .loading, .none:
             viewModels = nil
             rootView.setLoading()

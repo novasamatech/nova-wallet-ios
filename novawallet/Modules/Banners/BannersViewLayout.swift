@@ -2,12 +2,29 @@ import UIKit
 import SoraUI
 
 final class BannersViewLayout: UIView {
+    var loadingState: LoadingState = .none {
+        didSet {
+            if loadingState == .none {
+                stopLoadingIfNeeded()
+            } else {
+                startLoadingIfNeeded()
+            }
+        }
+    }
+
+    var skeletonView: SkrullableView? {
+        didSet {
+            skeletonView?.backgroundColor = R.color.colorBlockBackground()
+            skeletonView?.layer.cornerRadius = Constants.backgroundCornerRaius
+        }
+    }
+
     let containerView = UIView()
 
     let backgroundView: BannerBackgroundView = .create { view in
         view.clipsToBounds = true
-        view.layer.cornerRadius = 12
-        view.layer.borderWidth = 1.0
+        view.layer.cornerRadius = Constants.backgroundCornerRaius
+        view.layer.borderWidth = Constants.borderWidth
         view.layer.borderColor = R.color.colorContainerBorder()?.cgColor
     }
 
@@ -37,10 +54,17 @@ final class BannersViewLayout: UIView {
         return collectionView
     }()
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if loadingState != .none {
+            updateLoadingState()
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        collectionView.backgroundColor = .clear
         setupLayout()
     }
 
@@ -57,7 +81,7 @@ private extension BannersViewLayout {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview().inset(8)
+            make.top.bottom.equalToSuperview().inset(Constants.containerVerticalInset)
         }
 
         containerView.addSubview(backgroundView)
@@ -72,15 +96,61 @@ private extension BannersViewLayout {
 
         containerView.addSubview(pageControl)
         pageControl.snp.makeConstraints { make in
-            make.bottom.leading.equalTo(backgroundView).inset(16)
+            make.bottom.leading.equalTo(backgroundView).inset(Constants.contentLeadingOffset)
         }
 
         containerView.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
-            make.top.equalTo(backgroundView).inset(10)
-            make.trailing.equalTo(backgroundView).inset(16)
+            make.size.equalTo(Constants.closeButtonSize)
+            make.top.equalTo(backgroundView).inset(Constants.closeButtontopOffset)
+            make.trailing.equalTo(backgroundView).inset(Constants.contentLeadingOffset)
         }
+    }
+}
+
+// MARK: SkeletonableView
+
+extension BannersViewLayout: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [containerView]
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [any Skeletonable] {
+        var lastY: CGFloat = 0
+
+        let rows = zip(
+            Constants.skeletonLineWidths,
+            Constants.skeletonLineHeights
+        )
+        .enumerated()
+        .map { index, size in
+            let size = CGSize(
+                width: size.0,
+                height: size.1
+            )
+
+            let yPoint = lastY + Constants.skeletonYOffsets[index]
+            lastY = yPoint + size.height
+
+            let offset = CGPoint(
+                x: Constants.contentLeadingOffset,
+                y: yPoint
+            )
+
+            return SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: offset,
+                size: size
+            )
+        }
+
+        return rows
     }
 }
 
@@ -95,7 +165,46 @@ extension BannersViewLayout {
         closeButton.isHidden = !available
     }
 
-    func setLoading() {}
+    func setLoading() {
+        loadingState.formUnion(.content)
+    }
 
-    func setDisplayContent() {}
+    func setLoaded() {
+        loadingState.remove(.content)
+    }
+}
+
+extension BannersViewLayout {
+    struct LoadingState: OptionSet {
+        typealias RawValue = UInt8
+
+        static let content = LoadingState(rawValue: 1 << 0)
+        static let all: LoadingState = [.content]
+        static let none: LoadingState = []
+
+        let rawValue: UInt8
+
+        init(rawValue: RawValue) {
+            self.rawValue = rawValue
+        }
+    }
+}
+
+// MARK: Constants
+
+private extension BannersViewLayout {
+    enum Constants {
+        static let closeButtonSize: CGFloat = 24
+        static let closeButtontopOffset: CGFloat = 10
+
+        static let backgroundCornerRaius: CGFloat = 12
+        static let borderWidth: CGFloat = 1.0
+
+        static let contentLeadingOffset: CGFloat = 16.0
+        static let containerVerticalInset: CGFloat = 8.0
+
+        static let skeletonYOffsets: [CGFloat] = [16.0, 16.0, 8.0]
+        static let skeletonLineHeights: [CGFloat] = [14.0, 8.0, 8.0]
+        static let skeletonLineWidths: [CGFloat] = [168.0, 125.0, 89.0]
+    }
 }

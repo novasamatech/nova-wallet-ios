@@ -14084,9 +14084,9 @@
 		2DB538622D561B050044BF6F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */,
-				2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */,
 				2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */,
+				2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */,
+				2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */,
 				2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */,
 			);
 			path = View;
