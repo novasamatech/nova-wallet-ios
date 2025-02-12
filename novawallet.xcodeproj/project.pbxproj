@@ -975,6 +975,8 @@
 		0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */; };
 		0CEB6B532CA6E92700609DC2 /* VotingPowerSetClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */; };
 		0CEB6B552CA70CB400609DC2 /* AssetBalance+OpenGov.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */; };
+		0CEBAD502D5C5FDE000EBA45 /* CollatorStakingRewardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD4F2D5C5FDE000EBA45 /* CollatorStakingRewardService.swift */; };
+		0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FDD282B979900479375 /* Decimal+Conversion.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -6560,6 +6562,7 @@
 		0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardOverlayView.swift; sourceTree = "<group>"; };
 		0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerSetClosure.swift; sourceTree = "<group>"; };
 		0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetBalance+OpenGov.swift"; sourceTree = "<group>"; };
+		0CEBAD4F2D5C5FDE000EBA45 /* CollatorStakingRewardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingRewardService.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -11573,6 +11576,7 @@
 				0C0F6DCF2D4133A300943A7C /* StakingCollatorsService.swift */,
 				0C0F6DD12D41352400943A7C /* CollatorStakingRewardCalculatorServiceProtocol.swift */,
 				0C0F6D8C2D3A943C00943A7C /* CollatorStakingServiceFactory.swift */,
+				0CEBAD4F2D5C5FDE000EBA45 /* CollatorStakingRewardService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -26573,6 +26577,7 @@
 				77EDF9252B96DD1B003266B1 /* Proxy.swift in Sources */,
 				0CCD18AF2BA175540068D73A /* NotificationContentResult+UserContent.swift in Sources */,
 				77AE4F972B905B4D00426519 /* ChainModel.swift in Sources */,
+				0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
 				0CCD18D72BA2C17C0068D73A /* SharedContainerGroup.swift in Sources */,
 				77AE4F962B905B2F00426519 /* AddressConversion.swift in Sources */,
@@ -27832,6 +27837,7 @@
 				841E5532282CD86C00C8438F /* StakingMainPresenterFactory.swift in Sources */,
 				84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */,
 				8473B4762A20722E003DE213 /* StakingDashboardRelaychainMapper.swift in Sources */,
+				0CEBAD502D5C5FDE000EBA45 /* CollatorStakingRewardService.swift in Sources */,
 				849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */,
 				0C6108362CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift in Sources */,
 				84A70D9B29CCECC100C648AD /* GovMetadataOperationFactory.swift in Sources */,

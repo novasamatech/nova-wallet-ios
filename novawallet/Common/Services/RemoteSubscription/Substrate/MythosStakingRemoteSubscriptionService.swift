@@ -5,7 +5,9 @@ final class MythosStakingRemoteSubscriptionService: RemoteSubscriptionService,
     StakingRemoteSubscriptionServiceProtocol {
     private static let globalDataStoragePaths: [StorageCodingPath] = [
         MythosStakingPallet.minStakePath,
-        MythosStakingPallet.currentSessionPath
+        MythosStakingPallet.currentSessionPath,
+        MythosStakingPallet.extraRewardPath,
+        MythosStakingPallet.collatorRewardPercentagePath
     ]
 
     func attachToGlobalData(

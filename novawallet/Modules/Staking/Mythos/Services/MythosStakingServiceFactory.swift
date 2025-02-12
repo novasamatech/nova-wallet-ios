@@ -7,8 +7,9 @@ protocol MythosStakingServiceFactoryProtocol {
 
     func createRewardCalculatorService(
         for chainAssetId: ChainAssetId,
-        stakingType: StakingType,
-        collatorService: MythosCollatorServiceProtocol
+        collatorService: MythosCollatorServiceProtocol,
+        blockTimeService: BlockTimeEstimationServiceProtocol,
+        stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     ) throws -> CollatorStakingRewardCalculatorServiceProtocol
 
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol
@@ -30,10 +31,27 @@ extension MythosStakingServiceFactory: MythosStakingServiceFactoryProtocol {
     }
 
     func createRewardCalculatorService(
-        for _: ChainAssetId,
-        stakingType _: StakingType,
-        collatorService _: MythosCollatorServiceProtocol
+        for chainAssetId: ChainAssetId,
+        collatorService: MythosCollatorServiceProtocol,
+        blockTimeService: BlockTimeEstimationServiceProtocol,
+        stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     ) throws -> CollatorStakingRewardCalculatorServiceProtocol {
-        MythosRewardCalculatorService()
+        let chain = try chainRegisty.getChainOrError(for: chainAssetId.chainId)
+        let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
+
+        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chain.chainId)
+
+        let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
+
+        return MythosRewardCalculatorService(
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            blockTimeOperationFactory: blockTimeOperationFactory,
+            blockTimeService: blockTimeService,
+            runtimeService: runtimeService,
+            collatorService: collatorService,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 }

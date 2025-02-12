@@ -24,6 +24,14 @@ protocol MythosStakingLocalSubscriptionFactoryProtocol {
         for chainId: ChainModel.Id,
         accountId: AccountId
     ) throws -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>
+
+    func getCollatorRewardsPercentageProvider(
+        for chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedPercent>
+
+    func getExtraRewardProvider(
+        for chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBigUInt>
 }
 
 final class MythosStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -65,6 +73,24 @@ final class MythosStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFac
             for: chainId,
             accountId: accountId,
             storagePath: MythosStakingPallet.releaseQueuesPath
+        )
+    }
+
+    func getCollatorRewardsPercentageProvider(
+        for chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedPercent> {
+        try getPlainProvider(
+            for: chainId,
+            storagePath: MythosStakingPallet.collatorRewardPercentagePath
+        )
+    }
+
+    func getExtraRewardProvider(
+        for chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBigUInt> {
+        try getPlainProvider(
+            for: chainId,
+            storagePath: MythosStakingPallet.extraRewardPath
         )
     }
 }

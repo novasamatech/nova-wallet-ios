@@ -37,4 +37,12 @@ extension MythosStakingPallet {
     static var maxStakersPerCandidatePath: ConstantCodingPath {
         ConstantCodingPath(moduleName: Self.name, constantName: "MaxStakers")
     }
+
+    static var collatorRewardPercentagePath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.name, itemName: "CollatorRewardPercentage")
+    }
+
+    static var extraRewardPath: StorageCodingPath {
+        StorageCodingPath(moduleName: Self.name, itemName: "ExtraReward")
+    }
 }
