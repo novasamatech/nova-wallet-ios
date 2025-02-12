@@ -53,7 +53,7 @@ extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
         return AsyncClosureOperation { closure in
             _ = provider.fetch { result in
                 guard let result else {
-                    closure(.failure(BaseOperationError.parentOperationCancelled))
+                    closure(.failure(BannersLocalizationFetchErrors.localizablesListFetchError))
                     return
                 }
 
@@ -69,4 +69,8 @@ private extension BannersLocalizationFactory {
     enum Constants {
         static let localizationPathFormat: String = "%@/localized/%@.json"
     }
+}
+
+enum BannersLocalizationFetchErrors: Error {
+    case localizablesListFetchError
 }

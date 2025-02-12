@@ -11,6 +11,7 @@ final class BannersInteractor {
     private let localizationFactory: BannersLocalizationFactoryProtocol
     private let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
+    private let logger: LoggerProtocol
 
     private var tmpCloseIds = Set<String>()
 
@@ -19,13 +20,15 @@ final class BannersInteractor {
         bannersFactory: BannersFetchOperationFactoryProtocol,
         localizationFactory: BannersLocalizationFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.domain = domain
         self.bannersFactory = bannersFactory
         self.localizationFactory = localizationFactory
         self.settingsManager = settingsManager
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }
 
@@ -44,6 +47,7 @@ private extension BannersInteractor {
             case let .success(fetchResult):
                 self?.presenter?.didReceive(fetchResult)
             case let .failure(error):
+                self?.logger.error("Banners fetch failed with error: \(error)")
                 self?.presenter?.didReceive(error)
             }
         }
@@ -108,6 +112,7 @@ extension BannersInteractor: BannersInteractorInputProtocol {
             case let .success(fetchResult):
                 self?.presenter?.didReceive(fetchResult)
             case let .failure(error):
+                self?.logger.error("Localization fetch failed with error: \(error)")
                 self?.presenter?.didReceive(error)
             }
         }

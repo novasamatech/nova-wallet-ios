@@ -57,7 +57,7 @@ private extension BannersFetchOperationFactory {
             (Result<[RemoteBannerModel]?, Error>) -> Void
         ) -> Void = { result, closure in
             guard let result else {
-                closure(.failure(BaseOperationError.parentOperationCancelled))
+                closure(.failure(BannersFetchErrors.bannersListFetchError))
 
                 return
             }
@@ -110,7 +110,7 @@ private extension BannersFetchOperationFactory {
 
     func createImageFetchWrapper(with imageInfo: CommonImageInfo) -> CompoundOperationWrapper<UIImage> {
         guard let cacheKey = imageInfo.url?.absoluteString else {
-            return .createWithError(NSError())
+            return .createWithError(BannersFetchErrors.imageURLIsMissing)
         }
 
         let checkCacheOperation = imageRetrieveOperationFactory.checkCacheOperation(using: cacheKey)
@@ -242,4 +242,9 @@ private extension BannersFetchOperationFactory {
             #endif
         }
     }
+}
+
+enum BannersFetchErrors: Error {
+    case imageURLIsMissing
+    case bannersListFetchError
 }
