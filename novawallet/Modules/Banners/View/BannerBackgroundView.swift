@@ -37,19 +37,20 @@ class BannerBackgroundView: UIView {
 
     func changeBackground(
         to image: UIImage?,
-        progressClosure: () -> CGFloat
+        progress: CGFloat
     ) {
-        let progress = progressClosure()
+        guard progress > 0 else {
+            transitionImageView.image = nil
+            return
+        }
 
-        print("TRANSITION PROGRESS: \(progress)")
-
-        if progress >= 0, transitionImageView.image == nil {
+        if progress > 0, progress < 1, transitionImageView.image == nil {
             transitionImageView.image = image
         }
 
         transitionImageView.alpha = progress
 
-        if progress == 1 {
+        if progress == 1, transitionImageView.image != nil {
             backgroundImageView.image = image
             transitionImageView.image = nil
             transitionImageView.alpha = 0

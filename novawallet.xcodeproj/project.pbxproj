@@ -1210,6 +1210,7 @@
 		2D62876C2C99A12A00060814 /* SwipeGovSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */; };
 		2D62ED2D2D5A0AFE001EF17D /* ExtendedPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */; };
 		2D62ED2E2D5A257D001EF17D /* BannersModuleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */; };
+		2D62ED302D5CC3B2001EF17D /* BannersViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
@@ -6668,6 +6669,7 @@
 		2D6287692C99A10000060814 /* SwipeGovRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovRepositoryFactory.swift; sourceTree = "<group>"; };
 		2D62876B2C99A12A00060814 /* SwipeGovSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovSetupInteractorError.swift; sourceTree = "<group>"; };
 		2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedPageControl.swift; sourceTree = "<group>"; };
+		2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannersViewController+State.swift"; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
 		2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceIconsOptions.swift; sourceTree = "<group>"; };
@@ -14581,6 +14583,7 @@
 				6C1CBCD5B3AE3E88244C50F5 /* BannersPresenter.swift */,
 				93660F2A367CEBD932F080B1 /* BannersInteractor.swift */,
 				A00DD977BD9CE066B1B11569 /* BannersViewController.swift */,
+				2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */,
 				FF591D1C38E7FDF839AF5783 /* BannersViewLayout.swift */,
 			);
 			path = Banners;
@@ -28786,6 +28789,7 @@
 				1F88F3DBFA0BD6D0FDF558F3 /* SelectValidatorsConfirmViewFactory.swift in Sources */,
 				0CCD18B82BA1EE3D0068D73A /* StatemineAssetSerializer.swift in Sources */,
 				D344C6DAC1F8BB6152BA8DD0 /* RecommendedValidatorListProtocols.swift in Sources */,
+				2D62ED302D5CC3B2001EF17D /* BannersViewController+State.swift in Sources */,
 				84F3B27827F4179A00D64CF5 /* PhishingSiteMapper.swift in Sources */,
 				0678271BE1BA5BBC084F478A /* RecommendedValidatorListWireframe.swift in Sources */,
 				F441BE0E263984DD0096B67B /* BondExtraCall.swift in Sources */,
