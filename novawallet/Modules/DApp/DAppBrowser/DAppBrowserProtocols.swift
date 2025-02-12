@@ -27,11 +27,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
     func process(page: DAppBrowserPage)
 
-    func process(
-        message: Any,
-        host: String,
-        transport name: String
-    )
+    func process(message: Any, transport name: String)
 
     func process(stateRender: DAppBrowserTabRenderProtocol)
 

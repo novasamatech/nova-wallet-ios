@@ -194,12 +194,14 @@ extension DAppListViewController: DAppListViewProtocol {
         dataSource.apply(sections.models)
     }
 
-    func didReceiveDApp(with id: String) {
-        presenter.selectDApp(with: id)
-    }
-
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
+    }
+}
+
+extension DAppListViewController: DAppOpenViewProtocol {
+    func didReceiveDAppNavigation(model: DAppNavigation) {
+        presenter.provideNavigation(for: model)
     }
 }
 
