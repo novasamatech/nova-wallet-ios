@@ -6,10 +6,8 @@ final class BannersViewController: UIViewController, ViewHolder {
 
     let presenter: BannersPresenterProtocol
 
-    private var viewModels: [BannerViewModel]?
-    private var loopedViewModels: [BannerViewModel]?
-
-    private var bannerToClose: String?
+    var viewModels: [BannerViewModel]?
+    var loopedViewModels: [BannerViewModel]?
 
     private var staticState: StaticState?
     private var scrollState: ScrollState?
@@ -46,7 +44,7 @@ private extension BannersViewController {
 
         rootView.collectionView.registerCellClass(BannerCollectionViewCell.self)
     }
-    
+
     func setupActions() {
         rootView.closeButton.addTarget(
             self,
@@ -56,12 +54,20 @@ private extension BannersViewController {
     }
 
     func setup(with widgetModel: BannersWidgetviewModel) {
+        setupPageControl(for: widgetModel.banners)
         setupBannersCollection(with: widgetModel.banners)
 
         rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
         rootView.setCloseButton(available: widgetModel.showsCloseButton)
-        rootView.pageControl.numberOfPages = widgetModel.banners.count
-        rootView.pageControl.currentPage = 0
+    }
+
+    func setupPageControl(for banners: [BannerViewModel]) {
+        if banners.count > 1 {
+            rootView.pageControl.numberOfPages = banners.count
+            rootView.pageControl.isHidden = false
+        } else {
+            rootView.pageControl.isHidden = true
+        }
     }
 
     func setupBannersCollection(with viewModels: [BannerViewModel]) {
@@ -74,16 +80,28 @@ private extension BannersViewController {
             pageByActualOffset: 1
         )
 
-        let indexPath = if loopedViewModels != nil {
-            IndexPath(item: 1, section: 0)
-        } else {
-            IndexPath(item: 0, section: 0)
-        }
+        let itemIndex = viewModels.count > 1 ? 1 : 0
+
+        scrollToItem(index: itemIndex)
+
+        rootView.collectionView.alwaysBounceHorizontal = viewModels.count > 1
+    }
+
+    func scrollToItem(index: Int) {
+        guard let staticState else { return }
+
+        let indexPath = IndexPath(item: index, section: 0)
+
+        scrollState = ScrollState(
+            contentOffset: rootView.collectionView.contentOffset.x,
+            pageWidth: rootView.collectionView.bounds.width,
+            currentPage: staticState.currentPage
+        )
 
         rootView.collectionView.scrollToItem(
             at: indexPath,
             at: .centeredHorizontally,
-            animated: false
+            animated: true
         )
     }
 
@@ -248,110 +266,21 @@ extension BannersViewController: BannersViewProtocol {
     func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
         guard let staticState else { return }
 
-        viewModels = updatedViewModel.banners
+        setViewModels(updatedViewModel.banners)
+        setupPageControl(for: updatedViewModel.banners)
 
-        let nextItemIndex = if staticState.currentPage < updatedViewModel.banners.count {
-            staticState.currentPage
+        let nextItemIndex: Int
+
+        if let loopedViewModels, staticState.pageByActualOffset < loopedViewModels.count - 1 {
+            nextItemIndex = staticState.pageByActualOffset + 1
         } else {
-            0
+            nextItemIndex = 0
         }
-
-        rootView.pageControl.numberOfPages = updatedViewModel.banners.count
-        rootView.pageControl.currentPage = nextItemIndex
-
-        let nextIndexPath = IndexPath(
-            item: nextItemIndex,
-            section: 0
-        )
 
         rootView.collectionView.reloadData()
-        rootView.collectionView.scrollToItem(
-            at: nextIndexPath,
-            at: .centeredHorizontally,
-            animated: true
-        )
-    }
-}
 
-// MARK: UICollectionViewDataSource
-
-extension BannersViewController: UICollectionViewDataSource {
-    func collectionView(
-        _: UICollectionView,
-        numberOfItemsInSection _: Int
-    ) -> Int {
-        if let loopedViewModels {
-            loopedViewModels.count
-        } else if let viewModels {
-            viewModels.count
-        } else {
-            0
-        }
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        guard let viewModels else {
-            return UICollectionViewCell()
-        }
-
-        let cell = collectionView.dequeueReusableCellWithType(
-            BannerCollectionViewCell.self,
-            for: indexPath
-        )!
-
-        let actualViewModels = if let loopedViewModels {
-            loopedViewModels
-        } else {
-            viewModels
-        }
-
-        cell.bind(with: actualViewModels[indexPath.item])
-
-        return cell
-    }
-}
-
-// MARK: UICollectionViewDelegate
-
-extension BannersViewController: UICollectionViewDelegate {
-    func collectionView(
-        _: UICollectionView,
-        didSelectItemAt indexPath: IndexPath
-    ) {
-        guard let viewModels else { return }
-
-        let index = indexPath.item
-
-        let bannerId = if let loopedViewModels {
-            loopedViewModels[index].id
-        } else {
-            viewModels[index].id
-        }
-
-        presenter.action(for: bannerId)
-    }
-}
-
-// MARK: UICollectionViewDelegateFlowLayout
-
-extension BannersViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        sizeForItemAt _: IndexPath
-    ) -> CGSize {
-        rootView.backgroundView.bounds.size
-    }
-
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt _: Int
-    ) -> CGFloat {
-        .zero
+        scrollToItem(index: nextItemIndex)
+        rootView.collectionView.alwaysBounceHorizontal = updatedViewModel.banners.count > 1
     }
 }
 
