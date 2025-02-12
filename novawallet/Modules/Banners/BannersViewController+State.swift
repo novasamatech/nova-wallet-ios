@@ -6,7 +6,7 @@ extension BannersViewController {
         let pageByActualOffset: Int
     }
 
-    struct ScrollState {
+    struct DynamicState {
         private let currentPage: Int
 
         let contentOffset: CGFloat

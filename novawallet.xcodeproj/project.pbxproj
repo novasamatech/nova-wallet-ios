@@ -1218,6 +1218,7 @@
 		2D62ED2E2D5A257D001EF17D /* BannersModuleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */; };
 		2D62ED302D5CC3B2001EF17D /* BannersViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */; };
 		2D62ED322D5CE621001EF17D /* BannersViewController+UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */; };
+		2D62ED342D5D0471001EF17D /* UICollectionView+reload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
@@ -6685,6 +6686,7 @@
 		2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedPageControl.swift; sourceTree = "<group>"; };
 		2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannersViewController+State.swift"; sourceTree = "<group>"; };
 		2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannersViewController+UICollectionView.swift"; sourceTree = "<group>"; };
+		2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+reload.swift"; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
 		2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceIconsOptions.swift; sourceTree = "<group>"; };
@@ -19262,6 +19264,7 @@
 				F4D96B662637E89300B23D3D /* UIView+Separator.swift */,
 				84BB3CF2267D24B000676FFE /* UIStackView+Manage.swift */,
 				F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */,
+				2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */,
 				849ECD3826DF792800F542A3 /* SkeletonRow+View.swift */,
 				84E4897229A79017008726FA /* SkeletonDecoration+View.swift */,
 				849D755A2756910A007726C3 /* RoundedView+Styles.swift */,
@@ -28970,6 +28973,7 @@
 				DBA436B3B1C90965FE8F9B79 /* YourValidatorListPresenter.swift in Sources */,
 				E7CAD629FF0D4E97594F7A05 /* YourValidatorListInteractor.swift in Sources */,
 				88F34FD728FFE66E00712BDE /* FullDetailsRow.swift in Sources */,
+				2D62ED342D5D0471001EF17D /* UICollectionView+reload.swift in Sources */,
 				8466780F27EB2939007935D3 /* OnChainTransferPresenter.swift in Sources */,
 				7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */,
 				84466B3528B6731B00FA1E0D /* LedgerSigningWrapper.swift in Sources */,
