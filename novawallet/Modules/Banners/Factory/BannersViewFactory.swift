@@ -40,7 +40,8 @@ struct BannersViewFactory {
             bannersFactory: bannersFactory,
             localizationFactory: localizationFactory,
             settingsManager: SettingsManager.shared,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
         let wireframe = BannersWireframe(router: URLLocalRouter.createWithDeeplinks())
 

@@ -284,7 +284,7 @@ extension BannersViewController: UICollectionViewDelegate {
         didSelectItemAt indexPath: IndexPath
     ) {
         guard let viewModels else { return }
-        
+
         let index = indexPath.item % viewModels.count
         let bannerId = viewModels[index].id
 
