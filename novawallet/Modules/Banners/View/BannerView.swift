@@ -2,9 +2,18 @@ import Foundation
 import SoraUI
 
 class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupStyle()
+    }
+
+    private func setupStyle() {
+        layer.cornerRadius = 12
+    }
+
     func bind(with viewModel: BannerViewModel) {
         view.bind(with: viewModel)
-        clipsToBounds = viewModel.clipsToBounds
         layer.masksToBounds = viewModel.clipsToBounds
     }
 }
@@ -62,7 +71,6 @@ class BannerView: UIView {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
         contentImageView.image = viewModel.contentImage
-        clipsToBounds = viewModel.clipsToBounds
         layer.masksToBounds = viewModel.clipsToBounds
     }
 }

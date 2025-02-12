@@ -7,6 +7,8 @@ final class BannersViewLayout: UIView {
     let backgroundView: BannerBackgroundView = .create { view in
         view.clipsToBounds = true
         view.layer.cornerRadius = 12
+        view.layer.borderWidth = 1.0
+        view.layer.borderColor = R.color.colorContainerBorder()?.cgColor
     }
 
     let closeButton: RoundedButton = .create { button in
