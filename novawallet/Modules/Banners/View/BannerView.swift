@@ -53,6 +53,7 @@ class BannerView: UIView {
         contentImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(-8.0)
             make.bottom.equalToSuperview().inset(-8.0)
+            make.width.equalTo(202)
             make.trailing.equalToSuperview()
         }
     }

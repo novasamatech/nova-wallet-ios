@@ -2,12 +2,12 @@ import UIKit
 import SoraUI
 
 final class BannersViewLayout: UIView {
-    let containerView: UIView = .create { view in
-        view.layer.cornerRadius = 12
-        view.clipsToBounds = true
-    }
+    let containerView = UIView()
 
-    let backgroundView = BannerBackgroundView()
+    let backgroundView: BannerBackgroundView = .create { view in
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 12
+    }
 
     let closeButton: RoundedButton = .create { button in
         button.applyIconStyle()
@@ -54,18 +54,18 @@ private extension BannersViewLayout {
     func setupLayout() {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        containerView.addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.bottom.equalToSuperview().inset(8)
         }
 
+        containerView.addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         containerView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.edges.equalTo(backgroundView)
+            make.edges.equalToSuperview()
         }
 
         containerView.addSubview(pageControl)

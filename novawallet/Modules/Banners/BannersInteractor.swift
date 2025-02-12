@@ -55,11 +55,11 @@ private extension BannersInteractor {
 
     func createFullFetchWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersFetchResult> {
         let backgroundImageInfo = CommonImageInfo(
-            size: CGSize(width: 343, height: 126),
+            size: CGSize(width: 343, height: 110),
             scale: UIScreen.main.scale
         )
         let contentImageInfo = CommonImageInfo(
-            size: CGSize(width: 40, height: 40),
+            size: CGSize(width: 202, height: 126),
             scale: UIScreen.main.scale
         )
         let bannersFetchWrapper = bannersFactory.createWrapper(
