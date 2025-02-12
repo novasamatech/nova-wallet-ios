@@ -31,6 +31,9 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
+    private let rewardCalculatorCancellableStore = CancellableCallStore()
+    private let stakingDurationCancellableStore = CancellableCallStore()
+
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
     private var currentSessionProvider: AnyDataProvider<DecodedU32>?
@@ -68,6 +71,9 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
 
     deinit {
         state.throttle()
+
+        rewardCalculatorCancellableStore.cancel()
+        stakingDurationCancellableStore.cancel()
     }
 
     private func performBlockNumberSubscription() {
@@ -86,19 +92,42 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
     }
 
     private func provideStakingDuration() {
+        stakingDurationCancellableStore.cancel()
+
         let wrapper = durationOperationFactory.createDurationOperation(
             for: chain.chainId,
             blockTimeEstimationService: state.blockTimeService
         )
 
-        execute(
+        executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: stakingDurationCancellableStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(duration):
                 self?.presenter?.didReceive(duration: duration)
+            case let .failure(error):
+                self?.logger.error("Unexpected duration error: \(error)")
+            }
+        }
+    }
+
+    private func provideRewardCalculationEngine() {
+        rewardCalculatorCancellableStore.cancel()
+
+        let operation = state.rewardCalculatorService.fetchCalculatorOperation()
+
+        execute(
+            operation: operation,
+            inOperationQueue: operationQueue,
+            backingCallIn: rewardCalculatorCancellableStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(engine):
+                self?.presenter?.didReceive(calculator: engine)
             case let .failure(error):
                 self?.logger.error("Unexpected duration error: \(error)")
             }
@@ -150,6 +179,8 @@ extension StartStakingInfoMythosInteractor: MythosStakingLocalStorageSubscriber,
         switch result {
         case let .success(session):
             if let session {
+                provideRewardCalculationEngine()
+
                 presenter?.didReceive(currentSession: session)
             }
         case let .failure(error):

@@ -69,6 +69,10 @@ extension StartStakingInfoMythosPresenter: StartStakingInfoMythosInteractorOutpu
 
         state.minStake = minStake
     }
+
+    func didReceive(calculator: CollatorStakingRewardCalculatorEngineProtocol) {
+        state.maxApy = calculator.calculateMaxReturn(for: .year)
+    }
 }
 
 extension StartStakingInfoMythosPresenter {
@@ -77,6 +81,7 @@ extension StartStakingInfoMythosPresenter {
         var minStake: Balance?
         var duration: MythosStakingDuration?
         var currentSession: SessionIndex?
+        var maxApy: Decimal?
 
         private(set) var blockNumber: BlockNumber?
 
@@ -86,11 +91,6 @@ extension StartStakingInfoMythosPresenter {
 
         var rewardDelay: TimeInterval? {
             sessionCountdown?.timeIntervalTillNextSessionStart()
-        }
-
-        var maxApy: Decimal? {
-            // TODO: Fix when APY implemented
-            0
         }
 
         var sessionCountdown: ChainSessionCountdown? {

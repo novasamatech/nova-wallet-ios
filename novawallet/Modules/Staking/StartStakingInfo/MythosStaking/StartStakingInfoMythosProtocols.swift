@@ -7,4 +7,5 @@ protocol StartStakingInfoMythosInteractorOutputProtocol: StartStakingInfoInterac
     func didReceive(minStake: Balance)
     func didReceive(currentSession: SessionIndex)
     func didReceive(blockNumber: BlockNumber?)
+    func didReceive(calculator: CollatorStakingRewardCalculatorEngineProtocol)
 }
