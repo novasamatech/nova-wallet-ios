@@ -8,9 +8,10 @@ final class BannersViewController: UIViewController, ViewHolder {
 
     private var viewModels: [BannerViewModel]?
 
-    private var lastContentOffset: CGFloat = 0
-    private var lastCurrentPage: Int = 0
     private var bannerToClose: String?
+
+    private var staticState: StaticState?
+    private var scrollState: ScrollState?
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
@@ -49,6 +50,7 @@ private extension BannersViewController {
     func setup(with widgetModel: BannersWidgetviewModel) {
         viewModels = widgetModel.banners
         rootView.collectionView.reloadData()
+        staticState = .init(currentPage: 0)
 
         rootView.collectionView.scrollToItem(
             at: IndexPath(item: 0, section: 0),
@@ -61,8 +63,6 @@ private extension BannersViewController {
         rootView.setDisplayContent()
         rootView.pageControl.numberOfPages = widgetModel.banners.count
         rootView.pageControl.currentPage = 0
-        lastContentOffset = 0
-        lastCurrentPage = 0
     }
 
     func setupCollectionView() {
@@ -72,73 +72,118 @@ private extension BannersViewController {
         rootView.collectionView.registerCellClass(BannerCollectionViewCell.self)
     }
 
-    func calculateTransitionProgress(state: ScrollState) -> CGFloat {
-        let roundedDownPage = state.rawPageIndex.rounded(.down)
-        let rawProgress = abs((state.currentOffset - roundedDownPage * state.pageWidth) / state.pageWidth)
+    func calculateTransitionProgress(
+        for newScrollState: ScrollState,
+        _ oldScrollState: ScrollState?
+    ) -> CGFloat {
+        guard let staticState, let viewModels else { return .zero }
+
+        let scrollingForward: Bool = if let oldOffset = oldScrollState?.virtualOffset {
+            oldOffset < newScrollState.virtualOffset
+        } else {
+            newScrollState.virtualOffset > CGFloat(staticState.currentPage) * newScrollState.pageWidth
+        }
+
+        print("scrollingForward: \(scrollingForward)")
+
+        let rawPageIndex = abs(newScrollState.rawPageIndex.rounded(.down))
+        let rawProgress = abs((newScrollState.virtualOffset - rawPageIndex * newScrollState.pageWidth) / newScrollState.pageWidth)
+
+        print("rawPageIndex: \(rawPageIndex)")
+        print("rawProgress: \(rawProgress)")
 
         let draggedToNext = (
-            state.scrollingForward &&
-            (state.rawPageIndex > CGFloat(lastCurrentPage))
+            scrollingForward &&
+                rawPageIndex > CGFloat(staticState.currentPage)
         )
         let draggedToPrevious = (
-            !state.scrollingForward &&
-            state.rawPageIndex < CGFloat(lastCurrentPage)
+            !scrollingForward &&
+                rawPageIndex < CGFloat(staticState.currentPage)
         )
         let changesPage: Bool = draggedToNext
             || draggedToPrevious
-            || (!state.scrollingForward && roundedDownPage > CGFloat(lastCurrentPage))
 
         return if changesPage {
-            state.scrollingForward
+            scrollingForward
                 ? (rawProgress == 0 ? 1.0 : rawProgress)
                 : (1 - rawProgress)
         } else {
-            state.scrollingForward
+            scrollingForward
                 ? (rawProgress == 0 ? rawProgress : 1 - rawProgress)
                 : rawProgress
         }
     }
 
-    func updateBackground(for offset: CGFloat) {
-        let state = ScrollState(
-            scrollOffset: offset,
-            pageWidth: rootView.collectionView.bounds.width,
-            lastOffset: lastContentOffset,
-            lastPage: lastCurrentPage
-        )
-        lastContentOffset = state.currentOffset
+    func updateBackground(
+        for newScrollState: ScrollState,
+        oldScrollState: ScrollState?
+    ) {
+        guard let staticState else { return }
 
-        let progress = calculateTransitionProgress(state: state)
+        let progress = calculateTransitionProgress(for: newScrollState, oldScrollState)
+
+        print("TRANSITION PROGRESS: \(progress)")
 
         guard
             let viewModels = viewModels,
             !viewModels.isEmpty
         else { return }
 
-        let rawTargetPage = state.targetPageIndex
-        let targetPageindex = rawTargetPage % viewModels.count
+        let rawPageIndex = newScrollState.actualOffset / newScrollState.pageWidth
 
-        let backgroundImage = viewModels[targetPageindex].backgroundImage
+        let rawTargetPageIndex: Int = if CGFloat(staticState.currentPage) == rawPageIndex {
+            staticState.currentPage
+        } else if rawPageIndex - CGFloat(staticState.currentPage) > 1 {
+            Int(floor(rawPageIndex))
+        } else {
+            staticState.currentPage + (rawPageIndex > CGFloat(staticState.currentPage) ? 1 : -1)
+        }
+
+        let targetPageIndex = rawTargetPageIndex % viewModels.count
+
+        let backgroundImage = viewModels[targetPageIndex].backgroundImage
 
         rootView.backgroundView.changeBackground(to: backgroundImage) {
             progress
         }
-        rootView.pageControl.currentPage = targetPageindex
+        rootView.pageControl.currentPage = targetPageIndex
+
+        print("TARGET PAGE INDEX: \(targetPageIndex)")
     }
 
-    func calculateOffset(for scrollView: UIScrollView) -> CGFloat {
-        guard let viewModels else { return scrollView.contentOffset.x }
+    func calculateOffset(
+        for scrollView: UIScrollView,
+        scrollState: ScrollState
+    ) -> (actualOffset: CGFloat, virtualOffset: CGFloat) {
+        guard let viewModels else {
+            return (scrollState.actualOffset, scrollState.virtualOffset)
+        }
 
         let itemWidth = scrollView.bounds.width
+        let fullContentSize = itemWidth * CGFloat(viewModels.count)
 
-        if scrollView.contentOffset.x > itemWidth * CGFloat(viewModels.count) {
-            return rootView.collectionView.contentOffset.x - itemWidth * CGFloat(viewModels.count)
+        var reuseDelta: CGFloat = 0
+        var actualOffset: CGFloat = scrollView.contentOffset.x
+
+        if scrollView.contentOffset.x > fullContentSize {
+            reuseDelta = scrollView.contentOffset.x - fullContentSize
+            actualOffset = reuseDelta
         }
+
         if scrollView.contentOffset.x < 0 {
-            return rootView.collectionView.contentOffset.x + itemWidth * CGFloat(viewModels.count)
+            reuseDelta = scrollView.contentOffset.x
+            actualOffset = reuseDelta + fullContentSize
         }
 
-        return scrollView.contentOffset.x
+        let actualOffsetDelta = actualOffset - scrollState.actualOffset
+
+        let virtualOffset = if reuseDelta != 0 {
+            scrollState.virtualOffset + reuseDelta
+        } else {
+            scrollState.virtualOffset + actualOffsetDelta
+        }
+
+        return (actualOffset, virtualOffset)
     }
 
     // MARK: Actions
@@ -146,10 +191,11 @@ private extension BannersViewController {
     @objc func actionClose() {
         guard
             let viewModels,
-            lastCurrentPage < viewModels.count
+            let staticState,
+            staticState.currentPage < viewModels.count
         else { return }
 
-        let banner = viewModels[lastCurrentPage]
+        let banner = viewModels[staticState.currentPage]
 
         presenter.closeBanner(with: banner.id)
     }
@@ -169,10 +215,12 @@ extension BannersViewController: BannersViewProtocol {
     }
 
     func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
+        guard let staticState else { return }
+
         viewModels = updatedViewModel.banners
 
-        let nextItemIndex = if lastCurrentPage < updatedViewModel.banners.count {
-            lastCurrentPage
+        let nextItemIndex = if staticState.currentPage < updatedViewModel.banners.count {
+            staticState.currentPage
         } else {
             0
         }
@@ -265,62 +313,92 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
 
 extension BannersViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offset = calculateOffset(for: scrollView)
+        guard let staticState, let scrollState else { return }
 
-        scrollView.contentOffset.x = offset
+        let (actualOffset, virtualOffset) = calculateOffset(
+            for: scrollView,
+            scrollState: scrollState
+        )
 
-        updateBackground(for: offset)
+        let crossedBounds = virtualOffset != actualOffset
+        scrollView.contentOffset.x = actualOffset
+
+        let newScrollState = ScrollState(
+            actualOffset: actualOffset,
+            virtualOffset: virtualOffset,
+            crossedBounds: crossedBounds,
+            pageWidth: scrollView.bounds.width,
+            currentPage: staticState.currentPage
+        )
+
+        print("Actual offset: \(actualOffset), virtual offset: \(virtualOffset), crossed bounds: \(newScrollState.crossedBounds)")
+
+        updateBackground(
+            for: newScrollState,
+            oldScrollState: scrollState
+        )
+        self.scrollState = newScrollState
+    }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        guard let staticState else { return }
+
+        let scrollState = ScrollState(
+            actualOffset: scrollView.contentOffset.x,
+            virtualOffset: scrollView.contentOffset.x,
+            crossedBounds: false,
+            pageWidth: scrollView.bounds.width,
+            currentPage: staticState.currentPage
+        )
+
+        self.scrollState = scrollState
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         guard let viewModels else { return }
 
-        lastCurrentPage = Int(
+        let lastCurrentPage = Int(
             round(
                 Double(scrollView.contentOffset.x) / Double(scrollView.bounds.width)
             )
         ) % viewModels.count
+
+        staticState = StaticState(currentPage: lastCurrentPage)
+        scrollState = nil
     }
 }
 
 // MARK: ScrollState
 
 private extension BannersViewController {
-    struct ScrollState {
-        private let lastPage: Int
-        private let lastOffset: CGFloat
+    struct StaticState {
+        let currentPage: Int
+    }
 
-        let currentOffset: CGFloat
+    struct ScrollState {
+        private let currentPage: Int
+
+        let crossedBounds: Bool
+        let actualOffset: CGFloat
+        let virtualOffset: CGFloat
         let pageWidth: CGFloat
 
         var rawPageIndex: CGFloat {
-            currentOffset / pageWidth
-        }
-
-        var scrollingForward: Bool {
-            currentOffset > lastOffset
-        }
-
-        var targetPageIndex: Int {
-            if CGFloat(lastPage) == rawPageIndex {
-                lastPage
-            } else if rawPageIndex - CGFloat(lastPage) > 1 {
-                Int(floor(rawPageIndex))
-            } else {
-                lastPage + (rawPageIndex > CGFloat(lastPage) ? 1 : -1)
-            }
+            virtualOffset / pageWidth
         }
 
         init(
-            scrollOffset: CGFloat,
+            actualOffset: CGFloat,
+            virtualOffset: CGFloat,
+            crossedBounds: Bool,
             pageWidth: CGFloat,
-            lastOffset: CGFloat,
-            lastPage: Int
+            currentPage: Int
         ) {
-            currentOffset = scrollOffset
+            self.virtualOffset = virtualOffset
+            self.actualOffset = actualOffset
+            self.crossedBounds = crossedBounds
             self.pageWidth = pageWidth
-            self.lastOffset = lastOffset
-            self.lastPage = lastPage
+            self.currentPage = currentPage
         }
     }
 }
