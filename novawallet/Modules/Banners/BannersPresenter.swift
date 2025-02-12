@@ -50,11 +50,14 @@ extension BannersPresenter: BannersPresenterProtocol {
     }
 
     func action(for bannerId: String) {
-        guard let banner = banners?.first(where: { $0.id == bannerId }) else {
+        guard
+            let banner = banners?.first(where: { $0.id == bannerId }),
+            let actionLink = banner.actionLink
+        else {
             return
         }
 
-        print(banner)
+        wireframe.openActionLink(urlString: actionLink)
     }
 
     func closeBanner(with id: String) {

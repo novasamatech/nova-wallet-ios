@@ -42,7 +42,7 @@ struct BannersViewFactory {
             settingsManager: SettingsManager.shared,
             operationQueue: operationQueue
         )
-        let wireframe = BannersWireframe()
+        let wireframe = BannersWireframe(router: URLLocalRouter.createWithDeeplinks())
 
         let viewModelFactory = BannerViewModelFactory()
 

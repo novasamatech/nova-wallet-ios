@@ -156,7 +156,8 @@ private extension BannersFetchOperationFactory {
                     id: $0.id,
                     background: background,
                     image: contentImage,
-                    clipsToBounds: $0.clipsToBounds
+                    clipsToBounds: $0.clipsToBounds,
+                    actionLink: $0.action
                 )
             }
         }

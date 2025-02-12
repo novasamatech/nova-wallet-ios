@@ -6,6 +6,7 @@ struct RemoteBannerModel: Codable, Equatable {
     let background: URL
     let image: URL
     let clipsToBounds: Bool
+    let action: String?
 }
 
 struct Banner {
@@ -13,4 +14,5 @@ struct Banner {
     let background: UIImage?
     let image: UIImage?
     let clipsToBounds: Bool
+    let actionLink: String?
 }

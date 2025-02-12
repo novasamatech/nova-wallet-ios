@@ -67,4 +67,6 @@ protocol BannersInteractorOutputProtocol: AnyObject {
     func didReceive(_ error: Error)
 }
 
-protocol BannersWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol BannersWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func openActionLink(urlString: String)
+}
