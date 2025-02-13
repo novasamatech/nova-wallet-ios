@@ -1219,6 +1219,7 @@
 		2D62ED302D5CC3B2001EF17D /* BannersViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */; };
 		2D62ED322D5CE621001EF17D /* BannersViewController+UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */; };
 		2D62ED342D5D0471001EF17D /* UICollectionView+reload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */; };
+		2D62ED382D5E1EEE001EF17D /* BannersViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
@@ -6687,6 +6688,7 @@
 		2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannersViewController+State.swift"; sourceTree = "<group>"; };
 		2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannersViewController+UICollectionView.swift"; sourceTree = "<group>"; };
 		2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+reload.swift"; sourceTree = "<group>"; };
+		2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersViewDataSource.swift; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
 		2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceIconsOptions.swift; sourceTree = "<group>"; };
@@ -14612,6 +14614,7 @@
 				6C1CBCD5B3AE3E88244C50F5 /* BannersPresenter.swift */,
 				93660F2A367CEBD932F080B1 /* BannersInteractor.swift */,
 				A00DD977BD9CE066B1B11569 /* BannersViewController.swift */,
+				2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */,
 				2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */,
 				2D62ED2F2D5CC3B2001EF17D /* BannersViewController+State.swift */,
 				FF591D1C38E7FDF839AF5783 /* BannersViewLayout.swift */,
@@ -27685,6 +27688,7 @@
 				84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */,
 				84E0C52229CA421A000B65C8 /* OperationDetailsContractView.swift in Sources */,
 				844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */,
+				2D62ED382D5E1EEE001EF17D /* BannersViewDataSource.swift in Sources */,
 				847119CD262EF61F00716580 /* PayoutValidatorForValidatorFactory.swift in Sources */,
 				F40966E426B29919008CD244 /* Stacks.swift in Sources */,
 				848CCB502833D1D900A1FD00 /* StakingRelaychainStatics.swift in Sources */,
