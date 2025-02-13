@@ -1,12 +1,15 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkRedeemViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParaStkRedeemViewLayout
+final class CollatorStakingRedeemViewController: UIViewController, ViewHolder {
+    typealias RootViewType = CollatorStakingRedeemViewLayout
 
-    let presenter: ParaStkRedeemPresenterProtocol
+    let presenter: CollatorStakingRedeemPresenterProtocol
 
-    init(presenter: ParaStkRedeemPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: CollatorStakingRedeemPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
@@ -19,7 +22,7 @@ final class ParaStkRedeemViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ParaStkRedeemViewLayout()
+        view = CollatorStakingRedeemViewLayout()
     }
 
     override func viewDidLoad() {
@@ -73,7 +76,7 @@ final class ParaStkRedeemViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ParaStkRedeemViewController: ParaStkRedeemViewProtocol {
+extension CollatorStakingRedeemViewController: CollatorStakingRedeemViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
@@ -99,7 +102,7 @@ extension ParaStkRedeemViewController: ParaStkRedeemViewProtocol {
     }
 }
 
-extension ParaStkRedeemViewController: Localizable {
+extension CollatorStakingRedeemViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

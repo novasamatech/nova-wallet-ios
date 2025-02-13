@@ -1,8 +1,8 @@
 import UIKit
 import Operation_iOS
 
-final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
-    weak var presenter: MythosStkClaimRewardsInteractorOutputProtocol?
+final class MythosStakingRedeemInteractor: AnyProviderAutoCleaning {
+    weak var presenter: MythosStakingRedeemInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
@@ -14,7 +14,9 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
 
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol
+    let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let frozenBalanceStore: MythosStakingFrozenBalanceStore
 
     var accountId: AccountId { selectedAccount.chainAccount.accountId }
     var chainId: ChainModel.Id { chainAsset.chain.chainId }
@@ -23,6 +25,8 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
+    private var releaseQueueProvider: AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>?
+    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
 
     init(
         selectedAccount: MetaChainAccountResponse,
@@ -32,7 +36,8 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
         signingWrapper: SigningWrapperProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol,
+        stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
+        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
@@ -44,15 +49,23 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
         self.signingWrapper = signingWrapper
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.rewardsSyncService = rewardsSyncService
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.logger = logger
         self.operationQueue = operationQueue
+
+        frozenBalanceStore = MythosStakingFrozenBalanceStore(
+            accountId: selectedAccount.chainAccount.accountId,
+            chainAssetId: chainAsset.chainAssetId,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            logger: logger
+        )
 
         self.currencyManager = currencyManager
     }
 }
 
-private extension MythosStkClaimRewardsInteractor {
+private extension MythosStakingRedeemInteractor {
     func makeAssetBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
         balanceProvider = subscribeToAssetBalanceProvider(
@@ -70,30 +83,46 @@ private extension MythosStkClaimRewardsInteractor {
         }
     }
 
-    func makeClaimableRewardsSubscription() {
-        rewardsSyncService.add(
+    func makeReleaseQueueSubscription() {
+        clear(dataProvider: &releaseQueueProvider)
+
+        releaseQueueProvider = subscribeToReleaseQueue(for: chainId, accountId: accountId)
+    }
+
+    func makeBlockNumberSubscription() {
+        clear(dataProvider: &blockNumberProvider)
+
+        blockNumberProvider = subscribeToBlockNumber(for: chainId)
+    }
+
+    func setupFrozenBalanceSubscription() {
+        frozenBalanceStore.setup()
+
+        frozenBalanceStore.add(
             observer: self,
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
             if let newState {
-                self?.presenter?.didReceiveClaimableRewards(newState)
+                self?.presenter?.didReceiveFrozen(newState)
             }
         }
     }
 
     func getExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure {
         { builder in
-            try builder.adding(call: MythosStakingPallet.ClaimRewardsCall().runtimeCall())
+            try builder.adding(call: MythosStakingPallet.ReleaseCall().runtimeCall())
         }
     }
 }
 
-extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputProtocol {
+extension MythosStakingRedeemInteractor: MythosStakingRedeemInteractorInputProtocol {
     func setup() {
         makeAssetBalanceSubscription()
         makePriceSubscription()
-        makeClaimableRewardsSubscription()
+        makeBlockNumberSubscription()
+        makeReleaseQueueSubscription()
+        setupFrozenBalanceSubscription()
     }
 
     func estimateFee() {
@@ -127,7 +156,38 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
     }
 }
 
-extension MythosStkClaimRewardsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension MythosStakingRedeemInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleBlockNumber(
+        result: Result<BlockNumber?, Error>,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(blockNumber):
+            if let blockNumber {
+                presenter?.didReceiveBlockNumber(blockNumber)
+            }
+        case let .failure(error):
+            logger.error("Block number subscription failed: \(error)")
+        }
+    }
+}
+
+extension MythosStakingRedeemInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {
+    func handleReleaseQueue(
+        result: Result<MythosStakingPallet.ReleaseQueue?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(releaseQueue):
+            presenter?.didReceiveReleaseQueue(releaseQueue)
+        case let .failure(error):
+            logger.error("Release queue subscription failed: \(error)")
+        }
+    }
+}
+
+extension MythosStakingRedeemInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
@@ -143,7 +203,7 @@ extension MythosStkClaimRewardsInteractor: WalletLocalStorageSubscriber, WalletL
     }
 }
 
-extension MythosStkClaimRewardsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension MythosStakingRedeemInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
@@ -154,7 +214,7 @@ extension MythosStkClaimRewardsInteractor: PriceLocalStorageSubscriber, PriceLoc
     }
 }
 
-extension MythosStkClaimRewardsInteractor: SelectedCurrencyDepending {
+extension MythosStakingRedeemInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil else {
             return
