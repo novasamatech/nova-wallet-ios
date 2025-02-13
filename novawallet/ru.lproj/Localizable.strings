@@ -1796,7 +1796,9 @@
 "dapp.widget.close.alert.message" = "Все открытые вкладки в DApp браузере будут закрыты.";
 "common.close.all" = "Закрыть все";
 "dapp.browser.tab.not.available" = "Веб-страница недоступна";
-"common.manage.debit.card" = "Управление Дебетовой Картой";
+"dapp.list.section.popular" = "Популярные";
+"swaps.max.price.diff.error.title" = "Обнаружено существенное влияние на цену (%@)";
+"swaps.max.price.diff.error.message" = "Выполнение этого свапа приведет к значительному проскальзыванию и финансовым потерям. Рассмотрите возможность уменьшения размера вашей сделки или разделения её на несколько транзакций.";
 "common.estimated.timer" = "Ожидаемое ~%@";
 "card.open.pending.sheet.title" = "Ваша карта выпускается!";
 "card.open.pending.sheet.message" = "Это может занять до %@.\nЭто окно закроется автоматически.";

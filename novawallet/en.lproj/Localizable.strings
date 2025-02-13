@@ -1793,7 +1793,9 @@
 "common.see.all" = "See All";
 "dapp.widget.close.alert.title" = "Close All DApps?";
 "dapp.widget.close.alert.message" = "All opened tabs in DApp browser will be closed.";
-"dapp.list.section.popular" = "Popular DApps";
+"dapp.list.section.popular" = "Popular";
+"swaps.max.price.diff.error.title" = "High price impact detected (%@)";
+"swaps.max.price.diff.error.message" = "Executing this swap will result in significant slippage and financial losses. Consider reducing your trade size of splitting your trade into multiple transactions.";
 "common.manage.debit.card" = "Manage Debit Card";
 "common.estimated.timer" = "Estimated ~%@";
 "card.open.pending.sheet.title" = "Your card is being issued!";

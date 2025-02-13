@@ -1,3 +1,5 @@
+import Foundation
+
 struct SwapAssetAmountViewModel {
     let imageViewModel: ImageViewModelProtocol?
     let hub: NetworkViewModel
@@ -14,4 +16,9 @@ enum AttentionState {
     case high
     case medium
     case low
+}
+
+struct SwapDifferenceModel {
+    let diff: Decimal
+    let attention: AttentionState
 }

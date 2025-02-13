@@ -41,6 +41,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         interactor: SwapSetupInteractorInputProtocol,
         wireframe: SwapSetupWireframeProtocol,
         viewModelFactory: SwapsSetupViewModelFactoryProtocol,
+        priceDiffModelFactory: SwapPriceDifferenceModelFactoryProtocol,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
         localizationManager: LocalizationManagerProtocol,
@@ -61,6 +62,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         super.init(
             selectedWallet: selectedWallet,
             dataValidatingFactory: dataValidatingFactory,
+            priceDiffFactory: priceDiffModelFactory,
             priceStore: priceStore,
             logger: logger
         )

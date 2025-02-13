@@ -1790,3 +1790,6 @@
 "dapp.widget.close.alert.message" = "Todas as abas abertas no navegador DApp serão fechadas.";
 "common.close.all" = "Fechar Tudo";
 "dapp.browser.tab.not.available" = "Página da web não disponível";
+"dapp.list.section.popular" = "Populares";
+"swaps.max.price.diff.error.title" = "Alto impacto de preço detectado (%@)";
+"swaps.max.price.diff.error.message" = "Executar esta troca resultará em deslizamento significativo e perdas financeiras. Considere reduzir o tamanho da sua negociação ou divida-a em várias transações.";

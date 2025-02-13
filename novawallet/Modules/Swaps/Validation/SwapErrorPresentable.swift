@@ -26,6 +26,13 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         locale: Locale
     )
 
+    func presentHighPriceDifference(
+        from view: ControllerBackedProtocol?,
+        difference: String,
+        proceedAction: @escaping () -> Void,
+        locale: Locale
+    )
+
     func presentNoProviderForNonSufficientToken(
         from view: ControllerBackedProtocol,
         utilityMinBalance: String,
@@ -225,6 +232,35 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
             title: title,
             message: message,
             actions: [proceedAction, swapAllAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentHighPriceDifference(
+        from view: ControllerBackedProtocol?,
+        difference: String,
+        proceedAction: @escaping () -> Void,
+        locale: Locale
+    ) {
+        let title = R.string.localizable.swapsMaxPriceDiffErrorTitle(difference, preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.swapsMaxPriceDiffErrorMessage(preferredLanguages: locale.rLanguages)
+
+        let continueAction = AlertPresentableAction(
+            title: R.string.localizable.commonProceed(preferredLanguages: locale.rLanguages),
+            style: .destructive,
+            handler: proceedAction
+        )
+
+        let cancelAction = AlertPresentableAction(
+            title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [cancelAction, continueAction],
             closeAction: nil
         )
 

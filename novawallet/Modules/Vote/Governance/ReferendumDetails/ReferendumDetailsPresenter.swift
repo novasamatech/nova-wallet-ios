@@ -16,6 +16,7 @@ final class ReferendumDetailsPresenter {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let universalLinkFactory: UniversalLinkFactoryProtocol
     let wallet: MetaAccountModel
 
     let chain: ChainModel
@@ -58,6 +59,7 @@ final class ReferendumDetailsPresenter {
         endedReferendumProgressViewModelFactory: EndedReferendumProgressViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
+        universalLinkFactory: UniversalLinkFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -75,6 +77,7 @@ final class ReferendumDetailsPresenter {
         self.endedReferendumProgressViewModelFactory = endedReferendumProgressViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.universalLinkFactory = universalLinkFactory
         referendum = initData.referendum
         accountVotes = initData.accountVotes
         offchainVoting = initData.offchainVoting
@@ -536,6 +539,18 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         }
 
         wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
+
+    func share() {
+        guard let url = universalLinkFactory.createUrl(
+            for: chain,
+            referendumId: referendum.index,
+            type: governanceType
+        ) else {
+            return
+        }
+
+        wireframe.share(items: [url.absoluteString], from: view, with: nil)
     }
 }
 

@@ -95,10 +95,27 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppSelectNavigationTask(
-            dAppId: id,
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
+            id,
             wallet: wallet,
             favoritesProvider: { [weak self] in self?.favorites },
+            dAppResultProvider: { [weak self] in self?.dAppsResult }
+        )
+
+        dAppNavigationTask?(
+            cleaner: self,
+            view: view
+        )
+    }
+
+    func provideNavigation(for model: DAppNavigation) {
+        guard let wallet else {
+            return
+        }
+
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
+            model,
+            wallet: wallet,
             dAppResultProvider: { [weak self] in self?.dAppsResult }
         )
 

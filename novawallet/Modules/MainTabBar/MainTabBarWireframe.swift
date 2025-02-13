@@ -54,12 +54,12 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             controller.selectedIndex = MainTabBarIndex.staking
         case let .gov(rederendumIndex):
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
-        case let .dApp(dApp):
+        case let .dApp(model):
             controller.selectedIndex = MainTabBarIndex.dapps
             let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
             (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
-            if let dappView: DAppListViewProtocol = dappViewController?.contentViewController() {
-                dappView.didReceiveDApp(with: dApp.identifier)
+            if let dappView: DAppOpenViewProtocol = dappViewController?.contentViewController() {
+                dappView.didReceiveDAppNavigation(model: model)
             }
         }
     }

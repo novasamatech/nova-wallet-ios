@@ -1790,3 +1790,6 @@
 "dapp.widget.close.alert.message" = "Tất cả các tab mở trong trình duyệt DApp sẽ bị đóng.";
 "common.close.all" = "Đóng tất cả";
 "dapp.browser.tab.not.available" = "Trang web không khả dụng";
+"dapp.list.section.popular" = "Phổ biến";
+"swaps.max.price.diff.error.title" = "Phát hiện tác động giá cao (%@)";
+"swaps.max.price.diff.error.message" = "Thực hiện giao dịch này sẽ dẫn đến trượt giá đáng kể và thiệt hại tài chính. Xem xét giảm kích thước giao dịch của bạn hoặc chia giao dịch thành nhiều lần thực hiện.";
