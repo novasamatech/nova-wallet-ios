@@ -6,6 +6,10 @@ struct CollatorStakingDelegator {
     func hasDelegation(to candidate: AccountId) -> Bool {
         delegations.contains { $0.candidate == candidate }
     }
+
+    func delegationsDict() -> [AccountId: Balance] {
+        delegations.reduce(into: [:]) { $0[$1.candidate] = $1.amount }
+    }
 }
 
 extension CollatorStakingDelegator {

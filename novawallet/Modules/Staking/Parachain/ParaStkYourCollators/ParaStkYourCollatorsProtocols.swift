@@ -1,14 +1,3 @@
-protocol ParaStkYourCollatorsViewProtocol: ControllerBackedProtocol {
-    func reload(state: ParaStkYourCollatorsState)
-}
-
-protocol ParaStkYourCollatorsPresenterProtocol: AnyObject {
-    func setup()
-    func retry()
-    func manageCollators()
-    func selectCollator(viewModel: CollatorSelectionViewModel)
-}
-
 protocol ParaStkYourCollatorsInteractorInputProtocol: AnyObject {
     func setup()
     func retry()
@@ -20,28 +9,23 @@ protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
     func didReceiveScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>)
 }
 
-protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable {
+protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable,
+    ParachainStakingErrorPresentable,
+    CollatorStkManageCollatorsPresentable {
     func showCollatorInfo(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         collatorInfo: ParachainStkCollatorSelectionInfo
     )
 
-    func showManageCollators(
-        from view: ParaStkYourCollatorsViewProtocol?,
-        options: [StakingManageOption],
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    )
-
     func showStakeMore(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
         delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     )
 
     func showUnstake(
-        from view: ParaStkYourCollatorsViewProtocol?,
+        from view: CollatorStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
         delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
