@@ -7,7 +7,8 @@ protocol MythosStakingLocalStorageSubscriber: LocalStorageProviderObserving {
     var stakingLocalSubscriptionHandler: MythosStakingLocalStorageHandler { get }
 
     func subscribeToMinStake(
-        for chainId: ChainModel.Id
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedBigUInt>?
 
     func subscribeToCurrentSession(
@@ -24,11 +25,28 @@ protocol MythosStakingLocalStorageSubscriber: LocalStorageProviderObserving {
         for chainId: ChainModel.Id,
         accountId: AccountId
     ) -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>?
+
+    func subscribeToCollatorRewardsPercentage(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedPercent>?
+
+    func subscribeToExtraReward(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedBigUInt>?
 }
 
 extension MythosStakingLocalStorageSubscriber {
     func subscribeToMinStake(
         for chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedBigUInt>? {
+        subscribeToMinStake(for: chainId, callbackQueue: .main)
+    }
+
+    func subscribeToMinStake(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedBigUInt>? {
         guard let provider = try? stakingLocalSubscriptionFactory.getMinStakeProvider(for: chainId) else {
             return nil
@@ -47,7 +65,9 @@ extension MythosStakingLocalStorageSubscriber {
                     result: .failure(error),
                     chainId: chainId
                 )
-            }
+            },
+            callbackQueue: callbackQueue,
+            options: DataProviderObserverOptions()
         )
 
         return provider
@@ -150,6 +170,68 @@ extension MythosStakingLocalStorageSubscriber {
                     accountId: accountId
                 )
             }
+        )
+
+        return provider
+    }
+
+    func subscribeToCollatorRewardsPercentage(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedPercent>? {
+        guard let provider = try? stakingLocalSubscriptionFactory.getCollatorRewardsPercentageProvider(
+            for: chainId
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] valueMapper in
+                self?.stakingLocalSubscriptionHandler.handleCollatorRewardsPercentage(
+                    result: .success(valueMapper?.value),
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleCollatorRewardsPercentage(
+                    result: .failure(error),
+                    chainId: chainId
+                )
+            },
+            callbackQueue: callbackQueue,
+            options: DataProviderObserverOptions()
+        )
+
+        return provider
+    }
+
+    func subscribeToExtraReward(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedBigUInt>? {
+        guard let provider = try? stakingLocalSubscriptionFactory.getExtraRewardProvider(
+            for: chainId
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] valueMapper in
+                self?.stakingLocalSubscriptionHandler.handleExtraReward(
+                    result: .success(valueMapper?.value),
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleExtraReward(
+                    result: .failure(error),
+                    chainId: chainId
+                )
+            },
+            callbackQueue: callbackQueue,
+            options: DataProviderObserverOptions()
         )
 
         return provider

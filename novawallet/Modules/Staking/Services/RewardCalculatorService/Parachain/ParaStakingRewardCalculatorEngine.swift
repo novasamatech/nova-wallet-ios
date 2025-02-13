@@ -1,10 +1,6 @@
 import Foundation
 import BigInt
 
-enum ParaStakingRewardCalculatorEngineError: Error {
-    case missingCollator(_ collatorAccountId: AccountId)
-}
-
 final class ParaStakingRewardCalculatorEngine {
     let totalIssuance: BigUInt
     let totalStaked: BigUInt
@@ -129,25 +125,7 @@ extension ParaStakingRewardCalculatorEngine: CollatorStakingRewardCalculatorEngi
             )?.snapshot.total,
             let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision),
             decimalStake > 0.0 else {
-            throw ParaStakingRewardCalculatorEngineError.missingCollator(collatorAccountId)
-        }
-
-        let annualReturn = try calculateAnnualReturn(for: averageStake / decimalStake)
-
-        let dailyReturn = annualReturn / CalculationPeriod.daysInYear
-
-        return amount * dailyReturn * Decimal(period.inDays)
-    }
-
-    func calculateEarnings(
-        amount: Decimal,
-        collatorStake: BigUInt,
-        period: CalculationPeriod
-    ) throws -> Decimal {
-        guard
-            let decimalStake = Decimal.fromSubstrateAmount(collatorStake, precision: assetPrecision),
-            decimalStake > 0 else {
-            return 0
+            throw CollatorStkRewardCalculatorEngineError.missingCollator(collatorAccountId)
         }
 
         let annualReturn = try calculateAnnualReturn(for: averageStake / decimalStake)
@@ -166,23 +144,6 @@ extension ParaStakingRewardCalculatorEngine: CollatorStakingRewardCalculatorEngi
         }
 
         if let annualReturn = try? calculateAnnualReturn(for: averageStake / minStake) {
-            let dailyReturn = annualReturn / CalculationPeriod.daysInYear
-
-            return amount * dailyReturn * Decimal(period.inDays)
-        } else {
-            return 0.0
-        }
-    }
-
-    func calculateAvgEarnings(
-        amount: Decimal,
-        period: CalculationPeriod
-    ) -> Decimal {
-        guard minStake > 0.0 else {
-            return 0.0
-        }
-
-        if let annualReturn = try? calculateAnnualReturn(for: 1.0) {
             let dailyReturn = annualReturn / CalculationPeriod.daysInYear
 
             return amount * dailyReturn * Decimal(period.inDays)

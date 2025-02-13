@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 protocol MythosStakingLocalStorageHandler {
     func handleMinStake(
@@ -21,6 +22,16 @@ protocol MythosStakingLocalStorageHandler {
         result: Result<MythosStakingPallet.ReleaseQueue?, Error>,
         chainId: ChainModel.Id,
         accountId: AccountId
+    )
+
+    func handleCollatorRewardsPercentage(
+        result: Result<Percent?, Error>,
+        chainId: ChainModel.Id
+    )
+
+    func handleExtraReward(
+        result: Result<Balance?, Error>,
+        chainId: ChainModel.Id
     )
 }
 
@@ -45,5 +56,15 @@ extension MythosStakingLocalStorageHandler {
         result _: Result<MythosStakingPallet.ReleaseQueue?, Error>,
         chainId _: ChainModel.Id,
         accountId _: AccountId
+    ) {}
+
+    func handleCollatorRewardsPercentage(
+        result _: Result<Percent?, Error>,
+        chainId _: ChainModel.Id
+    ) {}
+
+    func handleExtraReward(
+        result _: Result<Balance?, Error>,
+        chainId _: ChainModel.Id
     ) {}
 }

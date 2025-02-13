@@ -19,14 +19,10 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
         }
 
         let maxApr = calculator.calculateMaxEarnings(amount: 1.0, period: .year)
-        let avgApr = calculator.calculateAvgEarnings(amount: 1.0, period: .year)
 
         let logger = Logger.shared
 
         logger.info("Max APR: \(maxApr)")
-        logger.info("Average APR: \(avgApr)")
-
-        XCTAssertTrue(avgApr <= maxApr)
     }
 
     private func setupCalculator(
