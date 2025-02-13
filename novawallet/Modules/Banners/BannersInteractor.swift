@@ -76,7 +76,7 @@ private extension BannersInteractor {
 
             return BannersFetchResult(
                 banners: banners,
-                closedBannerIds: settingsManager.closedBanners.bannerIds,
+                closedBanners: settingsManager.closedBanners,
                 localizedResources: localizations
             )
         }
@@ -127,6 +127,6 @@ extension BannersInteractor: BannersInteractorInputProtocol {
         closedBanners.add(id)
         settingsManager.closedBanners = closedBanners
 
-        presenter?.didReceive(closedBanners.bannerIds)
+        presenter?.didReceive(closedBanners)
     }
 }

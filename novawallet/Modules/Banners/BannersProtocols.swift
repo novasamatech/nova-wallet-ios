@@ -63,7 +63,7 @@ protocol BannersInteractorInputProtocol: AnyObject {
 protocol BannersInteractorOutputProtocol: AnyObject {
     func didReceive(_ bannersFetchResult: BannersFetchResult)
     func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?)
-    func didReceive(_ updatedClosedBannerIds: Set<String>?)
+    func didReceive(_ updatedClosedBanners: ClosedBanners)
     func didReceive(_ error: Error)
 }
 

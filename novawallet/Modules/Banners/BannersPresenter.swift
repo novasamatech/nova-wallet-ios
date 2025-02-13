@@ -12,7 +12,7 @@ final class BannersPresenter {
     private let closeActionAvailable: Bool
 
     private var banners: [Banner]?
-    private var closedBannerIds: Set<String>?
+    private var closedBanners: ClosedBanners?
     private var localizedResources: BannersLocalizedResources?
 
     init(
@@ -32,7 +32,7 @@ final class BannersPresenter {
     private func provideBanners() {
         let viewModel = viewModelFactory.createLoadableWidgetViewModel(
             for: banners,
-            closedBannerIds: closedBannerIds,
+            closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
             localizedResources: localizedResources
         )
@@ -72,7 +72,7 @@ extension BannersPresenter: BannersPresenterProtocol {
 extension BannersPresenter: BannersInteractorOutputProtocol {
     func didReceive(_ bannersFetchResult: BannersFetchResult) {
         banners = bannersFetchResult.banners
-        closedBannerIds = bannersFetchResult.closedBannerIds
+        closedBanners = bannersFetchResult.closedBanners
         localizedResources = bannersFetchResult.localizedResources
 
         provideBanners()
@@ -85,12 +85,12 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         provideBanners()
     }
 
-    func didReceive(_ updatedClosedBannerIds: Set<String>?) {
-        closedBannerIds = updatedClosedBannerIds
+    func didReceive(_ updatedClosedBanners: ClosedBanners) {
+        closedBanners = updatedClosedBanners
 
         guard let viewModel = viewModelFactory.createWidgetViewModel(
             for: banners,
-            closedBannerIds: closedBannerIds,
+            closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
             localizedResources: localizedResources
         ) else {

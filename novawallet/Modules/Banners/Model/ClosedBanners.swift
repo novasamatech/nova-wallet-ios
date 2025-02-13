@@ -1,7 +1,7 @@
 import Foundation
 
 struct ClosedBanners: Codable {
-    var bannerIds: Set<String> = []
+    private var bannerIds: Set<String> = []
 
     func contains(_ id: String) -> Bool {
         bannerIds.contains(id)

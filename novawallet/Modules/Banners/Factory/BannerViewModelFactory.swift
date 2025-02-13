@@ -3,14 +3,14 @@ import Foundation
 protocol BannerViewModelFactoryProtocol {
     func createWidgetViewModel(
         for banners: [Banner]?,
-        closedBannerIds: Set<String>?,
+        closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
     ) -> BannersWidgetviewModel?
 
     func createLoadableWidgetViewModel(
         for banners: [Banner]?,
-        closedBannerIds: Set<String>?,
+        closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
     ) -> LoadableViewModelState<BannersWidgetviewModel>?
@@ -19,11 +19,11 @@ protocol BannerViewModelFactoryProtocol {
 class BannerViewModelFactory {
     private func createBannerViewModels(
         for banners: [Banner],
-        closedBannerIds: Set<String>?,
+        closedBanners: ClosedBanners,
         localizedResources: BannersLocalizedResources
     ) -> [BannerViewModel] {
         banners
-            .filter { closedBannerIds?.contains($0.id) != true }
+            .filter { closedBanners.contains($0.id) }
             .compactMap { banner in
                 guard let localizedContent = localizedResources[banner.id] else {
                     return nil
@@ -44,17 +44,21 @@ class BannerViewModelFactory {
 extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
     func createLoadableWidgetViewModel(
         for banners: [Banner]?,
-        closedBannerIds: Set<String>?,
+        closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
     ) -> LoadableViewModelState<BannersWidgetviewModel>? {
-        guard let banners, let localizedResources else {
+        guard
+            let banners,
+            let localizedResources,
+            let closedBanners
+        else {
             return .loading
         }
 
         let bannerViewModels: [BannerViewModel] = createBannerViewModels(
             for: banners,
-            closedBannerIds: closedBannerIds,
+            closedBanners: closedBanners,
             localizedResources: localizedResources
         )
 
@@ -72,17 +76,21 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
 
     func createWidgetViewModel(
         for banners: [Banner]?,
-        closedBannerIds: Set<String>?,
+        closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
     ) -> BannersWidgetviewModel? {
-        guard let banners, let localizedResources else {
+        guard
+            let banners,
+            let localizedResources,
+            let closedBanners
+        else {
             return nil
         }
 
         let bannerViewModels: [BannerViewModel] = createBannerViewModels(
             for: banners,
-            closedBannerIds: closedBannerIds,
+            closedBanners: closedBanners,
             localizedResources: localizedResources
         )
 
