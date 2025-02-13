@@ -21,17 +21,19 @@ struct BannersViewFactory {
 
         let operationManager = OperationManagerFacade.sharedManager
 
+        let fetchOperationFactory = BaseFetchOperationFactory()
+
         let bannersFactory = BannersFetchOperationFactory(
             domain: domain,
             bannersContentPath: appConfig.bannersContentPath,
-            jsonDataProviderFactory: jsonDataProviderFactory,
+            fetchOperationFactory: fetchOperationFactory,
             imageRetrieveOperationFactory: imageRetrieveOperationFactory,
             operationManager: operationManager
         )
         let localizationFactory = BannersLocalizationFactory(
             domain: domain,
             bannersContentPath: appConfig.bannersContentPath,
-            jsonDataProviderFactory: jsonDataProviderFactory
+            fetchOperationFactory: fetchOperationFactory
         )
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 

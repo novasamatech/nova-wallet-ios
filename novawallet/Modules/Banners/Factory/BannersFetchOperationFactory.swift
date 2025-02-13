@@ -12,7 +12,7 @@ protocol BannersFetchOperationFactoryProtocol {
 class BannersFetchOperationFactory {
     private let domain: Banners.Domain
     private let bannersContentPath: String
-    private let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
+    private let fetchOperationFactory: BaseFetchOperationFactory
     private let imageRetrieveOperationFactory: ImageRetrieveOperationFactory<CommonImageInfo>
     private let operationManager: OperationManagerProtocol
 
@@ -21,13 +21,13 @@ class BannersFetchOperationFactory {
     init(
         domain: Banners.Domain,
         bannersContentPath: String,
-        jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
+        fetchOperationFactory: BaseFetchOperationFactory,
         imageRetrieveOperationFactory: ImageRetrieveOperationFactory<CommonImageInfo>,
         operationManager: OperationManagerProtocol
     ) {
         self.domain = domain
         self.bannersContentPath = bannersContentPath
-        self.jsonDataProviderFactory = jsonDataProviderFactory
+        self.fetchOperationFactory = fetchOperationFactory
         self.imageRetrieveOperationFactory = imageRetrieveOperationFactory
         self.operationManager = operationManager
     }
@@ -47,46 +47,18 @@ class BannersFetchOperationFactory {
 // MARK: Private
 
 private extension BannersFetchOperationFactory {
-    func createBannersFetchOperation() -> BaseOperation<[RemoteBannerModel]?> {
+    func createBannersFetchOperation() -> BaseOperation<[RemoteBannerModel]> {
         guard let url = createURL() else {
-            return .createWithResult(nil)
+            return .createWithError(BannersFetchErrors.badURL)
         }
 
-        let resultClosure: (
-            (Result<[RemoteBannerModel]?, Error>)?,
-            (Result<[RemoteBannerModel]?, Error>) -> Void
-        ) -> Void = { result, closure in
-            guard let result else {
-                closure(.failure(BannersFetchErrors.bannersListFetchError))
-
-                return
-            }
-
-            closure(result)
-        }
-
-        return AsyncClosureOperation { [weak self] closure in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
-            if let bannersProvider {
-                _ = bannersProvider.fetch { resultClosure($0, closure) }
-            } else {
-                let provider: AnySingleValueProvider<[RemoteBannerModel]>
-                provider = jsonDataProviderFactory.getJson(for: url)
-
-                bannersProvider = provider
-
-                _ = provider.fetch { resultClosure($0, closure) }
-            }
-        }
+        return fetchOperationFactory.createFetchOperation(from: url)
     }
 
     func createImagesFetchWrapper(
         with imageInfo: CommonImageInfo,
         imageURLKeyPath: KeyPath<RemoteBannerModel, URL>,
-        dependingOn bannerFetchOperation: BaseOperation<[RemoteBannerModel]?>
+        dependingOn bannerFetchOperation: BaseOperation<[RemoteBannerModel]>
     ) -> CompoundOperationWrapper<[String: CompoundOperationWrapper<UIImage>]> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: operationManager
@@ -97,12 +69,12 @@ private extension BannersFetchOperationFactory {
 
             let banners = try bannerFetchOperation.extractNoCancellableResultData()
 
-            let innerWrappers: [String: CompoundOperationWrapper<UIImage>] = banners?
+            let innerWrappers: [String: CompoundOperationWrapper<UIImage>] = banners
                 .reduce(into: [:]) { acc, banner in
                     acc[banner.id] = self.createImageFetchWrapper(
                         with: imageInfo.byChangingURL(banner[keyPath: imageURLKeyPath])
                     )
-                } ?? [:]
+                }
 
             return .createWithResult(innerWrappers)
         }
@@ -211,7 +183,7 @@ extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
                 .extractNoCancellableResultData()
 
             return bannersMapWrapper(
-                remoteBanners: remoteBanners ?? [],
+                remoteBanners: remoteBanners,
                 backgroundImageWrappers: backgroundImageWrappers,
                 contentImageWrappers: contentImageWrappers
             )
@@ -245,6 +217,7 @@ private extension BannersFetchOperationFactory {
 }
 
 enum BannersFetchErrors: Error {
+    case badURL
     case imageURLIsMissing
     case bannersListFetchError
 }

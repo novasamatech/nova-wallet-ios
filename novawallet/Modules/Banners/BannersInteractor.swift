@@ -67,14 +67,12 @@ private extension BannersInteractor {
         let localizationFetchOperation = localizationFactory.createOperation(for: locale)
 
         let mergeOperation: ClosureOperation<BannersFetchResult> = ClosureOperation { [weak self] in
-            guard
-                let self,
-                let localizations = try localizationFetchOperation.extractNoCancellableResultData()
-            else {
+            guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
             let banners = try bannersFetchWrapper.targetOperation.extractNoCancellableResultData()
+            let localizations = try localizationFetchOperation.extractNoCancellableResultData()
 
             return BannersFetchResult(
                 banners: banners,

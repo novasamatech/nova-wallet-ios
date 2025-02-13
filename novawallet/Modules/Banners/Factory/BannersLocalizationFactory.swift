@@ -2,24 +2,24 @@ import Foundation
 import Operation_iOS
 
 protocol BannersLocalizationFactoryProtocol {
-    func createOperation(for locale: Locale) -> BaseOperation<BannersLocalizedResources?>
+    func createOperation(for locale: Locale) -> BaseOperation<BannersLocalizedResources>
 }
 
 class BannersLocalizationFactory {
     private let domain: Banners.Domain
     private let bannersContentPath: String
-    private let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
+    private let fetchOperationFactory: BaseFetchOperationFactory
 
     private var localizationProvider: AnySingleValueProvider<BannersLocalizedResources>?
 
     init(
         domain: Banners.Domain,
         bannersContentPath: String,
-        jsonDataProviderFactory: JsonDataProviderFactoryProtocol
+        fetchOperationFactory: BaseFetchOperationFactory
     ) {
         self.domain = domain
         self.bannersContentPath = bannersContentPath
-        self.jsonDataProviderFactory = jsonDataProviderFactory
+        self.fetchOperationFactory = fetchOperationFactory
     }
 
     private func createLocalizationURL(for locale: Locale) -> URL? {
@@ -40,26 +40,12 @@ class BannersLocalizationFactory {
 // MARK: BannersLocalizationFactoryProtocol
 
 extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
-    func createOperation(for locale: Locale) -> BaseOperation<BannersLocalizedResources?> {
+    func createOperation(for locale: Locale) -> BaseOperation<BannersLocalizedResources> {
         guard let url = createLocalizationURL(for: locale) else {
-            return .createWithResult(nil)
+            return .createWithError(BannersLocalizationFetchErrors.badURL)
         }
 
-        let provider: AnySingleValueProvider<BannersLocalizedResources>
-        provider = jsonDataProviderFactory.getJson(for: url)
-
-        localizationProvider = provider
-
-        return AsyncClosureOperation { closure in
-            _ = provider.fetch { result in
-                guard let result else {
-                    closure(.failure(BannersLocalizationFetchErrors.localizablesListFetchError))
-                    return
-                }
-
-                closure(result)
-            }
-        }
+        return fetchOperationFactory.createFetchOperation(from: url)
     }
 }
 
@@ -72,5 +58,5 @@ private extension BannersLocalizationFactory {
 }
 
 enum BannersLocalizationFetchErrors: Error {
-    case localizablesListFetchError
+    case badURL
 }
