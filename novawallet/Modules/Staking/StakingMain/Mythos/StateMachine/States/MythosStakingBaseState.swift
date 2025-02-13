@@ -93,8 +93,14 @@ class MythosStakingBaseState: MythosStakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
-    func process(blockTime: BlockTime) {
-        commonData = commonData.byReplacing(blockTime: blockTime)
+    func process(duration: MythosStakingDuration) {
+        commonData = commonData.byReplacing(duration: duration)
+
+        stateMachine?.transit(to: self)
+    }
+
+    func process(networkInfo: MythosStakingNetworkInfo) {
+        commonData = commonData.byReplacing(networkInfo: networkInfo)
 
         stateMachine?.transit(to: self)
     }

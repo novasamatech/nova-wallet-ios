@@ -22,7 +22,8 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
     let sharedState: MythosStakingSharedStateProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let durationOperationFactory: MythosStkDurationOperationFactoryProtocol
+    let networkInfoFactory: MythosStkNetworkInfoOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let operationQueue: OperationQueue
@@ -38,8 +39,9 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
 
     var totalRewardInterval: StakingRewardFiltersInterval?
 
-    let blockTimeReqStore = CancellableCallStore()
+    let durationReqStore = CancellableCallStore()
     let collatorReqStore = CancellableCallStore()
+    let networkInfoReqStore = CancellableCallStore()
 
     var chain: ChainModel {
         chainAsset.chain
@@ -58,7 +60,8 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         sharedState: MythosStakingSharedStateProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
+        networkInfoFactory: MythosStkNetworkInfoOperationFactoryProtocol,
+        durationOperationFactory: MythosStkDurationOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -69,7 +72,8 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         self.sharedState = sharedState
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.blockTimeOperationFactory = blockTimeOperationFactory
+        self.networkInfoFactory = networkInfoFactory
+        self.durationOperationFactory = durationOperationFactory
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -92,8 +96,9 @@ extension MythosStakingDetailsInteractor {
     }
 
     func clearRequests() {
-        blockTimeReqStore.cancel()
+        durationReqStore.cancel()
         collatorReqStore.cancel()
+        networkInfoReqStore.cancel()
     }
 
     func makeBalanceSubscription() {
@@ -189,31 +194,61 @@ extension MythosStakingDetailsInteractor {
         }
     }
 
-    func provideBlockTime() {
+    func provideNetworkInfo() {
         do {
-            blockTimeReqStore.cancel()
+            networkInfoReqStore.cancel()
 
             let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
-            let wrapper = blockTimeOperationFactory.createBlockTimeOperation(
-                from: runtimeService,
+            let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
+
+            let wrapper = networkInfoFactory.networkStakingWrapper(
+                for: sharedState.collatorService,
+                connection: connection,
+                runtimeService: runtimeService
+            )
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: networkInfoReqStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(networkInfo):
+                    self?.presenter?.didReceiveNetworkInfo(networkInfo)
+                case let .failure(error):
+                    self?.logger.error("Network info request failed: \(error)")
+                }
+            }
+        } catch {
+            logger.error("Network info error: \(error)")
+        }
+    }
+
+    func provideStakingDuration() {
+        do {
+            durationReqStore.cancel()
+
+            let wrapper = durationOperationFactory.createDurationOperation(
+                for: chain.chainId,
                 blockTimeEstimationService: sharedState.blockTimeService
             )
 
             executeCancellable(
                 wrapper: wrapper,
                 inOperationQueue: operationQueue,
-                backingCallIn: blockTimeReqStore,
+                backingCallIn: durationReqStore,
                 runningCallbackIn: .main
             ) { [weak self] result in
                 switch result {
-                case let .success(blockTime):
-                    self?.presenter?.didReceiveBlockTime(blockTime)
+                case let .success(duration):
+                    self?.presenter?.didReceiveStakingDuration(duration)
                 case let .failure(error):
-                    self?.logger.error("Block time request failed: \(error)")
+                    self?.logger.error("Staking duration request failed: \(error)")
                 }
             }
         } catch {
-            logger.error("Block time error: \(error)")
+            logger.error("Staking duration error: \(error)")
         }
     }
 
@@ -236,6 +271,8 @@ extension MythosStakingDetailsInteractor: MythosStakingDetailsInteractorInputPro
         makeTotalRewardSubscription()
 
         provideElectedCollators()
+        provideNetworkInfo()
+        provideStakingDuration()
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
@@ -260,8 +297,6 @@ extension MythosStakingDetailsInteractor: GeneralLocalStorageSubscriber, General
         switch result {
         case let .success(blockNumber):
             if let blockNumber {
-                provideBlockTime()
-
                 presenter?.didReceiveBlockNumber(blockNumber)
             }
         case let .failure(error):
@@ -323,6 +358,15 @@ extension MythosStakingDetailsInteractor: EventVisitorProtocol {
         }
 
         provideElectedCollators()
+        provideNetworkInfo()
+    }
+
+    func processBlockTimeChanged(event: BlockTimeChanged) {
+        guard event.chainId == chain.chainId else {
+            return
+        }
+
+        provideStakingDuration()
     }
 }
 

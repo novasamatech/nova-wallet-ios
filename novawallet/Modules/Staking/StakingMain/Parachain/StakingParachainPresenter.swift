@@ -8,14 +8,14 @@ final class StakingParachainPresenter {
     let logger: LoggerProtocol
 
     let stateMachine: ParaStkStateMachineProtocol
-    let networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol
+    let networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol
     let stateViewModelFactory: ParaStkStateViewModelFactoryProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         interactor: StakingParachainInteractorInputProtocol,
         wireframe: StakingParachainWireframeProtocol,
-        networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol,
+        networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol,
         stateViewModelFactory: ParaStkStateViewModelFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         logger: LoggerProtocol
@@ -40,9 +40,15 @@ final class StakingParachainPresenter {
         if
             let networkInfo = optCommonData?.networkInfo,
             let chainAsset = optCommonData?.chainAsset {
+            let model = CollatorStkNetworkModel(
+                totalStake: networkInfo.totalStake,
+                minStake: max(networkInfo.minStakeForRewards, networkInfo.minTechStake),
+                activeDelegators: networkInfo.activeDelegatorsCount,
+                unstakingDuration: optCommonData?.stakingDuration?.unstaking
+            )
+
             let viewModel = networkInfoViewModelFactory.createViewModel(
-                from: networkInfo,
-                duration: optCommonData?.stakingDuration,
+                from: model,
                 chainAsset: chainAsset,
                 price: optCommonData?.price,
                 locale: view?.selectedLocale ?? Locale.current

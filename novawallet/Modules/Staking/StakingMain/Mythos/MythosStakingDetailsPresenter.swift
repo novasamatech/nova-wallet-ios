@@ -6,6 +6,7 @@ final class MythosStakingDetailsPresenter {
     let interactor: MythosStakingDetailsInteractorInputProtocol
     let viewModelFactory: MythosStkStateViewModelFactoryProtocol
     let dataValidationFactory: MythosStakingValidationFactoryProtocol
+    let networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     let stateMachine: MythosStakingStateMachineProtocol
@@ -27,12 +28,14 @@ final class MythosStakingDetailsPresenter {
         wireframe: MythosStakingDetailsWireframeProtocol,
         viewModelFactory: MythosStkStateViewModelFactoryProtocol,
         dataValidationFactory: MythosStakingValidationFactoryProtocol,
+        networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
+        self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.logger = logger
 
         let stateMachine = MythosStakingStateMachine()
@@ -43,6 +46,34 @@ final class MythosStakingDetailsPresenter {
 }
 
 private extension MythosStakingDetailsPresenter {
+    func provideNetworkInfo() {
+        let optCommonData = stateMachine.viewState { (state: MythosStakingBaseState) in
+            state.commonData
+        }
+
+        if
+            let networkInfo = optCommonData?.networkInfo,
+            let chainAsset = optCommonData?.chainAsset {
+            let model = CollatorStkNetworkModel(
+                totalStake: networkInfo.totalStake,
+                minStake: networkInfo.minStake,
+                activeDelegators: networkInfo.activeStakersCount,
+                unstakingDuration: optCommonData?.duration?.unstaking
+            )
+
+            let viewModel = networkInfoViewModelFactory.createViewModel(
+                from: model,
+                chainAsset: chainAsset,
+                price: optCommonData?.price,
+                locale: view?.selectedLocale ?? Locale.current
+            )
+
+            view?.didRecieveNetworkStakingInfo(viewModel: viewModel)
+        } else {
+            view?.didRecieveNetworkStakingInfo(viewModel: NetworkStakingInfoViewModel.allLoading)
+        }
+    }
+
     func provideStateViewModel() {
         let viewModel = viewModelFactory.createViewModel(from: stateMachine.state)
         view?.didReceiveStakingState(viewModel: viewModel)
@@ -91,6 +122,8 @@ private extension MythosStakingDetailsPresenter {
 extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
     func setup() {
         view?.didReceiveStatics(viewModel: StakingParachainStatics())
+
+        provideNetworkInfo()
 
         interactor.setup()
     }
@@ -163,6 +196,8 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         logger.debug("Price: \(String(describing: price))")
 
         stateMachine.state.process(price: price)
+
+        provideNetworkInfo()
     }
 
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
@@ -213,9 +248,19 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         stateMachine.state.process(blockNumber: blockNumber)
     }
 
-    func didReceiveBlockTime(_ blockTime: BlockTime) {
-        logger.debug("Block time: \(blockTime)")
+    func didReceiveStakingDuration(_ stakingDuration: MythosStakingDuration) {
+        logger.debug("Staking duration: \(stakingDuration)")
 
-        stateMachine.state.process(blockTime: blockTime)
+        stateMachine.state.process(duration: stakingDuration)
+
+        provideNetworkInfo()
+    }
+
+    func didReceiveNetworkInfo(_ info: MythosStakingNetworkInfo) {
+        logger.debug("Network info: \(info)")
+
+        stateMachine.state.process(networkInfo: info)
+
+        provideNetworkInfo()
     }
 }
