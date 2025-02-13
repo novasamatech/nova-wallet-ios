@@ -76,7 +76,7 @@ private extension BannersInteractor {
 
             return BannersFetchResult(
                 banners: banners,
-                closedBannerIds: settingsManager.closedBannerIds?[domain],
+                closedBannerIds: settingsManager.closedBanners.bannerIds,
                 localizedResources: localizations
             )
         }
@@ -123,14 +123,10 @@ extension BannersInteractor: BannersInteractorInputProtocol {
     }
 
     func closeBanner(with id: String) {
-        var closedBannerIds = settingsManager.closedBannerIds?[domain] ?? Set()
-        closedBannerIds.insert(id)
+        var closedBanners = settingsManager.closedBanners
+        closedBanners.add(id)
+        settingsManager.closedBanners = closedBanners
 
-        var dict = settingsManager.closedBannerIds ?? [:]
-        dict[domain] = closedBannerIds
-
-        settingsManager.closedBannerIds = dict
-
-        presenter?.didReceive(closedBannerIds)
+        presenter?.didReceive(closedBanners.bannerIds)
     }
 }
