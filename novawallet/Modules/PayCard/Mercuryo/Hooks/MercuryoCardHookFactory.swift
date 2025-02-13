@@ -12,8 +12,6 @@ enum MercuryoCardApi {
     static let type = "sell"
     static let fiatCurrency = "EUR"
     static let fixFiatCurrency = "true"
-    static let fixPaymentMethod = "true"
-    static let paymentMethod = "fiat_card_open"
     static let showSpendCardDetails = "true"
     static let hideRefundAddress = "true"
     static let cardsEndpoint = "https://api.mercuryo.io/v1.6/cards"
