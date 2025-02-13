@@ -26,10 +26,6 @@ final class MercuryoCardResourceProvider {
             name: "fiat_currency",
             value: MercuryoCardApi.fiatCurrency
         )
-        let paymentMethodItem = URLQueryItem(
-            name: "payment_method",
-            value: MercuryoCardApi.paymentMethod
-        )
         let themeItem = URLQueryItem(
             name: "theme",
             value: MercuryoCardApi.theme
@@ -37,10 +33,6 @@ final class MercuryoCardResourceProvider {
         let showSpendCardDetails = URLQueryItem(
             name: "show_spend_card_details",
             value: MercuryoCardApi.showSpendCardDetails
-        )
-        let fixPaymentMethodItem = URLQueryItem(
-            name: "fix_payment_method",
-            value: MercuryoCardApi.fixPaymentMethod
         )
         let hideRefundAddressItem = URLQueryItem(
             name: "hide_refund_address",
@@ -58,8 +50,6 @@ final class MercuryoCardResourceProvider {
             showSpendCardDetails,
             currencyItem,
             fiatCurrencyItem,
-            fixPaymentMethodItem,
-            paymentMethodItem,
             hideRefundAddressItem,
             refundAddressItem
         ]
