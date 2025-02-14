@@ -30,10 +30,11 @@ final class MythosRewardCalculatorEngine {
 
         let yearlyEmission = Self.calculateYearlyEmission(for: params)
 
-        let rewardableCollatorsCount = params.collators.filter(\.rewardable).count
+        let rewardableCollators = params.collators.filter(\.rewardable)
+        let rewardableCollatorsCount = rewardableCollators.count
 
-        let aprByCollator: [AccountId: Decimal] = params.collators.reduce(into: [:]) { accum, collator in
-            guard collator.rewardable, let stake = collator.info?.stake else {
+        let aprByCollator: [AccountId: Decimal] = rewardableCollators.reduce(into: [:]) { accum, collator in
+            guard let stake = collator.info?.stake else {
                 return
             }
 
