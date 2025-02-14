@@ -2,6 +2,7 @@ import UIKit
 
 final class BannersCollectionViewLayout: UICollectionViewFlowLayout {
     private let slideDistance: CGFloat
+    private let verticalInset: CGFloat
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         guard let attributes = super.layoutAttributesForElements(in: rect) else {
@@ -15,8 +16,12 @@ final class BannersCollectionViewLayout: UICollectionViewFlowLayout {
         forBoundsChange _: CGRect
     ) -> Bool { true }
 
-    init(slideDistance: CGFloat = 40.0) {
+    init(
+        slideDistance: CGFloat = 20.0,
+        verticalInset: CGFloat = 8.0
+    ) {
         self.slideDistance = slideDistance
+        self.verticalInset = verticalInset
 
         super.init()
     }
@@ -47,7 +52,7 @@ private extension BannersCollectionViewLayout {
 
         let newOrigin = CGPoint(
             x: contentOffset.x,
-            y: contentOffset.y
+            y: verticalInset
         )
         attributes.frame = CGRect(
             origin: newOrigin,
@@ -58,7 +63,7 @@ private extension BannersCollectionViewLayout {
             y: 0
         )
 
-        attributes.alpha = 1 - abs(position * 1.25)
+        attributes.alpha = 1 - abs(position * 1.4)
 
         return attributes
     }

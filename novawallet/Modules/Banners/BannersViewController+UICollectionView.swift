@@ -20,7 +20,7 @@ extension BannersViewController: UICollectionViewDataSource {
         }
 
         let cell = collectionView.dequeueReusableCellWithType(
-            BannerCollectionViewCell.self,
+            BannersCollectionViewCell.self,
             for: indexPath
         )!
 

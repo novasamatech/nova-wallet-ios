@@ -41,7 +41,7 @@ private extension BannersViewController {
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
 
-        rootView.collectionView.registerCellClass(BannerCollectionViewCell.self)
+        rootView.collectionView.registerCellClass(BannersCollectionViewCell.self)
     }
 
     func setupActions() {

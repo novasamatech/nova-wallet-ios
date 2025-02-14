@@ -1,20 +1,22 @@
 import Foundation
 import SoraUI
 
-class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupStyle()
+class BannersCollectionViewCell: CollectionViewContainerCell<BannerView> {
+    var contentInsets: UIEdgeInsets = .zero {
+        didSet {
+            view.snp.updateConstraints {
+                $0.edges.equalToSuperview().inset(contentInsets)
+            }
+        }
     }
 
-    private func setupStyle() {
-        layer.cornerRadius = 12
+    override init(frame: CGRect) {
+        super.init(frame: frame)
     }
 
     func bind(with viewModel: BannerViewModel) {
         view.bind(with: viewModel)
-        layer.masksToBounds = viewModel.clipsToBounds
+        contentView.layer.masksToBounds = viewModel.clipsToBounds
     }
 }
 
@@ -36,15 +38,21 @@ class BannerView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
         setupLayout()
+        setupStyle()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func setupLayout() {
+// MARK: Private
+
+private extension BannerView {
+    func setupLayout() {
         let textContainer = UIStackView.vStack(
             alignment: .leading,
             spacing: 8.0,
@@ -67,10 +75,19 @@ class BannerView: UIView {
         }
     }
 
+    func setupStyle() {
+        layer.cornerRadius = 12.0
+    }
+}
+
+// MARK: Internal
+
+extension BannerView {
     func bind(with viewModel: BannerViewModel) {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
         contentImageView.image = viewModel.contentImage
+        clipsToBounds = viewModel.clipsToBounds
         layer.masksToBounds = viewModel.clipsToBounds
     }
 }
