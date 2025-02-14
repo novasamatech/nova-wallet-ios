@@ -6,11 +6,23 @@ protocol BannersViewDataSourceProtocol {
     func itemsCount() -> Int
     func getItem(at index: Int) -> BannerViewModel?
     func pageIndex(for itemIndex: Int) -> Int
+    func nextShowingItemIndex(after currentItemIndex: Int) -> Int?
+    func lastShowingItemIndex() -> Int?
+    func firstShowingItemIndex() -> Int?
 }
 
 class BannersViewDataSource {
     var viewModels: [BannerViewModel]?
-    var loopedViewModels: [BannerViewModel]?
+
+    var looped: Bool {
+        viewModels?.count ?? 0 > 1
+    }
+
+    var lastIndex: Int? {
+        guard let viewModels else { return nil }
+
+        return viewModels.count - 1
+    }
 }
 
 // MARK: BannersViewDataSourceProtocol
@@ -21,50 +33,60 @@ extension BannersViewDataSource: BannersViewDataSourceProtocol {
 
         guard
             let viewModels,
-            viewModels.count > 1,
+            looped,
             let first = viewModels.first,
             let last = viewModels.last
         else {
-            loopedViewModels = nil
-
             return
         }
 
-        loopedViewModels = viewModels
+        self.viewModels?.insert(last, at: 0)
+        self.viewModels?.append(first)
+    }
 
-        loopedViewModels?.insert(last, at: 0)
-        loopedViewModels?.append(first)
-    }
-    
     func itemsCount() -> Int {
-        loopedViewModels?.count ?? viewModels?.count ?? 0
+        viewModels?.count ?? 0
     }
-    
+
     func getItem(at index: Int) -> BannerViewModel? {
-        let actualViewModels: [BannerViewModel] = if let loopedViewModels {
-            loopedViewModels
-        } else if let viewModels{
-            viewModels
-        } else {
-            []
+        guard let viewModels, viewModels.count > index else {
+            return nil
         }
-        
-        guard actualViewModels.count > index else { return nil }
-        
-        return actualViewModels[index]
+
+        return viewModels[index]
     }
-    
+
     func pageIndex(for itemIndex: Int) -> Int {
-        guard let viewModels, let loopedViewModels else {
+        guard let viewModels else {
             return 0
         }
-        
-        return if itemIndex == 0 {
-            viewModels.count - 1
-        } else if itemIndex == loopedViewModels.count - 1 {
+
+        return if looped, itemIndex == 0 {
+            viewModels.count - 3
+        } else if !looped, itemIndex == 0 || looped, itemIndex == lastIndex {
             0
         } else {
             itemIndex - 1
         }
+    }
+
+    func nextShowingItemIndex(after currentItemIndex: Int) -> Int? {
+        if looped, currentItemIndex == lastShowingItemIndex() {
+            firstShowingItemIndex()
+        } else {
+            currentItemIndex + 1
+        }
+    }
+
+    func lastShowingItemIndex() -> Int? {
+        guard let viewModels else { return nil }
+
+        return looped ? viewModels.count - 2 : 0
+    }
+
+    func firstShowingItemIndex() -> Int? {
+        guard let viewModels else { return nil }
+
+        return looped ? 1 : 0
     }
 }

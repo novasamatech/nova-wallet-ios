@@ -61,8 +61,6 @@ extension BannersPresenter: BannersPresenterProtocol {
     }
 
     func closeBanner(with id: String) {
-        guard closeActionAvailable else { return }
-
         interactor.closeBanner(with: id)
     }
 }

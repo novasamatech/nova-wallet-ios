@@ -7,8 +7,6 @@ extension BannersViewController {
     }
 
     struct DynamicState {
-        private let currentPage: Int
-
         let contentOffset: CGFloat
         let pageWidth: CGFloat
 
@@ -18,12 +16,10 @@ extension BannersViewController {
 
         init(
             contentOffset: CGFloat,
-            pageWidth: CGFloat,
-            currentPage: Int
+            pageWidth: CGFloat
         ) {
             self.contentOffset = contentOffset
             self.pageWidth = pageWidth
-            self.currentPage = currentPage
         }
     }
 }

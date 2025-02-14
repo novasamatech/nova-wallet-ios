@@ -23,7 +23,7 @@ class BannerViewModelFactory {
         localizedResources: BannersLocalizedResources
     ) -> [BannerViewModel] {
         banners
-            .filter { closedBanners.contains($0.id) }
+            .filter { !closedBanners.contains($0.id) }
             .compactMap { banner in
                 guard let localizedContent = localizedResources[banner.id] else {
                     return nil

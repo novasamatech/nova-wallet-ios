@@ -8,20 +8,14 @@ extension BannersViewController: UICollectionViewDataSource {
         _: UICollectionView,
         numberOfItemsInSection _: Int
     ) -> Int {
-        if let loopedViewModels {
-            loopedViewModels.count
-        } else if let viewModels {
-            viewModels.count
-        } else {
-            0
-        }
+        dataSource.itemsCount()
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let viewModels else {
+        guard let viewModel = dataSource.getItem(at: indexPath.item) else {
             return UICollectionViewCell()
         }
 
@@ -30,13 +24,7 @@ extension BannersViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        let actualViewModels = if let loopedViewModels {
-            loopedViewModels
-        } else {
-            viewModels
-        }
-
-        cell.bind(with: actualViewModels[indexPath.item])
+        cell.bind(with: viewModel)
 
         return cell
     }
@@ -49,17 +37,11 @@ extension BannersViewController: UICollectionViewDelegate {
         _: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        guard let viewModels else { return }
-
-        let index = indexPath.item
-
-        let bannerId = if let loopedViewModels {
-            loopedViewModels[index].id
-        } else {
-            viewModels[index].id
+        guard let viewModel = dataSource.getItem(at: indexPath.item) else {
+            return
         }
 
-        presenter.action(for: bannerId)
+        presenter.action(for: viewModel.id)
     }
 }
 

@@ -7,14 +7,12 @@ final class BannersViewController: UIViewController, ViewHolder {
     let presenter: BannersPresenterProtocol
     let dataSource: BannersViewDataSourceProtocol
 
-    var scrollCompletionHandler: (() -> Void)?
-
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
-        self.dataSource = BannersViewDataSource()
+        dataSource = BannersViewDataSource()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -85,7 +83,7 @@ private extension BannersViewController {
         rootView.collectionView.reloadData { [weak self] in
             self?.scrollToItem(
                 index: itemIndex,
-                animated: true
+                animated: false
             ) {
                 self?.rootView.collectionView.alwaysBounceHorizontal = multipleBanners
             }
@@ -95,7 +93,7 @@ private extension BannersViewController {
     func scrollToItem(
         index: Int,
         animated: Bool,
-        scrollCompletionHandler: (() -> Void)? = nil
+        completionBlock: (() -> Void)? = nil
     ) {
         guard let staticState else { return }
 
@@ -104,18 +102,21 @@ private extension BannersViewController {
         if animated {
             dynamicState = DynamicState(
                 contentOffset: rootView.collectionView.contentOffset.x,
-                pageWidth: rootView.collectionView.bounds.width,
-                currentPage: staticState.currentPage
+                pageWidth: rootView.collectionView.bounds.width
             )
         }
 
-        self.scrollCompletionHandler = scrollCompletionHandler
+        CATransaction.setCompletionBlock {
+            completionBlock?()
+        }
+        CATransaction.begin()
 
         rootView.collectionView.scrollTo(
             horizontalPage: index,
             animated: animated
         )
-        rootView.collectionView.setNeedsLayout()
+
+        CATransaction.commit()
     }
 
     func calculateTransitionProgress(
@@ -159,21 +160,16 @@ private extension BannersViewController {
     ) -> Int {
         let rawPageIndex = dynamicState.rawPageIndex
 
-        let targetPageIndex = if CGFloat(staticState.pageByActualOffset) == rawPageIndex {
-            staticState.pageByActualOffset
+        let targetPageIndex: Int
+
+        if CGFloat(staticState.pageByActualOffset) == rawPageIndex {
+            targetPageIndex = staticState.pageByActualOffset
         } else {
-            staticState.pageByActualOffset + (rawPageIndex > CGFloat(staticState.pageByActualOffset) ? 1 : -1)
+            let newIndex = staticState.pageByActualOffset + (rawPageIndex > CGFloat(staticState.pageByActualOffset) ? 1 : -1)
+            targetPageIndex = abs(Int(rawPageIndex) - staticState.pageByActualOffset) > 1 ? Int(rawPageIndex) : newIndex
         }
 
         return targetPageIndex
-    }
-
-    func calculateIndicatorPageIndex(basedOn targetItemIndex: Int) -> Int {
-        let notScrolling = dynamicState?.rawPageIndex.rounded(.up) != dynamicState?.rawPageIndex.rounded(.down)
-        
-        guard notScrolling else { return rootView.pageControl.currentPage }
-
-        return dataSource.pageIndex(for: targetItemIndex)
     }
 
     func updateBackground(
@@ -238,36 +234,31 @@ extension BannersViewController: BannersViewProtocol {
     }
 
     func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
-        guard let staticState else { return }
-
-        let nextItemIndex: Int
-
-        if let loopedViewModels, staticState.pageByActualOffset < loopedViewModels.count - 1 {
-            nextItemIndex = staticState.pageByActualOffset + 1
-        } else {
-            nextItemIndex = 0
-        }
+        guard
+            let staticState,
+            !updatedViewModel.banners.isEmpty,
+            let nextItemIndex = dataSource.nextShowingItemIndex(after: staticState.pageByActualOffset)
+        else { return }
 
         scrollToItem(
             index: nextItemIndex,
             animated: true
         ) { [weak self] in
             guard let self else { return }
+
             dataSource.update(with: updatedViewModel.banners)
             setupPageControl(for: updatedViewModel.banners)
 
-            let newPageByActualOffset = nextItemIndex - 1
-
+            let pageByActualOffset = nextItemIndex - 1
             self.staticState = .init(
-                currentPage: staticState.currentPage - 1,
-                pageByActualOffset: newPageByActualOffset
+                currentPage: staticState.currentPage,
+                pageByActualOffset: pageByActualOffset
             )
 
             let pageWidth = rootView.collectionView.bounds.width
 
             rootView.collectionView.reloadData()
-            rootView.collectionView.contentOffset.x = CGFloat(newPageByActualOffset) * pageWidth
-
+            rootView.collectionView.contentOffset.x = CGFloat(pageByActualOffset) * pageWidth
             rootView.collectionView.alwaysBounceHorizontal = updatedViewModel.banners.count > 1
         }
     }
@@ -281,22 +272,21 @@ extension BannersViewController: UIScrollViewDelegate {
 
         let newDynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
-            pageWidth: scrollView.bounds.width,
-            currentPage: staticState.currentPage
+            pageWidth: scrollView.bounds.width
         )
 
-        let targetPageIndex = calculateTargetPageIndex(
+        let targetIetmIndex = calculateTargetPageIndex(
             using: newDynamicState,
             staticState: staticState
         )
-        let indicatorPageIndex = calculateIndicatorPageIndex(basedOn: targetPageIndex)
+        let indicatorPageIndex = dataSource.pageIndex(for: targetIetmIndex)
 
         rootView.pageControl.currentPage = indicatorPageIndex
 
         updateBackground(
             for: newDynamicState,
             oldDynamicState: dynamicState,
-            targetPageIndex: targetPageIndex
+            targetPageIndex: targetIetmIndex
         )
 
         self.dynamicState = newDynamicState
@@ -307,8 +297,7 @@ extension BannersViewController: UIScrollViewDelegate {
 
         let dynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
-            pageWidth: scrollView.bounds.width,
-            currentPage: staticState.currentPage
+            pageWidth: scrollView.bounds.width
         )
 
         self.dynamicState = dynamicState
@@ -339,9 +328,6 @@ extension BannersViewController: UIScrollViewDelegate {
             pageByActualOffset: pageByOffsetAfterChanges
         )
 
-        scrollCompletionHandler?()
-
-        scrollCompletionHandler = nil
         dynamicState = nil
     }
 }
