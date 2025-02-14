@@ -2,26 +2,53 @@ import Foundation
 import UIKit
 
 protocol BannersViewDataSourceProtocol {
+    var lastIndex: Int? { get }
+    var firstIndex: Int? { get }
+    var lastShowingItemIndex: Int? { get }
+    var firstShowingItemIndex: Int? { get }
+    var multipleBanners: Bool { get }
+
+    func numberOfItems() -> Int
+    func numberOfPages() -> Int
+
     func update(with viewModels: [BannerViewModel]?)
-    func itemsCount() -> Int
     func getItem(at index: Int) -> BannerViewModel?
     func pageIndex(for itemIndex: Int) -> Int
-    func nextShowingItemIndex(after currentItemIndex: Int) -> Int?
-    func lastShowingItemIndex() -> Int?
-    func firstShowingItemIndex() -> Int?
 }
 
-class BannersViewDataSource {
-    var viewModels: [BannerViewModel]?
+final class BannersViewDataSource {
+    private var viewModels: [BannerViewModel]?
 
-    var looped: Bool {
+    private var looped: Bool {
         viewModels?.count ?? 0 > 1
+    }
+
+    var multipleBanners: Bool {
+        looped
     }
 
     var lastIndex: Int? {
         guard let viewModels else { return nil }
 
         return viewModels.count - 1
+    }
+
+    var firstIndex: Int? {
+        guard viewModels != nil else { return nil }
+
+        return 0
+    }
+
+    var lastShowingItemIndex: Int? {
+        guard let viewModels else { return nil }
+
+        return looped ? viewModels.count - 2 : 0
+    }
+
+    var firstShowingItemIndex: Int? {
+        guard let viewModels else { return nil }
+
+        return looped ? 1 : 0
     }
 }
 
@@ -44,8 +71,14 @@ extension BannersViewDataSource: BannersViewDataSourceProtocol {
         self.viewModels?.append(first)
     }
 
-    func itemsCount() -> Int {
+    func numberOfItems() -> Int {
         viewModels?.count ?? 0
+    }
+
+    func numberOfPages() -> Int {
+        guard let viewModels else { return 0 }
+
+        return looped ? viewModels.count - 2 : viewModels.count
     }
 
     func getItem(at index: Int) -> BannerViewModel? {
@@ -68,25 +101,5 @@ extension BannersViewDataSource: BannersViewDataSourceProtocol {
         } else {
             itemIndex - 1
         }
-    }
-
-    func nextShowingItemIndex(after currentItemIndex: Int) -> Int? {
-        if looped, currentItemIndex == lastShowingItemIndex() {
-            firstShowingItemIndex()
-        } else {
-            currentItemIndex + 1
-        }
-    }
-
-    func lastShowingItemIndex() -> Int? {
-        guard let viewModels else { return nil }
-
-        return looped ? viewModels.count - 2 : 0
-    }
-
-    func firstShowingItemIndex() -> Int? {
-        guard let viewModels else { return nil }
-
-        return looped ? 1 : 0
     }
 }
