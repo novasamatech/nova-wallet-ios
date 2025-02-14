@@ -8,6 +8,7 @@ final class BannersPresenter {
     private let wireframe: BannersWireframeProtocol
     private let interactor: BannersInteractorInputProtocol
     private let viewModelFactory: BannerViewModelFactoryProtocol
+    private var locale: Locale
 
     private let closeActionAvailable: Bool
 
@@ -19,14 +20,14 @@ final class BannersPresenter {
         interactor: BannersInteractorInputProtocol,
         wireframe: BannersWireframeProtocol,
         viewModelFactory: BannerViewModelFactoryProtocol,
-        closeActionAvailable: Bool,
-        localizationManager: LocalizationManagerProtocol
+        locale: Locale,
+        closeActionAvailable: Bool
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.locale = locale
         self.closeActionAvailable = closeActionAvailable
-        self.localizationManager = localizationManager
     }
 
     private func provideBanners() {
@@ -46,7 +47,7 @@ final class BannersPresenter {
 extension BannersPresenter: BannersPresenterProtocol {
     func setup() {
         provideBanners()
-        interactor.setup(with: selectedLocale)
+        interactor.setup(with: locale)
     }
 
     func action(for bannerId: String) {
@@ -99,11 +100,7 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     }
 
     func didReceive(_ error: any Error) {
-        wireframe.present(
-            error: error,
-            from: view,
-            locale: selectedLocale
-        )
+        moduleOutput?.didReceive(error)
     }
 }
 
@@ -114,17 +111,9 @@ extension BannersPresenter: BannersModuleInputProtocol {
         banners?.isEmpty != true
     }
 
-    func refresh() {
-        interactor.refresh(for: selectedLocale)
-    }
-}
+    func refresh(with locale: Locale) {
+        self.locale = locale
 
-// MARK: Localizable
-
-extension BannersPresenter: Localizable {
-    func applyLocalization() {
-        guard view?.controller.isViewLoaded == true else { return }
-
-        interactor.updateResources(for: selectedLocale)
+        interactor.refresh(for: locale)
     }
 }

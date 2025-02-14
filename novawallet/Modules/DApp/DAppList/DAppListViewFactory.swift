@@ -35,7 +35,8 @@ struct DAppListViewFactory {
         guard let bannersModule = BannersViewFactory.createView(
             domain: .dApps,
             output: presenter,
-            inputOwner: presenter
+            inputOwner: presenter,
+            locale: localizationManager.selectedLocale
         ) else {
             return nil
         }
