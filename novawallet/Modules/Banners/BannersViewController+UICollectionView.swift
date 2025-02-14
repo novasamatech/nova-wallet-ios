@@ -8,7 +8,7 @@ extension BannersViewController: UICollectionViewDataSource {
         _: UICollectionView,
         numberOfItemsInSection _: Int
     ) -> Int {
-        dataSource.itemsCount()
+        dataSource.numberOfItems()
     }
 
     func collectionView(
