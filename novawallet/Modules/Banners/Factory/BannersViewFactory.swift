@@ -39,7 +39,6 @@ struct BannersViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = BannersInteractor(
-            domain: domain,
             bannersFactory: bannersFactory,
             localizationFactory: localizationFactory,
             settingsManager: SettingsManager.shared,

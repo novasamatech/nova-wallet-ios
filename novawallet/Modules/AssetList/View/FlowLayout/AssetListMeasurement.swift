@@ -11,7 +11,7 @@ enum AssetListMeasurement {
     static let assetHeaderHeight: CGFloat = 45.0
     static let emptyStateCellHeight: CGFloat = 230
     static let decorationInset: CGFloat = 8.0
-    static let promotionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
+    static let bannerInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
     static let summaryInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
     static let nftsInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
     static let settingsInsets = UIEdgeInsets.zero

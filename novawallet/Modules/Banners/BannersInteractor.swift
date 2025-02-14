@@ -6,7 +6,6 @@ import SoraKeystore
 final class BannersInteractor {
     weak var presenter: BannersInteractorOutputProtocol?
 
-    private let domain: Banners.Domain
     private let bannersFactory: BannersFetchOperationFactoryProtocol
     private let localizationFactory: BannersLocalizationFactoryProtocol
     private let settingsManager: SettingsManagerProtocol
@@ -14,14 +13,12 @@ final class BannersInteractor {
     private let logger: LoggerProtocol
 
     init(
-        domain: Banners.Domain,
         bannersFactory: BannersFetchOperationFactoryProtocol,
         localizationFactory: BannersLocalizationFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.domain = domain
         self.bannersFactory = bannersFactory
         self.localizationFactory = localizationFactory
         self.settingsManager = settingsManager

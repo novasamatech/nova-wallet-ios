@@ -7,7 +7,7 @@ extension AssetListFlowLayout {
         case summary
         case nfts
         case settings
-        case promotion
+        case banners
         case assetGroup
 
         init(section: Int) {
@@ -17,7 +17,7 @@ extension AssetListFlowLayout {
             case 1:
                 self = .nfts
             case 2:
-                self = .promotion
+                self = .banners
             case 3:
                 self = .settings
             default:
@@ -31,7 +31,7 @@ extension AssetListFlowLayout {
                 return 0
             case .nfts:
                 return 1
-            case .promotion:
+            case .banners:
                 return 2
             case .settings:
                 return 3
@@ -56,7 +56,7 @@ extension AssetListFlowLayout {
             switch self {
             case .summary:
                 return 10.0
-            case .settings, .assetGroup, .nfts, .promotion:
+            case .settings, .assetGroup, .nfts, .banners:
                 return 0
             }
         }

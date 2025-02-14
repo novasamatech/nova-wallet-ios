@@ -29,9 +29,9 @@ final class AssetListBannerCell: UICollectionViewCell {
 }
 
 extension AssetListBannerCell {
-    static func estimateHeight(for viewModel: PromotionBannerView.ViewModel) -> CGFloat {
+    static func estimateHeight() -> CGFloat {
         let width = UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset
 
-        return PromotionBannerView.estimateHeight(for: viewModel, width: width)
+        return 126 // PromotionBannerView.estimateHeight(for: viewModel, width: width)
     }
 }

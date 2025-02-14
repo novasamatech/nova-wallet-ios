@@ -332,9 +332,6 @@ extension BannersViewController: UIScrollViewDelegate {
             round(scrollView.contentOffset.x / scrollView.bounds.width)
         )
 
-        staticState = StaticState(
-            currentPage: currentPage,
-            pageByActualOffset: pageByOffsetAfterChanges
         changeCurrentOffsetIfNeeded(
             for: scrollView,
             currentItemByOffset: itemByOffsetBeforeChanges

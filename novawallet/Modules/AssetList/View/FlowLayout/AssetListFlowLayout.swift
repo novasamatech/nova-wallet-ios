@@ -11,7 +11,8 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
     private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
-    private var promotionInsets: UIEdgeInsets = .zero
+    private var bannerInsets = .zero
+
     private var nftsInsets: UIEdgeInsets = .zero
 
     private let attributesFactory = AssetDecorationAttributesFactory()
@@ -174,9 +175,9 @@ private extension AssetListFlowLayout {
             initialY += AssetListMeasurement.nftsHeight
         }
 
-        initialY += promotionInsets.top + promotionInsets.bottom
+        initialY += bannerInsets.top + bannerInsets.bottom
 
-        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
+        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.banners.index) > 0
 
         if hasPromotion {
             initialY += promotionHeight
@@ -253,25 +254,25 @@ extension AssetListFlowLayout {
     }
 
     func activatePromotionWithHeight(_ height: CGFloat) {
-        let newInsets = AssetListMeasurement.promotionInsets
+        let newInsets = AssetListMeasurement.bannerInsets
 
-        guard height != promotionHeight || promotionInsets != newInsets else {
+        guard height != promotionHeight || bannerInsets != newInsets else {
             return
         }
 
         promotionHeight = height
-        promotionInsets = newInsets
+        bannerInsets = newInsets
         invalidateLayout()
     }
 
     func deactivatePromotion() {
         let newInsets = UIEdgeInsets.zero
 
-        guard promotionInsets != newInsets else {
+        guard bannerInsets != newInsets else {
             return
         }
 
-        promotionInsets = newInsets
+        bannerInsets = newInsets
         invalidateLayout()
     }
 
@@ -317,8 +318,8 @@ extension AssetListFlowLayout {
             return AssetListMeasurement.summaryInsets
         case .nfts:
             return nftsInsets
-        case .promotion:
-            return promotionInsets
+        case .banners:
+            return bannerInsets
         case .settings:
             return AssetListMeasurement.settingsInsets
         case .assetGroup:
