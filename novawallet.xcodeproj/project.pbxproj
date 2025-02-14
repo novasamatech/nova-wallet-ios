@@ -1220,6 +1220,8 @@
 		2D62ED322D5CE621001EF17D /* BannersViewController+UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */; };
 		2D62ED342D5D0471001EF17D /* UICollectionView+reload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */; };
 		2D62ED382D5E1EEE001EF17D /* BannersViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */; };
+		2D62ED3A2D5E645C001EF17D /* ClosedBanners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED392D5E645C001EF17D /* ClosedBanners.swift */; };
+		2D62ED3B2D5E660E001EF17D /* ClosedBanners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D62ED392D5E645C001EF17D /* ClosedBanners.swift */; };
 		2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */; };
 		2D65F6CC2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */; };
 		2D65F6CF2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */; };
@@ -6689,6 +6691,7 @@
 		2D62ED312D5CE621001EF17D /* BannersViewController+UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannersViewController+UICollectionView.swift"; sourceTree = "<group>"; };
 		2D62ED332D5D0471001EF17D /* UICollectionView+reload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+reload.swift"; sourceTree = "<group>"; };
 		2D62ED372D5E1EEE001EF17D /* BannersViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersViewDataSource.swift; sourceTree = "<group>"; };
+		2D62ED392D5E645C001EF17D /* ClosedBanners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedBanners.swift; sourceTree = "<group>"; };
 		2D65F6C82CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D65F6CB2CCF730D00CC6F72 /* AppearanceSettingsIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsIconsView.swift; sourceTree = "<group>"; };
 		2D65F6CE2CCF8DA100CC6F72 /* AppearanceIconsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceIconsOptions.swift; sourceTree = "<group>"; };
@@ -13695,6 +13698,7 @@
 			isa = PBXGroup;
 			children = (
 				2D5D0CCA2D50CBE4000E32F6 /* Banner.swift */,
+				2D62ED392D5E645C001EF17D /* ClosedBanners.swift */,
 				2D5D0CD72D51EBFF000E32F6 /* BannerViewModel.swift */,
 				2D5D0CD42D514904000E32F6 /* BannersFetchResult.swift */,
 				2D5D0CCE2D50CDCF000E32F6 /* BannersModuleConfiguration.swift */,
@@ -25881,6 +25885,7 @@
 				77AE4FAE2B90611000426519 /* DispatchQueueHelper.swift in Sources */,
 				7778FE6A2B910CF60023E801 /* String+Helpers.swift in Sources */,
 				77EDF9262B96DD72003266B1 /* ChainAccountModel.swift in Sources */,
+				2D62ED3B2D5E660E001EF17D /* ClosedBanners.swift in Sources */,
 				7778FE572B910A540023E801 /* LocalizationManager+Shared.swift in Sources */,
 				2D4F550D2CCB742100B65B76 /* AssetListGroupsStyle.swift in Sources */,
 				778215D62B959344006C7D13 /* SharedSettingsManager.swift in Sources */,
@@ -28737,6 +28742,7 @@
 				AEE5FB09264289FD002B8FDC /* RebondCall.swift in Sources */,
 				8406B5AD26FBE69200635B61 /* SelectableIconDetailsListViewModel.swift in Sources */,
 				C01C5F1C8CB67B0D5CBE9FB1 /* StakingMainPresenter.swift in Sources */,
+				2D62ED3A2D5E645C001EF17D /* ClosedBanners.swift in Sources */,
 				843F657A265854A700829C14 /* CrowdloanDisplayInfo.swift in Sources */,
 				0C13D31F2A8227AB0054BB6F /* StartStakingPoolConfirmPresenter.swift in Sources */,
 				0CCA245D2AC6918800AEF23D /* XcmV3Junction.swift in Sources */,

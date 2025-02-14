@@ -2,15 +2,54 @@ import Foundation
 import UIKit
 
 protocol BannersViewDataSourceProtocol {
+    var lastIndex: Int? { get }
+    var firstIndex: Int? { get }
+    var lastShowingItemIndex: Int? { get }
+    var firstShowingItemIndex: Int? { get }
+    var multipleBanners: Bool { get }
+
+    func numberOfItems() -> Int
+    func numberOfPages() -> Int
+
     func update(with viewModels: [BannerViewModel]?)
-    func itemsCount() -> Int
     func getItem(at index: Int) -> BannerViewModel?
     func pageIndex(for itemIndex: Int) -> Int
 }
 
-class BannersViewDataSource {
-    var viewModels: [BannerViewModel]?
-    var loopedViewModels: [BannerViewModel]?
+final class BannersViewDataSource {
+    private var viewModels: [BannerViewModel]?
+
+    private var looped: Bool {
+        viewModels?.count ?? 0 > 1
+    }
+
+    var multipleBanners: Bool {
+        looped
+    }
+
+    var lastIndex: Int? {
+        guard let viewModels else { return nil }
+
+        return viewModels.count - 1
+    }
+
+    var firstIndex: Int? {
+        guard viewModels != nil else { return nil }
+
+        return 0
+    }
+
+    var lastShowingItemIndex: Int? {
+        guard let viewModels else { return nil }
+
+        return looped ? viewModels.count - 2 : 0
+    }
+
+    var firstShowingItemIndex: Int? {
+        guard let viewModels else { return nil }
+
+        return looped ? 1 : 0
+    }
 }
 
 // MARK: BannersViewDataSourceProtocol
@@ -21,47 +60,43 @@ extension BannersViewDataSource: BannersViewDataSourceProtocol {
 
         guard
             let viewModels,
-            viewModels.count > 1,
+            looped,
             let first = viewModels.first,
             let last = viewModels.last
         else {
-            loopedViewModels = nil
-
             return
         }
 
-        loopedViewModels = viewModels
+        self.viewModels?.insert(last, at: 0)
+        self.viewModels?.append(first)
+    }
 
-        loopedViewModels?.insert(last, at: 0)
-        loopedViewModels?.append(first)
+    func numberOfItems() -> Int {
+        viewModels?.count ?? 0
     }
-    
-    func itemsCount() -> Int {
-        loopedViewModels?.count ?? viewModels?.count ?? 0
+
+    func numberOfPages() -> Int {
+        guard let viewModels else { return 0 }
+
+        return looped ? viewModels.count - 2 : viewModels.count
     }
-    
+
     func getItem(at index: Int) -> BannerViewModel? {
-        let actualViewModels: [BannerViewModel] = if let loopedViewModels {
-            loopedViewModels
-        } else if let viewModels{
-            viewModels
-        } else {
-            []
+        guard let viewModels, viewModels.count > index else {
+            return nil
         }
-        
-        guard actualViewModels.count > index else { return nil }
-        
-        return actualViewModels[index]
+
+        return viewModels[index]
     }
-    
+
     func pageIndex(for itemIndex: Int) -> Int {
-        guard let viewModels, let loopedViewModels else {
+        guard let viewModels else {
             return 0
         }
-        
-        return if itemIndex == 0 {
-            viewModels.count - 1
-        } else if itemIndex == loopedViewModels.count - 1 {
+
+        return if looped, itemIndex == 0 {
+            viewModels.count - 3
+        } else if !looped, itemIndex == 0 || looped, itemIndex == lastIndex {
             0
         } else {
             itemIndex - 1

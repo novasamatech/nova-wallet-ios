@@ -8,31 +8,32 @@ final class BannersPresenter {
     private let wireframe: BannersWireframeProtocol
     private let interactor: BannersInteractorInputProtocol
     private let viewModelFactory: BannerViewModelFactoryProtocol
+    private var locale: Locale
 
     private let closeActionAvailable: Bool
 
     private var banners: [Banner]?
-    private var closedBannerIds: Set<String>?
+    private var closedBanners: ClosedBanners?
     private var localizedResources: BannersLocalizedResources?
 
     init(
         interactor: BannersInteractorInputProtocol,
         wireframe: BannersWireframeProtocol,
         viewModelFactory: BannerViewModelFactoryProtocol,
-        closeActionAvailable: Bool,
-        localizationManager: LocalizationManagerProtocol
+        locale: Locale,
+        closeActionAvailable: Bool
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.locale = locale
         self.closeActionAvailable = closeActionAvailable
-        self.localizationManager = localizationManager
     }
 
     private func provideBanners() {
         let viewModel = viewModelFactory.createLoadableWidgetViewModel(
             for: banners,
-            closedBannerIds: closedBannerIds,
+            closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
             localizedResources: localizedResources
         )
@@ -46,7 +47,7 @@ final class BannersPresenter {
 extension BannersPresenter: BannersPresenterProtocol {
     func setup() {
         provideBanners()
-        interactor.setup(with: selectedLocale)
+        interactor.setup(with: locale)
     }
 
     func action(for bannerId: String) {
@@ -61,8 +62,6 @@ extension BannersPresenter: BannersPresenterProtocol {
     }
 
     func closeBanner(with id: String) {
-        guard closeActionAvailable else { return }
-
         interactor.closeBanner(with: id)
     }
 }
@@ -72,7 +71,7 @@ extension BannersPresenter: BannersPresenterProtocol {
 extension BannersPresenter: BannersInteractorOutputProtocol {
     func didReceive(_ bannersFetchResult: BannersFetchResult) {
         banners = bannersFetchResult.banners
-        closedBannerIds = bannersFetchResult.closedBannerIds
+        closedBanners = bannersFetchResult.closedBanners
         localizedResources = bannersFetchResult.localizedResources
 
         provideBanners()
@@ -85,12 +84,12 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         provideBanners()
     }
 
-    func didReceive(_ updatedClosedBannerIds: Set<String>?) {
-        closedBannerIds = updatedClosedBannerIds
+    func didReceive(_ updatedClosedBanners: ClosedBanners) {
+        closedBanners = updatedClosedBanners
 
         guard let viewModel = viewModelFactory.createWidgetViewModel(
             for: banners,
-            closedBannerIds: closedBannerIds,
+            closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
             localizedResources: localizedResources
         ) else {
@@ -101,11 +100,7 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     }
 
     func didReceive(_ error: any Error) {
-        wireframe.present(
-            error: error,
-            from: view,
-            locale: selectedLocale
-        )
+        moduleOutput?.didReceive(error)
     }
 }
 
@@ -116,17 +111,9 @@ extension BannersPresenter: BannersModuleInputProtocol {
         banners?.isEmpty != true
     }
 
-    func refresh() {
-        interactor.refresh(for: selectedLocale)
-    }
-}
+    func refresh(with locale: Locale) {
+        self.locale = locale
 
-// MARK: Localizable
-
-extension BannersPresenter: Localizable {
-    func applyLocalization() {
-        guard view?.controller.isViewLoaded == true else { return }
-
-        interactor.updateResources(for: selectedLocale)
+        interactor.refresh(for: locale)
     }
 }

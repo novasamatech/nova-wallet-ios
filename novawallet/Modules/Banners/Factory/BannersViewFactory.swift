@@ -7,7 +7,8 @@ struct BannersViewFactory {
     static func createView(
         domain: Banners.Domain,
         output: BannersModuleOutputProtocol,
-        inputOwner: BannersModuleInputOwnerProtocol
+        inputOwner: BannersModuleInputOwnerProtocol,
+        locale: Locale
     ) -> BannersViewProtocol? {
         let appConfig = ApplicationConfig.shared
         let jsonDataProviderFactory = JsonDataProviderFactory.shared
@@ -45,7 +46,7 @@ struct BannersViewFactory {
             operationQueue: operationQueue,
             logger: Logger.shared
         )
-        let wireframe = BannersWireframe(router: URLLocalRouter.createWithDeeplinks())
+        let wireframe = BannersWireframe()
 
         let viewModelFactory = BannerViewModelFactory()
 
@@ -53,8 +54,8 @@ struct BannersViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            closeActionAvailable: bannerAvailability(for: domain),
-            localizationManager: LocalizationManager.shared
+            locale: locale,
+            closeActionAvailable: bannerAvailability(for: domain)
         )
 
         let view = BannersViewController(presenter: presenter)

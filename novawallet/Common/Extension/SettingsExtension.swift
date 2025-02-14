@@ -25,7 +25,7 @@ enum SettingsKey: String {
     case integrateNetworksBannerSeen
     case assetListGroupStyle
     case assetIconsAppearance
-    case closedBannerIds
+    case closedBanners
 }
 
 extension SettingsManagerProtocol {
@@ -296,25 +296,17 @@ extension SettingsManagerProtocol {
         }
     }
 
-    var closedBannerIds: [Banners.Domain: Set<String>]? {
+    var closedBanners: ClosedBanners {
         get {
-            let value = anyValue(for: SettingsKey.closedBannerIds.rawValue) as? [String: [String]]
-
-            return value?.reduce(into: [:]) { acc, pair in
-                guard let domain = Banners.Domain(rawValue: pair.key) else {
-                    return
-                }
-                acc[domain] = Set(pair.value)
-            }
+            value(
+                of: ClosedBanners.self,
+                for: SettingsKey.closedBanners.rawValue
+            ) ?? ClosedBanners()
         }
         set {
-            let value = newValue?.reduce(into: [:]) { acc, pair in
-                acc[pair.key.rawValue] = Array(pair.value)
-            }
-
             set(
-                anyValue: value as Any,
-                for: SettingsKey.closedBannerIds.rawValue
+                value: newValue,
+                for: SettingsKey.closedBanners.rawValue
             )
         }
     }

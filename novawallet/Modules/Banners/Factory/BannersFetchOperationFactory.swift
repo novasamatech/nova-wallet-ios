@@ -55,29 +55,27 @@ private extension BannersFetchOperationFactory {
         return fetchOperationFactory.createFetchOperation(from: url)
     }
 
-    func createImagesFetchWrapper(
+    func createImagesFetchOperation(
         with imageInfo: CommonImageInfo,
         imageURLKeyPath: KeyPath<RemoteBannerModel, URL>,
         dependingOn bannerFetchOperation: BaseOperation<[RemoteBannerModel]>
-    ) -> CompoundOperationWrapper<[String: CompoundOperationWrapper<UIImage>]> {
-        OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: operationManager
-        ) { [weak self] in
+    ) -> BaseOperation<[UIImage]> {
+        OperationCombiningService(operationManager: operationManager) { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
             let banners = try bannerFetchOperation.extractNoCancellableResultData()
 
-            let innerWrappers: [String: CompoundOperationWrapper<UIImage>] = banners
-                .reduce(into: [:]) { acc, banner in
-                    acc[banner.id] = self.createImageFetchWrapper(
+            let wrappers: [CompoundOperationWrapper<UIImage>] = banners
+                .map { banner in
+                    self.createImageFetchWrapper(
                         with: imageInfo.byChangingURL(banner[keyPath: imageURLKeyPath])
                     )
                 }
 
-            return .createWithResult(innerWrappers)
-        }
+            return wrappers
+        }.longrunOperation()
     }
 
     func createImageFetchWrapper(with imageInfo: CommonImageInfo) -> CompoundOperationWrapper<UIImage> {
@@ -155,50 +153,52 @@ extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
         contentImageInfo: CommonImageInfo
     ) -> CompoundOperationWrapper<[Banner]> {
         let bannersFetchOperation = createBannersFetchOperation()
-        let backgroundImageFetchOperationsWrapper = createImagesFetchWrapper(
+        let backgroundImageFetchOperation = createImagesFetchOperation(
             with: backgroundImageInfo,
             imageURLKeyPath: \.background,
             dependingOn: bannersFetchOperation
         )
-        let contentImageFetchOperationsWrapper = createImagesFetchWrapper(
+        let contentImageFetchOperation = createImagesFetchOperation(
             with: contentImageInfo,
             imageURLKeyPath: \.image,
             dependingOn: bannersFetchOperation
         )
-
-        let resultWrapper: CompoundOperationWrapper<[Banner]>
-        resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: operationManager
-        ) { [weak self] in
+        let mapOperation: BaseOperation<[Banner]> = ClosureOperation { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
             let remoteBanners = try bannersFetchOperation.extractNoCancellableResultData()
-            let backgroundImageWrappers = try backgroundImageFetchOperationsWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
-            let contentImageWrappers = try contentImageFetchOperationsWrapper
-                .targetOperation
-                .extractNoCancellableResultData()
+            let backgroundImages = try backgroundImageFetchOperation.extractNoCancellableResultData()
+            let contentImages = try contentImageFetchOperation.extractNoCancellableResultData()
 
-            return bannersMapWrapper(
-                remoteBanners: remoteBanners,
-                backgroundImageWrappers: backgroundImageWrappers,
-                contentImageWrappers: contentImageWrappers
-            )
+            return zip(remoteBanners, zip(backgroundImages, contentImages))
+                .map { remoteBanner, images in
+                    Banner(
+                        id: remoteBanner.id,
+                        background: images.0,
+                        image: images.1,
+                        clipsToBounds: remoteBanner.clipsToBounds,
+                        actionLink: remoteBanner.action
+                    )
+                }
         }
 
-        backgroundImageFetchOperationsWrapper.addDependency(operations: [bannersFetchOperation])
-        contentImageFetchOperationsWrapper.addDependency(operations: [bannersFetchOperation])
+        backgroundImageFetchOperation.addDependency(bannersFetchOperation)
+        contentImageFetchOperation.addDependency(bannersFetchOperation)
 
-        resultWrapper.addDependency(wrapper: backgroundImageFetchOperationsWrapper)
-        resultWrapper.addDependency(wrapper: contentImageFetchOperationsWrapper)
+        let dependencies = [
+            bannersFetchOperation,
+            backgroundImageFetchOperation,
+            contentImageFetchOperation
+        ]
 
-        return resultWrapper
-            .insertingHead(operations: [bannersFetchOperation])
-            .insertingHead(operations: backgroundImageFetchOperationsWrapper.allOperations)
-            .insertingHead(operations: contentImageFetchOperationsWrapper.allOperations)
+        dependencies.forEach { mapOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: dependencies
+        )
     }
 }
 

@@ -10,11 +10,12 @@ protocol BannersModuleInputOwnerProtocol: AnyObject {
 protocol BannersModuleInputProtocol: AnyObject {
     var bannersAvailable: Bool { get }
 
-    func refresh()
+    func refresh(with locale: Locale)
 }
 
 protocol BannersModuleOutputProtocol: AnyObject {
     func didReceiveBanners(available: Bool)
+    func didReceive(_ error: Error)
 }
 
 protocol BannersViewProviderProtocol: ControllerBackedProtocol {}
@@ -63,10 +64,10 @@ protocol BannersInteractorInputProtocol: AnyObject {
 protocol BannersInteractorOutputProtocol: AnyObject {
     func didReceive(_ bannersFetchResult: BannersFetchResult)
     func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?)
-    func didReceive(_ updatedClosedBannerIds: Set<String>?)
+    func didReceive(_ updatedClosedBanners: ClosedBanners)
     func didReceive(_ error: Error)
 }
 
-protocol BannersWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol BannersWireframeProtocol {
     func openActionLink(urlString: String)
 }

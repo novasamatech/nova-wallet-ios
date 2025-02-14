@@ -2,28 +2,23 @@ import UIKit
 
 extension BannersViewController {
     struct StaticState {
-        let currentPage: Int
-        let pageByActualOffset: Int
+        let itemByActualOffset: Int
     }
 
     struct DynamicState {
-        private let currentPage: Int
-
         let contentOffset: CGFloat
-        let pageWidth: CGFloat
+        let itemWidth: CGFloat
 
-        var rawPageIndex: CGFloat {
-            contentOffset / pageWidth
+        var rawItemIndex: CGFloat {
+            contentOffset / itemWidth
         }
 
         init(
             contentOffset: CGFloat,
-            pageWidth: CGFloat,
-            currentPage: Int
+            itemWidth: CGFloat
         ) {
             self.contentOffset = contentOffset
-            self.pageWidth = pageWidth
-            self.currentPage = currentPage
+            self.itemWidth = itemWidth
         }
     }
 }
