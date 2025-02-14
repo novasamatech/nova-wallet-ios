@@ -117,8 +117,6 @@ extension StartStakingInfoMythosPresenter {
         var rewardsDestination: DefaultStakingRewardDestination { .manual }
 
         mutating func update(blockNumber: BlockNumber?) {
-            // TODO: Think how frequently trigger update based on the number
-
             self.blockNumber = blockNumber
         }
     }

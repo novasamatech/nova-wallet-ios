@@ -14,6 +14,8 @@ protocol MythosCollatorOperationFactoryProtocol {
         collatorIdsClosure: @escaping () throws -> [AccountId],
         blockHash: Data?
     ) -> CompoundOperationWrapper<MythosDelegatorStakeDistribution>
+
+    func createInvulnerableCollators(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Set<AccountId>>
 }
 
 final class MythosCollatorOperationFactory {
@@ -139,6 +141,42 @@ extension MythosCollatorOperationFactory: MythosCollatorOperationFactoryProtocol
 
             return stakesWrapper
                 .insertingHead(operations: [codingFactoryOperation, collatorIdsListOperation])
+                .insertingTail(operation: mappingOperation)
+
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func createInvulnerableCollators(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Set<AccountId>> {
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+            let fetchWrapper: CompoundOperationWrapper<StorageResponse<[BytesCodable]>>
+            fetchWrapper = requestFactory.queryItem(
+                engine: connection,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: MythosStakingPallet.invulnerablesPath
+            )
+
+            fetchWrapper.addDependency(operations: [codingFactoryOperation])
+
+            let mappingOperation = ClosureOperation<Set<AccountId>> {
+                let response = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+
+                let accountIds = (response.value ?? []).map(\.wrappedValue)
+
+                return Set(accountIds)
+            }
+
+            fetchWrapper.addDependency(operations: [codingFactoryOperation])
+            mappingOperation.addDependency(fetchWrapper.targetOperation)
+
+            return fetchWrapper
+                .insertingHead(operations: [codingFactoryOperation])
                 .insertingTail(operation: mappingOperation)
 
         } catch {

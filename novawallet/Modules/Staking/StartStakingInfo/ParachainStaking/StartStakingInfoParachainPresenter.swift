@@ -172,10 +172,6 @@ extension StartStakingInfoParachainPresenter {
         }
 
         mutating func update(blockNumber: BlockNumber?) {
-            guard let blockNumber = blockNumber, self.blockNumber == nil else {
-                return
-            }
-
             self.blockNumber = blockNumber
         }
     }

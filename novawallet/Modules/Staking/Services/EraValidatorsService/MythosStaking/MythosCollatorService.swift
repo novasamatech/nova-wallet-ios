@@ -138,22 +138,37 @@ private extension MythosCollatorService {
             collatorIdsClosure: { collatorIds }
         )
 
+        let invulnerablesWrapper = operationFactory.createInvulnerableCollators(for: chainId)
+
+        let mappingOperation = ClosureOperation<MythosSessionCollators> {
+            let accountMapping = try infoWrapper.targetOperation.extractNoCancellableResultData()
+            let invulnerables = try invulnerablesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return collatorIds.map { collatorId in
+                MythosSessionCollator(
+                    accountId: collatorId,
+                    info: accountMapping[collatorId],
+                    invulnerable: invulnerables.contains(collatorId)
+                )
+            }
+        }
+
+        mappingOperation.addDependency(infoWrapper.targetOperation)
+        mappingOperation.addDependency(invulnerablesWrapper.targetOperation)
+
+        let totalWrapper = invulnerablesWrapper
+            .insertingHead(operations: infoWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
+
         executeCancellable(
-            wrapper: infoWrapper,
+            wrapper: totalWrapper,
             inOperationQueue: operationQueue,
             backingCallIn: infoCancellableStore,
             runningCallbackIn: syncQueue
         ) { [weak self] result in
             switch result {
-            case let .success(accountMapping):
-                let snapshot = collatorIds.map { collatorId in
-                    MythosSessionCollator(
-                        accountId: collatorId,
-                        info: accountMapping[collatorId]
-                    )
-                }
-
-                self?.didReceiveSnapshot(snapshot)
+            case let .success(sessionCollators):
+                self?.didReceiveSnapshot(sessionCollators)
             case let .failure(error):
                 // we don't need to handle error here since the branch is called only in case parsing fail
                 self?.logger.error("Collators info fetch error: \(error)")

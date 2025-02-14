@@ -19,7 +19,6 @@ import BigInt
  */
 final class MythosRewardCalculatorEngine {
     let totalStaked: BigUInt
-    let yearlyEmission: Decimal
     let aprByCollator: [AccountId: Decimal]
     let maxApr: Decimal?
 
@@ -31,7 +30,10 @@ final class MythosRewardCalculatorEngine {
 
         let yearlyEmission = Self.calculateYearlyEmission(for: params)
 
-        let aprByCollator: [AccountId: Decimal] = params.collators.reduce(into: [:]) { accum, collator in
+        let rewardableCollators = params.collators.filter(\.rewardable)
+        let rewardableCollatorsCount = rewardableCollators.count
+
+        let aprByCollator: [AccountId: Decimal] = rewardableCollators.reduce(into: [:]) { accum, collator in
             guard let stake = collator.info?.stake else {
                 return
             }
@@ -39,12 +41,12 @@ final class MythosRewardCalculatorEngine {
             accum[collator.accountId] = Self.calculateApr(
                 params: params,
                 collatorStake: stake,
-                yearlyEmission: yearlyEmission
+                yearlyEmission: yearlyEmission,
+                rewardableCollatorsCount: rewardableCollatorsCount
             )
         }
 
         self.aprByCollator = aprByCollator
-        self.yearlyEmission = yearlyEmission
         maxApr = aprByCollator.values.max()
     }
 }
@@ -72,11 +74,12 @@ private extension MythosRewardCalculatorEngine {
     static func calculateApr(
         params: Params,
         collatorStake: Balance,
-        yearlyEmission: Decimal
+        yearlyEmission: Decimal,
+        rewardableCollatorsCount: Int
     ) -> Decimal {
         let minStake = params.minStake.decimal(assetInfo: params.asset.assetDisplayInfo)
         let collatorStakeDecimal = collatorStake.decimal(assetInfo: params.asset.assetDisplayInfo)
-        let perCollatorRewards = yearlyEmission / Decimal(params.collators.count) * (1 - params.collatorComission)
+        let perCollatorRewards = yearlyEmission / Decimal(rewardableCollatorsCount) * (1 - params.collatorComission)
 
         // We estimate rewards assuming user stakes at least min_stake - this will compute maximum possible APR
         // But at least not as big as when min stake not accounted
