@@ -11,7 +11,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
     private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
-    private var bannerInsets = .zero
+    private var bannerInsets: UIEdgeInsets = .zero
 
     private var nftsInsets: UIEdgeInsets = .zero
 
