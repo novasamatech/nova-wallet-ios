@@ -15,7 +15,8 @@ extension TimeInterval {
             return localizedDaysHoursMinutes(
                 for: locale,
                 preposition: preposition ?? "",
-                separator: separator
+                separator: separator,
+                atLeastMinutesToShow: 1
             )
         }
 
@@ -76,7 +77,8 @@ extension TimeInterval {
     func localizedDaysHoursMinutes(
         for locale: Locale,
         preposition: String = "",
-        separator: String = " "
+        separator: String = " ",
+        atLeastMinutesToShow: Int? = nil
     ) -> String {
         let days = daysFromSeconds
         let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
@@ -102,6 +104,14 @@ extension TimeInterval {
         }
 
         if minutes > 0, components.count < 2 {
+            let minutesString = R.string.localizable.commonMinutesFormat(
+                format: minutes, preferredLanguages: locale.rLanguages
+            )
+
+            components.append(minutesString)
+        }
+
+        if components.isEmpty, let minutes = atLeastMinutesToShow {
             let minutesString = R.string.localizable.commonMinutesFormat(
                 format: minutes, preferredLanguages: locale.rLanguages
             )
