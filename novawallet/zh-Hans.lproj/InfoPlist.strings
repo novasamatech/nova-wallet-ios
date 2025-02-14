@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "访问相册用于选择带有地址的QR码、Polkadot Vault交易或通过WalletConnect连接";
 "NSPhotoLibraryAddUsageDescription" = "将转账请求保存为二维码";
 "NSBluetoothAlwaysUsageDescription" = "蓝牙用于与Ledger Nano X设备通信";
+"NSMicrophoneUsageDescription" = "麦克风用于KYC媒体会话";

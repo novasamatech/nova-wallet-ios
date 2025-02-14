@@ -4,7 +4,10 @@ import Operation_iOS
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didCompleteRefreshing()
     func didReceive(_ sections: [DAppListSectionViewModel])
-    func didReceiveDApp(with id: String)
+}
+
+protocol DAppOpenViewProtocol {
+    func didReceiveDAppNavigation(model: DAppNavigation)
 }
 
 protocol DAppListPresenterProtocol: AnyObject {
@@ -17,6 +20,7 @@ protocol DAppListPresenterProtocol: AnyObject {
 
     func selectCategory(with id: String)
     func selectDApp(with id: String)
+    func provideNavigation(for model: DAppNavigation)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {

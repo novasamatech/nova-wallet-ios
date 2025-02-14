@@ -15,6 +15,7 @@ final class DAppListPresenter {
     private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
+    private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
 
     private var dAppNavigationTask: DAppListNavigationTask?
@@ -38,14 +39,16 @@ final class DAppListPresenter {
     }
 
     private func provideSections() {
-        guard let wallet else { return }
-
         do {
+            let params = DAppListViewModelFactory.ListSectionsParams(
+                randomizationSeed: randomizationSeed,
+                hasWalletsListUpdates: hasWalletsListUpdates
+            )
             let sections = viewModelFactory.createDAppSections(
                 from: try dAppsResult?.get(),
                 favorites: favorites ?? [:],
                 wallet: wallet,
-                hasWalletsListUpdates: hasWalletsListUpdates,
+                params: params,
                 locale: selectedLocale
             )
 
@@ -92,10 +95,27 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppSelectNavigationTask(
-            dAppId: id,
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
+            id,
             wallet: wallet,
             favoritesProvider: { [weak self] in self?.favorites },
+            dAppResultProvider: { [weak self] in self?.dAppsResult }
+        )
+
+        dAppNavigationTask?(
+            cleaner: self,
+            view: view
+        )
+    }
+
+    func provideNavigation(for model: DAppNavigation) {
+        guard let wallet else {
+            return
+        }
+
+        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
+            model,
+            wallet: wallet,
             dAppResultProvider: { [weak self] in self?.dAppsResult }
         )
 
@@ -133,12 +153,13 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         if let currentResult = self.dAppsResult {
             // ignore error if we already loaded some dapps
-            guard case .success = currentResult, case .failure = dAppsResult else {
+            if case .success = currentResult, case .failure = dAppsResult {
                 return
             }
         }
 
         self.dAppsResult = dAppsResult
+        randomizationSeed = Int.random(in: 1 ..< 100)
 
         dAppNavigationTask?(
             cleaner: self,
