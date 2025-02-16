@@ -851,6 +851,9 @@
 		0CEB6B532CA6E92700609DC2 /* VotingPowerSetClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */; };
 		0CEB6B552CA70CB400609DC2 /* AssetBalance+OpenGov.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */; };
 		0CEBAD4E2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD4D2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift */; };
+		0CEBAD542D5F941E000EBA45 /* CallDispatchErrorDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD532D5F941E000EBA45 /* CallDispatchErrorDecoder.swift */; };
+		0CEBAD562D61A275000EBA45 /* ExtrinsicStatusServiceInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD552D61A275000EBA45 /* ExtrinsicStatusServiceInput.swift */; };
+		0CEBAD5B2D61A90D000EBA45 /* ExtrinsicStatusFetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD5A2D61A90D000EBA45 /* ExtrinsicStatusFetchTests.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -6282,6 +6285,9 @@
 		0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerSetClosure.swift; sourceTree = "<group>"; };
 		0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetBalance+OpenGov.swift"; sourceTree = "<group>"; };
 		0CEBAD4D2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsDifferenceModelFactory.swift; sourceTree = "<group>"; };
+		0CEBAD532D5F941E000EBA45 /* CallDispatchErrorDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDispatchErrorDecoder.swift; sourceTree = "<group>"; };
+		0CEBAD552D61A275000EBA45 /* ExtrinsicStatusServiceInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicStatusServiceInput.swift; sourceTree = "<group>"; };
+		0CEBAD5A2D61A90D000EBA45 /* ExtrinsicStatusFetchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicStatusFetchTests.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -12174,6 +12180,7 @@
 				0CA8AD5F2CE08FEE00ED9746 /* SubstrateExtrinsicEvents.swift */,
 				0CA8AD602CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift */,
 				0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */,
+				0CEBAD552D61A275000EBA45 /* ExtrinsicStatusServiceInput.swift */,
 			);
 			path = ExtrinsicStatusService;
 			sourceTree = "<group>";
@@ -12719,6 +12726,14 @@
 				0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */,
 			);
 			path = AssetConverters;
+			sourceTree = "<group>";
+		};
+		0CEBAD572D61A8CF000EBA45 /* ExtrinsicStatusFetch */ = {
+			isa = PBXGroup;
+			children = (
+				0CEBAD5A2D61A90D000EBA45 /* ExtrinsicStatusFetchTests.swift */,
+			);
+			path = ExtrinsicStatusFetch;
 			sourceTree = "<group>";
 		};
 		0CF3A6C72CE9422400F93C49 /* View */ = {
@@ -16717,6 +16732,7 @@
 		8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0CEBAD572D61A8CF000EBA45 /* ExtrinsicStatusFetch */,
 				0C2DA8AB2CC2B120001F79C8 /* AssetsExchange */,
 				0C8FDBA72CAE537800775D7F /* SwipeGov */,
 				0C71046E2C29B60D00487E64 /* MetadataShortener */,
@@ -16831,6 +16847,7 @@
 				8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */,
 				84A3B8A12836DA2600DE2669 /* LastAccountIdKeyWrapper.swift */,
 				847A25BC28D7C0E7006AC9F5 /* TokenTransferedEvent.swift */,
+				0CEBAD532D5F941E000EBA45 /* CallDispatchErrorDecoder.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -25824,6 +25841,7 @@
 				0C2DA8AD2CC2B156001F79C8 /* AssetsExchangeTests.swift in Sources */,
 				8418167728253B120007684A /* ParachainStakingCollatorsTests.swift in Sources */,
 				0CA7198C2B78FEF9000B086E /* HydraQuoteTests.swift in Sources */,
+				0CEBAD5B2D61A90D000EBA45 /* ExtrinsicStatusFetchTests.swift in Sources */,
 				0C7104702C29B62800487E64 /* MetadataHashGenerationTests.swift in Sources */,
 				84F3B27E27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift in Sources */,
 				846CA7842709C2BE0011124C /* ChainRegistry+Setup.swift in Sources */,
@@ -29621,6 +29639,7 @@
 				77A6F5D22A31DB8C004AFD1A /* JsonCanonicalizer.swift in Sources */,
 				777BD86029F9730F004969A2 /* ReferendumsFilterViewModel.swift in Sources */,
 				0C7104792C2AC0F300487E64 /* InMemoryCaching.swift in Sources */,
+				0CEBAD542D5F941E000EBA45 /* CallDispatchErrorDecoder.swift in Sources */,
 				B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */,
 				84E8BA2829FFCA4000FD9F40 /* WalletConnectEthereumTransaction.swift in Sources */,
 				F6F73F4862779FE0B58A7931 /* ParaStkRebondInteractor.swift in Sources */,
@@ -30279,6 +30298,7 @@
 				3D798C32B3C960FC6216C8C9 /* StakingRewardFiltersViewController.swift in Sources */,
 				19055A725FD9C18753B74A52 /* StakingRewardFiltersViewLayout.swift in Sources */,
 				3983EDE80B9296F3A252BA03 /* StakingRewardFiltersViewFactory.swift in Sources */,
+				0CEBAD562D61A275000EBA45 /* ExtrinsicStatusServiceInput.swift in Sources */,
 				CF2F3A0F0999D6D054CD33D2 /* ReferendumSearchProtocols.swift in Sources */,
 				0CE629D62AA9B5E200E250BD /* BalanceViewModel.swift in Sources */,
 				0C2F86982A728EE900593C01 /* NPoolsRewardEngineFactory.swift in Sources */,
