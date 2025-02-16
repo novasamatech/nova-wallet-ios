@@ -1790,3 +1790,6 @@
 "dapp.widget.close.alert.message" = "DApp浏览器中所有打开的标签页将被关闭。";
 "common.close.all" = "关闭所有";
 "dapp.browser.tab.not.available" = "网页不可用";
+"dapp.list.section.popular" = "流行";
+"swaps.max.price.diff.error.title" = "检测到高价格影响 (%@)";
+"swaps.max.price.diff.error.message" = "执行此交换将导致显著的滑点和经济损失。建议减小交易规模或将交易分拆为多笔交易。";
