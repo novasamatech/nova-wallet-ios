@@ -7,6 +7,10 @@ final class BannersViewController: UIViewController, ViewHolder {
     let presenter: BannersPresenterProtocol
     let dataSource: BannersViewDataSourceProtocol
 
+    private lazy var autoScrollManager: AutoScrollManager = {
+        AutoScrollManager(scrollable: self)
+    }()
+
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
@@ -74,6 +78,8 @@ private extension BannersViewController {
 
         rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
         rootView.setCloseButton(available: widgetModel.showsCloseButton)
+
+        autoScrollManager.setupScrolling()
     }
 
     func setupPageControl() {
@@ -338,6 +344,8 @@ extension BannersViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard let staticState else { return }
 
+        autoScrollManager.stopScrolling()
+
         let dynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
             itemWidth: scrollView.bounds.width
@@ -361,5 +369,18 @@ extension BannersViewController: UIScrollViewDelegate {
         )
 
         dynamicState = nil
+    }
+}
+
+// MARK: AutoScrollable
+
+extension BannersViewController: AutoScrollable {
+    func scrollToNextItem() {
+        guard let staticState else { return }
+
+        scrollToItem(
+            index: staticState.itemByActualOffset + 1,
+            animated: true
+        )
     }
 }
