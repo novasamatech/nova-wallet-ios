@@ -640,6 +640,10 @@ extension ChainNodeConnectable {
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false
     }
+
+    var isPureEvm: Bool {
+        isEthereumBased && !hasSubstrateRuntime
+    }
 }
 
 // MARK: ChainViewModelSource
