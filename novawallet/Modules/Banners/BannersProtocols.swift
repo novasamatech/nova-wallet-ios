@@ -15,7 +15,7 @@ protocol BannersModuleInputProtocol: AnyObject {
 }
 
 protocol BannersModuleOutputProtocol: AnyObject {
-    func didUpdateContentLocale()
+    func didUpdateContent()
     func didReceiveBanners(available: Bool)
     func didReceive(_ error: Error)
 }

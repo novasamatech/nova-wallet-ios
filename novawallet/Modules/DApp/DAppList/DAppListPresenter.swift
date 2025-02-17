@@ -218,7 +218,7 @@ extension DAppListPresenter: BannersModuleOutputProtocol {
         )
     }
 
-    func didUpdateContentLocale() {
+    func didUpdateContent() {
         provideSections()
     }
 }

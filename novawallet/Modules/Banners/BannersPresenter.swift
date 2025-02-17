@@ -83,7 +83,7 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         localizedResources = updatedLocalizedResources
         provideBanners()
 
-        moduleOutput?.didUpdateContentLocale()
+        moduleOutput?.didUpdateContent()
     }
 
     func didReceive(_ updatedClosedBanners: ClosedBanners) {
