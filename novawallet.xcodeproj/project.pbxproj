@@ -1078,7 +1078,7 @@
 		2D15850F2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */; };
 		2D1A5F552C358E280073773D /* CustomNetworkSetupFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */; };
 		2D1A5F572C35A8720073773D /* PartialCustomChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */; };
-		2D1A5F5A2C35A8A30073773D /* ChainType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F592C35A8A30073773D /* ChainType.swift */; };
+		2D1A5F5A2C35A8A30073773D /* CustomNetworkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1A5F592C35A8A30073773D /* CustomNetworkType.swift */; };
 		2D1C5D0B2C241C2700E2DBDD /* NetworkNodeEditPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D0A2C241C2700E2DBDD /* NetworkNodeEditPresenter.swift */; };
 		2D1C5D0E2C24214D00E2DBDD /* NetworkNodeBasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D0D2C24214D00E2DBDD /* NetworkNodeBasePresenter.swift */; };
 		2D1C5D102C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1C5D0F2C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift */; };
@@ -6528,7 +6528,7 @@
 		2D15850E2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
 		2D1A5F542C358E280073773D /* CustomNetworkSetupFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkSetupFactory.swift; sourceTree = "<group>"; };
 		2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialCustomChainModel.swift; sourceTree = "<group>"; };
-		2D1A5F592C35A8A30073773D /* ChainType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainType.swift; sourceTree = "<group>"; };
+		2D1A5F592C35A8A30073773D /* CustomNetworkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkType.swift; sourceTree = "<group>"; };
 		2D1C5D0A2C241C2700E2DBDD /* NetworkNodeEditPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeEditPresenter.swift; sourceTree = "<group>"; };
 		2D1C5D0D2C24214D00E2DBDD /* NetworkNodeBasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeBasePresenter.swift; sourceTree = "<group>"; };
 		2D1C5D0F2C242FF800E2DBDD /* NetworkNodeBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeBaseInteractor.swift; sourceTree = "<group>"; };
@@ -13335,7 +13335,7 @@
 			isa = PBXGroup;
 			children = (
 				2D1A5F562C35A8720073773D /* PartialCustomChainModel.swift */,
-				2D1A5F592C35A8A30073773D /* ChainType.swift */,
+				2D1A5F592C35A8A30073773D /* CustomNetworkType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -29056,7 +29056,7 @@
 				84BFE89C28C23A2500140F1F /* AutomationTime.swift in Sources */,
 				2D6287402C91ED5300060814 /* ReferendumVoteSetupPresenter.swift in Sources */,
 				846DA5592A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift in Sources */,
-				2D1A5F5A2C35A8A30073773D /* ChainType.swift in Sources */,
+				2D1A5F5A2C35A8A30073773D /* CustomNetworkType.swift in Sources */,
 				D83B47B07C0D40A327AC44F7 /* CustomValidatorListViewFactory.swift in Sources */,
 				777DC2DA2B2363FA0060CB2C /* ProxyInfoTableViewCell.swift in Sources */,
 				8881043829EBC6BD000FA9BC /* EquilibriumTokenTransfer.swift in Sources */,
