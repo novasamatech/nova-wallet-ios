@@ -10,8 +10,6 @@ class BannersLocalizationFactory {
     private let bannersContentPath: String
     private let fetchOperationFactory: BaseFetchOperationFactory
 
-    private var localizationProvider: AnySingleValueProvider<BannersLocalizedResources>?
-
     init(
         domain: Banners.Domain,
         bannersContentPath: String,
@@ -26,12 +24,16 @@ class BannersLocalizationFactory {
         guard let languageCode = locale.languageCode else { return nil }
 
         let domainValue = domain.rawValue
+        let filePathComponent = "\(languageCode).json"
 
-        let urlString = bannersContentPath + String(
-            format: Constants.localizationPathFormat,
+        let pathComponents = [
             domainValue,
-            languageCode
-        )
+            Constants.localizationPath,
+            filePathComponent
+        ]
+
+        let path = NSString.path(withComponents: pathComponents)
+        let urlString = (bannersContentPath as NSString).appendingPathComponent(path)
 
         return URL(string: urlString)
     }
@@ -53,7 +55,7 @@ extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
 
 private extension BannersLocalizationFactory {
     enum Constants {
-        static let localizationPathFormat: String = "%@/localized/%@.json"
+        static let localizationPath: String = "localized"
     }
 }
 

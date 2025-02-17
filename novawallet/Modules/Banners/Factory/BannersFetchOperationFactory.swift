@@ -16,8 +16,6 @@ class BannersFetchOperationFactory {
     private let imageRetrieveOperationFactory: ImageRetrieveOperationFactory<CommonImageInfo>
     private let operationManager: OperationManagerProtocol
 
-    private var bannersProvider: AnySingleValueProvider<[RemoteBannerModel]>?
-
     init(
         domain: Banners.Domain,
         bannersContentPath: String,
@@ -35,10 +33,13 @@ class BannersFetchOperationFactory {
     private func createURL() -> URL? {
         let domainValue = domain.rawValue
 
-        let urlString = bannersContentPath + String(
-            format: Constants.bannersFormat,
-            domainValue
-        )
+        let pathComponents = [
+            domainValue,
+            Constants.bannersPath
+        ]
+
+        let path = NSString.path(withComponents: pathComponents)
+        let urlString = (bannersContentPath as NSString).appendingPathComponent(path)
 
         return URL(string: urlString)
     }
@@ -107,42 +108,6 @@ private extension BannersFetchOperationFactory {
 
         return wrapper.insertingHead(operations: [checkCacheOperation])
     }
-
-    func bannersMapWrapper(
-        remoteBanners: [RemoteBannerModel],
-        backgroundImageWrappers: [String: CompoundOperationWrapper<UIImage>],
-        contentImageWrappers: [String: CompoundOperationWrapper<UIImage>]
-    ) -> CompoundOperationWrapper<[Banner]> {
-        let mapOperation: BaseOperation<[Banner]> = ClosureOperation {
-            try remoteBanners.map {
-                let background = try backgroundImageWrappers[$0.id]?
-                    .targetOperation
-                    .extractNoCancellableResultData()
-                let contentImage = try contentImageWrappers[$0.id]?
-                    .targetOperation
-                    .extractNoCancellableResultData()
-
-                return Banner(
-                    id: $0.id,
-                    background: background,
-                    image: contentImage,
-                    clipsToBounds: $0.clipsToBounds,
-                    actionLink: $0.action
-                )
-            }
-        }
-
-        let backgroundImageOperations = backgroundImageWrappers.flatMap(\.value.allOperations)
-        let contentImageOperations = contentImageWrappers.flatMap(\.value.allOperations)
-
-        backgroundImageOperations.forEach { mapOperation.addDependency($0) }
-        contentImageOperations.forEach { mapOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: backgroundImageOperations + contentImageOperations
-        )
-    }
 }
 
 // MARK: BannersFetchOperationFactoryProtocol
@@ -206,11 +171,11 @@ extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
 
 private extension BannersFetchOperationFactory {
     enum Constants {
-        static var bannersFormat: String {
+        static var bannersPath: String {
             #if F_RELEASE
-                "%@/banners.json"
+                "banners.json"
             #else
-                "%@/banners_dev.json"
+                "banners_dev.json"
             #endif
         }
     }
