@@ -10,6 +10,8 @@ final class BannersViewController: UIViewController, ViewHolder {
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
+    private var maxWidgetHeight: CGFloat = 0
+
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
         dataSource = BannersViewDataSource()
@@ -52,7 +54,21 @@ private extension BannersViewController {
         )
     }
 
-    func setup(with widgetModel: BannersWidgetviewModel) {
+    func updateMaxWidgetHeight(for widgetViewModel: BannersWidgetViewModel) {
+        let oldHeight = maxWidgetHeight
+        let height = widgetViewModel.maxTextHeight
+            + BannerView.Constants.textContainerTopInset
+            + BannerView.Constants.textContainerBottomInset
+            + BannerView.Constants.contentImageViewVerticalInset * 2
+
+        maxWidgetHeight = height
+
+        if height != oldHeight {
+            rootView.collectionView.collectionViewLayout.invalidateLayout()
+        }
+    }
+
+    func setup(with widgetModel: BannersWidgetViewModel) {
         setupBannersCollection(with: widgetModel.banners)
         setupPageControl()
 
@@ -91,7 +107,7 @@ private extension BannersViewController {
         }
     }
 
-    func updateCollectionOnClose(with updatedModel: BannersWidgetviewModel) {
+    func updateCollectionOnClose(with updatedModel: BannersWidgetViewModel) {
         guard let staticState else { return }
 
         dataSource.update(with: updatedModel.banners)
@@ -256,10 +272,11 @@ private extension BannersViewController {
 // MARK: BannersViewProtocol
 
 extension BannersViewController: BannersViewProtocol {
-    func update(with viewModel: LoadableViewModelState<BannersWidgetviewModel>?) {
+    func update(with viewModel: LoadableViewModelState<BannersWidgetViewModel>?) {
         switch viewModel {
         case let .cached(model), let .loaded(model):
             setup(with: model)
+            updateMaxWidgetHeight(for: model)
             rootView.setLoaded()
         case .loading, .none:
             dataSource.update(with: nil)
@@ -267,7 +284,9 @@ extension BannersViewController: BannersViewProtocol {
         }
     }
 
-    func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
+    func didCloseBanner(updatedViewModel: BannersWidgetViewModel) {
+        updateMaxWidgetHeight(for: updatedViewModel)
+
         guard
             let staticState,
             !updatedViewModel.banners.isEmpty
@@ -281,6 +300,10 @@ extension BannersViewController: BannersViewProtocol {
         ) { [weak self] in
             self?.updateCollectionOnClose(with: updatedViewModel)
         }
+    }
+
+    func getMaxBannerHeight() -> CGFloat {
+        maxWidgetHeight
     }
 }
 

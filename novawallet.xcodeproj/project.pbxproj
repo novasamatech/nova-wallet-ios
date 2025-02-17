@@ -1343,6 +1343,10 @@
 		2DCC876E2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */; };
 		2DCC87712C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */; };
 		2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */; };
+		2DD018BD2D635AD10063F9BB /* TextHeightOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018BC2D635AD10063F9BB /* TextHeightOperationFactory.swift */; };
+		2DD018BF2D635AEA0063F9BB /* TextHeightCalculationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018BE2D635AEA0063F9BB /* TextHeightCalculationContext.swift */; };
+		2DD018C12D635B110063F9BB /* HeightCalculatableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018C02D635B110063F9BB /* HeightCalculatableText.swift */; };
+		2DD018C32D635FD50063F9BB /* String+Estimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018C22D635FD50063F9BB /* String+Estimate.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
@@ -6813,6 +6817,10 @@
 		2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdatePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnablePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
+		2DD018BC2D635AD10063F9BB /* TextHeightOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextHeightOperationFactory.swift; sourceTree = "<group>"; };
+		2DD018BE2D635AEA0063F9BB /* TextHeightCalculationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextHeightCalculationContext.swift; sourceTree = "<group>"; };
+		2DD018C02D635B110063F9BB /* HeightCalculatableText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightCalculatableText.swift; sourceTree = "<group>"; };
+		2DD018C22D635FD50063F9BB /* String+Estimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Estimate.swift"; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
@@ -13714,6 +13722,7 @@
 				2D5D0CD92D51ED6E000E32F6 /* BannerViewModelFactory.swift */,
 				2D5D0CD02D513C72000E32F6 /* BannersLocalizationFactory.swift */,
 				2D5D0CD22D51422C000E32F6 /* BannersFetchOperationFactory.swift */,
+				2DD018BB2D635AA90063F9BB /* TextHeightOperationFactory */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -14186,6 +14195,16 @@
 				2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */,
 			);
 			path = CloudBackupEnablePasswordWireframe;
+			sourceTree = "<group>";
+		};
+		2DD018BB2D635AA90063F9BB /* TextHeightOperationFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2DD018BC2D635AD10063F9BB /* TextHeightOperationFactory.swift */,
+				2DD018BE2D635AEA0063F9BB /* TextHeightCalculationContext.swift */,
+				2DD018C02D635B110063F9BB /* HeightCalculatableText.swift */,
+			);
+			path = TextHeightOperationFactory;
 			sourceTree = "<group>";
 		};
 		2DD0909F2C2F507300632A5F /* NetworkManagement */ = {
@@ -19384,6 +19403,7 @@
 				849014FB24AA9939008F705E /* Charset+Mnemonic.swift */,
 				8490152624ABCC40008F705E /* NumberFormatter.swift */,
 				8401F24E24E524900081D8F8 /* String+Helpers.swift */,
+				2DD018C22D635FD50063F9BB /* String+Estimate.swift */,
 				8494D86A25247F9600614D8F /* Decimal+String.swift */,
 				846A2C4425271F0100731018 /* DateFormatter.swift */,
 				84F4386025D9A83100AEDA56 /* TimeInterval+Time.swift */,
@@ -26016,6 +26036,7 @@
 				842A737727DC7AEB006EE1EA /* NetworkViewModelFactory.swift in Sources */,
 				849F1B002A41A5B3003A2CF7 /* ScrullableView+Animation.swift in Sources */,
 				848919D726FB238E004DBAD5 /* JsonDataProviderFactory.swift in Sources */,
+				2DD018BD2D635AD10063F9BB /* TextHeightOperationFactory.swift in Sources */,
 				886A278029E939D9003B269F /* EquilibriumAccountData.swift in Sources */,
 				88F34FD228FF045400712BDE /* BindableView.swift in Sources */,
 				8857E03128A6A22500260BA2 /* PriceAssetInfoFactory.swift in Sources */,
@@ -26765,6 +26786,7 @@
 				2D039DE22BFBB08400A928E5 /* ExportNetworkView.swift in Sources */,
 				84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */,
 				84E258A52893D27E00DC8A51 /* AddressScanPresentable.swift in Sources */,
+				2DD018C12D635B110063F9BB /* HeightCalculatableText.swift in Sources */,
 				AEE5FB1026457806002B8FDC /* StakingRewardDestSetupViewFactory.swift in Sources */,
 				849B563327A70D71007D5528 /* ExtrinsicProcessor+Fee.swift in Sources */,
 				8814773C29AF554D001E98A1 /* AddDelegationViewModel.swift in Sources */,
@@ -28461,6 +28483,7 @@
 				8430AAF626023087005B1066 /* NominatorState.swift in Sources */,
 				0CF4ADFD2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift in Sources */,
 				842A735E27DB2EC4006EE1EA /* OperationDetailsModel.swift in Sources */,
+				2DD018BF2D635AEA0063F9BB /* TextHeightCalculationContext.swift in Sources */,
 				844DAADD28ABC5E2008E11DA /* LedgerDevice.swift in Sources */,
 				8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */,
 				88840D8A29DEA975002EFFFD /* TransferSetupRecipientAccount.swift in Sources */,
@@ -29627,6 +29650,7 @@
 				006BEDBD2F98FF54DB993D8C /* DAppAddFavoriteViewController.swift in Sources */,
 				84FFE45D28620833002432BB /* XcmTransferResolutionService.swift in Sources */,
 				D3F199376DAEBF380C5FFD9D /* DAppAddFavoriteViewLayout.swift in Sources */,
+				2DD018C32D635FD50063F9BB /* String+Estimate.swift in Sources */,
 				12734D7CC6ACA5B657F44519 /* DAppAddFavoriteViewFactory.swift in Sources */,
 				8483B15528F9406C0048B295 /* ReferendumVotersInteractorError.swift in Sources */,
 				84757E14299A1E1500616C6C /* BatchSubscriptionHandler.swift in Sources */,

@@ -6,14 +6,16 @@ protocol BannerViewModelFactoryProtocol {
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> BannersWidgetviewModel?
+    ) -> BannersWidgetViewModel?
 
     func createLoadableWidgetViewModel(
         for banners: [Banner]?,
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> LoadableViewModelState<BannersWidgetviewModel>?
+    ) -> LoadableViewModelState<BannersWidgetViewModel>?
+
+    func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat
 }
 
 class BannerViewModelFactory {
@@ -47,7 +49,7 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> LoadableViewModelState<BannersWidgetviewModel>? {
+    ) -> LoadableViewModelState<BannersWidgetViewModel>? {
         guard
             let banners,
             let localizedResources,
@@ -66,9 +68,12 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
             return nil
         }
 
-        let widgetViewModel = BannersWidgetviewModel(
+        let maxTextHeight = maxTextHeight(for: localizedResources)
+
+        let widgetViewModel = BannersWidgetViewModel(
             showsCloseButton: closeAvailable,
-            banners: bannerViewModels
+            banners: bannerViewModels,
+            maxTextHeight: maxTextHeight
         )
 
         return .loaded(value: widgetViewModel)
@@ -79,7 +84,7 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> BannersWidgetviewModel? {
+    ) -> BannersWidgetViewModel? {
         guard
             let banners,
             let localizedResources,
@@ -94,9 +99,16 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
             localizedResources: localizedResources
         )
 
-        return BannersWidgetviewModel(
+        let maxTextHeight = maxTextHeight(for: localizedResources)
+
+        return BannersWidgetViewModel(
             showsCloseButton: closeAvailable,
-            banners: bannerViewModels
+            banners: bannerViewModels,
+            maxTextHeight: maxTextHeight
         )
+    }
+
+    func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat {
+        CGFloat(localizedResources.map(\.value.estimatedHeight).max() ?? 0)
     }
 }

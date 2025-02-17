@@ -82,6 +82,8 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?) {
         localizedResources = updatedLocalizedResources
         provideBanners()
+
+        moduleOutput?.didUpdateContent()
     }
 
     func didReceive(_ updatedClosedBanners: ClosedBanners) {
@@ -111,9 +113,13 @@ extension BannersPresenter: BannersModuleInputProtocol {
         banners?.isEmpty != true
     }
 
-    func refresh(with locale: Locale) {
-        self.locale = locale
-
+    func refresh() {
         interactor.refresh(for: locale)
+    }
+
+    func updateLocale(_ newLocale: Locale) {
+        locale = newLocale
+
+        interactor.updateResources(for: newLocale)
     }
 }

@@ -1,8 +1,9 @@
 import UIKit
 
-struct BannersWidgetviewModel {
+struct BannersWidgetViewModel {
     let showsCloseButton: Bool
     let banners: [BannerViewModel]
+    let maxTextHeight: CGFloat
 }
 
 struct BannerViewModel {

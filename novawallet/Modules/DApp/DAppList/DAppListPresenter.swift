@@ -72,7 +72,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
-        bannersModule?.refresh(with: selectedLocale)
+        bannersModule?.refresh()
     }
 
     func activateAccount() {
@@ -217,6 +217,10 @@ extension DAppListPresenter: BannersModuleOutputProtocol {
             locale: selectedLocale
         )
     }
+
+    func didUpdateContent() {
+        provideSections()
+    }
 }
 
 // MARK: DAppListNavigationTaskCleaning
@@ -233,7 +237,7 @@ extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideSections()
-            bannersModule?.refresh(with: selectedLocale)
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

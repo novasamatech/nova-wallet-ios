@@ -50,7 +50,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        configureCollectionView()
+        setupView()
 
         presenter.setup()
     }
@@ -71,7 +71,13 @@ final class DAppListViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension DAppListViewController {
-    func configureCollectionView() {
+    func setupView() {
+        rootView.delegate = self
+
+        setupCollectionView()
+    }
+
+    func setupCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
         rootView.collectionView.registerCellClass(CollectionViewContainerCell<UIView>.self)
@@ -139,6 +145,14 @@ extension DAppListViewController {
         default:
             break
         }
+    }
+}
+
+// MARK: DAppListViewLayoutDelegate
+
+extension DAppListViewController: DAppListViewLayoutDelegate {
+    func heightForBannerSection() -> CGFloat {
+        bannersViewProvider.getMaxBannerHeight()
     }
 }
 

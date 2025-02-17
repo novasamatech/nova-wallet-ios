@@ -25,6 +25,7 @@ class BannerView: UIView {
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
+        view.numberOfLines = 0
     }
 
     let detailsLabel: UILabel = .create { view in
@@ -36,18 +37,24 @@ class BannerView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
         setupLayout()
+        setupStyle()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func setupLayout() {
+// MARK: Private
+
+private extension BannerView {
+    func setupLayout() {
         let textContainer = UIStackView.vStack(
             alignment: .leading,
-            spacing: 8.0,
+            spacing: Constants.textSpacing,
             [titleLabel, detailsLabel]
         )
 
@@ -55,22 +62,46 @@ class BannerView: UIView {
         addSubview(contentImageView)
 
         textContainer.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(16.0)
-            make.trailing.equalToSuperview().inset(127.0)
+            make.top.leading.equalToSuperview().inset(Constants.textContainerTopInset)
+            make.bottom.equalToSuperview().inset(Constants.textContainerBottomInset)
+            make.width.equalTo(Constants.textContainerWidth)
         }
 
         contentImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(-8.0)
-            make.bottom.equalToSuperview().inset(-8.0)
-            make.width.equalTo(202)
+            make.top.equalToSuperview().inset(-Constants.contentImageViewVerticalInset)
+            make.bottom.equalToSuperview().inset(-Constants.contentImageViewVerticalInset)
+            make.width.equalTo(Constants.contentImageViewWidth)
             make.trailing.equalToSuperview()
         }
     }
 
+    func setupStyle() {
+        layer.cornerRadius = Constants.cornerRadius
+    }
+}
+
+// MARK: Internal
+
+extension BannerView {
     func bind(with viewModel: BannerViewModel) {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
         contentImageView.image = viewModel.contentImage
+        clipsToBounds = viewModel.clipsToBounds
         layer.masksToBounds = viewModel.clipsToBounds
+    }
+}
+
+// MARK: Constants
+
+extension BannerView {
+    enum Constants {
+        static let textContainerTopInset: CGFloat = 16.0
+        static let textContainerBottomInset: CGFloat = 36.0
+        static let textContainerWidth: CGFloat = 200
+        static let textSpacing: CGFloat = 8.0
+        static let contentImageViewWidth: CGFloat = 202
+        static let contentImageViewVerticalInset: CGFloat = 8.0
+        static let cornerRadius: CGFloat = 12.0
     }
 }
