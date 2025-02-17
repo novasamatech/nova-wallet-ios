@@ -10,10 +10,12 @@ protocol BannersModuleInputOwnerProtocol: AnyObject {
 protocol BannersModuleInputProtocol: AnyObject {
     var bannersAvailable: Bool { get }
 
-    func refresh(with locale: Locale)
+    func refresh()
+    func updateLocale(_ newLocale: Locale)
 }
 
 protocol BannersModuleOutputProtocol: AnyObject {
+    func didUpdateContentLocale()
     func didReceiveBanners(available: Bool)
     func didReceive(_ error: Error)
 }
@@ -46,8 +48,8 @@ extension BannersViewProviderProtocol {
 // MARK: Inner Interfaces
 
 protocol BannersViewProtocol: ControllerBackedProtocol, BannersViewProviderProtocol {
-    func update(with viewModel: LoadableViewModelState<BannersWidgetviewModel>?)
-    func didCloseBanner(updatedViewModel: BannersWidgetviewModel)
+    func update(with viewModel: LoadableViewModelState<BannersWidgetViewModel>?)
+    func didCloseBanner(updatedViewModel: BannersWidgetViewModel)
 }
 
 protocol BannersPresenterProtocol: AnyObject {

@@ -25,6 +25,7 @@ class BannerView: UIView {
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldBodyPrimary)
+        view.numberOfLines = 0
     }
 
     let detailsLabel: UILabel = .create { view in

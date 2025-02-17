@@ -6,14 +6,14 @@ protocol BannerViewModelFactoryProtocol {
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> BannersWidgetviewModel?
+    ) -> BannersWidgetViewModel?
 
     func createLoadableWidgetViewModel(
         for banners: [Banner]?,
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> LoadableViewModelState<BannersWidgetviewModel>?
+    ) -> LoadableViewModelState<BannersWidgetViewModel>?
 
     func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat
 }
@@ -49,7 +49,7 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> LoadableViewModelState<BannersWidgetviewModel>? {
+    ) -> LoadableViewModelState<BannersWidgetViewModel>? {
         guard
             let banners,
             let localizedResources,
@@ -70,7 +70,7 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
 
         let maxTextHeight = maxTextHeight(for: localizedResources)
 
-        let widgetViewModel = BannersWidgetviewModel(
+        let widgetViewModel = BannersWidgetViewModel(
             showsCloseButton: closeAvailable,
             banners: bannerViewModels,
             maxTextHeight: maxTextHeight
@@ -84,7 +84,7 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
         closedBanners: ClosedBanners?,
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
-    ) -> BannersWidgetviewModel? {
+    ) -> BannersWidgetViewModel? {
         guard
             let banners,
             let localizedResources,
@@ -101,7 +101,7 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
 
         let maxTextHeight = maxTextHeight(for: localizedResources)
 
-        return BannersWidgetviewModel(
+        return BannersWidgetViewModel(
             showsCloseButton: closeAvailable,
             banners: bannerViewModels,
             maxTextHeight: maxTextHeight
