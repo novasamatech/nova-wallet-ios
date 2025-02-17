@@ -34,6 +34,7 @@ final class AssetListCollectionManager {
         )
 
         collectionViewDelegate = AssetListCollectionViewDelegate(
+            bannersViewProvider: bannersViewProvider,
             groupsViewModel: groupsViewModel
         )
 

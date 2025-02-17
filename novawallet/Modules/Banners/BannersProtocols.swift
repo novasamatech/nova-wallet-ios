@@ -18,7 +18,9 @@ protocol BannersModuleOutputProtocol: AnyObject {
     func didReceive(_ error: Error)
 }
 
-protocol BannersViewProviderProtocol: ControllerBackedProtocol {}
+protocol BannersViewProviderProtocol: ControllerBackedProtocol {
+    func getMaxBannerHeight() -> CGFloat
+}
 
 extension BannersViewProviderProtocol {
     func setupBanners(
@@ -38,6 +40,12 @@ extension BannersViewProviderProtocol {
         }
 
         controller.didMove(toParent: parentController)
+    }
+}
+
+extension BannersViewProviderProtocol where Self: BannersViewController {
+    func getMaxBannerHeight() -> CGFloat {
+        getMaxTotalBannerHeight()
     }
 }
 

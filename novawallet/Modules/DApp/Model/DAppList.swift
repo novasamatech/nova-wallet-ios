@@ -9,7 +9,7 @@ struct DAppList: Codable, Equatable {
 
     let popular: [DAppPopular]
     let categories: [DAppCategory]
-    let dApps: [DApp]
+    var dApps: [DApp]
 }
 
 struct DAppPopular: Codable, Equatable {

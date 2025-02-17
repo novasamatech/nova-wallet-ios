@@ -9,6 +9,7 @@ final class BannersViewController: UIViewController, ViewHolder {
 
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
+    private var maxWidgetHeight: CGFloat = 0
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
@@ -32,6 +33,10 @@ final class BannersViewController: UIViewController, ViewHolder {
         setupActions()
         presenter.setup()
     }
+
+    func getMaxTotalBannerHeight() -> CGFloat {
+        maxWidgetHeight
+    }
 }
 
 // MARK: Private
@@ -50,6 +55,13 @@ private extension BannersViewController {
             action: #selector(actionClose),
             for: .touchUpInside
         )
+    }
+
+    func updateMaxWidgetHeight(for widgetViewModel: BannersWidgetviewModel) {
+        maxWidgetHeight = widgetViewModel.maxTextHeight
+            + BannerView.Constants.textContainerTopInset
+            + BannerView.Constants.textContainerBottomInset
+            + BannerView.Constants.contentImageViewVerticalInset * 2
     }
 
     func setup(with widgetModel: BannersWidgetviewModel) {
@@ -120,10 +132,6 @@ private extension BannersViewController {
         animated: Bool,
         completionBlock: (() -> Void)? = nil
     ) {
-        guard let staticState else { return }
-
-        let indexPath = IndexPath(item: index, section: 0)
-
         if animated {
             dynamicState = DynamicState(
                 contentOffset: rootView.collectionView.contentOffset.x,
@@ -226,7 +234,6 @@ private extension BannersViewController {
         else { return }
 
         let itemWidth = scrollView.bounds.width
-        let fullContentWidth = itemWidth * CGFloat(dataSource.numberOfItems())
 
         if currentItemByOffset == firstIndex {
             scrollView.contentOffset.x = itemWidth * CGFloat(lastShowingItemIndex)
@@ -259,6 +266,7 @@ extension BannersViewController: BannersViewProtocol {
     func update(with viewModel: LoadableViewModelState<BannersWidgetviewModel>?) {
         switch viewModel {
         case let .cached(model), let .loaded(model):
+            updateMaxWidgetHeight(for: model)
             setup(with: model)
             rootView.setLoaded()
         case .loading, .none:
@@ -268,6 +276,8 @@ extension BannersViewController: BannersViewProtocol {
     }
 
     func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
+        updateMaxWidgetHeight(for: updatedViewModel)
+
         guard
             let staticState,
             !updatedViewModel.banners.isEmpty
@@ -313,8 +323,6 @@ extension BannersViewController: UIScrollViewDelegate {
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard let staticState else { return }
-
         let dynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
             itemWidth: scrollView.bounds.width

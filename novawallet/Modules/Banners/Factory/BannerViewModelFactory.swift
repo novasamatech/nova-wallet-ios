@@ -14,6 +14,8 @@ protocol BannerViewModelFactoryProtocol {
         closeAvailable: Bool,
         localizedResources: BannersLocalizedResources?
     ) -> LoadableViewModelState<BannersWidgetviewModel>?
+
+    func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat
 }
 
 class BannerViewModelFactory {
@@ -66,9 +68,12 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
             return nil
         }
 
+        let maxTextHeight = maxTextHeight(for: localizedResources)
+
         let widgetViewModel = BannersWidgetviewModel(
             showsCloseButton: closeAvailable,
-            banners: bannerViewModels
+            banners: bannerViewModels,
+            maxTextHeight: maxTextHeight
         )
 
         return .loaded(value: widgetViewModel)
@@ -94,9 +99,16 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
             localizedResources: localizedResources
         )
 
+        let maxTextHeight = maxTextHeight(for: localizedResources)
+
         return BannersWidgetviewModel(
             showsCloseButton: closeAvailable,
-            banners: bannerViewModels
+            banners: bannerViewModels,
+            maxTextHeight: maxTextHeight
         )
+    }
+
+    func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat {
+        CGFloat(localizedResources.map(\.value.estimatedHeight).max() ?? 0)
     }
 }

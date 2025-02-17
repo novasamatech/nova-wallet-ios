@@ -2,6 +2,7 @@ import UIKit
 
 final class DAppListViewLayout: UIView {
     private let backgroundView = MultigradientView.background
+    private let bannersViewProvider: BannersViewProviderProtocol
 
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(
@@ -18,8 +19,9 @@ final class DAppListViewLayout: UIView {
 
     var sectionViewModels: [DAppListSectionViewModel] = []
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(bannersViewProvider: BannersViewProviderProtocol) {
+        self.bannersViewProvider = bannersViewProvider
+        super.init(frame: .zero)
 
         setupLayout()
     }
@@ -115,7 +117,7 @@ private extension DAppListViewLayout {
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.915),
-                heightDimension: .absolute(126.0)
+                heightDimension: .absolute(bannersViewProvider.getMaxBannerHeight())
             ),
             subitem: item,
             count: 1

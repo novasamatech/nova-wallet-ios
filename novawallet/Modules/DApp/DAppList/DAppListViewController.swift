@@ -44,7 +44,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = DAppListViewLayout()
+        view = DAppListViewLayout(bannersViewProvider: bannersViewProvider)
     }
 
     override func viewDidLoad() {

@@ -1,16 +1,20 @@
 import UIKit
 
 final class AssetListCollectionViewDelegate: NSObject {
+    let bannersViewProvider: BannersViewProviderProtocol
+
     var groupsViewModel: AssetListViewModel
 
     weak var selectionDelegate: AssetListCollectionSelectionDelegate?
     weak var groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate?
 
     init(
+        bannersViewProvider: BannersViewProviderProtocol,
         groupsViewModel: AssetListViewModel,
         selectionDelegate: AssetListCollectionSelectionDelegate? = nil,
         groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate? = nil
     ) {
+        self.bannersViewProvider = bannersViewProvider
         self.groupsViewModel = groupsViewModel
         self.selectionDelegate = selectionDelegate
         self.groupsLayoutDelegate = groupsLayoutDelegate
@@ -80,10 +84,15 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
 
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
-        let cellHeight = groupsLayoutDelegate.cellHeight(
-            for: cellType,
-            at: indexPath
-        )
+        let cellHeight = switch cellType {
+        case .banner:
+            bannersViewProvider.getMaxBannerHeight()
+        default:
+            groupsLayoutDelegate.cellHeight(
+                for: cellType,
+                at: indexPath
+            )
+        }
 
         return CGSize(
             width: collectionView.bounds.width,
