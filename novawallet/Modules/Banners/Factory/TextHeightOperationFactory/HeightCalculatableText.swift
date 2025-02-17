@@ -18,14 +18,14 @@ extension TextHeightCalculationParams {
         let availableWidth: CGFloat = 200.0
         let title = TextHeightCalculationParams(
             availableWidth: availableWidth,
-            font: .h4Title,
+            font: .semiBoldBody,
             bottomInset: 8.0,
             topInset: .zero
         )
         let description = TextHeightCalculationParams(
             availableWidth: availableWidth,
             font: .caption1,
-            bottomInset: .zero,
+            bottomInset: 8.0,
             topInset: .zero
         )
 
