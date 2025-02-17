@@ -271,6 +271,7 @@ extension AssetListFlowLayout {
             return
         }
 
+        bannersHeight = .zero
         bannersInsets = newInsets
         invalidateLayout()
     }

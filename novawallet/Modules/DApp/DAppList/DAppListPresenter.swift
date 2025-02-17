@@ -51,7 +51,7 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
                 favorites: favorites ?? [:],
                 wallet: wallet,
                 params: params,
-                bannersAvailable: bannersModule?.bannersAvailable ?? false,
+                bannersState: bannersModule?.bannersState ?? .unavailable,
                 locale: selectedLocale
             )
 
@@ -206,7 +206,7 @@ extension DAppListPresenter: DAppSearchDelegate {
 // MARK: BannersModuleOutputProtocol
 
 extension DAppListPresenter: BannersModuleOutputProtocol {
-    func didReceiveBanners(available _: Bool) {
+    func didReceiveBanners(state _: BannersState) {
         provideSections()
     }
 
@@ -218,7 +218,7 @@ extension DAppListPresenter: BannersModuleOutputProtocol {
         )
     }
 
-    func didUpdateContent() {
+    func didUpdateContent(state _: BannersState) {
         provideSections()
     }
 }

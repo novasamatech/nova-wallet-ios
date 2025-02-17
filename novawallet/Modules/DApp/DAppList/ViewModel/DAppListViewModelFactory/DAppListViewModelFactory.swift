@@ -396,7 +396,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite],
         wallet: MetaAccountModel?,
         params: DAppListViewModelFactory.ListSectionsParams,
-        bannersAvailable: Bool,
+        bannersState: BannersState,
         locale: Locale
     ) -> [DAppListSectionViewModel] {
         var viewModels: [DAppListSectionViewModel] = []
@@ -425,7 +425,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             viewModels.append(.categorySelect(categorySelectSection))
         }
 
-        if bannersAvailable {
+        if bannersState == .available || bannersState == .loading {
             let bannersSection = DAppListSection(
                 title: nil,
                 cells: [.banner]

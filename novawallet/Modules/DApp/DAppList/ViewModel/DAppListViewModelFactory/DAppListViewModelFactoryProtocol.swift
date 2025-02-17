@@ -23,7 +23,7 @@ protocol DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite],
         wallet: MetaAccountModel?,
         params: DAppListViewModelFactory.ListSectionsParams,
-        bannersAvailable: Bool,
+        bannersState: BannersState,
         locale: Locale
     ) -> [DAppListSectionViewModel]
 }

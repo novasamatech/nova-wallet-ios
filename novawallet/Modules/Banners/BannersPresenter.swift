@@ -76,14 +76,14 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
 
         provideBanners()
 
-        moduleOutput?.didReceiveBanners(available: !bannersFetchResult.banners.isEmpty)
+        moduleOutput?.didReceiveBanners(state: bannersState)
     }
 
     func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?) {
         localizedResources = updatedLocalizedResources
         provideBanners()
 
-        moduleOutput?.didUpdateContent()
+        moduleOutput?.didUpdateContent(state: bannersState)
     }
 
     func didReceive(_ updatedClosedBanners: ClosedBanners) {
@@ -98,6 +98,11 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
             return
         }
 
+        guard !viewModel.banners.isEmpty else {
+            moduleOutput?.didReceiveBanners(state: bannersState)
+            return
+        }
+
         view?.didCloseBanner(updatedViewModel: viewModel)
     }
 
@@ -109,8 +114,16 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
 // MARK: BannersModuleInputProtocol
 
 extension BannersPresenter: BannersModuleInputProtocol {
-    var bannersAvailable: Bool {
-        banners?.isEmpty != true
+    var bannersState: BannersState {
+        guard let banners, let closedBanners else {
+            return .loading
+        }
+
+        return banners
+            .filter { !closedBanners.contains($0.id) }
+            .isEmpty
+            ? .unavailable
+            : .available
     }
 
     func refresh() {

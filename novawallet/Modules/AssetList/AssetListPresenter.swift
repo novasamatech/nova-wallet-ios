@@ -48,8 +48,9 @@ final class AssetListPresenter: BannersModuleInputOwnerProtocol {
 // MARK: Private
 
 private extension AssetListPresenter {
-    func provideBanners() {
-        view?.didReceiveBanners(available: bannersModule?.bannersAvailable ?? false)
+    func provideBanners(state: BannersState) {
+        let available = state == .available || state == .loading
+        view?.didReceiveBanners(available: available)
     }
 
     func provideHeaderViewModel() {
@@ -441,7 +442,10 @@ private extension AssetListPresenter {
 
 extension AssetListPresenter: AssetListPresenterProtocol {
     func setup() {
-        provideBanners()
+        if let bannersModule {
+            provideBanners(state: bannersModule.bannersState)
+        }
+
         interactor.setup()
     }
 
@@ -633,12 +637,12 @@ extension AssetListPresenter: BannersModuleOutputProtocol {
         )
     }
 
-    func didReceiveBanners(available _: Bool) {
-        provideBanners()
+    func didReceiveBanners(state: BannersState) {
+        provideBanners(state: state)
     }
 
-    func didUpdateContent() {
-        provideBanners()
+    func didUpdateContent(state: BannersState) {
+        provideBanners(state: state)
     }
 }
 

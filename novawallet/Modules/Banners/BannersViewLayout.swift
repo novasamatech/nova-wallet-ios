@@ -99,11 +99,13 @@ private extension BannersViewLayout {
             make.bottom.leading.equalTo(backgroundView).inset(Constants.contentLeadingOffset)
         }
 
-        containerView.addSubview(closeButton)
+        addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.closeButtonSize)
-            make.top.equalTo(backgroundView).inset(Constants.closeButtontopOffset)
-            make.trailing.equalTo(backgroundView).inset(Constants.contentLeadingOffset)
+            make.trailing.equalToSuperview().inset(Constants.contentLeadingOffset)
+            make.top.equalToSuperview().inset(
+                Constants.containerVerticalInset + Constants.closeButtontopOffset
+            )
         }
     }
 }
@@ -116,7 +118,7 @@ extension BannersViewLayout: SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [containerView]
+        [containerView, closeButton]
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [any Skeletonable] {
@@ -192,7 +194,7 @@ extension BannersViewLayout {
 
 // MARK: Constants
 
-private extension BannersViewLayout {
+extension BannersViewLayout {
     enum Constants {
         static let closeButtonSize: CGFloat = 24
         static let closeButtontopOffset: CGFloat = 10
@@ -206,5 +208,6 @@ private extension BannersViewLayout {
         static let skeletonYOffsets: [CGFloat] = [16.0, 16.0, 8.0]
         static let skeletonLineHeights: [CGFloat] = [14.0, 8.0, 8.0]
         static let skeletonLineWidths: [CGFloat] = [168.0, 125.0, 89.0]
+        static let skeletonViewHeight: CGFloat = 110.0
     }
 }

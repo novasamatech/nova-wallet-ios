@@ -3,20 +3,27 @@ import UIKit
 
 // MARK: Module Interface
 
+enum BannersState {
+    case loading
+    case available
+    case unavailable
+}
+
 protocol BannersModuleInputOwnerProtocol: AnyObject {
     var bannersModule: BannersModuleInputProtocol? { get set }
 }
 
 protocol BannersModuleInputProtocol: AnyObject {
-    var bannersAvailable: Bool { get }
+    var bannersState: BannersState { get }
 
+    func setup()
     func refresh()
     func updateLocale(_ newLocale: Locale)
 }
 
 protocol BannersModuleOutputProtocol: AnyObject {
-    func didUpdateContent()
-    func didReceiveBanners(available: Bool)
+    func didUpdateContent(state: BannersState)
+    func didReceiveBanners(state: BannersState)
     func didReceive(_ error: Error)
 }
 
