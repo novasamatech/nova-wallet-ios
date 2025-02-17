@@ -98,7 +98,6 @@ protocol AssetListInteractorInputProtocol {
     func refresh()
     func connectWalletConnect(uri: String)
     func retryFetchWalletConnectSessionsCount()
-    func markPolkadotStakingPromotionSeen()
     func setAssetListGroupsStyle(_ style: AssetListGroupsStyle)
 }
 

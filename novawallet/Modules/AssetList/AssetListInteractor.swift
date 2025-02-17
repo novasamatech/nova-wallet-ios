@@ -251,10 +251,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
 }
 
 extension AssetListInteractor: AssetListInteractorInputProtocol {
-    func markPolkadotStakingPromotionSeen() {
-        settingsManager.polkadotStakingPromoSeen = true
-    }
-
     func refresh() {
         if let provider = priceSubscription {
             provider.refresh()
