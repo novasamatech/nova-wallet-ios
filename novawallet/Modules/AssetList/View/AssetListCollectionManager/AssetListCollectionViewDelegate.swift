@@ -84,15 +84,10 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
 
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
-        let cellHeight = switch cellType {
-        case .banner:
-            bannersViewProvider.getMaxBannerHeight()
-        default:
-            groupsLayoutDelegate.cellHeight(
-                for: cellType,
-                at: indexPath
-            )
-        }
+        let cellHeight = groupsLayoutDelegate.cellHeight(
+            for: cellType,
+            at: indexPath
+        )
 
         return CGSize(
             width: collectionView.bounds.width,
