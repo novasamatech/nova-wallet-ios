@@ -95,7 +95,8 @@ struct MythosStkUnstakeConfirmViewFactory {
         let statusService = ExtrinsicStatusService(
             connection: connection,
             runtimeProvider: runtimeService,
-            eventsQueryFactory: eventsFactory
+            eventsQueryFactory: eventsFactory,
+            logger: Logger.shared
         )
         let submissionFactory = ExtrinsicSubmissionMonitorFactory(
             submissionService: extrinsicService,

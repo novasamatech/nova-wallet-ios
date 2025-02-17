@@ -96,7 +96,8 @@ struct MythosStakingConfirmViewFactory {
             statusService: ExtrinsicStatusService(
                 connection: connection,
                 runtimeProvider: runtimeProvider,
-                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue)
+                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+                logger: Logger.shared
             ),
             operationQueue: operationQueue
         )

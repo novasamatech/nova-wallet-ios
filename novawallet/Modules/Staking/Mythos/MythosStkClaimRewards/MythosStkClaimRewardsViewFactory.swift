@@ -94,7 +94,8 @@ struct MythosStkClaimRewardsViewFactory {
             statusService: ExtrinsicStatusService(
                 connection: connection,
                 runtimeProvider: runtimeService,
-                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue)
+                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+                logger: Logger.shared
             ),
             operationQueue: operationQueue
         )
