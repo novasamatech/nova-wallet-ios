@@ -1,6 +1,6 @@
 import UIKit
 
-final class AssetPriceChartViewController: UIViewController {
+final class AssetPriceChartViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetPriceChartViewLayout
 
     let presenter: AssetPriceChartPresenterProtocol
