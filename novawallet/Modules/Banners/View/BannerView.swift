@@ -1,20 +1,24 @@
 import Foundation
 import SoraUI
 
+class BannersCollectionViewCell: CollectionViewContainerCell<UIView> {
+    var contentInsets: UIEdgeInsets = .zero {
+        didSet {
+            view.snp.updateConstraints {
+                $0.edges.equalToSuperview().inset(contentInsets)
+            }
+        }
+    }
+}
+
 class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        setupStyle()
-    }
-
-    private func setupStyle() {
-        layer.cornerRadius = 12
     }
 
     func bind(with viewModel: BannerViewModel) {
         view.bind(with: viewModel)
-        layer.masksToBounds = viewModel.clipsToBounds
+        contentView.layer.masksToBounds = viewModel.clipsToBounds
     }
 }
 
