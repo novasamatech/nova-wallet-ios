@@ -256,9 +256,9 @@ private extension AssetListCollectionViewDataSource {
     func provideBannersCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
-    ) -> BannersCollectionViewCell {
+    ) -> BannersContainerCollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithType(
-            BannersCollectionViewCell.self,
+            BannersContainerCollectionViewCell.self,
             for: indexPath
         )!
 

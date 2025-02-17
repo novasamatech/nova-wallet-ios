@@ -80,7 +80,7 @@ private extension DAppListViewController {
     func setupCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
-        rootView.collectionView.registerCellClass(BannersCollectionViewCell.self)
+        rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppListLoadingView.self)

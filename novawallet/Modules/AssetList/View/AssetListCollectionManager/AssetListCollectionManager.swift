@@ -92,7 +92,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         viewController?.rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListNftsCell.self)
-        viewController?.rootView.collectionView.registerCellClass(BannersCollectionViewCell.self)
+        viewController?.rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
         viewController?.rootView.collectionView.registerClass(
             AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader

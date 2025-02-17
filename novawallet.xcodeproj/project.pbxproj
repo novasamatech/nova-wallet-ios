@@ -1344,6 +1344,7 @@
 		2DD018BF2D635AEA0063F9BB /* TextHeightCalculationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018BE2D635AEA0063F9BB /* TextHeightCalculationContext.swift */; };
 		2DD018C12D635B110063F9BB /* HeightCalculatableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018C02D635B110063F9BB /* HeightCalculatableText.swift */; };
 		2DD018C32D635FD50063F9BB /* String+Estimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018C22D635FD50063F9BB /* String+Estimate.swift */; };
+		2DD018C52D63B09A0063F9BB /* BannersContainerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018C42D63B09A0063F9BB /* BannersContainerCollectionViewCell.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
@@ -6815,6 +6816,7 @@
 		2DD018BE2D635AEA0063F9BB /* TextHeightCalculationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextHeightCalculationContext.swift; sourceTree = "<group>"; };
 		2DD018C02D635B110063F9BB /* HeightCalculatableText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightCalculatableText.swift; sourceTree = "<group>"; };
 		2DD018C22D635FD50063F9BB /* String+Estimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Estimate.swift"; sourceTree = "<group>"; };
+		2DD018C42D63B09A0063F9BB /* BannersContainerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersContainerCollectionViewCell.swift; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
@@ -14091,6 +14093,7 @@
 			children = (
 				2D5D0CDB2D51FAEF000E32F6 /* BannerView.swift */,
 				2D5D0CE82D54A24C000E32F6 /* BannerBackgroundView.swift */,
+				2DD018C42D63B09A0063F9BB /* BannersContainerCollectionViewCell.swift */,
 				2D62ED2C2D5A0AFE001EF17D /* ExtendedPageControl.swift */,
 				2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */,
 			);
@@ -27666,6 +27669,7 @@
 				88D42CF42977AA9600DDE01E /* ReferendumsDelegationViewModel.swift in Sources */,
 				84729741260A9C13009B86D0 /* DisplayAddress.swift in Sources */,
 				8499FEE027C0AE3200712589 /* KnownChainIds.swift in Sources */,
+				2DD018C52D63B09A0063F9BB /* BannersContainerCollectionViewCell.swift in Sources */,
 				84FF267E28494B2B003EC78D /* ParaStkStateSetupPresenter+StakeMore.swift in Sources */,
 				77FFB2B32B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift in Sources */,
 				84F4386125D9A83100AEDA56 /* TimeInterval+Time.swift in Sources */,

@@ -8,7 +8,7 @@ enum Banners {
 
     enum Domain: String {
         case dApps = "dapps"
-        case assets
+        case assets = "assets"
     }
 }
 
