@@ -133,8 +133,14 @@ extension AssetListViewController: AssetListViewProtocol {
         collectionViewManager.updateBanners(available: available)
         rootView.collectionView.reloadData()
 
-        let height = AssetListBannerCell.estimateHeight()
-        activatePromotionWithHeight(height)
+        let height = bannersViewProvider.getMaxBannerHeight()
+        
+        if available {
+            activatePromotionWithHeight(height)
+        } else {
+            deactivatePromotion()
+        }
+        
     }
 
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle) {

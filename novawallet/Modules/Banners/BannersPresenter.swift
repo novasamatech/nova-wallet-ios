@@ -95,6 +95,11 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         ) else {
             return
         }
+        
+        guard !viewModel.banners.isEmpty else {
+            moduleOutput?.didReceiveBanners(available: false)
+            return
+        }
 
         view?.didCloseBanner(updatedViewModel: viewModel)
     }

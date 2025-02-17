@@ -350,7 +350,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         case .nfts:
             nftViewModel != nil ? 1 : 0
         case .banners:
-            bannersAvailable != nil ? 1 : 0
+            bannersAvailable == true ? 1 : 0
         case .settings:
             groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
