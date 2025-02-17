@@ -527,9 +527,6 @@
 		0C992C452B552A5000ACC129 /* StakingUnclaimedRewardsFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C442B552A5000ACC129 /* StakingUnclaimedRewardsFacade.swift */; };
 		0C992C482B55303600ACC129 /* StakingLedgerUnclaimedRewardsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C472B55303600ACC129 /* StakingLedgerUnclaimedRewardsFactory.swift */; };
 		0C992C4A2B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C992C492B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift */; };
-		0C9951CA2AE2ABA400B65615 /* AssetListBannerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */; };
-		0C9951CF2AE2BAE500B65615 /* PromotionBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */; };
-		0C9951D32AE2DB0200B65615 /* PromotionViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */; };
 		0C9A7F992AFC9A2B00938CD0 /* SwapPriceDifferenceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9A7F982AFC9A2B00938CD0 /* SwapPriceDifferenceConfig.swift */; };
 		0C9BCC582CBD6B4000CBE21B /* AssetsExchangeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BCC572CBD6B4000CBE21B /* AssetsExchangeProtocol.swift */; };
 		0C9C642D2A8CE30A004DC078 /* SystemAccountValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9C642C2A8CE30A004DC078 /* SystemAccountValidating.swift */; };
@@ -5990,9 +5987,6 @@
 		0C992C442B552A5000ACC129 /* StakingUnclaimedRewardsFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnclaimedRewardsFacade.swift; sourceTree = "<group>"; };
 		0C992C472B55303600ACC129 /* StakingLedgerUnclaimedRewardsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingLedgerUnclaimedRewardsFactory.swift; sourceTree = "<group>"; };
 		0C992C492B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimedRewardsOperationFactory.swift; sourceTree = "<group>"; };
-		0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBannerCell.swift; sourceTree = "<group>"; };
-		0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotionBannerView.swift; sourceTree = "<group>"; };
-		0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromotionViewModelFactory.swift; sourceTree = "<group>"; };
 		0C9A7F982AFC9A2B00938CD0 /* SwapPriceDifferenceConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPriceDifferenceConfig.swift; sourceTree = "<group>"; };
 		0C9BCC572CBD6B4000CBE21B /* AssetsExchangeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeProtocol.swift; sourceTree = "<group>"; };
 		0C9C642C2A8CE30A004DC078 /* SystemAccountValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemAccountValidating.swift; sourceTree = "<group>"; };
@@ -12047,14 +12041,6 @@
 				0C992C492B5530A000ACC129 /* StakingClaimedRewardsOperationFactory.swift */,
 			);
 			path = UnclaimedRewards;
-			sourceTree = "<group>";
-		};
-		0C9951CD2AE2BAA700B65615 /* PromotionBannerView */ = {
-			isa = PBXGroup;
-			children = (
-				0C9951CE2AE2BAE500B65615 /* PromotionBannerView.swift */,
-			);
-			path = PromotionBannerView;
 			sourceTree = "<group>";
 		};
 		0C9BCC562CBD6B1600CBE21B /* AssetExchange */ = {
@@ -19536,7 +19522,6 @@
 				0CF6928A2C231C89000FC395 /* SharedStatusView */,
 				2D5493322C04C0C000607BF7 /* MnemonicCard */,
 				0CC0F7F52BB070C6002C49F6 /* LoadableAction */,
-				0C9951CD2AE2BAA700B65615 /* PromotionBannerView */,
 				0C79C8932A7BDED700B171E3 /* TitleHorizontalMultivalueView */,
 				84F96FA32A136E0400EB70E2 /* GladingView */,
 				84B24FA12A2F1C6C00F9BF59 /* CollectionView */,
@@ -19830,7 +19815,6 @@
 				0C13380F2AB832B30036BCD6 /* QRImageViewModel.swift */,
 				0C1338112AB8330D0036BCD6 /* AnimatedImageViewModel.swift */,
 				0C1338132AB834750036BCD6 /* QRImageViewModelFactory.swift */,
-				0C9951D22AE2DB0200B65615 /* PromotionViewModelFactory.swift */,
 				8828F4F428AD2763009E0B7C /* BalanceViewModelFactoryFacade.swift */,
 				0C13DFD22AF949B400E5F355 /* BalanceViewModelFactoryFacade+Formatting.swift */,
 				779F1F8C2B4D8A9100EF1EE9 /* NetworkFeeInfoViewModel.swift */,
@@ -22055,7 +22039,6 @@
 				843E9B2727C83985009C143A /* AssetListNftsCell.swift */,
 				88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */,
 				0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */,
-				0C9951C92AE2ABA400B65615 /* AssetListBannerCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -26759,7 +26742,6 @@
 				8858917229A4B55600320896 /* DelegateInfoView.swift in Sources */,
 				8489A6DC27FE9F570040C066 /* StakingUnbondingItemViewModel.swift in Sources */,
 				848DE76626D642670045CD29 /* StorageMigrator.swift in Sources */,
-				0C9951CF2AE2BAE500B65615 /* PromotionBannerView.swift in Sources */,
 				0CA719902B79C92E000B086E /* HydraRoutesOperationFactory.swift in Sources */,
 				2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */,
 				F4AE12A1268DD69B0097D1C7 /* MnemonicTextNormalizer.swift in Sources */,
@@ -27975,7 +27957,6 @@
 				84CFF1E626526FBC00DB7CF7 /* StakingBondMoreInteractor.swift in Sources */,
 				844D2A44281B28FB0049CF5E /* StackTitleMultiValueCell.swift in Sources */,
 				0CE9338C2C0096AA000F3EFE /* CloudBackupSyncMediator.swift in Sources */,
-				0C9951CA2AE2ABA400B65615 /* AssetListBannerCell.swift in Sources */,
 				84E172CF28BE468D00DC85B6 /* MessageSheetPresentable.swift in Sources */,
 				8487583727F06AF300495306 /* AddressScanDelegate.swift in Sources */,
 				2D7748802C8B48C40059607B /* CIKeys.generated.swift in Sources */,
@@ -28739,7 +28720,6 @@
 				0C500B1F2B04EA9100ABEE70 /* AssetConversionPallet+Event.swift in Sources */,
 				0CBABFF62CEEACB60047F29E /* RoundedButton+Set.swift in Sources */,
 				2CF2F93AF862CF54FC46B560 /* PurchaseInteractor.swift in Sources */,
-				0C9951D32AE2DB0200B65615 /* PromotionViewModelFactory.swift in Sources */,
 				77EFFC912A7276F1009E28F8 /* StakingTypeAccountView.swift in Sources */,
 				90EFE3768F1375470FDBE6F6 /* PurchaseViewFactory.swift in Sources */,
 				F452D895273D22CF008F7295 /* SettingsTableHeaderView.swift in Sources */,
