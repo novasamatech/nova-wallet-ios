@@ -31,15 +31,17 @@ struct BannersViewFactory {
             imageRetrieveOperationFactory: imageRetrieveOperationFactory,
             operationManager: operationManager
         )
+        let textHeightOperationFactory = TextHeightOperationFactory()
         let localizationFactory = BannersLocalizationFactory(
             domain: domain,
             bannersContentPath: appConfig.bannersContentPath,
-            fetchOperationFactory: fetchOperationFactory
+            fetchOperationFactory: fetchOperationFactory,
+            textHeightOperationFactory: textHeightOperationFactory,
+            operationManager: operationManager
         )
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = BannersInteractor(
-            domain: domain,
             bannersFactory: bannersFactory,
             localizationFactory: localizationFactory,
             settingsManager: SettingsManager.shared,

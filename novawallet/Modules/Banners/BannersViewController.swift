@@ -10,6 +10,8 @@ final class BannersViewController: UIViewController, ViewHolder {
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
+    private var maxWidgetHeight: CGFloat = 0
+
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
         dataSource = BannersViewDataSource()
@@ -50,6 +52,15 @@ private extension BannersViewController {
             action: #selector(actionClose),
             for: .touchUpInside
         )
+    }
+
+    func updateMaxWidgetHeight(for widgetViewModel: BannersWidgetviewModel) {
+        let height = widgetViewModel.maxTextHeight
+            + BannerView.Constants.textContainerTopInset
+            + BannerView.Constants.textContainerBottomInset
+            + BannerView.Constants.contentImageViewVerticalInset * 2
+
+        maxWidgetHeight = height
     }
 
     func setup(with widgetModel: BannersWidgetviewModel) {
@@ -259,6 +270,7 @@ extension BannersViewController: BannersViewProtocol {
     func update(with viewModel: LoadableViewModelState<BannersWidgetviewModel>?) {
         switch viewModel {
         case let .cached(model), let .loaded(model):
+            updateMaxWidgetHeight(for: model)
             setup(with: model)
             rootView.setLoaded()
         case .loading, .none:
@@ -268,6 +280,8 @@ extension BannersViewController: BannersViewProtocol {
     }
 
     func didCloseBanner(updatedViewModel: BannersWidgetviewModel) {
+        updateMaxWidgetHeight(for: updatedViewModel)
+
         guard
             let staticState,
             !updatedViewModel.banners.isEmpty
@@ -281,6 +295,10 @@ extension BannersViewController: BannersViewProtocol {
         ) { [weak self] in
             self?.updateCollectionOnClose(with: updatedViewModel)
         }
+    }
+
+    func getMaxBannerHeight() -> CGFloat {
+        maxWidgetHeight
     }
 }
 
