@@ -38,6 +38,18 @@ final class BannersViewController: UIViewController, ViewHolder {
         setupActions()
         presenter.setup()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAutoScroll()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        autoScrollManager.stopScrolling()
+    }
 }
 
 // MARK: Private
@@ -287,6 +299,8 @@ private extension BannersViewController {
 
 extension BannersViewController: BannersViewProtocol {
     func update(with viewModel: LoadableViewModelState<BannersWidgetViewModel>?) {
+        autoScrollManager.stopScrolling()
+
         switch viewModel {
         case let .cached(model), let .loaded(model):
             setup(with: model)
@@ -306,6 +320,8 @@ extension BannersViewController: BannersViewProtocol {
             let staticState,
             !updatedViewModel.banners.isEmpty
         else { return }
+
+        autoScrollManager.stopScrolling()
 
         let nextItemIndex = staticState.itemByActualOffset + 1
 
