@@ -78,8 +78,6 @@ private extension BannersViewController {
 
         rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
         rootView.setCloseButton(available: widgetModel.showsCloseButton)
-
-        autoScrollManager.setupScrolling()
     }
 
     func setupPageControl() {
@@ -263,6 +261,16 @@ private extension BannersViewController {
         staticState = StaticState(itemByActualOffset: itemByOffsetChanges)
     }
 
+    private func setupAutoScroll() {
+        guard dataSource.multipleBanners else {
+            autoScrollManager.stopScrolling()
+
+            return
+        }
+
+        autoScrollManager.setupScrolling()
+    }
+
     // MARK: Actions
 
     @objc func actionClose() {
@@ -283,6 +291,7 @@ extension BannersViewController: BannersViewProtocol {
         case let .cached(model), let .loaded(model):
             setup(with: model)
             updateMaxWidgetHeight(for: model)
+            setupAutoScroll()
             rootView.setLoaded()
         case .loading, .none:
             dataSource.update(with: nil)
@@ -305,6 +314,7 @@ extension BannersViewController: BannersViewProtocol {
             animated: true
         ) { [weak self] in
             self?.updateCollectionOnClose(with: updatedViewModel)
+            self?.setupAutoScroll()
         }
     }
 
