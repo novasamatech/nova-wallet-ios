@@ -93,7 +93,7 @@ private extension CustomNetworkSetupFinishStrategy {
     ) -> Set<ChainNodeModel> {
         // we can have only a single node if it was setup by a user
         if let node = setUpNetwork.nodes.first, !preConfNetwork.nodes.contains(where: { $0.url == node.url }) {
-            [node].union(preConfNetwork.nodes)
+            Set([node]).union(preConfNetwork.nodes)
         } else {
             preConfNetwork.nodes
         }
