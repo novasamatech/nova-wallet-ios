@@ -10,7 +10,7 @@ enum SubstrateExtrinsicStatus {
     struct FailedExtrinsic {
         let extrinsicHash: ExtrinsicHash
         let blockHash: BlockHash
-        let error: DispatchExtrinsicError
+        let error: DispatchCallError
     }
 
     case success(SuccessExtrinsic)
