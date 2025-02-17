@@ -1325,6 +1325,7 @@
 		2DCC876E2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */; };
 		2DCC87712C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */; };
 		2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */; };
+		2DD018CC2D63E1400063F9BB /* DateValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
@@ -6780,6 +6781,7 @@
 		2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdatePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnablePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
+		2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateValueFormatter.swift; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
@@ -10900,6 +10902,7 @@
 				D8DE2583C0D36ECDB0F012EB /* AssetPriceChartInteractor.swift */,
 				99FD0B7680E2D406466FCB36 /* AssetPriceChartViewController.swift */,
 				B08478AD9E9AF78370BC7E87 /* AssetPriceChartViewLayout.swift */,
+				2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */,
 				8200F778F49BE2390F58F810 /* AssetPriceChartViewFactory.swift */,
 			);
 			path = AssetPriceChart;
@@ -26730,6 +26733,7 @@
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
 				84796080283B63240084E779 /* LoadableActionView.swift in Sources */,
 				84FD3DBB254104B600A234E3 /* WalletTransactionListUpdated.swift in Sources */,
+				2DD018CC2D63E1400063F9BB /* DateValueFormatter.swift in Sources */,
 				842EBB2928908ADB00B952D8 /* WalletsListTableViewCell.swift in Sources */,
 				84C1706629961FAD00CBE531 /* GovernanceYourDelegationsInteractorError.swift in Sources */,
 				771901A62AE8FF7E00D9C918 /* SwapInfoViewCell.swift in Sources */,
