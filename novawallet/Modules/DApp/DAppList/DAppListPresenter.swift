@@ -3,8 +3,10 @@ import SubstrateSdk
 import SoraFoundation
 import Operation_iOS
 
-final class DAppListPresenter {
+final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     weak var view: DAppListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol
@@ -49,6 +51,7 @@ final class DAppListPresenter {
                 favorites: favorites ?? [:],
                 wallet: wallet,
                 params: params,
+                bannersAvailable: bannersModule?.bannersAvailable ?? false,
                 locale: selectedLocale
             )
 
@@ -69,6 +72,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh(with: selectedLocale)
     }
 
     func activateAccount() {
@@ -199,6 +203,22 @@ extension DAppListPresenter: DAppSearchDelegate {
     }
 }
 
+// MARK: BannersModuleOutputProtocol
+
+extension DAppListPresenter: BannersModuleOutputProtocol {
+    func didReceiveBanners(available _: Bool) {
+        provideSections()
+    }
+
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
+    }
+}
+
 // MARK: DAppListNavigationTaskCleaning
 
 extension DAppListPresenter: DAppListNavigationTaskCleaning {
@@ -213,6 +233,7 @@ extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideSections()
+            bannersModule?.refresh(with: selectedLocale)
         }
     }
 }

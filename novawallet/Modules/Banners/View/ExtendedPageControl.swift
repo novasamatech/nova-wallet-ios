@@ -1,0 +1,179 @@
+import Foundation
+import UIKit
+import SoraUI
+
+class ExtendedPageControl: UIControl {
+    private var dots: [UIView] = []
+
+    private lazy var stackView: UIStackView = .create { view in
+        view.axis = .horizontal
+        view.alignment = .center
+        view.spacing = Constants.spacing
+    }
+
+    private let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 0.0,
+        to: 1.0,
+        duration: Constants.animationDuration
+    )
+    private let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 1.0,
+        to: 0.0,
+        duration: Constants.animationDuration
+    )
+    private let changesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(duration: Constants.animationDuration)
+
+    var numberOfPages: Int = 0 {
+        didSet {
+            if numberOfPages < oldValue {
+                animateLeadingDotRemoval(oldValue: oldValue)
+            } else {
+                setupDots()
+            }
+        }
+    }
+
+    var currentPage: Int = 0 {
+        didSet {
+            updateDots(animated: true)
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+}
+
+// MARK: Private
+
+private extension ExtendedPageControl {
+    func setupView() {
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
+    func setupDots() {
+        dots.forEach { $0.removeFromSuperview() }
+        dots.removeAll()
+
+        for pageIndex in 0 ..< numberOfPages {
+            let dot = createDot()
+
+            stackView.addArrangedSubview(dot)
+
+            let width = pageIndex == currentPage
+                ? Constants.extendedDotWidth
+                : Constants.dotSize
+
+            dot.snp.makeConstraints { make in
+                make.height.equalTo(Constants.dotSize)
+                make.width.equalTo(width)
+            }
+
+            dots.append(dot)
+        }
+
+        updateDots(animated: false)
+    }
+
+    func createDot() -> UIView {
+        let dot = UIView()
+        dot.backgroundColor = .white
+        dot.layer.cornerRadius = Constants.dotSize / 2
+        dot.layer.masksToBounds = true
+
+        return dot
+    }
+
+    func animateLeadingDotRemoval(oldValue: Int) {
+        guard oldValue > numberOfPages, !dots.isEmpty else { return }
+
+        let dotToRemove = dots.removeFirst()
+
+        changesAnimator.animate { [weak self] in
+            guard let self else { return }
+
+            dotToRemove.snp.updateConstraints { make in
+                make.width.equalTo(0)
+            }
+
+            stackView.setCustomSpacing(0, after: dotToRemove)
+
+            self.layoutIfNeeded()
+        } completionBlock: { _ in
+            dotToRemove.removeFromSuperview()
+        }
+    }
+
+    func updateDots(animated: Bool) {
+        guard currentPage < dots.count else { return }
+
+        if animated {
+            changesAnimator.animate(
+                block: updateDots,
+                completionBlock: nil
+            )
+        } else {
+            updateDots()
+        }
+    }
+
+    func updateDots() {
+        dots.enumerated().forEach { index, dot in
+            if index == self.currentPage {
+                dot.snp.updateConstraints { make in
+                    make.width.equalTo(Constants.extendedDotWidth)
+                }
+                dot.backgroundColor = R.color.colorIconChip()
+            } else {
+                dot.snp.updateConstraints { make in
+                    make.width.equalTo(Constants.dotSize)
+                }
+                dot.backgroundColor = R.color.colorIconInactive()
+            }
+        }
+        layoutIfNeeded()
+    }
+}
+
+// MARK: Internal
+
+extension ExtendedPageControl {
+    func show() {
+        guard stackView.isHidden else { return }
+
+        stackView.isHidden = false
+
+        appearanceAnimator.animate(
+            view: stackView,
+            completionBlock: nil
+        )
+    }
+
+    func hide() {
+        guard !stackView.isHidden else { return }
+
+        disappearanceAnimator.animate(view: stackView) { [weak self] _ in
+            self?.stackView.isHidden = true
+        }
+    }
+}
+
+// MARK: Constants
+
+private extension ExtendedPageControl {
+    enum Constants {
+        static let animationDuration: CGFloat = 0.3
+        static let dotSize: CGFloat = 6.0
+        static let extendedDotWidth: CGFloat = 20
+        static let spacing: CGFloat = 6
+    }
+}

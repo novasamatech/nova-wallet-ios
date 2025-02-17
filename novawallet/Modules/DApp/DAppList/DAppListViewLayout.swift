@@ -69,10 +69,9 @@ private extension DAppListViewLayout {
                     fixedHeight: DAppCategoriesView.preferredHeight,
                     scrollingBehavior: .none
                 )
-                contentInsets.bottom = 12
             case .banners:
                 section = bannersSectionLayout()
-                contentInsets.bottom = 24
+                contentInsets.bottom = 16
             case .favorites:
                 section = dAppFavoritesSectionLayout()
                 contentInsets.bottom = 24
@@ -116,7 +115,7 @@ private extension DAppListViewLayout {
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.915),
-                heightDimension: .absolute(120.0)
+                heightDimension: .absolute(126.0)
             ),
             subitem: item,
             count: 1
