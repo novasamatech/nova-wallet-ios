@@ -36,7 +36,7 @@ final class ExtrinsicStatusService {
 }
 
 private extension ExtrinsicStatusService {
-    private func createSuccessStatus(
+    func createSuccessStatus(
         from events: SubstrateExtrinsicEvents,
         input: ExtrinsicStatusServiceInput,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -63,7 +63,7 @@ private extension ExtrinsicStatusService {
         )
     }
 
-    private func createFailureStatus(
+    func createFailureStatus(
         from events: SubstrateExtrinsicEvents,
         input: ExtrinsicStatusServiceInput,
         codingFactory: RuntimeCoderFactoryProtocol
@@ -76,10 +76,10 @@ private extension ExtrinsicStatusService {
             throw ExtrinsicStatusServiceError.terminateEventNotFound(events)
         }
 
-        let errorDecoderFactory = CallDispatchErrorDecoder(logger: logger)
+        let errorDecoder = CallDispatchErrorDecoder(logger: logger)
 
         guard
-            let dispatchError = errorDecoderFactory.decode(
+            let dispatchError = errorDecoder.decode(
                 errorParams: failureEvent.params,
                 using: codingFactory
             ) else {
@@ -90,7 +90,7 @@ private extension ExtrinsicStatusService {
         return .failure(.init(extrinsicHash: extString, blockHash: input.blockHash, error: dispatchError))
     }
 
-    private func createMatchingWrapper(
+    func createMatchingWrapper(
         dependingOn queryOperation: BaseOperation<SubstrateBlockDetails>,
         input: ExtrinsicStatusServiceInput
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
