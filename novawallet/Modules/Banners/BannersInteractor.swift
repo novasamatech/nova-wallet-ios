@@ -6,7 +6,6 @@ import SoraKeystore
 final class BannersInteractor {
     weak var presenter: BannersInteractorOutputProtocol?
 
-    private let domain: Banners.Domain
     private let bannersFactory: BannersFetchOperationFactoryProtocol
     private let localizationFactory: BannersLocalizationFactoryProtocol
     private let settingsManager: SettingsManagerProtocol
@@ -14,14 +13,12 @@ final class BannersInteractor {
     private let logger: LoggerProtocol
 
     init(
-        domain: Banners.Domain,
         bannersFactory: BannersFetchOperationFactoryProtocol,
         localizationFactory: BannersLocalizationFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.domain = domain
         self.bannersFactory = bannersFactory
         self.localizationFactory = localizationFactory
         self.settingsManager = settingsManager
@@ -64,7 +61,7 @@ private extension BannersInteractor {
             backgroundImageInfo: backgroundImageInfo,
             contentImageInfo: contentImageInfo
         )
-        let localizationFetchOperation = localizationFactory.createOperation(for: locale)
+        let localizationFetchWrapper = localizationFactory.createWrapper(for: locale)
 
         let mergeOperation: ClosureOperation<BannersFetchResult> = ClosureOperation { [weak self] in
             guard let self else {
@@ -72,7 +69,7 @@ private extension BannersInteractor {
             }
 
             let banners = try bannersFetchWrapper.targetOperation.extractNoCancellableResultData()
-            let localizations = try localizationFetchOperation.extractNoCancellableResultData()
+            let localizations = try localizationFetchWrapper.targetOperation.extractNoCancellableResultData()
 
             return BannersFetchResult(
                 banners: banners,
@@ -82,9 +79,9 @@ private extension BannersInteractor {
         }
 
         mergeOperation.addDependency(bannersFetchWrapper.targetOperation)
-        mergeOperation.addDependency(localizationFetchOperation)
+        mergeOperation.addDependency(localizationFetchWrapper.targetOperation)
 
-        let dependencies = bannersFetchWrapper.allOperations + [localizationFetchOperation]
+        let dependencies = bannersFetchWrapper.allOperations + localizationFetchWrapper.allOperations
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
@@ -97,10 +94,10 @@ private extension BannersInteractor {
 
 extension BannersInteractor: BannersInteractorInputProtocol {
     func updateResources(for locale: Locale) {
-        let localizationFetchOperation = localizationFactory.createOperation(for: locale)
+        let localizationFetchWrapper = localizationFactory.createWrapper(for: locale)
 
         execute(
-            operation: localizationFetchOperation,
+            wrapper: localizationFetchWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
