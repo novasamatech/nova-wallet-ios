@@ -273,7 +273,7 @@ extension AssetListFlowLayout {
 
         bannersHeight = .zero
         bannersInsets = newInsets
-        invalidateLayout()
+        // invalidateLayout()
     }
 
     func setNftsActive(_ isActive: Bool) {

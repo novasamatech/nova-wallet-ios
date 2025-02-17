@@ -131,7 +131,6 @@ extension AssetListViewController: AssetListViewProtocol {
 
     func didReceiveBanners(available: Bool) {
         collectionViewManager.updateBanners(available: available)
-        rootView.collectionView.reloadData()
 
         let height = bannersViewProvider.getMaxBannerHeight()
 
@@ -139,6 +138,12 @@ extension AssetListViewController: AssetListViewProtocol {
             activatePromotionWithHeight(height)
         } else {
             deactivatePromotion()
+        }
+
+        rootView.collectionView.performBatchUpdates {
+            self.rootView.collectionView.reloadSections(
+                [AssetListFlowLayout.SectionType.banners.index]
+            )
         }
     }
 
