@@ -56,8 +56,9 @@ private extension BannerView {
         addSubview(contentImageView)
 
         textContainer.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(Constants.textContainerTopInset)
-            make.bottom.equalToSuperview().inset(Constants.textContainerBottomInset)
+            make.bottom.equalToSuperview().inset(Constants.textContainerBottomInset).priority(.high)
+            make.top.equalToSuperview().inset(Constants.textContainerTopInset).priority(.high)
+            make.leading.equalToSuperview().inset(Constants.textContainerTopInset)
             make.width.equalTo(Constants.textContainerWidth)
         }
 
