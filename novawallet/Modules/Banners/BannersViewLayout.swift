@@ -89,7 +89,7 @@ private extension BannersViewLayout {
             make.edges.equalToSuperview()
         }
 
-        containerView.addSubview(collectionView)
+        addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
