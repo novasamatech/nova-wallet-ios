@@ -137,7 +137,13 @@ extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
 
 private extension BannersLocalizationFactory {
     enum Constants {
-        static let localizationPath: String = "localized"
+        static var localizationPath: String {
+            #if F_RELEASE
+                "localized"
+            #else
+                "localized_dev"
+            #endif
+        }
     }
 }
 

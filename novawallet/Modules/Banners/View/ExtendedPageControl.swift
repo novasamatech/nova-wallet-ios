@@ -23,10 +23,14 @@ class ExtendedPageControl: UIControl {
     )
     private let changesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(duration: Constants.animationDuration)
 
+    private var previousSelectedPage: Int?
+
     var numberOfPages: Int = 0 {
         didSet {
+            guard oldValue != numberOfPages else { return }
+
             if numberOfPages < oldValue {
-                animateLeadingDotRemoval(oldValue: oldValue)
+                animateDotRemoval(oldNumberOfPage: oldValue)
             } else {
                 setupDots()
             }
@@ -35,6 +39,10 @@ class ExtendedPageControl: UIControl {
 
     var currentPage: Int = 0 {
         didSet {
+            if oldValue != currentPage {
+                previousSelectedPage = oldValue
+            }
+
             updateDots(animated: true)
         }
     }
@@ -93,6 +101,18 @@ private extension ExtendedPageControl {
         return dot
     }
 
+    func animateDotRemoval(oldNumberOfPage: Int) {
+        guard let previousSelectedPage, previousSelectedPage != currentPage else {
+            return
+        }
+
+        if previousSelectedPage < currentPage {
+            animateLeadingDotRemoval(oldValue: oldNumberOfPage)
+        } else {
+            animateTrailingDotRemoval(oldValue: oldNumberOfPage)
+        }
+    }
+
     func animateLeadingDotRemoval(oldValue: Int) {
         guard oldValue > numberOfPages, !dots.isEmpty else { return }
 
@@ -109,6 +129,18 @@ private extension ExtendedPageControl {
 
             self.layoutIfNeeded()
         } completionBlock: { _ in
+            dotToRemove.removeFromSuperview()
+        }
+    }
+
+    func animateTrailingDotRemoval(oldValue: Int) {
+        guard oldValue > numberOfPages, dots.count > 1 else { return }
+
+        let dotToRemove = dots.removeLast()
+        let newLastDot = dots.last!
+
+        disappearanceAnimator.animate(view: dotToRemove) { [weak self] _ in
+            self?.stackView.setCustomSpacing(0, after: newLastDot)
             dotToRemove.removeFromSuperview()
         }
     }
