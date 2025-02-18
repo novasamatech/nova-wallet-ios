@@ -57,10 +57,17 @@ class MythosStkUnstakeInteractor: AnyProviderAutoCleaning {
 
     func getExtrinsicBuilderClosure(for model: MythosStkUnstakeModel) -> ExtrinsicBuilderClosure {
         { builder in
+            var newBuilder = builder
+
+            if model.shouldClaimRewards {
+                let claimReward = MythosStakingPallet.ClaimRewardsCall()
+                newBuilder = try newBuilder.adding(call: claimReward.runtimeCall())
+            }
+
             let unstakeCall = MythosStakingPallet.UnstakeCall(account: model.collator)
             let unlockCall = MythosStakingPallet.UnlockCall(maybeAmount: model.amount)
 
-            return try builder
+            return try newBuilder
                 .adding(call: unstakeCall.runtimeCall())
                 .adding(call: unlockCall.runtimeCall())
         }

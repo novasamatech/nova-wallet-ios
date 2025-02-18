@@ -158,13 +158,18 @@ private extension MythosStkUnstakeSetupPresenter {
         fee = nil
         provideFeeViewModel()
 
+        guard let claimableRewards else {
+            return
+        }
+
         let collator = getSelectedCollator() ?? AccountId.zeroAccountId(
             of: chainAsset.chain.accountIdSize
         )
 
         let model = MythosStkUnstakeModel(
             collator: collator,
-            amount: stakingAmountInPlank()
+            amount: stakingAmountInPlank(),
+            shouldClaimRewards: claimableRewards.shouldClaim
         )
 
         interactor.estimateFee(for: model)
@@ -225,13 +230,6 @@ private extension MythosStkUnstakeSetupPresenter {
                 balance: balance?.transferable,
                 fee: fee,
                 asset: chainAsset.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.noUnclaimedRewards(
-                claimableRewards?.shouldClaim ?? false,
-                claimAction: { [weak self] in
-                    self?.wireframe.showClaimRewards(from: self?.view)
-                },
                 locale: selectedLocale
             )
         ])
@@ -363,6 +361,8 @@ extension MythosStkUnstakeSetupPresenter: MythosStkUnstakeSetupInteractorOutputP
         logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
 
         self.claimableRewards = claimableRewards
+
+        refreshFee()
     }
 
     func didReceiveStakingDuration(_ duration: MythosStakingDuration) {

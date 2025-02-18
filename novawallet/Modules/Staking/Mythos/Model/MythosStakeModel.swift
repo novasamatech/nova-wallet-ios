@@ -13,12 +13,4 @@ struct MythosStakeModel {
 
     let amount: Amount
     let collator: AccountId
-
-    var reuseTxId: String {
-        [
-            String(amount.toLock),
-            collator.toHex(),
-            String(amount.toStake)
-        ].joined(with: String.Separator.dash)
-    }
 }

@@ -5,7 +5,6 @@ final class MythosStakingDetailsPresenter {
     let wireframe: MythosStakingDetailsWireframeProtocol
     let interactor: MythosStakingDetailsInteractorInputProtocol
     let viewModelFactory: MythosStkStateViewModelFactoryProtocol
-    let dataValidationFactory: MythosStakingValidationFactoryProtocol
     let networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol
     let logger: LoggerProtocol
 
@@ -27,14 +26,12 @@ final class MythosStakingDetailsPresenter {
         interactor: MythosStakingDetailsInteractorInputProtocol,
         wireframe: MythosStakingDetailsWireframeProtocol,
         viewModelFactory: MythosStkStateViewModelFactoryProtocol,
-        dataValidationFactory: MythosStakingValidationFactoryProtocol,
         networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.dataValidationFactory = dataValidationFactory
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.logger = logger
 
@@ -79,43 +76,15 @@ private extension MythosStakingDetailsPresenter {
         view?.didReceiveStakingState(viewModel: viewModel)
     }
 
-    func ensureRewardsClaimed(_ successClosure: @escaping () -> Void) {
-        guard let view else {
-            return
-        }
-
-        let validator = DataValidationRunner(validators: [
-            dataValidationFactory.noUnclaimedRewards(
-                claimableRewards?.shouldClaim ?? false,
-                claimAction: { [weak self] in
-                    self?.wireframe.showClaimRewards(from: self?.view)
-                },
-                locale: view.selectedLocale
-            )
-        ])
-
-        validator.runValidation {
-            successClosure()
-        }
-    }
-
     func handleStakeMoreAction() {
-        ensureRewardsClaimed { [weak self] in
-            guard let self = self else { return }
-
-            wireframe.showStakeTokens(
-                from: view,
-                initialDetails: stakingDetails
-            )
-        }
+        wireframe.showStakeTokens(
+            from: view,
+            initialDetails: stakingDetails
+        )
     }
 
     func handleUnstakeAction() {
-        ensureRewardsClaimed { [weak self] in
-            guard let self = self else { return }
-
-            wireframe.showUnstakeTokens(from: view)
-        }
+        wireframe.showUnstakeTokens(from: view)
     }
 }
 

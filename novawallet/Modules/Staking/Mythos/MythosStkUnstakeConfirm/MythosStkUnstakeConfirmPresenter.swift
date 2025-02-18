@@ -18,8 +18,8 @@ final class MythosStkUnstakeConfirmPresenter {
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
     private(set) var stakingDetails: MythosStakingDetails?
-    private(set) var delegationIdentities: [AccountId: AccountIdentity]?
     private(set) var claimableRewards: MythosStakingClaimableRewards?
+    private(set) var delegationIdentities: [AccountId: AccountIdentity]?
     private(set) var stakingDuration: MythosStakingDuration?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -65,11 +65,16 @@ final class MythosStkUnstakeConfirmPresenter {
     func getUnstakingModel() -> MythosStkUnstakeModel? {
         guard
             let collatorId = getCollatorId(),
-            let amount = stakingDetails?.stakeDistribution[collatorId]?.stake else {
+            let amount = stakingDetails?.stakeDistribution[collatorId]?.stake,
+            let claimableRewards else {
             return nil
         }
 
-        return MythosStkUnstakeModel(collator: collatorId, amount: amount)
+        return MythosStkUnstakeModel(
+            collator: collatorId,
+            amount: amount,
+            shouldClaimRewards: claimableRewards.shouldClaim
+        )
     }
 
     private func provideAmountViewModel() {
@@ -196,13 +201,6 @@ final class MythosStkUnstakeConfirmPresenter {
                 fee: fee,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
-            ),
-            dataValidatingFactory.noUnclaimedRewards(
-                claimableRewards?.shouldClaim ?? false,
-                claimAction: { [weak self] in
-                    self?.wireframe.showClaimRewards(from: self?.view)
-                },
-                locale: selectedLocale
             )
         ])
     }
@@ -267,6 +265,8 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
         logger.debug("Claimable rewards: \(String(describing: rewards))")
 
         claimableRewards = rewards
+
+        refreshFee()
     }
 
     func didReceiveStakingDuration(_ duration: MythosStakingDuration) {
