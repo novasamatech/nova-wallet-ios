@@ -130,8 +130,8 @@ private extension DAppListViewController {
         using collectionView: UICollectionView,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let cell: CollectionViewContainerCell<UIView> = collectionView.dequeueReusableCellWithType(
-            CollectionViewContainerCell<UIView>.self,
+        let cell: BannersContainerCollectionViewCell = collectionView.dequeueReusableCellWithType(
+            BannersContainerCollectionViewCell.self,
             for: indexPath
         )!
 

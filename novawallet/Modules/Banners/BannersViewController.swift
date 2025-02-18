@@ -10,7 +10,7 @@ final class BannersViewController: UIViewController, ViewHolder {
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
-    private var maxWidgetHeight: CGFloat = 0
+    var maxWidgetHeight = BannersViewLayout.Constants.skeletonViewHeight
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter

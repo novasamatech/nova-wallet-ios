@@ -4,17 +4,11 @@ import SoraUI
 class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        setupStyle()
-    }
-
-    private func setupStyle() {
-        layer.cornerRadius = 12
     }
 
     func bind(with viewModel: BannerViewModel) {
         view.bind(with: viewModel)
-        layer.masksToBounds = viewModel.clipsToBounds
+        contentView.layer.masksToBounds = viewModel.clipsToBounds
     }
 }
 
@@ -62,8 +56,9 @@ private extension BannerView {
         addSubview(contentImageView)
 
         textContainer.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(Constants.textContainerTopInset)
-            make.bottom.equalToSuperview().inset(Constants.textContainerBottomInset)
+            make.bottom.equalToSuperview().inset(Constants.textContainerBottomInset).priority(.high)
+            make.top.equalToSuperview().inset(Constants.textContainerTopInset).priority(.high)
+            make.leading.equalToSuperview().inset(Constants.textContainerTopInset)
             make.width.equalTo(Constants.textContainerWidth)
         }
 
