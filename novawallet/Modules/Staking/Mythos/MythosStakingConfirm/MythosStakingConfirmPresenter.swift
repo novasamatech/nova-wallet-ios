@@ -145,8 +145,6 @@ private extension MythosStakingConfirmPresenter {
         }
 
         interactor.estimateFee(with: transactionModel)
-
-        provideFeeViewModel()
     }
 
     func submitExtrinsic() {
