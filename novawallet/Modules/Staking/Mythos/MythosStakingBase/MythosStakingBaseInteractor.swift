@@ -23,7 +23,7 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoClean
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
-    private var feeDebouncer = Debouncer(delay: 0.5)
+    private var feeDebouncer = Debouncer(delay: 0.25)
 
     init(
         chainAsset: ChainAsset,
