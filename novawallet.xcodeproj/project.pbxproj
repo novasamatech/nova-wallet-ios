@@ -934,6 +934,7 @@
 		0CE632A32B904449002E4D20 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A22B904449002E4D20 /* PushNotification.swift */; };
 		0CE840E22BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */; };
 		0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */; };
+		0CE862152D64B61C00245992 /* ObservableSubscriptionStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */; };
 		0CE92A672B2ADBBA009A21E9 /* RuntimeProviderChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */; };
 		0CE933862BFF90B4000F3EFE /* RuntimeLocalMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */; };
 		0CE933882BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */; };
@@ -989,6 +990,7 @@
 		0CEBAD612D61BDA9000EBA45 /* StateCallTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD602D61BDA9000EBA45 /* StateCallTests.swift */; };
 		0CEBAD632D61BF2A000EBA45 /* PolkadotInflationPredictionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD622D61BF2A000EBA45 /* PolkadotInflationPredictionFactory.swift */; };
 		0CEBAD652D64560C000EBA45 /* DispatchCallError+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD642D64560C000EBA45 /* DispatchCallError+Display.swift */; };
+		0CEBAD672D648AC0000EBA45 /* MythosStakingStakeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD662D648AC0000EBA45 /* MythosStakingStakeSyncService.swift */; };
 		0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */; };
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
@@ -6534,6 +6536,7 @@
 		0CE632A22B904449002E4D20 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactory.swift; sourceTree = "<group>"; };
 		0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
+		0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionStateStore.swift; sourceTree = "<group>"; };
 		0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProviderChain.swift; sourceTree = "<group>"; };
 		0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeLocalMigrator.swift; sourceTree = "<group>"; };
 		0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRuntimeMetadataFetcher.swift; sourceTree = "<group>"; };
@@ -6588,6 +6591,7 @@
 		0CEBAD602D61BDA9000EBA45 /* StateCallTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateCallTests.swift; sourceTree = "<group>"; };
 		0CEBAD622D61BF2A000EBA45 /* PolkadotInflationPredictionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotInflationPredictionFactory.swift; sourceTree = "<group>"; };
 		0CEBAD642D64560C000EBA45 /* DispatchCallError+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchCallError+Display.swift"; sourceTree = "<group>"; };
+		0CEBAD662D648AC0000EBA45 /* MythosStakingStakeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingStakeSyncService.swift; sourceTree = "<group>"; };
 		0CED3A072BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsExporting.swift; sourceTree = "<group>"; };
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -11576,6 +11580,7 @@
 				0C0F6E3C2D473CF400943A7C /* MythosStakingClaimableRewardsService.swift */,
 				0C0F6E402D47431B00943A7C /* MythosStakingClaimRewardsFactory.swift */,
 				0CA72A782D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift */,
+				0CEBAD662D648AC0000EBA45 /* MythosStakingStakeSyncService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -16828,6 +16833,7 @@
 				0C7A3FCF2B6A93B500764603 /* ObservableSubscriptionSyncService.swift */,
 				0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */,
 				0C0F6DC32D3FEDC800943A7C /* BaseObservableStateStore.swift */,
+				0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -30739,6 +30745,7 @@
 				6A2B6DF2D6AE912D5FA62D94 /* ParitySignerAddressesWireframe.swift in Sources */,
 				849A1647299523C500E235FE /* GovernanceDelegateConfirmPresenter+Protocols.swift in Sources */,
 				65083CD11AE1998A1F4D98F1 /* ParitySignerAddressesPresenter.swift in Sources */,
+				0CEBAD672D648AC0000EBA45 /* MythosStakingStakeSyncService.swift in Sources */,
 				3AD7635AFA1F7E66A3C00F56 /* ParitySignerAddressesInteractor.swift in Sources */,
 				940DA38E4586A27D7F3E0C67 /* HardwareWalletAddressesViewController.swift in Sources */,
 				E8F04B9E557AD6BD0279EA6F /* HardwareWalletAddressesViewLayout.swift in Sources */,
@@ -30848,6 +30855,7 @@
 				ED529AA4ED05E8847C4C067F /* LedgerTxConfirmPresenter.swift in Sources */,
 				E488F3E052650FF525D41D63 /* LedgerTxConfirmInteractor.swift in Sources */,
 				75DAB313623E900EC475E215 /* LedgerTxConfirmViewFactory.swift in Sources */,
+				0CE862152D64B61C00245992 /* ObservableSubscriptionStateStore.swift in Sources */,
 				44D9F74D7851B874F2045E7E /* LedgerInstructionsProtocols.swift in Sources */,
 				0CCDB2F72B75DFD4007BC5D6 /* HydraStableswapFlowState.swift in Sources */,
 				84AC794A297FEAFF00E284DE /* GovernanceDelegateDetails.swift in Sources */,

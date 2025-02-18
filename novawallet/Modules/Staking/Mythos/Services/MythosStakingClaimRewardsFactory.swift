@@ -5,12 +5,14 @@ import SubstrateSdk
 protocol MythosStakingClaimRewardsFactoryProtocol {
     func shouldClaimRewardsWrapper(
         for chainId: ChainModel.Id,
-        accountId: AccountId
+        accountId: AccountId,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<Bool>
 
     func totalRewardsWrapper(
         for chainId: ChainModel.Id,
-        accountId: AccountId
+        accountId: AccountId,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<Balance>
 }
 
@@ -38,7 +40,8 @@ final class MythosStakingClaimRewardsFactory {
         accountId: AccountId,
         methodName: String,
         connection: JSONRPCEngine,
-        runtimeApiFactory: StateCallRequestFactoryProtocol
+        runtimeApiFactory: StateCallRequestFactoryProtocol,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<T> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -67,7 +70,8 @@ final class MythosStakingClaimRewardsFactory {
                     try codingFactoryOperation.extractNoCancellableResultData()
                 },
                 connection: connection,
-                queryType: String(runtimeApi.method.output)
+                queryType: String(runtimeApi.method.output),
+                at: blockHash?.toHexWithPrefix()
             )
         }
     }
@@ -76,7 +80,8 @@ final class MythosStakingClaimRewardsFactory {
 extension MythosStakingClaimRewardsFactory: MythosStakingClaimRewardsFactoryProtocol {
     func shouldClaimRewardsWrapper(
         for chainId: ChainModel.Id,
-        accountId: AccountId
+        accountId: AccountId,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<Bool> {
         do {
             let connection = try chainRegistry.getConnectionOrError(for: chainId)
@@ -89,7 +94,8 @@ extension MythosStakingClaimRewardsFactory: MythosStakingClaimRewardsFactoryProt
                 accountId: accountId,
                 methodName: "should_claim",
                 connection: connection,
-                runtimeApiFactory: runtimeApiFactory
+                runtimeApiFactory: runtimeApiFactory,
+                at: blockHash
             )
 
             requestWrapper.addDependency(operations: [codingFactoryOperation])
@@ -102,7 +108,8 @@ extension MythosStakingClaimRewardsFactory: MythosStakingClaimRewardsFactoryProt
 
     func totalRewardsWrapper(
         for chainId: ChainModel.Id,
-        accountId: AccountId
+        accountId: AccountId,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<Balance> {
         do {
             let connection = try chainRegistry.getConnectionOrError(for: chainId)
@@ -115,7 +122,8 @@ extension MythosStakingClaimRewardsFactory: MythosStakingClaimRewardsFactoryProt
                 accountId: accountId,
                 methodName: "total_rewards",
                 connection: connection,
-                runtimeApiFactory: runtimeApiFactory
+                runtimeApiFactory: runtimeApiFactory,
+                at: blockHash
             )
 
             let mappingOperation = ClosureOperation<Balance> {
