@@ -112,7 +112,14 @@ extension MythosCollatorOperationFactory: MythosCollatorOperationFactoryProtocol
                     return collators.map { BytesCodable(wrappedValue: $0) }
                 },
                 keyParams2: {
-                    [BytesCodable(wrappedValue: delegatorAccountId)]
+                    let collators = try collatorIdsListOperation.extractNoCancellableResultData()
+
+                    // for each collator we need to provide the staker
+                    let delegatorIds = collators.map { _ in
+                        BytesCodable(wrappedValue: delegatorAccountId)
+                    }
+
+                    return delegatorIds
                 },
                 factory: {
                     try codingFactoryOperation.extractNoCancellableResultData()
