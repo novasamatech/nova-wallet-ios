@@ -7,6 +7,10 @@ final class BannersViewController: UIViewController, ViewHolder {
     let presenter: BannersPresenterProtocol
     let dataSource: BannersViewDataSourceProtocol
 
+    private lazy var autoScrollManager: AutoScrollManager = {
+        AutoScrollManager(scrollable: self)
+    }()
+
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
@@ -33,6 +37,18 @@ final class BannersViewController: UIViewController, ViewHolder {
         setupCollectionView()
         setupActions()
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAutoScroll()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        autoScrollManager.stopScrolling()
     }
 }
 
@@ -257,6 +273,16 @@ private extension BannersViewController {
         staticState = StaticState(itemByActualOffset: itemByOffsetChanges)
     }
 
+    private func setupAutoScroll() {
+        guard dataSource.multipleBanners else {
+            autoScrollManager.stopScrolling()
+
+            return
+        }
+
+        autoScrollManager.setupScrolling()
+    }
+
     // MARK: Actions
 
     @objc func actionClose() {
@@ -273,10 +299,13 @@ private extension BannersViewController {
 
 extension BannersViewController: BannersViewProtocol {
     func update(with viewModel: LoadableViewModelState<BannersWidgetViewModel>?) {
+        autoScrollManager.stopScrolling()
+
         switch viewModel {
         case let .cached(model), let .loaded(model):
             setup(with: model)
             updateMaxWidgetHeight(for: model)
+            setupAutoScroll()
             rootView.setLoaded()
         case .loading, .none:
             dataSource.update(with: nil)
@@ -285,6 +314,7 @@ extension BannersViewController: BannersViewProtocol {
     }
 
     func didCloseBanner(updatedViewModel: BannersWidgetViewModel) {
+        autoScrollManager.stopScrolling()
         updateMaxWidgetHeight(for: updatedViewModel)
 
         guard
@@ -299,6 +329,7 @@ extension BannersViewController: BannersViewProtocol {
             animated: true
         ) { [weak self] in
             self?.updateCollectionOnClose(with: updatedViewModel)
+            self?.setupAutoScroll()
         }
     }
 
@@ -338,6 +369,8 @@ extension BannersViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard let staticState else { return }
 
+        autoScrollManager.stopScrolling()
+
         let dynamicState = DynamicState(
             contentOffset: scrollView.contentOffset.x,
             itemWidth: scrollView.bounds.width
@@ -361,5 +394,18 @@ extension BannersViewController: UIScrollViewDelegate {
         )
 
         dynamicState = nil
+    }
+}
+
+// MARK: AutoScrollable
+
+extension BannersViewController: AutoScrollable {
+    func scrollToNextItem() {
+        guard let staticState else { return }
+
+        scrollToItem(
+            index: staticState.itemByActualOffset + 1,
+            animated: true
+        )
     }
 }
