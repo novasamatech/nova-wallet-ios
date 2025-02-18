@@ -129,13 +129,19 @@ private extension BannersViewController {
         dataSource.update(with: updatedModel.banners)
         setupPageControl()
 
-        let itemByActualOffset: Int = if
-            let lastItemIndex = dataSource.lastIndex,
-            let firstShowingItemIndex = dataSource.firstShowingItemIndex,
-            staticState.itemByActualOffset >= lastItemIndex {
-            firstShowingItemIndex
+        let currentItemIndexAfterClose = (staticState.itemByActualOffset - 1)
+
+        let itemByActualOffset: Int = if dataSource.multipleBanners {
+            if
+                let lastItemIndex = dataSource.lastIndex,
+                let firstShowingItemIndex = dataSource.firstShowingItemIndex,
+                currentItemIndexAfterClose >= lastItemIndex {
+                firstShowingItemIndex
+            } else {
+                currentItemIndexAfterClose == 0 ? 1 : currentItemIndexAfterClose
+            }
         } else {
-            staticState.itemByActualOffset
+            0
         }
 
         self.staticState = .init(itemByActualOffset: itemByActualOffset)
