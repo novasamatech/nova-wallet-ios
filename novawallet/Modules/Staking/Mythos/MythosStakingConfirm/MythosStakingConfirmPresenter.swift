@@ -17,11 +17,11 @@ final class MythosStakingConfirmPresenter {
     private(set) var balance: AssetBalance?
     private(set) var frozenBalance: MythosStakingFrozenBalance?
     private(set) var stakingDetails: MythosStakingDetails?
-    private(set) var claimableRewards: MythosStakingClaimableRewards?
     private(set) var price: PriceData?
     private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var minStake: Balance?
     private(set) var maxCollatorsPerStaker: UInt32?
+    private(set) var claimableRewards: MythosStakingClaimableRewards?
     private(set) var currentBlock: BlockNumber?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
@@ -53,6 +53,17 @@ final class MythosStakingConfirmPresenter {
 }
 
 private extension MythosStakingConfirmPresenter {
+    func getTransactionModel() -> MythosStakeTransactionModel? {
+        guard let claimableRewards else {
+            return nil
+        }
+
+        return MythosStakeTransactionModel(
+            input: model,
+            shouldClaimRewards: claimableRewards.shouldClaim
+        )
+    }
+
     func provideAmountViewModel() {
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             model.amount.toStake.decimal(assetInfo: chainAsset.assetDisplayInfo),
@@ -127,15 +138,23 @@ private extension MythosStakingConfirmPresenter {
     func refreshFee() {
         fee = nil
 
-        interactor.estimateFee(with: model)
-
         provideFeeViewModel()
+
+        guard let transactionModel = getTransactionModel() else {
+            return
+        }
+
+        interactor.estimateFee(with: transactionModel)
     }
 
     func submitExtrinsic() {
+        guard let transactionModel = getTransactionModel() else {
+            return
+        }
+
         view?.didStartLoading()
 
-        interactor.submit(model: model)
+        interactor.submit(model: transactionModel)
     }
 
     func applyCurrentState() {
@@ -161,16 +180,12 @@ private extension MythosStakingConfirmPresenter {
             balance: balance,
             minStake: minStake,
             stakingDetails: stakingDetails,
-            claimableRewards: claimableRewards,
             selectedCollator: model.collator,
             fee: fee,
             maxCollatorsPerStaker: maxCollatorsPerStaker,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
-            },
-            onClaimRewards: { [weak self] in
-                self?.wireframe.showClaimRewards(from: self?.view)
             }
         )
     }
@@ -288,6 +303,8 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
         logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
 
         self.claimableRewards = claimableRewards
+
+        refreshFee()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {

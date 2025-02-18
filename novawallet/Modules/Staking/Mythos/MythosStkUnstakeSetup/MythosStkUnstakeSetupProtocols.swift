@@ -7,7 +7,7 @@ protocol MythosStkUnstakeSetupInteractorOutputProtocol: MythosStkUnstakeInteract
 protocol MythosStkUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     CollatorStakingDelegationSelectable,
     CommonRetryable, FeeRetryable,
-    MythosStakingErrorPresentable, MythosClaimRewardsPresenting {
+    MythosStakingErrorPresentable {
     func showConfirm(
         from view: CollatorStkFullUnstakeSetupViewProtocol?,
         collator: DisplayAddress

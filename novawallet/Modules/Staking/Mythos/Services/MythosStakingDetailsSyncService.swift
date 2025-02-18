@@ -19,14 +19,12 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
     let chainId: ChainModel.Id
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
+    let syncService: MythosStakingStakeSyncService
     let operationFactory: MythosCollatorOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private let syncQueue: DispatchQueue
-    private let localKeyFactory = LocalStorageKeyFactory()
     private let callStore = CancellableCallStore()
-
-    private var subscription: CallbackStorageSubscription<MythosStakingPallet.UserStake>?
 
     private var stateObservable: Observable<MythosStakingDetails?> = .init(state: nil)
 
@@ -44,12 +42,14 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
         chainId: ChainModel.Id,
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
+        syncService: MythosStakingStakeSyncService,
         operationFactory: MythosCollatorOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainId = chainId
         self.accountId = accountId
         self.chainRegistry = chainRegistry
+        self.syncService = syncService
         self.operationFactory = operationFactory
         self.operationQueue = operationQueue
 
@@ -57,10 +57,53 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
     }
 
     deinit {
-        clearSubscriptionAndRequest()
+        callStore.cancel()
     }
 
-    private func updateDetails(
+    override func performSyncUp() {
+        clearSubscriptionAndRequest()
+
+        syncService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: syncQueue
+        ) { [weak self] _, newState in
+            guard let self else {
+                return
+            }
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            guard let newState, newState.lastChange.userStake.isDefined else {
+                return
+            }
+
+            updateDetails(
+                userStake: newState.userStake,
+                chainId: chainId,
+                accountId: accountId,
+                blockHash: newState.lastChange.blockHash
+            )
+        }
+    }
+
+    override func stopSyncUp() {
+        clearSubscriptionAndRequest()
+    }
+}
+
+private extension MythosStakingDetailsSyncService {
+    func clearSubscriptionAndRequest() {
+        syncService.remove(observer: self)
+
+        callStore.cancel()
+    }
+
+    func updateDetails(
         userStake: MythosStakingPallet.UserStake?,
         chainId: ChainModel.Id,
         accountId: AccountId,
@@ -92,6 +135,8 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
             blockHash: blockHash
         )
 
+        logger.debug("Will update details at: \(String(describing: blockHash?.toHexWithPrefix()))")
+
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -111,80 +156,6 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
                 self?.completeImmediate(error)
             }
         }
-    }
-
-    private func createUserStakeRequest(
-        for chainId: ChainModel.Id,
-        accountId: AccountId
-    ) throws -> MapSubscriptionRequest<BytesCodable> {
-        let localKey = try localKeyFactory.createFromStoragePath(
-            MythosStakingPallet.userStakePath,
-            accountId: accountId,
-            chainId: chainId
-        )
-
-        return MapSubscriptionRequest(
-            storagePath: MythosStakingPallet.userStakePath,
-            localKey: localKey,
-            keyParamClosure: {
-                BytesCodable(wrappedValue: accountId)
-            }
-        )
-    }
-
-    private func clearSubscriptionAndRequest() {
-        subscription?.unsubscribe()
-        subscription = nil
-
-        callStore.cancel()
-    }
-
-    private func setupSubscription(for chainId: ChainModel.Id, accountId: AccountId) throws {
-        let connection = try chainRegistry.getConnectionOrError(for: chainId)
-        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
-
-        let request = try createUserStakeRequest(for: chainId, accountId: accountId)
-
-        subscription = CallbackStorageSubscription(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeProvider,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackWithBlockQueue: syncQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            defer {
-                self?.mutex.unlock()
-            }
-
-            switch result {
-            case let .success(response):
-                self?.updateDetails(
-                    userStake: response.value,
-                    chainId: chainId,
-                    accountId: accountId,
-                    blockHash: response.blockHash
-                )
-            case let .failure(error):
-                self?.completeImmediate(error)
-            }
-        }
-    }
-
-    override func performSyncUp() {
-        clearSubscriptionAndRequest()
-
-        do {
-            try setupSubscription(for: chainId, accountId: accountId)
-        } catch {
-            completeImmediate(error)
-        }
-    }
-
-    override func stopSyncUp() {
-        clearSubscriptionAndRequest()
     }
 }
 

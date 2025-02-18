@@ -237,14 +237,23 @@ private extension MythosStakingSetupPresenter {
         fee = nil
         provideFeeViewModel()
 
+        guard let claimableRewards else {
+            return
+        }
+
         let collator = getCollatorAccount() ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
 
-        let stakeModel = MythosStakeModel(
+        let input = MythosStakeModel(
             amount: amountModel,
             collator: collator
         )
 
-        interactor.estimateFee(with: stakeModel)
+        let transactionModel = MythosStakeTransactionModel(
+            input: input,
+            shouldClaimRewards: claimableRewards.shouldClaim
+        )
+
+        interactor.estimateFee(with: transactionModel)
     }
 
     func setupInitialCollator() {
@@ -296,16 +305,12 @@ private extension MythosStakingSetupPresenter {
             balance: balance,
             minStake: minStake,
             stakingDetails: stakingDetails,
-            claimableRewards: claimableRewards,
             selectedCollator: getCollatorAccount(),
             fee: fee,
             maxCollatorsPerStaker: maxCollatorsPerStaker,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
-            },
-            onClaimRewards: { [weak self] in
-                self?.wireframe.showClaimRewards(from: self?.view)
             }
         )
     }
@@ -524,6 +529,8 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         logger.debug("Claimable rewards: \(String(describing: claimableRewards))")
 
         self.claimableRewards = claimableRewards
+
+        refreshFee()
     }
 
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?) {

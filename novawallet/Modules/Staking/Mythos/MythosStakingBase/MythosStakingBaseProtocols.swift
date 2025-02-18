@@ -2,7 +2,7 @@ import Foundation
 
 protocol MythosStakingBaseInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(with model: MythosStakeModel)
+    func estimateFee(with model: MythosStakeTransactionModel)
 }
 
 protocol MythosStakingBaseInteractorOutputProtocol: AnyObject {

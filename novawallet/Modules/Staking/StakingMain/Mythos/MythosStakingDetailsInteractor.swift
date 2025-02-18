@@ -322,7 +322,7 @@ extension MythosStakingDetailsInteractor: MythosStakingLocalStorageSubscriber,
         case let .success(releaseQueue):
             presenter?.didReceiveReleaseQueue(releaseQueue)
         case let .failure(error):
-            logger.error("Balance subscription error: \(error)")
+            logger.error("Release queue subscription error: \(error)")
         }
     }
 }

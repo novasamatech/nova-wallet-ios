@@ -144,7 +144,6 @@ struct MythosStakingSetupViewFactory {
             rewardService: state.rewardCalculatorService,
             preferredCollatorFactory: preferredCollatorFactory,
             extrinsicService: extrinsicService,
-            feeProxy: ExtrinsicFeeProxy(),
             connection: connection,
             runtimeProvider: runtimeProvider,
             repositoryFactory: repositoryFactory,

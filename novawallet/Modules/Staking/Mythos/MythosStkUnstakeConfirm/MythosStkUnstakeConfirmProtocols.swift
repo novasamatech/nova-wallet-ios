@@ -14,5 +14,4 @@ protocol MythosStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresen
     MessageSheetPresentable,
     MythosStakingErrorPresentable,
     ExtrinsicSigningErrorHandling,
-    ExtrinsicSubmissionPresenting,
-    MythosClaimRewardsPresenting {}
+    ExtrinsicSubmissionPresenting {}

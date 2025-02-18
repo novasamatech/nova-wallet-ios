@@ -69,6 +69,18 @@ final class MythosRewardCalculatorService: CollatorStakingRewardService<MythosRe
 extension MythosRewardCalculatorService: AnyProviderAutoCleaning {}
 
 private extension MythosRewardCalculatorService {
+    private func createBlockTimeWrapper() -> CompoundOperationWrapper<BlockTime> {
+        // To prevent differences with the indexer use fixed block time if available
+        if let blockTime = chainAsset.chain.defaultBlockTimeMillis {
+            return .createWithResult(blockTime)
+        }
+
+        return blockTimeOperationFactory.createBlockTimeOperation(
+            from: runtimeService,
+            blockTimeEstimationService: blockTimeService
+        )
+    }
+
     func deliver(
         snapshot: MythosRewardsParamsSnapshot,
         to request: PendingRequest,
@@ -76,10 +88,7 @@ private extension MythosRewardCalculatorService {
     ) {
         let collatorsOperation = collatorService.fetchInfoOperation()
 
-        let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
+        let blockTimeWrapper = createBlockTimeWrapper()
 
         let mappingOperation = ClosureOperation<CollatorStakingRewardCalculatorEngineProtocol> {
             let collators = try collatorsOperation.extractNoCancellableResultData()

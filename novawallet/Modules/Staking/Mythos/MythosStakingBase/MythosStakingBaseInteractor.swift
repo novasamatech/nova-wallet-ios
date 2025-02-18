@@ -14,7 +14,6 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoClean
     let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
     let claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
@@ -24,6 +23,7 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoClean
     private var minStakeProvider: AnyDataProvider<DecodedBigUInt>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
+    private var feeDebouncer = Debouncer(delay: 0.25)
 
     init(
         chainAsset: ChainAsset,
@@ -35,7 +35,6 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoClean
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -50,7 +49,6 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoClean
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.extrinsicService = extrinsicService
-        self.feeProxy = feeProxy
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
         self.logger = logger
@@ -65,20 +63,27 @@ class MythosStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoClean
         self.currencyManager = currencyManager
     }
 
-    func getExtrinsicBuilderClosure(from model: MythosStakeModel) -> ExtrinsicBuilderClosure {
+    func getExtrinsicBuilderClosure(from model: MythosStakeTransactionModel) -> ExtrinsicBuilderClosure {
         { builder in
             var resultBuilder = builder
 
-            if model.amount.toLock > 0 {
-                let lockCall = MythosStakingPallet.LockCall(amount: model.amount.toLock)
+            if model.shouldClaimRewards {
+                let claimRewardsCall = MythosStakingPallet.ClaimRewardsCall()
+                resultBuilder = try resultBuilder.adding(call: claimRewardsCall.runtimeCall())
+            }
+
+            let input = model.input
+
+            if input.amount.toLock > 0 {
+                let lockCall = MythosStakingPallet.LockCall(amount: input.amount.toLock)
                 resultBuilder = try resultBuilder.adding(call: lockCall.runtimeCall())
             }
 
             let stakeCall = MythosStakingPallet.StakeCall(
                 targets: [
                     MythosStakingPallet.StakeTarget(
-                        candidate: model.collator,
-                        stake: model.amount.toStake
+                        candidate: input.collator,
+                        stake: input.amount.toStake
                     )
                 ]
             )
@@ -172,8 +177,6 @@ private extension MythosStakingBaseInteractor {
 
 extension MythosStakingBaseInteractor: MythosStakingBaseInteractorInputProtocol {
     func setup() {
-        feeProxy.delegate = self
-
         makeAssetBalanceSubscription()
         makePriceSubscription()
         makeFrozenBalanceSubscription()
@@ -188,26 +191,23 @@ extension MythosStakingBaseInteractor: MythosStakingBaseInteractorInputProtocol 
         onSetup()
     }
 
-    func estimateFee(with model: MythosStakeModel) {
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: model.reuseTxId,
-            payingIn: nil,
-            setupBy: getExtrinsicBuilderClosure(from: model)
-        )
-    }
-}
+    func estimateFee(with model: MythosStakeTransactionModel) {
+        feeDebouncer.debounce { [weak self] in
+            guard let self else {
+                return
+            }
 
-extension MythosStakingBaseInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(
-        result: Result<ExtrinsicFeeProtocol, Error>,
-        for _: TransactionFeeId
-    ) {
-        switch result {
-        case let .success(model):
-            basePresenter?.didReceiveFee(model)
-        case let .failure(error):
-            basePresenter?.didReceiveBaseError(.feeFailed(error))
+            extrinsicService.estimateFee(
+                getExtrinsicBuilderClosure(from: model),
+                runningIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(model):
+                    self?.basePresenter?.didReceiveFee(model)
+                case let .failure(error):
+                    self?.basePresenter?.didReceiveBaseError(.feeFailed(error))
+                }
+            }
         }
     }
 }

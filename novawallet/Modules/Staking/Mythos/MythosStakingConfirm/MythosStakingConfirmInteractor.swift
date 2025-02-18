@@ -29,7 +29,6 @@ final class MythosStakingConfirmInteractor: MythosStakingBaseInteractor {
         signer: SigningWrapperProtocol,
         sharedOperation: SharedOperationProtocol?,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -49,7 +48,6 @@ final class MythosStakingConfirmInteractor: MythosStakingBaseInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             extrinsicService: extrinsicService,
-            feeProxy: feeProxy,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
@@ -59,7 +57,7 @@ final class MythosStakingConfirmInteractor: MythosStakingBaseInteractor {
 }
 
 extension MythosStakingConfirmInteractor: MythosStakingConfirmInteractorInputProtocol {
-    func submit(model: MythosStakeModel) {
+    func submit(model: MythosStakeTransactionModel) {
         let wrapper = extrinsicSubmitionMonitor.submitAndMonitorWrapper(
             extrinsicBuilderClosure: getExtrinsicBuilderClosure(from: model),
             signer: signer

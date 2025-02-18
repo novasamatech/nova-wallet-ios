@@ -26,21 +26,3 @@ final class MythosStakingValidationFactory: MythosStakingValidationFactoryProtoc
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 }
-
-extension MythosStakingValidationFactory {
-    func noUnclaimedRewards(
-        _ hasUnclaimedRewards: Bool,
-        claimAction: @escaping () -> Void,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.presentable.presentUnclaimedRewards(view, claimAction: claimAction, locale: locale)
-        }, preservesCondition: {
-            !hasUnclaimedRewards
-        })
-    }
-}

@@ -120,7 +120,6 @@ struct MythosStakingConfirmViewFactory {
             signer: signer,
             sharedOperation: state.sharedOperation,
             extrinsicService: extrinsicService,
-            feeProxy: ExtrinsicFeeProxy(),
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,
             operationQueue: operationQueue,

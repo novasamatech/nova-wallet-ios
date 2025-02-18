@@ -17,29 +17,26 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
     let chainId: ChainModel.Id
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
-    let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
+    let syncService: MythosStakingStakeSyncService
     let operationFactory: MythosStakingClaimRewardsFactoryProtocol
     let operationQueue: OperationQueue
-    let workQueue: DispatchQueue
 
+    private let syncQueue: DispatchQueue
     private let callStore = CancellableCallStore()
 
     private var stateObservable: Observable<MythosStakingClaimableRewards?> = .init(state: nil)
-    private var currentSessionProvider: AnyDataProvider<DecodedU32>?
-    private var userStakeProvider: AnyDataProvider<MythosStakingPallet.DecodedUserStake>?
 
     init(
         chainId: ChainModel.Id,
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
-        stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue,
-        workQueue: DispatchQueue = .global()
+        syncService: MythosStakingStakeSyncService,
+        operationQueue: OperationQueue
     ) {
         self.chainId = chainId
         self.accountId = accountId
         self.chainRegistry = chainRegistry
-        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.syncService = syncService
         self.operationQueue = operationQueue
 
         operationFactory = MythosStakingClaimRewardsFactory(
@@ -47,24 +44,54 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
             operationQueue: operationQueue
         )
 
-        self.workQueue = workQueue
+        syncQueue = DispatchQueue(label: "io.novawallet.mythos.rewards.sync.\(UUID().uuidString)")
     }
 
     deinit {
-        currentSessionProvider = nil
-        userStakeProvider = nil
         callStore.cancel()
     }
 
-    private func updateState() {
+    override func performSyncUp() {
+        clearSubscriptionAndRequest()
+
+        syncService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: syncQueue
+        ) { [weak self] _, newState in
+            self?.mutex.lock()
+
+            defer {
+                self?.mutex.unlock()
+            }
+
+            guard let newState else {
+                return
+            }
+
+            self?.updateState(for: newState.lastChange.blockHash)
+        }
+    }
+
+    override func stopSyncUp() {
+        clearSubscriptionAndRequest()
+    }
+}
+
+private extension MythosStakingClaimableRewardsService {
+    func updateState(for blockHash: Data?) {
+        callStore.cancel()
+
         let shouldClaimWrapper = operationFactory.shouldClaimRewardsWrapper(
             for: chainId,
-            accountId: accountId
+            accountId: accountId,
+            at: blockHash
         )
 
         let totalRewardsWrapper = operationFactory.totalRewardsWrapper(
             for: chainId,
-            accountId: accountId
+            accountId: accountId,
+            at: blockHash
         )
 
         let mappingOperation = ClosureOperation<MythosStakingClaimableRewards> {
@@ -77,6 +104,8 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
         mappingOperation.addDependency(totalRewardsWrapper.targetOperation)
         mappingOperation.addDependency(shouldClaimWrapper.targetOperation)
 
+        logger.debug("Will start query at: \(String(describing: blockHash?.toHexWithPrefix()))")
+
         let resultWrapper = totalRewardsWrapper
             .insertingHead(operations: shouldClaimWrapper.allOperations)
             .insertingTail(operation: mappingOperation)
@@ -85,7 +114,7 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
             wrapper: resultWrapper,
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
-            runningCallbackIn: workQueue,
+            runningCallbackIn: syncQueue,
             mutex: mutex
         ) { [weak self] result in
             switch result {
@@ -101,91 +130,10 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
         }
     }
 
-    private func updateIfNotInProgress() {
-        guard !callStore.hasCall else {
-            return
-        }
-
-        markSyncingImmediate()
-        updateState()
-    }
-
-    private func clearSubscriptionAndRequest() {
-        clear(dataProvider: &currentSessionProvider)
-        clear(dataProvider: &userStakeProvider)
+    func clearSubscriptionAndRequest() {
+        syncService.remove(observer: self)
 
         callStore.cancel()
-    }
-
-    private func setupSubscription(for chainId: ChainModel.Id, accountId: AccountId) {
-        currentSessionProvider = subscribeToCurrentSession(
-            for: chainId,
-            callbackQueue: workQueue
-        )
-
-        userStakeProvider = subscribeToUserState(for: chainId, accountId: accountId)
-    }
-
-    override func performSyncUp() {
-        if currentSessionProvider == nil {
-            clearSubscriptionAndRequest()
-            setupSubscription(for: chainId, accountId: accountId)
-        } else {
-            callStore.cancel()
-            updateState()
-        }
-    }
-
-    override func stopSyncUp() {
-        clearSubscriptionAndRequest()
-    }
-}
-
-extension MythosStakingClaimableRewardsService: MythosStakingLocalStorageSubscriber,
-    MythosStakingLocalStorageHandler {
-    func handleCurrentSession(
-        result: Result<SessionIndex?, Error>,
-        chainId _: ChainModel.Id
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        switch result {
-        case let .success(session):
-            logger.debug("Session: \(String(describing: session))")
-
-            updateIfNotInProgress()
-        case let .failure(error):
-            logger.error("Unexpected subscription error: \(error)")
-
-            clearSubscriptionAndRequest()
-        }
-    }
-
-    func handleUserStake(
-        result: Result<MythosStakingPallet.UserStake?, Error>,
-        chainId _: ChainModel.Id,
-        accountId _: AccountId
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        switch result {
-        case let .success(stakingState):
-            logger.debug("Staking state: \(String(describing: stakingState))")
-
-            updateIfNotInProgress()
-        case let .failure(error):
-            logger.error("Unexpected subscription error: \(error)")
-
-            clearSubscriptionAndRequest()
-        }
     }
 }
 

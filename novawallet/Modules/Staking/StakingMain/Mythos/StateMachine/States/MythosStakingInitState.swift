@@ -29,12 +29,7 @@ final class MythosStakingInitState: MythosStakingBaseState {
 
             stateMachine?.transit(to: lockedState)
         } else {
-            let initState = MythosStakingInitState(
-                stateMachine: stateMachine,
-                commonData: commonData
-            )
-
-            stateMachine?.transit(to: initState)
+            stateMachine?.transit(to: self)
         }
     }
 }

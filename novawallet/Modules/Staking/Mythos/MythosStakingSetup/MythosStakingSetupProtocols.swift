@@ -13,8 +13,7 @@ protocol MythosStakingSetupInteractorOutputProtocol: MythosStakingBaseInteractor
 
 protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CollatorStakingDelegationSelectable,
-    MythosStakingErrorPresentable,
-    MythosClaimRewardsPresenting {
+    MythosStakingErrorPresentable {
     func showConfirmation(
         from view: CollatorStakingSetupViewProtocol?,
         model: MythosStakingConfirmModel
@@ -24,6 +23,4 @@ protocol MythosStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable
         from view: CollatorStakingSetupViewProtocol?,
         delegate: CollatorStakingSelectDelegate
     )
-
-    func showClaimRewards(from view: ControllerBackedProtocol?)
 }
