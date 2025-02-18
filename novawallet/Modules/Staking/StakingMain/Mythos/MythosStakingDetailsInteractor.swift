@@ -402,6 +402,7 @@ extension MythosStakingDetailsInteractor: EventVisitorProtocol {
 extension MythosStakingDetailsInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
+        totalRewardProvider?.refresh()
     }
 }
 
