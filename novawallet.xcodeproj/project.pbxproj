@@ -936,6 +936,9 @@
 		0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */; };
 		0CE862152D64B61C00245992 /* ObservableSubscriptionStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */; };
 		0CE862172D64D2E900245992 /* MythosStakeTransactionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862162D64D2E900245992 /* MythosStakeTransactionModel.swift */; };
+		0CE862192D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862182D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift */; };
+		0CE8621B2D64E86700245992 /* StakingRewardsLocalSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE8621A2D64E86700245992 /* StakingRewardsLocalSubscriber.swift */; };
+		0CE8621D2D64E87E00245992 /* StakingRewardsLocalHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE8621C2D64E87E00245992 /* StakingRewardsLocalHandler.swift */; };
 		0CE92A672B2ADBBA009A21E9 /* RuntimeProviderChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */; };
 		0CE933862BFF90B4000F3EFE /* RuntimeLocalMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */; };
 		0CE933882BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */; };
@@ -6539,6 +6542,9 @@
 		0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
 		0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionStateStore.swift; sourceTree = "<group>"; };
 		0CE862162D64D2E900245992 /* MythosStakeTransactionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakeTransactionModel.swift; sourceTree = "<group>"; };
+		0CE862182D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		0CE8621A2D64E86700245992 /* StakingRewardsLocalSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsLocalSubscriber.swift; sourceTree = "<group>"; };
+		0CE8621C2D64E87E00245992 /* StakingRewardsLocalHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsLocalHandler.swift; sourceTree = "<group>"; };
 		0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProviderChain.swift; sourceTree = "<group>"; };
 		0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeLocalMigrator.swift; sourceTree = "<group>"; };
 		0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRuntimeMetadataFetcher.swift; sourceTree = "<group>"; };
@@ -18471,6 +18477,7 @@
 				0CC2E5632A6E5C72004092E7 /* NPoolsLocalSubscriptionFactory.swift */,
 				77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */,
 				0C0F6D822D3A7AC800943A7C /* MythosStakingLocalSubscriptionFactory.swift */,
+				0CE862182D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift */,
 			);
 			path = DataProvider;
 			sourceTree = "<group>";
@@ -22210,6 +22217,8 @@
 				77DF403C2B7DC91200ABDB53 /* SettingsSubscriber.swift */,
 				0C0F6D862D3A8C5500943A7C /* MythosStakingLocalStorageSubscriber.swift */,
 				0C0F6D882D3A8CDB00943A7C /* MythosStakingLocalStorageHandler.swift */,
+				0CE8621A2D64E86700245992 /* StakingRewardsLocalSubscriber.swift */,
+				0CE8621C2D64E87E00245992 /* StakingRewardsLocalHandler.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -27771,6 +27780,7 @@
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
 				2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */,
 				0C0F6E2B2D46177300943A7C /* CollatorStakingErrorPresentable.swift in Sources */,
+				0CE8621D2D64E87E00245992 /* StakingRewardsLocalHandler.swift in Sources */,
 				77CC82A32A984BC3002D022F /* StartStakingSelectedValidatorsListWireframe.swift in Sources */,
 				0C77B5692A837D4000B5AE08 /* StaticValidatorListViewFactory.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,
@@ -28830,6 +28840,7 @@
 				8467FD5124EFD11E005D486C /* UserDataModel.xcdatamodeld in Sources */,
 				0C7CF4CE2BD3784B0015DD45 /* CloudBackupCoding.swift in Sources */,
 				2D6287422C91F20400060814 /* ReferendumVoteSetupViewController.swift in Sources */,
+				0CE862192D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift in Sources */,
 				0CA72A822D4A2AC900B3FD02 /* CollatorStkFullUnstakeSetupLayout.swift in Sources */,
 				84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */,
 				0C0F6DE22D41968000943A7C /* MythosRewardCalculatorEngine.swift in Sources */,
@@ -29090,6 +29101,7 @@
 				84B8AA7329F8EFC700347A37 /* DAppInteractionError.swift in Sources */,
 				8485035029FBC84300AE6909 /* WalletConnectSignModelFactory.swift in Sources */,
 				2D1C5D162C24553200E2DBDD /* NetworkNodeAddPresenter.swift in Sources */,
+				0CE8621B2D64E86700245992 /* StakingRewardsLocalSubscriber.swift in Sources */,
 				849E17F02791909C002D1744 /* DAppSettings.swift in Sources */,
 				0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */,
 				0CCDB2EB2B74DA55007BC5D6 /* GraphModel.swift in Sources */,

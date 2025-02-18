@@ -18,6 +18,10 @@ final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
         sharedState.generalLocalSubscriptionFactory
     }
 
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol {
+        sharedState.stakingRewardsLocalSubscriptionFactory
+    }
+
     let selectedAccount: MetaChainAccountResponse
     let sharedState: MythosStakingSharedStateProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -226,34 +230,44 @@ extension MythosStakingDetailsInteractor {
     }
 
     func provideStakingDuration() {
-        do {
-            durationReqStore.cancel()
+        durationReqStore.cancel()
 
-            let wrapper = durationOperationFactory.createDurationOperation(
-                for: chain.chainId,
-                blockTimeEstimationService: sharedState.blockTimeService
-            )
+        let wrapper = durationOperationFactory.createDurationOperation(
+            for: chain.chainId,
+            blockTimeEstimationService: sharedState.blockTimeService
+        )
 
-            executeCancellable(
-                wrapper: wrapper,
-                inOperationQueue: operationQueue,
-                backingCallIn: durationReqStore,
-                runningCallbackIn: .main
-            ) { [weak self] result in
-                switch result {
-                case let .success(duration):
-                    self?.presenter?.didReceiveStakingDuration(duration)
-                case let .failure(error):
-                    self?.logger.error("Staking duration request failed: \(error)")
-                }
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: durationReqStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(duration):
+                self?.presenter?.didReceiveStakingDuration(duration)
+            case let .failure(error):
+                self?.logger.error("Staking duration request failed: \(error)")
             }
-        } catch {
-            logger.error("Staking duration error: \(error)")
         }
     }
 
     func makeTotalRewardSubscription() {
-        // TODO: Implment total reward subscription
+        clear(singleValueProvider: &totalRewardProvider)
+
+        if
+            let address = selectedAccount.chainAccount.toChecksumedAddress(),
+            let rewardApi = chain.externalApis?.staking()?.first {
+            totalRewardProvider = subscribeTotalReward(
+                for: address,
+                startTimestamp: totalRewardInterval?.startTimestamp,
+                endTimestamp: totalRewardInterval?.endTimestamp,
+                api: rewardApi,
+                assetPrecision: Int16(chainAsset.asset.precision)
+            )
+        } else {
+            presenter?.didReceiveTotalReward(nil)
+        }
     }
 }
 
@@ -347,6 +361,21 @@ extension MythosStakingDetailsInteractor: WalletLocalStorageSubscriber,
             presenter?.didReceiveAssetBalance(balance)
         case let .failure(error):
             logger.error("Balance subscription error: \(error)")
+        }
+    }
+}
+
+extension MythosStakingDetailsInteractor: StakingRewardsLocalSubscriber, StakingRewardsLocalHandler {
+    func handleTotalReward(
+        result: Result<TotalRewardItem, Error>,
+        for _: AccountAddress,
+        api _: LocalChainExternalApi
+    ) {
+        switch result {
+        case let .success(rewardItem):
+            presenter?.didReceiveTotalReward(rewardItem)
+        case let .failure(error):
+            logger.error("Total rewards subscription: \(error)")
         }
     }
 }

@@ -475,6 +475,13 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             logger: logger
         )
 
+        let stakingRewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
         let rewardCalculatorService = try serviceFactory.createRewardCalculatorService(
             for: stakingOption.chainAsset.chainAssetId,
             collatorService: collatorService,
@@ -492,6 +499,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             collatorService: collatorService,
             rewardCalculatorService: rewardCalculatorService,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: stakingRewardsSubscriptionFactory,
             globalRemoteSubscriptionService: MythosStakingRemoteSubscriptionService(
                 chainRegistry: chainRegistry,
                 repository: repository,
