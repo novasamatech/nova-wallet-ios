@@ -114,18 +114,12 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
     }
 
     private func createUserStakeRequest(
-        for chainId: ChainModel.Id,
+        for _: ChainModel.Id,
         accountId: AccountId
     ) throws -> MapSubscriptionRequest<BytesCodable> {
-        let localKey = try localKeyFactory.createFromStoragePath(
-            MythosStakingPallet.userStakePath,
-            accountId: accountId,
-            chainId: chainId
-        )
-
-        return MapSubscriptionRequest(
+        MapSubscriptionRequest(
             storagePath: MythosStakingPallet.userStakePath,
-            localKey: localKey,
+            localKey: "",
             keyParamClosure: {
                 BytesCodable(wrappedValue: accountId)
             }
