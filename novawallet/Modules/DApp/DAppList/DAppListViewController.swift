@@ -8,6 +8,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppListViewLayout
 
     let presenter: DAppListPresenterProtocol
+    let bannersViewProvider: BannersViewProviderProtocol
 
     var loadingView: DAppListLoadingView? {
         guard sectionViewModels.loaded else {
@@ -26,9 +27,12 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: DAppListPresenterProtocol,
+        bannersViewProvider: BannersViewProviderProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.bannersViewProvider = bannersViewProvider
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -46,7 +50,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        configureCollectionView()
+        setupView()
 
         presenter.setup()
     }
@@ -67,10 +71,16 @@ final class DAppListViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension DAppListViewController {
-    func configureCollectionView() {
+    func setupView() {
+        rootView.delegate = self
+
+        setupCollectionView()
+    }
+
+    func setupCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesViewCell.self)
-        rootView.collectionView.registerCellClass(DAppListBannerView.self)
+        rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemCollectionViewCell.self)
         rootView.collectionView.registerCellClass(DAppListLoadingView.self)
@@ -135,6 +145,14 @@ extension DAppListViewController {
         default:
             break
         }
+    }
+}
+
+// MARK: DAppListViewLayoutDelegate
+
+extension DAppListViewController: DAppListViewLayoutDelegate {
+    func heightForBannerSection() -> CGFloat {
+        bannersViewProvider.getMaxBannerHeight()
     }
 }
 

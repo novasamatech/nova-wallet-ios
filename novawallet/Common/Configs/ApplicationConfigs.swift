@@ -324,5 +324,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/colored/"
     }
 
+    var bannersContentPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/content/"
+    }
+
     // swiftlint:enable line_length
 }

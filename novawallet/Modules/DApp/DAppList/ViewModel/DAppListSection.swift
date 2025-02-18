@@ -36,7 +36,7 @@ struct DAppListSection: Hashable, SectionProtocol {
 enum DAppListItem: Hashable {
     case header(WalletSwitchViewModel)
     case categorySelect([DAppCategoryViewModel])
-    case banner(DAppListBannerViewModel)
+    case banner
     case favorites(model: DAppViewModel, categoryName: String)
     case category(model: DAppViewModel, categoryName: String)
     case notLoaded
@@ -51,8 +51,6 @@ enum DAppListItem: Hashable {
             hasher.combine(model)
         case let .categorySelect(models):
             hasher.combine(models)
-        case let .banner(model):
-            hasher.combine(model)
         default:
             break
         }
@@ -64,8 +62,6 @@ enum DAppListItem: Hashable {
             lhsModel == rhsModel && lhsCategoryName == rhsCategoryName
         case let (.favorites(lhsModel, lhsCategoryName), .favorites(rhsModel, rhsCategoryName)):
             lhsModel == rhsModel && lhsCategoryName == rhsCategoryName
-        case let (.banner(lhsModel), .banner(rhsModel)):
-            lhsModel == rhsModel
         case let (.header(lhsModel), .header(rhsModel)):
             lhsModel == rhsModel
         case let (.categorySelect(lhsModel), .categorySelect(rhsModel)):

@@ -8,13 +8,13 @@ final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
     let payloadClosure: () throws -> Data
     let qrSize: CGSize
     let scale: CGFloat
-    let logoInfo: IconInfo?
+    let logoInfo: ChainLogoImageInfo?
 
     init(
         payload: Data,
         qrSize: CGSize,
         scale: CGFloat = UIScreen.main.scale,
-        logoInfo: IconInfo? = nil
+        logoInfo: ChainLogoImageInfo? = nil
     ) {
         payloadClosure = { payload }
         self.qrSize = qrSize
@@ -26,7 +26,7 @@ final class QRWithLogoCreationOperation: BaseOperation<UIImage> {
 
     init(
         qrSize: CGSize,
-        logoInfo: IconInfo? = nil,
+        logoInfo: ChainLogoImageInfo? = nil,
         scale: CGFloat = UIScreen.main.scale,
         payloadClosure: @escaping () throws -> Data
     ) {
