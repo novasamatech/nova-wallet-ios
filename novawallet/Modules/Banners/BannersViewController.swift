@@ -314,14 +314,13 @@ extension BannersViewController: BannersViewProtocol {
     }
 
     func didCloseBanner(updatedViewModel: BannersWidgetViewModel) {
+        autoScrollManager.stopScrolling()
         updateMaxWidgetHeight(for: updatedViewModel)
 
         guard
             let staticState,
             !updatedViewModel.banners.isEmpty
         else { return }
-
-        autoScrollManager.stopScrolling()
 
         let nextItemIndex = staticState.itemByActualOffset + 1
 
