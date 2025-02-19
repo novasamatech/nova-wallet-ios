@@ -286,6 +286,13 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             remoteUrl: applicationConfig.preferredValidatorsURL
         )
 
+        let rewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
         return RelaychainStakingSharedState(
             consensus: consensus,
             stakingOption: stakingOption,
@@ -293,6 +300,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             accountRemoteSubscriptionService: services.accountRemoteSubscriptionService,
             proxyRemoteSubscriptionService: services.proxyRemoteSubscriptionService,
             localSubscriptionFactory: services.localSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: rewardsSubscriptionFactory,
             proxyLocalSubscriptionFactory: services.proxySubscriptionFactory,
             eraValidatorService: services.eraValidatorService,
             rewardCalculatorService: services.rewardCalculatorService,
@@ -364,6 +372,13 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             logger: logger
         )
 
+        let rewardsSubscriptionFactory = StakingRewardsLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(operationQueue: repositoryOperationQueue),
+            logger: logger
+        )
+
         let serviceFactory = ParachainStakingServiceFactory(
             stakingProviderFactory: localSubscriptionFactory,
             chainRegisty: chainRegistry,
@@ -404,6 +419,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             rewardCalculationService: rewardService,
             blockTimeService: blockTimeService,
             stakingLocalSubscriptionFactory: localSubscriptionFactory,
+            stakingRewardsLocalSubscriptionFactory: rewardsSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             preferredCollatorsProvider: preferredValidatorsProvider,
             logger: logger

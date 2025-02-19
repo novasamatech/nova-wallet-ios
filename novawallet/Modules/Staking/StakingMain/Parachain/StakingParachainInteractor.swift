@@ -9,6 +9,10 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         sharedState.stakingLocalSubscriptionFactory
     }
 
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol {
+        sharedState.stakingRewardsLocalSubscriptionFactory
+    }
+
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
         sharedState.generalLocalSubscriptionFactory
     }
