@@ -98,9 +98,10 @@ private extension AssetPriceChartViewLayout {
         yAxis.gridLineWidth = 1.5
         yAxis.drawGridLinesEnabled = true
         yAxis.gridColor = R.color.colorChartGridLine()!
-        yAxis.gridLineDashLengths = [10.0, 10.0, 0.0]
+        yAxis.gridLineDashLengths = [4.0, 2.0]
 
         chartView.marker = nil
+        chartView.animate(xAxisDuration: 1.5)
     }
 }
 

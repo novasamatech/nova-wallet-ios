@@ -32,25 +32,6 @@ final class AssetPriceChartRenderer: LineChartRenderer {
         dotColor = color
     }
 
-    override func drawHighlightLines(
-        context: CGContext,
-        point: CGPoint,
-        set _: any LineScatterCandleRadarChartDataSetProtocol
-    ) {
-        guard
-            let dataProvider = dataProvider,
-            let lineData = dataProvider.lineData
-        else { return }
-
-        context.saveGState()
-        defer { context.restoreGState() }
-
-        context.setFillColor(highlightColor.cgColor)
-        context.setLineWidth(1.5)
-
-        context.addLine(to: point)
-    }
-
     override func drawExtras(context: CGContext) {
         super.drawExtras(context: context)
 

@@ -102,13 +102,16 @@ private extension AssetPriceChartViewController {
 
     func createChartData(
         using entries: [ChartDataEntry],
-        lineColor _: UIColor
+        lineColor: UIColor
     ) -> LineChartData {
         let lineDataSet = LineChartDataSet(entries: entries)
         lineDataSet.mode = .cubicBezier
         lineDataSet.drawCirclesEnabled = false
         lineDataSet.lineWidth = 1.5
         lineDataSet.drawValuesEnabled = false
+        lineDataSet.setColor(lineColor)
+        lineDataSet.drawHorizontalHighlightIndicatorEnabled = false
+        lineDataSet.highlightColor = R.color.colorNeutralPriceChartLine()!
 
         let lineData = LineChartData(dataSets: [lineDataSet])
 
