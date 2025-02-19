@@ -90,7 +90,13 @@ extension StartStakingInfoMythosPresenter {
         var unstakingTime: TimeInterval? { duration?.unstaking }
 
         var rewardDelay: TimeInterval? {
-            sessionCountdown?.timeIntervalTillNextSessionStart()
+            guard let currentSession else {
+                return nil
+            }
+
+            return sessionCountdown?.timeIntervalTillStart(
+                targetSession: currentSession + 2
+            )
         }
 
         var sessionCountdown: ChainSessionCountdown? {
