@@ -98,7 +98,7 @@ extension Multistaking {
                 return nil
             }
 
-            if mythosState.userStake != nil {
+            if let userStake = mythosState.userStake, userStake.stake > 0 {
                 return .activeIndependent
             } else {
                 return .bonded
@@ -171,11 +171,7 @@ extension Multistaking {
                     return .inactive
                 }
             case .activeIndependent:
-                if stakeOrZero > 0 {
-                    return .active
-                } else {
-                    return .inactive
-                }
+                return .active
             }
         }
     }
