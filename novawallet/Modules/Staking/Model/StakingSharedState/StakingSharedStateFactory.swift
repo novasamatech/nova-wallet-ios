@@ -210,7 +210,7 @@ final class StakingSharedStateFactory {
             logger: logger
         )
 
-        guard chainAsset.asset.supportsNominationPoolsStaking else {
+        guard chainAsset.asset.hasPoolStaking else {
             return NominationPoolsServices(
                 remoteSubscriptionService: nil,
                 accountSubscriptionServiceFactory: nil,
