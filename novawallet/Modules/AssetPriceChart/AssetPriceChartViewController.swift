@@ -25,6 +25,7 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupChart()
         presenter.setup()
     }
 }
@@ -32,9 +33,24 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
 // MARK: Private
 
 private extension AssetPriceChartViewController {
+    func setupChart() {
+        rootView.chartView.delegate = self
+    }
+
     func updateView() {
         updateTexts()
         updateChart()
+        updatePeriodControlIfNeeded()
+    }
+
+    func updatePeriodControlIfNeeded() {
+        guard
+            let widgetViewModel,
+            widgetViewModel.periodControlModel.periods != rootView.periodControl?.viewModel.periods
+        else { return }
+
+        rootView.setupPeriodControl(with: widgetViewModel.periodControlModel)
+        rootView.periodControl?.delegate = self
     }
 
     func updateTexts() {
@@ -163,6 +179,19 @@ extension AssetPriceChartViewController: ChartViewDelegate {
     func chartValueNothingSelected(_: ChartViewBase) {
         updateChart()
     }
+
+    func chartViewDidEndPanning(_: ChartViewBase) {
+        updateChart()
+    }
+}
+
+// MARK: PriceChartPeriodControlDelegate
+
+extension AssetPriceChartViewController: PriceChartPeriodControlDelegate {
+    func periodControl(
+        _: PriceChartPeriodControl,
+        didSelect _: PriceChartPeriodViewModel
+    ) {}
 }
 
 // MARK: AssetPriceChartViewProviderProtocol

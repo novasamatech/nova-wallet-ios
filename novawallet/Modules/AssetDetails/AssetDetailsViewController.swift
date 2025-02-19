@@ -43,9 +43,13 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
 
 private extension AssetDetailsViewController {
     func setupChartView() {
+        let insets = UIEdgeInsets(
+            inset: AssetDetailsViewLayout.Constants.chartWidgetInset
+        )
         chartViewProvider.setupView(
             on: self,
-            view: rootView.chartContainerView
+            view: rootView.chartContainerView,
+            insets: insets
         )
 
         let widgetHeight = chartViewProvider.getProposedHeight()

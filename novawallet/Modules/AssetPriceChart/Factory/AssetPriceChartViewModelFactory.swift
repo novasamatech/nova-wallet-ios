@@ -34,7 +34,8 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             .day("1D"),
             .week("1W"),
             .month("1M"),
-            .year("1Y")
+            .year("1Y"),
+            .allTime("All")
         ]
         let periodControlViewModel = PriceChartPeriodControlViewModel(periods: periods)
 

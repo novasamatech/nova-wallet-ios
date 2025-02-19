@@ -16,11 +16,7 @@ final class AssetPriceChartViewLayout: UIView {
 
     lazy var chartView = LineChartView()
 
-    lazy var timeRangeControl: UIStackView = .create { view in
-        view.axis = .horizontal
-        view.spacing = 16
-        view.distribution = .fillEqually
-    }
+    var periodControl: PriceChartPeriodControl?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,11 +39,10 @@ private extension AssetPriceChartViewLayout {
         addSubview(priceLabel)
         addSubview(priceChangeLabel)
         addSubview(chartView)
-        addSubview(timeRangeControl)
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview()
+            make.leading.equalToSuperview()
         }
         priceLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
@@ -59,15 +54,9 @@ private extension AssetPriceChartViewLayout {
         }
         chartView.snp.makeConstraints { make in
             make.top.equalTo(priceChangeLabel.snp.bottom).offset(8.0)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().inset(48)
+            make.leading.trailing.equalToSuperview()
             make.height.equalTo(132)
-        }
-        timeRangeControl.snp.makeConstraints { make in
-            make.top.equalTo(chartView.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.height.equalTo(32)
         }
     }
 
@@ -78,8 +67,8 @@ private extension AssetPriceChartViewLayout {
         chartView.xAxis.enabled = false
         chartView.setScaleEnabled(false)
         chartView.minOffset = .zero
-        chartView.extraTopOffset = .zero
-        chartView.extraBottomOffset = .zero
+        chartView.extraTopOffset = 5.0
+        chartView.extraBottomOffset = 5.0
         chartView.pinchZoomEnabled = false
         chartView.doubleTapToZoomEnabled = false
 
@@ -92,7 +81,7 @@ private extension AssetPriceChartViewLayout {
         yAxis.enabled = true
         yAxis.labelFont = .monospaceNumbers
         yAxis.labelTextColor = R.color.colorTextSecondary()!
-        yAxis.setLabelCount(4, force: true)
+        yAxis.setLabelCount(5, force: true)
         yAxis.drawTopYLabelEntryEnabled = true
         yAxis.drawAxisLineEnabled = false
         yAxis.gridLineWidth = 1.5
@@ -105,10 +94,35 @@ private extension AssetPriceChartViewLayout {
     }
 }
 
+// MARK: Internal
+
+extension AssetPriceChartViewLayout {
+    func setupPeriodControl(with model: PriceChartPeriodControlViewModel) {
+        guard let firstPeriod = model.periods.first else { return }
+
+        if let periodControl {
+            periodControl.removeFromSuperview()
+            self.periodControl = nil
+        }
+
+        let periodControl = PriceChartPeriodControl(
+            viewModel: model,
+            selectedPeriod: firstPeriod
+        )
+
+        addSubview(periodControl)
+        periodControl.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(32)
+        }
+    }
+}
+
 // MARK: Constants
 
 extension AssetPriceChartViewLayout {
     enum Constants {
-        static let widgetHeight: CGFloat = 292.0
+        static let widgetHeight: CGFloat = 270.0
     }
 }

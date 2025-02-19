@@ -1125,6 +1125,7 @@
 		2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */; };
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
 		2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */; };
+		2D3733062D66825100217F29 /* PriceChartPeriodControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */; };
 		2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */; };
 		2D389B0C2C8631FD00256C7B /* VotingListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */; };
 		2D389B0E2C86E94A00256C7B /* SwipeGovEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B0D2C86E94A00256C7B /* SwipeGovEmptyStateView.swift */; };
@@ -6588,6 +6589,7 @@
 		2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnabledChanged.swift; sourceTree = "<group>"; };
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
 		2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceVoteValidatingHandlers.swift; sourceTree = "<group>"; };
+		2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartPeriodControl.swift; sourceTree = "<group>"; };
 		2D389B072C8616F900256C7B /* SwipeGovGradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovGradientFactory.swift; sourceTree = "<group>"; };
 		2D389B0B2C8631FD00256C7B /* VotingListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingListWidget.swift; sourceTree = "<group>"; };
 		2D389B0D2C86E94A00256C7B /* SwipeGovEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovEmptyStateView.swift; sourceTree = "<group>"; };
@@ -10910,13 +10912,12 @@
 			children = (
 				2DD018D62D65E3B70063F9BB /* Factory */,
 				2DD018CD2D658FDC0063F9BB /* Model */,
+				2D3733072D66972400217F29 /* View */,
 				2AE55BD334AA9384863E0020 /* AssetPriceChartProtocols.swift */,
 				8F278691D88383AE078823D4 /* AssetPriceChartWireframe.swift */,
 				B73152A79ECCEC10AE87B3E4 /* AssetPriceChartPresenter.swift */,
 				D8DE2583C0D36ECDB0F012EB /* AssetPriceChartInteractor.swift */,
 				99FD0B7680E2D406466FCB36 /* AssetPriceChartViewController.swift */,
-				B08478AD9E9AF78370BC7E87 /* AssetPriceChartViewLayout.swift */,
-				2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */,
 				2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */,
 			);
 			path = AssetPriceChart;
@@ -13476,6 +13477,16 @@
 				0C6108372CD7333100909928 /* ExtrinsicCustomFeeInstallingWrapperFactory.swift */,
 			);
 			path = FeeManaging;
+			sourceTree = "<group>";
+		};
+		2D3733072D66972400217F29 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B08478AD9E9AF78370BC7E87 /* AssetPriceChartViewLayout.swift */,
+				2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */,
+				2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2D389B112C86FF1C00256C7B /* CardsZStack */ = {
@@ -30570,6 +30581,7 @@
 				A0FB39F2C6192F57B2FAFC37 /* SwapConfirmPresenter.swift in Sources */,
 				8960EC452EA6E7E9105F4762 /* SwapConfirmInteractor.swift in Sources */,
 				EA7BA01C6745ABE0E1AF7E1D /* SwapConfirmViewController.swift in Sources */,
+				2D3733062D66825100217F29 /* PriceChartPeriodControl.swift in Sources */,
 				C28A0BFC483095E132705C83 /* SwapConfirmViewLayout.swift in Sources */,
 				C61286217D7D54EC70E3F1AA /* SwapConfirmViewFactory.swift in Sources */,
 				94A6747402550FB39D2E2BE7 /* SwapSlippageProtocols.swift in Sources */,

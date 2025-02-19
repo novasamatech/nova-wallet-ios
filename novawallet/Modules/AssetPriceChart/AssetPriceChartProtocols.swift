@@ -24,7 +24,8 @@ protocol AssetPriceChartViewProviderProtocol: ControllerBackedProtocol {
 extension AssetPriceChartViewProviderProtocol {
     func setupView(
         on parent: ControllerBackedProtocol?,
-        view: UIView
+        view: UIView,
+        insets: UIEdgeInsets = .zero
     ) {
         guard
             let parentController = parent?.controller,
@@ -35,7 +36,7 @@ extension AssetPriceChartViewProviderProtocol {
         view.addSubview(childView)
 
         childView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges.equalToSuperview().inset(insets)
         }
 
         controller.didMove(toParent: parentController)

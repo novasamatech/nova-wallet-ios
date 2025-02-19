@@ -3,7 +3,10 @@ import SoraUI
 import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
-    let chartContainerView = UIView()
+    let chartContainerView: UIView = .create { view in
+        view.backgroundColor = R.color.colorBlockBackground()
+        view.layer.cornerRadius = 12.0
+    }
 
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
@@ -252,7 +255,7 @@ final class AssetDetailsViewLayout: UIView {
 }
 
 extension AssetDetailsViewLayout {
-    private enum Constants {
+    enum Constants {
         static let balanceCellHeight: CGFloat = 48
         static let priceStackHeight: CGFloat = 26
         static let assetHeight: CGFloat = 28
@@ -262,5 +265,6 @@ extension AssetDetailsViewLayout {
         static let assetImageViewSize: CGFloat = 28
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8
+        static let chartWidgetInset: CGFloat = 16
     }
 }
