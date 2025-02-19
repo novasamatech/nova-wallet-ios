@@ -62,7 +62,8 @@ extension Multistaking {
     enum DashboardItemOnchainState: String {
         case bonded
         case waiting
-        case active
+        case active // need to consult offchain state for activity
+        case activeIndependent // no need to check offchain state for activity
 
         static func from(relaychainState: Multistaking.RelaychainState) -> DashboardItemOnchainState? {
             guard relaychainState.ledger != nil else {
@@ -98,7 +99,7 @@ extension Multistaking {
             }
 
             if mythosState.userStake != nil {
-                return .active
+                return .activeIndependent
             } else {
                 return .bonded
             }
@@ -165,6 +166,12 @@ extension Multistaking {
                 }
 
                 if hasAssignedStake {
+                    return .active
+                } else {
+                    return .inactive
+                }
+            case .activeIndependent:
+                if stakeOrZero > 0 {
                     return .active
                 } else {
                     return .inactive
