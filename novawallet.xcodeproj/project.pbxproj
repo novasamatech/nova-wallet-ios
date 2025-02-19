@@ -1331,6 +1331,7 @@
 		2DD018D32D65E36F0063F9BB /* PriceChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D22D65E36F0063F9BB /* PriceChartViewModel.swift */; };
 		2DD018D52D65E3910063F9BB /* PriceChartPeriodControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D42D65E3910063F9BB /* PriceChartPeriodControlViewModel.swift */; };
 		2DD018D82D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D72D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift */; };
+		2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
@@ -6792,6 +6793,7 @@
 		2DD018D22D65E36F0063F9BB /* PriceChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartViewModel.swift; sourceTree = "<group>"; };
 		2DD018D42D65E3910063F9BB /* PriceChartPeriodControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartPeriodControlViewModel.swift; sourceTree = "<group>"; };
 		2DD018D72D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartViewModelFactory.swift; sourceTree = "<group>"; };
+		2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartRenderer.swift; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
@@ -10914,6 +10916,7 @@
 				D8DE2583C0D36ECDB0F012EB /* AssetPriceChartInteractor.swift */,
 				99FD0B7680E2D406466FCB36 /* AssetPriceChartViewController.swift */,
 				B08478AD9E9AF78370BC7E87 /* AssetPriceChartViewLayout.swift */,
+				2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */,
 				2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */,
 			);
 			path = AssetPriceChart;
@@ -30586,6 +30589,7 @@
 				C2F4E24CC7D26ECBEE23B974 /* ProxiedsUpdateWireframe.swift in Sources */,
 				68E01098C46BFEA570B95ED1 /* ProxiedsUpdatePresenter.swift in Sources */,
 				F19BA6E8A9A7FDA269CA57DE /* ProxiedsUpdateInteractor.swift in Sources */,
+				2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */,
 				7136E160BD5C6A19F9C20A5B /* ProxiedsUpdateViewController.swift in Sources */,
 				0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */,
 				5DCEEE88DD1E09DC8110BF0C /* ProxiedsUpdateViewLayout.swift in Sources */,

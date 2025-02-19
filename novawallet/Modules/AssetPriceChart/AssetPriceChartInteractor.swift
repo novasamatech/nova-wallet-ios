@@ -4,4 +4,6 @@ final class AssetPriceChartInteractor {
     weak var presenter: AssetPriceChartInteractorOutputProtocol?
 }
 
-extension AssetPriceChartInteractor: AssetPriceChartInteractorInputProtocol {}
+extension AssetPriceChartInteractor: AssetPriceChartInteractorInputProtocol {
+    func setup() {}
+}

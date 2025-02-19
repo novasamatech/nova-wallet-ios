@@ -3,6 +3,8 @@ import SoraUI
 import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
+    let chartContainerView = UIView()
+
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
     let topBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -149,6 +151,7 @@ final class AssetDetailsViewLayout: UIView {
         containerView.stackView.spacing = Constants.sectionSpace
         containerView.stackView.addArrangedSubview(balanceTableView)
         containerView.stackView.addArrangedSubview(buttonsRow)
+        containerView.stackView.addArrangedSubview(chartContainerView)
     }
 
     private func setupBalanceTableViewLayout() {
@@ -225,11 +228,26 @@ final class AssetDetailsViewLayout: UIView {
         }
     }
 
+    func setChartViewHeight(_ height: CGFloat) {
+        guard chartContainerView.superview != nil else { return }
+
+        chartContainerView.snp.makeConstraints { make in
+            make.height.equalTo(height)
+        }
+
+        layoutIfNeeded()
+    }
+
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
-        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace +
-            buttonsRowHeight + Constants.bottomOffset
+
+        return priceLabel.font.lineHeight
+            + balanceSectionHeight
+            + Constants.sectionSpace
+            + buttonsRowHeight
+            + Constants.bottomOffset
+            + chartContainerView.bounds.height
     }
 }
 

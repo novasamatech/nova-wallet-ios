@@ -14,9 +14,7 @@ final class AssetPriceChartViewLayout: UIView {
         view.apply(style: .semiboldFootnotePrimary)
     }
 
-    lazy var chartView: LineChartView = .create { view in
-        configureChartView(view)
-    }
+    lazy var chartView = LineChartView()
 
     lazy var timeRangeControl: UIStackView = .create { view in
         view.axis = .horizontal
@@ -28,6 +26,7 @@ final class AssetPriceChartViewLayout: UIView {
         super.init(frame: frame)
 
         setupLayout()
+        setupChartView()
     }
 
     @available(*, unavailable)
@@ -72,73 +71,43 @@ private extension AssetPriceChartViewLayout {
         }
     }
 
-    func configureChartView(_ chartView: LineChartView) {
-        chartView.rightAxis.enabled = false
+    func setupChartView() {
+        chartView.chartDescription.enabled = false
         chartView.legend.enabled = false
+        chartView.leftAxis.enabled = false
+        chartView.xAxis.enabled = false
+        chartView.setScaleEnabled(false)
+        chartView.minOffset = .zero
+        chartView.extraTopOffset = .zero
+        chartView.extraBottomOffset = .zero
         chartView.pinchZoomEnabled = false
         chartView.doubleTapToZoomEnabled = false
 
+        chartView.renderer = AssetPriceChartRenderer(
+            highlightColor: R.color.colorNeutralPriceChartLine()!,
+            chart: chartView
+        )
+
         let yAxis = chartView.rightAxis
+        yAxis.enabled = true
+        yAxis.labelFont = .monospaceNumbers
         yAxis.labelTextColor = R.color.colorTextSecondary()!
-        yAxis.axisLineColor = .clear
+        yAxis.setLabelCount(4, force: true)
+        yAxis.drawTopYLabelEntryEnabled = true
+        yAxis.drawAxisLineEnabled = false
+        yAxis.gridLineWidth = 1.5
+        yAxis.drawGridLinesEnabled = true
         yAxis.gridColor = R.color.colorChartGridLine()!
-        yAxis.gridLineDashLengths = [4, 2]
-        yAxis.setLabelCount(4, force: false)
+        yAxis.gridLineDashLengths = [10.0, 10.0, 0.0]
 
-        let xAxis = chartView.xAxis
-        xAxis.labelPosition = .bottom
-        xAxis.labelTextColor = R.color.colorTextSecondary()!
-        xAxis.axisLineColor = .clear
-        xAxis.gridColor = .clear
-        xAxis.valueFormatter = DateValueFormatter()
-    }
-
-    func createStyledData(
-        using entries: [ChartDataEntry],
-        overallChangeType: PricePeriodChangeViewModel
-    ) -> LineChartData {
-        let lineDataSet = LineChartDataSet(entries: entries)
-        lineDataSet.mode = .cubicBezier
-        lineDataSet.drawCirclesEnabled = false
-        lineDataSet.lineWidth = 1.5
-
-        let color = switch overallChangeType {
-        case .up:
-            R.color.colorPositivePriceChartLine()!
-        case .down:
-            R.color.colorNegativePriceChartLine()!
-        }
-
-        lineDataSet.setColor(color)
-
-        let lineData = LineChartData(dataSets: [lineDataSet])
-        lineData.setDrawValues(false)
-
-        return lineData
+        chartView.marker = nil
     }
 }
 
-// MARK: Internal
+// MARK: Constants
 
 extension AssetPriceChartViewLayout {
-    func bind(with widgetViewModel: AssetPriceChartWidgetViewModel) {
-        titleLabel.text = widgetViewModel.title
-        priceLabel.text = widgetViewModel.currentPrice
-
-        switch widgetViewModel.periodChange {
-        case let .up(changeText):
-            priceChangeLabel.text = changeText
-            priceChangeLabel.textColor = R.color.colorTextPositive()
-        case let .down(changeText):
-            priceChangeLabel.text = changeText
-            priceChangeLabel.textColor = R.color.colorTextNegative()
-        }
-
-        let styledData = createStyledData(
-            using: widgetViewModel.chartModel.dataSet,
-            overallChangeType: widgetViewModel.periodChange
-        )
-
-        chartView.data = styledData
+    enum Constants {
+        static let widgetHeight: CGFloat = 292.0
     }
 }

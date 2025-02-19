@@ -40,9 +40,11 @@ struct AssetDetailsViewFactory {
             priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource()
         )
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = AssetDetailsPresenter(
             interactor: interactor,
-            localizableManager: LocalizationManager.shared,
+            localizableManager: localizationManager,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             viewModelFactory: viewModelFactory,
@@ -50,9 +52,17 @@ struct AssetDetailsViewFactory {
             logger: Logger.shared
         )
 
+        guard let chartView = AssetPriceChartViewFactory.createView(
+            asset: chainAsset.asset,
+            output: presenter,
+            inputOwner: presenter,
+            locale: localizationManager.selectedLocale
+        ) else { return nil }
+
         let view = AssetDetailsViewController(
+            chartViewProvider: chartView,
             presenter: presenter,
-            localizableManager: LocalizationManager.shared
+            localizableManager: localizationManager
         )
 
         presenter.view = view

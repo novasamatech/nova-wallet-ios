@@ -2,6 +2,8 @@ import Foundation
 
 final class AssetPriceChartPresenter {
     weak var view: AssetPriceChartViewProtocol?
+    weak var moduleOutput: AssetPriceChartModuleOutputProtocol?
+
     let wireframe: AssetPriceChartWireframeProtocol
     let interactor: AssetPriceChartInteractorInputProtocol
     let assetModel: AssetModel
@@ -50,4 +52,18 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 
 // MARK: AssetPriceChartInteractorOutputProtocol
 
-extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {}
+extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
+    func didReceive(_ error: Error) {
+        moduleOutput?.didReceive(error)
+    }
+}
+
+// MARK: AssetPriceChartModuleInputProtocol
+
+extension AssetPriceChartPresenter: AssetPriceChartModuleInputProtocol {
+    func updateLocale(_ newLocale: Locale) {
+        locale = newLocale
+
+        provideViewModel()
+    }
+}
