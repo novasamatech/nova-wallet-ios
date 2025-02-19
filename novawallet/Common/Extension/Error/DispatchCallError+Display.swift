@@ -7,9 +7,9 @@ extension DispatchCallError: ErrorContentConvertible {
 
         switch self {
         case let .module(moduleError):
-            details = "\(moduleError.display.moduleName):\(moduleError.display.errorName)"
-        case let .other(message):
-            details = "Other: \(message)"
+            details = "\(moduleError.display.moduleName): \(moduleError.display.errorName)"
+        case let .other(otherError):
+            details = "\(otherError.module): \(otherError.reason ?? "Unknown reason")"
         }
 
         return ErrorContent(title: title, message: details)
