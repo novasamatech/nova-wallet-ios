@@ -99,7 +99,7 @@ extension Multistaking {
             }
 
             if let userStake = mythosState.userStake, userStake.stake > 0 {
-                return .activeIndependent
+                return .active
             } else {
                 return .bonded
             }
