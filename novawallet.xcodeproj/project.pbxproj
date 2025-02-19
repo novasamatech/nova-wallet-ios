@@ -949,6 +949,7 @@
 		0CE862302D65A0B800245992 /* PoolStakingHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE8622F2D65A0B800245992 /* PoolStakingHistoryFiltersProvider.swift */; };
 		0CE862322D65A26100245992 /* ConstantHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862312D65A26100245992 /* ConstantHistoryFiltersProvider.swift */; };
 		0CE862342D65A40800245992 /* TransactionHistoryLocalFilterFactory+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862332D65A40800245992 /* TransactionHistoryLocalFilterFactory+Init.swift */; };
+		0CE862362D65F3C100245992 /* AssetLock+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862352D65F3C100245992 /* AssetLock+Display.swift */; };
 		0CE92A672B2ADBBA009A21E9 /* RuntimeProviderChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */; };
 		0CE933862BFF90B4000F3EFE /* RuntimeLocalMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */; };
 		0CE933882BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */; };
@@ -6564,6 +6565,7 @@
 		0CE8622F2D65A0B800245992 /* PoolStakingHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolStakingHistoryFiltersProvider.swift; sourceTree = "<group>"; };
 		0CE862312D65A26100245992 /* ConstantHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstantHistoryFiltersProvider.swift; sourceTree = "<group>"; };
 		0CE862332D65A40800245992 /* TransactionHistoryLocalFilterFactory+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryLocalFilterFactory+Init.swift"; sourceTree = "<group>"; };
+		0CE862352D65F3C100245992 /* AssetLock+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetLock+Display.swift"; sourceTree = "<group>"; };
 		0CE92A662B2ADBBA009A21E9 /* RuntimeProviderChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeProviderChain.swift; sourceTree = "<group>"; };
 		0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeLocalMigrator.swift; sourceTree = "<group>"; };
 		0CE933872BFF98BE000F3EFE /* MockRuntimeMetadataFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRuntimeMetadataFetcher.swift; sourceTree = "<group>"; };
@@ -19888,6 +19890,7 @@
 				0CD352942ACAF59900B3E446 /* BigRational.swift */,
 				77D2E2722B0542A50098F188 /* AmountPair.swift */,
 				778215D42B9591C2006C7D13 /* SharedSettingsManager.swift */,
+				0CE862352D65F3C100245992 /* AssetLock+Display.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -27949,6 +27952,7 @@
 				8425EA9A25EA83FA00C307C9 /* ChainData+Value.swift in Sources */,
 				8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */,
 				84981EE829D42BF800948306 /* TransactionHistoryLocalFetcher.swift in Sources */,
+				0CE862362D65F3C100245992 /* AssetLock+Display.swift in Sources */,
 				88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */,
 				AEA2C1BA2681E9C50069492E /* ValidatorSearchInteractor.swift in Sources */,
 				8824D42629032B410022D778 /* BlurredView.swift in Sources */,
