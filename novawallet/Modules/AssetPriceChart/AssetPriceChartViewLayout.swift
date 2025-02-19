@@ -2,24 +2,23 @@ import UIKit
 import DGCharts
 
 final class AssetPriceChartViewLayout: UIView {
+    let titleLabel: UILabel = .create { view in
+        view.apply(style: .regularSubhedlineSecondary)
+    }
+
     let priceLabel: UILabel = .create { view in
-        view.font = .systemFont(ofSize: 28, weight: .bold)
+        view.apply(style: .boldTitle3Primary)
     }
 
     let priceChangeLabel: UILabel = .create { view in
-        view.font = .systemFont(ofSize: 14)
-    }
-
-    let titleLabel: UILabel = .create { view in
-        view.font = .systemFont(ofSize: 14)
-        view.textColor = .secondaryLabel
+        view.apply(style: .semiboldFootnotePrimary)
     }
 
     lazy var chartView: LineChartView = .create { view in
         configureChartView(view)
     }
 
-    lazy var timeRangeStackView: UIStackView = .create { view in
+    lazy var timeRangeControl: UIStackView = .create { view in
         view.axis = .horizontal
         view.spacing = 16
         view.distribution = .fillEqually
@@ -45,7 +44,7 @@ private extension AssetPriceChartViewLayout {
         addSubview(priceLabel)
         addSubview(priceChangeLabel)
         addSubview(chartView)
-        addSubview(timeRangeStackView)
+        addSubview(timeRangeControl)
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(16)
@@ -65,7 +64,7 @@ private extension AssetPriceChartViewLayout {
             make.trailing.equalToSuperview().offset(-16)
             make.height.equalTo(132)
         }
-        timeRangeStackView.snp.makeConstraints { make in
+        timeRangeControl.snp.makeConstraints { make in
             make.top.equalTo(chartView.snp.bottom).offset(16)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
@@ -84,6 +83,7 @@ private extension AssetPriceChartViewLayout {
         yAxis.axisLineColor = .clear
         yAxis.gridColor = R.color.colorChartGridLine()!
         yAxis.gridLineDashLengths = [4, 2]
+        yAxis.setLabelCount(4, force: false)
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .bottom
@@ -91,5 +91,54 @@ private extension AssetPriceChartViewLayout {
         xAxis.axisLineColor = .clear
         xAxis.gridColor = .clear
         xAxis.valueFormatter = DateValueFormatter()
+    }
+
+    func createStyledData(
+        using entries: [ChartDataEntry],
+        overallChangeType: PricePeriodChangeViewModel
+    ) -> LineChartData {
+        let lineDataSet = LineChartDataSet(entries: entries)
+        lineDataSet.mode = .cubicBezier
+        lineDataSet.drawCirclesEnabled = false
+        lineDataSet.lineWidth = 1.5
+
+        let color = switch overallChangeType {
+        case .up:
+            R.color.colorPositivePriceChartLine()!
+        case .down:
+            R.color.colorNegativePriceChartLine()!
+        }
+
+        lineDataSet.setColor(color)
+
+        let lineData = LineChartData(dataSets: [lineDataSet])
+        lineData.setDrawValues(false)
+
+        return lineData
+    }
+}
+
+// MARK: Internal
+
+extension AssetPriceChartViewLayout {
+    func bind(with widgetViewModel: AssetPriceChartWidgetViewModel) {
+        titleLabel.text = widgetViewModel.title
+        priceLabel.text = widgetViewModel.currentPrice
+
+        switch widgetViewModel.periodChange {
+        case let .up(changeText):
+            priceChangeLabel.text = changeText
+            priceChangeLabel.textColor = R.color.colorTextPositive()
+        case let .down(changeText):
+            priceChangeLabel.text = changeText
+            priceChangeLabel.textColor = R.color.colorTextNegative()
+        }
+
+        let styledData = createStyledData(
+            using: widgetViewModel.chartModel.dataSet,
+            overallChangeType: widgetViewModel.periodChange
+        )
+
+        chartView.data = styledData
     }
 }

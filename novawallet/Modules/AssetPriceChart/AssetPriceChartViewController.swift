@@ -26,4 +26,8 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
     }
 }
 
-extension AssetPriceChartViewController: AssetPriceChartViewProtocol {}
+extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
+    func update(with widgetViewModel: AssetPriceChartWidgetViewModel) {
+        rootView.bind(with: widgetViewModel)
+    }
+}

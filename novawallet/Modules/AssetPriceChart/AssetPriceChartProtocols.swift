@@ -1,10 +1,14 @@
-protocol AssetPriceChartViewProtocol: AnyObject {}
+protocol AssetPriceChartViewProtocol: AnyObject {
+    func update(with widgetViewModel: AssetPriceChartWidgetViewModel)
+}
 
 protocol AssetPriceChartPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol AssetPriceChartInteractorInputProtocol: AnyObject {}
+protocol AssetPriceChartInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
 protocol AssetPriceChartInteractorOutputProtocol: AnyObject {}
 
