@@ -1,12 +1,12 @@
 import Foundation
 
 enum PricePeriodChangeViewModel {
-    case up(String)
-    case down(String)
+    case increase(String?)
+    case decrease(String?)
 
-    var value: String {
+    var value: String? {
         switch self {
-        case let .up(text), let .down(text):
+        case let .increase(text), let .decrease(text):
             return text
         }
     }

@@ -4,10 +4,11 @@ import DGCharts
 
 protocol AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
+        for asset: AssetModel,
         prices: [CoingeckoChartSinglePriceData],
         availablePeriods: [PriceChartPeriod],
         selectedPeriod: PriceChartPeriod,
-        for asset: AssetModel,
+        priceData: PriceData?,
         locale: Locale
     ) -> LoadableViewModelState<AssetPriceChartWidgetViewModel>
 }
@@ -28,34 +29,58 @@ final class AssetPriceChartViewModelFactory {
     }
 }
 
-// MARK: AssetPriceChartViewModelFactoryProtocol
+// MARK: Private
 
-extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
-    func createViewModel(
-        prices: [CoingeckoChartSinglePriceData],
-        availablePeriods: [PriceChartPeriod],
-        selectedPeriod: PriceChartPeriod,
-        for asset: AssetModel,
+private extension AssetPriceChartViewModelFactory {
+    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
+        let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
+        return assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetBalanceDisplayInfo)
+    }
+
+    func formattedPrice(
+        for priceData: PriceData,
+        _ locale: Locale
+    ) -> String? {
+        let priceDecimal = Decimal(string: priceData.price) ?? 0.0
+
+        let price = priceFormatter(priceId: priceData.currencyId)
+            .value(for: locale)
+            .stringFromDecimal(priceDecimal)
+
+        return price
+    }
+
+    func createPeriodChangeViewModel(
+        priceData: PriceData,
+        firstPrice: Decimal,
+        lastPrice: Decimal,
         locale: Locale
-    ) -> LoadableViewModelState<AssetPriceChartWidgetViewModel> {
-        guard
-            let firstPrice = prices.first,
-            let lastPrice = prices.last
-        else { return .loading }
+    ) -> PricePeriodChangeViewModel {
+        let periodChangeDecimal = abs(lastPrice - firstPrice)
 
-        let title = [
-            asset.symbol,
-            R.string.localizable.commonPrice(preferredLanguages: locale.rLanguages)
-        ].joined(with: .space)
+        let periodChangeAmountText = priceFormatter(priceId: priceData.currencyId)
+            .value(for: locale)
+            .stringFromDecimal(periodChangeDecimal) ?? ""
 
-        let dataSet = prices.map { price in
-            ChartDataEntry(
-                x: Double(price.timeStamp),
-                y: (price.price as NSDecimalNumber).doubleValue
-            )
+        let percentText = priceChangePercentFormatter
+            .value(for: locale)
+            .stringFromDecimal(periodChangeDecimal / firstPrice) ?? ""
+
+        let finalText = periodChangeAmountText + "(\(percentText))"
+
+        let changeViewModel: PricePeriodChangeViewModel = if lastPrice >= firstPrice {
+            .increase(finalText)
+        } else {
+            .decrease(finalText)
         }
-        let chartViewModel = PriceChartViewModel(dataSet: dataSet)
 
+        return changeViewModel
+    }
+
+    func createPeriodsControlViewModel(
+        availablePeriods: [PriceChartPeriod],
+        selectedPeriod: PriceChartPeriod
+    ) -> PriceChartPeriodControlViewModel {
         let periods: [PriceChartPeriodViewModel] = availablePeriods.map {
             let text = switch $0 {
             case .day: "1D"
@@ -73,19 +98,59 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             selectedPeriodIndex: periods.firstIndex { $0.period == selectedPeriod } ?? 0
         )
 
-        let periodChangeDecimal = lastPrice.price - firstPrice.price
-        let periodChangePercent = abs(periodChangeDecimal / firstPrice.price * 100)
-        let periodChangeText = String(format: "%.2f", periodChangePercent as CVarArg)
+        return periodControlViewModel
+    }
 
-        let changeViewModel: PricePeriodChangeViewModel = if periodChangeDecimal >= 0 {
-            .up(periodChangeText)
-        } else {
-            .down(periodChangeText)
+    func createChartViewModel(using prices: [CoingeckoChartSinglePriceData]) -> PriceChartViewModel {
+        let dataSet = prices.map { price in
+            ChartDataEntry(
+                x: Double(price.timeStamp),
+                y: (price.price as NSDecimalNumber).doubleValue
+            )
         }
+
+        return PriceChartViewModel(dataSet: dataSet)
+    }
+}
+
+// MARK: AssetPriceChartViewModelFactoryProtocol
+
+extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
+    func createViewModel(
+        for asset: AssetModel,
+        prices: [CoingeckoChartSinglePriceData],
+        availablePeriods: [PriceChartPeriod],
+        selectedPeriod: PriceChartPeriod,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> LoadableViewModelState<AssetPriceChartWidgetViewModel> {
+        guard
+            let firstPrice = prices.first,
+            let lastPrice = prices.last,
+            let priceData
+        else { return .loading }
+
+        let title = [
+            asset.symbol,
+            R.string.localizable.commonPrice(preferredLanguages: locale.rLanguages)
+        ].joined(with: .space)
+
+        let chartViewModel = createChartViewModel(using: prices)
+        let periodControlViewModel = createPeriodsControlViewModel(
+            availablePeriods: availablePeriods,
+            selectedPeriod: selectedPeriod
+        )
+        let changeViewModel = createPeriodChangeViewModel(
+            priceData: priceData,
+            firstPrice: firstPrice.price,
+            lastPrice: lastPrice.price,
+            locale: locale
+        )
+        let currentPrice = formattedPrice(for: priceData, locale)
 
         let viewModel = AssetPriceChartWidgetViewModel(
             title: title,
-            currentPrice: "\(prices.last!.price)",
+            currentPrice: currentPrice,
             periodChange: changeViewModel,
             chartModel: chartViewModel,
             periodControlModel: periodControlViewModel

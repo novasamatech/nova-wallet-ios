@@ -138,13 +138,13 @@ private extension AssetPriceChartViewController {
         guard let widgetViewModel else { return nil }
 
         return switch widgetViewModel.periodChange {
-        case .up:
+        case .increase:
             Colors(
                 chartHighlightedLineColor: R.color.colorPositivePriceChartLine()!,
                 entryDotShadowColor: R.color.colorPriceChartPositiveShadow()!,
                 changeTextColor: R.color.colorTextPositive()!
             )
-        case .down:
+        case .decrease:
             Colors(
                 chartHighlightedLineColor: R.color.colorNegativePriceChartLine()!,
                 entryDotShadowColor: R.color.colorPriceChartNegativeShadow()!,

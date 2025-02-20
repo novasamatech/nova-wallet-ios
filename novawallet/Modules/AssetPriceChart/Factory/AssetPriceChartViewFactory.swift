@@ -2,17 +2,19 @@ import Foundation
 
 struct AssetPriceChartViewFactory {
     static func createView(
-        asset: AssetModel,
-        periods: [PriceChartPeriod],
         output: AssetPriceChartModuleOutputProtocol,
         inputOwner: AssetPriceChartInputOwnerProtocol,
-        locale: Locale
+        params: Params
     ) -> AssetPriceChartModule? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
-        let interactor = AssetPriceChartInteractor()
+        let interactor = AssetPriceChartInteractor(
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            asset: params.asset,
+            currency: params.currency
+        )
         let wireframe = AssetPriceChartWireframe()
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -26,11 +28,11 @@ struct AssetPriceChartViewFactory {
         let presenter = AssetPriceChartPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            assetModel: asset,
+            assetModel: params.asset,
             viewModelFactory: viewModelFactory,
-            periods: periods,
+            periods: params.periods,
             logger: Logger.shared,
-            locale: locale
+            locale: params.locale
         )
 
         let view = AssetPriceChartViewController(presenter: presenter)
@@ -42,5 +44,14 @@ struct AssetPriceChartViewFactory {
         inputOwner.assetPriceChartModule = presenter
 
         return view
+    }
+}
+
+extension AssetPriceChartViewFactory {
+    struct Params {
+        let asset: AssetModel
+        let periods: [PriceChartPeriod]
+        let locale: Locale
+        let currency: Currency
     }
 }

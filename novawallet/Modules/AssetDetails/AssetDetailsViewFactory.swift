@@ -52,20 +52,12 @@ struct AssetDetailsViewFactory {
             logger: Logger.shared
         )
 
-        let chartPeriods: [PriceChartPeriod] = [
-            .day,
-            .week,
-            .month,
-            .year,
-            .allTime
-        ]
-
-        guard let chartView = AssetPriceChartViewFactory.createView(
-            asset: chainAsset.asset,
-            periods: chartPeriods,
+        guard let chartView = createChartView(
+            asset: asset,
+            locale: localizationManager.selectedLocale,
+            currency: currencyManager.selectedCurrency,
             output: presenter,
-            inputOwner: presenter,
-            locale: localizationManager.selectedLocale
+            inputOwner: presenter
         ) else { return nil }
 
         let view = AssetDetailsViewController(
@@ -78,5 +70,34 @@ struct AssetDetailsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createChartView(
+        asset: AssetModel,
+        locale: Locale,
+        currency: Currency,
+        output: AssetPriceChartModuleOutputProtocol,
+        inputOwner: AssetPriceChartInputOwnerProtocol
+    ) -> AssetPriceChartModule? {
+        let chartPeriods: [PriceChartPeriod] = [
+            .day,
+            .week,
+            .month,
+            .year,
+            .allTime
+        ]
+
+        let chartParams = AssetPriceChartViewFactory.Params(
+            asset: asset,
+            periods: chartPeriods,
+            locale: locale,
+            currency: currency
+        )
+
+        return AssetPriceChartViewFactory.createView(
+            output: output,
+            inputOwner: inputOwner,
+            params: chartParams
+        )
     }
 }

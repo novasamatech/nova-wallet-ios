@@ -11,6 +11,7 @@ protocol AssetPriceChartInputOwnerProtocol: AnyObject {
 
 protocol AssetPriceChartModuleInputProtocol: AnyObject {
     func updateLocale(_ newLocale: Locale)
+    func updateSelectedCurrency(_ currency: Currency)
 }
 
 protocol AssetPriceChartModuleOutputProtocol: AnyObject {
@@ -56,9 +57,11 @@ protocol AssetPriceChartPresenterProtocol: AnyObject {
 
 protocol AssetPriceChartInteractorInputProtocol: AnyObject {
     func setup()
+    func updateSelectedCurrency(_ currency: Currency)
 }
 
 protocol AssetPriceChartInteractorOutputProtocol: AnyObject {
+    func didReceive(price: PriceData?)
     func didReceive(_ error: Error)
 }
 
