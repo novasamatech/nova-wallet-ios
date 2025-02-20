@@ -66,6 +66,26 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 
     func selectPeriod(_ period: PriceChartPeriod) {
         selectedPeriod = period
+
+        provideViewModel()
+    }
+
+    func selectEntry(_ entry: PriceChartEntry?) {
+        guard let entry else {
+            provideViewModel()
+            return
+        }
+
+        guard let viewModel = viewModelFactory.createPriceChangeViewModel(
+            prices: prices1D,
+            priceData: priceData,
+            closingPrice: entry.price,
+            locale: locale
+        ) else {
+            return
+        }
+
+        view?.update(priceChange: viewModel)
     }
 }
 

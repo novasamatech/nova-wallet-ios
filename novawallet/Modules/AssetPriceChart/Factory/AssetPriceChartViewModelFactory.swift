@@ -11,6 +11,13 @@ protocol AssetPriceChartViewModelFactoryProtocol {
         priceData: PriceData?,
         locale: Locale
     ) -> AssetPriceChartWidgetViewModel
+
+    func createPriceChangeViewModel(
+        prices: [CoingeckoChartSinglePriceData],
+        priceData: PriceData?,
+        closingPrice: Decimal,
+        locale: Locale
+    ) -> PricePeriodChangeViewModel?
 }
 
 final class AssetPriceChartViewModelFactory {
@@ -163,6 +170,25 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             periodChange: .loaded(value: changeViewModel),
             chartModel: .loaded(value: chartViewModel),
             periodControlModel: periodControlViewModel
+        )
+    }
+
+    func createPriceChangeViewModel(
+        prices: [CoingeckoChartSinglePriceData],
+        priceData: PriceData?,
+        closingPrice: Decimal,
+        locale: Locale
+    ) -> PricePeriodChangeViewModel? {
+        guard
+            let priceData,
+            let firstPrice = prices.first
+        else { return nil }
+
+        return createPeriodChangeViewModel(
+            priceData: priceData,
+            firstPrice: firstPrice.price,
+            lastPrice: closingPrice,
+            locale: locale
         )
     }
 }

@@ -39,6 +39,7 @@ private extension AssetPriceChartViewController {
 
     func updateView() {
         updateTitle()
+        updatePriceChange()
         updateChart()
         updatePeriodControlIfNeeded()
     }
@@ -219,6 +220,19 @@ private extension AssetPriceChartViewController {
             )
         }
     }
+
+    func selectEntry(entry: ChartDataEntry?) {
+        guard let entry else {
+            presenter.selectEntry(nil)
+            return
+        }
+
+        let plainEntry = PriceChartEntry(
+            price: Decimal(entry.y),
+            timestamp: Int(entry.x)
+        )
+        presenter.selectEntry(plainEntry)
+    }
 }
 
 // MARK: AssetPriceChartViewProtocol
@@ -226,6 +240,12 @@ private extension AssetPriceChartViewController {
 extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
     func update(with widgetViewModel: AssetPriceChartWidgetViewModel) {
         self.widgetViewModel = widgetViewModel
+
+        updateView()
+    }
+
+    func update(priceChange: PricePeriodChangeViewModel) {
+        widgetViewModel = widgetViewModel?.byUpdatingPeriodChange(priceChange)
 
         updateView()
     }
@@ -241,14 +261,17 @@ extension AssetPriceChartViewController: ChartViewDelegate {
     ) {
         rootView.chartView.highlightValue(highlight)
         updateChart(with: entry)
+        selectEntry(entry: entry)
     }
 
     func chartValueNothingSelected(_: ChartViewBase) {
         updateChart()
+        selectEntry(entry: nil)
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
         updateChart()
+        selectEntry(entry: nil)
     }
 }
 
@@ -279,4 +302,9 @@ private extension AssetPriceChartViewController {
         let entryDotShadowColor: UIColor
         let changeTextColor: UIColor
     }
+}
+
+struct PriceChartEntry {
+    let price: Decimal
+    let timestamp: Int
 }
