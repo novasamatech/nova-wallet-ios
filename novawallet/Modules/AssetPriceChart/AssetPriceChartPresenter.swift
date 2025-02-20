@@ -6,21 +6,21 @@ final class AssetPriceChartPresenter {
 
     let interactor: AssetPriceChartInteractorInputProtocol
     let assetModel: AssetModel
-    let availablePeriods: [PriceChartPeriod]
+    let availablePeriods: [PriceHistoryPeriod]
     let logger: Logger
 
     private let viewModelFactory: AssetPriceChartViewModelFactoryProtocol
 
     private var locale: Locale
-    private var selectedPeriod: PriceChartPeriod?
+    private var selectedPeriod: PriceHistoryPeriod?
     private var priceData: PriceData?
-    private var prices: [PriceChartPeriod: [CoingeckoChartSinglePriceData]]?
+    private var prices: [PriceHistoryPeriod: [PriceHistoryItem]]?
 
     init(
         interactor: AssetPriceChartInteractorInputProtocol,
         assetModel: AssetModel,
         viewModelFactory: AssetPriceChartViewModelFactoryProtocol,
-        periods: [PriceChartPeriod],
+        periods: [PriceHistoryPeriod],
         logger: Logger,
         locale: Locale
     ) {
@@ -62,7 +62,7 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
         provideViewModel()
     }
 
-    func selectPeriod(_ period: PriceChartPeriod) {
+    func selectPeriod(_ period: PriceHistoryPeriod) {
         selectedPeriod = period
 
         provideViewModel()
@@ -90,7 +90,7 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 // MARK: AssetPriceChartInteractorOutputProtocol
 
 extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
-    func didReceive(prices: [PriceChartPeriod: [CoingeckoChartSinglePriceData]]) {
+    func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]]) {
         self.prices = prices
 
         provideViewModel()

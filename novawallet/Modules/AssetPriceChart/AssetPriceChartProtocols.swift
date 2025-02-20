@@ -53,7 +53,7 @@ protocol AssetPriceChartViewProtocol: ControllerBackedProtocol {
 
 protocol AssetPriceChartPresenterProtocol: AnyObject {
     func setup()
-    func selectPeriod(_ periodModel: PriceChartPeriod)
+    func selectPeriod(_ periodModel: PriceHistoryPeriod)
     func selectEntry(_ entry: AssetPriceChart.Entry?)
 }
 
@@ -63,7 +63,7 @@ protocol AssetPriceChartInteractorInputProtocol: AnyObject {
 }
 
 protocol AssetPriceChartInteractorOutputProtocol: AnyObject {
-    func didReceive(prices: [PriceChartPeriod: [CoingeckoChartSinglePriceData]])
+    func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]])
     func didReceive(price: PriceData?)
     func didReceive(_ error: Error)
 }
