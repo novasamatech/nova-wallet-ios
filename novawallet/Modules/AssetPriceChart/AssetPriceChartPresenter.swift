@@ -15,6 +15,7 @@ final class AssetPriceChartPresenter {
     private var locale: Locale
     private var selectedPeriod: PriceChartPeriod?
     private var priceData: PriceData?
+    private var prices: [PriceChartPeriod: [CoingeckoChartSinglePriceData]]?
 
     init(
         interactor: AssetPriceChartInteractorInputProtocol,
@@ -44,7 +45,7 @@ private extension AssetPriceChartPresenter {
 
         let viewModel = viewModelFactory.createViewModel(
             for: assetModel,
-            prices: prices1D,
+            prices: prices?[selectedPeriod],
             availablePeriods: availablePeriods,
             selectedPeriod: selectedPeriod,
             priceData: priceData,
@@ -70,14 +71,14 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
         provideViewModel()
     }
 
-    func selectEntry(_ entry: PriceChartEntry?) {
-        guard let entry else {
+    func selectEntry(_ entry: AssetPriceChart.Entry?) {
+        guard let entry, let selectedPeriod else {
             provideViewModel()
             return
         }
 
         guard let viewModel = viewModelFactory.createPriceChangeViewModel(
-            prices: prices1D,
+            prices: prices?[selectedPeriod],
             priceData: priceData,
             closingPrice: entry.price,
             locale: locale
@@ -92,6 +93,12 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 // MARK: AssetPriceChartInteractorOutputProtocol
 
 extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
+    func didReceive(prices: [PriceChartPeriod: [CoingeckoChartSinglePriceData]]) {
+        self.prices = prices
+
+        provideViewModel()
+    }
+
     func didReceive(price: PriceData?) {
         priceData = price
 

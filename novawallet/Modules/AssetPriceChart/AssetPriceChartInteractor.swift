@@ -43,6 +43,17 @@ extension AssetPriceChartInteractor: AssetPriceChartInteractorInputProtocol {
 
     func setup() {
         subscribePrice()
+
+        // TODO: Implement fetch logic
+        presenter?.didReceive(
+            prices: [
+                .day: prices1D,
+                .week: prices1W,
+                .month: prices1M,
+                .year: prices1M,
+                .allTime: prices1M
+            ]
+        )
     }
 }
 

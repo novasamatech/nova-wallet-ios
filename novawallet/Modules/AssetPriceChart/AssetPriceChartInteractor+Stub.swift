@@ -2,7 +2,7 @@ import Foundation
 
 // TODO: REMOVE AFTER NETWORK PART IMPLEMENTATION
 
-extension AssetPriceChartPresenter {
+extension AssetPriceChartInteractor {
     var prices1D: [CoingeckoChartSinglePriceData] {
         [
             CoingeckoChartSinglePriceData(timeStamp: 1_711_843_200_000, price: 3502.34),

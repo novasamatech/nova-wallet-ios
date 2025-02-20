@@ -5,7 +5,7 @@ import DGCharts
 protocol AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
         for asset: AssetModel,
-        prices: [CoingeckoChartSinglePriceData],
+        prices: [CoingeckoChartSinglePriceData]?,
         availablePeriods: [PriceChartPeriod],
         selectedPeriod: PriceChartPeriod,
         priceData: PriceData?,
@@ -13,7 +13,7 @@ protocol AssetPriceChartViewModelFactoryProtocol {
     ) -> AssetPriceChartWidgetViewModel
 
     func createPriceChangeViewModel(
-        prices: [CoingeckoChartSinglePriceData],
+        prices: [CoingeckoChartSinglePriceData]?,
         priceData: PriceData?,
         closingPrice: Decimal,
         locale: Locale
@@ -136,7 +136,7 @@ private extension AssetPriceChartViewModelFactory {
 extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
         for asset: AssetModel,
-        prices: [CoingeckoChartSinglePriceData],
+        prices: [CoingeckoChartSinglePriceData]?,
         availablePeriods: [PriceChartPeriod],
         selectedPeriod: PriceChartPeriod,
         priceData: PriceData?,
@@ -153,6 +153,7 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         )
 
         guard
+            let prices,
             let firstPrice = prices.first,
             let lastPrice = prices.last,
             let priceData
@@ -185,14 +186,14 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
     }
 
     func createPriceChangeViewModel(
-        prices: [CoingeckoChartSinglePriceData],
+        prices: [CoingeckoChartSinglePriceData]?,
         priceData: PriceData?,
         closingPrice: Decimal,
         locale: Locale
     ) -> PricePeriodChangeViewModel? {
         guard
             let priceData,
-            let firstPrice = prices.first
+            let firstPrice = prices?.first
         else { return nil }
 
         return createPeriodChangeViewModel(
