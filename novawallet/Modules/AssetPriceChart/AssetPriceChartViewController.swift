@@ -39,6 +39,7 @@ private extension AssetPriceChartViewController {
 
     func updateView() {
         updateTitle()
+        updatePrice()
         updatePriceChange()
         updateChart()
         updatePeriodControlIfNeeded()
@@ -103,7 +104,8 @@ private extension AssetPriceChartViewController {
         case let .cached(model), let .loaded(model):
             let chartData = createChartData(
                 using: model.dataSet,
-                lineColor: colors.chartHighlightedLineColor
+                lineColor: colors.chartHighlightedLineColor,
+                showHighlighter: false
             )
             rootView.chartView.rightAxis.labelTextColor = R.color.colorTextSecondary()!
             rootView.chartView.data = chartData
@@ -130,11 +132,13 @@ private extension AssetPriceChartViewController {
 
         let dataBefore = createChartData(
             using: entriesBefore,
-            lineColor: colors.chartHighlightedLineColor
+            lineColor: colors.chartHighlightedLineColor,
+            showHighlighter: true
         )
         let dataAfter = createChartData(
             using: entriesAfter,
-            lineColor: R.color.colorNeutralPriceChartLine()!
+            lineColor: R.color.colorNeutralPriceChartLine()!,
+            showHighlighter: true
         )
 
         priceChartRenderer.setSelectedEntry(selectedEntry)
@@ -150,7 +154,8 @@ private extension AssetPriceChartViewController {
 
     func createChartData(
         using entries: [ChartDataEntry],
-        lineColor: UIColor
+        lineColor: UIColor,
+        showHighlighter: Bool
     ) -> LineChartData {
         let lineDataSet = LineChartDataSet(entries: entries)
         lineDataSet.mode = .cubicBezier
@@ -159,7 +164,7 @@ private extension AssetPriceChartViewController {
         lineDataSet.drawValuesEnabled = false
         lineDataSet.setColor(lineColor)
         lineDataSet.drawHorizontalHighlightIndicatorEnabled = false
-        lineDataSet.drawVerticalHighlightIndicatorEnabled = true
+        lineDataSet.drawVerticalHighlightIndicatorEnabled = showHighlighter
         lineDataSet.highlightEnabled = true
         lineDataSet.highlightColor = R.color.colorNeutralPriceChartLine()!
 
