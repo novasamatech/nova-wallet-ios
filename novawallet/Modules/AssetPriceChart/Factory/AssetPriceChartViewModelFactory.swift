@@ -75,13 +75,16 @@ private extension AssetPriceChartViewModelFactory {
 
         let finalText = periodChangeAmountText + "(\(percentText))"
 
-        let changeViewModel: PricePeriodChangeViewModel = if lastPrice >= firstPrice {
-            .increase(finalText)
+        let changeType: PriceChangeType = if lastPrice >= firstPrice {
+            .increase
         } else {
-            .decrease(finalText)
+            .decrease
         }
 
-        return changeViewModel
+        return PricePeriodChangeViewModel(
+            changeType: changeType,
+            text: finalText
+        )
     }
 
     func createPeriodsControlViewModel(
@@ -109,6 +112,9 @@ private extension AssetPriceChartViewModelFactory {
     }
 
     func createChartViewModel(using prices: [CoingeckoChartSinglePriceData]) -> PriceChartViewModel {
+        let firstPrice = prices.first?.price ?? 0.0
+        let lastPrice = prices.last?.price ?? 0.0
+
         let dataSet = prices.map { price in
             ChartDataEntry(
                 x: Double(price.timeStamp),
@@ -116,7 +122,12 @@ private extension AssetPriceChartViewModelFactory {
             )
         }
 
-        return PriceChartViewModel(dataSet: dataSet)
+        let changeType: PriceChangeType = lastPrice >= firstPrice ? .increase : .decrease
+
+        return PriceChartViewModel(
+            dataSet: dataSet,
+            changeType: changeType
+        )
     }
 }
 

@@ -133,7 +133,7 @@ extension AssetPriceChartViewLayout {
 
 extension AssetPriceChartViewLayout {
     enum Constants {
-        static let widgetHeight: CGFloat = 260.0
+        static let widgetHeight: CGFloat = 265.0
         static let titleHeight: CGFloat = 20.0
 
         static let priceSkeletonOffsets: [CGFloat] = [34.0, 12.0]

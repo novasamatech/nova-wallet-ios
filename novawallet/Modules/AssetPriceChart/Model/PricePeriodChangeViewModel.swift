@@ -1,13 +1,11 @@
 import Foundation
 
-enum PricePeriodChangeViewModel {
-    case increase(String?)
-    case decrease(String?)
+enum PriceChangeType {
+    case increase
+    case decrease
+}
 
-    var value: String? {
-        switch self {
-        case let .increase(text), let .decrease(text):
-            return text
-        }
-    }
+struct PricePeriodChangeViewModel {
+    let changeType: PriceChangeType
+    let text: String?
 }

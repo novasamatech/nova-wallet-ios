@@ -78,7 +78,7 @@ private extension AssetPriceChartViewController {
 
         switch widgetViewModel.periodChange {
         case let .cached(model), let .loaded(model):
-            rootView.priceChangeLabel.text = model.value
+            rootView.priceChangeLabel.text = model.text
             rootView.priceChangeLabel.textColor = colors.changeTextColor
             rootView.loadingState.remove(.all)
         case .loading:
@@ -197,26 +197,37 @@ private extension AssetPriceChartViewController {
     func createColors() -> Colors? {
         guard let widgetViewModel else { return nil }
 
-        return if let model = widgetViewModel.periodChange.value {
-            switch model {
+        let changeTextColor: UIColor = if let model = widgetViewModel.periodChange.value {
+            switch model.changeType {
+            case .increase:
+                R.color.colorTextPositive()!
+            case .decrease:
+                R.color.colorTextNegative()!
+            }
+        } else {
+            R.color.colorTextSecondary()!
+        }
+
+        return if let chartModel = widgetViewModel.chartModel.value {
+            switch chartModel.changeType {
             case .increase:
                 Colors(
                     chartHighlightedLineColor: R.color.colorPositivePriceChartLine()!,
                     entryDotShadowColor: R.color.colorPriceChartPositiveShadow()!,
-                    changeTextColor: R.color.colorTextPositive()!
+                    changeTextColor: changeTextColor
                 )
             case .decrease:
                 Colors(
                     chartHighlightedLineColor: R.color.colorNegativePriceChartLine()!,
                     entryDotShadowColor: R.color.colorPriceChartNegativeShadow()!,
-                    changeTextColor: R.color.colorTextNegative()!
+                    changeTextColor: changeTextColor
                 )
             }
         } else {
             Colors(
                 chartHighlightedLineColor: R.color.colorNeutralPriceChartLine()!,
                 entryDotShadowColor: .clear,
-                changeTextColor: R.color.colorTextSecondary()!
+                changeTextColor: changeTextColor
             )
         }
     }
