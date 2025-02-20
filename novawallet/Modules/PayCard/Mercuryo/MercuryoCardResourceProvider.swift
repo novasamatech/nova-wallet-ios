@@ -19,16 +19,8 @@ final class MercuryoCardResourceProvider {
             value: MercuryoCardApi.type
         )
         let currencyItem = URLQueryItem(
-            name: "currency",
+            name: "currencies",
             value: "\(chainAsset.asset.symbol)"
-        )
-        let fiatCurrencyItem = URLQueryItem(
-            name: "fiat_currency",
-            value: MercuryoCardApi.fiatCurrency
-        )
-        let fixCurrencyItem = URLQueryItem(
-            name: "fix_currency",
-            value: MercuryoCardApi.fixCurrency
         )
         let themeItem = URLQueryItem(
             name: "theme",
@@ -53,8 +45,6 @@ final class MercuryoCardResourceProvider {
             typeItem,
             showSpendCardDetails,
             currencyItem,
-            fiatCurrencyItem,
-            fixCurrencyItem,
             hideRefundAddressItem,
             refundAddressItem
         ]
