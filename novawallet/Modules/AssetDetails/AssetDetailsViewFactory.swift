@@ -51,9 +51,18 @@ struct AssetDetailsViewFactory {
             wireframe: wireframe,
             logger: Logger.shared
         )
+        
+        let chartPeriods: [PriceChartPeriod] = [
+            .day,
+            .week,
+            .month,
+            .year,
+            .allTime
+        ]
 
         guard let chartView = AssetPriceChartViewFactory.createView(
             asset: chainAsset.asset,
+            periods: chartPeriods,
             output: presenter,
             inputOwner: presenter,
             locale: localizationManager.selectedLocale

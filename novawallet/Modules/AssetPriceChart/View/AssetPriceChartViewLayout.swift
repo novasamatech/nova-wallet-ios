@@ -98,17 +98,12 @@ private extension AssetPriceChartViewLayout {
 
 extension AssetPriceChartViewLayout {
     func setupPeriodControl(with model: PriceChartPeriodControlViewModel) {
-        guard let firstPeriod = model.periods.first else { return }
-
         if let periodControl {
             periodControl.removeFromSuperview()
             self.periodControl = nil
         }
 
-        let periodControl = PriceChartPeriodControl(
-            viewModel: model,
-            selectedPeriod: firstPeriod
-        )
+        let periodControl = PriceChartPeriodControl(viewModel: model)
 
         addSubview(periodControl)
         periodControl.snp.makeConstraints { make in
@@ -123,6 +118,6 @@ extension AssetPriceChartViewLayout {
 
 extension AssetPriceChartViewLayout {
     enum Constants {
-        static let widgetHeight: CGFloat = 270.0
+        static let widgetHeight: CGFloat = 280.0
     }
 }

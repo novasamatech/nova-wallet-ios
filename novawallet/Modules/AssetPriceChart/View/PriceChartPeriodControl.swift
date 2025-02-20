@@ -11,7 +11,7 @@ protocol PriceChartPeriodControlDelegate: AnyObject {
 
 final class PriceChartPeriodControl: UIView {
     weak var delegate: PriceChartPeriodControlDelegate?
-    let viewModel: PriceChartPeriodControlViewModel
+    let periods: [PriceChartPeriodViewModel]
 
     private let layoutAnimator: BlockViewAnimatorProtocol
     private let transformAnimator: BlockViewAnimatorProtocol
@@ -30,12 +30,9 @@ final class PriceChartPeriodControl: UIView {
         view.layer.cornerRadius = Constants.cornerRadius
     }
 
-    init(
-        viewModel: PriceChartPeriodControlViewModel,
-        selectedPeriod: PriceChartPeriodViewModel
-    ) {
-        self.viewModel = viewModel
-        self.selectedPeriod = selectedPeriod
+    init(viewModel: PriceChartPeriodControlViewModel) {
+        self.periods = viewModel.periods
+        self.selectedPeriod = viewModel.periods[viewModel.selectedPeriodIndex]
 
         layoutAnimator = BlockViewAnimator(
             duration: 0.3,
@@ -88,7 +85,7 @@ private extension PriceChartPeriodControl {
     }
 
     func setupPeriodButtons() {
-        viewModel.periods.forEach { period in
+        periods.forEach { period in
             let button = createPeriodButton(for: period)
             buttons.append(button)
             stackView.addArrangedSubview(button)
@@ -101,7 +98,7 @@ private extension PriceChartPeriodControl {
 
     func createPeriodButton(for period: PriceChartPeriodViewModel) -> UIButton {
         let button = UIButton(type: .system)
-        button.setTitle(period.title, for: .normal)
+        button.setTitle(period.text, for: .normal)
         button.titleLabel?.font = .regularFootnote
 
         button.addTarget(
@@ -132,7 +129,7 @@ private extension PriceChartPeriodControl {
 
     func updateSelectionBackground(animated: Bool) {
         guard
-            let index = viewModel.periods.firstIndex(of: selectedPeriod),
+            let index = periods.firstIndex(of: selectedPeriod),
             index < buttons.count,
             let selectedButton = buttons[safe: index]
         else { return }
@@ -175,10 +172,10 @@ private extension PriceChartPeriodControl {
     @objc func periodButtonTapped(_ sender: UIButton) {
         guard
             let index = buttons.firstIndex(of: sender),
-            index < viewModel.periods.count
+            index < periods.count
         else { return }
 
-        let period = viewModel.periods[index]
+        let period = periods[index]
         selectedPeriod = period
 
         delegate?.periodControl(

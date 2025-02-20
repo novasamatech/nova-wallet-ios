@@ -1326,7 +1326,6 @@
 		2DCC876E2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */; };
 		2DCC87712C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */; };
 		2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */; };
-		2DD018CC2D63E1400063F9BB /* DateValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */; };
 		2DD018CF2D6591250063F9BB /* AssetPriceChartWidgetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018CE2D6591250063F9BB /* AssetPriceChartWidgetViewModel.swift */; };
 		2DD018D12D65E3550063F9BB /* PricePeriodChangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D02D65E3550063F9BB /* PricePeriodChangeViewModel.swift */; };
 		2DD018D32D65E36F0063F9BB /* PriceChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D22D65E36F0063F9BB /* PriceChartViewModel.swift */; };
@@ -6789,7 +6788,6 @@
 		2DCC876D2C598DB00028C3CA /* CloudBackupCreateConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DCC87702C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupUpdatePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
 		2DCC87732C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupEnablePasswordConfirmWireframe.swift; sourceTree = "<group>"; };
-		2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateValueFormatter.swift; sourceTree = "<group>"; };
 		2DD018CE2D6591250063F9BB /* AssetPriceChartWidgetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartWidgetViewModel.swift; sourceTree = "<group>"; };
 		2DD018D02D65E3550063F9BB /* PricePeriodChangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricePeriodChangeViewModel.swift; sourceTree = "<group>"; };
 		2DD018D22D65E36F0063F9BB /* PriceChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartViewModel.swift; sourceTree = "<group>"; };
@@ -10918,7 +10916,6 @@
 				B73152A79ECCEC10AE87B3E4 /* AssetPriceChartPresenter.swift */,
 				D8DE2583C0D36ECDB0F012EB /* AssetPriceChartInteractor.swift */,
 				99FD0B7680E2D406466FCB36 /* AssetPriceChartViewController.swift */,
-				2DD018CB2D63E1400063F9BB /* DateValueFormatter.swift */,
 			);
 			path = AssetPriceChart;
 			sourceTree = "<group>";
@@ -26778,7 +26775,6 @@
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
 				84796080283B63240084E779 /* LoadableActionView.swift in Sources */,
 				84FD3DBB254104B600A234E3 /* WalletTransactionListUpdated.swift in Sources */,
-				2DD018CC2D63E1400063F9BB /* DateValueFormatter.swift in Sources */,
 				842EBB2928908ADB00B952D8 /* WalletsListTableViewCell.swift in Sources */,
 				84C1706629961FAD00CBE531 /* GovernanceYourDelegationsInteractorError.swift in Sources */,
 				771901A62AE8FF7E00D9C918 /* SwapInfoViewCell.swift in Sources */,

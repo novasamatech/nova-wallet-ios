@@ -3,6 +3,7 @@ import Foundation
 struct AssetPriceChartViewFactory {
     static func createView(
         asset: AssetModel,
+        periods: [PriceChartPeriod],
         output: AssetPriceChartModuleOutputProtocol,
         inputOwner: AssetPriceChartInputOwnerProtocol,
         locale: Locale
@@ -17,6 +18,8 @@ struct AssetPriceChartViewFactory {
             wireframe: wireframe,
             assetModel: asset,
             viewModelFactory: viewModelFactory,
+            periods: periods,
+            logger: Logger.shared,
             locale: locale
         )
 

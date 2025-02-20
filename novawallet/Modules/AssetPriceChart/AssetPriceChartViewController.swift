@@ -46,7 +46,7 @@ private extension AssetPriceChartViewController {
     func updatePeriodControlIfNeeded() {
         guard
             let widgetViewModel,
-            widgetViewModel.periodControlModel.periods != rootView.periodControl?.viewModel.periods
+            widgetViewModel.periodControlModel.periods != rootView.periodControl?.periods
         else { return }
 
         rootView.setupPeriodControl(with: widgetViewModel.periodControlModel)
@@ -157,6 +157,16 @@ private extension AssetPriceChartViewController {
 // MARK: AssetPriceChartViewProtocol
 
 extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
+    func update(with widgetViewModel: LoadableViewModelState<AssetPriceChartWidgetViewModel>) {
+        switch widgetViewModel {
+        case .loading:
+            // TODO: Implement skeleton
+            print("Loading...")
+        case let .cached(viewModel), let .loaded(viewModel):
+            self.widgetViewModel = viewModel
+        }
+    }
+
     func update(with widgetViewModel: AssetPriceChartWidgetViewModel) {
         self.widgetViewModel = widgetViewModel
 
@@ -190,8 +200,10 @@ extension AssetPriceChartViewController: ChartViewDelegate {
 extension AssetPriceChartViewController: PriceChartPeriodControlDelegate {
     func periodControl(
         _: PriceChartPeriodControl,
-        didSelect _: PriceChartPeriodViewModel
-    ) {}
+        didSelect period: PriceChartPeriodViewModel
+    ) {
+        presenter.selectPeriod(period.period)
+    }
 }
 
 // MARK: AssetPriceChartViewProviderProtocol
