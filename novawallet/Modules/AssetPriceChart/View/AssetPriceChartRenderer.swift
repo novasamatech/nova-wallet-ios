@@ -27,17 +27,18 @@ final class AssetPriceChartRenderer: LineChartRenderer {
 
     func setDotColor(
         _ color: UIColor?,
-        shadowColor _: UIColor?
+        shadowColor: UIColor?
     ) {
         dotColor = color
+        self.shadowColor = shadowColor
     }
 
     override func drawExtras(context: CGContext) {
         super.drawExtras(context: context)
 
         guard
-            let dataProvider = dataProvider,
-            let selectedEntry = selectedEntry
+            let dataProvider,
+            let selectedEntry
         else { return }
 
         let point = CGPoint(

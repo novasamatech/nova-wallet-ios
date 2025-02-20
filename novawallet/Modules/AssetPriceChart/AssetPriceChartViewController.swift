@@ -208,7 +208,7 @@ private extension AssetPriceChartViewController {
             R.color.colorTextSecondary()!
         }
 
-        return if let chartModel = widgetViewModel.chartModel.value {
+        let colors = if let chartModel = widgetViewModel.chartModel.value {
             switch chartModel.changeType {
             case .increase:
                 Colors(
@@ -230,6 +230,8 @@ private extension AssetPriceChartViewController {
                 changeTextColor: changeTextColor
             )
         }
+
+        return colors
     }
 
     func selectEntry(entry: ChartDataEntry?) {
@@ -258,7 +260,7 @@ extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
     func update(priceChange: PricePeriodChangeViewModel) {
         widgetViewModel = widgetViewModel?.byUpdatingPeriodChange(priceChange)
 
-        updateView()
+        updatePriceChange()
     }
 }
 
@@ -273,11 +275,6 @@ extension AssetPriceChartViewController: ChartViewDelegate {
         rootView.chartView.highlightValue(highlight)
         updateChart(with: entry)
         selectEntry(entry: entry)
-    }
-
-    func chartValueNothingSelected(_: ChartViewBase) {
-        updateChart()
-        selectEntry(entry: nil)
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
