@@ -161,7 +161,7 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             title: title,
             currentPrice: .loaded(value: currentPrice),
             periodChange: .loaded(value: changeViewModel),
-            chartModel: .loading, // .loaded(value: chartViewModel),
+            chartModel: .loaded(value: chartViewModel),
             periodControlModel: periodControlViewModel
         )
     }
