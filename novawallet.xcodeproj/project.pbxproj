@@ -1107,10 +1107,10 @@
 		2D20F1C72D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */; };
 		2D20F1C92D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */; };
 		2D20F1CC2D36C5D8003E9CF2 /* WalletStorageCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */; };
-		2D21BD3B2D67190B00B1C480 /* AssetPriceChartInteractor+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3A2D67190B00B1C480 /* AssetPriceChartInteractor+Stub.swift */; };
 		2D21BD3D2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */; };
 		2D21BD3F2D675D2800B1C480 /* AssetPriceChartDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3E2D675D2800B1C480 /* AssetPriceChartDataSource.swift */; };
 		2D21BD412D6760CC00B1C480 /* AssetPriceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD402D6760CC00B1C480 /* AssetPriceChart.swift */; };
+		2D21BD432D67964400B1C480 /* PriceChartDataOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD422D67964400B1C480 /* PriceChartDataOperationFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -6573,10 +6573,10 @@
 		2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
 		2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
 		2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleaner.swift; sourceTree = "<group>"; };
-		2D21BD3A2D67190B00B1C480 /* AssetPriceChartInteractor+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetPriceChartInteractor+Stub.swift"; sourceTree = "<group>"; };
 		2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetPriceChartViewLayout+Loading.swift"; sourceTree = "<group>"; };
 		2D21BD3E2D675D2800B1C480 /* AssetPriceChartDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartDataSource.swift; sourceTree = "<group>"; };
 		2D21BD402D6760CC00B1C480 /* AssetPriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChart.swift; sourceTree = "<group>"; };
+		2D21BD422D67964400B1C480 /* PriceChartDataOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartDataOperationFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -10919,7 +10919,6 @@
 				2D3733072D66972400217F29 /* View */,
 				2AE55BD334AA9384863E0020 /* AssetPriceChartProtocols.swift */,
 				B73152A79ECCEC10AE87B3E4 /* AssetPriceChartPresenter.swift */,
-				2D21BD3A2D67190B00B1C480 /* AssetPriceChartInteractor+Stub.swift */,
 				D8DE2583C0D36ECDB0F012EB /* AssetPriceChartInteractor.swift */,
 				99FD0B7680E2D406466FCB36 /* AssetPriceChartViewController.swift */,
 				2D21BD3E2D675D2800B1C480 /* AssetPriceChartDataSource.swift */,
@@ -14175,6 +14174,7 @@
 			children = (
 				8200F778F49BE2390F58F810 /* AssetPriceChartViewFactory.swift */,
 				2DD018D72D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift */,
+				2D21BD422D67964400B1C480 /* PriceChartDataOperationFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -26651,7 +26651,6 @@
 				8472975D260B1B71009B86D0 /* ExistingBonding.swift in Sources */,
 				0C2A3C932CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift in Sources */,
 				8490144C24A93D0B008F705E /* NovaNavigationController.swift in Sources */,
-				2D21BD3B2D67190B00B1C480 /* AssetPriceChartInteractor+Stub.swift in Sources */,
 				848077D02837C637003B7C79 /* ParachainStakingValidatorFactory.swift in Sources */,
 				84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */,
 				8436C79D29ACD00E0024B409 /* ElectionProviderMultiPhase.swift in Sources */,
@@ -27068,6 +27067,7 @@
 				AEACD5F9265E94AB00A09892 /* StatusViewModel.swift in Sources */,
 				0C1998EF2C4CC51D000EBFB8 /* SCLoadableControllerProtocol.swift in Sources */,
 				847A25BF28D7C2A2006AC9F5 /* AccountIdCodingWrapper.swift in Sources */,
+				2D21BD432D67964400B1C480 /* PriceChartDataOperationFactory.swift in Sources */,
 				84CCBFBC2509709500180F4F /* UIBarButtonItem+Style.swift in Sources */,
 				F4223F102732D445003D8E4E /* AcalaStatementData.swift in Sources */,
 				847DD8DC26034B99003DE053 /* LocalizableViewProtocol.swift in Sources */,
