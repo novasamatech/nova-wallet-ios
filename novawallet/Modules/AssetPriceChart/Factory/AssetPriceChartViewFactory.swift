@@ -8,10 +8,20 @@ struct AssetPriceChartViewFactory {
         inputOwner: AssetPriceChartInputOwnerProtocol,
         locale: Locale
     ) -> AssetPriceChartModule? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
         let interactor = AssetPriceChartInteractor()
         let wireframe = AssetPriceChartWireframe()
 
-        let viewModelFactory = AssetPriceChartViewModelFactory()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let viewModelFactory = AssetPriceChartViewModelFactory(
+            priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let presenter = AssetPriceChartPresenter(
             interactor: interactor,

@@ -63,7 +63,7 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
     }
 
     func selectPeriod(_ period: PriceChartPeriod) {
-        self.selectedPeriod = period
+        selectedPeriod = period
     }
 }
 

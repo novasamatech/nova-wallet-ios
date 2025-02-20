@@ -51,7 +51,7 @@ struct AssetDetailsViewFactory {
             wireframe: wireframe,
             logger: Logger.shared
         )
-        
+
         let chartPeriods: [PriceChartPeriod] = [
             .day,
             .week,

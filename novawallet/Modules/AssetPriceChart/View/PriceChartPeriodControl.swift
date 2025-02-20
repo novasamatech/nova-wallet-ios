@@ -31,8 +31,8 @@ final class PriceChartPeriodControl: UIView {
     }
 
     init(viewModel: PriceChartPeriodControlViewModel) {
-        self.periods = viewModel.periods
-        self.selectedPeriod = viewModel.periods[viewModel.selectedPeriodIndex]
+        periods = viewModel.periods
+        selectedPeriod = viewModel.periods[viewModel.selectedPeriodIndex]
 
         layoutAnimator = BlockViewAnimator(
             duration: 0.3,

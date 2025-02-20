@@ -16,7 +16,7 @@ final class AssetPriceChartViewModelFactory {
     let priceChangePercentFormatter: LocalizableResource<NumberFormatter>
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
-    
+
     init(
         priceChangePercentFormatter: LocalizableResource<NumberFormatter>,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,

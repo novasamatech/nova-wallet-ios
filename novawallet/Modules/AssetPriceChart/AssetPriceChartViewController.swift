@@ -164,13 +164,8 @@ extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
             print("Loading...")
         case let .cached(viewModel), let .loaded(viewModel):
             self.widgetViewModel = viewModel
+            updateView()
         }
-    }
-
-    func update(with widgetViewModel: AssetPriceChartWidgetViewModel) {
-        self.widgetViewModel = widgetViewModel
-
-        updateView()
     }
 }
 
