@@ -5,11 +5,11 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetPriceChartViewLayout
 
     let presenter: AssetPriceChartPresenterProtocol
-    let dataSource: AssetPriceChartDataSourceProtocol
+    let dataSource: AssetPriceChartViewDataSourceProtocol
 
     init(presenter: AssetPriceChartPresenterProtocol) {
         self.presenter = presenter
-        dataSource = AssetPriceChartDataSource()
+        dataSource = AssetPriceChartViewDataSource()
         super.init(nibName: nil, bundle: nil)
     }
 

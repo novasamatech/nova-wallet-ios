@@ -1,7 +1,7 @@
 import Foundation
 import DGCharts
 
-protocol AssetPriceChartDataSourceProtocol {
+protocol AssetPriceChartViewDataSourceProtocol {
     func createChartData(
         using entries: [ChartDataEntry],
         lineColor: UIColor,
@@ -29,13 +29,13 @@ protocol AssetPriceChartDataSourceProtocol {
     func getPeriodControlModel() -> PriceChartPeriodControlViewModel?
 }
 
-final class AssetPriceChartDataSource {
+final class AssetPriceChartViewDataSource {
     private var widgetViewModel: AssetPriceChartWidgetViewModel?
 }
 
 // MARK: AssetPriceChartDataSourceProtocol
 
-extension AssetPriceChartDataSource: AssetPriceChartDataSourceProtocol {
+extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
     func createChartData(
         using entries: [ChartDataEntry],
         lineColor: UIColor,
