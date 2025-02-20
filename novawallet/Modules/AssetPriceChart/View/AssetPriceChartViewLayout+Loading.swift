@@ -26,7 +26,7 @@ extension AssetPriceChartViewLayout: SkeletonableView {
     var hidingViews: [UIView] {
         [
             priceLabel,
-            priceChangeLabel
+            priceChangeView
         ]
     }
 

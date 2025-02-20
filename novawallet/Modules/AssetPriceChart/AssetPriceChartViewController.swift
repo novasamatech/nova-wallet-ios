@@ -77,10 +77,22 @@ private extension AssetPriceChartViewController {
             let colors = createColors()
         else { return }
 
+        var image: UIImage?
+
+        if let value = widgetViewModel.periodChange.value {
+            image = switch value.changeType {
+            case .increase:
+                R.image.iconFullArrowUp()?.tinted(with: colors.changeTextColor)
+            case .decrease:
+                R.image.iconFullArrowDown()?.tinted(with: colors.changeTextColor)
+            }
+        }
+
         switch widgetViewModel.periodChange {
         case let .cached(model), let .loaded(model):
-            rootView.priceChangeLabel.text = model.text
-            rootView.priceChangeLabel.textColor = colors.changeTextColor
+            rootView.priceChangeView.detailsLabel.text = model.text
+            rootView.priceChangeView.detailsLabel.textColor = colors.changeTextColor
+            rootView.priceChangeView.imageView.image = image
             rootView.loadingState.remove(.all)
         case .loading:
             rootView.loadingState.formUnion(.chart)

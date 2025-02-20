@@ -23,8 +23,10 @@ final class AssetPriceChartViewLayout: UIView {
         view.apply(style: .boldTitle3Primary)
     }
 
-    let priceChangeLabel: UILabel = .create { view in
-        view.apply(style: .semiboldFootnotePrimary)
+    let priceChangeView: IconDetailsView = .create { view in
+        view.spacing = 0
+        view.detailsLabel.apply(style: .semiboldFootnotePrimary)
+        view.imageView.contentMode = .scaleAspectFit
     }
 
     lazy var chartView = LineChartView()
@@ -50,7 +52,7 @@ private extension AssetPriceChartViewLayout {
     func setupLayout() {
         addSubview(titleLabel)
         addSubview(priceLabel)
-        addSubview(priceChangeLabel)
+        addSubview(priceChangeView)
         addSubview(chartView)
 
         titleLabel.snp.makeConstraints { make in
@@ -62,12 +64,13 @@ private extension AssetPriceChartViewLayout {
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.equalTo(titleLabel)
         }
-        priceChangeLabel.snp.makeConstraints { make in
+        priceChangeView.snp.makeConstraints { make in
             make.top.equalTo(priceLabel.snp.bottom).offset(4)
             make.leading.equalTo(priceLabel)
+            make.height.equalTo(Constants.priceChangeViewHeight)
         }
         chartView.snp.makeConstraints { make in
-            make.top.equalTo(priceChangeLabel.snp.bottom).offset(8.0)
+            make.top.equalTo(priceChangeView.snp.bottom).offset(8.0)
             make.bottom.equalToSuperview().inset(48)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(132)
@@ -135,6 +138,7 @@ extension AssetPriceChartViewLayout {
     enum Constants {
         static let widgetHeight: CGFloat = 295.0
         static let titleHeight: CGFloat = 20.0
+        static let priceChangeViewHeight: CGFloat = 18.0
 
         static let priceSkeletonOffsets: [CGFloat] = [34.0, 12.0]
         static let priceSkeletonLineWidths: [CGFloat] = [56.0, 126.0]
