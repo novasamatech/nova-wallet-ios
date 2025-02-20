@@ -38,7 +38,7 @@ private extension AssetPriceChartViewController {
     }
 
     func updateView() {
-        updateTexts()
+        updateTitle()
         updateChart()
         updatePeriodControlIfNeeded()
     }
@@ -53,15 +53,36 @@ private extension AssetPriceChartViewController {
         rootView.periodControl?.delegate = self
     }
 
-    func updateTexts() {
-        guard let colors = createColors() else {
-            return
-        }
-
+    func updateTitle() {
         rootView.titleLabel.text = widgetViewModel?.title
-        rootView.priceLabel.text = widgetViewModel?.currentPrice
-        rootView.priceChangeLabel.text = widgetViewModel?.periodChange.value
-        rootView.priceChangeLabel.textColor = colors.changeTextColor
+    }
+
+    func updatePrice() {
+        guard let widgetViewModel else { return }
+
+        switch widgetViewModel.currentPrice {
+        case let .cached(text), let .loaded(text):
+            rootView.priceLabel.text = text
+            rootView.loadingState.remove(.price)
+        case .loading:
+            rootView.loadingState.formUnion(.price)
+        }
+    }
+
+    func updatePriceChange() {
+        guard
+            let widgetViewModel,
+            let colors = createColors()
+        else { return }
+
+        switch widgetViewModel.periodChange {
+        case let .cached(model), let .loaded(model):
+            rootView.priceChangeLabel.text = model.value
+            rootView.priceChangeLabel.textColor = colors.changeTextColor
+            rootView.loadingState.remove(.all)
+        case .loading:
+            rootView.loadingState.formUnion(.chart)
+        }
     }
 
     func updateChart() {
@@ -77,21 +98,31 @@ private extension AssetPriceChartViewController {
             shadowColor: nil
         )
 
-        let chartData = createChartData(
-            using: widgetViewModel.chartModel.dataSet,
-            lineColor: colors.chartHighlightedLineColor
-        )
-        rootView.chartView.data = chartData
+        switch widgetViewModel.chartModel {
+        case let .cached(model), let .loaded(model):
+            let chartData = createChartData(
+                using: model.dataSet,
+                lineColor: colors.chartHighlightedLineColor
+            )
+            rootView.chartView.rightAxis.labelTextColor = R.color.colorTextSecondary()!
+            rootView.chartView.data = chartData
+            rootView.loadingState.remove(.chart)
+        case .loading:
+            rootView.chartView.rightAxis.labelTextColor = .clear
+            rootView.chartView.data = createEmptyChartData()
+            rootView.loadingState.formUnion(.chart)
+        }
     }
 
     func updateChart(with selectedEntry: ChartDataEntry) {
         guard
             let widgetViewModel,
+            let chartModel = widgetViewModel.chartModel.value,
             let priceChartRenderer = rootView.chartView.renderer as? AssetPriceChartRenderer,
             let colors = createColors()
         else { return }
 
-        let currentEntries = widgetViewModel.chartModel.dataSet
+        let currentEntries = chartModel.dataSet
 
         let entriesBefore = currentEntries.filter { $0.x <= selectedEntry.x }
         let entriesAfter = Array(currentEntries[entriesBefore.count - 1 ..< currentEntries.count])
@@ -127,6 +158,8 @@ private extension AssetPriceChartViewController {
         lineDataSet.drawValuesEnabled = false
         lineDataSet.setColor(lineColor)
         lineDataSet.drawHorizontalHighlightIndicatorEnabled = false
+        lineDataSet.drawVerticalHighlightIndicatorEnabled = true
+        lineDataSet.highlightEnabled = true
         lineDataSet.highlightColor = R.color.colorNeutralPriceChartLine()!
 
         let lineData = LineChartData(dataSets: [lineDataSet])
@@ -134,21 +167,55 @@ private extension AssetPriceChartViewController {
         return lineData
     }
 
+    func createEmptyChartData() -> LineChartData {
+        let periods: CGFloat = 2
+        let entriesCount = 100
+
+        let entries = (0 ..< entriesCount).map {
+            let xPoint = Double($0)
+            let yPoint = sin(2.0 * Double.pi * Double($0) / Double(entriesCount) * 2) + 1
+
+            return ChartDataEntry(x: xPoint, y: yPoint)
+        }
+
+        let dataSet = LineChartDataSet(entries: entries)
+        dataSet.mode = .cubicBezier
+        dataSet.drawCirclesEnabled = false
+        dataSet.lineWidth = 1.5
+        dataSet.drawValuesEnabled = false
+        dataSet.setColor(R.color.colorNeutralPriceChartLine()!)
+        dataSet.drawHorizontalHighlightIndicatorEnabled = false
+        dataSet.drawVerticalHighlightIndicatorEnabled = false
+        dataSet.highlightEnabled = false
+
+        let lineData = LineChartData(dataSet: dataSet)
+
+        return lineData
+    }
+
     func createColors() -> Colors? {
         guard let widgetViewModel else { return nil }
 
-        return switch widgetViewModel.periodChange {
-        case .increase:
+        return if let model = widgetViewModel.periodChange.value {
+            switch model {
+            case .increase:
+                Colors(
+                    chartHighlightedLineColor: R.color.colorPositivePriceChartLine()!,
+                    entryDotShadowColor: R.color.colorPriceChartPositiveShadow()!,
+                    changeTextColor: R.color.colorTextPositive()!
+                )
+            case .decrease:
+                Colors(
+                    chartHighlightedLineColor: R.color.colorNegativePriceChartLine()!,
+                    entryDotShadowColor: R.color.colorPriceChartNegativeShadow()!,
+                    changeTextColor: R.color.colorTextNegative()!
+                )
+            }
+        } else {
             Colors(
-                chartHighlightedLineColor: R.color.colorPositivePriceChartLine()!,
-                entryDotShadowColor: R.color.colorPriceChartPositiveShadow()!,
-                changeTextColor: R.color.colorTextPositive()!
-            )
-        case .decrease:
-            Colors(
-                chartHighlightedLineColor: R.color.colorNegativePriceChartLine()!,
-                entryDotShadowColor: R.color.colorPriceChartNegativeShadow()!,
-                changeTextColor: R.color.colorTextNegative()!
+                chartHighlightedLineColor: R.color.colorNeutralPriceChartLine()!,
+                entryDotShadowColor: .clear,
+                changeTextColor: R.color.colorTextSecondary()!
             )
         }
     }
@@ -157,15 +224,10 @@ private extension AssetPriceChartViewController {
 // MARK: AssetPriceChartViewProtocol
 
 extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
-    func update(with widgetViewModel: LoadableViewModelState<AssetPriceChartWidgetViewModel>) {
-        switch widgetViewModel {
-        case .loading:
-            // TODO: Implement skeleton
-            print("Loading...")
-        case let .cached(viewModel), let .loaded(viewModel):
-            self.widgetViewModel = viewModel
-            updateView()
-        }
+    func update(with widgetViewModel: AssetPriceChartWidgetViewModel) {
+        self.widgetViewModel = widgetViewModel
+
+        updateView()
     }
 }
 

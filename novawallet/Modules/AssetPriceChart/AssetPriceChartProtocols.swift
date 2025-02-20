@@ -47,7 +47,7 @@ extension AssetPriceChartViewProviderProtocol {
 // MARK: Inner Interfaces
 
 protocol AssetPriceChartViewProtocol: ControllerBackedProtocol {
-    func update(with widgetViewModel: LoadableViewModelState<AssetPriceChartWidgetViewModel>)
+    func update(with widgetViewModel: AssetPriceChartWidgetViewModel)
 }
 
 protocol AssetPriceChartPresenterProtocol: AnyObject {

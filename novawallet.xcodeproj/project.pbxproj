@@ -1108,6 +1108,7 @@
 		2D20F1C92D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */; };
 		2D20F1CC2D36C5D8003E9CF2 /* WalletStorageCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */; };
 		2D21BD3B2D67190B00B1C480 /* AssetPriceChartPresenter+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3A2D67190B00B1C480 /* AssetPriceChartPresenter+Stub.swift */; };
+		2D21BD3D2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -6572,6 +6573,7 @@
 		2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
 		2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleaner.swift; sourceTree = "<group>"; };
 		2D21BD3A2D67190B00B1C480 /* AssetPriceChartPresenter+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetPriceChartPresenter+Stub.swift"; sourceTree = "<group>"; };
+		2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetPriceChartViewLayout+Loading.swift"; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -13483,6 +13485,7 @@
 			isa = PBXGroup;
 			children = (
 				B08478AD9E9AF78370BC7E87 /* AssetPriceChartViewLayout.swift */,
+				2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */,
 				2D3733052D66825100217F29 /* PriceChartPeriodControl.swift */,
 				2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */,
 			);
@@ -29468,6 +29471,7 @@
 				D567BAAF620EDB9F4975C800 /* DAppAuthConfirmProtocols.swift in Sources */,
 				84C342092831645800156569 /* EraCountdownDisplay.swift in Sources */,
 				841E5551282E2C1700C8438F /* StakingParachainInteractor+Subscription.swift in Sources */,
+				2D21BD3D2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift in Sources */,
 				F0B74A766BF50518323AB25C /* DAppAuthConfirmWireframe.swift in Sources */,
 				84A6AB5E290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift in Sources */,
 				575A729D07A6B984851E6DD0 /* DAppAuthConfirmPresenter.swift in Sources */,

@@ -10,7 +10,7 @@ protocol AssetPriceChartViewModelFactoryProtocol {
         selectedPeriod: PriceChartPeriod,
         priceData: PriceData?,
         locale: Locale
-    ) -> LoadableViewModelState<AssetPriceChartWidgetViewModel>
+    ) -> AssetPriceChartWidgetViewModel
 }
 
 final class AssetPriceChartViewModelFactory {
@@ -123,23 +123,32 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         selectedPeriod: PriceChartPeriod,
         priceData: PriceData?,
         locale: Locale
-    ) -> LoadableViewModelState<AssetPriceChartWidgetViewModel> {
-        guard
-            let firstPrice = prices.first,
-            let lastPrice = prices.last,
-            let priceData
-        else { return .loading }
-
+    ) -> AssetPriceChartWidgetViewModel {
         let title = [
             asset.symbol,
             R.string.localizable.commonPrice(preferredLanguages: locale.rLanguages)
         ].joined(with: .space)
 
-        let chartViewModel = createChartViewModel(using: prices)
         let periodControlViewModel = createPeriodsControlViewModel(
             availablePeriods: availablePeriods,
             selectedPeriod: selectedPeriod
         )
+
+        guard
+            let firstPrice = prices.first,
+            let lastPrice = prices.last,
+            let priceData
+        else {
+            return AssetPriceChartWidgetViewModel(
+                title: title,
+                currentPrice: .loading,
+                periodChange: .loading,
+                chartModel: .loading,
+                periodControlModel: periodControlViewModel
+            )
+        }
+
+        let chartViewModel = createChartViewModel(using: prices)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
             firstPrice: firstPrice.price,
@@ -148,15 +157,13 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         )
         let currentPrice = formattedPrice(for: priceData, locale)
 
-        let viewModel = AssetPriceChartWidgetViewModel(
+        return AssetPriceChartWidgetViewModel(
             title: title,
-            currentPrice: currentPrice,
-            periodChange: changeViewModel,
-            chartModel: chartViewModel,
+            currentPrice: .loaded(value: currentPrice),
+            periodChange: .loaded(value: changeViewModel),
+            chartModel: .loading, // .loaded(value: chartViewModel),
             periodControlModel: periodControlViewModel
         )
-
-        return .loaded(value: viewModel)
     }
 }
 

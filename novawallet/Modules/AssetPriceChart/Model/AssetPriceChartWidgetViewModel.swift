@@ -2,8 +2,8 @@ import Foundation
 
 struct AssetPriceChartWidgetViewModel {
     let title: String
-    let currentPrice: String?
-    let periodChange: PricePeriodChangeViewModel
-    let chartModel: PriceChartViewModel
+    let currentPrice: LoadableViewModelState<String?>
+    let periodChange: LoadableViewModelState<PricePeriodChangeViewModel>
+    let chartModel: LoadableViewModelState<PriceChartViewModel>
     let periodControlModel: PriceChartPeriodControlViewModel
 }

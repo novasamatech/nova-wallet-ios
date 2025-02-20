@@ -1,7 +1,20 @@
 import UIKit
 import DGCharts
+import SoraUI
 
 final class AssetPriceChartViewLayout: UIView {
+    var loadingState: LoadingState = .none {
+        didSet {
+            if loadingState == .none {
+                stopLoadingIfNeeded()
+            } else {
+                startLoadingIfNeeded()
+            }
+        }
+    }
+
+    var skeletonView: SkrullableView?
+
     let titleLabel: UILabel = .create { view in
         view.apply(style: .regularSubhedlineSecondary)
     }
@@ -43,6 +56,7 @@ private extension AssetPriceChartViewLayout {
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.equalToSuperview()
+            make.height.equalTo(Constants.titleHeight)
         }
         priceLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
@@ -104,6 +118,7 @@ extension AssetPriceChartViewLayout {
         }
 
         let periodControl = PriceChartPeriodControl(viewModel: model)
+        self.periodControl = periodControl
 
         addSubview(periodControl)
         periodControl.snp.makeConstraints { make in
@@ -119,5 +134,14 @@ extension AssetPriceChartViewLayout {
 extension AssetPriceChartViewLayout {
     enum Constants {
         static let widgetHeight: CGFloat = 295.0
+        static let titleHeight: CGFloat = 20.0
+
+        static let priceSkeletonOffsets: [CGFloat] = [34.0, 12.0]
+        static let priceSkeletonLineWidths: [CGFloat] = [56.0, 126.0]
+        static let priceSkeletonLineHeights: [CGFloat] = [16.0, 10.0]
+
+        static let chartSkeletonOffsets: [CGFloat] = [85.0, 24.0, 24.0, 24.0, 24.0]
+        static let chartSkeletonLineWidths: [CGFloat] = [22.0, 22.0, 22.0, 22.0, 22.0]
+        static let chartSkeletonLineHeights: [CGFloat] = [6.0, 6.0, 6.0, 6.0, 6.0]
     }
 }
