@@ -4,7 +4,6 @@ final class AssetPriceChartPresenter {
     weak var view: AssetPriceChartViewProtocol?
     weak var moduleOutput: AssetPriceChartModuleOutputProtocol?
 
-    let wireframe: AssetPriceChartWireframeProtocol
     let interactor: AssetPriceChartInteractorInputProtocol
     let assetModel: AssetModel
     let availablePeriods: [PriceChartPeriod]
@@ -19,7 +18,6 @@ final class AssetPriceChartPresenter {
 
     init(
         interactor: AssetPriceChartInteractorInputProtocol,
-        wireframe: AssetPriceChartWireframeProtocol,
         assetModel: AssetModel,
         viewModelFactory: AssetPriceChartViewModelFactoryProtocol,
         periods: [PriceChartPeriod],
@@ -27,7 +25,6 @@ final class AssetPriceChartPresenter {
         locale: Locale
     ) {
         self.interactor = interactor
-        self.wireframe = wireframe
         self.assetModel = assetModel
         availablePeriods = periods
         self.viewModelFactory = viewModelFactory

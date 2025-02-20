@@ -15,7 +15,6 @@ struct AssetPriceChartViewFactory {
             asset: params.asset,
             currency: params.currency
         )
-        let wireframe = AssetPriceChartWireframe()
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
@@ -27,7 +26,6 @@ struct AssetPriceChartViewFactory {
 
         let presenter = AssetPriceChartPresenter(
             interactor: interactor,
-            wireframe: wireframe,
             assetModel: params.asset,
             viewModelFactory: viewModelFactory,
             periods: params.periods,

@@ -67,5 +67,3 @@ protocol AssetPriceChartInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(_ error: Error)
 }
-
-protocol AssetPriceChartWireframeProtocol: AnyObject {}
