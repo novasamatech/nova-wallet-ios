@@ -3,6 +3,11 @@ import SoraUI
 import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
+    let chartContainerView: UIView = .create { view in
+        view.backgroundColor = R.color.colorBlockBackground()
+        view.layer.cornerRadius = 12.0
+    }
+
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
     let topBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -149,6 +154,7 @@ final class AssetDetailsViewLayout: UIView {
         containerView.stackView.spacing = Constants.sectionSpace
         containerView.stackView.addArrangedSubview(balanceTableView)
         containerView.stackView.addArrangedSubview(buttonsRow)
+        containerView.stackView.addArrangedSubview(chartContainerView)
     }
 
     private func setupBalanceTableViewLayout() {
@@ -225,16 +231,31 @@ final class AssetDetailsViewLayout: UIView {
         }
     }
 
+    func setChartViewHeight(_ height: CGFloat) {
+        guard chartContainerView.superview != nil else { return }
+
+        chartContainerView.snp.makeConstraints { make in
+            make.height.equalTo(height)
+        }
+
+        layoutIfNeeded()
+    }
+
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
-        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace +
-            buttonsRowHeight + Constants.bottomOffset
+
+        return priceLabel.font.lineHeight
+            + balanceSectionHeight
+            + Constants.sectionSpace
+            + buttonsRowHeight
+            + Constants.bottomOffset
+            + chartContainerView.bounds.height
     }
 }
 
 extension AssetDetailsViewLayout {
-    private enum Constants {
+    enum Constants {
         static let balanceCellHeight: CGFloat = 48
         static let priceStackHeight: CGFloat = 26
         static let assetHeight: CGFloat = 28
@@ -244,5 +265,6 @@ extension AssetDetailsViewLayout {
         static let assetImageViewSize: CGFloat = 28
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8
+        static let chartWidgetInset: CGFloat = 16
     }
 }

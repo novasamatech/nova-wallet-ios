@@ -63,6 +63,7 @@ extension UIFont {
     static var regularSubheadline: UIFont { R.font.publicSansRegular(size: 15)! }
     static var semiBoldSubheadline: UIFont { R.font.publicSansSemiBold(size: 15)! }
     static var regularBody: UIFont { R.font.publicSansRegular(size: 17)! }
+    static var monospaceNumbers: UIFont { R.font.publicSansRegular(size: 9)! }
 
     static var largeTitle: UIFont { R.font.publicSansBold(size: 34)! }
     static var boldTitle1: UIFont { R.font.publicSansBold(size: 28)! }

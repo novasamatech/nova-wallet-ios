@@ -8,3 +8,12 @@ extension Calendar {
         return interval.end.addingTimeInterval(-1)
     }
 }
+
+extension Date {
+    func sameYear(as date: Date) -> Bool {
+        let currentYear = Calendar.current.component(.year, from: self)
+        let dateYear = Calendar.current.component(.year, from: date)
+
+        return currentYear == dateYear
+    }
+}

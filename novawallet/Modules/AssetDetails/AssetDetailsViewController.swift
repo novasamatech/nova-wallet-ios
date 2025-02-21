@@ -4,6 +4,7 @@ import SoraFoundation
 final class AssetDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetDetailsViewLayout
 
+    let chartViewProvider: AssetPriceChartViewProviderProtocol
     let presenter: AssetDetailsPresenterProtocol
     var observable = NovaWalletViewModelObserverContainer<ContainableObserver>()
     weak var reloadableDelegate: ReloadableDelegate?
@@ -11,9 +12,11 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     var preferredContentHeight: CGFloat { rootView.prefferedHeight }
 
     init(
+        chartViewProvider: AssetPriceChartViewProviderProtocol,
         presenter: AssetDetailsPresenterProtocol,
         localizableManager: LocalizationManagerProtocol
     ) {
+        self.chartViewProvider = chartViewProvider
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
         localizationManager = localizableManager
@@ -31,12 +34,34 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupChartView()
         addHandlers()
         applyLocalization()
         presenter.setup()
     }
+}
 
-    private func addHandlers() {
+private extension AssetDetailsViewController {
+    func setupChartView() {
+        let insets = UIEdgeInsets(
+            inset: AssetDetailsViewLayout.Constants.chartWidgetInset
+        )
+        chartViewProvider.setupView(
+            on: self,
+            view: rootView.chartContainerView,
+            insets: insets
+        )
+
+        let widgetHeight = chartViewProvider.getProposedHeight()
+
+        rootView.setChartViewHeight(widgetHeight)
+
+        observable.observers.forEach {
+            $0.observer?.didChangePreferredContentHeight(to: preferredContentHeight)
+        }
+    }
+
+    func addHandlers() {
         rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
         rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
         rootView.buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
@@ -44,23 +69,23 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
         rootView.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
     }
 
-    @objc private func didTapSendButton() {
+    @objc func didTapSendButton() {
         presenter.handleSend()
     }
 
-    @objc private func didTapReceiveButton() {
+    @objc func didTapReceiveButton() {
         presenter.handleReceive()
     }
 
-    @objc private func didTapBuyButton() {
+    @objc func didTapBuyButton() {
         presenter.handleBuy()
     }
 
-    @objc private func didTapSwapButton() {
+    @objc func didTapSwapButton() {
         presenter.handleSwap()
     }
 
-    @objc private func didTapLocks() {
+    @objc func didTapLocks() {
         presenter.handleLocks()
     }
 }
