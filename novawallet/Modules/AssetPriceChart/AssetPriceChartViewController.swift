@@ -175,9 +175,10 @@ extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
         updateView()
     }
 
-    func update(priceChange: PricePeriodChangeViewModel) {
-        dataSource.set(priceChange: priceChange)
+    func update(with priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel) {
+        dataSource.set(priceUpdateViewModel: priceUpdateViewModel)
         updatePriceChange()
+        updatePrice()
     }
 }
 

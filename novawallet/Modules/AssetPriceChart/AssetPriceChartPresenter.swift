@@ -80,18 +80,18 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
             value: entry.price
         )
 
-        let params = PriceChartChangeViewFactoryParams(
+        let params = PriceChartPriceUpdateViewFactoryParams(
             entries: prices?[selectedPeriod],
             priceData: priceData,
             lastEntry: priceHistoryItem,
             selectedPeriod: selectedPeriod,
             locale: locale
         )
-        guard let viewModel = viewModelFactory.createPriceChangeViewModel(params: params) else {
+        guard let viewModel = viewModelFactory.createPriceUpdateViewModel(params: params) else {
             return
         }
 
-        view?.update(priceChange: viewModel)
+        view?.update(with: viewModel)
     }
 }
 

@@ -16,7 +16,7 @@ protocol AssetPriceChartViewDataSourceProtocol {
 
     func set(widgetViewModel: AssetPriceChartWidgetViewModel)
 
-    func set(priceChange: PricePeriodChangeViewModel)
+    func set(priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel)
 
     func getTitle() -> String?
 
@@ -164,8 +164,8 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
             .reduce(into: [:]) { $0[$1.element.x] = $1.offset }
     }
 
-    func set(priceChange: PricePeriodChangeViewModel) {
-        widgetViewModel = widgetViewModel?.byUpdatingPeriodChange(priceChange)
+    func set(priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel) {
+        widgetViewModel = widgetViewModel?.byUpdating(with: priceUpdateViewModel)
     }
 
     func getTitle() -> String? {
