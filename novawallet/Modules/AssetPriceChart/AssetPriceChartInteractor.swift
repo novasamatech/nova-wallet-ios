@@ -30,7 +30,6 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
 
     deinit {
         callStore.cancel()
-        clear(streamableProvider: &priceProvider)
     }
 }
 
