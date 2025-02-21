@@ -6,7 +6,7 @@ enum CustomNetworkBaseInteractorError: Error {
     case wrongCurrencySymbol(enteredSymbol: String, actualSymbol: String)
     case invalidPriceUrl
     case invalidChainId
-    case invalidNetworkType(selectedType: ChainType)
+    case invalidNetworkType(selectedType: CustomNetworkType)
     case connecting(innerError: NetworkNodeConnectingError)
     case common(innerError: CommonError)
 

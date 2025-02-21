@@ -5,7 +5,7 @@ final class CustomNetworkAddPresenter: CustomNetworkBasePresenter {
     let interactor: CustomNetworkAddInteractorInputProtocol
 
     init(
-        chainType: ChainType,
+        chainType: CustomNetworkType,
         interactor: CustomNetworkAddInteractorInputProtocol,
         wireframe: CustomNetworkWireframeProtocol,
         localizationManager: LocalizationManagerProtocol

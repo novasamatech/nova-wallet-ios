@@ -360,7 +360,7 @@ extension ChainModel: Identifiable {
     var identifier: String { chainId }
 }
 
-enum LocalChainOptions: String, Codable {
+enum LocalChainOptions: String, Codable, Equatable {
     case ethereumBased
     case testnet
     case crowdloans
@@ -639,6 +639,10 @@ extension ChainNodeConnectable {
 
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false
+    }
+
+    var isPureEvm: Bool {
+        isEthereumBased && !hasSubstrateRuntime
     }
 }
 

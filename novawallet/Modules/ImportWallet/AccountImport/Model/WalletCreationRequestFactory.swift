@@ -26,7 +26,7 @@ extension WalletCreationRequestFactory: WalletCreationRequestFactoryProtocol {
         let walletRequest = MetaAccountCreationRequest(
             username: walletName,
             derivationPath: "",
-            ethereumDerivationPath: "",
+            ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
             cryptoType: .sr25519
         )
 

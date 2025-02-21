@@ -79,7 +79,8 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
                 statusService: ExtrinsicStatusService(
                     connection: connection,
                     runtimeProvider: runtimeService,
-                    eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger)
+                    eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue, logger: logger),
+                    logger: logger
                 ),
                 operationQueue: operationQueue
             )

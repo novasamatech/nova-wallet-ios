@@ -38,7 +38,8 @@ final class RuntimeFetchOperationFactory {
             for: Self.availableVersionsCall,
             paramsClosure: nil,
             connection: connection,
-            decoder: StateCallResultFromScaleTypeDecoder()
+            decoder: StateCallResultFromScaleTypeDecoder(),
+            at: nil
         )
 
         let metadataRequestWrapper: CompoundOperationWrapper<Data> = requestFactory.createStaticCodingWrapper(
@@ -52,7 +53,8 @@ final class RuntimeFetchOperationFactory {
                 return try maxVersion.scaleEncoded()
             },
             connection: connection,
-            decoder: StateCallRawDataDecoder()
+            decoder: StateCallRawDataDecoder(),
+            at: nil
         )
 
         metadataRequestWrapper.addDependency(wrapper: versionRequestWrapper)

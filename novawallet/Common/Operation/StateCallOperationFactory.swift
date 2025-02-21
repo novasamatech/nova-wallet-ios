@@ -65,14 +65,16 @@ protocol StateCallRequestFactoryProtocol {
         paramsClosure: StateCallRequestParamsClosure?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine,
-        resultDecoder: Decoder
+        resultDecoder: Decoder,
+        at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<V> where Decoder.Result == V
 
     func createStaticCodingWrapper<V, D: StateCallStaticResultDecoding>(
         for functionName: String,
         paramsClosure: StateCallRawParamClosure?,
         connection: JSONRPCEngine,
-        decoder: D
+        decoder: D,
+        at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<V> where D.Result == V
 }
 
@@ -82,14 +84,16 @@ extension StateCallRequestFactoryProtocol {
         paramsClosure: StateCallRequestParamsClosure?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine,
-        queryType: String
+        queryType: String,
+        at blockHash: BlockHash? = nil
     ) -> CompoundOperationWrapper<V> {
         createWrapper(
             for: functionName,
             paramsClosure: paramsClosure,
             codingFactoryClosure: codingFactoryClosure,
             connection: connection,
-            resultDecoder: StateCallResultFromTypeNameDecoder(typeName: queryType)
+            resultDecoder: StateCallResultFromTypeNameDecoder(typeName: queryType),
+            at: blockHash
         )
     }
 
@@ -97,14 +101,16 @@ extension StateCallRequestFactoryProtocol {
         for functionName: String,
         paramsClosure: StateCallRequestParamsClosure?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        connection: JSONRPCEngine
+        connection: JSONRPCEngine,
+        at blockHash: BlockHash? = nil
     ) -> CompoundOperationWrapper<V> {
         createWrapper(
             for: functionName,
             paramsClosure: paramsClosure,
             codingFactoryClosure: codingFactoryClosure,
             connection: connection,
-            resultDecoder: StateCallResultFromScaleTypeDecoder<V>()
+            resultDecoder: StateCallResultFromScaleTypeDecoder<V>(),
+            at: blockHash
         )
     }
 
@@ -112,14 +118,16 @@ extension StateCallRequestFactoryProtocol {
         for functionName: String,
         paramsClosure: StateCallRequestParamsClosure?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
-        connection: JSONRPCEngine
+        connection: JSONRPCEngine,
+        at blockHash: BlockHash? = nil
     ) -> CompoundOperationWrapper<Data> {
         createWrapper(
             for: functionName,
             paramsClosure: paramsClosure,
             codingFactoryClosure: codingFactoryClosure,
             connection: connection,
-            resultDecoder: StateCallRawDataDecoder()
+            resultDecoder: StateCallRawDataDecoder(),
+            at: blockHash
         )
     }
 }
@@ -138,7 +146,8 @@ extension StateCallRequestFactory: StateCallRequestFactoryProtocol {
         paramsClosure: StateCallRequestParamsClosure?,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol,
         connection: JSONRPCEngine,
-        resultDecoder: Decoder
+        resultDecoder: Decoder,
+        at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<V> where Decoder.Result == V {
         let requestOperation = ClosureOperation<StateCallRpc.Request> {
             let codingFactory = try codingFactoryClosure()
@@ -151,7 +160,10 @@ extension StateCallRequestFactory: StateCallRequestFactoryProtocol {
 
             let param = try encoder.encode()
 
-            return StateCallRpc.Request(builtInFunction: functionName) { container in
+            return StateCallRpc.Request(
+                builtInFunction: functionName,
+                blockHash: blockHash
+            ) { container in
                 try container.encode(param.toHex(includePrefix: true))
             }
         }
@@ -189,12 +201,16 @@ extension StateCallRequestFactory: StateCallRequestFactoryProtocol {
         for functionName: String,
         paramsClosure: StateCallRawParamClosure?,
         connection: JSONRPCEngine,
-        decoder: D
+        decoder: D,
+        at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<V> where D.Result == V {
         let requestOperation = ClosureOperation<StateCallRpc.Request> {
             let param = try paramsClosure?() ?? Data()
 
-            return StateCallRpc.Request(builtInFunction: functionName) { container in
+            return StateCallRpc.Request(
+                builtInFunction: functionName,
+                blockHash: blockHash
+            ) { container in
                 try container.encode(param.toHex(includePrefix: true))
             }
         }

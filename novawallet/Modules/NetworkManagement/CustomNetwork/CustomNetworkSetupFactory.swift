@@ -178,7 +178,7 @@ private extension CustomNetworkSetupFactory {
                 .targetOperation
                 .extractNoCancellableResultData()
 
-            guard !partialChain.isEthereumBased else {
+            guard partialChain.hasSubstrateRuntime else {
                 return CompoundOperationWrapper.createWithResult(partialChain)
             }
 
@@ -216,7 +216,7 @@ private extension CustomNetworkSetupFactory {
                 .targetOperation
                 .extractNoCancellableResultData()
 
-            guard !partialChain.isEthereumBased else {
+            guard partialChain.hasSubstrateRuntime else {
                 return CompoundOperationWrapper.createWithResult(partialChain)
             }
 
@@ -266,9 +266,7 @@ private extension CustomNetworkSetupFactory {
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
-        let isEvmChain = chain.isEthereumBased && chain.noSubstrateRuntime
-
-        return isEvmChain
+        chain.isPureEvm
             ? createEvmMainAssetSetupWrapper(for: chain)
             : createSubstrateMainAssetSetupWrapper(
                 for: chain,
@@ -277,7 +275,9 @@ private extension CustomNetworkSetupFactory {
             )
     }
 
-    func createEvmMainAssetSetupWrapper(for chain: PartialCustomChainModel) -> CompoundOperationWrapper<PartialCustomChainModel> {
+    func createEvmMainAssetSetupWrapper(
+        for chain: PartialCustomChainModel
+    ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let defaultEVMAssetPrecision: UInt16 = 18
 
         return .createWithResult(
@@ -305,7 +305,9 @@ private extension CustomNetworkSetupFactory {
         systemPropertiesOperationFactory: SystemPropertiesOperationFactoryProtocol,
         connection: ChainConnection
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
-        let propertiesOperation = systemPropertiesOperationFactory.createSystemPropertiesOperation(connection: connection)
+        let propertiesOperation = systemPropertiesOperationFactory.createSystemPropertiesOperation(
+            connection: connection
+        )
 
         let assetOperation = ClosureOperation<PartialCustomChainModel> {
             let properties = try propertiesOperation.extractNoCancellableResultData()
@@ -371,7 +373,7 @@ private extension CustomNetworkSetupFactory {
     ) -> CompoundOperationWrapper<PartialCustomChainModel> {
         let dependency: (targetOperation: BaseOperation<String>, dependencies: [Operation])
 
-        if chain.isEthereumBased {
+        if chain.isPureEvm {
             let wrapper = evmChainCorrespondingOperation(
                 connection: connection,
                 node: node,
