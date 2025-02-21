@@ -3,8 +3,10 @@ import BigInt
 import SoraFoundation
 import Operation_iOS
 
-final class AssetDetailsPresenter: PurchaseFlowManaging {
+final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwnerProtocol {
     weak var view: AssetDetailsViewProtocol?
+    weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
+
     let wireframe: AssetDetailsWireframeProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
     let interactor: AssetDetailsInteractorInputProtocol
@@ -266,5 +268,11 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 extension AssetDetailsPresenter: PurchaseDelegate {
     func purchaseDidComplete() {
         wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+    }
+}
+
+extension AssetDetailsPresenter: AssetPriceChartModuleOutputProtocol {
+    func didReceive(_ error: any Error) {
+        logger?.error("Did receive error: \(error)")
     }
 }
