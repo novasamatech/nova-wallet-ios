@@ -40,14 +40,15 @@ private extension AssetPriceChartPresenter {
     func provideViewModel() {
         guard let selectedPeriod else { return }
 
-        let viewModel = viewModelFactory.createViewModel(
-            for: assetModel,
-            prices: prices?[selectedPeriod],
+        let params = PriceChartWidgetFactoryParams(
+            asset: assetModel,
+            entries: prices?[selectedPeriod],
             availablePeriods: availablePeriods,
             selectedPeriod: selectedPeriod,
             priceData: priceData,
             locale: locale
         )
+        let viewModel = viewModelFactory.createViewModel(params: params)
 
         view?.update(with: viewModel)
     }
@@ -74,12 +75,19 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
             return
         }
 
-        guard let viewModel = viewModelFactory.createPriceChangeViewModel(
-            prices: prices?[selectedPeriod],
+        let priceHistoryItem = PriceHistoryItem(
+            startedAt: UInt64(entry.timestamp),
+            value: entry.price
+        )
+
+        let params = PriceChartChangeViewFactoryParams(
+            entries: prices?[selectedPeriod],
             priceData: priceData,
-            closingPrice: entry.price,
+            lastEntry: priceHistoryItem,
+            selectedPeriod: selectedPeriod,
             locale: locale
-        ) else {
+        )
+        guard let viewModel = viewModelFactory.createPriceChangeViewModel(params: params) else {
             return
         }
 

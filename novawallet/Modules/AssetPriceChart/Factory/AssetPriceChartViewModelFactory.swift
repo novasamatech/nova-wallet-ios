@@ -2,22 +2,26 @@ import Foundation
 import SoraFoundation
 import DGCharts
 
-protocol AssetPriceChartViewModelFactoryProtocol {
-    func createViewModel(
-        for asset: AssetModel,
-        prices: [PriceHistoryItem]?,
-        availablePeriods: [PriceHistoryPeriod],
-        selectedPeriod: PriceHistoryPeriod,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> AssetPriceChartWidgetViewModel
+struct PriceChartWidgetFactoryParams {
+    let asset: AssetModel
+    let entries: [PriceHistoryItem]?
+    let availablePeriods: [PriceHistoryPeriod]
+    let selectedPeriod: PriceHistoryPeriod
+    let priceData: PriceData?
+    let locale: Locale
+}
 
-    func createPriceChangeViewModel(
-        prices: [PriceHistoryItem]?,
-        priceData: PriceData?,
-        closingPrice: Decimal,
-        locale: Locale
-    ) -> PricePeriodChangeViewModel?
+struct PriceChartChangeViewFactoryParams {
+    let entries: [PriceHistoryItem]?
+    let priceData: PriceData?
+    let lastEntry: PriceHistoryItem
+    let selectedPeriod: PriceHistoryPeriod
+    let locale: Locale
+}
+
+protocol AssetPriceChartViewModelFactoryProtocol {
+    func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel
+    func createPriceChangeViewModel(params: PriceChartChangeViewFactoryParams) -> PricePeriodChangeViewModel?
 }
 
 final class AssetPriceChartViewModelFactory {
@@ -59,11 +63,14 @@ private extension AssetPriceChartViewModelFactory {
 
     func createPeriodChangeViewModel(
         priceData: PriceData,
-        firstPrice: Decimal,
-        lastPrice: Decimal,
+        allEntries: [PriceHistoryItem],
+        lastEntry: PriceHistoryItem,
+        selectedPeriod: PriceHistoryPeriod,
         locale: Locale
     ) -> PricePeriodChangeViewModel {
-        let periodChangeDecimal = abs(lastPrice - firstPrice)
+        let firstEntry = allEntries.first ?? lastEntry
+
+        let periodChangeDecimal = abs(lastEntry.value - firstEntry.value)
 
         let periodChangeAmountText = priceFormatter(priceId: priceData.currencyId)
             .value(for: locale)
@@ -71,20 +78,57 @@ private extension AssetPriceChartViewModelFactory {
 
         let percentText = priceChangePercentFormatter
             .value(for: locale)
-            .stringFromDecimal(periodChangeDecimal / firstPrice) ?? ""
+            .stringFromDecimal(periodChangeDecimal / firstEntry.value) ?? ""
 
         let finalText = periodChangeAmountText + "(\(percentText))"
 
-        let changeType: PriceChangeType = if lastPrice >= firstPrice {
+        let changeType: PriceChangeType = if lastEntry.value >= firstEntry.value {
             .increase
         } else {
             .decrease
         }
 
+        let changeDateText = createChangeDateText(
+            for: lastEntry,
+            allEntries: allEntries,
+            selectedPeriod: selectedPeriod,
+            locale: locale
+        )
+
         return PricePeriodChangeViewModel(
             changeType: changeType,
-            text: finalText
+            changeText: finalText,
+            changeDateText: changeDateText
         )
+    }
+
+    func createChangeDateText(
+        for lastEntry: PriceHistoryItem,
+        allEntries: [PriceHistoryItem],
+        selectedPeriod: PriceHistoryPeriod,
+        locale: Locale
+    ) -> String {
+        let languages = locale.rLanguages
+
+        let changeDateText: String
+
+        if lastEntry.startedAt == allEntries.last?.startedAt {
+            changeDateText = switch selectedPeriod {
+            case .day: R.string.localizable.commonToday(preferredLanguages: languages)
+            case .week: R.string.localizable.chartPeriodWeek(preferredLanguages: languages)
+            case .month: R.string.localizable.chartPeriodMonth(preferredLanguages: languages)
+            case .year: R.string.localizable.chartPeriodYear(preferredLanguages: languages)
+            case .allTime: R.string.localizable.chartPeriodMax(preferredLanguages: languages)
+            }
+        } else {
+            let date = Date(timeIntervalSince1970: TimeInterval(lastEntry.startedAt))
+            let formatter = date.sameYear(as: Date())
+                ? DateFormatter.chartEntryDate
+                : DateFormatter.chartEntryWithYear
+            changeDateText = formatter.value(for: locale).string(from: date)
+        }
+
+        return changeDateText
     }
 
     func createPeriodsControlViewModel(
@@ -134,29 +178,21 @@ private extension AssetPriceChartViewModelFactory {
 // MARK: AssetPriceChartViewModelFactoryProtocol
 
 extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
-    func createViewModel(
-        for asset: AssetModel,
-        prices: [PriceHistoryItem]?,
-        availablePeriods: [PriceHistoryPeriod],
-        selectedPeriod: PriceHistoryPeriod,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> AssetPriceChartWidgetViewModel {
+    func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel {
         let title = [
-            asset.symbol,
-            R.string.localizable.commonPrice(preferredLanguages: locale.rLanguages)
+            params.asset.symbol,
+            R.string.localizable.commonPrice(preferredLanguages: params.locale.rLanguages)
         ].joined(with: .space)
 
         let periodControlViewModel = createPeriodsControlViewModel(
-            availablePeriods: availablePeriods,
-            selectedPeriod: selectedPeriod
+            availablePeriods: params.availablePeriods,
+            selectedPeriod: params.selectedPeriod
         )
 
         guard
-            let prices,
-            let firstPrice = prices.first,
-            let lastPrice = prices.last,
-            let priceData
+            let entries = params.entries,
+            let lastEntry = entries.last,
+            let priceData = params.priceData
         else {
             return AssetPriceChartWidgetViewModel(
                 title: title,
@@ -167,14 +203,16 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             )
         }
 
-        let chartViewModel = createChartViewModel(using: prices)
+        let chartViewModel = createChartViewModel(using: entries)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
-            firstPrice: firstPrice.value,
-            lastPrice: lastPrice.value,
-            locale: locale
+            allEntries: entries,
+            lastEntry: lastEntry,
+            selectedPeriod: params.selectedPeriod,
+            locale: params.locale
         )
-        let currentPrice = formattedPrice(for: priceData, locale)
+
+        let currentPrice = formattedPrice(for: priceData, params.locale)
 
         return AssetPriceChartWidgetViewModel(
             title: title,
@@ -185,22 +223,18 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         )
     }
 
-    func createPriceChangeViewModel(
-        prices: [PriceHistoryItem]?,
-        priceData: PriceData?,
-        closingPrice: Decimal,
-        locale: Locale
-    ) -> PricePeriodChangeViewModel? {
+    func createPriceChangeViewModel(params: PriceChartChangeViewFactoryParams) -> PricePeriodChangeViewModel? {
         guard
-            let priceData,
-            let firstPrice = prices?.first
+            let priceData = params.priceData,
+            let entries = params.entries
         else { return nil }
 
         return createPeriodChangeViewModel(
             priceData: priceData,
-            firstPrice: firstPrice.value,
-            lastPrice: closingPrice,
-            locale: locale
+            allEntries: entries,
+            lastEntry: params.lastEntry,
+            selectedPeriod: params.selectedPeriod,
+            locale: params.locale
         )
     }
 }

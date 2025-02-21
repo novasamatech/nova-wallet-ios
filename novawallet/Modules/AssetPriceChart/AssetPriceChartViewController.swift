@@ -90,9 +90,10 @@ private extension AssetPriceChartViewController {
 
         switch periodChange {
         case let .cached(model), let .loaded(model):
-            rootView.priceChangeView.detailsLabel.text = model.text
+            rootView.priceChangeView.detailsLabel.text = model.changeText
             rootView.priceChangeView.detailsLabel.textColor = colors.changeTextColor
             rootView.priceChangeView.imageView.image = image
+            rootView.currentEntryDateLabel.text = model.changeDateText
             rootView.loadingState.remove(.all)
         case .loading:
             rootView.loadingState.formUnion(.chart)
@@ -121,12 +122,12 @@ private extension AssetPriceChartViewController {
             )
             rootView.chartView.rightAxis.labelTextColor = R.color.colorTextSecondary()!
             rootView.chartView.data = chartData
-            
+
             /* Clear highlighted indexes to prevent renderer crashes.
-               The renderer attempts to highlight indexes from previous datasets,
-               which can cause out-of-range errors when switching from multiple
-               to single datasets.
-               Reference: https://github.com/ChartsOrg/Charts/issues/5154 */
+             The renderer attempts to highlight indexes from previous datasets,
+             which can cause out-of-range errors when switching from multiple
+             to single datasets.
+             Reference: https://github.com/ChartsOrg/Charts/issues/5154 */
             rootView.chartView.highlightValues(nil)
             rootView.loadingState.remove(.chart)
         case .loading:
