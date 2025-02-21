@@ -2,23 +2,26 @@ import Foundation
 import SoraFoundation
 import DGCharts
 
-protocol AssetPriceChartViewModelFactoryProtocol {
-    func createViewModel(
-        for asset: AssetModel,
-        entries: [PriceHistoryItem]?,
-        availablePeriods: [PriceHistoryPeriod],
-        selectedPeriod: PriceHistoryPeriod,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> AssetPriceChartWidgetViewModel
+struct PriceChartWidgetFactoryParams {
+    let asset: AssetModel
+    let entries: [PriceHistoryItem]?
+    let availablePeriods: [PriceHistoryPeriod]
+    let selectedPeriod: PriceHistoryPeriod
+    let priceData: PriceData?
+    let locale: Locale
+}
 
-    func createPriceChangeViewModel(
-        entries: [PriceHistoryItem]?,
-        priceData: PriceData?,
-        lastEntry: PriceHistoryItem,
-        selectedPeriod: PriceHistoryPeriod,
-        locale: Locale
-    ) -> PricePeriodChangeViewModel?
+struct PriceChartChangeViewFactoryParams {
+    let entries: [PriceHistoryItem]?
+    let priceData: PriceData?
+    let lastEntry: PriceHistoryItem
+    let selectedPeriod: PriceHistoryPeriod
+    let locale: Locale
+}
+
+protocol AssetPriceChartViewModelFactoryProtocol {
+    func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel
+    func createPriceChangeViewModel(params: PriceChartChangeViewFactoryParams) -> PricePeriodChangeViewModel?
 }
 
 final class AssetPriceChartViewModelFactory {
@@ -175,28 +178,21 @@ private extension AssetPriceChartViewModelFactory {
 // MARK: AssetPriceChartViewModelFactoryProtocol
 
 extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
-    func createViewModel(
-        for asset: AssetModel,
-        entries: [PriceHistoryItem]?,
-        availablePeriods: [PriceHistoryPeriod],
-        selectedPeriod: PriceHistoryPeriod,
-        priceData: PriceData?,
-        locale: Locale
-    ) -> AssetPriceChartWidgetViewModel {
+    func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel {
         let title = [
-            asset.symbol,
-            R.string.localizable.commonPrice(preferredLanguages: locale.rLanguages)
+            params.asset.symbol,
+            R.string.localizable.commonPrice(preferredLanguages: params.locale.rLanguages)
         ].joined(with: .space)
 
         let periodControlViewModel = createPeriodsControlViewModel(
-            availablePeriods: availablePeriods,
-            selectedPeriod: selectedPeriod
+            availablePeriods: params.availablePeriods,
+            selectedPeriod: params.selectedPeriod
         )
 
         guard
-            let entries,
+            let entries = params.entries,
             let lastEntry = entries.last,
-            let priceData
+            let priceData = params.priceData
         else {
             return AssetPriceChartWidgetViewModel(
                 title: title,
@@ -212,10 +208,11 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             priceData: priceData,
             allEntries: entries,
             lastEntry: lastEntry,
-            selectedPeriod: selectedPeriod,
-            locale: locale
+            selectedPeriod: params.selectedPeriod,
+            locale: params.locale
         )
-        let currentPrice = formattedPrice(for: priceData, locale)
+
+        let currentPrice = formattedPrice(for: priceData, params.locale)
 
         return AssetPriceChartWidgetViewModel(
             title: title,
@@ -226,24 +223,18 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         )
     }
 
-    func createPriceChangeViewModel(
-        entries: [PriceHistoryItem]?,
-        priceData: PriceData?,
-        lastEntry: PriceHistoryItem,
-        selectedPeriod: PriceHistoryPeriod,
-        locale: Locale
-    ) -> PricePeriodChangeViewModel? {
+    func createPriceChangeViewModel(params: PriceChartChangeViewFactoryParams) -> PricePeriodChangeViewModel? {
         guard
-            let priceData,
-            let entries
+            let priceData = params.priceData,
+            let entries = params.entries
         else { return nil }
 
         return createPeriodChangeViewModel(
             priceData: priceData,
             allEntries: entries,
-            lastEntry: lastEntry,
-            selectedPeriod: selectedPeriod,
-            locale: locale
+            lastEntry: params.lastEntry,
+            selectedPeriod: params.selectedPeriod,
+            locale: params.locale
         )
     }
 }
