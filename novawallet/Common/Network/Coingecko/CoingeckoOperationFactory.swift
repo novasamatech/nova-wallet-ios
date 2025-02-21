@@ -168,8 +168,10 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
         }
 
-        let decodingClosure = decodeToPriceHistory
+        return buildOperation(for: url) { [weak self] data in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-        return buildOperation(for: url) { try decodingClosure($0, currency) }
+            return try decodeToPriceHistory(data, currency)
+        }
     }
 }

@@ -76,9 +76,13 @@ private extension AssetPriceChartViewModelFactory {
             .value(for: locale)
             .stringFromDecimal(periodChangeDecimal) ?? ""
 
+        var percent = periodChangeDecimal / firstEntry.value
+
+        percent = (!percent.isNaN && !percent.isInfinite) ? percent : .zero
+
         let percentText = priceChangePercentFormatter
             .value(for: locale)
-            .stringFromDecimal(periodChangeDecimal / firstEntry.value) ?? ""
+            .stringFromDecimal(percent) ?? ""
 
         let finalText = periodChangeAmountText + "(\(percentText))"
 
