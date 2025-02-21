@@ -5,7 +5,7 @@ import DGCharts
 protocol AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
         for asset: AssetModel,
-        prices: [PriceHistoryItem]?,
+        entries: [PriceHistoryItem]?,
         availablePeriods: [PriceHistoryPeriod],
         selectedPeriod: PriceHistoryPeriod,
         priceData: PriceData?,
@@ -13,9 +13,10 @@ protocol AssetPriceChartViewModelFactoryProtocol {
     ) -> AssetPriceChartWidgetViewModel
 
     func createPriceChangeViewModel(
-        prices: [PriceHistoryItem]?,
+        entries: [PriceHistoryItem]?,
         priceData: PriceData?,
-        closingPrice: Decimal,
+        lastEntry: PriceHistoryItem,
+        selectedPeriod: PriceHistoryPeriod,
         locale: Locale
     ) -> PricePeriodChangeViewModel?
 }
@@ -59,11 +60,14 @@ private extension AssetPriceChartViewModelFactory {
 
     func createPeriodChangeViewModel(
         priceData: PriceData,
-        firstPrice: Decimal,
-        lastPrice: Decimal,
+        allEntries: [PriceHistoryItem],
+        lastEntry: PriceHistoryItem,
+        selectedPeriod: PriceHistoryPeriod,
         locale: Locale
     ) -> PricePeriodChangeViewModel {
-        let periodChangeDecimal = abs(lastPrice - firstPrice)
+        let firstEntry = allEntries.first ?? lastEntry
+
+        let periodChangeDecimal = abs(lastEntry.value - firstEntry.value)
 
         let periodChangeAmountText = priceFormatter(priceId: priceData.currencyId)
             .value(for: locale)
@@ -71,20 +75,57 @@ private extension AssetPriceChartViewModelFactory {
 
         let percentText = priceChangePercentFormatter
             .value(for: locale)
-            .stringFromDecimal(periodChangeDecimal / firstPrice) ?? ""
+            .stringFromDecimal(periodChangeDecimal / firstEntry.value) ?? ""
 
         let finalText = periodChangeAmountText + "(\(percentText))"
 
-        let changeType: PriceChangeType = if lastPrice >= firstPrice {
+        let changeType: PriceChangeType = if lastEntry.value >= firstEntry.value {
             .increase
         } else {
             .decrease
         }
 
+        let changeDateText = createChangeDateText(
+            for: lastEntry,
+            allEntries: allEntries,
+            selectedPeriod: selectedPeriod,
+            locale: locale
+        )
+
         return PricePeriodChangeViewModel(
             changeType: changeType,
-            text: finalText
+            changeText: finalText,
+            changeDateText: changeDateText
         )
+    }
+
+    func createChangeDateText(
+        for lastEntry: PriceHistoryItem,
+        allEntries: [PriceHistoryItem],
+        selectedPeriod: PriceHistoryPeriod,
+        locale: Locale
+    ) -> String {
+        let languages = locale.rLanguages
+
+        let changeDateText: String
+
+        if lastEntry.startedAt == allEntries.last?.startedAt {
+            changeDateText = switch selectedPeriod {
+            case .day: R.string.localizable.commonToday(preferredLanguages: languages)
+            case .week: R.string.localizable.chartPeriodWeek(preferredLanguages: languages)
+            case .month: R.string.localizable.chartPeriodMonth(preferredLanguages: languages)
+            case .year: R.string.localizable.chartPeriodYear(preferredLanguages: languages)
+            case .allTime: R.string.localizable.chartPeriodMax(preferredLanguages: languages)
+            }
+        } else {
+            let date = Date(timeIntervalSince1970: TimeInterval(lastEntry.startedAt))
+            let formatter = date.sameYear(as: Date())
+                ? DateFormatter.chartEntryDate
+                : DateFormatter.chartEntryWithYear
+            changeDateText = formatter.value(for: locale).string(from: date)
+        }
+
+        return changeDateText
     }
 
     func createPeriodsControlViewModel(
@@ -136,7 +177,7 @@ private extension AssetPriceChartViewModelFactory {
 extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
         for asset: AssetModel,
-        prices: [PriceHistoryItem]?,
+        entries: [PriceHistoryItem]?,
         availablePeriods: [PriceHistoryPeriod],
         selectedPeriod: PriceHistoryPeriod,
         priceData: PriceData?,
@@ -153,9 +194,8 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         )
 
         guard
-            let prices,
-            let firstPrice = prices.first,
-            let lastPrice = prices.last,
+            let entries,
+            let lastEntry = entries.last,
             let priceData
         else {
             return AssetPriceChartWidgetViewModel(
@@ -167,11 +207,12 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             )
         }
 
-        let chartViewModel = createChartViewModel(using: prices)
+        let chartViewModel = createChartViewModel(using: entries)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
-            firstPrice: firstPrice.value,
-            lastPrice: lastPrice.value,
+            allEntries: entries,
+            lastEntry: lastEntry,
+            selectedPeriod: selectedPeriod,
             locale: locale
         )
         let currentPrice = formattedPrice(for: priceData, locale)
@@ -186,20 +227,22 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
     }
 
     func createPriceChangeViewModel(
-        prices: [PriceHistoryItem]?,
+        entries: [PriceHistoryItem]?,
         priceData: PriceData?,
-        closingPrice: Decimal,
+        lastEntry: PriceHistoryItem,
+        selectedPeriod: PriceHistoryPeriod,
         locale: Locale
     ) -> PricePeriodChangeViewModel? {
         guard
             let priceData,
-            let firstPrice = prices?.first
+            let entries
         else { return nil }
 
         return createPeriodChangeViewModel(
             priceData: priceData,
-            firstPrice: firstPrice.value,
-            lastPrice: closingPrice,
+            allEntries: entries,
+            lastEntry: lastEntry,
+            selectedPeriod: selectedPeriod,
             locale: locale
         )
     }

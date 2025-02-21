@@ -29,6 +29,10 @@ final class AssetPriceChartViewLayout: UIView {
         view.imageView.contentMode = .scaleAspectFit
     }
 
+    let currentEntryDateLabel: UILabel = .create { view in
+        view.apply(style: .footnotePrimary)
+    }
+
     lazy var chartView = LineChartView()
 
     var periodControl: PriceChartPeriodControl?
@@ -52,8 +56,17 @@ private extension AssetPriceChartViewLayout {
     func setupLayout() {
         addSubview(titleLabel)
         addSubview(priceLabel)
-        addSubview(priceChangeView)
         addSubview(chartView)
+
+        let priceChangeContainer = UIStackView.hStack(
+            spacing: Constants.priceChangeContainerSpacing,
+            [
+                priceChangeView,
+                currentEntryDateLabel
+            ]
+        )
+
+        addSubview(priceChangeContainer)
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -61,19 +74,19 @@ private extension AssetPriceChartViewLayout {
             make.height.equalTo(Constants.titleHeight)
         }
         priceLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.top.equalTo(titleLabel.snp.bottom).offset(Constants.priceLabelTopOffset)
             make.leading.equalTo(titleLabel)
         }
-        priceChangeView.snp.makeConstraints { make in
-            make.top.equalTo(priceLabel.snp.bottom).offset(4)
+        priceChangeContainer.snp.makeConstraints { make in
+            make.top.equalTo(priceLabel.snp.bottom).offset(Constants.priceChangeContainerTopOffset)
             make.leading.equalTo(priceLabel)
             make.height.equalTo(Constants.priceChangeViewHeight)
         }
         chartView.snp.makeConstraints { make in
-            make.top.equalTo(priceChangeView.snp.bottom).offset(8.0)
-            make.bottom.equalToSuperview().inset(48)
+            make.top.equalTo(priceChangeContainer.snp.bottom).offset(Constants.chartViewTopOffset)
+            make.bottom.equalToSuperview().inset(Constants.chartViewBottomInset)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(132)
+            make.height.equalTo(Constants.chartViewHeight)
         }
     }
 
@@ -84,8 +97,8 @@ private extension AssetPriceChartViewLayout {
         chartView.xAxis.enabled = false
         chartView.setScaleEnabled(false)
         chartView.minOffset = .zero
-        chartView.extraTopOffset = 5.0
-        chartView.extraBottomOffset = 5.0
+        chartView.extraTopOffset = Constants.chartViewExtraOffsets
+        chartView.extraBottomOffset = Constants.chartViewExtraOffsets
         chartView.pinchZoomEnabled = false
         chartView.doubleTapToZoomEnabled = false
 
@@ -98,16 +111,16 @@ private extension AssetPriceChartViewLayout {
         yAxis.enabled = true
         yAxis.labelFont = .monospaceNumbers
         yAxis.labelTextColor = R.color.colorTextSecondary()!
-        yAxis.setLabelCount(5, force: true)
+        yAxis.setLabelCount(Constants.chartYAxisLabelsCount, force: true)
         yAxis.drawTopYLabelEntryEnabled = true
         yAxis.drawAxisLineEnabled = false
-        yAxis.gridLineWidth = 1.5
+        yAxis.gridLineWidth = Constants.gridLineWidth
         yAxis.drawGridLinesEnabled = true
         yAxis.gridColor = R.color.colorChartGridLine()!
-        yAxis.gridLineDashLengths = [4.0, 2.0]
+        yAxis.gridLineDashLengths = Constants.gridLineDashLengths
 
         chartView.marker = nil
-        chartView.animate(xAxisDuration: 1.5)
+        chartView.animate(xAxisDuration: Constants.chartViewAnimationDuration)
     }
 }
 
@@ -127,7 +140,7 @@ extension AssetPriceChartViewLayout {
         periodControl.snp.makeConstraints { make in
             make.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(32)
+            make.height.equalTo(Constants.periodControlHeight)
         }
     }
 }
@@ -139,6 +152,21 @@ extension AssetPriceChartViewLayout {
         static let widgetHeight: CGFloat = 295.0
         static let titleHeight: CGFloat = 20.0
         static let priceChangeViewHeight: CGFloat = 18.0
+        static let chartViewHeight: CGFloat = 132.0
+        static let gridLineDashLengths: [CGFloat] = [4.0, 2.0]
+        static let gridLineWidth: CGFloat = 1.5
+        static let periodControlHeight: CGFloat = 32.0
+
+        static let priceChangeContainerSpacing: CGFloat = 4.0
+
+        static let priceChangeContainerTopOffset: CGFloat = 4.0
+        static let priceLabelTopOffset: CGFloat = 8.0
+        static let chartViewTopOffset: CGFloat = 8.0
+        static let chartViewBottomInset: CGFloat = 48.0
+        static let chartViewExtraOffsets: CGFloat = 5.0
+
+        static let chartYAxisLabelsCount: Int = 5
+        static let chartViewAnimationDuration: CGFloat = 1.5
 
         static let priceSkeletonOffsets: [CGFloat] = [34.0, 12.0]
         static let priceSkeletonLineWidths: [CGFloat] = [56.0, 126.0]

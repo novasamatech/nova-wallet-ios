@@ -42,7 +42,7 @@ private extension AssetPriceChartPresenter {
 
         let viewModel = viewModelFactory.createViewModel(
             for: assetModel,
-            prices: prices?[selectedPeriod],
+            entries: prices?[selectedPeriod],
             availablePeriods: availablePeriods,
             selectedPeriod: selectedPeriod,
             priceData: priceData,
@@ -74,10 +74,16 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
             return
         }
 
+        let priceHistoryItem = PriceHistoryItem(
+            startedAt: UInt64(entry.timestamp),
+            value: entry.price
+        )
+
         guard let viewModel = viewModelFactory.createPriceChangeViewModel(
-            prices: prices?[selectedPeriod],
+            entries: prices?[selectedPeriod],
             priceData: priceData,
-            closingPrice: entry.price,
+            lastEntry: priceHistoryItem,
+            selectedPeriod: selectedPeriod,
             locale: locale
         ) else {
             return
