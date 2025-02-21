@@ -121,6 +121,13 @@ private extension AssetPriceChartViewController {
             )
             rootView.chartView.rightAxis.labelTextColor = R.color.colorTextSecondary()!
             rootView.chartView.data = chartData
+            
+            /* Clear highlighted indexes to prevent renderer crashes.
+               The renderer attempts to highlight indexes from previous datasets,
+               which can cause out-of-range errors when switching from multiple
+               to single datasets.
+               Reference: https://github.com/ChartsOrg/Charts/issues/5154 */
+            rootView.chartView.highlightValues(nil)
             rootView.loadingState.remove(.chart)
         case .loading:
             rootView.chartView.rightAxis.labelTextColor = .clear

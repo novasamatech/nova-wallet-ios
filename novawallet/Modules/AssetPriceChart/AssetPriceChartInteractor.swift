@@ -27,7 +27,7 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
         self.operationQueue = operationQueue
         self.currency = currency
     }
-    
+
     deinit {
         callStore.cancel()
     }
