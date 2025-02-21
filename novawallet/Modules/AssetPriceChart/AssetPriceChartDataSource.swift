@@ -31,6 +31,7 @@ protocol AssetPriceChartViewDataSourceProtocol {
 
 final class AssetPriceChartViewDataSource {
     private var widgetViewModel: AssetPriceChartWidgetViewModel?
+    private var entryIndexesByX: [Double: Int]?
 }
 
 // MARK: AssetPriceChartDataSourceProtocol
@@ -59,13 +60,14 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
 
     func createChartData(for selectedEntry: ChartDataEntry) -> LineChartData? {
         guard
+            let selectedIndex = entryIndexesByX?[selectedEntry.x],
             let chartModel = widgetViewModel?.chartModel.value,
             let colors = createColors()
         else { return nil }
 
         let currentEntries = chartModel.dataSet
 
-        let entriesBefore = currentEntries.filter { $0.x <= selectedEntry.x }
+        let entriesBefore = Array(currentEntries[0 ..< selectedIndex + 1])
         let entriesAfter = Array(currentEntries[entriesBefore.count - 1 ..< currentEntries.count])
 
         let dataBefore = createChartData(
@@ -152,6 +154,15 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
 
     func set(widgetViewModel: AssetPriceChartWidgetViewModel) {
         self.widgetViewModel = widgetViewModel
+
+        guard let chartModel = widgetViewModel.chartModel.value else {
+            entryIndexesByX = nil
+            return
+        }
+
+        entryIndexesByX = chartModel.dataSet
+            .enumerated()
+            .reduce(into: [:]) { $0[$1.element.x] = $1.offset }
     }
 
     func set(priceChange: PricePeriodChangeViewModel) {
