@@ -7,6 +7,7 @@ protocol MythosStakingSharedStateProtocol {
     var chainRegistry: ChainRegistryProtocol { get }
     var stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
 
     var detailsSyncService: MythosStakingDetailsSyncServiceProtocol? { get }
@@ -37,6 +38,7 @@ final class MythosStakingSharedState {
     let accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
+    let stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -57,6 +59,7 @@ final class MythosStakingSharedState {
         collatorService: MythosCollatorServiceProtocol,
         rewardCalculatorService: CollatorStakingRewardCalculatorServiceProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
+        stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingRemoteAccountSubscriptionServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
@@ -69,6 +72,7 @@ final class MythosStakingSharedState {
         self.chainRegistry = chainRegistry
         self.collatorService = collatorService
         self.rewardCalculatorService = rewardCalculatorService
+        self.stakingRewardsLocalSubscriptionFactory = stakingRewardsLocalSubscriptionFactory
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.accountRemoteSubscriptionService = accountRemoteSubscriptionService

@@ -207,6 +207,7 @@ private extension MythosStkUnstakeSetupPresenter {
 
         provideCollatorViewModel()
         provideAssetViewModel()
+        provideAmountInputViewModel()
     }
 
     func updateView() {

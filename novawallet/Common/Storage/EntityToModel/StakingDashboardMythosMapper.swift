@@ -32,7 +32,7 @@ extension StakingDashboardMythosMapper: CoreDataMapperProtocol {
         let state = Multistaking.DashboardItemOnchainState.from(mythosState: model.state)
 
         switch state {
-        case .bonded, .active, .waiting:
+        case .bonded, .active, .waiting, .activeIndependent:
             entity.stake = String(model.state.userStake?.stake ?? 0)
         case nil:
             entity.stake = nil

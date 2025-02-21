@@ -9,6 +9,7 @@ protocol ParachainStakingSharedStateProtocol: AnyObject {
     var rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol { get }
     var blockTimeService: BlockTimeEstimationServiceProtocol { get }
     var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol { get }
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var preferredCollatorsProvider: PreferredValidatorsProviding { get }
     var logger: LoggerProtocol { get }
@@ -29,6 +30,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
     let rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let preferredCollatorsProvider: PreferredValidatorsProviding
     let logger: LoggerProtocol
@@ -47,6 +49,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         rewardCalculationService: CollatorStakingRewardCalculatorServiceProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
+        stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         preferredCollatorsProvider: PreferredValidatorsProviding,
         logger: LoggerProtocol
@@ -59,6 +62,7 @@ final class ParachainStakingSharedState: ParachainStakingSharedStateProtocol {
         self.rewardCalculationService = rewardCalculationService
         self.blockTimeService = blockTimeService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.stakingRewardsLocalSubscriptionFactory = stakingRewardsLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.preferredCollatorsProvider = preferredCollatorsProvider
         self.logger = logger
