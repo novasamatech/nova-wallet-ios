@@ -10,8 +10,6 @@ enum MercuryoCardApi {
     static let widgetId = "4ce98182-ed76-4933-ba1b-b85e4a51d75a" // TODO: Change for production
     static let theme = "nova"
     static let type = "sell"
-    static let fiatCurrency = "EUR"
-    static let fixCurrency = "true"
     static let fixFiatCurrency = "true"
     static let showSpendCardDetails = "true"
     static let hideRefundAddress = "true"
