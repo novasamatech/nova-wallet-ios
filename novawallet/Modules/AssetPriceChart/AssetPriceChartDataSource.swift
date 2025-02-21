@@ -87,7 +87,6 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
     }
 
     func createEmptyChartData() -> LineChartData {
-        let periods: CGFloat = 2
         let entriesCount = 100
 
         let entries = (0 ..< entriesCount).map {
