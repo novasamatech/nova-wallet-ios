@@ -6,14 +6,6 @@ struct PriceChartPeriodControlViewModel {
 }
 
 struct PriceChartPeriodViewModel: Equatable {
-    let period: PriceChartPeriod
+    let period: PriceHistoryPeriod
     let text: String
-}
-
-enum PriceChartPeriod: Equatable {
-    case day
-    case week
-    case month
-    case year
-    case allTime
 }

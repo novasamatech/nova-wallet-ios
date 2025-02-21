@@ -5,15 +5,15 @@ import DGCharts
 protocol AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
         for asset: AssetModel,
-        prices: [CoingeckoChartSinglePriceData]?,
-        availablePeriods: [PriceChartPeriod],
-        selectedPeriod: PriceChartPeriod,
+        prices: [PriceHistoryItem]?,
+        availablePeriods: [PriceHistoryPeriod],
+        selectedPeriod: PriceHistoryPeriod,
         priceData: PriceData?,
         locale: Locale
     ) -> AssetPriceChartWidgetViewModel
 
     func createPriceChangeViewModel(
-        prices: [CoingeckoChartSinglePriceData]?,
+        prices: [PriceHistoryItem]?,
         priceData: PriceData?,
         closingPrice: Decimal,
         locale: Locale
@@ -88,8 +88,8 @@ private extension AssetPriceChartViewModelFactory {
     }
 
     func createPeriodsControlViewModel(
-        availablePeriods: [PriceChartPeriod],
-        selectedPeriod: PriceChartPeriod
+        availablePeriods: [PriceHistoryPeriod],
+        selectedPeriod: PriceHistoryPeriod
     ) -> PriceChartPeriodControlViewModel {
         let periods: [PriceChartPeriodViewModel] = availablePeriods.map {
             let text = switch $0 {
@@ -111,14 +111,14 @@ private extension AssetPriceChartViewModelFactory {
         return periodControlViewModel
     }
 
-    func createChartViewModel(using prices: [CoingeckoChartSinglePriceData]) -> PriceChartViewModel {
-        let firstPrice = prices.first?.price ?? 0.0
-        let lastPrice = prices.last?.price ?? 0.0
+    func createChartViewModel(using prices: [PriceHistoryItem]) -> PriceChartViewModel {
+        let firstPrice = prices.first?.value ?? 0.0
+        let lastPrice = prices.last?.value ?? 0.0
 
         let dataSet = prices.map { price in
             ChartDataEntry(
-                x: Double(price.timeStamp),
-                y: (price.price as NSDecimalNumber).doubleValue
+                x: Double(price.startedAt),
+                y: (price.value as NSDecimalNumber).doubleValue
             )
         }
 
@@ -136,9 +136,9 @@ private extension AssetPriceChartViewModelFactory {
 extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(
         for asset: AssetModel,
-        prices: [CoingeckoChartSinglePriceData]?,
-        availablePeriods: [PriceChartPeriod],
-        selectedPeriod: PriceChartPeriod,
+        prices: [PriceHistoryItem]?,
+        availablePeriods: [PriceHistoryPeriod],
+        selectedPeriod: PriceHistoryPeriod,
         priceData: PriceData?,
         locale: Locale
     ) -> AssetPriceChartWidgetViewModel {
@@ -170,8 +170,8 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         let chartViewModel = createChartViewModel(using: prices)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
-            firstPrice: firstPrice.price,
-            lastPrice: lastPrice.price,
+            firstPrice: firstPrice.value,
+            lastPrice: lastPrice.value,
             locale: locale
         )
         let currentPrice = formattedPrice(for: priceData, locale)
@@ -186,7 +186,7 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
     }
 
     func createPriceChangeViewModel(
-        prices: [CoingeckoChartSinglePriceData]?,
+        prices: [PriceHistoryItem]?,
         priceData: PriceData?,
         closingPrice: Decimal,
         locale: Locale
@@ -198,14 +198,9 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
 
         return createPeriodChangeViewModel(
             priceData: priceData,
-            firstPrice: firstPrice.price,
+            firstPrice: firstPrice.value,
             lastPrice: closingPrice,
             locale: locale
         )
     }
-}
-
-struct CoingeckoChartSinglePriceData {
-    let timeStamp: Int64
-    let price: Decimal
 }

@@ -79,7 +79,7 @@ struct AssetDetailsViewFactory {
         output: AssetPriceChartModuleOutputProtocol,
         inputOwner: AssetPriceChartInputOwnerProtocol
     ) -> AssetPriceChartModule? {
-        let chartPeriods: [PriceChartPeriod] = [
+        let chartPeriods: [PriceHistoryPeriod] = [
             .day,
             .week,
             .month,

@@ -10,9 +10,18 @@ struct AssetPriceChartViewFactory {
             return nil
         }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let priceChartDataOperationFactory = PriceChartDataOperationFactory(
+            fetchOperationFactory: CoingeckoOperationFactory(),
+            availablePeriods: params.periods
+        )
+
         let interactor = AssetPriceChartInteractor(
+            priceChartDataOperationFactory: priceChartDataOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             asset: params.asset,
+            operationQueue: operationQueue,
             currency: params.currency
         )
 
@@ -48,7 +57,7 @@ struct AssetPriceChartViewFactory {
 extension AssetPriceChartViewFactory {
     struct Params {
         let asset: AssetModel
-        let periods: [PriceChartPeriod]
+        let periods: [PriceHistoryPeriod]
         let locale: Locale
         let currency: Currency
     }
