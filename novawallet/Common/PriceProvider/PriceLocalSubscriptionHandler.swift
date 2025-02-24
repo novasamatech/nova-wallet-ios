@@ -1,5 +1,4 @@
 import Foundation
-import Operation_iOS
 
 protocol PriceLocalSubscriptionHandler {
     func handlePrice(
@@ -7,14 +6,11 @@ protocol PriceLocalSubscriptionHandler {
         priceId: AssetModel.PriceId
     )
 
+    func handleAllPrices(result: Result<[ChainAssetId: PriceData], Error>)
+
     func handlePriceHistory(
         result: Result<PriceHistory?, Error>,
         priceId: AssetModel.PriceId
-    )
-
-    func handlePrices(
-        result: Result<[DataProviderChange<PriceData>], Error>,
-        priceIds: [AssetModel.PriceId]
     )
 }
 
@@ -24,13 +20,10 @@ extension PriceLocalSubscriptionHandler {
         priceId _: AssetModel.PriceId
     ) {}
 
+    func handleAllPrices(result _: Result<[ChainAssetId: PriceData], Error>) {}
+
     func handlePriceHistory(
         result _: Result<PriceHistory?, Error>,
         priceId _: AssetModel.PriceId
-    ) {}
-
-    func handlePrices(
-        result _: Result<[DataProviderChange<PriceData>], Error>,
-        priceIds _: [AssetModel.PriceId]
     ) {}
 }

@@ -1,13 +1,19 @@
 import Foundation
 import Operation_iOS
 
-protocol PriceLocalStorageSubscriber where Self: AnyObject {
+protocol PriceLocalStorageSubscriber: LocalStorageProviderObserving where Self: AnyObject {
     var priceLocalSubscriptionFactory: PriceProviderFactoryProtocol { get }
 
     var priceLocalSubscriptionHandler: PriceLocalSubscriptionHandler { get }
 
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
+        currency: Currency,
+        options: StreamableProviderObserverOptions
+    ) -> StreamableProvider<PriceData>
+
+    func subscribeAllPrices(
+        for priceIds: [ChainAssetId: AssetModel.PriceId],
         currency: Currency,
         options: StreamableProviderObserverOptions
     ) -> StreamableProvider<PriceData>
@@ -20,20 +26,6 @@ protocol PriceLocalStorageSubscriber where Self: AnyObject {
 }
 
 extension PriceLocalStorageSubscriber {
-    func subscribeToAllPrices(
-        for priceIds: [AssetModel.PriceId],
-        currency: Currency
-    ) -> StreamableProvider<PriceData> {
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
-        return subscribeToAllPrices(for: priceIds, currency: currency, options: options)
-    }
-
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency
@@ -46,6 +38,20 @@ extension PriceLocalStorageSubscriber {
         )
 
         return subscribeToPrice(for: priceId, currency: currency, options: options)
+    }
+
+    func subscribeAllPrices(
+        for priceIds: [ChainAssetId: AssetModel.PriceId],
+        currency: Currency
+    ) -> StreamableProvider<PriceData> {
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: true
+        )
+
+        return subscribeAllPrices(for: priceIds, currency: currency, options: options)
     }
 
     func subscribeToPriceHistory(
@@ -62,45 +68,6 @@ extension PriceLocalStorageSubscriber {
 }
 
 extension PriceLocalStorageSubscriber {
-    func subscribeToAllPrices(
-        for priceIds: [AssetModel.PriceId],
-        currency: Currency,
-        options: StreamableProviderObserverOptions
-    ) -> StreamableProvider<PriceData> {
-        let priceProvider = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
-            guard let self else { return }
-
-            priceLocalSubscriptionHandler.handlePrices(
-                result: .success(changes),
-                priceIds: priceIds
-            )
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            guard let self else { return }
-
-            priceLocalSubscriptionHandler.handlePrices(
-                result: .failure(error),
-                priceIds: priceIds
-            )
-        }
-
-        priceProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        return priceProvider
-    }
-
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency,
@@ -111,25 +78,63 @@ extension PriceLocalStorageSubscriber {
             currency: currency
         )
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
-            let finalValue = changes.reduceToLastChange()
-            self?.priceLocalSubscriptionHandler.handlePrice(result: .success(finalValue), priceId: priceId)
-        }
+        addStreamableProviderObserver(
+            for: priceProvider,
+            updateClosure: { [weak self] (changes: [DataProviderChange<PriceData>]) in
+                guard let self else {
+                    return
+                }
 
-        let failureClosure = { [weak self] (error: Error) in
-            self?.priceLocalSubscriptionHandler.handlePrice(result: .failure(error), priceId: priceId)
-            return
-        }
+                let finalValue = changes.reduceToLastChange()
+                priceLocalSubscriptionHandler.handlePrice(result: .success(finalValue), priceId: priceId)
+            }, failureClosure: { [weak self] (error: Error) in
+                guard let self else {
+                    return
+                }
 
-        priceProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
+                priceLocalSubscriptionHandler.handlePrice(result: .failure(error), priceId: priceId)
+            },
             options: options
         )
 
         return priceProvider
+    }
+
+    func subscribeAllPrices(
+        for priceIds: [ChainAssetId: AssetModel.PriceId],
+        currency: Currency,
+        options: StreamableProviderObserverOptions
+    ) -> StreamableProvider<PriceData> {
+        let provider = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
+            currency: currency
+        )
+
+        addStreamableProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] changes in
+                guard let self else {
+                    return
+                }
+
+                let priceIdToData = changes.mergeToDict([String: PriceData]())
+                let assetIdToData = priceIds.reduce(
+                    into: [ChainAssetId: PriceData]()
+                ) { accum, keyValue in
+                    let identifier = PriceData.createIdentifier(for: keyValue.value, currencyId: currency.id)
+                    accum[keyValue.key] = priceIdToData[identifier]
+                }
+
+                priceLocalSubscriptionHandler.handleAllPrices(result: .success(assetIdToData))
+            },
+            failureClosure: { [weak self] error in
+                self?.priceLocalSubscriptionHandler.handleAllPrices(
+                    result: .failure(error)
+                )
+            },
+            options: options
+        )
+
+        return provider
     }
 
     func subscribeToPriceHistory(
@@ -140,16 +145,24 @@ extension PriceLocalStorageSubscriber {
         let provider = priceLocalSubscriptionFactory.getPriceHistoryProvider(for: priceId, currency: currency)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<PriceHistory>]) in
+            guard let self else {
+                return
+            }
+
             let finalValue = changes.reduceToLastChange()
-            self?.priceLocalSubscriptionHandler.handlePriceHistory(
+
+            priceLocalSubscriptionHandler.handlePriceHistory(
                 result: .success(finalValue),
                 priceId: priceId
             )
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.priceLocalSubscriptionHandler.handlePriceHistory(result: .failure(error), priceId: priceId)
-            return
+            guard let self else {
+                return
+            }
+
+            priceLocalSubscriptionHandler.handlePriceHistory(result: .failure(error), priceId: priceId)
         }
 
         provider.addObserver(

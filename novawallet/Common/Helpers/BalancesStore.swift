@@ -18,7 +18,7 @@ protocol BalancesStoreProtocol: AnyObject {
     func setup()
 }
 
-final class BalancesStore {
+final class BalancesStore: AnyProviderAutoCleaning {
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -119,7 +119,7 @@ final class BalancesStore {
             currency: currency
         )
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PricdeData>]) in
             guard let strongSelf = self else {
                 return
             }
