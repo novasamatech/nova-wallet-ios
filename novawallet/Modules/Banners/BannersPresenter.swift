@@ -4,11 +4,11 @@ import SoraFoundation
 final class BannersPresenter {
     weak var view: BannersViewProtocol?
     weak var moduleOutput: BannersModuleOutputProtocol?
+    var locale: Locale
 
     private let wireframe: BannersWireframeProtocol
     private let interactor: BannersInteractorInputProtocol
     private let viewModelFactory: BannerViewModelFactoryProtocol
-    private var locale: Locale
 
     private let closeActionAvailable: Bool
 

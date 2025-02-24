@@ -68,6 +68,10 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
         interactor.setup()
+
+        if bannersModule?.locale != selectedLocale {
+            bannersModule?.updateLocale(selectedLocale)
+        }
     }
 
     func refresh() {
