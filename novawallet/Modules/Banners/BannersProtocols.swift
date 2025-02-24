@@ -15,6 +15,7 @@ protocol BannersModuleInputOwnerProtocol: AnyObject {
 
 protocol BannersModuleInputProtocol: AnyObject {
     var bannersState: BannersState { get }
+    var locale: Locale { get }
 
     func setup()
     func refresh()
