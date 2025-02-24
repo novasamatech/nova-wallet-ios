@@ -36,24 +36,8 @@ final class AssetDetailsViewLayout: UIView {
         return view
     }()
 
-    let headerCell: StackTableHeaderCell = .create {
-        $0.titleLabel.apply(style: .regularSubhedlineSecondary)
-        $0.contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
-    }
-
-    let totalCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
-    }
-
-    let transferrableCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
-    }
-
-    let lockCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
+    lazy var balanceWidget: AssetDetailsBalanceWidget = .create { view in
+        view.delegate = self
     }
 
     let sendButton: RoundedButton = createOperationButton(icon: R.image.iconSend())
@@ -65,12 +49,6 @@ final class AssetDetailsViewLayout: UIView {
         frame: .zero,
         views: [sendButton, receiveButton, swapButton, buyButton]
     )
-
-    private let balanceTableView: StackTableView = .create {
-        $0.cellHeight = Constants.balanceCellHeight
-        $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
-    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -96,8 +74,6 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     private func setupLayout() {
-        setupBalanceTableViewLayout()
-
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -151,34 +127,21 @@ final class AssetDetailsViewLayout: UIView {
             $0.top.equalTo(priceStack.snp.bottom).offset(Constants.containerViewTopOffset)
         }
 
+        balanceWidget.snp.makeConstraints { make in
+            make.height.equalTo(balanceWidget.state.height)
+        }
+
         containerView.stackView.spacing = Constants.sectionSpace
-        containerView.stackView.addArrangedSubview(balanceTableView)
+        containerView.stackView.addArrangedSubview(balanceWidget)
         containerView.stackView.addArrangedSubview(buttonsRow)
         containerView.stackView.addArrangedSubview(chartContainerView)
-    }
-
-    private func setupBalanceTableViewLayout() {
-        balanceTableView.addArrangedSubview(headerCell)
-        balanceTableView.addArrangedSubview(totalCell)
-        balanceTableView.addArrangedSubview(transferrableCell)
-        balanceTableView.addArrangedSubview(lockCell)
     }
 
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
-        headerCell.titleLabel.text = R.string.localizable.walletBalancesWidgetTitle(
-            preferredLanguages: languages
-        )
-        totalCell.titleLabel.text = R.string.localizable.walletTransferTotalTitle(
-            preferredLanguages: languages
-        )
-        transferrableCell.titleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
-        lockCell.titleLabel.text = R.string.localizable.walletBalanceLocked(
-            preferredLanguages: languages
-        )
+        balanceWidget.set(locale: locale)
+
         sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
             preferredLanguages: languages
         )
@@ -251,6 +214,18 @@ final class AssetDetailsViewLayout: UIView {
             + buttonsRowHeight
             + Constants.bottomOffset
             + chartContainerView.bounds.height
+    }
+}
+
+extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
+    func didChangeState(to state: AssetDetailsBalanceWidget.State) {
+        balanceWidget.snp.updateConstraints { make in
+            make.height.equalTo(state.height)
+        }
+
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            self?.containerView.layoutIfNeeded()
+        }
     }
 }
 
