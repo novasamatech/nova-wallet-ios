@@ -84,7 +84,6 @@ struct DAppListViewFactory {
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
             walletNotificationService: walletNotificationService,
-            operationQueue: sharedQueue,
             logger: logger
         )
 
