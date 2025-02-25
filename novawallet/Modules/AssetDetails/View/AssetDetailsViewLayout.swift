@@ -3,6 +3,11 @@ import SoraUI
 import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
+    private let balanceExpandingAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.2,
+        options: [.curveEaseInOut]
+    )
+
     let chartContainerView: UIView = .create { view in
         view.backgroundColor = R.color.colorBlockBackground()
         view.layer.cornerRadius = 12.0
@@ -205,7 +210,8 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     var prefferedHeight: CGFloat {
-        let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
+        let balanceSectionHeight = Constants.containerViewTopOffset
+            + AssetDetailsBalanceWidget.Constants.expandedStateHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
 
         return priceLabel.font.lineHeight
@@ -223,15 +229,15 @@ extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
             make.height.equalTo(state.height)
         }
 
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            self?.containerView.layoutIfNeeded()
-        }
+        balanceExpandingAnimator.animate(
+            block: { [weak self] in self?.containerView.layoutIfNeeded() },
+            completionBlock: nil
+        )
     }
 }
 
 extension AssetDetailsViewLayout {
     enum Constants {
-        static let balanceCellHeight: CGFloat = 48
         static let priceStackHeight: CGFloat = 26
         static let assetHeight: CGFloat = 28
         static let containerViewTopOffset: CGFloat = 12

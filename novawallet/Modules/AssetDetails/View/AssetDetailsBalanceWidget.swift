@@ -8,8 +8,22 @@ protocol AssetDetailsBalanceWidgetDelegate: AnyObject {
 
 class AssetDetailsBalanceWidget: UIView {
     weak var delegate: AssetDetailsBalanceWidgetDelegate?
-
     var state: State = .collapsed(Constants.collapsedStateHeight)
+
+    private let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 0.0,
+        to: 1.0,
+        duration: 0.15
+    )
+    private let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
+        from: 1.0,
+        to: 0.0,
+        duration: 0.15
+    )
+    private let arrowTransformAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.2,
+        options: [.curveEaseOut]
+    )
 
     private let balanceTableView: StackTableView = .create {
         $0.cellHeight = Constants.balanceCellHeight
@@ -58,13 +72,6 @@ class AssetDetailsBalanceWidget: UIView {
     var rowIconImageView: UIImageView {
         totalCell.rowContentView.fView.sView
     }
-
-    let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(from: 0.0, to: 1.0)
-    let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(from: 1.0, to: 0.0)
-    let arrowTransformAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
-        duration: 0.25,
-        options: [.curveEaseOut]
-    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
