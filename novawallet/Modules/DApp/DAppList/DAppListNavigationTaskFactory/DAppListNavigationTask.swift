@@ -1,20 +1,17 @@
-protocol DAppListNavigationTaskCleaning {
+protocol BrowserNavigationTaskCleaning {
     func cleanCompletedTask()
 }
 
-struct DAppListNavigationTask {
+struct BrowserNavigationTask {
     let tabProvider: () -> DAppBrowserTab?
-    let routingClosure: (DAppBrowserTab, ControllerBackedProtocol?) -> Void
+    let routingClosure: (DAppBrowserTab) -> Void
 
-    func callAsFunction(
-        cleaner: DAppListNavigationTaskCleaning,
-        view: ControllerBackedProtocol?
-    ) {
+    func callAsFunction(cleaner: BrowserNavigationTaskCleaning) {
         guard let tab = tabProvider() else {
             return
         }
 
-        routingClosure(tab, view)
+        routingClosure(tab)
         cleaner.cleanCompletedTask()
     }
 }
