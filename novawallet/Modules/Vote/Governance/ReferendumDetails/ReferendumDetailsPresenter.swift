@@ -497,16 +497,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func opeDApp(at index: Int) {
         guard
             let dApp = dApps?[index],
-            let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType),
-            let tab = DAppBrowserTab(from: url.absoluteString, metaId: wallet.metaId)
+            let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType)
         else {
             return
         }
 
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
-        )
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 
     func readFullDescription() {

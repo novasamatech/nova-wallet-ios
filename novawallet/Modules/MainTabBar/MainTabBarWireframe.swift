@@ -55,12 +55,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         case let .gov(rederendumIndex):
             openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
         case let .dApp(model):
-            controller.selectedIndex = MainTabBarIndex.dapps
-            let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
-            (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
-            if let dappView: DAppOpenViewProtocol = dappViewController?.contentViewController() {
-                dappView.didReceiveDAppNavigation(model: model)
-            }
+            openBrowser(with: model)
         }
     }
 

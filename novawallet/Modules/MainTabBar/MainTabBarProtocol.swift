@@ -35,7 +35,10 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
 
-protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible, ModalAlertPresenting {
+protocol MainTabBarWireframeProtocol: AlertPresentable,
+    AuthorizationAccessible,
+    ModalAlertPresenting,
+    BrowserOpening {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,

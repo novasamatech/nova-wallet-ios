@@ -1,43 +1,43 @@
 import Foundation
 
-protocol DAppListNavigationTaskFactoryProtocol {
+protocol BrowserNavigationTaskFactoryProtocol {
     func createDAppNavigationTaskById(
         _ dAppId: String,
         wallet: MetaAccountModel?,
         favoritesProvider: @escaping () -> [String: DAppFavorite]?,
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
-    ) -> DAppListNavigationTask
+    ) -> BrowserNavigationTask
 
     func createDAppNavigationTaskByModel(
         _ model: DAppNavigation,
         wallet: MetaAccountModel?,
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
-    ) -> DAppListNavigationTask
+    ) -> BrowserNavigationTask
 
     func createSearchResultNavigationTask(
         _ result: DAppSearchResult,
         wallet: MetaAccountModel
-    ) -> DAppListNavigationTask
+    ) -> BrowserNavigationTask
 }
 
-final class DAppListNavigationTaskFactory {
-    private let wireframe: DAppListWireframeProtocol
+final class BrowserNavigationTaskFactory {
+    weak var mainAppContainer: NovaMainAppContainerViewProtocol?
 
-    init(wireframe: DAppListWireframeProtocol) {
-        self.wireframe = wireframe
+    init(mainAppContainer: NovaMainAppContainerViewProtocol) {
+        self.mainAppContainer = mainAppContainer
     }
 }
 
-// MARK: DAppListNavigationTaskFactoryProtocol
+// MARK: BrowserNavigationTaskFactoryProtocol
 
-extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
+extension BrowserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol {
     func createDAppNavigationTaskById(
         _ dAppId: String,
         wallet: MetaAccountModel?,
         favoritesProvider: @escaping () -> [String: DAppFavorite]?,
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
-    ) -> DAppListNavigationTask {
-        DAppListNavigationTask(
+    ) -> BrowserNavigationTask {
+        BrowserNavigationTask(
             tabProvider: {
                 guard
                     let wallet,
@@ -49,18 +49,15 @@ extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
                 } else if let dApp = favoritesProvider()?[dAppId] {
                     DAppBrowserTab(from: dApp.identifier, metaId: wallet.metaId)
                 } else {
-                    nil
+                    DAppBrowserTab(from: dAppId, metaId: wallet.metaId)
                 }
 
                 return tab
             },
-            routingClosure: { [weak self] tab, view in
+            routingClosure: { [weak self] tab in
                 guard let self else { return }
 
-                wireframe.showNewBrowserStack(
-                    tab,
-                    from: view
-                )
+                mainAppContainer?.openBrowser(with: tab)
             }
         )
     }
@@ -69,8 +66,8 @@ extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
         _ model: DAppNavigation,
         wallet: MetaAccountModel?,
         dAppResultProvider: @escaping () -> Result<DAppList, Error>?
-    ) -> DAppListNavigationTask {
-        DAppListNavigationTask(
+    ) -> BrowserNavigationTask {
+        BrowserNavigationTask(
             tabProvider: {
                 guard
                     let wallet,
@@ -90,10 +87,10 @@ extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
 
                 return DAppBrowserTab(from: searchResult, metaId: wallet.metaId)
             },
-            routingClosure: { [weak self] tab, view in
+            routingClosure: { [weak self] tab in
                 guard let self else { return }
 
-                wireframe.showNewBrowserStack(tab, from: view)
+                mainAppContainer?.openBrowser(with: tab)
             }
         )
     }
@@ -101,18 +98,15 @@ extension DAppListNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol {
     func createSearchResultNavigationTask(
         _ result: DAppSearchResult,
         wallet: MetaAccountModel
-    ) -> DAppListNavigationTask {
-        DAppListNavigationTask(
+    ) -> BrowserNavigationTask {
+        BrowserNavigationTask(
             tabProvider: {
                 DAppBrowserTab(from: result, metaId: wallet.metaId)
             },
-            routingClosure: { [weak self] tab, view in
+            routingClosure: { [weak self] tab in
                 guard let self else { return }
 
-                wireframe.showNewBrowserStack(
-                    tab,
-                    from: view
-                )
+                mainAppContainer?.openBrowser(with: tab)
             }
         )
     }

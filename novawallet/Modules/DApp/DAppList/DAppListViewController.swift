@@ -213,12 +213,6 @@ extension DAppListViewController: DAppListViewProtocol {
     }
 }
 
-extension DAppListViewController: DAppOpenViewProtocol {
-    func didReceiveDAppNavigation(model: DAppNavigation) {
-        presenter.provideNavigation(for: model)
-    }
-}
-
 // MARK: Localizable
 
 extension DAppListViewController: Localizable {

@@ -66,7 +66,6 @@ class DAppListTests: XCTestCase {
             dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
             dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
             walletNotificationService: walletNotificationService,
-            operationQueue: operationQueue,
             logger: Logger.shared
         )
         
@@ -74,13 +73,10 @@ class DAppListTests: XCTestCase {
             dappCategoriesViewModelFactory: DAppCategoryViewModelFactory(),
             dappIconViewModelFactory: DAppIconViewModelFactory()
         )
-        
-        let dAppListNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            browserNavigationTaskFactory: dAppListNavigationTaskFactory,
             initialWallet: walletSettings.value,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
