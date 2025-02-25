@@ -74,7 +74,7 @@ final class CoingeckoStreamableSource: StreamableSourceProtocol {
         guard !cancellableStore.hasCall else {
             return
         }
-        
+
         // always provide sorted to utilize the cache
         let sortedPrices = Array(priceIds).sorted()
 

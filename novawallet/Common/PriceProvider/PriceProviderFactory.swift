@@ -167,8 +167,8 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         let source = CoingeckoPriceHistoryProviderSource(
             priceId: priceId,
             currency: currency,
-            period: .year
-            operationFactory: CoingeckoOperationFactory(),
+            period: .year operationFactory: CoingeckoOperationFactory(),
+
             logger: logger
         )
 

@@ -119,7 +119,7 @@ final class BalancesStore: AnyProviderAutoCleaning {
             currency: currency
         )
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PricdeData>]) in
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
             guard let strongSelf = self else {
                 return
             }
