@@ -83,6 +83,7 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
                 metadata: codingFactory.metadata
             )
             
+            Logger.shared.info("Metadata hash: \(metadataHash.toHexString())")
             Logger.shared.info("Call: \(params.encodedCall.toHexString())")
             Logger.shared.info("Include in extrinsic: \(params.includedInExtrinsicExtra.toHexString())")
             Logger.shared.info("Include in signature: \(params.includedInSignatureExtra.toHexString())")
