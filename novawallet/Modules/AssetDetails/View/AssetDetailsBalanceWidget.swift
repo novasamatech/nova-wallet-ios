@@ -13,21 +13,27 @@ class AssetDetailsBalanceWidget: UIView {
 
     private let balanceTableView: StackTableView = .create {
         $0.cellHeight = Constants.balanceCellHeight
-        $0.setCustomHeight(52.0, at: 1)
+        $0.setCustomHeight(Constants.totalCellHeight, at: 1)
         $0.setShowsSeparator(false, at: 1)
         $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
+        $0.contentInsets = Constants.contentInsets
     }
 
     let headerCell: StackTableHeaderCell = .create {
         $0.titleLabel.apply(style: .regularSubhedlineSecondary)
-        $0.contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
+        $0.contentInsets = Constants.headerCellInsets
     }
 
     let totalCell: StackTitleValueIconView = .create { view in
+        view.rowContentView.fView.sView.image = R.image.iconSmallArrowDown()?
+            .tinted(with: R.color.colorIconChip()!)?
+            .withAlignmentRectInsets(.init(inset: -4))
+        view.rowContentView.fView.sView.borderView.apply(style: .chips)
+        view.rowContentView.fView.sView.borderView.cornerRadius = Constants.arrowImageViewSize.width / 2
+
         view.frame = CGRect(
             origin: view.frame.origin,
-            size: CGSize(width: view.frame.width, height: 52)
+            size: CGSize(width: view.frame.width, height: Constants.totalCellHeight)
         )
     }
 
@@ -42,15 +48,23 @@ class AssetDetailsBalanceWidget: UIView {
     }
 
     var totalTokensBalanceLabel: UILabel {
-        totalCell.rowContentView.fView.detailsLabel
+        totalCell.rowContentView.fView.fView
     }
 
     var totalValueBalanceLabel: UILabel {
         totalCell.rowContentView.sView
     }
 
+    var rowIconImageView: UIImageView {
+        totalCell.rowContentView.fView.sView
+    }
+
     let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(from: 0.0, to: 1.0)
     let disappearanceAnimator: ViewAnimatorProtocol = FadeAnimator(from: 1.0, to: 0.0)
+    let arrowTransformAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.25,
+        options: [.curveEaseOut]
+    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -86,11 +100,13 @@ private extension AssetDetailsBalanceWidget {
         balanceTableView.addArrangedSubview(lockCell)
 
         headerCell.snp.makeConstraints { make in
-            make.height.equalTo(44.0)
+            make.height.equalTo(Constants.headerCellHeight)
         }
-
         totalCell.snp.makeConstraints { make in
-            make.height.equalTo(52.0)
+            make.height.equalTo(Constants.totalCellHeight)
+        }
+        rowIconImageView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.arrowImageViewSize)
         }
     }
 
@@ -124,14 +140,25 @@ private extension AssetDetailsBalanceWidget {
     }
 
     func toggleState() {
+        let arrowIconTransform: CGAffineTransform
+
         switch state {
         case .collapsed:
             state = .expanded(Constants.expandedStateHeight)
+            arrowIconTransform = CGAffineTransform(rotationAngle: .pi)
             showDetails(animated: true)
         case .expanded:
             state = .collapsed(Constants.collapsedStateHeight)
+            arrowIconTransform = .identity
             hideDetails(animated: true)
         }
+
+        arrowTransformAnimator.animate(
+            block: { [weak self] in
+                self?.rowIconImageView.transform = arrowIconTransform
+            },
+            completionBlock: nil
+        )
 
         delegate?.didChangeState(to: state)
     }
@@ -179,8 +206,24 @@ extension AssetDetailsBalanceWidget {
 
 extension AssetDetailsBalanceWidget {
     enum Constants {
-        static let balanceCellHeight: CGFloat = 48
+        static let balanceCellHeight: CGFloat = 48.0
+        static let headerCellHeight: CGFloat = 44.0
+        static let totalCellHeight: CGFloat = 60.0
         static let collapsedStateHeight: CGFloat = 112.0
         static let expandedStateHeight: CGFloat = 204.0
+        static let arrowImageViewSize: CGSize = .init(width: 32, height: 32)
+
+        static let headerCellInsets: UIEdgeInsets = .init(
+            top: 14,
+            left: 16,
+            bottom: 0,
+            right: 16
+        )
+        static let contentInsets: UIEdgeInsets = .init(
+            top: 0,
+            left: 16,
+            bottom: 8,
+            right: 16
+        )
     }
 }
