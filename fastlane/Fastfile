@@ -1,0 +1,122 @@
+opt_out_usage
+default_platform(:ios)
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "10"
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+platform :ios do
+  # imports
+  import ("lines/line_build.rb")
+  import ("lines/line_tests.rb")
+  import ("lines/line_firebase_distribute.rb")
+  import ("lines/line_register_device.rb")
+  import ("lines/line_testflight.rb")
+  import ("lines/line_signing.rb")
+
+  # shared variables
+  main_target = "novawallet"
+  main_scheme = "novawallet"
+  main_configuration = "Debug"
+  main_app_identifier = "io.novafoundation.novawallet"
+  notification_target = "NovaPushNotificationServiceExtension"
+
+  test_scheme = "novawallet"
+  dev_app_identifier = "io.novafoundation.novawallet.dev"
+  dev_notification_service_identifier = "io.novafoundation.novawallet.dev.NovaPushNotificationServiceExtension"
+
+  testflight_distribution_scheme = "novawallet"
+  testflight_distribution_configuration = "Release"
+  testflight_notification_service_identifier = "io.novafoundation.novawallet.notificationServiceExtension"
+
+  desc "Runs unit tests"
+  desc "Example usage: fastlane run_unit_tests"
+  lane :run_unit_tests do
+    test_build(
+      scheme: test_scheme,
+      configuration: main_configuration
+    )
+  end
+
+  desc "Build app for CI"
+  lane :build_app_ci do
+    prepare_code_signing(
+      app_identifiers: dev_app_identifier,
+      notification_service_identifier: dev_notification_service_identifier
+    )
+    base_build_app(
+      scheme: main_scheme,
+      target: main_target,
+      configuration: main_configuration,
+      app_identifier: dev_app_identifier,
+      notification_service_identifier: dev_notification_service_identifier,
+      notification_target: notification_target
+    )
+  end
+
+  desc "Distribute app to Firebase"
+  desc "Parameters:"
+  desc "- 'release_notes : <value>' to define release notes"
+  desc " "
+  desc "Example usage: fastlane distribute_app_to_firebase release_notes:'Release notes'"
+  lane :distribute_app_to_firebase do |options|
+    prepare_code_signing(
+      app_identifiers: dev_app_identifier,
+      notification_service_identifier: dev_notification_service_identifier
+    )
+    base_build_app(
+      scheme: main_scheme,
+      target: main_target,
+      configuration: main_configuration,
+      app_identifier: dev_app_identifier,
+      notification_service_identifier: dev_notification_service_identifier,
+      notification_target: notification_target
+    )
+    distribute_to_firebase(
+      release_notes: options[:release_notes]
+    )
+  end
+
+  desc "Distribute new iOS build through TestFlight"
+  desc "Example usage: fastlane distribute_testflight"
+  lane :distribute_testflight do
+    load_asc_api_key
+    prepare_code_signing(
+      app_identifiers: main_app_identifier,
+      notification_service_identifier: testflight_notification_service_identifier
+    )
+    latest_build = latest_testflight_build_number(
+      app_identifier: main_app_identifier,
+      version: ENV["IOS_APP_VERSION"]
+    )
+    new_build_number = latest_build + 1
+
+    increment_version_number(
+      version_number: ENV["IOS_APP_VERSION"],
+      xcodeproj: "./#{main_target}.xcodeproj"
+    )
+
+    base_build_app(
+      scheme: testflight_distribution_scheme,
+      target: main_target,
+      configuration: testflight_distribution_configuration,
+      build_number: new_build_number,
+      app_identifier: main_app_identifier,
+      notification_service_identifier: testflight_notification_service_identifier,
+      notification_target: notification_target
+    )
+    upload_testflight(
+      scheme: testflight_distribution_scheme,
+      target: main_target,
+      configuration: testflight_distribution_configuration
+    )
+  end
+
+  desc "Update signing data"
+  desc "Example usage: fastlane update_signing"
+  lane :update_signing do
+    update_signing_data(
+      app_identifiers: [main_app_identifier, dev_app_identifier],
+      notification_service_identifier: [dev_notification_service_identifier, testflight_notification_service_identifier]
+    )
+  end
+end
