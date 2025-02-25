@@ -27,6 +27,7 @@ class AssetDetailsBalanceWidget: UIView {
 
     private let balanceTableView: StackTableView = .create {
         $0.cellHeight = Constants.balanceCellHeight
+        $0.setCustomHeight(Constants.headerCellHeight, at: 0)
         $0.setCustomHeight(Constants.totalCellHeight, at: 1)
         $0.setShowsSeparator(false, at: 1)
         $0.hasSeparators = true
@@ -215,7 +216,7 @@ extension AssetDetailsBalanceWidget {
     enum Constants {
         static let balanceCellHeight: CGFloat = 48.0
         static let headerCellHeight: CGFloat = 44.0
-        static let totalCellHeight: CGFloat = 60.0
+        static let totalCellHeight: CGFloat = 52.0
         static let collapsedStateHeight: CGFloat = 112.0
         static let expandedStateHeight: CGFloat = 204.0
         static let arrowImageViewSize: CGSize = .init(width: 32, height: 32)
