@@ -119,12 +119,11 @@ private extension AssetDetailsBalanceWidget {
     }
 
     func setupActions() {
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(actionTap)
+        totalCell.addTarget(
+            self,
+            action: #selector(actionToggleState),
+            for: .touchUpInside
         )
-
-        totalCell.addGestureRecognizer(tapGesture)
     }
 
     func hideDetails(animated: Bool = false) {
@@ -171,7 +170,7 @@ private extension AssetDetailsBalanceWidget {
         delegate?.didChangeState(to: state)
     }
 
-    @objc func actionTap() {
+    @objc func actionToggleState() {
         toggleState()
     }
 }
