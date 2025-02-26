@@ -13,7 +13,6 @@ protocol PriceLocalStorageSubscriber: LocalStorageProviderObserving where Self: 
     ) -> StreamableProvider<PriceData>
 
     func subscribeAllPrices(
-        for priceIds: [ChainAssetId: AssetModel.PriceId],
         currency: Currency,
         options: StreamableProviderObserverOptions
     ) -> StreamableProvider<PriceData>
@@ -41,7 +40,6 @@ extension PriceLocalStorageSubscriber {
     }
 
     func subscribeAllPrices(
-        for priceIds: [ChainAssetId: AssetModel.PriceId],
         currency: Currency
     ) -> StreamableProvider<PriceData> {
         let options = StreamableProviderObserverOptions(
@@ -51,7 +49,7 @@ extension PriceLocalStorageSubscriber {
             refreshWhenEmpty: true
         )
 
-        return subscribeAllPrices(for: priceIds, currency: currency, options: options)
+        return subscribeAllPrices(currency: currency, options: options)
     }
 
     func subscribeToPriceHistory(
@@ -101,7 +99,6 @@ extension PriceLocalStorageSubscriber {
     }
 
     func subscribeAllPrices(
-        for priceIds: [ChainAssetId: AssetModel.PriceId],
         currency: Currency,
         options: StreamableProviderObserverOptions
     ) -> StreamableProvider<PriceData> {
@@ -112,19 +109,7 @@ extension PriceLocalStorageSubscriber {
         addStreamableProviderObserver(
             for: provider,
             updateClosure: { [weak self] changes in
-                guard let self else {
-                    return
-                }
-
-                let priceIdToData = changes.mergeToDict([String: PriceData]())
-                let assetIdToData = priceIds.reduce(
-                    into: [ChainAssetId: PriceData]()
-                ) { accum, keyValue in
-                    let identifier = PriceData.createIdentifier(for: keyValue.value, currencyId: currency.id)
-                    accum[keyValue.key] = priceIdToData[identifier]
-                }
-
-                priceLocalSubscriptionHandler.handleAllPrices(result: .success(assetIdToData))
+                self?.priceLocalSubscriptionHandler.handleAllPrices(result: .success(changes))
             },
             failureClosure: { [weak self] error in
                 self?.priceLocalSubscriptionHandler.handleAllPrices(
