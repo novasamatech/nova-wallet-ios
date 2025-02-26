@@ -66,7 +66,7 @@ private extension AssetDetailsViewController {
         rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
         rootView.buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
         rootView.swapButton.addTarget(self, action: #selector(didTapSwapButton), for: .touchUpInside)
-        rootView.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
+        rootView.balanceWidget.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
     }
 
     @objc func didTapSendButton() {
@@ -96,16 +96,17 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
     }
 
     func didReceive(totalBalance: BalanceViewModelProtocol) {
-        rootView.totalCell.bind(viewModel: totalBalance)
+        rootView.balanceWidget.totalTokensBalanceLabel.text = totalBalance.amount
+        rootView.balanceWidget.totalValueBalanceLabel.text = totalBalance.price
     }
 
     func didReceive(transferableBalance: BalanceViewModelProtocol) {
-        rootView.transferrableCell.bind(viewModel: transferableBalance)
+        rootView.balanceWidget.transferrableCell.bind(viewModel: transferableBalance)
     }
 
     func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool) {
-        rootView.lockCell.bind(viewModel: lockedBalance)
-        rootView.lockCell.canSelect = isSelectable
+        rootView.balanceWidget.lockCell.bind(viewModel: lockedBalance)
+        rootView.balanceWidget.lockCell.canSelect = isSelectable
     }
 
     func didReceive(availableOperations: AssetDetailsOperation) {
