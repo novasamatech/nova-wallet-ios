@@ -85,10 +85,7 @@ final class BalancesStore: AnyProviderAutoCleaning {
         }
 
         if prevPrices != availableTokenPrice {
-            updatePriceProvider(
-                for: Set(availableTokenPrice.values),
-                currency: selectedCurrency
-            )
+            updatePriceProvider(currency: selectedCurrency)
         }
     }
 
@@ -102,22 +99,9 @@ final class BalancesStore: AnyProviderAutoCleaning {
         delegate?.balancesStore(self, didReceive: error)
     }
 
-    private func updatePriceProvider(
-        for priceIdSet: Set<AssetModel.PriceId>,
-        currency: Currency
-    ) {
+    private func updatePriceProvider(currency: Currency) {
         priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
+        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(currency: currency)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
             guard let strongSelf = self else {
@@ -202,6 +186,6 @@ extension BalancesStore: SelectedCurrencyDepending {
             return
         }
 
-        updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        updatePriceProvider(currency: selectedCurrency)
     }
 }

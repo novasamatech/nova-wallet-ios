@@ -257,21 +257,11 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     }
 
     private func updatePriceProvider(
-        for priceIdSet: Set<AssetModel.PriceId>,
+        for _: Set<AssetModel.PriceId>,
         currency: Currency
     ) {
         priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
+        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(currency: currency)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
             guard let strongSelf = self else {

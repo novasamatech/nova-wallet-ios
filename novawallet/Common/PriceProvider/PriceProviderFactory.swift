@@ -167,8 +167,8 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         let source = CoingeckoPriceHistoryProviderSource(
             priceId: priceId,
             currency: currency,
-            period: .year operationFactory: CoingeckoOperationFactory(),
-
+            period: .year,
+            operationFactory: CoingeckoOperationFactory(),
             logger: logger
         )
 
@@ -196,7 +196,7 @@ private extension PriceProviderFactory {
                 mapper: AnyCoreDataMapper(mapper)
             )
             let coingecko = CoingeckoStreamableSource(
-                priceIdsObservable: priceProvider.priceIds,
+                priceIdsObservable: priceProvider.priceIdsObservable,
                 currency: currency,
                 repository: AnyDataProviderRepository(repository),
                 operationQueue: operationQueue

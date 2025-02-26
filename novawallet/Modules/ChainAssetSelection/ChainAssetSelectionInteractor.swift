@@ -132,20 +132,9 @@ final class ChainAssetSelectionInteractor {
         setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 
-    private func setupPriceProvider(for priceIdSet: Set<AssetModel.PriceId>, currency: Currency) {
+    private func setupPriceProvider(for _: Set<AssetModel.PriceId>, currency: Currency) {
         priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            presenter?.didReceivePrice(changes: [:])
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
+        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(currency: currency)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
             guard let strongSelf = self else {

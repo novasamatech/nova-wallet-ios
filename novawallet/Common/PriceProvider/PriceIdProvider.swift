@@ -2,17 +2,14 @@ import Foundation
 import Combine
 
 protocol PriceIdProviderProtocol {
-    var priceIds: AnyPublisher<Set<AssetModel.PriceId>, Never> { get }
+    var priceIdsObservable: Observable<Set<AssetModel.PriceId>> { get }
 }
 
 class PriceIdProvider: PriceIdProviderProtocol {
     let chainRegistry: ChainRegistryProtocol
     let queue: DispatchQueue
 
-    private let priceIdsSubject = CurrentValueSubject<Set<AssetModel.PriceId>, Never>([])
-    var priceIds: AnyPublisher<Set<AssetModel.PriceId>, Never> {
-        priceIdsSubject.eraseToAnyPublisher()
-    }
+    let priceIdsObservable: Observable<Set<AssetModel.PriceId>> = .init(state: Set())
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -36,7 +33,7 @@ class PriceIdProvider: PriceIdProviderProtocol {
             } ?? []
 
             let priceIds = allChains.flatMap { $0.assets.compactMap(\.priceId) }
-            self?.priceIdsSubject.send(Set(priceIds))
+            self?.priceIdsObservable.state = Set(priceIds)
         }
     }
 

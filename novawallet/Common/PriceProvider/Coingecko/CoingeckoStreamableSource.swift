@@ -1,13 +1,11 @@
 import Foundation
 import Operation_iOS
-import Combine
 
 final class CoingeckoStreamableSource: StreamableSourceProtocol {
     typealias Model = PriceData
 
     private let cancellableStore = CancellableCallStore()
-    private var cancellable: AnyCancellable?
-    private let priceIdsObservable: AnyPublisher<Set<AssetModel.PriceId>, Never>
+    private let priceIdsObservable: Observable<Set<AssetModel.PriceId>>
     private var priceIds: Set<AssetModel.PriceId> = [] {
         willSet {
             guard newValue != priceIds,
@@ -35,7 +33,7 @@ final class CoingeckoStreamableSource: StreamableSourceProtocol {
     let operationQueue: OperationQueue
 
     init(
-        priceIdsObservable: AnyPublisher<Set<AssetModel.PriceId>, Never>,
+        priceIdsObservable: Observable<Set<AssetModel.PriceId>>,
         currency: Currency,
         repository: AnyDataProviderRepository<PriceData>,
         operationQueue: OperationQueue
@@ -112,10 +110,11 @@ final class CoingeckoStreamableSource: StreamableSourceProtocol {
 
 private extension CoingeckoStreamableSource {
     func subscribe() {
-        cancellable = priceIdsObservable
-            .receive(on: queue)
-            .sink { [weak self] in
-                self?.priceIds = $0
-            }
+        priceIdsObservable.addObserver(
+            with: self,
+            queue: queue
+        ) { [weak self] _, newState in
+            self?.priceIds = newState
+        }
     }
 }
