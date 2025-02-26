@@ -49,8 +49,9 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
             iconAppearance: appearanceFacade.selectedIconAppearance
         )
 
-        let logoInfo = IconInfo(
+        let logoInfo = ChainLogoImageInfo(
             size: .qrLogoSize,
+            scale: UIScreen.main.scale,
             type: qrLogoType
         )
 
