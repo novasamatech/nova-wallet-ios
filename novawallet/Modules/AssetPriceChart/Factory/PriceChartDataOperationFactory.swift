@@ -68,7 +68,7 @@ extension PriceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol
         }
 
         let mapOperation = ClosureOperation<[PriceHistoryPeriod: [PriceHistoryItem]]> {
-            var result: [PriceHistoryPeriod: [PriceHistoryItem]] = [:]
+            let result: [PriceHistoryPeriod: [PriceHistoryItem]] = [:]
 
             return try zip(allPeriods, wrappers).reduce(into: result) { acc, pair in
                 acc[pair.0] = try pair.1.targetOperation.extractNoCancellableResultData()

@@ -16,7 +16,7 @@ protocol AssetPriceChartViewDataSourceProtocol {
 
     func set(widgetViewModel: AssetPriceChartWidgetViewModel)
 
-    func set(priceChange: PricePeriodChangeViewModel)
+    func set(priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel)
 
     func getTitle() -> String?
 
@@ -31,6 +31,7 @@ protocol AssetPriceChartViewDataSourceProtocol {
 
 final class AssetPriceChartViewDataSource {
     private var widgetViewModel: AssetPriceChartWidgetViewModel?
+    private var entryIndexesByX: [Double: Int]?
 }
 
 // MARK: AssetPriceChartDataSourceProtocol
@@ -59,13 +60,14 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
 
     func createChartData(for selectedEntry: ChartDataEntry) -> LineChartData? {
         guard
+            let selectedIndex = entryIndexesByX?[selectedEntry.x],
             let chartModel = widgetViewModel?.chartModel.value,
             let colors = createColors()
         else { return nil }
 
         let currentEntries = chartModel.dataSet
 
-        let entriesBefore = currentEntries.filter { $0.x <= selectedEntry.x }
+        let entriesBefore = Array(currentEntries[0 ..< selectedIndex + 1])
         let entriesAfter = Array(currentEntries[entriesBefore.count - 1 ..< currentEntries.count])
 
         let dataBefore = createChartData(
@@ -85,7 +87,6 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
     }
 
     func createEmptyChartData() -> LineChartData {
-        let periods: CGFloat = 2
         let entriesCount = 100
 
         let entries = (0 ..< entriesCount).map {
@@ -152,10 +153,19 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
 
     func set(widgetViewModel: AssetPriceChartWidgetViewModel) {
         self.widgetViewModel = widgetViewModel
+
+        guard let chartModel = widgetViewModel.chartModel.value else {
+            entryIndexesByX = nil
+            return
+        }
+
+        entryIndexesByX = chartModel.dataSet
+            .enumerated()
+            .reduce(into: [:]) { $0[$1.element.x] = $1.offset }
     }
 
-    func set(priceChange: PricePeriodChangeViewModel) {
-        widgetViewModel = widgetViewModel?.byUpdatingPeriodChange(priceChange)
+    func set(priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel) {
+        widgetViewModel = widgetViewModel?.byUpdating(with: priceUpdateViewModel)
     }
 
     func getTitle() -> String? {
