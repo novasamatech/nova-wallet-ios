@@ -1,57 +1,139 @@
 import UIKit
 import Operation_iOS
+import SubstrateSdk
 
 final class ParitySignerTxQrInteractor {
     weak var presenter: ParitySignerTxQrInteractorOutputProtocol?
 
     let signingData: Data
+    let params: ParitySignerConfirmationParams
     let metaId: String
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
     let walletRepository: AnyDataProviderRepository<MetaAccountModel>
     let messageOperationFactory: ParitySignerMessageOperationFactoryProtocol
     let multipartQrOperationFactory: MultipartQrOperationFactoryProtocol
+    let proofOperationFactory: ExtrinsicProofOperationFactoryProtocol
     let mortalityPeriodMilliseconds: TimeInterval
     let operationQueue: OperationQueue
 
     init(
         signingData: Data,
+        params: ParitySignerConfirmationParams,
         metaId: String,
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
         messageOperationFactory: ParitySignerMessageOperationFactoryProtocol,
+        proofOperationFactory: ExtrinsicProofOperationFactoryProtocol,
         multipartQrOperationFactory: MultipartQrOperationFactoryProtocol,
         mortalityPeriodMilliseconds: TimeInterval,
         operationQueue: OperationQueue
     ) {
         self.signingData = signingData
+        self.params = params
         self.metaId = metaId
         self.chainId = chainId
         self.chainRegistry = chainRegistry
         self.walletRepository = walletRepository
         self.messageOperationFactory = messageOperationFactory
+        self.proofOperationFactory = proofOperationFactory
         self.multipartQrOperationFactory = multipartQrOperationFactory
         self.mortalityPeriodMilliseconds = mortalityPeriodMilliseconds
         self.operationQueue = operationQueue
+    }
+
+    private func createMetadataProofWrapper(
+        from params: ParitySignerSigningMode.Extrinsic
+    ) -> CompoundOperationWrapper<Data> {
+        do {
+            let chain = try chainRegistry.getChainOrError(for: chainId)
+            let chainConnection = try chainRegistry.getConnectionOrError(for: chainId)
+
+            let signatureParamsOperation = ClosureOperation<ExtrinsicSignatureParams> {
+                let builder = params.extrinsicMemo.restoreBuilder()
+                let encoder = params.codingFactory.createEncoder()
+
+                return try builder.buildExtrinsicSignatureParams(
+                    encodingBy: encoder,
+                    metadata: params.codingFactory.metadata
+                )
+            }
+
+            let proofWrapper = proofOperationFactory.createExtrinsicProofWrapper(
+                for: chain,
+                connection: chainConnection,
+                signatureParamsClosure: {
+                    try signatureParamsOperation.extractNoCancellableResultData()
+                }
+            )
+
+            proofWrapper.addDependency(operations: [signatureParamsOperation])
+
+            return proofWrapper.insertingHead(operations: [signatureParamsOperation])
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
+    }
+
+    private func createTransactionWithExtrinsicWrapper(
+        for account: ChainAccountResponse,
+        params: ParitySignerSigningMode.Extrinsic
+    ) -> CompoundOperationWrapper<Data> {
+        guard params.codingFactory.supportsMetadataHash() else {
+            return messageOperationFactory.createMetadataBasedTransaction(
+                for: signingData,
+                accountId: account.accountId,
+                cryptoType: account.cryptoType,
+                genesisHash: chainId
+            )
+        }
+
+        let metadataProofWrapper = createMetadataProofWrapper(from: params)
+
+        let transactionWrapper = messageOperationFactory.createProofBasedTransaction(
+            for: signingData,
+            metadataProofClosure: {
+                try metadataProofWrapper.targetOperation.extractNoCancellableResultData()
+            },
+            accountId: account.accountId,
+            cryptoType: account.cryptoType,
+            genesisHash: chainId
+        )
+
+        transactionWrapper.addDependency(wrapper: metadataProofWrapper)
+
+        return transactionWrapper.insertingHead(operations: metadataProofWrapper.allOperations)
+    }
+
+    private func createTransactionWrapper(for account: ChainAccountResponse) -> CompoundOperationWrapper<Data> {
+        switch params.mode {
+        case let .extrinsic(extrinsicParams):
+            createTransactionWithExtrinsicWrapper(
+                for: account,
+                params: extrinsicParams
+            )
+        case .rawBytes:
+            messageOperationFactory.createMessage(
+                for: signingData,
+                accountId: account.accountId,
+                cryptoType: account.cryptoType,
+                genesisHash: chainId
+            )
+        }
     }
 
     private func provideTransactionCode(
         for size: CGSize,
         account: ChainAccountResponse
     ) {
-        let messageWrapper = messageOperationFactory.createTransaction(
-            for: signingData,
-            accountId: account.accountId,
-            cryptoType: account.cryptoType,
-            genesisHash: chainId
-        )
+        let transactionWrapper = createTransactionWrapper(for: account)
 
         let qrPayloadWrapper = multipartQrOperationFactory.createFromPayloadClosure {
-            try messageWrapper.targetOperation.extractNoCancellableResultData()
+            try transactionWrapper.targetOperation.extractNoCancellableResultData()
         }
 
-        qrPayloadWrapper.addDependency(wrapper: messageWrapper)
+        qrPayloadWrapper.addDependency(wrapper: transactionWrapper)
 
         let qrCreationOperation = OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -80,7 +162,7 @@ final class ParitySignerTxQrInteractor {
             }
         }
 
-        let operations = messageWrapper.allOperations + qrPayloadWrapper.allOperations + [qrCreationOperation]
+        let operations = transactionWrapper.allOperations + qrPayloadWrapper.allOperations + [qrCreationOperation]
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }

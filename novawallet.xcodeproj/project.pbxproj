@@ -496,6 +496,8 @@
 		0C8AF7BF2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */; };
 		0C8AF7C12B3A9EFE00005AC9 /* NftDetailsPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */; };
 		0C8B0EC02B84A4D600A2A53F /* URLLocalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */; };
+		0C8C8F882D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C8F872D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift */; };
+		0C8C8F8A2D6F168A00441FB3 /* ParitySignerMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C8F892D6F168A00441FB3 /* ParitySignerMode.swift */; };
 		0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA02CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */; };
 		0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FDBA22CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift */; };
@@ -5901,6 +5903,8 @@
 		0C8AF7BE2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pdc20DetailsInteractor.swift; sourceTree = "<group>"; };
 		0C8AF7C02B3A9EFE00005AC9 /* NftDetailsPrice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftDetailsPrice.swift; sourceTree = "<group>"; };
 		0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLLocalRouter.swift; sourceTree = "<group>"; };
+		0C8C8F872D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerConfirmationParams.swift; sourceTree = "<group>"; };
+		0C8C8F892D6F168A00441FB3 /* ParitySignerMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerMode.swift; sourceTree = "<group>"; };
 		0C8FDB7F2CAD022700775D7F /* SubstrateDataModel22.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel22.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB802CAD022700775D7F /* SubstrateDataModel9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel9.xcdatamodel; sourceTree = "<group>"; };
 		0C8FDB812CAD022700775D7F /* SubstrateDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -15916,6 +15920,8 @@
 				8428228F289BB3C700163031 /* ParitySignerWalletOperationFactory.swift */,
 				84282291289BB45700163031 /* ParitySignerWallet.swift */,
 				84F4B2362A31D2F300113DDD /* ParitySignerType.swift */,
+				0C8C8F872D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift */,
+				0C8C8F892D6F168A00441FB3 /* ParitySignerMode.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -26063,6 +26069,7 @@
 				846B749528B422C800C39B93 /* ChainAccountAddViewModel.swift in Sources */,
 				84EBFCE4285E734C0006327E /* XcmTransferDestination.swift in Sources */,
 				0CD8462E2BDE10C20026B5CA /* OnboardingImportOptionsPresenter.swift in Sources */,
+				0C8C8F8A2D6F168A00441FB3 /* ParitySignerMode.swift in Sources */,
 				77CBD3A02ABC35D900D646D6 /* SpendAssetSearchBuilder.swift in Sources */,
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
 				844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */,
@@ -30589,6 +30596,7 @@
 				ACE097F2BC993DC3E4E6CF7E /* GovernanceTracksSettingsViewFactory.swift in Sources */,
 				8C0C890FCCF0900DDE9CFD5F /* NotificationWalletListProtocols.swift in Sources */,
 				092A69A83D842376740F1943 /* NotificationWalletListWireframe.swift in Sources */,
+				0C8C8F882D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift in Sources */,
 				4520C59F8C8CCB7669DDA4DF /* NotificationWalletListPresenter.swift in Sources */,
 				AD87A679F6E61D7AA20DF60C /* NotificationWalletListInteractor.swift in Sources */,
 				6B1BDD1421916CCF59DF6F5F /* NotificationWalletListViewController.swift in Sources */,
