@@ -387,13 +387,13 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
     }
 
     func proceed() {
-        guard
-            let stakingModel = getStakingModel(),
-            let collator = collatorDisplayAddress else {
-            return
-        }
-
         let onSuccess: () -> Void = { [weak self] in
+            guard
+                let stakingModel = self?.getStakingModel(),
+                let collator = self?.collatorDisplayAddress else {
+                return
+            }
+            
             self?.wireframe.showConfirmation(
                 from: self?.view,
                 model: MythosStakingConfirmModel(
