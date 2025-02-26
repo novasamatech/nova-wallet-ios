@@ -11,7 +11,7 @@ struct PriceChartWidgetFactoryParams {
     let locale: Locale
 }
 
-struct PriceChartChangeViewFactoryParams {
+struct PriceChartPriceUpdateViewFactoryParams {
     let entries: [PriceHistoryItem]?
     let priceData: PriceData?
     let lastEntry: PriceHistoryItem
@@ -21,7 +21,9 @@ struct PriceChartChangeViewFactoryParams {
 
 protocol AssetPriceChartViewModelFactoryProtocol {
     func createViewModel(params: PriceChartWidgetFactoryParams) -> AssetPriceChartWidgetViewModel
-    func createPriceChangeViewModel(params: PriceChartChangeViewFactoryParams) -> PricePeriodChangeViewModel?
+    func createPriceUpdateViewModel(
+        params: PriceChartPriceUpdateViewFactoryParams
+    ) -> AssetPriceChartPriceUpdateViewModel?
 }
 
 final class AssetPriceChartViewModelFactory {
@@ -46,19 +48,6 @@ private extension AssetPriceChartViewModelFactory {
     func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
         let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
         return assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetBalanceDisplayInfo)
-    }
-
-    func formattedPrice(
-        for priceData: PriceData,
-        _ locale: Locale
-    ) -> String? {
-        let priceDecimal = Decimal(string: priceData.price) ?? 0.0
-
-        let price = priceFormatter(priceId: priceData.currencyId)
-            .value(for: locale)
-            .stringFromDecimal(priceDecimal)
-
-        return price
     }
 
     func createPeriodChangeViewModel(
@@ -218,7 +207,9 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             locale: params.locale
         )
 
-        let currentPrice = formattedPrice(for: priceData, params.locale)
+        let currentPrice = priceFormatter(priceId: priceData.currencyId)
+            .value(for: params.locale)
+            .stringFromDecimal(lastEntry.value)
 
         return AssetPriceChartWidgetViewModel(
             title: title,
@@ -229,18 +220,29 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         )
     }
 
-    func createPriceChangeViewModel(params: PriceChartChangeViewFactoryParams) -> PricePeriodChangeViewModel? {
+    func createPriceUpdateViewModel(
+        params: PriceChartPriceUpdateViewFactoryParams
+    ) -> AssetPriceChartPriceUpdateViewModel? {
         guard
             let priceData = params.priceData,
             let entries = params.entries
         else { return nil }
 
-        return createPeriodChangeViewModel(
+        let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
             allEntries: entries,
             lastEntry: params.lastEntry,
             selectedPeriod: params.selectedPeriod,
             locale: params.locale
+        )
+
+        let priceText = priceFormatter(priceId: priceData.currencyId)
+            .value(for: params.locale)
+            .stringFromDecimal(params.lastEntry.value)
+
+        return AssetPriceChartPriceUpdateViewModel(
+            currentPrice: priceText,
+            changeViewModel: changeViewModel
         )
     }
 }
