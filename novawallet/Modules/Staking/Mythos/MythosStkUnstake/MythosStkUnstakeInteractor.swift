@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-class MythosStkUnstakeInteractor: AnyProviderAutoCleaning {
+class MythosStkUnstakeInteractor: AnyProviderAutoCleaning, RuntimeConstantFetching {
     weak var basePresenter: MythosStkUnstakeInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -16,16 +16,23 @@ class MythosStkUnstakeInteractor: AnyProviderAutoCleaning {
     let runtimeProvider: RuntimeCodingServiceProtocol
     let stakingDurationFactory: MythosStkDurationOperationFactoryProtocol
     let blocktimeEstimationService: BlockTimeEstimationServiceProtocol
+    let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    var chainId: ChainModel.Id {
+        chainAsset.chain.chainId
+    }
+
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
+    private var releaseQueueProvider: AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>?
 
     init(
         chainAsset: ChainAsset,
         selectedAccount: ChainAccountResponse,
         stakingDetailsService: MythosStakingDetailsSyncServiceProtocol,
+        stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         claimableRewardsService: MythosStakingClaimableRewardsServiceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -41,6 +48,7 @@ class MythosStkUnstakeInteractor: AnyProviderAutoCleaning {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.stakingDetailsService = stakingDetailsService
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.claimableRewardsService = claimableRewardsService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -115,6 +123,15 @@ private extension MythosStkUnstakeInteractor {
         }
     }
 
+    func makeReleaseQueueSubscription() {
+        clear(dataProvider: &releaseQueueProvider)
+
+        releaseQueueProvider = subscribeToReleaseQueue(
+            for: chainId,
+            accountId: selectedAccount.accountId
+        )
+    }
+
     func provideStakingDuration() {
         let wrapper = stakingDurationFactory.createDurationOperation(
             for: chainAsset.chain.chainId,
@@ -134,6 +151,22 @@ private extension MythosStkUnstakeInteractor {
             }
         }
     }
+
+    func provideMaxUnstakingCollators() {
+        // the max number of collators per staker is also used to limit number of unstaking chunks
+        fetchConstant(
+            for: MythosStakingPallet.maxStakedCandidatesPath,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            switch result {
+            case let .success(maxCandidatesPerStaker):
+                self?.basePresenter?.didReceiveMaxUnstakingCollators(maxCandidatesPerStaker)
+            case let .failure(error):
+                self?.logger.error("Unexpected error: \(error)")
+            }
+        }
+    }
 }
 
 extension MythosStkUnstakeInteractor: MythosStkUnstakeInteractorInputProtocol {
@@ -142,7 +175,9 @@ extension MythosStkUnstakeInteractor: MythosStkUnstakeInteractorInputProtocol {
         makePriceSubscription()
         makeStakingDetailsSubscription()
         makeClaimableRewardsSubscription()
+        makeReleaseQueueSubscription()
         provideStakingDuration()
+        provideMaxUnstakingCollators()
 
         onSetup()
     }
@@ -191,6 +226,21 @@ extension MythosStkUnstakeInteractor: PriceLocalStorageSubscriber, PriceLocalSub
             basePresenter?.didReceivePrice(priceData)
         case let .failure(error):
             logger.error("Price subscription failed: \(error)")
+        }
+    }
+}
+
+extension MythosStkUnstakeInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {
+    func handleReleaseQueue(
+        result: Result<MythosStakingPallet.ReleaseQueue?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(releaseQueue):
+            basePresenter?.didReceiveReleaseQueue(releaseQueue)
+        case let .failure(error):
+            logger.error("Release queue subscription failed: \(error)")
         }
     }
 }

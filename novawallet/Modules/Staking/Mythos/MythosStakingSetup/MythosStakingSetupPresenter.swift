@@ -393,7 +393,7 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
                 let collator = self?.collatorDisplayAddress else {
                 return
             }
-            
+
             self?.wireframe.showConfirmation(
                 from: self?.view,
                 model: MythosStakingConfirmModel(

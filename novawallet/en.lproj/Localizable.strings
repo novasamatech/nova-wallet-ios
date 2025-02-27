@@ -1794,3 +1794,4 @@
 "dapp.list.section.popular" = "Popular";
 "swaps.max.price.diff.error.title" = "High price impact detected (%@)";
 "swaps.max.price.diff.error.message" = "Executing this swap will result in significant slippage and financial losses. Consider reducing your trade size of splitting your trade into multiple transactions.";
+"unstaking.limit.reached.message" = "You have reached the unstaking limit requests (%@ active requests)";

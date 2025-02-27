@@ -21,6 +21,8 @@ final class MythosStkUnstakeConfirmPresenter {
     private(set) var claimableRewards: MythosStakingClaimableRewards?
     private(set) var delegationIdentities: [AccountId: AccountIdentity]?
     private(set) var stakingDuration: MythosStakingDuration?
+    private(set) var maxUnstakingCollators: UInt32?
+    private(set) var releaseQueue: MythosStakingPallet.ReleaseQueue?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -196,6 +198,11 @@ final class MythosStkUnstakeConfirmPresenter {
                 locale: selectedLocale,
                 onError: { [weak self] in self?.refreshFee() }
             ),
+            dataValidatingFactory.notExceedsMaxUnstakingItems(
+                unstakingItemsCount: releaseQueue?.count ?? 0,
+                maxUnstakingItemsAllowed: maxUnstakingCollators,
+                locale: selectedLocale
+            ),
             dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
                 fee: fee,
@@ -275,6 +282,18 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
         stakingDuration = duration
 
         provideHintsViewModel()
+    }
+
+    func didReceiveMaxUnstakingCollators(_ maxUnstakingCollators: UInt32) {
+        logger.debug("Max unstaking collators: \(maxUnstakingCollators)")
+
+        self.maxUnstakingCollators = maxUnstakingCollators
+    }
+
+    func didReceiveReleaseQueue(_ releaseQueue: MythosStakingPallet.ReleaseQueue?) {
+        logger.debug("Release queue: \(String(describing: releaseQueue))")
+
+        self.releaseQueue = releaseQueue
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
