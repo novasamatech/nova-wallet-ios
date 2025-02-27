@@ -100,7 +100,7 @@ final class BalancesStore: AnyProviderAutoCleaning {
     }
 
     private func updatePriceProvider(currency: Currency) {
-        priceSubscription = nil
+        clear(streamableProvider: &priceSubscription)
         priceSubscription = subscribeAllPrices(currency: currency)
     }
 }

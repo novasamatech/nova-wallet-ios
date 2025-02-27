@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 import BigInt
 
-final class ChainAssetSelectionInteractor {
+final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
     weak var presenter: ChainAssetSelectionInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
@@ -133,7 +133,7 @@ final class ChainAssetSelectionInteractor {
     }
 
     private func setupPriceProvider(currency: Currency) {
-        priceSubscription = nil
+        clear(streamableProvider: &priceSubscription)
         priceSubscription = subscribeAllPrices(currency: currency)
     }
 }

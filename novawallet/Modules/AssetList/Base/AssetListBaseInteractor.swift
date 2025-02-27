@@ -4,7 +4,9 @@ import SubstrateSdk
 import SoraKeystore
 import BigInt
 
-class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+class AssetListBaseInteractor: WalletLocalStorageSubscriber,
+    WalletLocalSubscriptionHandler,
+    AnyProviderAutoCleaning {
     var baseBuilder: AssetListBaseBuilder?
 
     let selectedWalletSettings: SelectedWalletSettings
@@ -257,7 +259,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     }
 
     private func updatePriceProvider(currency: Currency) {
-        priceSubscription = nil
+        clear(streamableProvider: &priceSubscription)
         priceSubscription = subscribeAllPrices(currency: currency)
     }
 
