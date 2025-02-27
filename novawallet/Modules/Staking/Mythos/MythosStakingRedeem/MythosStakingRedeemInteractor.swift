@@ -66,6 +66,22 @@ final class MythosStakingRedeemInteractor: AnyProviderAutoCleaning {
 }
 
 private extension MythosStakingRedeemInteractor {
+    func setupDataRetrieval() {
+        makeAssetBalanceSubscription()
+        makePriceSubscription()
+        makeBlockNumberSubscription()
+        makeReleaseQueueSubscription()
+        setupFrozenBalanceSubscription()
+    }
+
+    func clearDataRetrieval() {
+        clear(streamableProvider: &balanceProvider)
+        clear(streamableProvider: &priceProvider)
+        clear(dataProvider: &blockNumberProvider)
+        clear(dataProvider: &releaseQueueProvider)
+        clearFrozenBalanceSubscription()
+    }
+
     func makeAssetBalanceSubscription() {
         clear(streamableProvider: &balanceProvider)
         balanceProvider = subscribeToAssetBalanceProvider(
@@ -95,6 +111,11 @@ private extension MythosStakingRedeemInteractor {
         blockNumberProvider = subscribeToBlockNumber(for: chainId)
     }
 
+    func clearFrozenBalanceSubscription() {
+        frozenBalanceStore.throttle()
+        frozenBalanceStore.remove(observer: self)
+    }
+
     func setupFrozenBalanceSubscription() {
         frozenBalanceStore.setup()
 
@@ -118,11 +139,7 @@ private extension MythosStakingRedeemInteractor {
 
 extension MythosStakingRedeemInteractor: MythosStakingRedeemInteractorInputProtocol {
     func setup() {
-        makeAssetBalanceSubscription()
-        makePriceSubscription()
-        makeBlockNumberSubscription()
-        makeReleaseQueueSubscription()
-        setupFrozenBalanceSubscription()
+        setupDataRetrieval()
     }
 
     func estimateFee() {
@@ -141,6 +158,8 @@ extension MythosStakingRedeemInteractor: MythosStakingRedeemInteractorInputProto
             signer: signingWrapper
         )
 
+        clearDataRetrieval()
+
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -150,6 +169,7 @@ extension MythosStakingRedeemInteractor: MythosStakingRedeemInteractorInputProto
                 let txHash = try result.getSuccessExtrinsicStatus().extrinsicHash
                 self?.presenter?.didReceiveSubmissionResult(.success(txHash))
             } catch {
+                self?.setupDataRetrieval()
                 self?.presenter?.didReceiveSubmissionResult(.failure(error))
             }
         }

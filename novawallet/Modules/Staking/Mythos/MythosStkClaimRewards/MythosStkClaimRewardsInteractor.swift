@@ -87,13 +87,23 @@ private extension MythosStkClaimRewardsInteractor {
             try builder.adding(call: MythosStakingPallet.ClaimRewardsCall().runtimeCall())
         }
     }
+
+    func setupDataRetrieval() {
+        makeAssetBalanceSubscription()
+        makePriceSubscription()
+        makeClaimableRewardsSubscription()
+    }
+
+    func clearDataRetrieval() {
+        clear(streamableProvider: &balanceProvider)
+        clear(streamableProvider: &priceProvider)
+        rewardsSyncService.remove(observer: self)
+    }
 }
 
 extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputProtocol {
     func setup() {
-        makeAssetBalanceSubscription()
-        makePriceSubscription()
-        makeClaimableRewardsSubscription()
+        setupDataRetrieval()
     }
 
     func estimateFee() {
@@ -112,6 +122,8 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
             signer: signingWrapper
         )
 
+        clearDataRetrieval()
+
         execute(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
@@ -121,6 +133,7 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
                 let txHash = try result.getSuccessExtrinsicStatus().extrinsicHash
                 self?.presenter?.didReceiveSubmissionResult(.success(txHash))
             } catch {
+                self?.setupDataRetrieval()
                 self?.presenter?.didReceiveSubmissionResult(.failure(error))
             }
         }
