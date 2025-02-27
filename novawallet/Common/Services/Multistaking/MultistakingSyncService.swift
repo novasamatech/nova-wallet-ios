@@ -357,12 +357,19 @@ final class MultistakingSyncService {
             return nil
         }
 
+        let collatorsOperationFactory = MythosCollatorOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            timeout: JSONRPCTimeout.hour
+        )
+
         return MythosMultistakingUpdateService(
             walletId: wallet.metaId,
             accountId: account.accountId,
             chainAsset: chainAsset,
             stakingType: stakingType,
             dashboardRepository: multistakingRepositoryFactory.createMythosRepository(),
+            collatorsOperationFactory: collatorsOperationFactory,
             cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
             connection: connection,
             runtimeService: runtimeService,

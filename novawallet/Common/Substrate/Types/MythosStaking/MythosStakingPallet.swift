@@ -24,6 +24,7 @@ enum MythosStakingPallet {
     }
 
     struct CandidateStakeInfo: Codable, Equatable {
+        @StringCodable var session: SessionIndex
         @StringCodable var stake: Balance
     }
 

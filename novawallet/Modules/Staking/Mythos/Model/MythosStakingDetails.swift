@@ -3,6 +3,7 @@ import Foundation
 struct MythosStakingDetails: Equatable {
     struct CollatorDetails: Hashable, Equatable {
         let stake: Balance
+        let session: SessionIndex
     }
 
     let stakeDistribution: [AccountId: CollatorDetails]

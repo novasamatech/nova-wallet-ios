@@ -138,7 +138,10 @@ extension MythosCollatorOperationFactory: MythosCollatorOperationFactoryProtocol
                     into: MythosDelegatorStakeDistribution()
                 ) { accum, pair in
                     accum[pair.0] = pair.1.value.map { info in
-                        MythosStakingDetails.CollatorDetails(stake: info.stake)
+                        MythosStakingDetails.CollatorDetails(
+                            stake: info.stake,
+                            session: info.session
+                        )
                     }
                 }
             }

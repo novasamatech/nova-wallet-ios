@@ -69,6 +69,8 @@ final class MythosStakingClaimableRewardsService: BaseSyncService, AnyProviderAu
                 return
             }
 
+            self?.logger.debug("New change: \(newState)")
+
             self?.updateState(for: newState.lastChange.blockHash)
         }
     }
