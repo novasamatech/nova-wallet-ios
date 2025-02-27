@@ -93,7 +93,9 @@ extension MythosStkStateViewModelFactory {
 
         let localizedFilter = commonData.totalRewardFilter.map { $0.title(calendar: calendar) }
 
-        let canClaimRewards = commonData.claimableRewards?.shouldClaim ?? false
+        let canClaimRewards = commonData.claimableRewards.map { claimable in
+            claimable.total > 0
+        } ?? false
 
         return LocalizableResource { locale in
             let totalRewards = localizedTotalRewards?.value(for: locale)
