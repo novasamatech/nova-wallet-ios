@@ -37,17 +37,18 @@ private extension MythosStkYourCollatorsInteractor {
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            if let newState {
-                self?.provideCollators()
-                self?.presenter?.didReceiveStakingDetails(newState)
-            }
+            let newDetails = newState.valueWhenDefined(else: nil)
+
+            self?.provideCollators()
+            self?.presenter?.didReceiveStakingDetails(newDetails)
         }
     }
 
     func provideCollators() {
         collatorsReqStore.cancel()
 
-        let collatorIds = stakingDetailsService.currentDetails?.collatorIds ?? []
+        let details = stakingDetailsService.currentDetails.valueWhenDefined(else: nil)
+        let collatorIds = details?.collatorIds ?? []
         guard !collatorIds.isEmpty else {
             presenter?.didReceiveCollatorsResult(.success([]))
             return

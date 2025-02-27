@@ -2,14 +2,16 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
+typealias MythosStakingDetailsState = UncertainStorage<MythosStakingDetails?>
+
 protocol MythosStakingDetailsSyncServiceProtocol: ApplicationServiceProtocol {
-    var currentDetails: MythosStakingDetails? { get }
+    var currentDetails: MythosStakingDetailsState { get }
 
     func add(
         observer: AnyObject,
         sendStateOnSubscription: Bool,
         queue: DispatchQueue?,
-        closure: @escaping Observable<MythosStakingDetails?>.StateChangeClosure
+        closure: @escaping Observable<MythosStakingDetailsState>.StateChangeClosure
     )
 
     func remove(observer: AnyObject)
@@ -26,9 +28,9 @@ final class MythosStakingDetailsSyncService: BaseSyncService {
     private let syncQueue: DispatchQueue
     private let callStore = CancellableCallStore()
 
-    private var stateObservable: Observable<MythosStakingDetails?> = .init(state: nil)
+    private var stateObservable: Observable<MythosStakingDetailsState> = .init(state: .undefined)
 
-    var currentDetails: MythosStakingDetails? {
+    var currentDetails: MythosStakingDetailsState {
         mutex.lock()
 
         defer {
@@ -112,16 +114,18 @@ private extension MythosStakingDetailsSyncService {
         callStore.cancel()
 
         guard let collatorsIds = userStake?.candidates.map(\.wrappedValue) else {
-            stateObservable.state = nil
+            stateObservable.state = .defined(nil)
             completeImmediate(nil)
             return
         }
 
         guard !collatorsIds.isEmpty else {
-            stateObservable.state = MythosStakingDetails(
+            let details = MythosStakingDetails(
                 stakeDistribution: [:],
                 maybeLastUnstake: userStake?.maybeLastUnstake
             )
+
+            stateObservable.state = .defined(details)
             completeImmediate(nil)
             return
         }
@@ -146,10 +150,13 @@ private extension MythosStakingDetailsSyncService {
         ) { [weak self] result in
             switch result {
             case let .success(stakeDistribution):
-                self?.stateObservable.state = MythosStakingDetails(
+                let details = MythosStakingDetails(
                     stakeDistribution: stakeDistribution,
                     maybeLastUnstake: userStake?.maybeLastUnstake
                 )
+
+                self?.stateObservable.state = .defined(details)
+
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.logger.error("Update failed: \(error)")
@@ -164,7 +171,7 @@ extension MythosStakingDetailsSyncService: MythosStakingDetailsSyncServiceProtoc
         observer: AnyObject,
         sendStateOnSubscription: Bool,
         queue: DispatchQueue?,
-        closure: @escaping Observable<MythosStakingDetails?>.StateChangeClosure
+        closure: @escaping Observable<MythosStakingDetailsState>.StateChangeClosure
     ) {
         mutex.lock()
 

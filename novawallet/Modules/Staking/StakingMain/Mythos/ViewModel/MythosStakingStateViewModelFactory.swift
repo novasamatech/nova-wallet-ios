@@ -185,7 +185,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
         lastViewModel = .undefined
     }
 
-    func visit(state _: MythosStakingDelegatorTransitionState) {
+    func visit(state _: MythosStakingTransitionState) {
         lastViewModel = .undefined
     }
 

@@ -5,17 +5,29 @@ final class MythosStakingInitState: MythosStakingBaseState {
         visitor.visit(state: self)
     }
 
-    override func process(stakingDetails: MythosStakingDetails?) {
-        if let stakingDetails {
-            let transitionState = MythosStakingDelegatorTransitionState(
+    override func process(stakingDetailsState: MythosStakingDetailsState) {
+        switch stakingDetailsState {
+        case let .defined(optDetails):
+            if let stakingDetails = optDetails {
+                let loadingState = MythosStakingTransitionState(
+                    stateMachine: stateMachine,
+                    commonData: commonData,
+                    stakingDetailsState: .defined(stakingDetails),
+                    frozenBalanceState: .defined(nil)
+                )
+
+                stateMachine?.transit(to: loadingState)
+            } else {
+                stateMachine?.transit(to: self)
+            }
+        case .undefined:
+            let loadingState = MythosStakingTransitionState(
                 stateMachine: stateMachine,
                 commonData: commonData,
-                stakingDetails: stakingDetails
+                frozenBalanceState: .defined(nil)
             )
 
-            stateMachine?.transit(to: transitionState)
-        } else {
-            stateMachine?.transit(to: self)
+            stateMachine?.transit(to: loadingState)
         }
     }
 

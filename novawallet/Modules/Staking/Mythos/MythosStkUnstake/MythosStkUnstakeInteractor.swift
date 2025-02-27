@@ -109,7 +109,8 @@ private extension MythosStkUnstakeInteractor {
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            self?.basePresenter?.didReceiveStakingDetails(newState)
+            let newDetails = newState.valueWhenDefined(else: nil)
+            self?.basePresenter?.didReceiveStakingDetails(newDetails)
         }
     }
 

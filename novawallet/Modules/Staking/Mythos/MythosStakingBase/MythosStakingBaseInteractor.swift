@@ -140,8 +140,9 @@ private extension MythosStakingBaseInteractor {
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            self?.onStakingDetails(newState)
-            self?.basePresenter?.didReceiveDetails(newState)
+            let newDetails = newState.valueWhenDefined(else: nil)
+            self?.onStakingDetails(newDetails)
+            self?.basePresenter?.didReceiveDetails(newDetails)
         }
     }
 

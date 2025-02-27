@@ -3,7 +3,7 @@ import Foundation
 protocol MythosStakingStateVisitorProtocol {
     func visit(state: MythosStakingInitState)
     func visit(state: MythosStakingLockedState)
-    func visit(state: MythosStakingDelegatorTransitionState)
+    func visit(state: MythosStakingTransitionState)
     func visit(state: MythosStakingDelegatorState)
 }
 
@@ -15,7 +15,7 @@ protocol MythosStakingStateProtocol {
     func process(balance: AssetBalance?)
     func process(price: PriceData?)
     func process(collatorsInfo: MythosSessionCollators?)
-    func process(stakingDetails: MythosStakingDetails?)
+    func process(stakingDetailsState: MythosStakingDetailsState)
     func process(frozenBalance: MythosStakingFrozenBalance?)
     func process(totalReward: TotalRewardItem?)
     func process(totalRewardFilter: StakingRewardFiltersPeriod?)

@@ -172,7 +172,7 @@
 		0C0F6E512D4891AE00943A7C /* MythosStakingInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E502D4891AE00943A7C /* MythosStakingInitState.swift */; };
 		0C0F6E532D48934400943A7C /* MythosStakingDelegatorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E522D48934400943A7C /* MythosStakingDelegatorState.swift */; };
 		0C0F6E552D4894D100943A7C /* MythosStakingLockedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E542D4894D100943A7C /* MythosStakingLockedState.swift */; };
-		0C0F6E572D48983100943A7C /* MythosStakingDelegatorTransitionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E562D48983100943A7C /* MythosStakingDelegatorTransitionState.swift */; };
+		0C0F6E572D48983100943A7C /* MythosStakingTransitionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E562D48983100943A7C /* MythosStakingTransitionState.swift */; };
 		0C0F6E592D489C5900943A7C /* MythosStakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E582D489C5900943A7C /* MythosStakingStateMachine.swift */; };
 		0C0F6E5C2D48A55000943A7C /* MythosStakingStateViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E5B2D48A55000943A7C /* MythosStakingStateViewModelFactory.swift */; };
 		0C0F6E5E2D48A9EB00943A7C /* MythosStakingCollatorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0F6E5D2D48A9EB00943A7C /* MythosStakingCollatorState.swift */; };
@@ -1724,8 +1724,8 @@
 		575A729D07A6B984851E6DD0 /* DAppAuthConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F80D885306E1EFE4ABE321C /* DAppAuthConfirmPresenter.swift */; };
 		576010F6494B3E2A6CA0B444 /* CreateWatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39907750D40A8DD7FE1288C8 /* CreateWatchOnlyViewController.swift */; };
 		577918C3D4AA22D887F605B5 /* ParaStkStakeSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1AC788C6E0A621B6D88D1BC /* ParaStkStakeSetupPresenter.swift */; };
-		57DE9DDE57F86846EDDA0126 /* MythosStakingRedeemPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB954E2C5DE26DCEA1A0308C /* MythosStakingRedeemPresenter.swift */; };
 		5786E683E29D17521A5BEEB6 /* BannersProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC9ADA9846C199380AF58D6 /* BannersProtocols.swift */; };
+		57DE9DDE57F86846EDDA0126 /* MythosStakingRedeemPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB954E2C5DE26DCEA1A0308C /* MythosStakingRedeemPresenter.swift */; };
 		57E20F0723C4748D576C4882 /* StakingUnbondSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82E373FFFBF708D7CF0973E /* StakingUnbondSetupViewFactory.swift */; };
 		58647872EA51556AC0791A3E /* ExportInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F83F91EC9B29C21D087D869 /* ExportInteractor.swift */; };
 		5869563D0EA593FBD02C169C /* StakingPayoutConfirmationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F8D055D0481469073AA859 /* StakingPayoutConfirmationProtocols.swift */; };
@@ -5783,7 +5783,7 @@
 		0C0F6E502D4891AE00943A7C /* MythosStakingInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingInitState.swift; sourceTree = "<group>"; };
 		0C0F6E522D48934400943A7C /* MythosStakingDelegatorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingDelegatorState.swift; sourceTree = "<group>"; };
 		0C0F6E542D4894D100943A7C /* MythosStakingLockedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingLockedState.swift; sourceTree = "<group>"; };
-		0C0F6E562D48983100943A7C /* MythosStakingDelegatorTransitionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingDelegatorTransitionState.swift; sourceTree = "<group>"; };
+		0C0F6E562D48983100943A7C /* MythosStakingTransitionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingTransitionState.swift; sourceTree = "<group>"; };
 		0C0F6E582D489C5900943A7C /* MythosStakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingStateMachine.swift; sourceTree = "<group>"; };
 		0C0F6E5B2D48A55000943A7C /* MythosStakingStateViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingStateViewModelFactory.swift; sourceTree = "<group>"; };
 		0C0F6E5D2D48A9EB00943A7C /* MythosStakingCollatorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingCollatorState.swift; sourceTree = "<group>"; };
@@ -11848,7 +11848,7 @@
 				0C0F6E502D4891AE00943A7C /* MythosStakingInitState.swift */,
 				0C0F6E522D48934400943A7C /* MythosStakingDelegatorState.swift */,
 				0C0F6E542D4894D100943A7C /* MythosStakingLockedState.swift */,
-				0C0F6E562D48983100943A7C /* MythosStakingDelegatorTransitionState.swift */,
+				0C0F6E562D48983100943A7C /* MythosStakingTransitionState.swift */,
 			);
 			path = States;
 			sourceTree = "<group>";
@@ -29779,7 +29779,7 @@
 				8476D39B27F43E30004D9A7A /* PhishingSiteVerifier.swift in Sources */,
 				0C7CF4D62BD4E5350015DD45 /* KeychainProxy.swift in Sources */,
 				9A6A55297F41DAE45071BF57 /* ExportSeedInteractor.swift in Sources */,
-				0C0F6E572D48983100943A7C /* MythosStakingDelegatorTransitionState.swift in Sources */,
+				0C0F6E572D48983100943A7C /* MythosStakingTransitionState.swift in Sources */,
 				0CE862322D65A26100245992 /* ConstantHistoryFiltersProvider.swift in Sources */,
 				0CE933C02C068BF2000F3EFE /* AddAccount+ImportOptionsPresenter.swift in Sources */,
 				886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */,
