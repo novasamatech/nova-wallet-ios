@@ -1161,6 +1161,9 @@ PODS:
   - Cuckoo (1.7.1):
     - Cuckoo/Swift (= 1.7.1)
   - Cuckoo/Swift (1.7.1)
+  - DGCharts (5.1.0):
+    - DGCharts/Core (= 5.1.0)
+  - DGCharts/Core (5.1.0)
   - DSF_QRCode (18.0.0):
     - SwiftImageReadWrite (~> 1.6.1)
     - SwiftQRCodeGenerator (~> 2.0.2)
@@ -1533,6 +1536,7 @@ PODS:
 DEPENDENCIES:
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - Cuckoo
+  - DGCharts (~> 5.1.0)
   - DSF_QRCode (~> 18.0.0)
   - EthereumSignTypedDataUtil (from `https://github.com/ERussel/EthereumSignTypedDataUtil.git`, tag `0.1.3`)
   - FirebaseAppCheck (~> 11.3.0)
@@ -1573,6 +1577,7 @@ SPEC REPOS:
     - BoringSSL-GRPC
     - CryptoSwift
     - Cuckoo
+    - DGCharts
     - DSF_QRCode
     - FirebaseAppCheck
     - FirebaseAppCheckInterop
@@ -1713,6 +1718,7 @@ SPEC CHECKSUMS:
   CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
+  DGCharts: 1c6daf585b6cfc78807af44ea690d357c410627f
   DSF_QRCode: 3fe0acc968ce8588a9b1dabb9557a364472f5aaf
   EthereumSignTypedDataUtil: ae4e33b21e51ee046a86a65b02843090b8bbd3f9
   FirebaseAppCheck: db69ee8842189d7a86366b79941da15934f99b75
@@ -1771,6 +1777,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: f6a15f672eb764d421692c18845c883c76c9fd0d
+PODFILE CHECKSUM: 226bc799a8e133e7b3e05c70495be3cc402f8c18
 
 COCOAPODS: 1.15.2

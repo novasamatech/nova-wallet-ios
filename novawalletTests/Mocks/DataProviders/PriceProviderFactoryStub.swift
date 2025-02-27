@@ -24,10 +24,7 @@ final class PriceProviderFactoryStub: PriceProviderFactoryProtocol {
         createProvider(from: createRepository())
     }
 
-    func getAllPricesStreamableProvider(
-        for priceIds: [AssetModel.PriceId],
-        currency: Currency
-    ) -> StreamableProvider<PriceData> {
+    func getAllPricesStreamableProvider(currency: Currency) -> StreamableProvider<PriceData> {
         createProvider(from: createRepository())
     }
 

@@ -3,6 +3,16 @@ import SoraUI
 import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
+    private let balanceExpandingAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: 0.2,
+        options: [.curveEaseInOut]
+    )
+
+    let chartContainerView: UIView = .create { view in
+        view.backgroundColor = R.color.colorBlockBackground()
+        view.layer.cornerRadius = 12.0
+    }
+
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
     let topBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -31,24 +41,8 @@ final class AssetDetailsViewLayout: UIView {
         return view
     }()
 
-    let headerCell: StackTableHeaderCell = .create {
-        $0.titleLabel.apply(style: .regularSubhedlineSecondary)
-        $0.contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
-    }
-
-    let totalCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
-    }
-
-    let transferrableCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
-    }
-
-    let lockCell: StackTitleMultiValueCell = .create {
-        $0.apply(style: .balancePart)
-        $0.canSelect = false
+    lazy var balanceWidget: AssetDetailsBalanceWidget = .create { view in
+        view.delegate = self
     }
 
     let sendButton: RoundedButton = createOperationButton(icon: R.image.iconSend())
@@ -60,12 +54,6 @@ final class AssetDetailsViewLayout: UIView {
         frame: .zero,
         views: [sendButton, receiveButton, swapButton, buyButton]
     )
-
-    private let balanceTableView: StackTableView = .create {
-        $0.cellHeight = Constants.balanceCellHeight
-        $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
-    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -91,8 +79,6 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     private func setupLayout() {
-        setupBalanceTableViewLayout()
-
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -146,33 +132,21 @@ final class AssetDetailsViewLayout: UIView {
             $0.top.equalTo(priceStack.snp.bottom).offset(Constants.containerViewTopOffset)
         }
 
-        containerView.stackView.spacing = Constants.sectionSpace
-        containerView.stackView.addArrangedSubview(balanceTableView)
-        containerView.stackView.addArrangedSubview(buttonsRow)
-    }
+        balanceWidget.snp.makeConstraints { make in
+            make.height.equalTo(balanceWidget.state.height)
+        }
 
-    private func setupBalanceTableViewLayout() {
-        balanceTableView.addArrangedSubview(headerCell)
-        balanceTableView.addArrangedSubview(totalCell)
-        balanceTableView.addArrangedSubview(transferrableCell)
-        balanceTableView.addArrangedSubview(lockCell)
+        containerView.stackView.spacing = Constants.sectionSpace
+        containerView.stackView.addArrangedSubview(balanceWidget)
+        containerView.stackView.addArrangedSubview(buttonsRow)
+        containerView.stackView.addArrangedSubview(chartContainerView)
     }
 
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
-        headerCell.titleLabel.text = R.string.localizable.walletBalancesWidgetTitle(
-            preferredLanguages: languages
-        )
-        totalCell.titleLabel.text = R.string.localizable.walletTransferTotalTitle(
-            preferredLanguages: languages
-        )
-        transferrableCell.titleLabel.text = R.string.localizable.walletBalanceAvailable(
-            preferredLanguages: languages
-        )
-        lockCell.titleLabel.text = R.string.localizable.walletBalanceLocked(
-            preferredLanguages: languages
-        )
+        balanceWidget.set(locale: locale)
+
         sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
             preferredLanguages: languages
         )
@@ -225,17 +199,45 @@ final class AssetDetailsViewLayout: UIView {
         }
     }
 
+    func setChartViewHeight(_ height: CGFloat) {
+        guard chartContainerView.superview != nil else { return }
+
+        chartContainerView.snp.makeConstraints { make in
+            make.height.equalTo(height)
+        }
+
+        layoutIfNeeded()
+    }
+
     var prefferedHeight: CGFloat {
-        let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
+        let balanceSectionHeight = Constants.containerViewTopOffset
+            + AssetDetailsBalanceWidget.Constants.expandedStateHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
-        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace +
-            buttonsRowHeight + Constants.bottomOffset
+
+        return priceLabel.font.lineHeight
+            + balanceSectionHeight
+            + Constants.sectionSpace
+            + buttonsRowHeight
+            + Constants.bottomOffset
+            + chartContainerView.bounds.height
+    }
+}
+
+extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
+    func didChangeState(to state: AssetDetailsBalanceWidget.State) {
+        balanceWidget.snp.updateConstraints { make in
+            make.height.equalTo(state.height)
+        }
+
+        balanceExpandingAnimator.animate(
+            block: { [weak self] in self?.containerView.layoutIfNeeded() },
+            completionBlock: nil
+        )
     }
 }
 
 extension AssetDetailsViewLayout {
-    private enum Constants {
-        static let balanceCellHeight: CGFloat = 48
+    enum Constants {
         static let priceStackHeight: CGFloat = 26
         static let assetHeight: CGFloat = 28
         static let containerViewTopOffset: CGFloat = 12
@@ -244,5 +246,6 @@ extension AssetDetailsViewLayout {
         static let assetImageViewSize: CGFloat = 28
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8
+        static let chartWidgetInset: CGFloat = 16
     }
 }

@@ -18,7 +18,7 @@ protocol BalancesStoreProtocol: AnyObject {
     func setup()
 }
 
-final class BalancesStore {
+final class BalancesStore: AnyProviderAutoCleaning {
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -85,10 +85,7 @@ final class BalancesStore {
         }
 
         if prevPrices != availableTokenPrice {
-            updatePriceProvider(
-                for: Set(availableTokenPrice.values),
-                currency: selectedCurrency
-            )
+            updatePriceProvider(currency: selectedCurrency)
         }
     }
 
@@ -102,61 +99,9 @@ final class BalancesStore {
         delegate?.balancesStore(self, didReceive: error)
     }
 
-    private func updatePriceProvider(
-        for priceIdSet: Set<AssetModel.PriceId>,
-        currency: Currency
-    ) {
-        priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
-            guard let strongSelf = self else {
-                return
-            }
-
-            let mappedChanges = changes.reduce(
-                using: .init(),
-                availableTokenPrice: strongSelf.availableTokenPrice,
-                currency: currency
-            )
-
-            strongSelf.calculator?.didReceivePrice(mappedChanges)
-            strongSelf.notifyCalculatorChanges()
-
-            return
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.notify(error: .priceFailed(error))
-            return
-        }
-
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
-        priceSubscription?.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        priceSubscription?.refresh()
+    private func updatePriceProvider(currency: Currency) {
+        clear(streamableProvider: &priceSubscription)
+        priceSubscription = subscribeAllPrices(currency: currency)
     }
 }
 
@@ -202,6 +147,24 @@ extension BalancesStore: SelectedCurrencyDepending {
             return
         }
 
-        updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        updatePriceProvider(currency: selectedCurrency)
+    }
+}
+
+extension BalancesStore: PriceLocalSubscriptionHandler, PriceLocalStorageSubscriber {
+    func handleAllPrices(result: Result<[DataProviderChange<PriceData>], any Error>) {
+        switch result {
+        case let .success(changes):
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: availableTokenPrice,
+                currency: selectedCurrency
+            )
+
+            calculator?.didReceivePrice(mappedChanges)
+            notifyCalculatorChanges()
+        case let .failure(error):
+            notify(error: .priceFailed(error))
+        }
     }
 }
