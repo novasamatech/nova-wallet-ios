@@ -53,14 +53,6 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
         delegatorId: AccountId
     ) throws -> StreamableProvider<ParachainStaking.MappedScheduledRequest>
 
-    func getTotalReward(
-        for address: AccountAddress,
-        startTimestamp: Int64?,
-        endTimestamp: Int64?,
-        api: LocalChainExternalApi,
-        assetPrecision: Int16
-    ) throws -> AnySingleValueProvider<TotalRewardItem>
-
     func getCandidateMetadataProvider(
         for chainId: ChainModel.Id,
         accountId: AccountId
@@ -69,42 +61,6 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
 
 final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     ParachainStakingLocalSubscriptionFactoryProtocol {
-    private func getPlainProvider<T: Equatable & Decodable>(
-        for chainId: ChainModel.Id,
-        storagePath: StorageCodingPath
-    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            storagePath,
-            chainId: chainId
-        )
-
-        return try getDataProvider(
-            for: localKey,
-            chainId: chainId,
-            storageCodingPath: storagePath,
-            shouldUseFallback: false
-        )
-    }
-
-    private func getAccountProvider<T: Equatable & Decodable>(
-        for chainId: ChainModel.Id,
-        accountId: AccountId,
-        storagePath: StorageCodingPath
-    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            storagePath,
-            accountId: accountId,
-            chainId: chainId
-        )
-
-        return try getDataProvider(
-            for: localKey,
-            chainId: chainId,
-            storageCodingPath: storagePath,
-            shouldUseFallback: false
-        )
-    }
-
     func getRoundProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedRoundInfo> {
@@ -209,53 +165,5 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
             accountId: accountId,
             storagePath: ParachainStaking.candidateMetadataPath
         )
-    }
-
-    func getTotalReward(
-        for address: AccountAddress,
-        startTimestamp: Int64?,
-        endTimestamp: Int64?,
-        api: LocalChainExternalApi,
-        assetPrecision: Int16
-    ) throws -> AnySingleValueProvider<TotalRewardItem> {
-        clearIfNeeded()
-
-        let timeIdentifier = [
-            startTimestamp.map { "\($0)" } ?? "nil",
-            endTimestamp.map { "\($0)" } ?? "nil"
-        ].joined(separator: "-")
-
-        let identifier = ("reward" + api.url.absoluteString) + address + timeIdentifier
-
-        if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
-            return AnySingleValueProvider(provider)
-        }
-
-        let repository = SubstrateRepositoryFactory(
-            storageFacade: storageFacade
-        ).createSingleValueRepository()
-
-        let operationFactory = SubqueryRewardOperationFactory(url: api.url)
-
-        let source = SubqueryTotalRewardSource(
-            address: address,
-            startTimestamp: startTimestamp,
-            endTimestamp: endTimestamp,
-            assetPrecision: assetPrecision,
-            operationFactory: operationFactory,
-            stakingType: .direct
-        )
-
-        let anySource = AnySingleValueProviderSource<TotalRewardItem>(source)
-
-        let provider = SingleValueProvider(
-            targetIdentifier: identifier,
-            source: anySource,
-            repository: AnyDataProviderRepository(repository)
-        )
-
-        saveProvider(provider, for: identifier)
-
-        return AnySingleValueProvider(provider)
     }
 }

@@ -39,7 +39,7 @@ enum StakingManageOption {
             return R.string.localizable.commonYieldBoost(preferredLanguages: locale.rLanguages)
         case .addProxy:
             return R.string.localizable.stakingSetupAddYourProxy(preferredLanguages: locale.rLanguages)
-        case let .editProxies:
+        case .editProxies:
             return R.string.localizable.stakingSetupYourProxies(preferredLanguages: locale.rLanguages)
         }
     }

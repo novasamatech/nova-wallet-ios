@@ -1,22 +1,6 @@
 import Foundation
 import BigInt
 
-protocol ParaStkStakeConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol)
-    func didReceiveWallet(viewModel: DisplayWalletViewModel)
-    func didReceiveAccount(viewModel: DisplayAddressViewModel)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveCollator(viewModel: DisplayAddressViewModel)
-    func didReceiveHints(viewModel: [String])
-}
-
-protocol ParaStkStakeConfirmPresenterProtocol: AnyObject {
-    func setup()
-    func selectAccount()
-    func selectCollator()
-    func confirm()
-}
-
 protocol ParaStkStakeConfirmInteractorInputProtocol: PendingExtrinsicInteracting {
     func setup()
 
@@ -45,5 +29,5 @@ protocol ParaStkStakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentabl
     AddressOptionsPresentable,
     FeeRetryable,
     MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: ParaStkStakeConfirmViewProtocol?, locale: Locale)
+    func complete(on view: CollatorStakingConfirmViewProtocol?, locale: Locale)
 }

@@ -105,6 +105,8 @@ final class StakingUnbondingsView: UIView {
 
         self.viewModel = viewModel
 
+        canCancel = viewModel.canCancelUnbonding
+
         updateTimer()
 
         applyViewModels()
