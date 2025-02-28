@@ -28,7 +28,7 @@ struct AssetPriceChartViewFactory {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = AssetPriceChartViewModelFactory(
-            priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            priceChangePercentFormatter: NumberFormatter.percent.localizableResource(),
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory
         )
