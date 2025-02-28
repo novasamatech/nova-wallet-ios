@@ -94,16 +94,16 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
                 mappingKey: Multistaking.MythosStakingStateChange.Key.freezes.rawValue
             )
 
-            let sessionRequest = BatchStorageSubscriptionRequest(
+            let sessionCollatorsRequest = BatchStorageSubscriptionRequest(
                 innerRequest: UnkeyedSubscriptionRequest(
-                    storagePath: MythosStakingPallet.currentSessionPath,
+                    storagePath: SessionPallet.validatorsPath,
                     localKey: ""
                 ),
-                mappingKey: Multistaking.MythosStakingStateChange.Key.session.rawValue
+                mappingKey: Multistaking.MythosStakingStateChange.Key.sessionCollators.rawValue
             )
 
             stateSubscription = CallbackBatchStorageSubscription(
-                requests: [userStakeRequest, freezesRequest, sessionRequest],
+                requests: [userStakeRequest, freezesRequest, sessionCollatorsRequest],
                 connection: connection,
                 runtimeService: runtimeService,
                 repository: cacheRepository,
@@ -138,65 +138,8 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
                 return
             }
 
-            if change.userStake.isDefined {
-                updateCandidatesIfNeeded(at: change.blockHash)
-            } else {
-                persistState(state)
-            }
-
+            persistState(state)
         case let .failure(error):
-            completeImmediate(error)
-        }
-    }
-
-    private func updateCandidatesIfNeeded(at blockHash: Data?) {
-        guard let userStake = state?.userStake else {
-            return
-        }
-
-        guard !userStake.candidates.isEmpty else {
-            handleCandidates(result: .success([:]))
-            return
-        }
-
-        logger.debug("Updating candidates for \(String(describing: blockHash?.toHexWithPrefix()))")
-
-        candidatesCallStore.cancel()
-
-        let fetchWrapper = collatorsOperationFactory.createFetchDelegatorStakeDistribution(
-            for: chainAsset.chain.chainId,
-            delegatorAccountId: accountId,
-            collatorIdsClosure: {
-                userStake.candidates.map(\.wrappedValue)
-            },
-            blockHash: blockHash
-        )
-
-        executeCancellable(
-            wrapper: fetchWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: candidatesCallStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            self?.handleCandidates(result: result)
-        }
-    }
-
-    private func handleCandidates(result: Result<MythosDelegatorStakeDistribution, Error>) {
-        switch result {
-        case let .success(candidatesDetails):
-            markSyncingImmediate()
-
-            logger.debug("Candidates details: \(candidatesDetails)")
-
-            state = state?.applying(candidatesDetails: candidatesDetails)
-
-            if let state {
-                persistState(state)
-            }
-        case let .failure(error):
-            logger.error("Candidates sync failed: \(error)")
             completeImmediate(error)
         }
     }
@@ -209,12 +152,11 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
         } else if
             case let .defined(userStake) = change.userStake,
             case let .defined(freezes) = change.freezes,
-            case let .defined(session) = change.session {
+            case let .defined(sessionCollators) = change.sessionCollators {
             let state = Multistaking.MythosStakingState(
+                sessionCollators: sessionCollators,
                 userStake: userStake,
-                freezes: freezes,
-                candidatesDetails: nil,
-                session: session
+                freezes: freezes
             )
 
             self.state = state

@@ -3,43 +3,28 @@ import SubstrateSdk
 
 extension Multistaking {
     struct MythosStakingState {
+        let sessionCollators: Set<AccountId>
         let userStake: MythosStakingPallet.UserStake?
         let freezes: BalancesPallet.Freezes?
-        let candidatesDetails: MythosDelegatorStakeDistribution?
-        let session: SessionIndex
 
         func applying(change: MythosStakingStateChange) -> MythosStakingState {
             let newStake = change.userStake.valueWhenDefined(else: userStake)
             let newFreezes = change.freezes.valueWhenDefined(else: freezes)
-            let newSession = change.session.valueWhenDefined(else: session)
-
-            let newCandidatesDetails = !change.userStake.isDefined ? candidatesDetails : nil
+            let newSessionCollators = change.sessionCollators.valueWhenDefined(else: sessionCollators)
 
             return .init(
+                sessionCollators: newSessionCollators,
                 userStake: newStake,
-                freezes: newFreezes,
-                candidatesDetails: newCandidatesDetails,
-                session: newSession
+                freezes: newFreezes
             )
         }
 
-        func applying(candidatesDetails: MythosDelegatorStakeDistribution?) -> MythosStakingState {
-            .init(
-                userStake: userStake,
-                freezes: freezes,
-                candidatesDetails: candidatesDetails,
-                session: session
-            )
-        }
-
-        var isStartedInCurrentSession: Bool {
-            guard let userStake else {
+        var hasActiveStaking: Bool {
+            guard let userStake, userStake.stake > 0 else {
                 return false
             }
 
-            return userStake.candidates.allSatisfy { candidate in
-                candidatesDetails?[candidate.wrappedValue]?.session == session
-            }
+            return userStake.candidates.contains { sessionCollators.contains($0.wrappedValue) }
         }
     }
 
@@ -47,12 +32,12 @@ extension Multistaking {
         enum Key: String {
             case userStake
             case freezes
-            case session
+            case sessionCollators
         }
 
         let userStake: UncertainStorage<MythosStakingPallet.UserStake?>
         let freezes: UncertainStorage<BalancesPallet.Freezes?>
-        let session: UncertainStorage<SessionIndex>
+        let sessionCollators: UncertainStorage<Set<AccountId>>
         let blockHash: Data?
 
         init(
@@ -72,11 +57,14 @@ extension Multistaking {
                 context: context
             )
 
-            session = try UncertainStorage<StringScaleMapper<SessionIndex>>(
+            sessionCollators = try UncertainStorage<[BytesCodable]>(
                 values: values,
-                mappingKey: Key.session.rawValue,
+                mappingKey: Key.sessionCollators.rawValue,
                 context: context
-            ).map(\.value)
+            ).map { value in
+                let collators = value.map(\.wrappedValue)
+                return Set(collators)
+            }
 
             blockHash = try blockHashJson.map(to: Data?.self, with: context)
         }
