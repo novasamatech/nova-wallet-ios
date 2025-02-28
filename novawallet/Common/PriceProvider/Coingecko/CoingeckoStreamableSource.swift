@@ -112,6 +112,7 @@ private extension CoingeckoStreamableSource {
     func subscribe() {
         priceIdsObservable.addObserver(
             with: self,
+            sendStateOnSubscription: true,
             queue: queue
         ) { [weak self] _, newState in
             self?.priceIds = newState
