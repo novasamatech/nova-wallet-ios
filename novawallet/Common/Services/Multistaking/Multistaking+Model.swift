@@ -98,11 +98,7 @@ extension Multistaking {
                 return nil
             }
 
-            if let userStake = mythosState.userStake, userStake.stake > 0 {
-                return mythosState.isStartedInCurrentSession ? .waiting : .active
-            } else {
-                return .bonded
-            }
+            return mythosState.hasActiveStaking ? .activeIndependent : .bonded
         }
 
         static func from(nominationPoolState: Multistaking.NominationPoolState) -> DashboardItemOnchainState? {
