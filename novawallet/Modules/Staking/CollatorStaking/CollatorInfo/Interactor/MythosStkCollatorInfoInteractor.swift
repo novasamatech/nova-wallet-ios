@@ -36,10 +36,9 @@ final class MythosCollatorInfoInteractor: CollatorStakingInfoInteractor {
             observer: self,
             sendStateOnSubscription: true,
             queue: .main
-        ) { [weak self] _, newDetails in
-            if let newDetails {
-                self?.handleNew(details: newDetails)
-            }
+        ) { [weak self] _, state in
+            let newDetails = state.valueWhenDefined(else: nil)
+            self?.handleNew(details: newDetails)
         }
     }
 

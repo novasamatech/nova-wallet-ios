@@ -8,7 +8,7 @@ protocol MythosStakingDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveChainAsset(_ chainAsset: ChainAsset?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?)
-    func didReceiveStakingDetails(_ stakingDetails: MythosStakingDetails?)
+    func didReceiveStakingDetails(_ stakingDetailsState: MythosStakingDetailsState)
     func didReceiveElectedCollators(_ collators: MythosSessionCollators)
     func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?)
     func didReceiveFrozenBalance(_ frozenBalance: MythosStakingFrozenBalance?)

@@ -175,10 +175,10 @@ extension MythosStakingDetailsPresenter: MythosStakingDetailsInteractorOutputPro
         stateMachine.state.process(balance: assetBalance)
     }
 
-    func didReceiveStakingDetails(_ stakingDetails: MythosStakingDetails?) {
+    func didReceiveStakingDetails(_ stakingDetailsState: MythosStakingDetailsState) {
         logger.debug("Staking details: \(String(describing: stakingDetails))")
 
-        stateMachine.state.process(stakingDetails: stakingDetails)
+        stateMachine.state.process(stakingDetailsState: stakingDetailsState)
     }
 
     func didReceiveElectedCollators(_ collators: MythosSessionCollators) {

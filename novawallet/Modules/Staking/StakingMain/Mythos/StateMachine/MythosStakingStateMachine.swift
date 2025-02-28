@@ -6,7 +6,7 @@ final class MythosStakingStateMachine: MythosStakingStateMachineProtocol {
     weak var delegate: MythosStakingStateMachineDelegate?
 
     init() {
-        let state = MythosStakingInitState(stateMachine: nil, commonData: .empty)
+        let state = MythosStakingTransitionState(stateMachine: nil, commonData: .empty)
 
         self.state = state
 

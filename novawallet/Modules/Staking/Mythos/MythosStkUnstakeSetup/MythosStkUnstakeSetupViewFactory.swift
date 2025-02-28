@@ -93,6 +93,7 @@ struct MythosStkUnstakeSetupViewFactory {
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             stakingDetailsService: stakingDetailsService,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             claimableRewardsService: claimableRewardsService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

@@ -20,26 +20,37 @@ final class MythosStakingDelegatorState: MythosStakingBaseState {
         visitor.visit(state: self)
     }
 
-    override func process(stakingDetails: MythosStakingDetails?) {
-        if let stakingDetails {
-            self.stakingDetails = stakingDetails
+    override func process(stakingDetailsState: MythosStakingDetailsState) {
+        switch stakingDetailsState {
+        case let .defined(optDetails):
+            if let stakingDetails = optDetails {
+                self.stakingDetails = stakingDetails
 
-            stateMachine?.transit(to: self)
-        } else if frozenBalance.total > 0 {
-            let lockedStaked = MythosStakingLockedState(
+                stateMachine?.transit(to: self)
+            } else if frozenBalance.total > 0 {
+                let lockedStaked = MythosStakingLockedState(
+                    stateMachine: stateMachine,
+                    commonData: commonData,
+                    frozenBalance: frozenBalance
+                )
+
+                stateMachine?.transit(to: lockedStaked)
+            } else {
+                let initState = MythosStakingInitState(
+                    stateMachine: stateMachine,
+                    commonData: commonData
+                )
+
+                stateMachine?.transit(to: initState)
+            }
+        case .undefined:
+            let loadingState = MythosStakingTransitionState(
                 stateMachine: stateMachine,
                 commonData: commonData,
-                frozenBalance: frozenBalance
+                frozenBalanceState: .defined(frozenBalance)
             )
 
-            stateMachine?.transit(to: lockedStaked)
-        } else {
-            let initState = MythosStakingInitState(
-                stateMachine: stateMachine,
-                commonData: commonData
-            )
-
-            stateMachine?.transit(to: initState)
+            stateMachine?.transit(to: loadingState)
         }
     }
 
@@ -49,10 +60,11 @@ final class MythosStakingDelegatorState: MythosStakingBaseState {
 
             stateMachine?.transit(to: self)
         } else {
-            let transitionState = MythosStakingDelegatorTransitionState(
+            let transitionState = MythosStakingTransitionState(
                 stateMachine: stateMachine,
                 commonData: commonData,
-                stakingDetails: stakingDetails
+                stakingDetailsState: .defined(stakingDetails),
+                frozenBalanceState: .defined(nil)
             )
 
             stateMachine?.transit(to: transitionState)

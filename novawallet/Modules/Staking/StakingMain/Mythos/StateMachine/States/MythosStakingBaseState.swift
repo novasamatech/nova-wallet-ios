@@ -59,7 +59,7 @@ class MythosStakingBaseState: MythosStakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
-    func process(stakingDetails _: MythosStakingDetails?) {}
+    func process(stakingDetailsState _: MythosStakingDetailsState) {}
 
     func process(frozenBalance _: MythosStakingFrozenBalance?) {}
 

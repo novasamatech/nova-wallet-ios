@@ -62,6 +62,7 @@ struct MythosStkUnstakeConfirmViewFactory {
         return view
     }
 
+    // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: MythosStakingSharedStateProtocol,
         chainAsset: ChainAsset,
@@ -111,6 +112,7 @@ struct MythosStkUnstakeConfirmViewFactory {
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             stakingDetailsService: stakingDetailsService,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             claimableRewardsService: claimableRewardsService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

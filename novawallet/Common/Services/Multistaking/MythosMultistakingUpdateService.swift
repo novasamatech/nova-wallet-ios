@@ -10,6 +10,7 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemMythosStakingPart>
+    let collatorsOperationFactory: MythosCollatorOperationFactoryProtocol
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -19,6 +20,7 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
     private var state: Multistaking.MythosStakingState?
 
     private var saveCallStore = CancellableCallStore()
+    private var candidatesCallStore = CancellableCallStore()
 
     init(
         walletId: MetaAccountModel.Id,
@@ -26,6 +28,7 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
         chainAsset: ChainAsset,
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemMythosStakingPart>,
+        collatorsOperationFactory: MythosCollatorOperationFactoryProtocol,
         cacheRepository: AnyDataProviderRepository<ChainStorageItem>,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -38,6 +41,7 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
         self.chainAsset = chainAsset
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
+        self.collatorsOperationFactory = collatorsOperationFactory
         self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
@@ -90,8 +94,16 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
                 mappingKey: Multistaking.MythosStakingStateChange.Key.freezes.rawValue
             )
 
+            let sessionRequest = BatchStorageSubscriptionRequest(
+                innerRequest: UnkeyedSubscriptionRequest(
+                    storagePath: MythosStakingPallet.currentSessionPath,
+                    localKey: ""
+                ),
+                mappingKey: Multistaking.MythosStakingStateChange.Key.session.rawValue
+            )
+
             stateSubscription = CallbackBatchStorageSubscription(
-                requests: [userStakeRequest, freezesRequest],
+                requests: [userStakeRequest, freezesRequest, sessionRequest],
                 connection: connection,
                 runtimeService: runtimeService,
                 repository: cacheRepository,
@@ -121,13 +133,70 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
 
             logger.debug("Change: \(change)")
 
-            if let state = updateState(from: change) {
-                logger.debug("Saving: \(state)")
+            guard let state = updateState(from: change) else {
+                logger.warning("Broken state detected")
+                return
+            }
 
-                saveState(state)
+            if change.userStake.isDefined {
+                updateCandidatesIfNeeded(at: change.blockHash)
+            } else {
+                persistState(state)
             }
 
         case let .failure(error):
+            completeImmediate(error)
+        }
+    }
+
+    private func updateCandidatesIfNeeded(at blockHash: Data?) {
+        guard let userStake = state?.userStake else {
+            return
+        }
+
+        guard !userStake.candidates.isEmpty else {
+            handleCandidates(result: .success([:]))
+            return
+        }
+
+        logger.debug("Updating candidates for \(String(describing: blockHash?.toHexWithPrefix()))")
+
+        candidatesCallStore.cancel()
+
+        let fetchWrapper = collatorsOperationFactory.createFetchDelegatorStakeDistribution(
+            for: chainAsset.chain.chainId,
+            delegatorAccountId: accountId,
+            collatorIdsClosure: {
+                userStake.candidates.map(\.wrappedValue)
+            },
+            blockHash: blockHash
+        )
+
+        executeCancellable(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: candidatesCallStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            self?.handleCandidates(result: result)
+        }
+    }
+
+    private func handleCandidates(result: Result<MythosDelegatorStakeDistribution, Error>) {
+        switch result {
+        case let .success(candidatesDetails):
+            markSyncingImmediate()
+
+            logger.debug("Candidates details: \(candidatesDetails)")
+
+            state = state?.applying(candidatesDetails: candidatesDetails)
+
+            if let state {
+                persistState(state)
+            }
+        case let .failure(error):
+            logger.error("Candidates sync failed: \(error)")
             completeImmediate(error)
         }
     }
@@ -139,10 +208,13 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
             return newState
         } else if
             case let .defined(userStake) = change.userStake,
-            case let .defined(freezes) = change.freezes {
+            case let .defined(freezes) = change.freezes,
+            case let .defined(session) = change.session {
             let state = Multistaking.MythosStakingState(
                 userStake: userStake,
-                freezes: freezes
+                freezes: freezes,
+                candidatesDetails: nil,
+                session: session
             )
 
             self.state = state
@@ -153,7 +225,9 @@ final class MythosMultistakingUpdateService: ObservableSyncService {
         }
     }
 
-    private func saveState(_ state: Multistaking.MythosStakingState) {
+    private func persistState(_ state: Multistaking.MythosStakingState) {
+        logger.debug("Persisting state: \(state)")
+
         let stakingOption = Multistaking.OptionWithWallet(
             walletId: walletId,
             option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)

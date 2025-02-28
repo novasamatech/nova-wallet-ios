@@ -20,6 +20,8 @@ final class MythosStkUnstakeSetupPresenter {
     private(set) var delegationIdentities: [AccountId: AccountIdentity]?
     private(set) var claimableRewards: MythosStakingClaimableRewards?
     private(set) var stakingDuration: MythosStakingDuration?
+    private(set) var maxUnstakingCollators: UInt32?
+    private(set) var releaseQueue: MythosStakingPallet.ReleaseQueue?
 
     let logger: LoggerProtocol
 
@@ -227,6 +229,11 @@ private extension MythosStkUnstakeSetupPresenter {
                 locale: selectedLocale,
                 onError: { [weak self] in self?.refreshFee() }
             ),
+            dataValidatingFactory.notExceedsMaxUnstakingItems(
+                unstakingItemsCount: releaseQueue?.count ?? 0,
+                maxUnstakingItemsAllowed: maxUnstakingCollators,
+                locale: selectedLocale
+            ),
             dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
                 fee: fee,
@@ -380,6 +387,18 @@ extension MythosStkUnstakeSetupPresenter: MythosStkUnstakeSetupInteractorOutputP
         self.fee = fee
 
         provideFeeViewModel()
+    }
+
+    func didReceiveMaxUnstakingCollators(_ maxUnstakingCollators: UInt32) {
+        logger.debug("Max unstaking collators: \(maxUnstakingCollators)")
+
+        self.maxUnstakingCollators = maxUnstakingCollators
+    }
+
+    func didReceiveReleaseQueue(_ releaseQueue: MythosStakingPallet.ReleaseQueue?) {
+        logger.debug("Release queue: \(String(describing: releaseQueue))")
+
+        self.releaseQueue = releaseQueue
     }
 
     func didReceiveBaseError(_ error: MythosStkUnstakeInteractorError) {
