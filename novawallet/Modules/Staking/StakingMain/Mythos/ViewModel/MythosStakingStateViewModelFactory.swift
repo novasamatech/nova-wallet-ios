@@ -178,6 +178,26 @@ extension MythosStkStateViewModelFactory {
 
         return StakingUnbondingViewModel(eraCountdown: countdown, items: items, canCancelUnbonding: false)
     }
+
+    func determineCollatorsStatus(for state: MythosStakingDelegatorState) -> [CollatorStakingDelegationStatus]? {
+        guard let collatorsInfo = state.commonData.collatorsInfo else {
+            return nil
+        }
+
+        let delegator = CollatorStakingDelegator(mythosDelegator: state.stakingDetails)
+
+        let electedSet = Set(collatorsInfo.map(\.accountId))
+
+        return delegator.delegations.compactMap { delegation in
+            let isElected = electedSet.contains(delegation.candidate)
+
+            return MythosStakingCollatorDelegationState(
+                delegatorModel: delegator,
+                accountId: delegation.candidate,
+                isElected: isElected
+            ).status
+        }
+    }
 }
 
 extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
@@ -234,19 +254,7 @@ extension MythosStkStateViewModelFactory: MythosStakingStateVisitorProtocol {
             return
         }
 
-        let delegator = CollatorStakingDelegator(mythosDelegator: state.stakingDetails)
-
-        let electedSet = Set((state.commonData.collatorsInfo ?? []).map(\.accountId))
-
-        let collatorsStatuses: [CollatorStakingDelegationStatus] = delegator.delegations.compactMap { delegation in
-            let isElected = electedSet.contains(delegation.candidate)
-
-            return MythosStakingCollatorDelegationState(
-                delegatorModel: delegator,
-                accountId: delegation.candidate,
-                isElected: isElected
-            ).status
-        }
+        let collatorsStatuses = determineCollatorsStatus(for: state)
 
         let delegationStatus = createDelegationStatus(
             for: state.stakingDetails.totalStake,
