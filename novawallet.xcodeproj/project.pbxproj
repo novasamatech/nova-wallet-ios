@@ -404,6 +404,7 @@
 		0C4394D72BD761D000578761 /* CloudBackupPasswordValidationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */; };
 		0C4394D92BD7626500578761 /* CloudBackupPasswordValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */; };
 		0C4394DB2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4394DA2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift */; };
+		0C4466A82D73A77E004B8C61 /* CollatorStakingSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4466A72D73A77E004B8C61 /* CollatorStakingSetupViewLayout.swift */; };
 		0C463FC82A58126A003E71C9 /* UIView+MotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */; };
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
 		0C495B8C2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */; };
@@ -5278,7 +5279,6 @@
 		D9746967761B1B4772A562B2 /* TokenManageSingleViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF5B66ACB3DFA32DD43BD75 /* TokenManageSingleViewLayout.swift */; };
 		D9D163642744F60D00681C1F /* ExternalContribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D163632744F60D00681C1F /* ExternalContribution.swift */; };
 		D9D163662744F9BF00681C1F /* ExternalContributionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D163652744F9BF00681C1F /* ExternalContributionSource.swift */; };
-		D9ECCCCF1449EFAFD0FA886E /* CollatorStakingSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44DDD9500E4A1040D863BC1E /* CollatorStakingSetupViewLayout.swift */; };
 		DA33289649E281A2D6378C1C /* StakingConfirmProxyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3543AE2CAA63AC0A20D532B6 /* StakingConfirmProxyViewLayout.swift */; };
 		DA46697F2BA60F98B01AE6FA /* CloudBackupCreateProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15886E1D406F61B333A44A2E /* CloudBackupCreateProtocols.swift */; };
 		DA53192887DFEEE42B658286 /* TokensManageAddViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A5632D4768BC5039EE8276 /* TokensManageAddViewLayout.swift */; };
@@ -6025,6 +6025,7 @@
 		0C4394D62BD761D000578761 /* CloudBackupPasswordValidationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupPasswordValidationResult.swift; sourceTree = "<group>"; };
 		0C4394D82BD7626500578761 /* CloudBackupPasswordValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupPasswordValidator.swift; sourceTree = "<group>"; };
 		0C4394DA2BD763F600578761 /* CloudBackPasswordViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackPasswordViewModelFactory.swift; sourceTree = "<group>"; };
+		0C4466A72D73A77E004B8C61 /* CollatorStakingSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingSetupViewLayout.swift; sourceTree = "<group>"; };
 		0C463FC72A58126A003E71C9 /* UIView+MotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+MotionEffect.swift"; sourceTree = "<group>"; };
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
 		0C495B8B2B3FE15500B8D339 /* ExtrinsicProxySenderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProxySenderResolver.swift; sourceTree = "<group>"; };
@@ -7314,7 +7315,6 @@
 		442FCD700DEAFD358A48F35D /* GovernanceTracksSettingsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceTracksSettingsViewLayout.swift; sourceTree = "<group>"; };
 		44809BCF44D7329266A60A9D /* ParitySignerAddConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerAddConfirmInteractor.swift; sourceTree = "<group>"; };
 		44AA632DE49B746BC38B959F /* NominationPoolSearchInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolSearchInteractor.swift; sourceTree = "<group>"; };
-		44DDD9500E4A1040D863BC1E /* CollatorStakingSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollatorStakingSetupViewLayout.swift; sourceTree = "<group>"; };
 		44EAF50AAF6C23225E06C16C /* AssetsSearchInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSearchInteractor.swift; sourceTree = "<group>"; };
 		45299DA08B8E5C2D5A5BB94B /* CustomNetworkWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomNetworkWireframe.swift; sourceTree = "<group>"; };
 		45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppSettingsViewController.swift; sourceTree = "<group>"; };
@@ -11656,9 +11656,9 @@
 		0C0F6DB22D3EDF5000943A7C /* Setup */ = {
 			isa = PBXGroup;
 			children = (
+				0C4466A72D73A77E004B8C61 /* CollatorStakingSetupViewLayout.swift */,
 				0C0F6DB02D3EDF3900943A7C /* CollatorStakingSetupProtocols.swift */,
 				DD2F1EEBF48485F02BF690A4 /* CollatorStakingSetupViewController.swift */,
-				44DDD9500E4A1040D863BC1E /* CollatorStakingSetupViewLayout.swift */,
 				0C0F6DDC2D415DEE00943A7C /* CollatorStakingDelegationSelectable.swift */,
 			);
 			path = Setup;
@@ -30506,6 +30506,7 @@
 				84D6E2FA283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift in Sources */,
 				842A737927DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift in Sources */,
 				0C9C64362A8D67FB004DC078 /* StakingNPoolsProtocols.swift in Sources */,
+				0C4466A82D73A77E004B8C61 /* CollatorStakingSetupViewLayout.swift in Sources */,
 				0CB261F12A9E149C00287305 /* NPoolsClaimRewardsError.swift in Sources */,
 				22403E58019260719055E122 /* AdvancedWalletWireframe.swift in Sources */,
 				EC328560F66AA0F5CFB3FE58 /* AdvancedWalletPresenter.swift in Sources */,
@@ -30774,8 +30775,6 @@
 				7050A26051FE62DB06B695F1 /* ParaStkStakeSetupInteractor.swift in Sources */,
 				0CD1F4D100ED82D137AB9834 /* CollatorStakingSetupViewController.swift in Sources */,
 				77AAE2282AFC1167006872CC /* ChainModel+historyId.swift in Sources */,
-				D9ECCCCF1449EFAFD0FA886E /* CollatorStakingSetupViewLayout.swift in Sources */,
-				D9ECCCCF1449EFAFD0FA886E /* CollatorStakingSetupViewLayout.swift in Sources */,
 				2DE757322D43D4D200EDE5E8 /* PseudoRandomNumberGenerator.swift in Sources */,
 				84981EEC29D4385F00948306 /* TransactionHistoryHybridFetcher.swift in Sources */,
 				0C75E2982C3F92EC005A6232 /* DelegatedStakingPallet+Path.swift in Sources */,
