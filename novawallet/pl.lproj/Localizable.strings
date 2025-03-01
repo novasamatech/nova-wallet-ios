@@ -1788,7 +1788,6 @@
 "common.see.all" = "Zobacz wszystkie";
 "dapp.widget.close.alert.title" = "Zamknąć wszystkie DAppy?";
 "dapp.widget.close.alert.message" = "Wszystkie otwarte karty w przeglądarce DApp zostaną zamknięte.";
-"common.claim" = "Odbierz";
 "common.close.all" = "Zamknij wszystkie";
 "dapp.browser.tab.not.available" = "Strona internetowa niedostępna";
 "dapp.list.section.popular" = "Popularne";

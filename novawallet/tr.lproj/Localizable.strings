@@ -1788,7 +1788,6 @@
 "common.see.all" = "Hepsini Gör";
 "dapp.widget.close.alert.title" = "Tüm DApp'leri Kapat?";
 "dapp.widget.close.alert.message" = "DApp tarayıcısındaki tüm açık sekmeler kapatılacak.";
-"common.claim" = "Talep Et";
 "common.close.all" = "Hepsini Kapat";
 "dapp.browser.tab.not.available" = "Web sayfası mevcut değil";
 "dapp.list.section.popular" = "Popüler";

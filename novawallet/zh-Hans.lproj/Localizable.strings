@@ -1788,7 +1788,6 @@
 "common.see.all" = "查看全部";
 "dapp.widget.close.alert.title" = "关闭所有DApps？";
 "dapp.widget.close.alert.message" = "DApp浏览器中所有打开的标签页将被关闭。";
-"common.claim" = "领取";
 "common.close.all" = "关闭所有";
 "dapp.browser.tab.not.available" = "网页不可用";
 "dapp.list.section.popular" = "流行";

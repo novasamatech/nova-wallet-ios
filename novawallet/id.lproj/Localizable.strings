@@ -1788,7 +1788,6 @@
 "common.see.all" = "Lihat Semua";
 "dapp.widget.close.alert.title" = "Tutup Semua DApps?";
 "dapp.widget.close.alert.message" = "Semua tab yang terbuka di browser DApp akan ditutup.";
-"common.claim" = "Klaim";
 "common.close.all" = "Tutup Semua";
 "dapp.browser.tab.not.available" = "Halaman web tidak tersedia";
 "dapp.list.section.popular" = "Populer";

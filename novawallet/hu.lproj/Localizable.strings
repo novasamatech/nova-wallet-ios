@@ -1788,7 +1788,6 @@
 "common.see.all" = "Összes megtekintése";
 "dapp.widget.close.alert.title" = "Összes DApp bezárása?";
 "dapp.widget.close.alert.message" = "Az összes megnyitott fül a DApp böngészőben be lesz zárva.";
-"common.claim" = "Igénylés";
 "common.close.all" = "Összes bezárása";
 "dapp.browser.tab.not.available" = "Weboldal nem érhető el";
 "dapp.list.section.popular" = "Népszerűek";

@@ -1788,7 +1788,6 @@
 "common.see.all" = "Ver todo";
 "dapp.widget.close.alert.title" = "¿Cerrar todas las DApps?";
 "dapp.widget.close.alert.message" = "Todas las pestañas abiertas en el navegador DApp se cerrarán.";
-"common.claim" = "Reclamar";
 "common.close.all" = "Cerrar todo";
 "dapp.browser.tab.not.available" = "Página web no disponible";
 "dapp.list.section.popular" = "Populares";
