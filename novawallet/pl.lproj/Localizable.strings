@@ -1788,8 +1788,10 @@
 "common.see.all" = "Zobacz wszystkie";
 "dapp.widget.close.alert.title" = "Zamknąć wszystkie DAppy?";
 "dapp.widget.close.alert.message" = "Wszystkie otwarte karty w przeglądarce DApp zostaną zamknięte.";
+"common.claim" = "Odbierz";
 "common.close.all" = "Zamknij wszystkie";
 "dapp.browser.tab.not.available" = "Strona internetowa niedostępna";
 "dapp.list.section.popular" = "Popularne";
 "swaps.max.price.diff.error.title" = "Wykryto wysoki wpływ na cenę (%@)";
 "swaps.max.price.diff.error.message" = "Wykonanie tej zamiany spowoduje znaczący poślizg cenowy i straty finansowe. Rozważ zmniejszenie wielkości swojego handlu lub podzielenie go na kilka transakcji.";
+"unstaking.limit.reached.message" = "Osiągnąłeś limit żądań unstakingu (%@ aktywnych żądań)";

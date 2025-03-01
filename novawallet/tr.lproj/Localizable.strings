@@ -1788,8 +1788,10 @@
 "common.see.all" = "Hepsini Gör";
 "dapp.widget.close.alert.title" = "Tüm DApp'leri Kapat?";
 "dapp.widget.close.alert.message" = "DApp tarayıcısındaki tüm açık sekmeler kapatılacak.";
+"common.claim" = "Talep Et";
 "common.close.all" = "Hepsini Kapat";
 "dapp.browser.tab.not.available" = "Web sayfası mevcut değil";
 "dapp.list.section.popular" = "Popüler";
 "swaps.max.price.diff.error.title" = "Yüksek fiyat etkisi tespit edildi (%@)";
 "swaps.max.price.diff.error.message" = "Bu takası gerçekleştirmek, önemli kaymalar ve finansal kayıplarla sonuçlanacaktır. İşlem boyutunuzu küçültmeyi veya işleminizi birden fazla işleme bölmeyi düşünün.";
+"unstaking.limit.reached.message" = "Unstaking talep limitine ulaştınız (%@ aktif talep)";
