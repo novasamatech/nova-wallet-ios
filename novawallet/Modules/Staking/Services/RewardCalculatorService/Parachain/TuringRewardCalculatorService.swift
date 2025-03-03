@@ -49,7 +49,7 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
             let inflationDistribution {
             let circulating = totalIssuance + totalUnvested
 
-            let snapshot = Snapshot(
+            let snapshot = ParaStkRewardParamsSnapshot(
                 totalStaked: totalStaked,
                 totalIssuance: circulating,
                 inflation: inflationConfig,
@@ -60,14 +60,14 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
         }
     }
 
-    override func subscribe() {
-        super.subscribe()
+    override func start() {
+        super.start()
 
         subscribeAdditionalIssuance()
     }
 
-    override func unsubscribe() {
-        super.unsubscribe()
+    override func stop() {
+        super.stop()
 
         unsubscribeAdditionalIssuance()
     }

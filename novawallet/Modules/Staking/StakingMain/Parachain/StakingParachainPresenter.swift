@@ -8,14 +8,14 @@ final class StakingParachainPresenter {
     let logger: LoggerProtocol
 
     let stateMachine: ParaStkStateMachineProtocol
-    let networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol
+    let networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol
     let stateViewModelFactory: ParaStkStateViewModelFactoryProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         interactor: StakingParachainInteractorInputProtocol,
         wireframe: StakingParachainWireframeProtocol,
-        networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol,
+        networkInfoViewModelFactory: CollatorStkNetworkInfoViewModelFactoryProtocol,
         stateViewModelFactory: ParaStkStateViewModelFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         logger: LoggerProtocol
@@ -40,9 +40,15 @@ final class StakingParachainPresenter {
         if
             let networkInfo = optCommonData?.networkInfo,
             let chainAsset = optCommonData?.chainAsset {
+            let model = CollatorStkNetworkModel(
+                totalStake: networkInfo.totalStake,
+                minStake: max(networkInfo.minStakeForRewards, networkInfo.minTechStake),
+                activeDelegators: networkInfo.activeDelegatorsCount,
+                unstakingDuration: optCommonData?.stakingDuration?.unstaking
+            )
+
             let viewModel = networkInfoViewModelFactory.createViewModel(
-                from: networkInfo,
-                duration: optCommonData?.stakingDuration,
+                from: model,
                 chainAsset: chainAsset,
                 price: optCommonData?.price,
                 locale: view?.selectedLocale ?? Locale.current
@@ -166,11 +172,11 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         if delegationRequests.count > 1 {
             let identities = delegator.delegations?.identitiesDict()
 
-            let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(
+            let accountDetailsViewModelFactory = CollatorStakingAccountViewModelFactory(
                 chainAsset: chainAsset
             )
 
-            let viewModels = accountDetailsViewModelFactory.createUnstakingViewModels(
+            let viewModels = accountDetailsViewModelFactory.createParachainUnstakingViewModels(
                 from: delegationRequests,
                 identities: identities
             )
@@ -260,7 +266,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         stateMachine.state.process(scheduledRequests: requests ?? [])
     }
 
-    func didReceiveDelegations(_ delegations: [CollatorSelectionInfo]) {
+    func didReceiveDelegations(_ delegations: [ParachainStkCollatorSelectionInfo]) {
         stateMachine.state.process(delegations: delegations)
     }
 
@@ -275,7 +281,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         }
     }
 
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol) {
         stateMachine.state.process(calculatorEngine: calculator)
     }
 

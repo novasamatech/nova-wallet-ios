@@ -9,7 +9,7 @@ extension ParachainStaking {
         let price: PriceData?
         let networkInfo: ParachainStaking.NetworkInfo?
         let stakingDuration: ParachainStakingDuration?
-        let calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?
+        let calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?
         let collatorsInfo: SelectedRoundCollators?
         let blockNumber: BlockNumber?
         let roundInfo: ParachainStaking.RoundInfo?
@@ -145,7 +145,7 @@ extension ParachainStaking.CommonData {
     }
 
     func byReplacing(
-        calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?
+        calculatorEngine: CollatorStakingRewardCalculatorEngineProtocol?
     ) -> ParachainStaking.CommonData {
         ParachainStaking.CommonData(
             account: account,

@@ -111,7 +111,7 @@ final class NPoolsClaimRewardsInteractor: RuntimeConstantFetching, AnyProviderAu
     }
 
     func createExtrinsicBuilderClosure(
-        for strategy: NominationPools.ClaimRewardsStrategy,
+        for strategy: StakingClaimRewardsStrategy,
         accountId: AccountId,
         needsMigration: Bool
     ) -> ExtrinsicBuilderClosure {
@@ -165,7 +165,7 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
         provideExistentialDeposit()
     }
 
-    func estimateFee(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool) {
+    func estimateFee(for strategy: StakingClaimRewardsStrategy, needsMigration: Bool) {
         let identifier = strategy.rawValue + "-" + "\(needsMigration)"
 
         feeProxy.estimateFee(
@@ -179,7 +179,7 @@ extension NPoolsClaimRewardsInteractor: NPoolsClaimRewardsInteractorInputProtoco
         )
     }
 
-    func submit(for strategy: NominationPools.ClaimRewardsStrategy, needsMigration: Bool) {
+    func submit(for strategy: StakingClaimRewardsStrategy, needsMigration: Bool) {
         extrinsicService.submit(
             createExtrinsicBuilderClosure(
                 for: strategy,
