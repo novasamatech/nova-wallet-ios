@@ -905,7 +905,7 @@
 "ledger.address.verify.message" = "Press both buttons on your %@ to approve address";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "This wallet is paired with Ledger. Nova will help you to form any operations you want, and you will be requested to sign them using Ledger";
-"ledger.instructions.title" = "Connect Ledger";
+"ledger.instructions.title" = "Connect Ledger via Bluetooth";
 "ledger.instructions.link" = "Ledger Connection Guide";
 "ledger.instructions.step1" = "Make sure %@ to your Ledger device using Ledger Live app";
 "ledger.instructions.step1.highlighted" = "Network app is installed";
