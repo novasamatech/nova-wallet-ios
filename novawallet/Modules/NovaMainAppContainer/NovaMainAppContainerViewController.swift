@@ -9,6 +9,7 @@ final class NovaMainAppContainerViewController: UIViewController,
     let presenter: NovaMainAppContainerPresenterProtocol
     let logger: LoggerProtocol
 
+    var browserNavigation: BrowserNavigationProtocol?
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
     var topContainerBottomConstraint: NSLayoutConstraint?

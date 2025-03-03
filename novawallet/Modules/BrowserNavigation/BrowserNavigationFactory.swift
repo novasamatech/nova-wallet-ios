@@ -3,16 +3,22 @@ import Operation_iOS
 import UIKit
 
 enum BrowserNavigationFactory {
-    static func createNavigation() -> BrowserNavigationProtocol? {
-        guard let mainAppContainer = findMainContainer() else { return nil }
-
-        let navigationTaskFactory = BrowserNavigationTaskFactory(mainAppContainer: mainAppContainer)
-
-        let presenter = shared
-
-        presenter.browserNavigationTaskFactory = navigationTaskFactory
+    static func createNavigation(
+        for mainContainer: NovaMainAppContainerViewProtocol
+    ) -> BrowserNavigationProtocol? {
+        let interactor = createInteractor()
+        let navigationTaskFactory = BrowserNavigationTaskFactory(mainAppContainer: mainContainer)
+        let presenter = BrowserNavigationPresenter(
+            interactor: interactor,
+            browserNavigationTaskFactory: navigationTaskFactory
+        )
+        interactor.presenter = presenter
 
         return presenter
+    }
+
+    static func createNavigation() -> BrowserNavigationProtocol? {
+        findMainContainer()?.browserNavigation
     }
 
     private static func createInteractor() -> BrowserNavigationInteractor {
@@ -47,12 +53,4 @@ enum BrowserNavigationFactory {
             .first { $0.isKeyWindow }?
             .rootViewController as? NovaMainAppContainerViewProtocol
     }
-
-    static var shared: BrowserNavigationPresenter = {
-        let interactor = createInteractor()
-        let presenter = BrowserNavigationPresenter(interactor: interactor)
-        interactor.presenter = presenter
-
-        return presenter
-    }()
 }

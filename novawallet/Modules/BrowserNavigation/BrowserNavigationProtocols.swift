@@ -1,6 +1,10 @@
 import Foundation
 import Operation_iOS
 
+protocol BrowserNavigationProviding {
+    var browserNavigation: BrowserNavigationProtocol? { get }
+}
+
 protocol BrowserNavigationProtocol {
     func openBrowser(with dAppId: String)
     func openBrowser(with model: DAppNavigation)

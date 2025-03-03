@@ -3,7 +3,7 @@ import Operation_iOS
 
 final class BrowserNavigationPresenter {
     let interactor: BrowserNavigationInteractorInputProtocol
-    var browserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol?
+    let browserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol
 
     private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
@@ -12,8 +12,12 @@ final class BrowserNavigationPresenter {
 
     private var browserNavigationTask: BrowserNavigationTask?
 
-    init(interactor: BrowserNavigationInteractorInputProtocol) {
+    init(
+        interactor: BrowserNavigationInteractorInputProtocol,
+        browserNavigationTaskFactory: BrowserNavigationTaskFactoryProtocol
+    ) {
         self.interactor = interactor
+        self.browserNavigationTaskFactory = browserNavigationTaskFactory
     }
 }
 
@@ -21,7 +25,7 @@ final class BrowserNavigationPresenter {
 
 extension BrowserNavigationPresenter: BrowserNavigationProtocol {
     func openBrowser(with dAppId: String) {
-        browserNavigationTask = browserNavigationTaskFactory?.createDAppNavigationTaskById(
+        browserNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
             dAppId,
             wallet: wallet,
             favoritesProvider: { [weak self] in self?.favorites },
@@ -31,7 +35,7 @@ extension BrowserNavigationPresenter: BrowserNavigationProtocol {
     }
 
     func openBrowser(with model: DAppNavigation) {
-        browserNavigationTask = browserNavigationTaskFactory?.createDAppNavigationTaskByModel(
+        browserNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
             model,
             wallet: wallet,
             dAppResultProvider: { [weak self] in self?.dAppsResult }
@@ -42,7 +46,7 @@ extension BrowserNavigationPresenter: BrowserNavigationProtocol {
     func openBrowser(with result: DAppSearchResult) {
         guard let wallet else { return }
 
-        browserNavigationTask = browserNavigationTaskFactory?.createSearchResultNavigationTask(
+        browserNavigationTask = browserNavigationTaskFactory.createSearchResultNavigationTask(
             result,
             wallet: wallet
         )
