@@ -34,8 +34,8 @@ final class CurrencyViewLayout: UIView {
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let settings = NSCollectionLayoutSection.Settings(
             estimatedRowHeight: Constants.estimatedRowHeight,
-            absoluteHeaderHeight: nil,
-            estimatedHeaderHeight: Constants.estimatedHeaderHeight,
+            absoluteHeaderHeight: Constants.absoluteHeaderHeight,
+            estimatedHeaderHeight: Constants.absoluteHeaderHeight,
             sectionContentInsets: Constants.sectionContentInsets,
             sectionInterGroupSpacing: Constants.interGroupSpacing,
             header: .init(pinToVisibleBounds: false)
@@ -52,11 +52,11 @@ final class CurrencyViewLayout: UIView {
 extension CurrencyViewLayout {
     private enum Constants {
         static let estimatedRowHeight: CGFloat = 56
-        static let estimatedHeaderHeight: CGFloat = 44
+        static let absoluteHeaderHeight: CGFloat = 24
         static let sectionContentInsets = NSDirectionalEdgeInsets(
-            top: 4,
+            top: 12,
             leading: 16,
-            bottom: 16,
+            bottom: 28,
             trailing: 16
         )
         static let interGroupSpacing: CGFloat = 0
