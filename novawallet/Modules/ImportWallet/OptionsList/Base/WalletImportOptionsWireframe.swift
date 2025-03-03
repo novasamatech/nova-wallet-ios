@@ -70,7 +70,7 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
                     LocalizableResource { locale in
                         ActionManageViewModel(
                             icon: R.image.iconLedgerActionWarning(),
-                            title: R.string.localizable.commonLedgerNanoLegacy(preferredLanguages: locale.rLanguages),
+                            title: R.string.localizable.commonLedgerLegacy(preferredLanguages: locale.rLanguages),
                             details: nil,
                             allowsIconModification: false
                         )
