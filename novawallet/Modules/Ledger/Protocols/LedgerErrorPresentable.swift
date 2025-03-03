@@ -5,6 +5,7 @@ protocol LedgerErrorPresentable: MessageSheetPresentable {
         on view: ControllerBackedProtocol,
         error: LedgerError,
         networkName: String,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback
@@ -16,6 +17,7 @@ extension LedgerErrorPresentable {
         on view: ControllerBackedProtocol,
         error: LedgerError,
         networkName: String,
+        deviceModel: LedgerDeviceModel,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback
     ) {
@@ -23,6 +25,7 @@ extension LedgerErrorPresentable {
             on: view,
             error: error,
             networkName: networkName,
+            deviceModel: deviceModel,
             migrationViewModel: nil,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure
@@ -33,6 +36,7 @@ extension LedgerErrorPresentable {
         on view: ControllerBackedProtocol,
         error: LedgerError,
         networkName: String,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback
@@ -53,6 +57,7 @@ extension LedgerErrorPresentable {
                 on: view,
                 response: ledgerResponseError,
                 networkName: networkName,
+                deviceModel: deviceModel,
                 migrationViewModel: migrationViewModel,
                 cancelClosure: cancelClosure,
                 retryClosure: retryClosure
@@ -60,6 +65,7 @@ extension LedgerErrorPresentable {
         case let .unexpectedData(message):
             guard let messageSheetView = LedgerMessageSheetViewFactory.createMessageErrorView(
                 message: message,
+                deviceModel: deviceModel,
                 cancelClosure: cancelClosure,
                 retryClosure: retryClosure,
                 migrationViewModel: migrationViewModel
@@ -85,6 +91,7 @@ extension LedgerErrorPresentable {
         on view: ControllerBackedProtocol,
         response: LedgerResponseError,
         networkName: String,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping () -> Void
@@ -95,6 +102,7 @@ extension LedgerErrorPresentable {
         case .appNotOpen, .wrongAppOpen:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createNetworkAppNotLaunchedView(
                 chainName: networkName,
+                deviceModel: deviceModel,
                 cancelClosure: cancelClosure,
                 retryClosure: retryClosure,
                 migrationViewModel: migrationViewModel
@@ -105,6 +113,7 @@ extension LedgerErrorPresentable {
             transitToMessageSheet(messageSheetView, on: view)
         case .transactionRejected:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createOperationCancelledView(
+                deviceModel: deviceModel,
                 cancelClosure: cancelClosure,
                 retryClosure: retryClosure,
                 migrationViewModel: migrationViewModel
@@ -119,6 +128,7 @@ extension LedgerErrorPresentable {
                     on: view,
                     reason: LedgerInvaliDataPolkadotReason(rawReason: reason),
                     networkName: networkName,
+                    deviceModel: deviceModel,
                     migrationViewModel: migrationViewModel,
                     cancelClosure: cancelClosure,
                     retryClosure: retryClosure
@@ -136,6 +146,7 @@ extension LedgerErrorPresentable {
                 presentMessageLedgerError(
                     on: view,
                     message: reason,
+                    deviceModel: deviceModel,
                     migrationViewModel: migrationViewModel,
                     cancelClosure: cancelClosure,
                     retryClosure: retryClosure
@@ -155,6 +166,7 @@ extension LedgerErrorPresentable {
         on view: ControllerBackedProtocol,
         reason: LedgerInvaliDataPolkadotReason,
         networkName: String,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping () -> Void
@@ -164,12 +176,14 @@ extension LedgerErrorPresentable {
             presentMessageLedgerError(
                 on: view,
                 message: reason,
+                deviceModel: deviceModel,
                 migrationViewModel: migrationViewModel,
                 cancelClosure: cancelClosure,
                 retryClosure: retryClosure
             )
         case .unsupportedOperation:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createTransactionNotSupportedView(
+                deviceModel: deviceModel,
                 completionClosure: cancelClosure,
                 migrationViewModel: migrationViewModel
             ) else {
@@ -180,6 +194,7 @@ extension LedgerErrorPresentable {
         case .outdatedMetadata:
             guard let messageSheetView = LedgerMessageSheetViewFactory.createMetadataOutdatedView(
                 chainName: networkName,
+                deviceModel: deviceModel,
                 completionClosure: cancelClosure,
                 migrationViewModel: migrationViewModel
             ) else {
@@ -193,12 +208,14 @@ extension LedgerErrorPresentable {
     private func presentMessageLedgerError(
         on view: ControllerBackedProtocol,
         message: String,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping () -> Void
     ) {
         guard let messageSheetView = LedgerMessageSheetViewFactory.createMessageErrorView(
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure,
             migrationViewModel: migrationViewModel

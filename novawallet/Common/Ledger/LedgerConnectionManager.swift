@@ -202,6 +202,8 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
             return
         }
 
+        device.serviceId = service.uuid
+
         guard let characteristics = service.characteristics else { return }
 
         for characteristic in characteristics {

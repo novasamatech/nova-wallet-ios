@@ -4,6 +4,14 @@ import CoreBluetooth
 protocol LedgerDeviceProtocol {
     var identifier: UUID { get }
     var name: String { get }
+    var model: LedgerDeviceModel { get }
+}
+
+enum LedgerDeviceModel {
+    case nanoX
+    case stax
+    case flex
+    case unknown
 }
 
 final class BluetoothLedgerDevice: LedgerDeviceProtocol {
@@ -19,6 +27,19 @@ final class BluetoothLedgerDevice: LedgerDeviceProtocol {
         peripheral.identifier
     }
 
+    var model: LedgerDeviceModel {
+        if serviceId == SupportedBluetoothDevice.ledgerNanoX.uuid {
+            .nanoX
+        } else if serviceId == SupportedBluetoothDevice.ledgerStax.uuid {
+            .stax
+        } else if serviceId == SupportedBluetoothDevice.ledgerFlex.uuid {
+            .flex
+        } else {
+            .unknown
+        }
+    }
+
+    var serviceId: CBUUID?
     var readCharacteristic: CBCharacteristic?
     var writeCharacteristic: CBCharacteristic?
     var notifyCharacteristic: CBCharacteristic?
