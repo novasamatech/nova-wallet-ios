@@ -19,6 +19,16 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem>
     func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem>
 
+    func createAssetStorageLocksRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock>
+
+    func createAssetStorageFreezesRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock>
+
     func createAssetLocksRepository(
         for accountId: AccountId,
         chainAssetId: ChainAssetId
@@ -227,6 +237,32 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         chainAssetId: ChainAssetId
     ) -> AnyDataProviderRepository<AssetLock> {
         createAssetLocksRepository(.assetLock(for: accountId, chainAssetId: chainAssetId))
+    }
+
+    func createAssetStorageLocksRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock> {
+        createAssetLocksRepository(
+            .assetLock(
+                for: accountId,
+                chainAssetId: chainAssetId,
+                storage: AssetLockStorage.locks.rawValue
+            )
+        )
+    }
+
+    func createAssetStorageFreezesRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock> {
+        createAssetLocksRepository(
+            .assetLock(
+                for: accountId,
+                chainAssetId: chainAssetId,
+                storage: AssetLockStorage.freezes.rawValue
+            )
+        )
     }
 
     func createAssetLocksRepository(chainAssetIds: Set<ChainAssetId>) -> AnyDataProviderRepository<AssetLock> {

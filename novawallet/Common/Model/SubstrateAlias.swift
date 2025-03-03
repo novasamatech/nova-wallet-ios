@@ -20,6 +20,7 @@ typealias Balance = BigUInt
 typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
+typealias Percent = UInt8
 
 extension AccountId {
     static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {
@@ -92,5 +93,11 @@ extension AccountAddress {
         let suffix = self.suffix(5)
 
         return "\(prefix)...\(suffix)"
+    }
+}
+
+extension Percent {
+    func percentToFraction() -> Decimal? {
+        Decimal.fromSubstratePercent(value: self)
     }
 }

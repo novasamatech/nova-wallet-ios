@@ -229,7 +229,7 @@ struct ModalInfoFactory {
 
                 let title: String = {
                     guard let mainTitle = lock.lockType?.displayType.value(for: locale) else {
-                        return lock.displayId?.capitalized ?? ""
+                        return lock.displayModuleAndIdTitle ?? ""
                     }
                     return mainTitle
                 }()

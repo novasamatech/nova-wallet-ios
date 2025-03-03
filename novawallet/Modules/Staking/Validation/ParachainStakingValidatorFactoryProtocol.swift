@@ -1,12 +1,7 @@
 import Foundation
 import BigInt
 
-protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
-    func delegatorNotExist(
-        delegator: ParachainStaking.Delegator?,
-        locale: Locale
-    ) -> DataValidating
-
+protocol ParaStkValidatorFactoryProtocol: CollatorStakingValidatorFactoryProtocol {
     func canStakeTopDelegations(
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
@@ -18,18 +13,6 @@ protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
         existingBond: BigUInt?,
-        locale: Locale
-    ) -> DataValidating
-
-    func hasMinStake(
-        amount: Decimal?,
-        minTechStake: BigUInt?,
-        locale: Locale
-    ) -> DataValidating
-
-    func notExceedsMaxCollators(
-        delegator: ParachainStaking.Delegator?,
-        maxCollatorsAllowed: UInt32?,
         locale: Locale
     ) -> DataValidating
 
@@ -78,4 +61,22 @@ protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         locale: Locale
     ) -> DataValidating
+}
+
+extension ParaStkValidatorFactoryProtocol {
+    func notExceedsMaxCollatorsForDelegator(
+        _ delegator: ParachainStaking.Delegator?,
+        selectedCollator: AccountId?,
+        maxCollatorsAllowed: UInt32?,
+        locale: Locale
+    ) -> DataValidating {
+        let currentCollators = delegator.map { Set($0.delegations.map(\.owner)) }
+
+        return notExceedsMaxCollators(
+            currentCollators: currentCollators,
+            selectedCollator: selectedCollator,
+            maxCollatorsAllowed: maxCollatorsAllowed,
+            locale: locale
+        )
+    }
 }

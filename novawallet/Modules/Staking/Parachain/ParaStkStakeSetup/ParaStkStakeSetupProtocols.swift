@@ -1,23 +1,5 @@
-import BigInt
-
 import Foundation
-
-protocol ParaStkStakeSetupViewProtocol: ControllerBackedProtocol {
-    func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?)
-    func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
-    func didReceiveMinStake(viewModel: BalanceViewModelProtocol?)
-    func didReceiveReward(viewModel: StakingRewardInfoViewModel)
-}
-
-protocol ParaStkStakeSetupPresenterProtocol: AnyObject {
-    func setup()
-    func selectCollator()
-    func updateAmount(_ newValue: Decimal?)
-    func selectAmountPercentage(_ percentage: Float)
-    func proceed()
-}
+import BigInt
 
 protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
     func setup()
@@ -28,7 +10,7 @@ protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
 
 protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
-    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
+    func didReceiveRewardCalculator(_ calculator: CollatorStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
@@ -43,24 +25,16 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
 }
 
 protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    ParachainStakingErrorPresentable {
+    ParachainStakingErrorPresentable, CollatorStakingDelegationSelectable {
     func showConfirmation(
-        from view: ParaStkStakeSetupViewProtocol?,
+        from view: CollatorStakingSetupViewProtocol?,
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?
     )
 
     func showCollatorSelection(
-        from view: ParaStkStakeSetupViewProtocol?,
-        delegate: ParaStkSelectCollatorsDelegate
-    )
-
-    func showDelegationSelection(
-        from view: ParaStkStakeSetupViewProtocol?,
-        viewModels: [AccountDetailsPickerViewModel],
-        selectedIndex: Int,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
+        from view: CollatorStakingSetupViewProtocol?,
+        delegate: CollatorStakingSelectDelegate
     )
 }
