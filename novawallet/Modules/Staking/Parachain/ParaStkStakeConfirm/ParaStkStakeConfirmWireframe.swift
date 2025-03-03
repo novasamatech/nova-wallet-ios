@@ -3,7 +3,7 @@ import Foundation
 final class ParaStkStakeConfirmWireframe: ParaStkStakeConfirmWireframeProtocol,
     ModalAlertPresenting,
     ExtrinsicSubmissionPresenting {
-    func complete(on view: ParaStkStakeConfirmViewProtocol?, locale: Locale) {
+    func complete(on view: CollatorStakingConfirmViewProtocol?, locale: Locale) {
         let navigationController = view?.controller.navigationController
         let viewControllers = navigationController?.viewControllers ?? []
 

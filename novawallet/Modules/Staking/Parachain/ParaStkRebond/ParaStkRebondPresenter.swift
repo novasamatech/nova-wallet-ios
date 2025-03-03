@@ -12,7 +12,7 @@ final class ParaStkRebondPresenter {
     let selectedCollator: AccountId
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
+    let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -33,7 +33,7 @@ final class ParaStkRebondPresenter {
         collatorIdentity: AccountIdentity?,
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
+        hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {

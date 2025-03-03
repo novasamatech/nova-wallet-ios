@@ -1,21 +1,5 @@
 import Foundation
 
-protocol ParaStkUnstakeConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol)
-    func didReceiveWallet(viewModel: DisplayWalletViewModel)
-    func didReceiveAccount(viewModel: DisplayAddressViewModel)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveCollator(viewModel: DisplayAddressViewModel)
-    func didReceiveHints(viewModel: [String])
-}
-
-protocol ParaStkUnstakeConfirmPresenterProtocol: AnyObject {
-    func setup()
-    func selectAccount()
-    func selectCollator()
-    func confirm()
-}
-
 protocol ParaStkUnstakeConfirmInteractorInputProtocol: ParaStkBaseUnstakeInteractorInputProtocol,
     PendingExtrinsicInteracting {
     func confirm(for callWrapper: UnstakeCallWrapper)
@@ -30,5 +14,5 @@ protocol ParaStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresenta
     AddressOptionsPresentable,
     FeeRetryable,
     MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: ParaStkUnstakeConfirmViewProtocol?, locale: Locale)
+    func complete(on view: CollatorStkUnstakeConfirmViewProtocol?, locale: Locale)
 }

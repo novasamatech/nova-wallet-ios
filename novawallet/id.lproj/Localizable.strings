@@ -1793,3 +1793,4 @@
 "dapp.list.section.popular" = "Populer";
 "swaps.max.price.diff.error.title" = "Dampak harga tinggi terdeteksi (%@)";
 "swaps.max.price.diff.error.message" = "Melakukan tukar ini akan mengakibatkan slippage signifikan dan kerugian finansial. Pertimbangkan untuk mengurangi ukuran perdagangan Anda atau membagi perdagangan Anda ke dalam beberapa transaksi.";
+"unstaking.limit.reached.message" = "Anda telah mencapai batas permintaan unstaking (%@ permintaan aktif)";

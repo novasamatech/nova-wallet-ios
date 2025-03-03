@@ -7,78 +7,37 @@ protocol TransactionHistoryLocalFilterFactoryProtocol {
 }
 
 final class TransactionHistoryLocalFilterFactory {
-    let chainRegistry: ChainRegistryProtocol
-    let chainAsset: ChainAsset
+    let providers: [TransactionHistoryFilterProviderProtocol]
     let logger: LoggerProtocol
 
-    init(chainRegistry: ChainRegistryProtocol, chainAsset: ChainAsset, logger: LoggerProtocol) {
-        self.chainRegistry = chainRegistry
-        self.chainAsset = chainAsset
+    init(providers: [TransactionHistoryFilterProviderProtocol], logger: LoggerProtocol) {
+        self.providers = providers
         self.logger = logger
-    }
-
-    private func createPoolAccountPrefixWrapper(
-        for runtimeProvider: RuntimeProviderProtocol,
-        chainAsset: ChainAsset
-    ) -> CompoundOperationWrapper<TransactionHistoryLocalFilterProtocol> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let constantOperation = StorageConstantOperation<BytesCodable>(path: NominationPools.palletIdPath)
-        constantOperation.configurationBlock = {
-            do {
-                constantOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                constantOperation.result = .failure(error)
-            }
-        }
-
-        constantOperation.addDependency(codingFactoryOperation)
-
-        let mergeOperation = ClosureOperation<TransactionHistoryLocalFilterProtocol> {
-            let palletId = try constantOperation.extractNoCancellableResultData().wrappedValue
-
-            let accountPrefix = try NominationPools.derivedAccountPrefix(for: palletId)
-
-            return TransactionHistoryAccountPrefixFilter(accountPrefix: accountPrefix, chainAsset: chainAsset)
-        }
-
-        mergeOperation.addDependency(constantOperation)
-
-        let dependencies = [codingFactoryOperation, constantOperation]
-
-        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 }
 
 extension TransactionHistoryLocalFilterFactory: TransactionHistoryLocalFilterFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<TransactionHistoryLocalFilterProtocol> {
-        let phishingFilter = TransactionHistoryPhishingFilter()
-
-        guard
-            chainAsset.asset.hasPoolStaking,
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
-            return CompoundOperationWrapper.createWithResult(phishingFilter)
-        }
-
-        let poolTransferFilterWrapper = createPoolAccountPrefixWrapper(for: runtimeProvider, chainAsset: chainAsset)
+        let wrappers = providers.map { $0.createFiltersWrapper() }
 
         let mergeOperation = ClosureOperation<TransactionHistoryLocalFilterProtocol> { [weak self] in
-            do {
-                let poolTransferFilter = try poolTransferFilterWrapper.targetOperation.extractNoCancellableResultData()
-
-                return TransactionHistoryAndPredicate(innerFilters: [poolTransferFilter, phishingFilter])
-            } catch {
-                // don't block if something wrong with the filter
-                self?.logger.warning("Couldn't fetch pools transfer filter: \(error)")
-                return phishingFilter
+            let filters: [TransactionHistoryLocalFilterProtocol] = wrappers.flatMap { wrapper in
+                do {
+                    return try wrapper.targetOperation.extractNoCancellableResultData()
+                } catch {
+                    // don't block if something wrong with the filter
+                    self?.logger.warning("Couldn't fetch filter: \(error)")
+                    return []
+                }
             }
+
+            return TransactionHistoryAndPredicate(innerFilters: filters)
         }
 
-        mergeOperation.addDependency(poolTransferFilterWrapper.targetOperation)
+        wrappers.forEach { mergeOperation.addDependency($0.targetOperation) }
 
-        return CompoundOperationWrapper(
-            targetOperation: mergeOperation,
-            dependencies: poolTransferFilterWrapper.allOperations
-        )
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 }
