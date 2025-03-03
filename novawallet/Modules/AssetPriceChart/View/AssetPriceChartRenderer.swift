@@ -7,6 +7,7 @@ final class AssetPriceChartRenderer: LineChartRenderer {
     private var selectedEntry: ChartDataEntry?
     private var dotColor: UIColor?
     private var shadowColor: UIColor?
+    private var splittedDataSets: [LineChartDataSetProtocol]?
 
     init(
         highlightColor: UIColor,
@@ -21,8 +22,12 @@ final class AssetPriceChartRenderer: LineChartRenderer {
         )
     }
 
-    func setSelectedEntry(_ entry: ChartDataEntry?) {
+    func setSelectedEntry(
+        _ entry: ChartDataEntry?,
+        splittedDataSets: [LineChartDataSetProtocol]?
+    ) {
         selectedEntry = entry
+        self.splittedDataSets = splittedDataSets
     }
 
     func setDotColor(
@@ -31,6 +36,17 @@ final class AssetPriceChartRenderer: LineChartRenderer {
     ) {
         dotColor = color
         self.shadowColor = shadowColor
+    }
+
+    override func drawDataSet(
+        context: CGContext,
+        dataSet: any LineChartDataSetProtocol
+    ) {
+        if let splittedDataSets {
+            splittedDataSets.forEach { super.drawDataSet(context: context, dataSet: $0) }
+        } else {
+            super.drawDataSet(context: context, dataSet: dataSet)
+        }
     }
 
     override func drawExtras(context: CGContext) {
