@@ -156,7 +156,7 @@ extension HapticService: HapticEngine {
         } else {
             1.0
         }
-        
+
         let finalIntensity = intensity ?? (config.baseIntensity * intensityFactor)
         let finalSharpness = sharpness ?? config.baseSharpness
 

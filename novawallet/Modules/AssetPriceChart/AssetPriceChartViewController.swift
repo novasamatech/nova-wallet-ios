@@ -179,12 +179,6 @@ private extension AssetPriceChartViewController {
 
         presenter.selectEntry(plainEntry)
     }
-
-    func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
-        let generator = UIImpactFeedbackGenerator(style: style)
-        generator.prepare()
-        generator.impactOccurred(intensity: 1.0)
-    }
 }
 
 // MARK: AssetPriceChartViewProtocol
