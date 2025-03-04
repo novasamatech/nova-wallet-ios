@@ -151,10 +151,12 @@ extension HapticService: HapticEngine {
             position - triggerStartPosition + 1
         }
 
-        let intensityFactor: Float = config.progressiveIntensity
-            ? Float(triggerPosition) / Float(config.triggerCount)
-            : 1.0
-
+        let intensityFactor: Float = if config.progressiveIntensity, config.triggerCount > 0 {
+            Float(triggerPosition) / Float(config.triggerCount)
+        } else {
+            1.0
+        }
+        
         let finalIntensity = intensity ?? (config.baseIntensity * intensityFactor)
         let finalSharpness = sharpness ?? config.baseSharpness
 
