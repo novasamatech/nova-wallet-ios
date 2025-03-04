@@ -4,11 +4,19 @@ import DGCharts
 final class AssetPriceChartViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetPriceChartViewLayout
 
-    let presenter: AssetPriceChartPresenterProtocol
-    let dataSource: AssetPriceChartViewDataSourceProtocol
+    private let presenter: AssetPriceChartPresenterProtocol
+    private let seekHapticEngine: HapticEngine
+    private let periodControlHapticEngine: HapticEngine
+    private let dataSource: AssetPriceChartViewDataSourceProtocol
 
-    init(presenter: AssetPriceChartPresenterProtocol) {
+    init(
+        presenter: AssetPriceChartPresenterProtocol,
+        seekHapticEngine: HapticEngine,
+        periodControlHapticEngine: HapticEngine
+    ) {
         self.presenter = presenter
+        self.seekHapticEngine = seekHapticEngine
+        self.periodControlHapticEngine = periodControlHapticEngine
         dataSource = AssetPriceChartViewDataSource()
         super.init(nibName: nil, bundle: nil)
     }
@@ -171,6 +179,12 @@ private extension AssetPriceChartViewController {
 
         presenter.selectEntry(plainEntry)
     }
+
+    func createHapticFeedback(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred(intensity: 1.0)
+    }
 }
 
 // MARK: AssetPriceChartViewProtocol
@@ -198,10 +212,12 @@ extension AssetPriceChartViewController: ChartViewDelegate {
     ) {
         rootView.chartView.highlightValue(highlight)
         selectEntry(entry: entry)
+        seekHapticEngine.triggerHapticFeedback()
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
         selectEntry(entry: nil)
+        seekHapticEngine.reset()
     }
 }
 
@@ -212,6 +228,8 @@ extension AssetPriceChartViewController: PriceChartPeriodControlDelegate {
         _: PriceChartPeriodControl,
         didSelect period: PriceChartPeriodViewModel
     ) {
+        periodControlHapticEngine.triggerHapticFeedback()
+        periodControlHapticEngine.reset()
         presenter.selectPeriod(period.period)
     }
 }

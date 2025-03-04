@@ -33,16 +33,30 @@ struct AssetPriceChartViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let logger = Logger.shared
+
         let presenter = AssetPriceChartPresenter(
             interactor: interactor,
             assetModel: params.asset,
             viewModelFactory: viewModelFactory,
             periods: params.periods,
-            logger: Logger.shared,
+            logger: logger,
             locale: params.locale
         )
 
-        let view = AssetPriceChartViewController(presenter: presenter)
+        let seekHapticEngine = HapticService(
+            config: .chartSeek,
+            logger: logger
+        )
+        let periodControlHapticEngine = HapticService(
+            config: .chartPeriodControl,
+            logger: logger
+        )
+        let view = AssetPriceChartViewController(
+            presenter: presenter,
+            seekHapticEngine: seekHapticEngine,
+            periodControlHapticEngine: periodControlHapticEngine
+        )
 
         presenter.view = view
         presenter.moduleOutput = output
