@@ -43,14 +43,6 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
         callbackQueue: DispatchQueue
     ) -> AnyDataProvider<DecodedBigUInt>?
 
-    func subscribeTotalReward(
-        for address: AccountAddress,
-        startTimestamp: Int64?,
-        endTimestamp: Int64?,
-        api: LocalChainExternalApi,
-        assetPrecision: Int16
-    ) -> AnySingleValueProvider<TotalRewardItem>?
-
     func subscribeStashItemProvider(
         for address: AccountAddress,
         chainId: ChainModel.Id
@@ -566,59 +558,6 @@ extension StakingLocalStorageSubscriber {
         )
 
         return payeeProvider
-    }
-
-    func subscribeTotalReward(
-        for address: AccountAddress,
-        startTimestamp: Int64?,
-        endTimestamp: Int64?,
-        api: LocalChainExternalApi,
-        assetPrecision: Int16
-    ) -> AnySingleValueProvider<TotalRewardItem>? {
-        guard let totalRewardProvider = try? stakingLocalSubscriptionFactory.getTotalReward(
-            for: address,
-            startTimestamp: startTimestamp,
-            endTimestamp: endTimestamp,
-            api: api,
-            assetPrecision: assetPrecision
-        ) else {
-            return nil
-        }
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<TotalRewardItem>]) in
-            if let finalValue = changes.reduceToLastChange() {
-                self?.stakingLocalSubscriptionHandler.handleTotalReward(
-                    result: .success(finalValue),
-                    for: address,
-                    api: api
-                )
-            }
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.stakingLocalSubscriptionHandler.handleTotalReward(
-                result: .failure(error),
-                for: address,
-                api: api
-            )
-
-            return
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        totalRewardProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        return totalRewardProvider
     }
 
     func subscribeStashItemProvider(

@@ -1793,3 +1793,4 @@
 "dapp.list.section.popular" = "人気のある";
 "swaps.max.price.diff.error.title" = "高価格インパクト検出 (%@)";
 "swaps.max.price.diff.error.message" = "この交換を実行すると、大幅なスリッページと財務上の損失が発生します。取引サイズを減らすか、取引を複数のトランザクションに分けることを検討してください。";
+"unstaking.limit.reached.message" = "アンステーキングのリクエスト上限に達しました（%@ 件のアクティブなリクエスト）";

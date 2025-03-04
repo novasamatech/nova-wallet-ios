@@ -3,8 +3,10 @@ import SubstrateSdk
 import SoraFoundation
 import Operation_iOS
 
-final class DAppListPresenter {
+final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     weak var view: DAppListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol
@@ -49,6 +51,7 @@ final class DAppListPresenter {
                 favorites: favorites ?? [:],
                 wallet: wallet,
                 params: params,
+                bannersState: bannersModule?.bannersState ?? .unavailable,
                 locale: selectedLocale
             )
 
@@ -65,10 +68,15 @@ final class DAppListPresenter {
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
         interactor.setup()
+
+        if bannersModule?.locale != selectedLocale {
+            bannersModule?.updateLocale(selectedLocale)
+        }
     }
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func activateAccount() {
@@ -199,6 +207,26 @@ extension DAppListPresenter: DAppSearchDelegate {
     }
 }
 
+// MARK: BannersModuleOutputProtocol
+
+extension DAppListPresenter: BannersModuleOutputProtocol {
+    func didReceiveBanners(state _: BannersState) {
+        provideSections()
+    }
+
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
+    }
+
+    func didUpdateContent(state _: BannersState) {
+        provideSections()
+    }
+}
+
 // MARK: DAppListNavigationTaskCleaning
 
 extension DAppListPresenter: DAppListNavigationTaskCleaning {
@@ -213,6 +241,7 @@ extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideSections()
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

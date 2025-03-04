@@ -9,7 +9,7 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancella
     let selectedAccount: MetaChainAccountResponse
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let collatorService: ParachainStakingCollatorServiceProtocol
-    let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -22,7 +22,7 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancella
         selectedAccount: MetaChainAccountResponse,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         collatorService: ParachainStakingCollatorServiceProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
