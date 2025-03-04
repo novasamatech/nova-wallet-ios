@@ -31,20 +31,20 @@ protocol LedgerConnectionManagerDelegate: AnyObject {
 }
 
 final class LedgerConnectionManager: NSObject {
+    weak var delegate: LedgerConnectionManagerDelegate?
+
+    let logger: LoggerProtocol
+
+    private let delegateQueue = DispatchQueue(label: "com.nova.wallet.ledger.connection." + UUID().uuidString)
+    private let supportedDevices: [CBUUID: SupportedBluetoothDevice] = SupportedBluetoothDevice.ledgers
+
     private var centralManager: CBCentralManager?
 
     @Atomic(defaultValue: [])
     private var devices: [BluetoothLedgerDevice]
 
-    private var supportedDevices: [SupportedBluetoothDevice] = SupportedBluetoothDevice.ledgers
-    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.map(\.uuid) }
-    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.map(\.notifyUuid) }
-
-    private let delegateQueue = DispatchQueue(label: "com.nova.wallet.ledger.connection." + UUID().uuidString)
-
-    weak var delegate: LedgerConnectionManagerDelegate?
-
-    let logger: LoggerProtocol
+    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.values.map(\.uuid) }
+    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.values.map(\.notifyUuid) }
 
     init(logger: LoggerProtocol) {
         self.logger = logger
@@ -66,7 +66,15 @@ final class LedgerConnectionManager: NSObject {
 
     private func didDiscoverDevice(_ peripheral: CBPeripheral) {
         if bluetoothDevice(id: peripheral.identifier) == nil {
-            let device = BluetoothLedgerDevice(peripheral: peripheral)
+            let deviceModel: LedgerDeviceModel = peripheral.services?.compactMap {
+                supportedDevices[$0.uuid]?.model
+            }.first ?? .unknown
+
+            let device = BluetoothLedgerDevice(
+                peripheral: peripheral,
+                model: deviceModel
+            )
+
             devices.append(device)
             delegate?.ledgerConnection(manager: self, didDiscover: device)
         }
@@ -201,8 +209,6 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
             logger.warning("Characteristic discovered for missing device")
             return
         }
-
-        device.serviceId = service.uuid
 
         guard let characteristics = service.characteristics else { return }
 
