@@ -230,8 +230,8 @@ extension HapticService: HapticEngine {
 
     func playHapticSequence(
         intensities: [Float],
-        sharpness: [Float]? = nil,
-        spacing: TimeInterval = 0.15
+        sharpness: [Float]?,
+        spacing: TimeInterval
     ) {
         let events: [CHHapticEvent] = intensities
             .enumerated()
