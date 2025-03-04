@@ -1,44 +1,55 @@
-import UIKit
 import CoreHaptics
+import SoraFoundation
 
 class HapticService {
     private let config: PatternConfig
     private let logger: LoggerProtocol
+    private let applicationHandler: ApplicationHandlerProtocol
 
     private var engine: CHHapticEngine?
     private var valueCounter = 0
+    private var needsStartup: Bool = true
 
     init(
         config: PatternConfig,
+        applicationHandler: ApplicationHandlerProtocol = ApplicationHandler(),
         logger: LoggerProtocol = Logger.shared
     ) {
         self.config = config
+        self.applicationHandler = applicationHandler
         self.logger = logger
-        setupEngine()
+
+        setup()
     }
 }
 
 // MARK: Private
 
 private extension HapticService {
+    func setup() {
+        applicationHandler.delegate = self
+        setupEngine()
+    }
+
     func setupEngine() {
         do {
             engine = try CHHapticEngine()
             try engine?.start()
+            needsStartup = false
 
             engine?.stoppedHandler = { [weak self] reason in
+                self?.needsStartup = true
                 self?.logger.info("Haptic engine stopped for reason: \(reason.rawValue)")
-                do {
-                    try self?.engine?.start()
-                } catch {
-                    self?.logger.error("Failed to restart haptic engine: \(error)")
-                }
             }
 
             engine?.resetHandler = { [weak self] in
                 self?.logger.info("Haptic engine reset")
+
+                guard self?.needsStartup == true else { return }
+
                 do {
                     try self?.engine?.start()
+                    self?.needsStartup = false
                 } catch {
                     self?.logger.error("Failed to restart haptic engine: \(error)")
                 }
@@ -242,5 +253,31 @@ extension HapticService: HapticEngine {
             }
 
         playEvents(events)
+    }
+}
+
+// MARK: ApplicationHandlerDelegate
+
+extension HapticService: ApplicationHandlerDelegate {
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        engine?.stop { [weak self] error in
+            if let error = error {
+                self?.logger.error("Haptic Engine Shutdown Error: \(error)")
+                return
+            }
+
+            self?.needsStartup = true
+        }
+    }
+
+    func didReceiveWillEnterForeground(notification _: Notification) {
+        engine?.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Haptic Engine Startup Error: \(error)")
+                return
+            }
+
+            self?.needsStartup = false
+        }
     }
 }
