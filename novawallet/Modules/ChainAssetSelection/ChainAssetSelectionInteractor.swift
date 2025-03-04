@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 import BigInt
 
-final class ChainAssetSelectionInteractor {
+final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
     weak var presenter: ChainAssetSelectionInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
@@ -129,59 +129,12 @@ final class ChainAssetSelectionInteractor {
             }
         }
 
-        setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        setupPriceProvider(currency: selectedCurrency)
     }
 
-    private func setupPriceProvider(for priceIdSet: Set<AssetModel.PriceId>, currency: Currency) {
-        priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            presenter?.didReceivePrice(changes: [:])
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
-            guard let strongSelf = self else {
-                return
-            }
-
-            let mappedChanges = changes.reduce(
-                using: .init(),
-                availableTokenPrice: strongSelf.availableTokenPrice,
-                currency: currency
-            )
-
-            self?.presenter?.didReceivePrice(changes: mappedChanges)
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.presenter?.didReceivePrice(error: error)
-            return
-        }
-
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
-        priceSubscription?.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        priceSubscription?.refresh()
+    private func setupPriceProvider(currency: Currency) {
+        clear(streamableProvider: &priceSubscription)
+        priceSubscription = subscribeAllPrices(currency: currency)
     }
 }
 
@@ -278,12 +231,29 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
     }
 }
 
+extension ChainAssetSelectionInteractor: PriceLocalSubscriptionHandler, PriceLocalStorageSubscriber {
+    func handleAllPrices(result: Result<[Operation_iOS.DataProviderChange<PriceData>], any Error>) {
+        switch result {
+        case let .success(changes):
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: availableTokenPrice,
+                currency: selectedCurrency
+            )
+
+            presenter?.didReceivePrice(changes: mappedChanges)
+        case let .failure(error):
+            presenter?.didReceivePrice(error: error)
+        }
+    }
+}
+
 extension ChainAssetSelectionInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil else {
             return
         }
 
-        setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        setupPriceProvider(currency: selectedCurrency)
     }
 }

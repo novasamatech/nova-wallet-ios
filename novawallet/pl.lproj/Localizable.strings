@@ -1794,3 +1794,7 @@
 "swaps.max.price.diff.error.title" = "Wykryto wysoki wpływ na cenę (%@)";
 "swaps.max.price.diff.error.message" = "Wykonanie tej zamiany spowoduje znaczący poślizg cenowy i straty finansowe. Rozważ zmniejszenie wielkości swojego handlu lub podzielenie go na kilka transakcji.";
 "unstaking.limit.reached.message" = "Osiągnąłeś limit żądań unstakingu (%@ aktywnych żądań)";
+"chart.period.week" = "Ostatni tydzień";
+"chart.period.month" = "Ostatni miesiąc";
+"chart.period.year" = "Ostatni rok";
+"chart.period.max" = "Cały czas";
