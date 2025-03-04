@@ -8,7 +8,7 @@ protocol AssetPriceChartViewDataSourceProtocol {
         showHighlighter: Bool
     ) -> LineChartData
 
-    func createChartData(for selectedEntry: ChartDataEntry) -> LineChartData?
+    func createDataSets(for selectedEntry: ChartDataEntry?) -> [LineChartDataSetProtocol]?
 
     func createEmptyChartData() -> LineChartData
 
@@ -34,14 +34,14 @@ final class AssetPriceChartViewDataSource {
     private var entryIndexesByX: [Double: Int]?
 }
 
-// MARK: AssetPriceChartDataSourceProtocol
+// MARK: Private
 
-extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
-    func createChartData(
+private extension AssetPriceChartViewDataSource {
+    func createChartDataSet(
         using entries: [ChartDataEntry],
         lineColor: UIColor,
         showHighlighter: Bool
-    ) -> LineChartData {
+    ) -> LineChartDataSetProtocol {
         let lineDataSet = LineChartDataSet(entries: entries)
         lineDataSet.mode = .cubicBezier
         lineDataSet.drawCirclesEnabled = false
@@ -53,37 +53,67 @@ extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
         lineDataSet.highlightEnabled = true
         lineDataSet.highlightColor = R.color.colorNeutralPriceChartLine()!
 
-        let lineData = LineChartData(dataSets: [lineDataSet])
+        return lineDataSet
+    }
+}
+
+// MARK: AssetPriceChartDataSourceProtocol
+
+extension AssetPriceChartViewDataSource: AssetPriceChartViewDataSourceProtocol {
+    func createChartData(
+        using entries: [ChartDataEntry],
+        lineColor: UIColor,
+        showHighlighter: Bool
+    ) -> LineChartData {
+        let dataSet = createChartDataSet(
+            using: entries,
+            lineColor: lineColor,
+            showHighlighter: showHighlighter
+        )
+
+        let lineData = LineChartData(dataSets: [dataSet])
 
         return lineData
     }
 
-    func createChartData(for selectedEntry: ChartDataEntry) -> LineChartData? {
+    func createDataSets(for selectedEntry: ChartDataEntry?) -> [LineChartDataSetProtocol]? {
         guard
-            let selectedIndex = entryIndexesByX?[selectedEntry.x],
             let chartModel = widgetViewModel?.chartModel.value,
             let colors = createColors()
-        else { return nil }
+        else {
+            return nil
+        }
+
+        guard
+            let selectedEntry,
+            let selectedIndex = entryIndexesByX?[selectedEntry.x]
+        else {
+            let dataSet = createChartDataSet(
+                using: chartModel.dataSet,
+                lineColor: colors.chartHighlightedLineColor,
+                showHighlighter: true
+            )
+
+            return [dataSet]
+        }
 
         let currentEntries = chartModel.dataSet
 
         let entriesBefore = Array(currentEntries[0 ..< selectedIndex + 1])
         let entriesAfter = Array(currentEntries[entriesBefore.count - 1 ..< currentEntries.count])
 
-        let dataBefore = createChartData(
+        let dataSetBefore = createChartDataSet(
             using: entriesBefore,
             lineColor: colors.chartHighlightedLineColor,
             showHighlighter: true
         )
-        let dataAfter = createChartData(
+        let dataSetAfter = createChartDataSet(
             using: entriesAfter,
             lineColor: R.color.colorNeutralPriceChartLine()!,
             showHighlighter: true
         )
 
-        let finalDataSet = dataBefore.dataSets + dataAfter.dataSets
-
-        return LineChartData(dataSets: finalDataSet)
+        return [dataSetBefore, dataSetAfter]
     }
 
     func createEmptyChartData() -> LineChartData {

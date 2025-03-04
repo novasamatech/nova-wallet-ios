@@ -107,7 +107,7 @@ private extension AssetPriceChartViewController {
             let colors = dataSource.createColors()
         else { return }
 
-        priceChartRenderer.setSelectedEntry(nil)
+        priceChartRenderer.setSelectedEntry(nil, splittedDataSets: nil)
         priceChartRenderer.setDotColor(
             nil,
             shadowColor: nil
@@ -118,7 +118,7 @@ private extension AssetPriceChartViewController {
             let chartData = dataSource.createChartData(
                 using: model.dataSet,
                 lineColor: colors.chartHighlightedLineColor,
-                showHighlighter: false
+                showHighlighter: true
             )
             rootView.chartView.rightAxis.labelTextColor = R.color.colorTextSecondary()!
             rootView.chartView.data = chartData
@@ -137,23 +137,28 @@ private extension AssetPriceChartViewController {
         }
     }
 
-    func updateChart(with selectedEntry: ChartDataEntry) {
+    func updateEntrySelection(selectedEntry: ChartDataEntry?) {
         guard
             let priceChartRenderer = rootView.chartView.renderer as? AssetPriceChartRenderer,
-            let data = dataSource.createChartData(for: selectedEntry),
+            let dataSets = dataSource.createDataSets(for: selectedEntry),
             let colors = dataSource.createColors()
         else { return }
 
-        priceChartRenderer.setSelectedEntry(selectedEntry)
+        priceChartRenderer.setSelectedEntry(
+            selectedEntry,
+            splittedDataSets: dataSets
+        )
         priceChartRenderer.setDotColor(
             colors.chartHighlightedLineColor,
             shadowColor: colors.entryDotShadowColor
         )
 
-        rootView.chartView.data = data
+        rootView.chartView.setNeedsDisplay()
     }
 
     func selectEntry(entry: ChartDataEntry?) {
+        updateEntrySelection(selectedEntry: entry)
+
         guard let entry else {
             presenter.selectEntry(nil)
             return
@@ -163,6 +168,7 @@ private extension AssetPriceChartViewController {
             price: Decimal(entry.y),
             timestamp: Int(entry.x)
         )
+
         presenter.selectEntry(plainEntry)
     }
 }
@@ -191,12 +197,10 @@ extension AssetPriceChartViewController: ChartViewDelegate {
         highlight: Highlight
     ) {
         rootView.chartView.highlightValue(highlight)
-        updateChart(with: entry)
         selectEntry(entry: entry)
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
-        updateChart()
         selectEntry(entry: nil)
     }
 }

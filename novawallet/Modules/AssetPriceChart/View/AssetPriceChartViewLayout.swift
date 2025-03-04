@@ -120,6 +120,7 @@ private extension AssetPriceChartViewLayout {
         yAxis.gridLineDashLengths = Constants.gridLineDashLengths
 
         chartView.marker = nil
+        chartView.highlightPerTapEnabled = false
         chartView.animate(xAxisDuration: Constants.chartViewAnimationDuration)
     }
 }
