@@ -59,8 +59,11 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
             manageContentView.iconImageView.image = model.icon
         }
 
-        manageContentView.titleLabel.textColor = textColor
+        manageContentView.titleValueView.valueTop.textColor = textColor
 
-        manageContentView.titleLabel.text = model.title
+        manageContentView.titleValueView.bind(
+            topValue: model.title,
+            bottomValue: model.subtitle
+        )
     }
 }

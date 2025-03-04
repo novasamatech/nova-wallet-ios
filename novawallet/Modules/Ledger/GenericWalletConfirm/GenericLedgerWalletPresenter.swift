@@ -7,12 +7,14 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     let interactor: GenericLedgerWalletInteractorInputProtocol
     let logger: LoggerProtocol
     let deviceName: String
+    let deviceModel: LedgerDeviceModel
     let appName: String
 
     private var account: LedgerAccount?
 
     init(
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         appName: String,
         interactor: GenericLedgerWalletInteractorInputProtocol,
         wireframe: GenericLedgerWalletWireframeProtocol,
@@ -21,6 +23,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
         logger: LoggerProtocol
     ) {
         self.deviceName = deviceName
+        self.deviceModel = deviceModel
         self.appName = appName
         self.interactor = interactor
         self.wireframe = wireframe
@@ -57,7 +60,12 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
 
         interactor.confirmAccount()
 
-        wireframe.showAddressVerification(on: view, deviceName: deviceName, address: address) { [weak self] in
+        wireframe.showAddressVerification(
+            on: view,
+            deviceName: deviceName,
+            deviceModel: deviceModel,
+            address: address
+        ) { [weak self] in
             self?.interactor.cancelRequest()
         }
     }
@@ -116,6 +124,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
                 on: view,
                 error: ledgerError,
                 networkName: appName,
+                deviceModel: deviceModel,
                 cancelClosure: {},
                 retryClosure: retryClosure
             )

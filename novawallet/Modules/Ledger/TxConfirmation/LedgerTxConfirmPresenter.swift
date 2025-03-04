@@ -114,15 +114,17 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
     }
 
     override func handleAppConnection(error: Error, deviceId: UUID) {
-        guard let view = view else {
-            return
-        }
+        guard
+            let view,
+            let device = devices.first(where: { $0.identifier == deviceId })
+        else { return }
 
         if let ledgerError = error as? LedgerError {
             wireframe?.presentLedgerError(
                 on: view,
                 error: ledgerError,
                 networkName: appName,
+                deviceModel: device.model,
                 migrationViewModel: createMigrationIfNeeded(for: ledgerError),
                 cancelClosure: { [weak self] in
                     self?.performCancellation()
@@ -140,6 +142,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             signatureError == .invalidSignature {
             wireframe?.transitToInvalidSignature(
                 on: view,
+                deviceModel: device.model,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.performCancellation()
@@ -157,6 +160,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
                 on: view,
                 timer: timer,
                 deviceName: device.name,
+                deviceModel: device.model,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.stopConnecting()
@@ -182,6 +186,7 @@ extension LedgerTxConfirmPresenter: CountdownTimerDelegate {
             wireframe?.transitToTransactionExpired(
                 on: view,
                 expirationTimeInterval: expirationTimeInterval,
+                deviceModel: connectingDevice?.model ?? .unknown,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.performCancellation()

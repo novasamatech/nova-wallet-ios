@@ -3,12 +3,12 @@ import UIKit
 final class StackActionView: UIView {
     let iconImageView = UIImageView()
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularSubheadline
-        label.textColor = R.color.colorTextPrimary()
-        return label
-    }()
+    let titleValueView: MultiValueView = .create { view in
+        view.valueTop.apply(style: .regularSubhedlinePrimary)
+        view.valueBottom.apply(style: .footnoteSecondary)
+        view.stackView.alignment = .leading
+        view.spacing = 2.0
+    }
 
     var detailsView: BorderedLabelView {
         internalDetailsView ?? setupDetailsView()
@@ -68,7 +68,7 @@ final class StackActionView: UIView {
         view.snp.makeConstraints { make in
             make.trailing.equalTo(disclosureIndicatorView.snp.leading).offset(-8)
             make.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
+            make.leading.greaterThanOrEqualTo(titleValueView.snp.trailing).offset(8)
         }
 
         return view
@@ -82,8 +82,8 @@ final class StackActionView: UIView {
             make.size.equalTo(iconSize)
         }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        addSubview(titleValueView)
+        titleValueView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(iconSize + titleOffset)
             make.centerY.equalToSuperview()
         }
@@ -92,14 +92,14 @@ final class StackActionView: UIView {
         disclosureIndicatorView.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
+            make.leading.greaterThanOrEqualTo(titleValueView.snp.trailing).offset(8)
         }
 
-        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        titleValueView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
     private func updateTitleLayout() {
-        titleLabel.snp.remakeConstraints { make in
+        titleValueView.snp.remakeConstraints { make in
             make.leading.equalToSuperview().offset(iconSize + titleOffset)
             make.centerY.equalToSuperview()
         }
