@@ -152,6 +152,7 @@ private extension NovaMainAppContainerViewController {
             let presentationController = presentedViewController?.presentationController
 
             guard !(presentationController is ModalCardPresentationController) else {
+                presentedViewController = presentedViewController?.presentedViewController
                 continue
             }
 
