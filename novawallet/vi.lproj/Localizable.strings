@@ -1794,3 +1794,7 @@
 "swaps.max.price.diff.error.title" = "Phát hiện tác động giá cao (%@)";
 "swaps.max.price.diff.error.message" = "Thực hiện giao dịch này sẽ dẫn đến trượt giá đáng kể và thiệt hại tài chính. Xem xét giảm kích thước giao dịch của bạn hoặc chia giao dịch thành nhiều lần thực hiện.";
 "unstaking.limit.reached.message" = "Bạn đã đạt đến giới hạn yêu cầu rút cược (%@ yêu cầu đang hoạt động)";
+"chart.period.week" = "Tuần trước";
+"chart.period.month" = "Tháng trước";
+"chart.period.year" = "Năm trước";
+"chart.period.max" = "Tất cả thời gian";

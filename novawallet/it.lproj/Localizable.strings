@@ -1794,3 +1794,7 @@
 "swaps.max.price.diff.error.title" = "Alto impatto sul prezzo rilevato (%@)";
 "swaps.max.price.diff.error.message" = "Eseguire questo swap comporterà uno slippage significativo e perdite finanziarie. Considera di ridurre la dimensione del tuo scambio o di dividere il tuo scambio in più transazioni.";
 "unstaking.limit.reached.message" = "Hai raggiunto il limite di richieste di unstaking (%@ richieste attive)";
+"chart.period.week" = "Ultima Settimana";
+"chart.period.month" = "Ultimo Mese";
+"chart.period.year" = "Ultimo Anno";
+"chart.period.max" = "Tutti i Tempi";

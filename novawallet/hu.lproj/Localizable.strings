@@ -1794,3 +1794,7 @@
 "swaps.max.price.diff.error.title" = "Magas árhatás észlelve (%@)";
 "swaps.max.price.diff.error.message" = "Ennek a csereügyletnek a végrehajtása jelentős csúszást és pénzügyi veszteségeket eredményez. Fontolja meg a kereskedés méretének csökkentését vagy a kereskedés több tranzakcióra osztását.";
 "unstaking.limit.reached.message" = "Elérted a kifizetési kérelmek korlátját (%@ aktív kérelem)";
+"chart.period.week" = "Elmúlt hét";
+"chart.period.month" = "Elmúlt hónap";
+"chart.period.year" = "Elmúlt év";
+"chart.period.max" = "Teljes idő";
