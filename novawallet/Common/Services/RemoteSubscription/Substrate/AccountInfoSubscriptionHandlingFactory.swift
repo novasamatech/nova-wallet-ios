@@ -2,20 +2,21 @@ import Foundation
 import Operation_iOS
 
 final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol {
-    let accountLocalStorageKey: String
-    let locksLocalStorageKey: String
-    let holdsLocalStorageKey: String
+    struct LocalStorageKeys {
+        let account: String
+        let locks: String
+        let holds: String
+        let freezes: String
+    }
+
+    let localKeys: LocalStorageKeys
     let factory: NativeTokenSubscriptionFactoryProtocol
 
     init(
-        accountLocalStorageKey: String,
-        locksLocalStorageKey: String,
-        holdsLocalStorageKey: String,
+        localKeys: LocalStorageKeys,
         factory: NativeTokenSubscriptionFactoryProtocol
     ) {
-        self.accountLocalStorageKey = accountLocalStorageKey
-        self.locksLocalStorageKey = locksLocalStorageKey
-        self.holdsLocalStorageKey = holdsLocalStorageKey
+        self.localKeys = localKeys
         self.factory = factory
     }
 
@@ -26,14 +27,20 @@ final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
-        if locksLocalStorageKey == localStorageKey {
+        if localKeys.locks == localStorageKey {
             return factory.createBalanceLocksSubscription(
                 remoteStorageKey: remoteStorageKey,
                 operationManager: operationManager,
                 logger: logger
             )
-        } else if holdsLocalStorageKey == localStorageKey {
+        } else if localKeys.holds == localStorageKey {
             return factory.createBalanceHoldsSubscription(
+                remoteStorageKey: remoteStorageKey,
+                operationManager: operationManager,
+                logger: logger
+            )
+        } else if localKeys.freezes == localStorageKey {
+            return factory.createBalanceFreezesSubscription(
                 remoteStorageKey: remoteStorageKey,
                 operationManager: operationManager,
                 logger: logger

@@ -8,7 +8,7 @@ struct ParaStkUnstakeConfirmViewFactory {
         for state: ParachainStakingSharedStateProtocol,
         callWrapper: UnstakeCallWrapper,
         collator: DisplayAddress
-    ) -> ParaStkUnstakeConfirmViewProtocol? {
+    ) -> CollatorStkUnstakeConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -48,12 +48,12 @@ struct ParaStkUnstakeConfirmViewFactory {
             callWrapper: callWrapper,
             dataValidatingFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            hintViewModelFactory: ParaStkHintsViewModelFactory(),
+            hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = ParaStkUnstakeConfirmViewController(
+        let view = CollatorStkUnstakeConfirmVC(
             presenter: presenter,
             localizationManager: localizationManager
         )

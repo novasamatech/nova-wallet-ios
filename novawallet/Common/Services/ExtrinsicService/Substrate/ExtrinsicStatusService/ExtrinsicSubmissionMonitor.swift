@@ -10,6 +10,21 @@ protocol ExtrinsicSubmitMonitorFactoryProtocol {
     ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
 }
 
+extension ExtrinsicSubmitMonitorFactoryProtocol {
+    func submitAndMonitorWrapper(
+        extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
+        payingIn feeAssetId: ChainAssetId? = nil,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
+        submitAndMonitorWrapper(
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
+            payingIn: feeAssetId,
+            signer: signer,
+            matchingEvents: nil
+        )
+    }
+}
+
 final class ExtrinsicSubmissionMonitorFactory {
     struct SubmissionResult {
         let blockHash: String
@@ -19,7 +34,7 @@ final class ExtrinsicSubmissionMonitorFactory {
     let submissionService: ExtrinsicServiceProtocol
     let statusService: ExtrinsicStatusServiceProtocol
     let operationQueue: OperationQueue
-    let processingQueue = DispatchQueue(label: "io.web3citizenship.extrinsic.monitor.\(UUID().uuidString)")
+    let processingQueue = DispatchQueue(label: "io.novawallet.extrinsic.monitor.\(UUID().uuidString)")
 
     init(
         submissionService: ExtrinsicServiceProtocol,

@@ -76,6 +76,8 @@ private extension ExtrinsicStatusService {
             throw ExtrinsicStatusServiceError.terminateEventNotFound(events)
         }
 
+        logger.error("Failed extrinsic \(input.extrinsicHash.toHexWithPrefix()) \(input.blockHash) \(failureEvent)")
+
         let errorDecoder = CallDispatchErrorDecoder(logger: logger)
 
         guard

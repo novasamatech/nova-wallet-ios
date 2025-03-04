@@ -1793,3 +1793,4 @@
 "dapp.list.section.popular" = "Populares";
 "swaps.max.price.diff.error.title" = "Impacto de precio alto detectado (%@)";
 "swaps.max.price.diff.error.message" = "Ejecutar este intercambio resultará en un deslizamiento significativo y pérdidas financieras. Considere reducir el tamaño de su transacción o dividir su operación en múltiples transacciones.";
+"unstaking.limit.reached.message" = "Has alcanzado el límite de solicitudes de desvinculación (%@ solicitudes activas)";

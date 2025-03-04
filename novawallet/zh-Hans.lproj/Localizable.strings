@@ -1793,3 +1793,4 @@
 "dapp.list.section.popular" = "流行";
 "swaps.max.price.diff.error.title" = "检测到高价格影响 (%@)";
 "swaps.max.price.diff.error.message" = "执行此交换将导致显著的滑点和经济损失。建议减小交易规模或将交易分拆为多笔交易。";
+"unstaking.limit.reached.message" = "您已达到解质押请求的上限（%@ 个活跃请求）";

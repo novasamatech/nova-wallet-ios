@@ -223,6 +223,16 @@ extension RoundedView.Style {
         rounding: .init(radius: 12, corners: .allCorners)
     )
 
+    static let inputDisabled = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 1,
+        strokeColor: R.color.colorContainerBorder(),
+        highlightedStrokeColor: R.color.colorContainerBorder(),
+        fillColor: R.color.colorInputBackground()!,
+        highlightedFillColor: R.color.colorInputBackground()!,
+        rounding: .init(radius: 12, corners: .allCorners)
+    )
+
     static let strokeOnError = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0,
