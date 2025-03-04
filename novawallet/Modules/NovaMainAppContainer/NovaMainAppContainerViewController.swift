@@ -91,7 +91,8 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
-                self?.updateModalsLayoutIfNeeded()
+                self?.updateCardModalsLayoutIfNeeded()
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
@@ -118,6 +119,7 @@ private extension NovaMainAppContainerViewController {
                     .layerMinXMaxYCorner,
                     .layerMaxXMaxYCorner
                 ]
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
@@ -134,11 +136,37 @@ private extension NovaMainAppContainerViewController {
                 self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
                 return self?.rootView
+            },
+            animatableClosure: { [weak self] in
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
 
-    func updateModalsLayoutIfNeeded() {
+    func updateDefaultModalsLayoutIfNeeded() {
+        guard let tabBar else { return }
+
+        var presentedViewController = tabBar.presentedController()
+
+        while presentedViewController != nil {
+            let presentationController = presentedViewController?.presentationController
+
+            guard !(presentationController is ModalCardPresentationController) else {
+                continue
+            }
+
+            presentationController?.presentedViewController.view.frame = CGRect(
+                x: tabBar.view.frame.origin.x,
+                y: tabBar.view.frame.origin.y,
+                width: tabBar.view.frame.width,
+                height: tabBar.view.frame.height
+            )
+
+            presentedViewController = presentedViewController?.presentedViewController
+        }
+    }
+
+    func updateCardModalsLayoutIfNeeded() {
         var presentedViewController = tabBar?.presentedController()
 
         while presentedViewController != nil {
