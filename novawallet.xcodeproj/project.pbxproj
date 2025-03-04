@@ -1267,16 +1267,16 @@
 		2D20F1C72D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */; };
 		2D20F1C92D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */; };
 		2D20F1CC2D36C5D8003E9CF2 /* WalletStorageCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */; };
-		2D2B6AEF2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AEE2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift */; };
-		2D2B6AF22D6DCD77002F8C77 /* BrowserNavigationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF12D6DCD77002F8C77 /* BrowserNavigationPresenter.swift */; };
-		2D2B6AF42D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */; };
-		2D2B6AF62D6DCFB6002F8C77 /* BrowserNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */; };
 		2D21BD3D2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */; };
 		2D21BD3F2D675D2800B1C480 /* AssetPriceChartDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD3E2D675D2800B1C480 /* AssetPriceChartDataSource.swift */; };
 		2D21BD412D6760CC00B1C480 /* AssetPriceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD402D6760CC00B1C480 /* AssetPriceChart.swift */; };
 		2D21BD432D67964400B1C480 /* PriceChartDataOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21BD422D67964400B1C480 /* PriceChartDataOperationFactory.swift */; };
 		2D2B6AEB2D6C7581002F8C77 /* AssetDetailsBalanceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AEA2D6C7581002F8C77 /* AssetDetailsBalanceWidget.swift */; };
 		2D2B6AED2D6C8597002F8C77 /* StackTitleValueIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AEC2D6C8597002F8C77 /* StackTitleValueIconView.swift */; };
+		2D2B6AEF2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AEE2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift */; };
+		2D2B6AF22D6DCD77002F8C77 /* BrowserNavigationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF12D6DCD77002F8C77 /* BrowserNavigationPresenter.swift */; };
+		2D2B6AF42D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */; };
+		2D2B6AF62D6DCFB6002F8C77 /* BrowserNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -1549,6 +1549,9 @@
 		2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */; };
 		2DF6F5F62C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF6F5F52C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift */; };
 		2DF6F5F82C5D7DEE000D9CDD /* Decimal+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF6F5F72C5D7DEE000D9CDD /* Decimal+Rounding.swift */; };
+		2DF95D1D2D77191E001D8785 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D1C2D77191E001D8785 /* HapticService.swift */; };
+		2DF95D1F2D773375001D8785 /* HapticEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D1E2D773375001D8785 /* HapticEngine.swift */; };
+		2DF95D212D77400E001D8785 /* HapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D202D77400E001D8785 /* HapticPatternConfig.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -6954,16 +6957,16 @@
 		2D20F1C62D364938003E9CF2 /* RemovedWalletBrowserStateCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedWalletBrowserStateCleaner.swift; sourceTree = "<group>"; };
 		2D20F1C82D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleanerFactory.swift; sourceTree = "<group>"; };
 		2D20F1CB2D36C5D8003E9CF2 /* WalletStorageCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletStorageCleaner.swift; sourceTree = "<group>"; };
-		2D2B6AEE2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationProtocols.swift; sourceTree = "<group>"; };
-		2D2B6AF12D6DCD77002F8C77 /* BrowserNavigationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationPresenter.swift; sourceTree = "<group>"; };
-		2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationInteractor.swift; sourceTree = "<group>"; };
-		2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationFactory.swift; sourceTree = "<group>"; };
 		2D21BD3C2D672B1E00B1C480 /* AssetPriceChartViewLayout+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetPriceChartViewLayout+Loading.swift"; sourceTree = "<group>"; };
 		2D21BD3E2D675D2800B1C480 /* AssetPriceChartDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartDataSource.swift; sourceTree = "<group>"; };
 		2D21BD402D6760CC00B1C480 /* AssetPriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChart.swift; sourceTree = "<group>"; };
 		2D21BD422D67964400B1C480 /* PriceChartDataOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChartDataOperationFactory.swift; sourceTree = "<group>"; };
 		2D2B6AEA2D6C7581002F8C77 /* AssetDetailsBalanceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsBalanceWidget.swift; sourceTree = "<group>"; };
 		2D2B6AEC2D6C8597002F8C77 /* StackTitleValueIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTitleValueIconView.swift; sourceTree = "<group>"; };
+		2D2B6AEE2D6DB77E002F8C77 /* BrowserNavigationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationProtocols.swift; sourceTree = "<group>"; };
+		2D2B6AF12D6DCD77002F8C77 /* BrowserNavigationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationPresenter.swift; sourceTree = "<group>"; };
+		2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationInteractor.swift; sourceTree = "<group>"; };
+		2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationFactory.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -7236,6 +7239,9 @@
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2DF6F5F52C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendmVotesViewModelFactory.swift; sourceTree = "<group>"; };
 		2DF6F5F72C5D7DEE000D9CDD /* Decimal+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounding.swift"; sourceTree = "<group>"; };
+		2DF95D1C2D77191E001D8785 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
+		2DF95D1E2D773375001D8785 /* HapticEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticEngine.swift; sourceTree = "<group>"; };
+		2DF95D202D77400E001D8785 /* HapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPatternConfig.swift; sourceTree = "<group>"; };
 		2E0DC18CB648BFACAD038C02 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
@@ -15236,6 +15242,16 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2DF95D1B2D771914001D8785 /* HapticEngine */ = {
+			isa = PBXGroup;
+			children = (
+				2DF95D1E2D773375001D8785 /* HapticEngine.swift */,
+				2DF95D1C2D77191E001D8785 /* HapticService.swift */,
+				2DF95D202D77400E001D8785 /* HapticPatternConfig.swift */,
+			);
+			path = HapticEngine;
+			sourceTree = "<group>";
+		};
 		2F9F44CABD4DE8B400DC60FA /* Confirm */ = {
 			isa = PBXGroup;
 			children = (
@@ -19975,8 +19991,9 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2DF95D1B2D771914001D8785 /* HapticEngine */,
 				0C8C8F802D6C3E2D00441FB3 /* PriceProvider */,
-				2D1D65FE2CD80A33009C6C2F /* IconRetrieve */,
+				2D1D65FE2CD80A33009C6C2F /* ImageRetrieve */,
 				0CCDB2E92B74DA33007BC5D6 /* Graphs */,
 				0C9C642B2A8CE2D4004DC078 /* SystemAccounts */,
 				0C463FCE2A592ACD003E71C9 /* Effects */,
@@ -27460,6 +27477,7 @@
 				AE2C84DA25EF98A900986716 /* ValidatorInfoPresenter.swift in Sources */,
 				848B59C428BCD1BD0009543C /* MessageSheetContentLabel.swift in Sources */,
 				84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */,
+				2DF95D1F2D773375001D8785 /* HapticEngine.swift in Sources */,
 				845BB8D625E461FC00E5FCDC /* RewardDestination.swift in Sources */,
 				849E07F6284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift in Sources */,
 				84CFF1EB26526FBC00DB7CF7 /* StakingBondMoreConfirmViewModel.swift in Sources */,
@@ -28016,6 +28034,7 @@
 				84CAC1CE298A7A4800F78169 /* GovernanceDelegationAdditions.swift in Sources */,
 				F47F5A7A2626E91A009BCFF4 /* StakingRewardHistoryViewModel.swift in Sources */,
 				77F033A82A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift in Sources */,
+				2DF95D212D77400E001D8785 /* HapticPatternConfig.swift in Sources */,
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,
@@ -30589,6 +30608,7 @@
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,
 				8487583C27F06AF300495306 /* QRCaptureService.swift in Sources */,
 				7D707DDD180999C63FD0C4ED /* AssetListViewController.swift in Sources */,
+				2DF95D1D2D77191E001D8785 /* HapticService.swift in Sources */,
 				75E689BC8D16786DF2674171 /* AssetListViewLayout.swift in Sources */,
 				88FAE78828FCF8E200130B47 /* ReferendumDetailsTitleView.swift in Sources */,
 				0C883A742CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift in Sources */,
