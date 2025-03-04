@@ -8,6 +8,7 @@ struct PriceChartWidgetFactoryParams {
     let availablePeriods: [PriceHistoryPeriod]
     let selectedPeriod: PriceHistoryPeriod
     let priceData: PriceData?
+    let availablePoints: Int
     let locale: Locale
 }
 
@@ -184,8 +185,19 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             selectedPeriod: params.selectedPeriod
         )
 
+        var entries: [PriceHistoryItem] = []
+
+        if let allEntries = params.entries {
+            if allEntries.count > params.availablePoints {
+                entries = allEntries
+                    .distribute(intoChunks: params.availablePoints)
+                    .compactMap(\.first)
+            } else {
+                entries = allEntries
+            }
+        }
+
         guard
-            let entries = params.entries,
             let lastEntry = entries.last,
             let priceData = params.priceData
         else {

@@ -235,6 +235,10 @@ extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
         updatePriceChange()
         updatePrice()
     }
+
+    func chartViewWidth() -> CGFloat {
+        rootView.bounds.width
+    }
 }
 
 // MARK: ChartViewDelegate
