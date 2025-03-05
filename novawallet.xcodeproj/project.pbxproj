@@ -1549,9 +1549,14 @@
 		2DEDF68D2C36FDCB007D5F4A /* LightChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEDF68C2C36FDCB007D5F4A /* LightChainModel.swift */; };
 		2DF6F5F62C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF6F5F52C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift */; };
 		2DF6F5F82C5D7DEE000D9CDD /* Decimal+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF6F5F72C5D7DEE000D9CDD /* Decimal+Rounding.swift */; };
-		2DF95D1D2D77191E001D8785 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D1C2D77191E001D8785 /* HapticService.swift */; };
-		2DF95D1F2D773375001D8785 /* HapticEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D1E2D773375001D8785 /* HapticEngine.swift */; };
-		2DF95D212D77400E001D8785 /* HapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D202D77400E001D8785 /* HapticPatternConfig.swift */; };
+		2DF95D282D785A41001D8785 /* CoreHapticEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D272D785A41001D8785 /* CoreHapticEngine.swift */; };
+		2DF95D2A2D785AF1001D8785 /* HapticEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D292D785AF1001D8785 /* HapticEngine.swift */; };
+		2DF95D2D2D785DA2001D8785 /* HapticPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D2C2D785DA2001D8785 /* HapticPlayer.swift */; };
+		2DF95D2F2D785DBF001D8785 /* CustomPatternHapticPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D2E2D785DBF001D8785 /* CustomPatternHapticPlayer.swift */; };
+		2DF95D312D785F9D001D8785 /* SequentialHapticPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D302D785F9D001D8785 /* SequentialHapticPlayer.swift */; };
+		2DF95D342D786097001D8785 /* CustomHapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */; };
+		2DF95D372D786156001D8785 /* SequentialHapticPlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */; };
+		2DF95D3B2D786631001D8785 /* HapticPlayerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */; };
 		2DF95D252D77AF8B001D8785 /* Array+Distribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D242D77AF8B001D8785 /* Array+Distribute.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
@@ -7240,9 +7245,14 @@
 		2DEED7526468089FE8A8989C /* SwapConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapConfirmInteractor.swift; sourceTree = "<group>"; };
 		2DF6F5F52C5CE7D4000D9CDD /* ReferendmVotesViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendmVotesViewModelFactory.swift; sourceTree = "<group>"; };
 		2DF6F5F72C5D7DEE000D9CDD /* Decimal+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounding.swift"; sourceTree = "<group>"; };
-		2DF95D1C2D77191E001D8785 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
-		2DF95D1E2D773375001D8785 /* HapticEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticEngine.swift; sourceTree = "<group>"; };
-		2DF95D202D77400E001D8785 /* HapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPatternConfig.swift; sourceTree = "<group>"; };
+		2DF95D272D785A41001D8785 /* CoreHapticEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreHapticEngine.swift; sourceTree = "<group>"; };
+		2DF95D292D785AF1001D8785 /* HapticEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticEngine.swift; sourceTree = "<group>"; };
+		2DF95D2C2D785DA2001D8785 /* HapticPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlayer.swift; sourceTree = "<group>"; };
+		2DF95D2E2D785DBF001D8785 /* CustomPatternHapticPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPatternHapticPlayer.swift; sourceTree = "<group>"; };
+		2DF95D302D785F9D001D8785 /* SequentialHapticPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentialHapticPlayer.swift; sourceTree = "<group>"; };
+		2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHapticPatternConfig.swift; sourceTree = "<group>"; };
+		2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentialHapticPlayerConfig.swift; sourceTree = "<group>"; };
+		2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlayerFactory.swift; sourceTree = "<group>"; };
 		2DF95D242D77AF8B001D8785 /* Array+Distribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Distribute.swift"; sourceTree = "<group>"; };
 		2E0DC18CB648BFACAD038C02 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
@@ -15244,14 +15254,51 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		2DF95D1B2D771914001D8785 /* HapticEngine */ = {
+		2DF95D1B2D771914001D8785 /* HapticPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				2DF95D1E2D773375001D8785 /* HapticEngine.swift */,
-				2DF95D1C2D77191E001D8785 /* HapticService.swift */,
-				2DF95D202D77400E001D8785 /* HapticPatternConfig.swift */,
+				2DF95D262D785A38001D8785 /* Engine */,
+				2DF95D2B2D785D86001D8785 /* Players */,
 			);
-			path = HapticEngine;
+			path = HapticPlayer;
+			sourceTree = "<group>";
+		};
+		2DF95D262D785A38001D8785 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				2DF95D292D785AF1001D8785 /* HapticEngine.swift */,
+				2DF95D272D785A41001D8785 /* CoreHapticEngine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		2DF95D2B2D785D86001D8785 /* Players */ = {
+			isa = PBXGroup;
+			children = (
+				2DF95D2C2D785DA2001D8785 /* HapticPlayer.swift */,
+				2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */,
+				2DF95D322D786061001D8785 /* CustomPatternPlayer */,
+				2DF95D352D78610F001D8785 /* SequentialPlayer */,
+			);
+			path = Players;
+			sourceTree = "<group>";
+		};
+		2DF95D322D786061001D8785 /* CustomPatternPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				2DF95D2E2D785DBF001D8785 /* CustomPatternHapticPlayer.swift */,
+				2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */,
+			);
+			path = CustomPatternPlayer;
+			sourceTree = "<group>";
+		};
+		2DF95D352D78610F001D8785 /* SequentialPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				2DF95D302D785F9D001D8785 /* SequentialHapticPlayer.swift */,
+				2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */,
+			);
+			path = SequentialPlayer;
 			sourceTree = "<group>";
 		};
 		2F9F44CABD4DE8B400DC60FA /* Confirm */ = {
@@ -19993,7 +20040,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2DF95D1B2D771914001D8785 /* HapticEngine */,
+				2DF95D1B2D771914001D8785 /* HapticPlayer */,
 				0C8C8F802D6C3E2D00441FB3 /* PriceProvider */,
 				2D1D65FE2CD80A33009C6C2F /* ImageRetrieve */,
 				0CCDB2E92B74DA33007BC5D6 /* Graphs */,
@@ -27249,6 +27296,7 @@
 				841E5559282E6A7700C8438F /* ParaStkDurationOperationFactory.swift in Sources */,
 				0C0F6E3D2D473CF400943A7C /* MythosStakingClaimableRewardsService.swift in Sources */,
 				841E553E282D469F00C8438F /* ParachainStakingDelegator.swift in Sources */,
+				2DF95D282D785A41001D8785 /* CoreHapticEngine.swift in Sources */,
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
 				0C7C886E2A962B0D00DD96A1 /* StackAddressCell.swift in Sources */,
 				0C8FDBB22CAFDC6000775D7F /* VoteCardSummaryProcessing.swift in Sources */,
@@ -27480,7 +27528,6 @@
 				AE2C84DA25EF98A900986716 /* ValidatorInfoPresenter.swift in Sources */,
 				848B59C428BCD1BD0009543C /* MessageSheetContentLabel.swift in Sources */,
 				84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */,
-				2DF95D1F2D773375001D8785 /* HapticEngine.swift in Sources */,
 				845BB8D625E461FC00E5FCDC /* RewardDestination.swift in Sources */,
 				849E07F6284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift in Sources */,
 				84CFF1EB26526FBC00DB7CF7 /* StakingBondMoreConfirmViewModel.swift in Sources */,
@@ -27892,6 +27939,7 @@
 				0CF4ADF92CEBF71A009C51FA /* AssetExchangeMetaOperationProtocol.swift in Sources */,
 				847A259029B5D2710054F90C /* GovJsonLocalStorageHandler.swift in Sources */,
 				77C9BCCE2ACD691300022EA2 /* SwapAssetsOperationViewFactory.swift in Sources */,
+				2DF95D312D785F9D001D8785 /* SequentialHapticPlayer.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
 				8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */,
 				0C0F6D902D3A9EA900943A7C /* MythosStakingDurationOperationFactory.swift in Sources */,
@@ -28037,7 +28085,6 @@
 				84CAC1CE298A7A4800F78169 /* GovernanceDelegationAdditions.swift in Sources */,
 				F47F5A7A2626E91A009BCFF4 /* StakingRewardHistoryViewModel.swift in Sources */,
 				77F033A82A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift in Sources */,
-				2DF95D212D77400E001D8785 /* HapticPatternConfig.swift in Sources */,
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,
@@ -28068,6 +28115,7 @@
 				842822A2289BCB5500163031 /* SwitchAccount+ParitySignerScanWireframe.swift in Sources */,
 				8473B4722A1F9154003DE213 /* Multistaking+Model.swift in Sources */,
 				8436B6D828480D2F00F24360 /* ModalPickerActionTableViewCell.swift in Sources */,
+				2DF95D3B2D786631001D8785 /* HapticPlayerFactory.swift in Sources */,
 				841AAC2926F6A59C00F0A25E /* MultiassetCryptoType.swift in Sources */,
 				F4DCAE4F2620819000CCA6BF /* PayoutRewardsService.swift in Sources */,
 				84A58FD728A10691003F6ABF /* ParitySignerMessageOperationFactory.swift in Sources */,
@@ -30612,7 +30660,6 @@
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,
 				8487583C27F06AF300495306 /* QRCaptureService.swift in Sources */,
 				7D707DDD180999C63FD0C4ED /* AssetListViewController.swift in Sources */,
-				2DF95D1D2D77191E001D8785 /* HapticService.swift in Sources */,
 				75E689BC8D16786DF2674171 /* AssetListViewLayout.swift in Sources */,
 				88FAE78828FCF8E200130B47 /* ReferendumDetailsTitleView.swift in Sources */,
 				0C883A742CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift in Sources */,
@@ -30900,6 +30947,7 @@
 				77DF40492B7FE7B700ABDB53 /* ChainNotificationSettingsViewLayout.swift in Sources */,
 				4014ED301AA53DA0B07B4221 /* DAppPhishingPresenter.swift in Sources */,
 				02BFBFE7B9D131B0FF27ABE7 /* DAppPhishingViewController.swift in Sources */,
+				2DF95D2F2D785DBF001D8785 /* CustomPatternHapticPlayer.swift in Sources */,
 				8321399396FA5B25BC93A090 /* DAppPhishingViewLayout.swift in Sources */,
 				B1BB78684B059A113AB3AD30 /* DAppPhishingViewFactory.swift in Sources */,
 				6ECB27B386124F87382073FD /* DAppAddFavoriteProtocols.swift in Sources */,
@@ -30991,6 +31039,7 @@
 				52326E49B049C54434C95132 /* ParaStkCollatorsSearchWireframe.swift in Sources */,
 				84117078285B1050006F4DFB /* XcmAssetTransfer.swift in Sources */,
 				0C3205D82A896009002EB914 /* EvmDefaultNonceProvider.swift in Sources */,
+				2DF95D342D786097001D8785 /* CustomHapticPatternConfig.swift in Sources */,
 				8428229E289BCAAB00163031 /* SwitchAccount+ParitySignerWelcomeWireframe.swift in Sources */,
 				84A59162292B590100BCCF8F /* EvmTransactionFeeProxy.swift in Sources */,
 				2D3EA7DC2CFA0F8E0033AFD2 /* DAppBrowserCloseTransition.swift in Sources */,
@@ -31057,6 +31106,7 @@
 				413CCB7C7B22831147B8E815 /* ParaStkRedeemPresenter.swift in Sources */,
 				35F9157CAA182493B2F0E1D3 /* ParaStkRedeemInteractor.swift in Sources */,
 				771901A22AE7E34D00D9C918 /* SwapBaseInteractor.swift in Sources */,
+				2DF95D2A2D785AF1001D8785 /* HapticEngine.swift in Sources */,
 				C729BF3E60E6825AEED11383 /* CollatorStakingRedeemViewController.swift in Sources */,
 				844C3E752A091B9800C4305F /* WalletsChooseViewModelFactory.swift in Sources */,
 				E477B09B47A3021EF1CE66F0 /* CollatorStakingRedeemViewLayout.swift in Sources */,
@@ -31124,6 +31174,7 @@
 				2D4F551E2CCBA17800B65B76 /* AssetOperationViewController.swift in Sources */,
 				99570B581EF2EE8A1070442F /* CreateWatchOnlyViewFactory.swift in Sources */,
 				6003DF3EBB77510EFB70B4E4 /* MessageSheetProtocols.swift in Sources */,
+				2DF95D372D786156001D8785 /* SequentialHapticPlayerConfig.swift in Sources */,
 				2D1C5D142C2451D800E2DBDD /* NetworkNodePresenterProtocols.swift in Sources */,
 				0CE862302D65A0B800245992 /* PoolStakingHistoryFiltersProvider.swift in Sources */,
 				0C13D31D2A82279D0054BB6F /* StartStakingDirectConfirmPresenter.swift in Sources */,
@@ -31493,6 +31544,7 @@
 				0C7A3FD02B6A93B500764603 /* ObservableSubscriptionSyncService.swift in Sources */,
 				BCC42525D716872B7E6CD72B /* TokenManageSingleProtocols.swift in Sources */,
 				9ECB28EA7E1D2C79869ED54F /* TokenManageSinglePresenter.swift in Sources */,
+				2DF95D2D2D785DA2001D8785 /* HapticPlayer.swift in Sources */,
 				7796C7032A17846B00D56094 /* EmptyCellContentView.swift in Sources */,
 				B8349266F061AEFFA9802237 /* TokenManageSingleViewController.swift in Sources */,
 				D9746967761B1B4772A562B2 /* TokenManageSingleViewLayout.swift in Sources */,

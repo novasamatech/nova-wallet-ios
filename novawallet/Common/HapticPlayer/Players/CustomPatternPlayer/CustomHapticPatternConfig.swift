@@ -1,6 +1,6 @@
 import Foundation
 
-extension HapticService {
+extension CustomPatternHapticPlayer {
     struct PatternConfig {
         var groupSize: Int
         var triggerCount: Int
@@ -12,7 +12,7 @@ extension HapticService {
     }
 }
 
-extension HapticService.PatternConfig {
+extension CustomPatternHapticPlayer.PatternConfig {
     static func withPositions(
         groupSize: Int,
         positions: [Int],
@@ -20,7 +20,7 @@ extension HapticService.PatternConfig {
         baseIntensity: Float,
         baseSharpness: Float
     ) -> Self {
-        var config = HapticService.PatternConfig(
+        var config: Self = .init(
             groupSize: groupSize,
             triggerCount: 0, // Not used when triggerPositions is set
             progressiveIntensity: progressiveIntensity,
@@ -32,6 +32,7 @@ extension HapticService.PatternConfig {
         return config
     }
 
+    /// Pattern used for price chart's `seek` feature
     static var chartSeek: Self {
         withPositions(
             groupSize: 20,
@@ -42,6 +43,7 @@ extension HapticService.PatternConfig {
         )
     }
 
+    /// Pattern used for price chart period selection control
     static var chartPeriodControl: Self {
         .init(
             groupSize: 1,

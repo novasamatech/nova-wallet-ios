@@ -1,23 +1,20 @@
-import CoreHaptics
+import Foundation
 import SoraFoundation
+import CoreHaptics
 
-class HapticService {
-    private let config: PatternConfig
+final class CoreHapticEngine {
     private let logger: LoggerProtocol
     private let applicationHandler: ApplicationHandlerProtocol
 
     private var engine: CHHapticEngine?
-    private var valueCounter = 0
     private var needsStartup: Bool = true
 
     init(
-        config: PatternConfig,
-        applicationHandler: ApplicationHandlerProtocol = ApplicationHandler(),
-        logger: LoggerProtocol = Logger.shared
+        logger: LoggerProtocol,
+        applicationHandler: ApplicationHandlerProtocol
     ) {
-        self.config = config
-        self.applicationHandler = applicationHandler
         self.logger = logger
+        self.applicationHandler = applicationHandler
 
         setup()
     }
@@ -25,7 +22,7 @@ class HapticService {
 
 // MARK: Private
 
-private extension HapticService {
+private extension CoreHapticEngine {
     func setup() {
         applicationHandler.delegate = self
         setupEngine()
@@ -107,67 +104,9 @@ private extension HapticService {
 
 // MARK: HapticEngine
 
-extension HapticService: HapticEngine {
-    func reset() {
-        valueCounter = 0
-    }
-
-    func playConfiguredTransientHaptic(
-        using triggerPositions: [Int],
-        customIntensity: Float?,
-        customSharpness: Float?
-    ) {
-        let currentPosition = (valueCounter % config.groupSize) == 0
-            ? config.groupSize
-            : (valueCounter % config.groupSize)
-
-        guard triggerPositions.contains(currentPosition) else { return }
-
-        let intensityFactor: Float = config.progressiveIntensity
-            ? Float(triggerPositions.firstIndex(of: currentPosition) ?? 0 + 1) / Float(triggerPositions.count)
-            : 1.0
-
-        let finalIntensity = customIntensity ?? (config.baseIntensity * intensityFactor)
-        let finalSharpness = customSharpness ?? config.baseSharpness
-
-        playTransientHaptic(
-            with: finalIntensity,
-            sharpness: finalSharpness
-        )
-    }
-
-    func playConfiguredTransientHaptic(
-        with intensity: Float?,
-        sharpness: Float?
-    ) {
-        let position = valueCounter % config.groupSize
-        let triggerStartPosition = config.groupSize - config.triggerCount + 1
-
-        guard position >= triggerStartPosition || position == 0 else { return }
-
-        let triggerPosition = if position == 0 {
-            config.triggerCount
-        } else {
-            position - triggerStartPosition + 1
-        }
-
-        let intensityFactor: Float = if config.progressiveIntensity, config.triggerCount > 0 {
-            Float(triggerPosition) / Float(config.triggerCount)
-        } else {
-            1.0
-        }
-
-        let finalIntensity = intensity ?? (config.baseIntensity * intensityFactor)
-        let finalSharpness = sharpness ?? config.baseSharpness
-
-        playTransientHaptic(
-            with: finalIntensity,
-            sharpness: finalSharpness
-        )
-    }
-
-    func playTransientHaptic(
-        with intensity: Float,
+extension CoreHapticEngine: HapticEngine {
+    func generateTransientHaptic(
+        intensity: Float,
         sharpness: Float
     ) {
         let event = createEvent(
@@ -180,41 +119,7 @@ extension HapticService: HapticEngine {
         playEvents([event])
     }
 
-    func triggerHapticFeedback(
-        customIntensity: Float?,
-        customSharpness: Float?
-    ) {
-        valueCounter += 1
-
-        if let triggerPositions = config.triggerPositions {
-            playConfiguredTransientHaptic(
-                using: triggerPositions,
-                customIntensity: customIntensity,
-                customSharpness: customSharpness
-            )
-        } else {
-            playConfiguredTransientHaptic(
-                with: customIntensity,
-                sharpness: customSharpness
-            )
-        }
-
-        if valueCounter >= 1000 {
-            valueCounter = valueCounter % config.groupSize
-        }
-    }
-
-    func playTransientHaptic(
-        intensity: Float,
-        sharpness: Float
-    ) {
-        playTransientHaptic(
-            with: intensity,
-            sharpness: sharpness
-        )
-    }
-
-    func playContinuousHaptic(
+    func generateContinuousHaptic(
         intensity: Float,
         sharpness: Float,
         duration: TimeInterval
@@ -230,9 +135,9 @@ extension HapticService: HapticEngine {
         playEvents([event])
     }
 
-    func playHapticSequence(
+    func generateHapticSequence(
         intensities: [Float],
-        sharpness: [Float]?,
+        sharpness: [Float],
         spacing: TimeInterval
     ) {
         let events: [CHHapticEvent] = intensities
@@ -240,10 +145,10 @@ extension HapticService: HapticEngine {
             .map { index, intensity in
                 let relativeTime = TimeInterval(index) * spacing
 
-                let eventSharpness = if let sharpness, index < sharpness.count {
+                let eventSharpness: Float = if index < sharpness.count {
                     sharpness[index]
                 } else {
-                    config.baseSharpness
+                    0.0
                 }
 
                 return createEvent(
@@ -260,7 +165,7 @@ extension HapticService: HapticEngine {
 
 // MARK: ApplicationHandlerDelegate
 
-extension HapticService: ApplicationHandlerDelegate {
+extension CoreHapticEngine: ApplicationHandlerDelegate {
     func didReceiveDidEnterBackground(notification _: Notification) {
         engine?.stop { [weak self] error in
             if let error = error {
