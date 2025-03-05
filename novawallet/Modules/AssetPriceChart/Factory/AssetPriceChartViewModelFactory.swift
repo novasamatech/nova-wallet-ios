@@ -169,6 +169,27 @@ private extension AssetPriceChartViewModelFactory {
             changeType: changeType
         )
     }
+
+    func optimizedEntries(
+        from entries: [PriceHistoryItem]?,
+        availablePoints: Int
+    ) -> [PriceHistoryItem] {
+        guard let entries else { return [] }
+
+        if entries.count > availablePoints {
+            var mutableEntries = entries
+            let firstEntry = mutableEntries.removeFirst()
+            let lastEntry = mutableEntries.removeLast()
+
+            let filteredEntries = mutableEntries
+                .distributed(intoChunks: availablePoints - 2)
+                .compactMap(\.first)
+
+            return [firstEntry] + filteredEntries + [lastEntry]
+        } else {
+            return entries
+        }
+    }
 }
 
 // MARK: AssetPriceChartViewModelFactoryProtocol
@@ -185,17 +206,10 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             selectedPeriod: params.selectedPeriod
         )
 
-        var entries: [PriceHistoryItem] = []
-
-        if let allEntries = params.entries {
-            if allEntries.count > params.availablePoints {
-                entries = allEntries
-                    .distribute(intoChunks: params.availablePoints)
-                    .compactMap(\.first)
-            } else {
-                entries = allEntries
-            }
-        }
+        let entries = optimizedEntries(
+            from: params.entries,
+            availablePoints: params.availablePoints
+        )
 
         guard
             let lastEntry = entries.last,

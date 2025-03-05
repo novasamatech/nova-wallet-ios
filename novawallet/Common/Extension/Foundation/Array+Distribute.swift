@@ -1,28 +1,22 @@
 import Foundation
 
 extension Array {
-    func distribute(intoChunks chunkCount: Int) -> [[Element]] {
+    func distributed(intoChunks chunkCount: Int) -> [[Element]] {
         guard chunkCount > 0 else { return [] }
         guard chunkCount < count else { return map { [$0] } }
 
-        let totalElements = count
-        var result = [[Element]](
-            repeating: [Element](),
-            count: chunkCount
-        )
+        let baseSize = count / chunkCount
+        let extraElements = count % chunkCount
 
-        let baseSize = totalElements / chunkCount
-        let remainingElements = totalElements % chunkCount
+        return stride(
+            from: 0,
+            to: chunkCount,
+            by: 1
+        ).map { chunkIndex in
+            let startIndex = chunkIndex * baseSize + Swift.min(chunkIndex, extraElements)
+            let endIndex = startIndex + baseSize + (chunkIndex < extraElements ? 1 : 0)
 
-        var currentIndex = 0
-
-        (0 ..< chunkCount).forEach { index in
-            let thisChunkSize = index < remainingElements ? baseSize + 1 : baseSize
-
-            result[index] = Array(self[currentIndex ..< currentIndex + thisChunkSize])
-            currentIndex += thisChunkSize
+            return Array(self[startIndex ..< endIndex])
         }
-
-        return result
     }
 }
