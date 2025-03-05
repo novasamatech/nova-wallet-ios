@@ -20,14 +20,14 @@ final class CustomPatternHapticPlayer {
 
 private extension CustomPatternHapticPlayer {
     func playHaptic(using triggerPositions: [Int]) {
-        let currentPosition = (valueCounter % config.groupSize) == 0
+        let currentPosition = valueCounter == 0
             ? config.groupSize
-            : (valueCounter % config.groupSize)
+            : valueCounter
 
-        guard triggerPositions.contains(currentPosition) else { return }
+        guard let positionIndex = triggerPositions.firstIndex(of: currentPosition) else { return }
 
         let intensityFactor: Float = config.progressiveIntensity
-            ? Float(triggerPositions.firstIndex(of: currentPosition) ?? 0 + 1) / Float(triggerPositions.count)
+            ? Float(positionIndex + 1) / Float(triggerPositions.count)
             : 1.0
 
         engine.generateTransientHaptic(
@@ -37,10 +37,10 @@ private extension CustomPatternHapticPlayer {
     }
 
     func playHaptic() {
-        let position = valueCounter % config.groupSize
-        let triggerStartPosition = config.groupSize - config.triggerCount + 1
+        let position = valueCounter
+        let triggerStartPosition = config.groupSize - config.triggerCount
 
-        guard position >= triggerStartPosition || position == 0 else { return }
+        guard position >= triggerStartPosition else { return }
 
         let triggerPosition = if position == 0 {
             config.triggerCount
@@ -77,8 +77,6 @@ extension CustomPatternHapticPlayer: ProgressiveHapticPlayer {
             playHaptic()
         }
 
-        if valueCounter >= 1000 {
-            valueCounter = valueCounter % config.groupSize
-        }
+        valueCounter = valueCounter % config.groupSize
     }
 }
