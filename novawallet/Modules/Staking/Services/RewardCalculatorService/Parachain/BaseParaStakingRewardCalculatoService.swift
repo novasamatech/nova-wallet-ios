@@ -42,6 +42,7 @@ class BaseParaStakingRewardCalculatoService: CollatorStakingRewardService<ParaSt
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue,
         assetPrecision: Int16,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.chainId = chainId
@@ -66,7 +67,7 @@ class BaseParaStakingRewardCalculatoService: CollatorStakingRewardService<ParaSt
             syncQueue: syncQueue
         )
 
-        super.init(logger: logger, syncQueue: syncQueue)
+        super.init(eventCenter: eventCenter, logger: logger, syncQueue: syncQueue)
     }
 
     func didUpdateTotalStaked(_ totalStaked: BigUInt) {
@@ -87,7 +88,7 @@ class BaseParaStakingRewardCalculatoService: CollatorStakingRewardService<ParaSt
                 inflationDistribution: inflationDistribution
             )
 
-            updateSnapshotAndNotify(snapshot)
+            updateSnapshotAndNotify(snapshot, chainId: chainId)
         }
     }
 

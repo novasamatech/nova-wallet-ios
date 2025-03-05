@@ -8,6 +8,7 @@ protocol EventVisitorProtocol: AnyObject {
     func processTypeRegistryPrepared(event: TypeRegistryPrepared)
     func processEraStakersInfoChanged(event: EraStakersInfoChanged)
     func processEraNominationPoolsChanged(event: EraNominationPoolsChanged)
+    func processStakingRewardsInfoChanged(event: StakingRewardInfoChanged)
 
     func processChainSyncDidStart(event: ChainSyncDidStart)
     func processChainSyncDidComplete(event: ChainSyncDidComplete)
@@ -43,6 +44,7 @@ extension EventVisitorProtocol {
     func processTypeRegistryPrepared(event _: TypeRegistryPrepared) {}
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {}
     func processEraNominationPoolsChanged(event _: EraNominationPoolsChanged) {}
+    func processStakingRewardsInfoChanged(event _: StakingRewardInfoChanged) {}
 
     func processChainSyncDidStart(event _: ChainSyncDidStart) {}
     func processChainSyncDidComplete(event _: ChainSyncDidComplete) {}
