@@ -155,6 +155,14 @@ extension StartStakingInfoMythosInteractor: EventVisitorProtocol {
 
         provideStakingDuration()
     }
+
+    func processStakingRewardsInfoChanged(event: StakingRewardInfoChanged) {
+        guard chain.chainId == event.chainId else { return }
+
+        logger.debug("Rewards calculator updated")
+
+        provideRewardCalculationEngine()
+    }
 }
 
 extension StartStakingInfoMythosInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {

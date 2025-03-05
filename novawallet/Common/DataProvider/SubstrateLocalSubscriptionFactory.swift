@@ -62,7 +62,8 @@ class SubstrateLocalSubscriptionFactory {
 
     func getPlainProvider<T: Equatable & Decodable>(
         for chainId: ChainModel.Id,
-        storagePath: StorageCodingPath
+        storagePath: StorageCodingPath,
+        shouldUseFallback: Bool = false
     ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             storagePath,
@@ -73,7 +74,7 @@ class SubstrateLocalSubscriptionFactory {
             for: localKey,
             chainId: chainId,
             storageCodingPath: storagePath,
-            shouldUseFallback: false
+            shouldUseFallback: shouldUseFallback
         )
     }
 

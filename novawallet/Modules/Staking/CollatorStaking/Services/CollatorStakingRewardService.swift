@@ -12,15 +12,18 @@ class CollatorStakingRewardService<S> {
 
     private var isActive: Bool = false
     private var snapshot: S?
+    private var eventCenter: EventCenterProtocol
 
     private var pendingRequests: [UUID: PendingRequest] = [:]
 
     init(
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol,
         syncQueue: DispatchQueue
     ) {
         self.logger = logger
         self.syncQueue = syncQueue
+        self.eventCenter = eventCenter
     }
 
     func start() {
@@ -35,10 +38,12 @@ class CollatorStakingRewardService<S> {
         fatalError("Must be implemented by subsclass")
     }
 
-    func updateSnapshotAndNotify(_ snapshot: S) {
+    func updateSnapshotAndNotify(_ snapshot: S, chainId: ChainModel.Id) {
         self.snapshot = snapshot
 
         notifyPendingClosures(with: snapshot)
+
+        eventCenter.notify(with: StakingRewardInfoChanged(chainId: chainId))
     }
 }
 

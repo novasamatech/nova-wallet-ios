@@ -71,7 +71,11 @@ extension StartStakingInfoMythosPresenter: StartStakingInfoMythosInteractorOutpu
     }
 
     func didReceive(calculator: CollatorStakingRewardCalculatorEngineProtocol) {
-        state.maxApy = calculator.calculateMaxReturn(for: .year)
+        let maxApy = calculator.calculateMaxReturn(for: .year)
+
+        logger.debug("Max APY: \(maxApy.stringWithPointSeparator)")
+
+        state.maxApy = maxApy
     }
 }
 

@@ -90,7 +90,8 @@ final class MythosStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFac
     ) throws -> AnyDataProvider<DecodedBigUInt> {
         try getPlainProvider(
             for: chainId,
-            storagePath: MythosStakingPallet.extraRewardPath
+            storagePath: MythosStakingPallet.extraRewardPath,
+            shouldUseFallback: true
         )
     }
 }
