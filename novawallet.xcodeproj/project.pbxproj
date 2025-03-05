@@ -1557,6 +1557,7 @@
 		2DF95D342D786097001D8785 /* CustomHapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */; };
 		2DF95D372D786156001D8785 /* SequentialHapticPlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */; };
 		2DF95D3B2D786631001D8785 /* HapticPlayerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */; };
+		2DF95D252D77AF8B001D8785 /* Array+Distribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D242D77AF8B001D8785 /* Array+Distribute.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -7252,6 +7253,7 @@
 		2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHapticPatternConfig.swift; sourceTree = "<group>"; };
 		2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentialHapticPlayerConfig.swift; sourceTree = "<group>"; };
 		2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlayerFactory.swift; sourceTree = "<group>"; };
+		2DF95D242D77AF8B001D8785 /* Array+Distribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Distribute.swift"; sourceTree = "<group>"; };
 		2E0DC18CB648BFACAD038C02 /* Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests.staging.xcconfig"; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
@@ -20557,6 +20559,7 @@
 				843ADAC22A3C30A1003AE2B5 /* Decimal+Fiat.swift */,
 				880855EC28D062A9004255E7 /* Array+AddOrReplace.swift */,
 				77CB33D62A3998FC00B6709A /* Array+Sort.swift */,
+				2DF95D242D77AF8B001D8785 /* Array+Distribute.swift */,
 				881ED96729758088000C0457 /* Array+Safe.swift */,
 				8849AD6129C3532600F4F7FF /* String+Split.swift */,
 				8849AD6D29C4690F00F4F7FF /* String+CheckLength.swift */,
@@ -30218,6 +30221,7 @@
 				8473F4B4282BD5A1007CC55A /* StakingRelaychainInteractor.swift in Sources */,
 				845B821B26EF80BC00D25C72 /* MetaAccountModel.swift in Sources */,
 				77E304B02AEFA261006FD6F0 /* FeeAssetSelectSheetLayout.swift in Sources */,
+				2DF95D252D77AF8B001D8785 /* Array+Distribute.swift in Sources */,
 				88FB7DCF295071B100784E08 /* ContainerViewController.swift in Sources */,
 				841E5536282CDB9E00C8438F /* StakingMainPresenterFactory+Relaychain.swift in Sources */,
 				0C0F6D872D3A8C5500943A7C /* MythosStakingLocalStorageSubscriber.swift in Sources */,
