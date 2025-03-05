@@ -225,12 +225,12 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
             let preferredContentInsets = createPreferredContentInsets(for: preferredContentHeight)
 
             let compactOriginY = containerSize.height - preferredContentInsets.bottom
-            let compactHeight = preferredContentInsets.bottom
+
             return CGRect(
                 x: 0.0,
                 y: compactOriginY,
                 width: containerSize.width,
-                height: compactHeight
+                height: containerSize.height
             )
         case .full:
             return CGRect(origin: .zero, size: containerSize)
