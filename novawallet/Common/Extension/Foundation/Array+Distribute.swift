@@ -11,9 +11,9 @@ extension Array {
         let maxChunkLen = (count / chunkCount) + 1
 
         return (0 ..< chunkCount).map { chunkIndex in
-            var offset = Swift.min(chunkIndex, extraElements) * baseChunkLen + Swift.max(0, chunkIndex - extraElements) * maxChunkLen
+            var offset = Swift.min(chunkIndex, extraElements) * maxChunkLen + Swift.max(0, chunkIndex - extraElements) * baseChunkLen
 
-            let chunkLen = chunkIndex < extraElements ? baseChunkLen : maxChunkLen
+            let chunkLen = chunkIndex < extraElements ? maxChunkLen : baseChunkLen
 
             return Array(self[offset ..< (offset + chunkLen)])
         }
