@@ -5,18 +5,17 @@ extension Array {
         guard chunkCount > 0 else { return [] }
         guard chunkCount < count else { return map { [$0] } }
 
-        let baseSize = count / chunkCount
         let extraElements = count % chunkCount
 
-        return stride(
-            from: 0,
-            to: chunkCount,
-            by: 1
-        ).map { chunkIndex in
-            let startIndex = chunkIndex * baseSize + Swift.min(chunkIndex, extraElements)
-            let endIndex = startIndex + baseSize + (chunkIndex < extraElements ? 1 : 0)
+        let baseChunkLen = count / chunkCount
+        let maxChunkLen = (count / chunkCount) + 1
 
-            return Array(self[startIndex ..< endIndex])
+        return (0 ..< chunkCount).map { chunkIndex in
+            var offset = Swift.min(chunkIndex, extraElements) * baseChunkLen + Swift.max(0, chunkIndex - extraElements) * maxChunkLen
+
+            let chunkLen = chunkIndex < extraElements ? baseChunkLen : maxChunkLen
+
+            return Array(self[offset ..< (offset + chunkLen)])
         }
     }
 }
