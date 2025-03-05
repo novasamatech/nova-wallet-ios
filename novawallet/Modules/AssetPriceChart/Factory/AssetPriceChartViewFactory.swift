@@ -44,18 +44,17 @@ struct AssetPriceChartViewFactory {
             locale: params.locale
         )
 
-        let seekHapticEngine = HapticService(
-            config: .chartSeek,
-            logger: logger
+        let seekHapticPlayer = HapticPlayerFactory.createProgressivePlayer(
+            patternConfiguration: .chartSeek
         )
-        let periodControlHapticEngine = HapticService(
-            config: .chartPeriodControl,
-            logger: logger
+        let periodControlHapticPlayer = HapticPlayerFactory.createHapticPlayer(
+            patternConfiguration: .singleTap
         )
+
         let view = AssetPriceChartViewController(
             presenter: presenter,
-            seekHapticEngine: seekHapticEngine,
-            periodControlHapticEngine: periodControlHapticEngine
+            seekHapticPlayer: seekHapticPlayer,
+            periodControlHapticPlayer: periodControlHapticPlayer
         )
 
         presenter.view = view

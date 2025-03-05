@@ -5,18 +5,18 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetPriceChartViewLayout
 
     private let presenter: AssetPriceChartPresenterProtocol
-    private let seekHapticEngine: HapticEngine
-    private let periodControlHapticEngine: HapticEngine
+    private let seekHapticPlayer: ProgressiveHapticPlayer
+    private let periodControlHapticPlayer: HapticPlayer
     private let dataSource: AssetPriceChartViewDataSourceProtocol
 
     init(
         presenter: AssetPriceChartPresenterProtocol,
-        seekHapticEngine: HapticEngine,
-        periodControlHapticEngine: HapticEngine
+        seekHapticPlayer: ProgressiveHapticPlayer,
+        periodControlHapticPlayer: HapticPlayer
     ) {
         self.presenter = presenter
-        self.seekHapticEngine = seekHapticEngine
-        self.periodControlHapticEngine = periodControlHapticEngine
+        self.seekHapticPlayer = seekHapticPlayer
+        self.periodControlHapticPlayer = periodControlHapticPlayer
         dataSource = AssetPriceChartViewDataSource()
         super.init(nibName: nil, bundle: nil)
     }
@@ -206,12 +206,12 @@ extension AssetPriceChartViewController: ChartViewDelegate {
     ) {
         rootView.chartView.highlightValue(highlight)
         selectEntry(entry: entry)
-        seekHapticEngine.triggerHapticFeedback()
+        seekHapticPlayer.play()
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
         selectEntry(entry: nil)
-        seekHapticEngine.reset()
+        seekHapticPlayer.reset()
     }
 }
 
@@ -222,8 +222,7 @@ extension AssetPriceChartViewController: PriceChartPeriodControlDelegate {
         _: PriceChartPeriodControl,
         didSelect period: PriceChartPeriodViewModel
     ) {
-        periodControlHapticEngine.triggerHapticFeedback()
-        periodControlHapticEngine.reset()
+        periodControlHapticPlayer.play()
         presenter.selectPeriod(period.period)
     }
 }
