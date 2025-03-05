@@ -19,7 +19,6 @@ protocol ReloadableDelegate: AnyObject {
 }
 
 @objc protocol ContainableObserver {
-    func willChangePreferredContentHeight()
     func didChangePreferredContentHeight(to newContentHeight: CGFloat)
 }
 
