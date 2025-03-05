@@ -4,11 +4,19 @@ import DGCharts
 final class AssetPriceChartViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetPriceChartViewLayout
 
-    let presenter: AssetPriceChartPresenterProtocol
-    let dataSource: AssetPriceChartViewDataSourceProtocol
+    private let presenter: AssetPriceChartPresenterProtocol
+    private let seekHapticPlayer: ProgressiveHapticPlayer
+    private let periodControlHapticPlayer: HapticPlayer
+    private let dataSource: AssetPriceChartViewDataSourceProtocol
 
-    init(presenter: AssetPriceChartPresenterProtocol) {
+    init(
+        presenter: AssetPriceChartPresenterProtocol,
+        seekHapticPlayer: ProgressiveHapticPlayer,
+        periodControlHapticPlayer: HapticPlayer
+    ) {
         self.presenter = presenter
+        self.seekHapticPlayer = seekHapticPlayer
+        self.periodControlHapticPlayer = periodControlHapticPlayer
         dataSource = AssetPriceChartViewDataSource()
         super.init(nibName: nil, bundle: nil)
     }
@@ -198,10 +206,12 @@ extension AssetPriceChartViewController: ChartViewDelegate {
     ) {
         rootView.chartView.highlightValue(highlight)
         selectEntry(entry: entry)
+        seekHapticPlayer.play()
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
         selectEntry(entry: nil)
+        seekHapticPlayer.reset()
     }
 }
 
@@ -212,6 +222,7 @@ extension AssetPriceChartViewController: PriceChartPeriodControlDelegate {
         _: PriceChartPeriodControl,
         didSelect period: PriceChartPeriodViewModel
     ) {
+        periodControlHapticPlayer.play()
         presenter.selectPeriod(period.period)
     }
 }
