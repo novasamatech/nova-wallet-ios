@@ -34,14 +34,20 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupChartView()
-        addHandlers()
+        setupView()
         applyLocalization()
         presenter.setup()
     }
 }
 
 private extension AssetDetailsViewController {
+    func setupView() {
+        setupChartView()
+        addHandlers()
+
+        rootView.delegate = self
+    }
+
     func setupChartView() {
         let insets = UIEdgeInsets(
             inset: AssetDetailsViewLayout.Constants.chartWidgetInset
@@ -114,6 +120,14 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.swapButton.isEnabled = availableOperations.contains(.swap)
         rootView.buyButton.isEnabled = availableOperations.contains(.buy)
+    }
+}
+
+extension AssetDetailsViewController: AssetDetailsViewLayoutDelegate {
+    func didUpdateHeight(_ height: CGFloat) {
+        observable.observers.forEach {
+            $0.observer?.didChangePreferredContentHeight(to: height)
+        }
     }
 }
 
