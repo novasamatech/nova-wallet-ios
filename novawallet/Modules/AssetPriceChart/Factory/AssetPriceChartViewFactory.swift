@@ -47,14 +47,15 @@ struct AssetPriceChartViewFactory {
         let seekHapticPlayer = HapticPlayerFactory.createProgressivePlayer(
             patternConfiguration: .chartSeek
         )
-        let periodControlHapticPlayer = HapticPlayerFactory.createHapticPlayer(
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(
             patternConfiguration: .singleTap
         )
 
         let view = AssetPriceChartViewController(
             presenter: presenter,
             seekHapticPlayer: seekHapticPlayer,
-            periodControlHapticPlayer: periodControlHapticPlayer
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer
         )
 
         presenter.view = view
