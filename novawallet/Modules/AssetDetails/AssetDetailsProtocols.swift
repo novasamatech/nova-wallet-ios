@@ -2,9 +2,7 @@ import Operation_iOS
 
 protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol, Containable {
     func didReceive(assetModel: AssetDetailsModel)
-    func didReceive(totalBalance: BalanceViewModelProtocol)
-    func didReceive(transferableBalance: BalanceViewModelProtocol)
-    func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool)
+    func didReceive(balance: AssetDetailsBalanceModel)
     func didReceive(availableOperations: AssetDetailsOperation)
 }
 
