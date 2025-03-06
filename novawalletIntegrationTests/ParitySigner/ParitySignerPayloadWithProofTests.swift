@@ -22,7 +22,7 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
                     callName: "transfer_keep_alive",
                     args: TransferCall(
                         dest: .accoundId(dest),
-                        value: Balance(100000000000)
+                        value: Balance(100000000)
                     )
                 )
                 
@@ -42,27 +42,46 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
         }
     }
     
-    func testWestendTransferGeneration() {
+    func testWestendStakingGeneration() {
         do {
             let message = try createSignerMessage(
                 for: KnowChainId.westend,
                 account: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
             ) { builder in
-                
-                let dest = try "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty".toAccountId()
-                let transferCall = RuntimeCall(
-                    moduleName: "Staking",
-                    callName: "bond",
-                    args: Staking.Bond.V2
+                let bondCall = RuntimeCall(
+                    moduleName: Staking.Bond.path.moduleName,
+                    callName: Staking.Bond.path.callName,
+                    args: Staking.Bond.V2(
+                        value: 1061900000000,
+                        payee: .staked
+                    )
                 )
                 
-                var resultBuilder = try builder
-                    .with(
-                        era: .mortal(period: 64, phase: 61),
-                        blockHash: "98a8ee9e389043cd8a9954b254d822d34138b9ae97d3b7f50dc6781b13df8d84"
+                let validator1 = try "5CFPcUJgYgWryPaV1aYjSbTpbTLu42V32Ytw1L9rfoMAsfGh".toAccountId()
+                let validator2 = try "5G1ojzh47Yt8KoYhuAjXpHcazvsoCXe3G8LZchKDvumozJJJ".toAccountId()
+                let validator3 = try "5FZoQhgUCmqBxnkHX7jCqThScS2xQWiwiF61msg63CFL3Y8f".toAccountId()
+                
+                let nominateCall = RuntimeCall(
+                    moduleName: "Staking",
+                    callName: "nominate",
+                    args: NominateCall(
+                        targets: [
+                            .accoundId(validator1),
+                            .accoundId(validator2),
+                            .accoundId(validator3)
+                        ]
                     )
-                    .with(tip: 10000000)
-                    .with(nonce: 261)
+                )
+                
+                return try builder
+                    .with(
+                        era: .mortal(period: 64, phase: 5),
+                        blockHash: "5b1d91c89d3de85a4d6eee76ecf3a303cf38b59e7d81522eb7cd24b02eb161ff"
+                    )
+                    .with(tip: 0)
+                    .with(nonce: 2)
+                    .adding(call: bondCall)
+                    .adding(call: nominateCall)
             }
             
             Logger.shared.info("Westend payload: \(message.toHexWithPrefix())")
@@ -154,6 +173,8 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
                 encoder: encoder,
                 metadata: codingFactory.metadata
             )
+            
+            Logger.shared.info("Metadata hash: \(metadataHash.toHex())")
         
             return (proofParams, signingPayload)
         }
