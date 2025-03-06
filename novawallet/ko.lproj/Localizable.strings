@@ -488,10 +488,11 @@
 "common.copy.id" = "ID 복사";
 "wallet.contacts.empty.title_v1.10" = "송금한 계정과\n연락처가\n여기에 나타납니다";
 "wallet.search.empty.title_v1.10.0" = "주소 형식이 잘못되었습니다. 네트워크에 맞는 주소인지 확인하세요";
-"staking.analytics.period.7d" = "7일";
-"staking.analytics.period.30d" = "30일";
-"staking.analytics.period.1y" = "1년";
-"staking.analytics.period.all" = "전체";
+"common.period.1d" = "1일";
+"common.period.7d" = "7일";
+"common.period.30d" = "30일";
+"common.period.1y" = "1년";
+"common.period.all" = "전체";
 "staking.analytics.rewards.empty.message" = "여기에서\n보상을 확인할 수 있습니다";
 "staking.analytics.stake.empty.message" = "여기에서\nStake 변경사항을 확인할 수 있습니다";
 "common.details" = "세부 사항";

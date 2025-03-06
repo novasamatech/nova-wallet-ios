@@ -488,10 +488,11 @@
 "common.copy.id" = "复制ID";
 "wallet.contacts.empty.title_v1.10" = "您发送转账的账户和联系人将出现在这里";
 "wallet.search.empty.title_v1.10.0" = "地址格式无效。确保地址属于正确的网络";
-"staking.analytics.period.7d" = "7天";
-"staking.analytics.period.30d" = "30天";
-"staking.analytics.period.1y" = "1年";
-"staking.analytics.period.all" = "全部";
+"common.period.1d" = "1天";
+"common.period.7d" = "7天";
+"common.period.30d" = "30天";
+"common.period.1y" = "1年";
+"common.period.all" = "全部";
 "staking.analytics.rewards.empty.message" = "您的奖励\n将出现在这里";
 "staking.analytics.stake.empty.message" = "您的质押变化\n将出现在这里";
 "common.details" = "详细信息";

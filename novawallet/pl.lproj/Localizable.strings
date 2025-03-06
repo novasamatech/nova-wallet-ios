@@ -488,10 +488,11 @@
 "common.copy.id" = "Kopiuj id";
 "wallet.contacts.empty.title_v1.10" = "Twoje konta i kontakty\ndo których wysyłałeś\nprzelewy pojawią się tutaj";
 "wallet.search.empty.title_v1.10.0" = "Nieprawidłowy format adresu.\nUpewnij się, że adres\nnależy do odpowiedniej sieci";
-"staking.analytics.period.7d" = "7d";
-"staking.analytics.period.30d" = "30d";
-"staking.analytics.period.1y" = "1r";
-"staking.analytics.period.all" = "Wszystko";
+"common.period.1d" = "1d";
+"common.period.7d" = "7d";
+"common.period.30d" = "30d";
+"common.period.1y" = "1r";
+"common.period.all" = "Wszystko";
 "staking.analytics.rewards.empty.message" = "Twoje nagrody \npojawią się tutaj";
 "staking.analytics.stake.empty.message" = "Twoje zmiany stake\npojawią się tutaj";
 "common.details" = "Szczegóły";

@@ -128,16 +128,24 @@ private extension AssetPriceChartViewModelFactory {
     }
 
     func createPeriodsControlViewModel(
+        locale: Locale,
         availablePeriods: [PriceHistoryPeriod],
         selectedPeriod: PriceHistoryPeriod
     ) -> PriceChartPeriodControlViewModel {
+        let languages = locale.rLanguages
+
         let periods: [PriceChartPeriodViewModel] = availablePeriods.map {
             let text = switch $0 {
-            case .day: "1D"
-            case .week: "1W"
-            case .month: "1M"
-            case .year: "1Y"
-            case .allTime: "All"
+            case .day:
+                R.string.localizable.commonPeriod1d(preferredLanguages: languages).uppercased()
+            case .week:
+                R.string.localizable.commonPeriod7d(preferredLanguages: languages).uppercased()
+            case .month:
+                R.string.localizable.commonPeriod30d(preferredLanguages: languages).uppercased()
+            case .year:
+                R.string.localizable.commonPeriod1y(preferredLanguages: languages).uppercased()
+            case .allTime:
+                R.string.localizable.commonPeriodAll(preferredLanguages: languages).capitalized(with: locale)
             }
 
             return PriceChartPeriodViewModel(period: $0, text: text)
@@ -202,6 +210,7 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
         ].joined(with: .space)
 
         let periodControlViewModel = createPeriodsControlViewModel(
+            locale: params.locale,
             availablePeriods: params.availablePeriods,
             selectedPeriod: params.selectedPeriod
         )

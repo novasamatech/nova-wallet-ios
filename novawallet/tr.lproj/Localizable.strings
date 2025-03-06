@@ -488,10 +488,11 @@
 "common.copy.id" = "Kimliği kopyala";
 "wallet.contacts.empty.title_v1.10" = "Transfer gönderdiğiniz\nhesaplarınız ve kişiler\nburada görünecek";
 "wallet.search.empty.title_v1.10.0" = "Adres formatı geçersiz. Adresin doğru ağa ait olduğundan emin olun";
-"staking.analytics.period.7d" = "7g";
-"staking.analytics.period.30d" = "30g";
-"staking.analytics.period.1y" = "1y";
-"staking.analytics.period.all" = "Hepsi";
+"common.period.1d" = "1g";
+"common.period.7d" = "7g";
+"common.period.30d" = "30g";
+"common.period.1y" = "1y";
+"common.period.all" = "Hepsi";
 "staking.analytics.rewards.empty.message" = "Ödülleriniz burada görünecek";
 "staking.analytics.stake.empty.message" = "Stake değişiklikleriniz burada görünecek";
 "common.details" = "Detaylar";

@@ -488,10 +488,11 @@
 "common.copy.id" = "Id másolása";
 "wallet.contacts.empty.title_v1.10" = "Itt fognak megjelenni\nfiókjaid és kapcsolataid\nakiknek már utaltál";
 "wallet.search.empty.title_v1.10.0" = "A cín formátuma érvénytelen.\nGyőzödj meg róla, hogy a cím\na megfelelő hálózatból származik";
-"staking.analytics.period.7d" = "7n";
-"staking.analytics.period.30d" = "30n";
-"staking.analytics.period.1y" = "1é";
-"staking.analytics.period.all" = "Összes";
+"common.period.1d" = "1n";
+"common.period.7d" = "7n";
+"common.period.30d" = "30n";
+"common.period.1y" = "1é";
+"common.period.all" = "Összes";
 "staking.analytics.rewards.empty.message" = "Itt fognak majd megjelenni a jutalmaid";
 "staking.analytics.stake.empty.message" = "Itt fognak megjelenni a stake-eddel\nkapcsolatos változások";
 "common.details" = "Részletek";

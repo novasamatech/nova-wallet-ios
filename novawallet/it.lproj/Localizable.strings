@@ -488,10 +488,11 @@
 "common.copy.id" = "Copia ID";
 "wallet.contacts.empty.title_v1.10" = "Qui appariranno i tuoi account e i contatti a cui hai inviato trasferimenti";
 "wallet.search.empty.title_v1.10.0" = "Il formato dell'indirizzo non è valido. Assicurati che l'indirizzo corrisponda alla rete giusta";
-"staking.analytics.period.7d" = "7gg";
-"staking.analytics.period.30d" = "30gg";
-"staking.analytics.period.1y" = "1anno";
-"staking.analytics.period.all" = "Tutto";
+"common.period.1d" = "1gg";
+"common.period.7d" = "7gg";
+"common.period.30d" = "30gg";
+"common.period.1y" = "1anno";
+"common.period.all" = "Tutto";
 "staking.analytics.rewards.empty.message" = "Le tue ricompense \nappariranno qui";
 "staking.analytics.stake.empty.message" = "Le modifiche al tuo staking\nappariranno qui";
 "common.details" = "Dettagli";
