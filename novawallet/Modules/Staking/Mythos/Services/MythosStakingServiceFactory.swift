@@ -51,6 +51,7 @@ extension MythosStakingServiceFactory: MythosStakingServiceFactoryProtocol {
             runtimeService: runtimeService,
             collatorService: collatorService,
             operationQueue: operationQueue,
+            eventCenter: eventCenter,
             logger: logger
         )
     }
