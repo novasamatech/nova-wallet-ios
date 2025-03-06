@@ -22,6 +22,7 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue,
         assetPrecision: Int16,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.rewardsRemoteSubscriptionService = rewardsRemoteSubscriptionService
@@ -36,6 +37,7 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
             repositoryFactory: repositoryFactory,
             operationQueue: operationQueue,
             assetPrecision: assetPrecision,
+            eventCenter: eventCenter,
             logger: logger
         )
     }
@@ -56,7 +58,7 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
                 inflationDistribution: inflationDistribution
             )
 
-            updateSnapshotAndNotify(snapshot)
+            updateSnapshotAndNotify(snapshot, chainId: chainId)
         }
     }
 

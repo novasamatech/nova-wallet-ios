@@ -42,6 +42,35 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
         }
     }
     
+    func testWestendTransferGeneration() {
+        do {
+            let message = try createSignerMessage(
+                for: KnowChainId.westend,
+                account: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+            ) { builder in
+                
+                let dest = try "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty".toAccountId()
+                let transferCall = RuntimeCall(
+                    moduleName: "Staking",
+                    callName: "bond",
+                    args: Staking.Bond.V2
+                )
+                
+                var resultBuilder = try builder
+                    .with(
+                        era: .mortal(period: 64, phase: 61),
+                        blockHash: "98a8ee9e389043cd8a9954b254d822d34138b9ae97d3b7f50dc6781b13df8d84"
+                    )
+                    .with(tip: 10000000)
+                    .with(nonce: 261)
+            }
+            
+            Logger.shared.info("Westend payload: \(message.toHexWithPrefix())")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     private func createSignerMessage(
         for chainId: ChainModel.Id,
         account: AccountAddress,

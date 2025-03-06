@@ -21,12 +21,9 @@ struct DAppListViewFactory {
             dappIconViewModelFactory: DAppIconViewModelFactory()
         )
 
-        let dAppNavigationTaskFactory = DAppListNavigationTaskFactory(wireframe: wireframe)
-
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            browserNavigationTaskFactory: dAppNavigationTaskFactory,
             initialWallet: SelectedWalletSettings.shared.value,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
@@ -87,7 +84,6 @@ struct DAppListViewFactory {
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
             walletNotificationService: walletNotificationService,
-            operationQueue: sharedQueue,
             logger: logger
         )
 

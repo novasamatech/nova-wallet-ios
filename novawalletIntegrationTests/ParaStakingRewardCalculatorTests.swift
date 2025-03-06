@@ -89,6 +89,7 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
             repositoryFactory: repositoryFactory,
             operationQueue: operationQueue,
             assetPrecision: assetDisplayInfo.assetPrecision,
+            eventCenter: EventCenter.shared,
             logger: logger
         )
 
