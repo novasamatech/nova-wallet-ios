@@ -66,7 +66,7 @@ private extension AssetPriceChartViewModelFactory {
             .value(for: locale)
             .stringFromDecimal(periodChangeDecimal) ?? ""
 
-        var percent = if firstEntry.value > 0 {
+        let percent = if firstEntry.value > 0 {
             periodChangeDecimal / firstEntry.value
         } else {
             periodChangeDecimal
