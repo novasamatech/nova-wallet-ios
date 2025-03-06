@@ -69,14 +69,12 @@ extension CustomPatternHapticPlayer: ProgressiveHapticPlayer {
     }
 
     func play() {
-        valueCounter += 1
+        valueCounter = (valueCounter + 1) % config.groupSize
 
         if let triggerPositions = config.triggerPositions {
             playHaptic(using: triggerPositions)
         } else {
             playHaptic()
         }
-
-        valueCounter = valueCounter % config.groupSize
     }
 }
