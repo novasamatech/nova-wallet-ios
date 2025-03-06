@@ -49,6 +49,7 @@ extension AssetPriceChartViewProviderProtocol {
 protocol AssetPriceChartViewProtocol: ControllerBackedProtocol {
     func update(with widgetViewModel: AssetPriceChartWidgetViewModel)
     func update(with priceUpdateViewModel: AssetPriceChartPriceUpdateViewModel)
+    func chartViewWidth() -> CGFloat
 }
 
 protocol AssetPriceChartPresenterProtocol: AnyObject {

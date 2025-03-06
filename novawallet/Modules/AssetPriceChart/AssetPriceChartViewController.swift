@@ -43,6 +43,7 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
 private extension AssetPriceChartViewController {
     func setupChart() {
         rootView.chartView.delegate = self
+        addLongTapGestureRecognizer()
     }
 
     func updateView() {
@@ -179,6 +180,46 @@ private extension AssetPriceChartViewController {
 
         presenter.selectEntry(plainEntry)
     }
+
+    func addLongTapGestureRecognizer() {
+        let longPressGestureRecognizer = UILongPressGestureRecognizer(
+            target: self,
+            action: #selector(handleLongPress)
+        )
+        longPressGestureRecognizer.minimumPressDuration = 0.1
+        longPressGestureRecognizer.allowableMovement = 0
+
+        rootView.chartView.addGestureRecognizer(longPressGestureRecognizer)
+    }
+
+    func handleChartEntrySelected(
+        _ entry: ChartDataEntry?,
+        highlight: Highlight?
+    ) {
+        rootView.chartView.highlightValue(highlight)
+        selectEntry(entry: entry)
+        seekHapticPlayer.play()
+    }
+
+    func handleEntrySelectionEnded() {
+        selectEntry(entry: nil)
+        seekHapticPlayer.reset()
+    }
+
+    @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began, .changed:
+            let locationOnChart = gestureRecognizer.location(in: rootView.chartView)
+            let highlight = rootView.chartView.getHighlightByTouchPoint(locationOnChart)
+            let entry = rootView.chartView.getEntryByTouchPoint(point: locationOnChart)
+
+            handleChartEntrySelected(entry, highlight: highlight)
+        case .ended, .cancelled, .failed:
+            handleEntrySelectionEnded()
+        default:
+            break
+        }
+    }
 }
 
 // MARK: AssetPriceChartViewProtocol
@@ -194,6 +235,10 @@ extension AssetPriceChartViewController: AssetPriceChartViewProtocol {
         updatePriceChange()
         updatePrice()
     }
+
+    func chartViewWidth() -> CGFloat {
+        rootView.bounds.width
+    }
 }
 
 // MARK: ChartViewDelegate
@@ -204,14 +249,11 @@ extension AssetPriceChartViewController: ChartViewDelegate {
         entry: ChartDataEntry,
         highlight: Highlight
     ) {
-        rootView.chartView.highlightValue(highlight)
-        selectEntry(entry: entry)
-        seekHapticPlayer.play()
+        handleChartEntrySelected(entry, highlight: highlight)
     }
 
     func chartViewDidEndPanning(_: ChartViewBase) {
-        selectEntry(entry: nil)
-        seekHapticPlayer.reset()
+        handleEntrySelectionEnded()
     }
 }
 
