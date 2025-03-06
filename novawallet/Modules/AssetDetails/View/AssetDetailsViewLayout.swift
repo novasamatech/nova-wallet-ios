@@ -2,7 +2,13 @@ import UIKit
 import SoraUI
 import SnapKit
 
+protocol AssetDetailsViewLayoutDelegate: AnyObject {
+    func didUpdateHeight(_ height: CGFloat)
+}
+
 final class AssetDetailsViewLayout: UIView {
+    weak var delegate: AssetDetailsViewLayoutDelegate?
+
     private let balanceExpandingAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
         duration: 0.2,
         options: [.curveEaseInOut]
@@ -49,6 +55,8 @@ final class AssetDetailsViewLayout: UIView {
     let receiveButton: RoundedButton = createOperationButton(icon: R.image.iconReceive())
     let buyButton: RoundedButton = createOperationButton(icon: R.image.iconBuy())
     let swapButton = createOperationButton(icon: R.image.iconActionChange())
+
+    private var currentBalanceHeight = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
@@ -211,7 +219,7 @@ final class AssetDetailsViewLayout: UIView {
 
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset
-            + AssetDetailsBalanceWidget.Constants.expandedStateHeight
+            + currentBalanceHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
 
         return priceLabel.font.lineHeight
@@ -225,6 +233,8 @@ final class AssetDetailsViewLayout: UIView {
 
 extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
     func didChangeState(to state: AssetDetailsBalanceWidget.State) {
+        currentBalanceHeight = state.height
+
         balanceWidget.snp.updateConstraints { make in
             make.height.equalTo(state.height)
         }
@@ -233,6 +243,8 @@ extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
             block: { [weak self] in self?.containerView.layoutIfNeeded() },
             completionBlock: nil
         )
+
+        delegate?.didUpdateHeight(prefferedHeight)
     }
 }
 

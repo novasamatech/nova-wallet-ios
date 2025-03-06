@@ -8,6 +8,7 @@ struct PriceChartWidgetFactoryParams {
     let availablePeriods: [PriceHistoryPeriod]
     let selectedPeriod: PriceHistoryPeriod
     let priceData: PriceData?
+    let availablePoints: Int
     let locale: Locale
 }
 
@@ -168,6 +169,27 @@ private extension AssetPriceChartViewModelFactory {
             changeType: changeType
         )
     }
+
+    func optimizedEntries(
+        from entries: [PriceHistoryItem]?,
+        availablePoints: Int
+    ) -> [PriceHistoryItem] {
+        guard let entries else { return [] }
+
+        if entries.count > availablePoints {
+            var mutableEntries = entries
+            let firstEntry = mutableEntries.removeFirst()
+            let lastEntry = mutableEntries.removeLast()
+
+            let filteredEntries = mutableEntries
+                .distributed(intoChunks: availablePoints - 2)
+                .compactMap(\.first)
+
+            return [firstEntry] + filteredEntries + [lastEntry]
+        } else {
+            return entries
+        }
+    }
 }
 
 // MARK: AssetPriceChartViewModelFactoryProtocol
@@ -184,8 +206,12 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             selectedPeriod: params.selectedPeriod
         )
 
+        let entries = optimizedEntries(
+            from: params.entries,
+            availablePoints: params.availablePoints
+        )
+
         guard
-            let entries = params.entries,
             let lastEntry = entries.last,
             let priceData = params.priceData
         else {

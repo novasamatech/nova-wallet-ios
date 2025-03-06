@@ -38,7 +38,10 @@ final class AssetPriceChartPresenter {
 
 private extension AssetPriceChartPresenter {
     func provideViewModel() {
-        guard let selectedPeriod else { return }
+        guard
+            let selectedPeriod,
+            let availablePoints = view?.chartViewWidth()
+        else { return }
 
         let params = PriceChartWidgetFactoryParams(
             asset: assetModel,
@@ -46,6 +49,7 @@ private extension AssetPriceChartPresenter {
             availablePeriods: availablePeriods,
             selectedPeriod: selectedPeriod,
             priceData: priceData,
+            availablePoints: Int(availablePoints),
             locale: locale
         )
         let viewModel = viewModelFactory.createViewModel(params: params)
