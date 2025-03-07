@@ -1,6 +1,12 @@
 import Foundation
 import UIKit
 
+enum AssetPriceChartState {
+    case loading
+    case available
+    case unavailable
+}
+
 // MARK: Module Interface
 
 typealias AssetPriceChartModule = AssetPriceChartViewProviderProtocol
@@ -15,7 +21,7 @@ protocol AssetPriceChartModuleInputProtocol: AnyObject {
 }
 
 protocol AssetPriceChartModuleOutputProtocol: AnyObject {
-    func didReceive(_ error: Error)
+    func didReceiveChartState(_ state: AssetPriceChartState)
 }
 
 protocol AssetPriceChartViewProviderProtocol: ControllerBackedProtocol {
@@ -66,5 +72,5 @@ protocol AssetPriceChartInteractorInputProtocol: AnyObject {
 protocol AssetPriceChartInteractorOutputProtocol: AnyObject {
     func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]])
     func didReceive(price: PriceData?)
-    func didReceive(_ error: Error)
+    func didReceive(_ error: AssetPriceChartInteractorError)
 }

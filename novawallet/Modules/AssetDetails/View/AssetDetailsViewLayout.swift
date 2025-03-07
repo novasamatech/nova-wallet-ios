@@ -9,7 +9,7 @@ protocol AssetDetailsViewLayoutDelegate: AnyObject {
 final class AssetDetailsViewLayout: UIView {
     weak var delegate: AssetDetailsViewLayoutDelegate?
 
-    private let balanceExpandingAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+    private let layoutChangesAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
         duration: 0.2,
         options: [.curveEaseInOut]
     )
@@ -62,6 +62,8 @@ final class AssetDetailsViewLayout: UIView {
         frame: .zero,
         views: [sendButton, receiveButton, swapButton, buyButton]
     )
+
+    private var chartViewHeight: CGFloat = .zero
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -148,6 +150,10 @@ final class AssetDetailsViewLayout: UIView {
         containerView.stackView.addArrangedSubview(balanceWidget)
         containerView.stackView.addArrangedSubview(buttonsRow)
         containerView.stackView.addArrangedSubview(chartContainerView)
+
+        chartContainerView.snp.makeConstraints { make in
+            make.height.equalTo(chartViewHeight)
+        }
     }
 
     func set(locale: Locale) {
@@ -208,11 +214,18 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     func setChartViewHeight(_ height: CGFloat) {
-        guard chartContainerView.superview != nil else { return }
+        guard
+            chartContainerView.superview != nil,
+            height != chartViewHeight
+        else { return }
 
-        chartContainerView.snp.makeConstraints { make in
+        chartViewHeight = height
+
+        chartContainerView.snp.updateConstraints { make in
             make.height.equalTo(height)
         }
+
+        chartContainerView.isHidden = !(height > 0)
 
         layoutIfNeeded()
     }
@@ -227,7 +240,7 @@ final class AssetDetailsViewLayout: UIView {
             + Constants.sectionSpace
             + buttonsRowHeight
             + Constants.bottomOffset
-            + chartContainerView.bounds.height
+            + chartViewHeight
     }
 }
 
@@ -239,7 +252,7 @@ extension AssetDetailsViewLayout: AssetDetailsBalanceWidgetDelegate {
             make.height.equalTo(state.height)
         }
 
-        balanceExpandingAnimator.animate(
+        layoutChangesAnimator.animate(
             block: { [weak self] in self?.containerView.layoutIfNeeded() },
             completionBlock: nil
         )

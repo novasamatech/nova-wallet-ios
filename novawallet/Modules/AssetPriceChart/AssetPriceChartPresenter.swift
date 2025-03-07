@@ -57,14 +57,24 @@ private extension AssetPriceChartPresenter {
 
         view?.update(with: viewModel)
     }
+
+    func notifyIfChartAvailable() {
+        guard
+            let priceData,
+            let prices,
+            !prices.isEmpty
+        else { return }
+
+        moduleOutput?.didReceiveChartState(.available)
+    }
 }
 
 // MARK: AssetPriceChartPresenterProtocol
 
 extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
     func setup() {
+        moduleOutput?.didReceiveChartState(.loading)
         interactor.setup()
-
         provideViewModel()
     }
 
@@ -108,22 +118,39 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 
 extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
     func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]]) {
+        guard !prices.isEmpty else {
+            moduleOutput?.didReceiveChartState(.unavailable)
+            return
+        }
+
         self.prices = prices
         pricesByTime = prices.values.reduce(into: [:]) { acc, values in
             values.forEach { acc[$0.startedAt] = $0.value }
         }
 
+        notifyIfChartAvailable()
         provideViewModel()
     }
 
     func didReceive(price: PriceData?) {
+        guard let price else {
+            moduleOutput?.didReceiveChartState(.unavailable)
+            return
+        }
+
         priceData = price
 
+        notifyIfChartAvailable()
         provideViewModel()
     }
 
-    func didReceive(_ error: Error) {
-        moduleOutput?.didReceive(error)
+    func didReceive(_ error: AssetPriceChartInteractorError) {
+        switch error {
+        case .chartDataNotAvailable, .priceDataNotAvailable:
+            moduleOutput?.didReceiveChartState(.unavailable)
+        }
+
+        logger.error("Failed loading chart price data with error: \(error)")
     }
 }
 

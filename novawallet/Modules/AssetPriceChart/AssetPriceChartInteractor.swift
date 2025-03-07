@@ -74,7 +74,7 @@ private extension AssetPriceChartInteractor {
             case let .success(prices):
                 self?.presenter?.didReceive(prices: prices)
             case let .failure(error):
-                self?.presenter?.didReceive(error)
+                self?.presenter?.didReceive(.chartDataNotAvailable)
             }
         }
     }
@@ -105,7 +105,12 @@ extension AssetPriceChartInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
         case let .success(priceData):
             presenter?.didReceive(price: priceData)
         case let .failure(error):
-            presenter?.didReceive(error)
+            presenter?.didReceive(.priceDataNotAvailable)
         }
     }
+}
+
+enum AssetPriceChartInteractorError {
+    case priceDataNotAvailable
+    case chartDataNotAvailable
 }
