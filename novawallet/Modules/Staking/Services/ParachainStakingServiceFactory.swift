@@ -11,18 +11,13 @@ protocol ParachainStakingServiceFactoryProtocol {
         stakingType: StakingType,
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
-    ) throws -> ParaStakingRewardCalculatorServiceProtocol
+    ) throws -> CollatorStakingRewardCalculatorServiceProtocol
 
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol
 }
 
-final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtocol {
-    let chainRegisty: ChainRegistryProtocol
-    let storageFacade: StorageFacadeProtocol
-    let eventCenter: EventCenterProtocol
-    let operationQueue: OperationQueue
+final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, ParachainStakingServiceFactoryProtocol {
     let stakingProviderFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let logger: LoggerProtocol
 
     init(
         stakingProviderFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
@@ -33,11 +28,14 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
         logger: LoggerProtocol
     ) {
         self.stakingProviderFactory = stakingProviderFactory
-        self.chainRegisty = chainRegisty
-        self.storageFacade = storageFacade
-        self.eventCenter = eventCenter
-        self.operationQueue = operationQueue
-        self.logger = logger
+
+        super.init(
+            chainRegisty: chainRegisty,
+            storageFacade: storageFacade,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 
     func createSelectedCollatorsService(
@@ -69,7 +67,7 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
         stakingType: StakingType,
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
-    ) throws -> ParaStakingRewardCalculatorServiceProtocol {
+    ) throws -> CollatorStakingRewardCalculatorServiceProtocol {
         guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
@@ -91,6 +89,7 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
                 repositoryFactory: repositoryFactory,
                 operationQueue: operationQueue,
                 assetPrecision: assetPrecision,
+                eventCenter: eventCenter,
                 logger: logger
             )
         case .turing:
@@ -127,34 +126,11 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
                 repositoryFactory: repositoryFactory,
                 operationQueue: operationQueue,
                 assetPrecision: assetPrecision,
+                eventCenter: eventCenter,
                 logger: logger
             )
         default:
             throw CommonError.dataCorruption
         }
-    }
-
-    func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
-        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        guard let connection = chainRegisty.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        return BlockTimeEstimationService(
-            chainId: chainId,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: repository,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue,
-            logger: logger
-        )
     }
 }

@@ -34,8 +34,6 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
     func fetchDelegations(for collators: [AccountId]) {
         clear(cancellable: &delegationsCancellable)
 
-        let chain = selectedChainAsset.chain
-
         let collatorService = sharedState.collatorService
         let rewardService = sharedState.rewardCalculationService
 

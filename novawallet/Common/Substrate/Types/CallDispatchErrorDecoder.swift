@@ -71,7 +71,7 @@ private extension CallDispatchErrorDecoder {
         }
 
         case module(Module)
-        case other(String)
+        case other(String, String?)
 
         init(from decoder: Decoder) throws {
             var unkeyedContainer = try decoder.unkeyedContainer()
@@ -83,7 +83,8 @@ private extension CallDispatchErrorDecoder {
                 let moduleError = try unkeyedContainer.decode(Module.self)
                 self = .module(moduleError)
             default:
-                self = .other(module)
+                let reason = try? unkeyedContainer.decode(ErrorName.self).name
+                self = .other(module, reason)
             }
         }
     }
@@ -112,8 +113,8 @@ extension CallDispatchErrorDecoder: CallDispatchErrorDecoding {
                 let moduleError = DispatchCallError.ModuleError(raw: rawError, display: displayError)
 
                 return DispatchCallError.module(moduleError)
-            case let .other(message):
-                return .other(message)
+            case let .other(module, reason):
+                return .other(.init(module: module, reason: reason))
             }
         } catch {
             logger.error("Error: \(error)")

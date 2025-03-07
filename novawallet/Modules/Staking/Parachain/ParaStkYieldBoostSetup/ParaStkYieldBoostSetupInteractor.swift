@@ -10,7 +10,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     let selectedAccount: ChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let connection: JSONRPCEngine
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
@@ -35,7 +35,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         childCancelInteractor: ParaStkYieldBoostCancelInteractorInputProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        rewardService: ParaStakingRewardCalculatorServiceProtocol,
+        rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
