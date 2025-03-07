@@ -94,7 +94,9 @@ extension XcmV3 {
 
         init(multilocation: XcmV3.Multilocation, amount: BigUInt) {
             assetId = .concrete(multilocation)
-            fun = .fungible(amount: amount)
+
+            // starting from xcmV3 zero amount is prohibited
+            fun = .fungible(amount: max(amount, 1))
         }
     }
 
