@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "Комиссия: %@";
 "common.not.enough.to.pay.fee.message" = "У вас недостаточно средств для оплаты сетевой комиссии в размере %@. Текущий баланс: %@";
 "swap.delivery.fee.error.message" = "Из-за ограничений межсетевого взаимодействия у вас должно остаться как минимум %@ после операции";
+"common.see.all" = "Посмотреть все";
+"dapp.widget.close.alert.title" = "Закрыть все DApps?";
+"dapp.widget.close.alert.message" = "Все открытые вкладки в DApp браузере будут закрыты.";
+"common.close.all" = "Закрыть все";
+"dapp.browser.tab.not.available" = "Веб-страница недоступна";
+"dapp.list.section.popular" = "Популярные";
+"swaps.max.price.diff.error.title" = "Обнаружено существенное влияние на цену (%@)";
+"swaps.max.price.diff.error.message" = "Выполнение этого свапа приведет к значительному проскальзыванию и финансовым потерям. Рассмотрите возможность уменьшения размера вашей сделки или разделения её на несколько транзакций.";
+"unstaking.limit.reached.message" = "Вы достигли предела запросов на отмену стейкинга (%@ активных запросов)";

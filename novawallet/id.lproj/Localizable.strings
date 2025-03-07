@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "Biaya: %@";
 "common.not.enough.to.pay.fee.message" = "Kamu tidak memiliki saldo yang cukup untuk membayar biaya jaringan sebesar %@. Saldo saat ini adalah %@";
 "swap.delivery.fee.error.message" = "Karena pembatasan antar-chain, kamu harus memiliki setidaknya %@ setelah operasi";
+"common.see.all" = "Lihat Semua";
+"dapp.widget.close.alert.title" = "Tutup Semua DApps?";
+"dapp.widget.close.alert.message" = "Semua tab yang terbuka di browser DApp akan ditutup.";
+"common.close.all" = "Tutup Semua";
+"dapp.browser.tab.not.available" = "Halaman web tidak tersedia";
+"dapp.list.section.popular" = "Populer";
+"swaps.max.price.diff.error.title" = "Dampak harga tinggi terdeteksi (%@)";
+"swaps.max.price.diff.error.message" = "Melakukan tukar ini akan mengakibatkan slippage signifikan dan kerugian finansial. Pertimbangkan untuk mengurangi ukuran perdagangan Anda atau membagi perdagangan Anda ke dalam beberapa transaksi.";
+"unstaking.limit.reached.message" = "Anda telah mencapai batas permintaan unstaking (%@ permintaan aktif)";

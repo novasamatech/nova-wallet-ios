@@ -10,6 +10,7 @@ final class DAppBrowserPresenter {
     let localizationManager: LocalizationManager
 
     private(set) var favorites: [String: DAppFavorite]?
+    private(set) var tabs: [DAppBrowserTab] = []
     private(set) var browserPage: DAppBrowserPage?
 
     init(
@@ -23,8 +24,12 @@ final class DAppBrowserPresenter {
         self.localizationManager = localizationManager
         self.logger = logger
     }
+}
 
-    private func showState(error: DAppBrowserStateError) {
+// MARK: Private
+
+private extension DAppBrowserPresenter {
+    func showState(error: DAppBrowserStateError) {
         let locale = localizationManager.selectedLocale
         let errorContent = error.toErrorContent(for: locale)
 
@@ -46,14 +51,51 @@ final class DAppBrowserPresenter {
         wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 
-    private func updateSettingsState() {
-        let canShowSettings = browserPage != nil && favorites != nil
+    func updateSettingsState() {
+        let canShowSettings = browserPage != nil
 
         view?.didSet(canShowSettings: canShowSettings)
     }
+
+    func provideFavorite() {
+        guard let browserPage else { return }
+
+        let state = favorites?[browserPage.identifier] != nil
+
+        view?.didSet(favorite: state)
+    }
+
+    func addToFavorites(page: DAppBrowserPage) {
+        wireframe.presentAddToFavoriteForm(
+            from: view,
+            page: page
+        )
+    }
+
+    func removeFromFavorites(dApp: DAppFavorite) {
+        let name = dApp.label ?? browserPage?.title
+
+        wireframe.showFavoritesRemovalConfirmation(
+            from: view,
+            name: name ?? "",
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.interactor.removeFromFavorites(record: dApp)
+        }
+    }
 }
 
+// MARK: DAppBrowserPresenterProtocol
+
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
+    func actionFavorite(page: DAppBrowserPage) {
+        if let favorite = favorites?[page.identifier] {
+            removeFromFavorites(dApp: favorite)
+        } else {
+            addToFavorites(page: page)
+        }
+    }
+
     func setup() {
         interactor.setup()
     }
@@ -68,26 +110,41 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
         interactor.process(host: newHost)
         updateSettingsState()
+        provideFavorite()
     }
 
-    func process(message: Any, host: String, transport name: String) {
-        interactor.process(message: message, host: host, transport: name)
+    func process(
+        message: Any,
+        transport name: String
+    ) {
+        let host = browserPage?.url.host ?? ""
+
+        interactor.process(
+            message: message,
+            host: host,
+            transport: name
+        )
+    }
+
+    func process(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.process(stateRender: stateRender)
     }
 
     func activateSearch(with query: String?) {
-        wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
+        wireframe.presentSearch(
+            from: view,
+            initialQuery: query,
+            delegate: self
+        )
     }
 
     func showSettings(using isDesktop: Bool) {
-        guard let page = browserPage, let favorites = favorites else {
+        guard let page = browserPage else {
             return
         }
 
-        let favorite = favorites[page.identifier] != nil
-
         let input = DAppSettingsInput(
             page: page,
-            favorite: favorite,
             desktopMode: isDesktop
         )
 
@@ -98,27 +155,28 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         )
     }
 
-    func close() {
-        let languages = localizationManager.selectedLocale.rLanguages
+    func close(stateRender: DAppBrowserTabRenderProtocol) {
+        interactor.process(stateRender: stateRender)
+        view?.didDecideClose()
+        wireframe.close(view: view)
+    }
 
-        let closeViewModel = AlertPresentableAction(
-            title: R.string.localizable.commonClose(preferredLanguages: languages),
-            style: .destructive
-        ) { [weak self] in
-            self?.view?.didDecideClose()
-            self?.wireframe.close(view: self?.view)
-        }
+    func showTabs(stateRender: DAppBrowserTabRenderProtocol) {
+        view?.didDecideClose()
+        interactor.saveLastTabState(render: stateRender)
+    }
 
-        let viewModel = AlertPresentableViewModel(
-            title: nil,
-            message: R.string.localizable.commonCloseWhenChangesConfirmation(preferredLanguages: languages),
-            actions: [closeViewModel],
-            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
-        )
+    func willDismissInteractive(stateRender: DAppBrowserTabRenderProtocol) {
+        view?.didDecideClose()
+        interactor.saveLastTabState(render: stateRender)
+    }
 
-        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    func didLoadPage() {
+        interactor.saveTabIfNeeded()
     }
 }
+
+// MARK: DAppBrowserInteractorOutputProtocol
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceive(error: Error) {
@@ -160,13 +218,35 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
-        updateSettingsState()
+        provideFavorite()
     }
 
     func didChangeGlobal(settings: DAppGlobalSettings) {
         view?.didSet(isDesktop: settings.desktopMode)
     }
+
+    func didReceiveTabs(_ models: [DAppBrowserTab]) {
+        tabs = models
+
+        let viewModel: DAppBrowserTabsButtonViewModel = if models.count < 100 {
+            .count("\(models.count)")
+        } else {
+            .icon
+        }
+
+        view?.didReceiveTabsCount(viewModel: viewModel)
+    }
+
+    func didSaveLastTabState() {
+        wireframe.showTabs(from: view)
+    }
+
+    func didReceiveRenderRequest() {
+        view?.didReceiveRenderRequest()
+    }
 }
+
+// MARK: DAppOperationConfirmDelegate
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
     func didReceiveConfirmationResponse(
@@ -177,11 +257,15 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
     }
 }
 
+// MARK: DAppSearchDelegate
+
 extension DAppBrowserPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
         interactor.process(newQuery: result)
     }
 }
+
+// MARK: DAppAuthDelegate
 
 extension DAppBrowserPresenter: DAppAuthDelegate {
     func didReceiveAuthResponse(_ response: DAppAuthResponse, for request: DAppAuthRequest) {
@@ -189,39 +273,18 @@ extension DAppBrowserPresenter: DAppAuthDelegate {
     }
 }
 
+// MARK: DAppPhishingViewDelegate
+
 extension DAppBrowserPresenter: DAppPhishingViewDelegate {
     func dappPhishingViewDidHide() {
+        view?.didDecideClose()
         wireframe.close(view: view)
     }
 }
 
+// MARK: DAppSettingsDelegate
+
 extension DAppBrowserPresenter: DAppSettingsDelegate {
-    func addToFavorites(page: DAppBrowserPage) {
-        wireframe.hideSettings(from: view)
-
-        wireframe.presentAddToFavoriteForm(
-            from: view,
-            page: page
-        )
-    }
-
-    func removeFromFavorites(page: DAppBrowserPage) {
-        wireframe.hideSettings(from: view)
-
-        guard let favoriteDApp = favorites?[page.identifier] else {
-            return
-        }
-
-        let name = favoriteDApp.label ?? browserPage?.title
-        wireframe.showFavoritesRemovalConfirmation(
-            from: view,
-            name: name ?? "",
-            locale: localizationManager.selectedLocale
-        ) { [weak self] in
-            self?.interactor.removeFromFavorites(record: favoriteDApp)
-        }
-    }
-
     func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool) {
         let settings = DAppGlobalSettings(identifier: page.domain, desktopMode: isOn)
         interactor.save(settings: settings)

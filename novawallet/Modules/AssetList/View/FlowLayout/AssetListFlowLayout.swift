@@ -1,26 +1,5 @@
 import UIKit
 
-enum AssetListMeasurement {
-    static let accountHeight: CGFloat = 56.0
-    static let totalBalanceHeight: CGFloat = 200.0
-    static let totalBalanceWithLocksHeight: CGFloat = 200.0
-    static let settingsHeight: CGFloat = 56.0
-    static let nftsHeight = 56.0
-    static let bannerHeight = 102.0
-    static let assetHeight: CGFloat = 56.0
-    static let assetHeaderHeight: CGFloat = 45.0
-    static let emptyStateCellHeight: CGFloat = 230
-    static let decorationInset: CGFloat = 8.0
-    static let promotionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
-    static let summaryInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
-    static let nftsInsets = UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
-    static let settingsInsets = UIEdgeInsets.zero
-    static let assetGroupInsets = UIEdgeInsets(top: 2.0, left: 0, bottom: 16.0, right: 0)
-
-    static let underneathViewHeight: CGFloat = 4
-    static let decorationContentInset: CGFloat = 4
-}
-
 class AssetListFlowLayout: UICollectionViewFlowLayout {
     var animatingTransition: Bool = false
 
@@ -31,8 +10,8 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
-    private var promotionHeight: CGFloat = AssetListMeasurement.bannerHeight
-    private var promotionInsets: UIEdgeInsets = .zero
+    private var bannersHeight: CGFloat = AssetListMeasurement.bannerHeight
+    private var bannersInsets: UIEdgeInsets = .zero
     private var nftsInsets: UIEdgeInsets = .zero
 
     private let attributesFactory = AssetDecorationAttributesFactory()
@@ -195,12 +174,12 @@ private extension AssetListFlowLayout {
             initialY += AssetListMeasurement.nftsHeight
         }
 
-        initialY += promotionInsets.top + promotionInsets.bottom
+        initialY += bannersInsets.top + bannersInsets.bottom
 
-        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.promotion.index) > 0
+        let hasPromotion = collectionView.numberOfItems(inSection: SectionType.banners.index) > 0
 
         if hasPromotion {
-            initialY += promotionHeight
+            initialY += bannersHeight
         }
 
         initialY += AssetListMeasurement.settingsInsets.top
@@ -276,24 +255,24 @@ extension AssetListFlowLayout {
     func activatePromotionWithHeight(_ height: CGFloat) {
         let newInsets = AssetListMeasurement.promotionInsets
 
-        guard height != promotionHeight || promotionInsets != newInsets else {
+        guard height != bannersHeight || bannersInsets != newInsets else {
             return
         }
 
-        promotionHeight = height
-        promotionInsets = newInsets
+        bannersHeight = height
+        bannersInsets = newInsets
         invalidateLayout()
     }
 
     func deactivatePromotion() {
         let newInsets = UIEdgeInsets.zero
 
-        guard promotionInsets != newInsets else {
+        guard bannersInsets != newInsets else {
             return
         }
 
-        promotionInsets = newInsets
-        invalidateLayout()
+        bannersHeight = .zero
+        bannersInsets = newInsets
     }
 
     func setNftsActive(_ isActive: Bool) {
@@ -319,7 +298,7 @@ extension AssetListFlowLayout {
         case .yourNfts:
             return AssetListMeasurement.nftsHeight
         case .banner:
-            return promotionHeight
+            return bannersHeight
         case .settings:
             return AssetListMeasurement.settingsHeight
         case .emptyState:
@@ -338,8 +317,8 @@ extension AssetListFlowLayout {
             return AssetListMeasurement.summaryInsets
         case .nfts:
             return nftsInsets
-        case .promotion:
-            return promotionInsets
+        case .banners:
+            return bannersInsets
         case .settings:
             return AssetListMeasurement.settingsInsets
         case .assetGroup:

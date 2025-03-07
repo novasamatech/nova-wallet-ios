@@ -3,56 +3,20 @@ import SubstrateSdk
 import SoraFoundation
 import Operation_iOS
 
-final class DAppListPresenter {
-    enum CategoryIndex: Equatable {
-        case all
-        case favorites
-        case custom(index: Int, hasFavorites: Bool)
-
-        var selectedIndex: Int {
-            switch self {
-            case .all:
-                return 0
-            case .favorites:
-                return 1
-            case let .custom(index, hasFavorites):
-                return hasFavorites ? index + 2 : index + 1
-            }
-        }
-
-        var customIndex: Int? {
-            switch self {
-            case .all, .favorites:
-                return nil
-            case let .custom(index, _):
-                return index
-            }
-        }
-
-        init(uiIndex: Int, hasFavorites: Bool) {
-            if uiIndex == 0 {
-                self = .all
-            } else if uiIndex == 1, hasFavorites {
-                self = .favorites
-            } else {
-                self = hasFavorites ? .custom(index: uiIndex - 2, hasFavorites: hasFavorites)
-                    : .custom(index: uiIndex - 1, hasFavorites: hasFavorites)
-            }
-        }
-    }
-
+final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     weak var view: DAppListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
-    private var categories: [DAppCategory] = []
-    private var selectedDApps: [DAppViewModel] = []
+    private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
-    private var selectedCategory: CategoryIndex = .all
+    private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -60,138 +24,54 @@ final class DAppListPresenter {
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        initialWallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        wallet = initialWallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 
-    private func provideWalletSwitchViewModel() {
-        guard let wallet = wallet else {
-            return
-        }
+    private func provideSections() {
+        do {
+            let params = DAppListViewModelFactory.ListSectionsParams(
+                randomizationSeed: randomizationSeed,
+                hasWalletsListUpdates: hasWalletsListUpdates
+            )
+            let sections = viewModelFactory.createDAppSections(
+                from: try dAppsResult?.get(),
+                favorites: favorites ?? [:],
+                wallet: wallet,
+                params: params,
+                bannersState: bannersModule?.bannersState ?? .unavailable,
+                locale: selectedLocale
+            )
 
-        let icon = wallet.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
-        let viewModel = WalletSwitchViewModel(
-            type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
-            iconViewModel: iconViewModel,
-            hasNotification: hasWalletsListUpdates
-        )
-
-        view?.didReceiveWalletSwitch(viewModel: viewModel)
-    }
-
-    private func updateCategories() {
-        guard let favorites = favorites else {
-            return
-        }
-
-        if let dAppList = try? dAppsResult?.get() {
-            let existingCategories = dAppList.dApps.reduce(into: Set<String>()) { result, dApp in
-                dApp.categories.forEach { result.insert($0) }
-            }
-
-            let prevCategories = categories
-            categories = dAppList.categories.filter { existingCategories.contains($0.identifier) }
-
-            switch selectedCategory {
-            case .all:
-                selectedDApps = viewModelFactory.createDApps(
-                    from: nil,
-                    dAppList: dAppList,
-                    favorites: favorites
-                )
-            case .favorites:
-                let hasFavorites = !favorites.isEmpty
-
-                if !hasFavorites {
-                    selectedCategory = .all
-
-                    selectedDApps = viewModelFactory.createDApps(
-                        from: nil,
-                        dAppList: dAppList,
-                        favorites: favorites
-                    )
-                } else {
-                    selectedCategory = .favorites
-
-                    selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
-                }
-            case .custom:
-                let maybeSelectedCategory = selectedCategory.customIndex.map { prevCategories[$0] }
-                updateCategoriesWhenCustomSelected(
-                    for: dAppList,
-                    selectedDAppCategory: maybeSelectedCategory
-                )
-            }
-
-        } else {
-            categories = []
-            selectedDApps = []
-            selectedCategory = .all
-        }
-    }
-
-    private func updateCategoriesWhenCustomSelected(
-        for dAppList: DAppList,
-        selectedDAppCategory: DAppCategory?
-    ) {
-        let maybeNewCategoryIndex = categories.firstIndex { category in
-            category.identifier == selectedDAppCategory?.identifier
-        }
-
-        selectedCategory = maybeNewCategoryIndex.map {
-            CategoryIndex.custom(index: $0, hasFavorites: hasFavorites)
-        } ?? .all
-
-        let categoryId = selectedCategory.customIndex.map { categories[$0].identifier }
-
-        selectedDApps = viewModelFactory.createDApps(
-            from: categoryId,
-            dAppList: dAppList,
-            favorites: favorites ?? [:]
-        )
-    }
-
-    private func updateState() {
-        if favorites != nil {
-            switch dAppsResult {
-            case .success:
-                view?.didReceive(state: .loaded)
-            case .failure:
-                view?.didReceive(state: .error)
-            case .none:
-                view?.didReceive(state: .loading)
-            }
-        } else {
-            view?.didReceive(state: .loading)
-        }
-    }
-
-    private func askDAppRemoval(for identifier: String, name: String) {
-        wireframe.showFavoritesRemovalConfirmation(
-            from: view,
-            name: name,
-            locale: selectedLocale
-        ) { [weak self] in
-            self?.interactor.removeFromFavorites(dAppIdentifier: identifier)
+            view?.didReceive(sections)
+        } catch {
+            let errorSection = viewModelFactory.createErrorSection()
+            view?.didReceive([errorSection])
         }
     }
 }
 
+// MARK: DAppListPresenterProtocol
+
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
-        updateState()
-
         interactor.setup()
+
+        if bannersModule?.locale != selectedLocale {
+            bannersModule?.updateLocale(selectedLocale)
+        }
     }
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func activateAccount() {
@@ -199,133 +79,41 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func activateSearch() {
-        wireframe.showSearch(from: view, delegate: self)
+        wireframe.presentSearch(
+            from: view,
+            delegate: self
+        )
     }
 
     func activateSettings() {
         wireframe.showSetting(from: view)
     }
 
-    func numberOfCategories() -> Int {
-        hasFavorites ? categories.count + 2 : categories.count + 1
+    func selectCategory(with id: String) {
+        wireframe.presentSearch(
+            from: view,
+            selectedCategoryId: id,
+            delegate: self
+        )
     }
 
-    func category(at index: Int) -> String {
-        let category = CategoryIndex(uiIndex: index, hasFavorites: hasFavorites)
-
-        switch category {
-        case .all:
-            return R.string.localizable.commonAll(preferredLanguages: selectedLocale.rLanguages)
-        case .favorites:
-            return R.string.localizable.commonFavorites(preferredLanguages: selectedLocale.rLanguages)
-        case let .custom(index, _):
-            return categories[index].name
-        }
+    func selectDApp(with id: String) {
+        wireframe.openBrowser(with: id)
     }
 
-    func selectedCategoryIndex() -> Int {
-        selectedCategory.selectedIndex
-    }
-
-    func selectCategory(at index: Int) {
-        guard let dAppList = try? dAppsResult?.get(), let favorites = favorites else {
-            return
-        }
-
-        let newCategory = CategoryIndex(uiIndex: index, hasFavorites: hasFavorites)
-
-        guard selectedCategory != newCategory else {
-            return
-        }
-
-        selectedCategory = newCategory
-
-        switch selectedCategory {
-        case .all:
-            selectedDApps = viewModelFactory.createDApps(
-                from: nil,
-                dAppList: dAppList,
-                favorites: favorites
-            )
-        case .favorites:
-            selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
-        case let .custom(index, _):
-            let categoryId = categories[index].identifier
-            selectedDApps = viewModelFactory.createDApps(
-                from: categoryId,
-                dAppList: dAppList,
-                favorites: favorites
-            )
-        }
-
-        view?.didReceive(state: .loaded)
-    }
-
-    func numberOfDApps() -> Int {
-        selectedDApps.count
-    }
-
-    func dApp(at index: Int) -> DAppViewModel {
-        selectedDApps[index]
-    }
-
-    func selectDApp(at index: Int) {
-        guard case let .success(dAppList) = dAppsResult else {
-            return
-        }
-
-        let dAppViewModel = selectedDApps[index]
-
-        switch dAppViewModel.identifier {
-        case let .index(value):
-            let dApp = dAppList.dApps[value]
-
-            wireframe.showBrowser(from: view, for: .dApp(model: dApp))
-
-        case let .key(value):
-            if let dapp = favorites?[value] {
-                wireframe.showBrowser(from: view, for: .query(string: dapp.identifier))
-            }
-        }
-    }
-
-    func toogleFavoriteForDApp(at index: Int) {
-        guard case let .success(dAppList) = dAppsResult else {
-            return
-        }
-
-        let dAppViewModel = selectedDApps[index]
-
-        switch dAppViewModel.identifier {
-        case let .index(value):
-            let dApp = dAppList.dApps[value]
-            let identifier = dApp.identifier
-
-            if favorites?[identifier] != nil {
-                askDAppRemoval(for: identifier, name: dAppViewModel.name)
-            } else {
-                interactor.addToFavorites(dApp: dApp)
-            }
-
-        case let .key(value):
-            if let dapp = favorites?[value] {
-                let name = viewModelFactory.createFavoriteDAppName(from: dapp)
-                askDAppRemoval(for: dapp.identifier, name: name)
-            }
-        }
-    }
-
-    func selectDApp(_ dapp: DApp) {
-        wireframe.showBrowser(from: view, for: .dApp(model: dapp))
+    func seeAllFavorites() {
+        wireframe.showFavorites(from: view)
     }
 }
+
+// MARK: DAppListInteractorOutputProtocol
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {
     func didReceive(walletResult: Result<MetaAccountModel, Error>) {
         switch walletResult {
         case let .success(wallet):
             self.wallet = wallet
-            provideWalletSwitchViewModel()
+            provideSections()
         case let .failure(error):
             wallet = nil
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
@@ -341,40 +129,64 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         if let currentResult = self.dAppsResult {
             // ignore error if we already loaded some dapps
-            guard case .success = currentResult, case .failure = dAppsResult else {
+            if case .success = currentResult, case .failure = dAppsResult {
                 return
             }
         }
 
         self.dAppsResult = dAppsResult
+        randomizationSeed = Int.random(in: 1 ..< 100)
 
-        updateCategories()
-        updateState()
+        provideSections()
     }
 
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
 
-        updateCategories()
-        updateState()
+        provideSections()
     }
 
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsListUpdates = hasUpdates
-        provideWalletSwitchViewModel()
+        provideSections()
     }
 }
 
+// MARK: DAppSearchDelegate
+
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        wireframe.showBrowser(from: view, for: result)
+        wireframe.openBrowser(with: result)
     }
 }
+
+// MARK: BannersModuleOutputProtocol
+
+extension DAppListPresenter: BannersModuleOutputProtocol {
+    func didReceiveBanners(state _: BannersState) {
+        provideSections()
+    }
+
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
+    }
+
+    func didUpdateContent(state _: BannersState) {
+        provideSections()
+    }
+}
+
+// MARK: Localizable
 
 extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            updateState()
+            provideSections()
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

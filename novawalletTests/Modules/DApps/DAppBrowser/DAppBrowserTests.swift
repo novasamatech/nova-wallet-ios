@@ -63,10 +63,17 @@ class DAppBrowserTests: XCTestCase {
         let dAppsFavoriteRepository = AccountRepositoryFactory(
             storageFacade: storageFacade
         ).createFavoriteDAppsRepository()
+        
+        let tabManager = DAppBrowserTabManager.shared
+        
+        let tab = DAppBrowserTab(
+            from: dAppURL,
+            metaId: walletSettings.value.metaId
+        )!
 
         let interactor = DAppBrowserInteractor(
             transports: [transport],
-            userQuery: .query(string: dAppURL),
+            selectedTab: tab,
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
             securedLayer: SecurityLayerService.shared,
@@ -75,7 +82,10 @@ class DAppBrowserTests: XCTestCase {
             dAppsLocalSubscriptionFactory: dAppLocalProviderFactory,
             dAppsFavoriteRepository: dAppsFavoriteRepository,
             operationQueue: OperationQueue(),
-            sequentialPhishingVerifier: phishingVerifier
+            sequentialPhishingVerifier: phishingVerifier,
+            tabManager: tabManager,
+            applicationHandler: ApplicationHandler(),
+            logger: Logger.shared
         )
 
         let presenter = DAppBrowserPresenter(
@@ -93,12 +103,22 @@ class DAppBrowserTests: XCTestCase {
 
         let loadingExpectation = XCTestExpectation()
         let enableSettingsExpectation = XCTestExpectation()
+        let favoriteExpectation = XCTestExpectation()
+        let tabCountExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(viewModel: any()).then { viewModel in
                 loadedModel = viewModel
 
                 loadingExpectation.fulfill()
+            }
+            
+            when(stub).didSet(favorite: any()).then { _ in
+                favoriteExpectation.fulfill()
+            }
+            
+            when(stub).didReceiveTabsCount(viewModel: any()).then { _ in
+                tabCountExpectation.fulfill()
             }
 
             when(stub).didSet(canShowSettings: any()).then { canShowSettings in
@@ -114,9 +134,17 @@ class DAppBrowserTests: XCTestCase {
 
         // then
 
-        wait(for: [loadingExpectation, enableSettingsExpectation], timeout: 10)
+        wait(
+            for: [
+                loadingExpectation,
+                enableSettingsExpectation,
+                favoriteExpectation,
+                tabCountExpectation
+            ],
+            timeout: 10
+        )
 
-        XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
+        XCTAssertEqual(loadedModel?.selectedTab.url, URL(string: dAppURL)!)
 
         if (transport.state as? DAppBrowserWaitingAuthState) == nil {
             XCTFail("Waiting auth state expected after setup")

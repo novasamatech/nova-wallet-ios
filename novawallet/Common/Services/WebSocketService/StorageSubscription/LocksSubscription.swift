@@ -149,7 +149,9 @@ class LocksSubscription: StorageChildSubscribing {
                     chainAssetId: chainAssetId,
                     accountId: accountId,
                     type: remoteItem.identifier,
-                    amount: remoteItem.amount
+                    amount: remoteItem.amount,
+                    storage: AssetLockStorage.locks.rawValue,
+                    module: nil
                 )
             }
         }

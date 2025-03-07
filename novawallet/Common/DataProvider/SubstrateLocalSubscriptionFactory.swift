@@ -60,6 +60,43 @@ class SubstrateLocalSubscriptionFactory {
         providers = providers.filter { $0.value.target != nil }
     }
 
+    func getPlainProvider<T: Equatable & Decodable>(
+        for chainId: ChainModel.Id,
+        storagePath: StorageCodingPath,
+        shouldUseFallback: Bool = false
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            storagePath,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storagePath,
+            shouldUseFallback: shouldUseFallback
+        )
+    }
+
+    func getAccountProvider<T: Equatable & Decodable>(
+        for chainId: ChainModel.Id,
+        accountId: AccountId,
+        storagePath: StorageCodingPath
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            storagePath,
+            accountId: accountId,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storagePath,
+            shouldUseFallback: false
+        )
+    }
+
     func getDataProvider<T>(
         for localKey: String,
         chainId: ChainModel.Id,

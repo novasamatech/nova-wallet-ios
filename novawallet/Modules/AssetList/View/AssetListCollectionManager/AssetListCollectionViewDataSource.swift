@@ -1,10 +1,13 @@
 import UIKit
 
 final class AssetListCollectionViewDataSource: NSObject {
+    weak var view: ControllerBackedProtocol?
+    let bannersViewProvider: BannersViewProviderProtocol
+
     var groupsViewModel: AssetListViewModel
     var headerViewModel: AssetListHeaderViewModel?
     var nftViewModel: AssetListNftsViewModel?
-    var promotionBannerViewModel: PromotionBannerView.ViewModel?
+    var bannersAvailable: Bool?
 
     var selectedLocale: Locale
 
@@ -12,11 +15,15 @@ final class AssetListCollectionViewDataSource: NSObject {
     weak var groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate?
 
     init(
+        view: ControllerBackedProtocol,
+        bannersViewProvider: BannersViewProviderProtocol,
         groupsViewModel: AssetListViewModel,
         selectedLocale: Locale,
         actionsDelegate: AssetListCollectionViewActionsDelegate? = nil,
         groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate? = nil
     ) {
+        self.view = view
+        self.bannersViewProvider = bannersViewProvider
         self.groupsViewModel = groupsViewModel
         self.selectedLocale = selectedLocale
         self.actionsDelegate = actionsDelegate
@@ -246,20 +253,22 @@ private extension AssetListCollectionViewDataSource {
         return cell
     }
 
-    func providePromotionBannerCell(
+    func provideBannersCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
-    ) -> AssetListBannerCell {
+    ) -> BannersContainerCollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithType(
-            AssetListBannerCell.self,
+            BannersContainerCollectionViewCell.self,
             for: indexPath
         )!
 
-        if let viewModel = promotionBannerViewModel {
-            cell.bind(viewModel: viewModel)
-        }
+        bannersViewProvider.setupBanners(
+            on: view,
+            view: cell.view
+        )
 
-        cell.bannerView.delegate = actionsDelegate
+        cell.contentInsets.left = UIConstants.horizontalInset
+        cell.contentInsets.right = UIConstants.horizontalInset
 
         return cell
     }
@@ -340,8 +349,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             headerViewModel != nil ? 2 : 0
         case .nfts:
             nftViewModel != nil ? 1 : 0
-        case .promotion:
-            promotionBannerViewModel != nil ? 1 : 0
+        case .banners:
+            bannersAvailable == true ? 1 : 0
         case .settings:
             groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
@@ -361,7 +370,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         case .yourNfts:
             return provideYourNftsCell(collectionView, indexPath: indexPath)
         case .banner:
-            return providePromotionBannerCell(collectionView, indexPath: indexPath)
+            return provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:
             return provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:

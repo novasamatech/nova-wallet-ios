@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "费用：%@";
 "common.not.enough.to.pay.fee.message" = "您的余额不足以支付 %@ 的网络费用。当前余额为 %@";
 "swap.delivery.fee.error.message" = "由于跨链限制，操作后您至少应有 %@";
+"common.see.all" = "查看全部";
+"dapp.widget.close.alert.title" = "关闭所有DApps？";
+"dapp.widget.close.alert.message" = "DApp浏览器中所有打开的标签页将被关闭。";
+"common.close.all" = "关闭所有";
+"dapp.browser.tab.not.available" = "网页不可用";
+"dapp.list.section.popular" = "流行";
+"swaps.max.price.diff.error.title" = "检测到高价格影响 (%@)";
+"swaps.max.price.diff.error.message" = "执行此交换将导致显著的滑点和经济损失。建议减小交易规模或将交易分拆为多笔交易。";
+"unstaking.limit.reached.message" = "您已达到解质押请求的上限（%@ 个活跃请求）";

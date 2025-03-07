@@ -224,6 +224,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             .appendingPathComponent("files-cache").path
     }
 
+    var webPageRenderCachePath: String {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("webpage-renders-cache").path
+    }
+
     var commonTypesURL: URL {
         URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/types/default.json")!
     }
@@ -317,6 +322,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var coloredAppearanceIconsPath: String {
         "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/colored/"
+    }
+
+    var bannersContentPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/content/"
     }
 
     // swiftlint:enable line_length

@@ -210,6 +210,36 @@ extension NSPredicate {
         ])
     }
 
+    static func assetLock(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId,
+        storage: String
+    ) -> NSPredicate {
+        let accountPredicate = assetLock(for: accountId)
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainId),
+            chainAssetId.chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetLock.assetId),
+            chainAssetId.assetId
+        )
+
+        let storagePredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.storage),
+            storage
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate, storagePredicate
+        ])
+    }
+
     static func assetHold(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
         let chainIdPredicate = NSPredicate(
             format: "%K == %@",
@@ -308,6 +338,10 @@ extension NSPredicate {
 
     static func filterFavoriteDApps(by identifier: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDDAppFavorite.identifier), identifier)
+    }
+
+    static func filterDAppBrowserTabs(by metaId: String) -> NSPredicate {
+        NSPredicate(format: "%K == %@", #keyPath(CDDAppBrowserTab.metaId), metaId)
     }
 
     static func filterAuthorizedBrowserDApps(by metaId: String) -> NSPredicate {

@@ -23,6 +23,7 @@ protocol ReferendumDetailsPresenterProtocol: AnyObject, WalletNoAccountHandling 
     func openFullDetails()
     func vote()
     func openURL(_ url: URL)
+    func share()
 }
 
 protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
@@ -51,8 +52,14 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
-protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable {
+protocol ReferendumDetailsWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    CommonRetryable,
+    AddressOptionsPresentable,
+    WebPresentable,
+    NoAccountSupportPresentable,
+    BrowserOpening,
+    SharingPresentable {
     func showFullDetails(
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,
@@ -78,8 +85,6 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         title: String,
         description: String
     )
-
-    func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL)
 
     func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
 }

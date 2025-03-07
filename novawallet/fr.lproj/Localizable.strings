@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "Frais : %@";
 "common.not.enough.to.pay.fee.message" = "Vous n'avez pas assez de solde pour payer les frais de réseau de %@. Le solde actuel est %@";
 "swap.delivery.fee.error.message" = "En raison des restrictions crosschain, vous devez avoir au moins %@ après l'opération";
+"common.see.all" = "Voir tout";
+"dapp.widget.close.alert.title" = "Fermer toutes les DApps ?";
+"dapp.widget.close.alert.message" = "Toutes les onglets ouverts dans le navigateur DApp seront fermés.";
+"common.close.all" = "Fermer tout";
+"dapp.browser.tab.not.available" = "Page web non disponible";
+"dapp.list.section.popular" = "Populaires";
+"swaps.max.price.diff.error.title" = "Impact de prix élevé détecté (%@)";
+"swaps.max.price.diff.error.message" = "Exécuter cet échange entraînera un glissement significatif et des pertes financières. Envisagez de réduire la taille de votre transaction ou de diviser votre transaction en plusieurs transactions.";
+"unstaking.limit.reached.message" = "Vous avez atteint la limite de demandes de désattribution (%@ demandes actives)";

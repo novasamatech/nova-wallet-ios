@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "Phí: %@";
 "common.not.enough.to.pay.fee.message" = "Bạn không có đủ số dư để trả phí mạng %@. Số dư hiện tại là %@";
 "swap.delivery.fee.error.message" = "Do những hạn chế crosschain, bạn cần có ít nhất %@ sau khi thực hiện";
+"common.see.all" = "Xem tất cả";
+"dapp.widget.close.alert.title" = "Đóng tất cả DApps?";
+"dapp.widget.close.alert.message" = "Tất cả các tab mở trong trình duyệt DApp sẽ bị đóng.";
+"common.close.all" = "Đóng tất cả";
+"dapp.browser.tab.not.available" = "Trang web không khả dụng";
+"dapp.list.section.popular" = "Phổ biến";
+"swaps.max.price.diff.error.title" = "Phát hiện tác động giá cao (%@)";
+"swaps.max.price.diff.error.message" = "Thực hiện giao dịch này sẽ dẫn đến trượt giá đáng kể và thiệt hại tài chính. Xem xét giảm kích thước giao dịch của bạn hoặc chia giao dịch thành nhiều lần thực hiện.";
+"unstaking.limit.reached.message" = "Bạn đã đạt đến giới hạn yêu cầu rút cược (%@ yêu cầu đang hoạt động)";

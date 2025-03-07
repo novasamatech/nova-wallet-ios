@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "手数料: %@";
 "common.not.enough.to.pay.fee.message" = "ネットワーク手数料%@を支払うための残高が不足しています。現在の残高は%@";
 "swap.delivery.fee.error.message" = "クロスチェーンの制限により、操作後に少なくとも%@を保持している必要があります";
+"common.see.all" = "すべて見る";
+"dapp.widget.close.alert.title" = "すべてのDAppを閉じますか？";
+"dapp.widget.close.alert.message" = "DAppブラウザーで開いているすべてのタブが閉じられます。";
+"common.close.all" = "すべて閉じる";
+"dapp.browser.tab.not.available" = "ウェブページが利用できません";
+"dapp.list.section.popular" = "人気のある";
+"swaps.max.price.diff.error.title" = "高価格インパクト検出 (%@)";
+"swaps.max.price.diff.error.message" = "この交換を実行すると、大幅なスリッページと財務上の損失が発生します。取引サイズを減らすか、取引を複数のトランザクションに分けることを検討してください。";
+"unstaking.limit.reached.message" = "アンステーキングのリクエスト上限に達しました（%@ 件のアクティブなリクエスト）";

@@ -41,7 +41,10 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
         let navigationController = NovaNavigationController(rootViewController: swapView.controller)
 
         presenter?.dismiss(animated: true) {
-            presenter?.present(navigationController, animated: true)
+            presenter?.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
         }
     }
 
@@ -61,7 +64,7 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: routeDetailsView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
     func showFeeDetails(
@@ -80,6 +83,6 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: routeDetailsView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 }

@@ -26,7 +26,11 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
             rootViewController: selectionView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
     }
 
     func showSwipeGov(from view: ControllerBackedProtocol?) {
@@ -63,7 +67,10 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: unlocksView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showAddDelegation(from view: ControllerBackedProtocol?) {
@@ -100,7 +107,10 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
         let navigationController = NovaNavigationController(rootViewController: filtersView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showSearch(
@@ -117,7 +127,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         }
 
         searchView.controller.modalTransitionStyle = .crossDissolve
-        searchView.controller.modalPresentationStyle = .fullScreen
+        searchView.controller.modalPresentationStyle = .overCurrentContext
 
         view?.controller.present(searchView.controller, animated: true, completion: nil)
     }

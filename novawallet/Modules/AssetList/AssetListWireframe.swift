@@ -51,7 +51,10 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             rootViewController: tokensManageView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate) {
@@ -64,9 +67,12 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         assetsSearchView.controller.modalTransitionStyle = .crossDissolve
-        assetsSearchView.controller.modalPresentationStyle = .fullScreen
+        assetsSearchView.controller.modalPresentationStyle = .overCurrentContext
 
-        view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
+        view?.controller.present(
+            assetsSearchView.controller,
+            animated: true
+        )
     }
 
     func showSendTokens(
@@ -74,7 +80,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         transferCompletion: @escaping TransferCompletionClosure,
         buyTokensClosure: @escaping BuyTokensClosure
     ) {
-        guard let assetsSearchView = AssetOperationViewFactory.createSendView(
+        guard let assetOperationView = AssetOperationViewFactory.createSendView(
             for: assetListModelObservable,
             transferCompletion: transferCompletion,
             buyTokensClosure: buyTokensClosure
@@ -83,34 +89,43 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: assetOperationView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showRecieveTokens(from view: AssetListViewProtocol?) {
-        guard let assetsSearchView = AssetOperationViewFactory.createReceiveView(for: assetListModelObservable) else {
+        guard let assetOperationView = AssetOperationViewFactory.createReceiveView(for: assetListModelObservable) else {
             return
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: assetOperationView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController, animated: true,
+            completion: nil
+        )
     }
 
     func showBuyTokens(from view: AssetListViewProtocol?) {
-        guard let assetsSearchView = AssetOperationViewFactory.createBuyView(for: assetListModelObservable) else {
+        guard let assetOperationView = AssetOperationViewFactory.createBuyView(for: assetListModelObservable) else {
             return
         }
 
         let navigationController = NovaNavigationController(
-            rootViewController: assetsSearchView.controller
+            rootViewController: assetOperationView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
@@ -138,7 +153,10 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             rootViewController: swapDirectionsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showNfts(from view: AssetListViewProtocol?) {
@@ -159,7 +177,10 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         viewController.controller.modalTransitioningFactory = factory
         viewController.controller.modalPresentationStyle = .custom
 
-        view?.controller.present(viewController.controller, animated: true)
+        view?.controller.present(
+            viewController.controller,
+            animated: true
+        )
     }
 
     func showWalletConnect(from view: AssetListViewProtocol?) {
@@ -198,6 +219,9 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: swapTokensView.controller)
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 }

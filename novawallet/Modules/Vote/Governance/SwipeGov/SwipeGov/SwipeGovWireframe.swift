@@ -24,7 +24,10 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
             rootViewController: votingListView.controller
         )
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showVoteSetup(
@@ -42,7 +45,10 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
 
         let navigationController = ImportantFlowViewFactory.createNavigation(from: setupView.controller)
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 
     func showReferendumDetails(
@@ -60,6 +66,9 @@ extension SwipeGovWireframe: SwipeGovWireframeProtocol {
             rootViewController: detailsView.controller
         )
 
-        view?.controller.present(navigationController, animated: true)
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
     }
 }

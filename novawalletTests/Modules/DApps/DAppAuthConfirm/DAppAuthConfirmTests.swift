@@ -114,12 +114,16 @@ class DAppAuthConfirmTests: XCTestCase {
             requiredChains: .init(),
             optionalChains: nil
         )
+        
+        let viewModelFactory = DAppAuthViewModelFactory(
+            iconViewModelFactory: DAppIconViewModelFactory()
+        )
 
         let presenter = DAppAuthConfirmPresenter(
             wireframe: wireframe,
             request: request,
             delegate: delegate,
-            viewModelFactory: DAppAuthViewModelFactory()
+            viewModelFactory: viewModelFactory
         )
 
         presenter.view = view

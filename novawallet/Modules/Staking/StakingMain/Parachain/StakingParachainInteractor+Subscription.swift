@@ -173,7 +173,9 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
             presenter?.didReceiveError(error)
         }
     }
+}
 
+extension StakingParachainInteractor: StakingRewardsLocalSubscriber, StakingRewardsLocalHandler {
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for address: AccountAddress,

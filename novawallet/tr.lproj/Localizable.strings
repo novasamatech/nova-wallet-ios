@@ -1785,3 +1785,12 @@
 "common.fee.amount.prefixed" = "Ücret: %@";
 "common.not.enough.to.pay.fee.message" = "Ağ ücreti olan %@'yi ödemek için yeterli bakiyeniz yok. Mevcut bakiye %@";
 "swap.delivery.fee.error.message" = "Çapraz zincir kısıtlamaları nedeniyle işlemden sonra en az %@'a sahip olmalısınız";
+"common.see.all" = "Hepsini Gör";
+"dapp.widget.close.alert.title" = "Tüm DApp'leri Kapat?";
+"dapp.widget.close.alert.message" = "DApp tarayıcısındaki tüm açık sekmeler kapatılacak.";
+"common.close.all" = "Hepsini Kapat";
+"dapp.browser.tab.not.available" = "Web sayfası mevcut değil";
+"dapp.list.section.popular" = "Popüler";
+"swaps.max.price.diff.error.title" = "Yüksek fiyat etkisi tespit edildi (%@)";
+"swaps.max.price.diff.error.message" = "Bu takası gerçekleştirmek, önemli kaymalar ve finansal kayıplarla sonuçlanacaktır. İşlem boyutunuzu küçültmeyi veya işleminizi birden fazla işleme bölmeyi düşünün.";
+"unstaking.limit.reached.message" = "Unstaking talep limitine ulaştınız (%@ aktif talep)";

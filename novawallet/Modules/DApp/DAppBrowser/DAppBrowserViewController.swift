@@ -8,6 +8,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     let presenter: DAppBrowserPresenterProtocol
 
+    let logger: LoggerProtocol
+
+    private let webViewPool: WebViewPoolProtocol
+
     private var viewModel: DAppBrowserModel?
 
     private var urlObservation: NSKeyValueObservation?
@@ -32,17 +36,21 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     var isLandscape: Bool {
-        view.frame.size.width > view.frame.size.height
+        traitCollection.verticalSizeClass == .compact
     }
 
     init(
         presenter: DAppBrowserPresenterProtocol,
         localRouter: URLLocalRouting,
+        webViewPool: WebViewPoolProtocol,
         deviceOrientationManager: DeviceOrientationManaging,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.presenter = presenter
+        self.logger = logger
         self.localRouter = localRouter
+        self.webViewPool = webViewPool
         self.deviceOrientationManager = deviceOrientationManager
         self.localizationManager = localizationManager
 
@@ -75,7 +83,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        let isOldLandscape = view.frame.size.width > view.frame.size.height
+        let isOldLandscape = traitCollection.verticalSizeClass == .compact
 
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -96,34 +104,62 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    private func configure() {
+    func canBeDismissedInteractively() -> Bool {
+        !isLandscape
+    }
+
+    func willBeDismissedInteractively() {
+        snapshotWebView { [weak self] image in
+            let render = DAppBrowserTabRender(for: image)
+            self?.presenter.willDismissInteractive(stateRender: render)
+        }
+    }
+}
+
+// MARK: Private
+
+private extension DAppBrowserViewController {
+    func configure() {
         navigationItem.titleView = rootView.urlBar
 
         navigationItem.leftItemsSupplementBackButton = false
-        navigationItem.leftBarButtonItem = rootView.closeBarItem
+        navigationItem.leftBarButtonItem = rootView.minimizeBarItem
+        navigationItem.rightBarButtonItem = rootView.refreshBarItem
 
-        rootView.closeBarItem.target = self
-        rootView.closeBarItem.action = #selector(actionClose)
+        rootView.minimizeBarItem.target = self
+        rootView.minimizeBarItem.action = #selector(actionClose)
 
-        rootView.webView.uiDelegate = self
-        rootView.webView.navigationDelegate = self
-        rootView.webView.scrollView.delegate = self
-        rootView.webView.allowsBackForwardNavigationGestures = true
-
-        configureObservers()
+        configureWebView()
         configureHandlers()
     }
 
-    private func configureObservers() {
-        urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
-            guard let newValue = change.newValue, let url = newValue else {
+    func configureWebView() {
+        rootView.webView?.uiDelegate = self
+        rootView.webView?.navigationDelegate = self
+        rootView.webView?.scrollView.delegate = self
+        rootView.webView?.allowsBackForwardNavigationGestures = true
+
+        configureObservers()
+    }
+
+    func configureObservers() {
+        urlObservation = rootView.webView?.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
+            // allow to change url here only for the same origin to prevent spoofing
+            // https://github.com/mozilla-mobile/firefox-ios/wiki/WKWebView-navigation-and-security-considerations
+            guard
+                let oldValue = change.oldValue,
+                let newValue = change.newValue,
+                let oldUrl = oldValue,
+                let newUrl = newValue,
+                URL.hasSameOrigin(oldUrl, newUrl) else {
+                // didCommit delegate should catch origin change
                 return
             }
 
-            self?.didChangeUrl(url)
+            self?.didChangeUrl(newUrl)
         }
 
-        goBackObservation = rootView.webView.observe(
+        goBackObservation = rootView.webView?.observe(
             \.canGoBack,
             options: [.initial, .new]
         ) { [weak self] _, change in
@@ -134,7 +170,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             self?.didChangeGoBack(newValue)
         }
 
-        goForwardObservation = rootView.webView.observe(
+        goForwardObservation = rootView.webView?.observe(
             \.canGoForward,
             options: [.initial, .new]
         ) { [weak self] _, change in
@@ -144,25 +180,30 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
             self?.didChangeGoForward(newValue)
         }
+    }
 
-        titleObservation = rootView.webView.observe(
-            \.title,
-            options: [.initial, .new]
-        ) { [weak self] _, change in
-            guard let newValue = change.newValue, let title = newValue else {
-                return
-            }
-
-            self?.didChangeTitle(title)
+    func makeStateRender() {
+        snapshotWebView { [weak self] image in
+            let render = DAppBrowserTabRender(for: image)
+            self?.presenter.process(stateRender: render)
         }
     }
 
-    private func configureHandlers() {
+    func configureHandlers() {
         rootView.goBackBarItem.target = self
         rootView.goBackBarItem.action = #selector(actionGoBack)
 
         rootView.goForwardBarItem.target = self
         rootView.goForwardBarItem.action = #selector(actionGoForward)
+
+        rootView.tabsButton.addTarget(
+            self,
+            action: #selector(actionTabs),
+            for: .touchUpInside
+        )
+
+        rootView.favoriteBarItem.target = self
+        rootView.favoriteBarItem.action = #selector(actionFavorite)
 
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
@@ -173,59 +214,58 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
     }
 
-    private func didChangeTitle(_ title: String) {
-        guard let url = rootView.webView.url else {
-            return
-        }
-
-        let page = DAppBrowserPage(url: url, title: title)
-        presenter.process(page: page)
-    }
-
-    private func didChangeUrl(_ newUrl: URL) {
+    func didChangeUrl(_ newUrl: URL) {
         rootView.urlLabel.text = newUrl.host
 
-        if newUrl.isTLSScheme {
-            rootView.securityImageView.image = R.image.iconBrowserSecurity()
-        } else {
-            rootView.securityImageView.image = nil
-        }
+        rootView.setURLSecure(newUrl.isTLSScheme)
 
         rootView.urlBar.setNeedsLayout()
 
-        let title = rootView.webView.title ?? ""
+        let title = rootView.webView?.title ?? ""
 
         let page = DAppBrowserPage(url: newUrl, title: title)
         presenter.process(page: page)
     }
 
-    private func setupUrl(_ url: URL) {
+    func setupUrl(
+        _ url: URL?,
+        with reload: Bool
+    ) {
+        guard let url else { return }
+
         rootView.urlLabel.text = url.host
 
-        if url.isTLSScheme {
-            rootView.securityImageView.image = R.image.iconBrowserSecurity()
-        } else {
-            rootView.securityImageView.image = nil
-        }
+        rootView.setURLSecure(url.isTLSScheme)
 
         rootView.urlBar.setNeedsLayout()
 
-        let request = URLRequest(url: url)
-        rootView.webView.load(request)
+        if reload {
+            let request = URLRequest(url: url)
+            rootView.webView?.load(request)
+        }
 
-        rootView.goBackBarItem.isEnabled = rootView.webView.canGoBack
-        rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
+        rootView.goBackBarItem.isEnabled = rootView.webView?.canGoBack ?? false
+        rootView.goForwardBarItem.isEnabled = rootView.webView?.canGoForward ?? false
     }
 
-    private func setupScripts() {
-        let contentController = rootView.webView.configuration.userContentController
+    func setupScripts() {
+        guard let contentController = rootView.webView?.configuration.userContentController else {
+            return
+        }
+
         contentController.removeAllUserScripts()
 
-        setupTransports(transports, contentController: contentController)
-        setupAdditionalUserScripts()
+        setupTransports(
+            transports,
+            for: contentController
+        )
+        setupAdditionalUserScripts(for: contentController)
     }
 
-    private func setupTransports(_ transports: [DAppTransportModel], contentController: WKUserContentController) {
+    func setupTransports(
+        _ transports: [DAppTransportModel],
+        for contentController: WKUserContentController
+    ) {
         scriptMessageHandlers = transports.reduce(
             into: scriptMessageHandlers
         ) { handlers, transport in
@@ -240,31 +280,33 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func setupAdditionalUserScripts() {
+    func setupAdditionalUserScripts(for contentController: WKUserContentController) {
+        guard let webView = rootView.webView else { return }
+
         if isDesktop {
             let script = WKUserScript(
-                source: rootView.webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth),
+                source: webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth),
                 injectionTime: .atDocumentEnd,
                 forMainFrameOnly: false
             )
 
-            rootView.webView.configuration.userContentController.addUserScript(script)
+            contentController.addUserScript(script)
         }
     }
 
-    private func setupWebPreferences() {
+    func setupWebPreferences() {
         let preferences = WKWebpagePreferences()
         preferences.preferredContentMode = isDesktop ? .desktop : .mobile
-        rootView.webView.configuration.defaultWebpagePreferences = preferences
+        rootView.webView?.configuration.defaultWebpagePreferences = preferences
 
         if isDesktop {
-            rootView.webView.customUserAgent = WKWebView.deskstopUserAgent
+            rootView.webView?.customUserAgent = WKWebView.deskstopUserAgent
         } else {
-            rootView.webView.customUserAgent = nil
+            rootView.webView?.customUserAgent = nil
         }
     }
 
-    private func showBars() {
+    func showBars() {
         guard isBarHidden else {
             return
         }
@@ -273,12 +315,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         navigationController?.setNavigationBarHidden(false, animated: true)
 
-        slidingAnimator.animate(block: {
-            self.rootView.setIsToolbarHidden(false)
+        slidingAnimator.animate(block: { [weak self] in
+            self?.rootView.setIsToolbarHidden(false)
         }, completionBlock: nil)
     }
 
-    private func hideBars() {
+    func hideBars() {
         guard !isBarHidden else {
             return
         }
@@ -287,29 +329,84 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         navigationController?.setNavigationBarHidden(true, animated: true)
 
-        slidingAnimator.animate(block: {
-            self.rootView.setIsToolbarHidden(true)
+        slidingAnimator.animate(block: { [weak self] in
+            self?.rootView.setIsToolbarHidden(true)
         }, completionBlock: nil)
     }
 
-    private func didChangeGoBack(_ newValue: Bool) {
+    func didChangeGoBack(_ newValue: Bool) {
         rootView.goBackBarItem.isEnabled = newValue
     }
 
-    private func didChangeGoForward(_: Bool) {
-        rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
+    func didChangeGoForward(_: Bool) {
+        rootView.goForwardBarItem.isEnabled = rootView.webView?.canGoForward ?? false
+    }
+
+    func snapshotWebView(completion: @escaping (UIImage?) -> Void) {
+        guard let webView = rootView.webView else {
+            completion(nil)
+            return
+        }
+
+        let snapshotConfiguration = WKSnapshotConfiguration()
+        snapshotConfiguration.rect = webView.bounds
+        snapshotConfiguration.afterScreenUpdates = false
+
+        webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, error in
+            guard let image = image else {
+                self?.logger.error("Failed to take snapshot: \(String(describing: error))")
+
+                completion(nil)
+                return
+            }
+
+            completion(image)
+        }
+    }
+
+    func setupWebView(with viewModel: DAppBrowserModel) {
+        let newTabView: WKWebView
+
+        scriptMessageHandlers = [:]
+
+        if let existingTab = webViewPool.getWebView(for: viewModel.selectedTab.uuid) {
+            newTabView = existingTab
+        } else {
+            newTabView = webViewPool.setupWebView(for: viewModel.selectedTab.uuid)
+        }
+
+        rootView.webView?.configuration.userContentController.removeAllUserScripts()
+
+        makeStateRender()
+        rootView.setWebView(newTabView)
+        configureWebView()
     }
 
     @objc private func actionGoBack() {
-        rootView.webView.goBack()
+        rootView.webView?.goBack()
     }
 
     @objc private func actionGoForward() {
-        rootView.webView.goForward()
+        rootView.webView?.goForward()
+    }
+
+    @objc private func actionFavorite() {
+        guard let url = rootView.webView?.url else {
+            return
+        }
+
+        let title = rootView.webView?.title ?? ""
+
+        let page = DAppBrowserPage(
+            url: url,
+            title: title
+        )
+
+        presenter.actionFavorite(page: page)
     }
 
     @objc private func actionRefresh() {
-        rootView.webView.reload()
+        rootView.webView?.reload()
     }
 
     @objc private func actionSettings() {
@@ -317,34 +414,78 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionSearch() {
-        presenter.activateSearch(with: rootView.webView.url?.absoluteString)
+        presenter.activateSearch(with: rootView.webView?.url?.absoluteString)
     }
 
     @objc private func actionClose() {
-        presenter.close()
+        snapshotWebView { [weak self] image in
+            let stateRender = DAppBrowserTabRender(for: image)
+            self?.presenter.close(stateRender: stateRender)
+        }
+    }
+
+    @objc private func actionTabs() {
+        snapshotWebView { [weak self] image in
+            let stateRender = DAppBrowserTabRender(for: image)
+            self?.presenter.showTabs(stateRender: stateRender)
+        }
     }
 }
+
+// MARK: DAppBrowserScriptHandlerDelegate
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
     func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
-        let host = rootView.webView.url?.host ?? ""
-
-        presenter.process(message: message.body, host: host, transport: message.name)
+        presenter.process(message: message.body, transport: message.name)
     }
 }
 
+// MARK: DAppBrowserViewProtocol
+
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
+    func didReceiveRenderRequest() {
+        makeStateRender()
+    }
+
+    func idForTransitioningTab() -> UUID? {
+        viewModel?.selectedTab.uuid
+    }
+
     func didReceive(viewModel: DAppBrowserModel) {
+        var reload: Bool = true
+
+        if self.viewModel?.selectedTab.uuid != viewModel.selectedTab.uuid {
+            reload = !webViewPool.webViewExists(for: viewModel.selectedTab.uuid)
+            setupWebView(with: viewModel)
+        }
+
+        self.viewModel = viewModel
+
         isDesktop = viewModel.isDesktop
         transports = viewModel.transports
 
         setupScripts()
         setupWebPreferences()
-        setupUrl(viewModel.url)
+
+        setupUrl(
+            viewModel.selectedTab.url,
+            with: reload
+        )
+    }
+
+    func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel) {
+        switch viewModel {
+        case let .count(text):
+            rootView.tabsButton.imageWithTitleView?.iconImage = nil
+            rootView.tabsButton.imageWithTitleView?.title = text
+        case .icon:
+            rootView.tabsButton.imageWithTitleView?.iconImage = R.image.iconSiriPawBrowser()
+            rootView.tabsButton.imageWithTitleView?.title = nil
+        }
     }
 
     func didReceive(response: DAppScriptResponse, forTransport _: String) {
-        rootView.webView.evaluateJavaScript(response.content)
+        rootView.webView?.evaluateJavaScript(response.content)
     }
 
     func didReceiveReplacement(
@@ -354,7 +495,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         self.transports = transports
         setupScripts()
 
-        rootView.webView.evaluateJavaScript(script.content)
+        rootView.webView?.evaluateJavaScript(script.content)
     }
 
     func didSet(isDesktop: Bool) {
@@ -366,11 +507,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
         setupScripts()
         setupWebPreferences()
-        rootView.webView.reload()
+        rootView.webView?.reload()
     }
 
     func didSet(canShowSettings: Bool) {
         rootView.settingsBarButton.isEnabled = canShowSettings
+    }
+
+    func didSet(favorite: Bool) {
+        rootView.setFavorite(favorite)
     }
 
     func didDecideClose() {
@@ -380,6 +525,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         }
     }
 }
+
+// MARK: UIScrollViewDelegate
 
 extension DAppBrowserViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -405,15 +552,15 @@ extension DAppBrowserViewController: UIScrollViewDelegate {
 
         if isScrollingUp {
             hideBars()
-
-            scrollYOffset = scrollView.contentOffset.y
         } else if isScrollingDown {
             showBars()
-
-            scrollYOffset = scrollView.contentOffset.y
         }
+
+        scrollYOffset = scrollView.contentOffset.y
     }
 }
+
+// MARK: WKUIDelegate, WKNavigationDelegate
 
 extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
     func webView(
@@ -429,6 +576,18 @@ extension DAppBrowserViewController: WKUIDelegate, WKNavigationDelegate {
         } else {
             decisionHandler(.allow)
         }
+    }
+
+    func webView(_ webView: WKWebView, didCommit _: WKNavigation) {
+        guard let url = webView.url else {
+            return
+        }
+
+        didChangeUrl(url)
+    }
+
+    func webView(_: WKWebView, didFinish _: WKNavigation!) {
+        presenter.didLoadPage()
     }
 
     func webView(
