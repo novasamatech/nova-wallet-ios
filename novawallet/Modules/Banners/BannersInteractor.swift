@@ -54,7 +54,7 @@ private extension BannersInteractor {
             scale: UIScreen.main.scale
         )
         let contentImageInfo = CommonImageInfo(
-            size: CGSize(width: 202, height: 126),
+            size: CGSize(width: 126, height: 96),
             scale: UIScreen.main.scale
         )
         let bannersFetchWrapper = bannersFactory.createWrapper(

@@ -20,8 +20,6 @@ final class BannersViewLayout: UIView {
         }
     }
 
-    let containerView = UIView()
-
     let backgroundView: BannerBackgroundView = .create { view in
         view.clipsToBounds = true
         view.layer.cornerRadius = Constants.backgroundCornerRaius
@@ -31,7 +29,7 @@ final class BannersViewLayout: UIView {
 
     let closeButton: RoundedButton = .create { button in
         button.applyIconStyle()
-        button.imageWithTitleView?.iconImage = R.image.iconCloseWithBg()!
+        button.imageWithTitleView?.iconImage = R.image.iconBannerClose()!
     }
 
     lazy var pageControl = ExtendedPageControl()
@@ -79,39 +77,29 @@ final class BannersViewLayout: UIView {
 
 private extension BannersViewLayout {
     func setupLayout() {
-        addSubview(pageControl)
-        pageControl.snp.makeConstraints { make in
-            make.bottom.centerX.equalToSuperview()
-            make.height.equalTo(Constants.pageControlHeight)
-        }
-
+        addSubview(backgroundView)
         addSubview(collectionView)
+        addSubview(pageControl)
+        addSubview(closeButton)
+
+        backgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.bottom.equalTo(collectionView).inset(Constants.containerVerticalInset)
+            make.height.equalTo(Constants.containerViewMinHeight)
+        }
         collectionView.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
             make.bottom.equalTo(pageControl.snp.top)
         }
-
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalTo(collectionView).inset(Constants.containerVerticalInset)
+        pageControl.snp.makeConstraints { make in
+            make.bottom.centerX.equalToSuperview()
+            make.height.equalTo(Constants.pageControlHeight)
         }
-
-        containerView.addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
-            make.size.equalTo(Constants.closeButtonSize)
-            make.trailing.equalToSuperview().inset(Constants.contentLeadingOffset)
-            make.top.equalToSuperview().inset(
-                Constants.containerVerticalInset + Constants.closeButtontopOffset
-            )
+            make.size.equalTo(CGSize(width: 32, height: 28))
+            make.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(Constants.containerVerticalInset)
         }
-
-        bringSubviewToFront(collectionView)
     }
 }
 
@@ -123,7 +111,7 @@ extension BannersViewLayout: SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [containerView, closeButton]
+        [backgroundView, closeButton]
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [any Skeletonable] {

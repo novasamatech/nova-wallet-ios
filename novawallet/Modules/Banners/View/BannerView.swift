@@ -93,7 +93,7 @@ extension BannerView {
         static let textContainerVerticalInset: CGFloat = 12.0
         static let textContainerWidth: CGFloat = 201.0
         static let textContainerLeadingInset: CGFloat = 16.0
-        static let textSpacing: CGFloat = 2.0
+        static let textSpacing: CGFloat = 4.0
         static let contentImageViewWidth: CGFloat = 126
         static let contentImageViewHeight: CGFloat = 96.0
         static let contentImageViewVerticalInset: CGFloat = 8.0

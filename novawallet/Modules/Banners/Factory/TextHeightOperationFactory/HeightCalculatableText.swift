@@ -19,7 +19,7 @@ extension TextHeightCalculationParams {
         let title = TextHeightCalculationParams(
             availableWidth: availableWidth,
             font: .semiBoldBody,
-            bottomInset: 2.0,
+            bottomInset: 8.0,
             topInset: .zero
         )
         let description = TextHeightCalculationParams(

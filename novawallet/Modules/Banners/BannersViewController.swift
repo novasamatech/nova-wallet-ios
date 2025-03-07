@@ -83,6 +83,7 @@ private extension BannersViewController {
         maxContentHeight = height
 
         if height != oldHeight {
+            rootView.updateContentHeight(height)
             rootView.collectionView.collectionViewLayout.invalidateLayout()
         }
     }
