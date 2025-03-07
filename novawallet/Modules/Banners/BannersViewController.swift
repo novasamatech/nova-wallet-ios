@@ -40,7 +40,12 @@ final class BannersViewController: UIViewController, ViewHolder {
 
         setupCollectionView()
         setupActions()
-        presenter.setup()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        presenter.setup(with: rootView.availableTextWidth)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -232,7 +237,8 @@ private extension BannersViewController {
         if CGFloat(staticState.itemByActualOffset) == rawItemIndex {
             targetItemIndex = staticState.itemByActualOffset
         } else {
-            let newIndex = staticState.itemByActualOffset + (rawItemIndex > CGFloat(staticState.itemByActualOffset) ? 1 : -1)
+            let newIndex = staticState.itemByActualOffset
+                + (rawItemIndex > CGFloat(staticState.itemByActualOffset) ? 1 : -1)
             targetItemIndex = abs(Int(rawItemIndex) - staticState.itemByActualOffset) > 1 ? Int(rawItemIndex) : newIndex
         }
 
@@ -345,6 +351,10 @@ extension BannersViewController: BannersViewProtocol {
 
     func getMaxBannerHeight() -> CGFloat {
         maxWidgetHeight
+    }
+
+    func getAvailableTextWidth() -> CGFloat {
+        rootView.availableTextWidth
     }
 }
 

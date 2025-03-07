@@ -48,6 +48,12 @@ final class BannersViewLayout: UIView {
         return collectionView
     }()
 
+    var availableTextWidth: CGFloat {
+        bounds.width
+            - Constants.contentLeadingOffset
+            - BannerView.Constants.contentImageViewWidth
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
