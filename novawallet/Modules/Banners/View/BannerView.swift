@@ -59,7 +59,7 @@ private extension BannerView {
 
         imageClippingContainer.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.height.equalTo(Constants.contentImageContainerHeight)
+            make.top.bottom.equalToSuperview().inset(Constants.contentImageViewVerticalInset)
             make.width.equalTo(Constants.contentImageViewWidth)
             make.trailing.equalToSuperview()
         }
