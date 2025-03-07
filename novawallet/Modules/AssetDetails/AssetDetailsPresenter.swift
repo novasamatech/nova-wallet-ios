@@ -40,10 +40,6 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         localizationManager = localizableManager
     }
 
-    private func hasLocks(for balance: AssetBalance, externalBalances: [ExternalAssetBalance]) -> Bool {
-        balance.locked > 0 || !externalBalances.isEmpty
-    }
-
     private func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
         externalBalances.reduce(0) { $0 + $1.amount }
     }
@@ -58,7 +54,6 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         }
 
         let assetDetailsModel = viewModelFactory.createAssetDetailsModel(
-            balance: balance,
             priceData: priceData,
             chainAsset: chainAsset,
             locale: selectedLocale

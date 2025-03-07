@@ -19,7 +19,6 @@ protocol AssetDetailsViewModelFactoryProtocol {
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel
 
     func createAssetDetailsModel(
-        balance: AssetBalance,
         priceData: PriceData?,
         chainAsset: ChainAsset,
         locale: Locale
@@ -136,7 +135,6 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
     }
 
     func createAssetDetailsModel(
-        balance _: AssetBalance,
         priceData: PriceData?,
         chainAsset: ChainAsset,
         locale: Locale
