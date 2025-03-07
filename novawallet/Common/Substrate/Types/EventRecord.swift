@@ -119,6 +119,11 @@ enum DispatchCallError: Error {
         let display: ModuleDisplayError
     }
 
+    struct Other {
+        let module: String
+        let reason: String?
+    }
+
     case module(ModuleError)
-    case other(String)
+    case other(Other)
 }

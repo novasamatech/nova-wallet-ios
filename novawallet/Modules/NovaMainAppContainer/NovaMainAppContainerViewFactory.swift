@@ -18,6 +18,9 @@ struct NovaMainAppContainerViewFactory {
             logger: Logger.shared
         )
 
+        let browserNavigation = BrowserNavigationFactory.createNavigation(for: view)
+        view.browserNavigation = browserNavigation
+
         view.tabBar = tabBarController
         view.browserWidget = browserWidgetController
 

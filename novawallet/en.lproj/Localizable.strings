@@ -1802,3 +1802,4 @@
 "card.open.pending.sheet.message" = "It can take up to %@.\nThis window will be closed automatically.";
 "card.open.failed.alert.title" = "Contact support";
 "card.open.failed.alert.message" = "Please contact support@novawallet.io. Include email address that you have used for issuing the card.";
+"unstaking.limit.reached.message" = "You have reached the unstaking limit requests (%@ active requests)";

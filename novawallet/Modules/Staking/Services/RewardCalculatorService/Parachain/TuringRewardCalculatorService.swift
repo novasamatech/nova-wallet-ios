@@ -22,6 +22,7 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue,
         assetPrecision: Int16,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.rewardsRemoteSubscriptionService = rewardsRemoteSubscriptionService
@@ -36,6 +37,7 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
             repositoryFactory: repositoryFactory,
             operationQueue: operationQueue,
             assetPrecision: assetPrecision,
+            eventCenter: eventCenter,
             logger: logger
         )
     }
@@ -49,25 +51,25 @@ final class TuringRewardCalculatorService: BaseParaStakingRewardCalculatoService
             let inflationDistribution {
             let circulating = totalIssuance + totalUnvested
 
-            let snapshot = Snapshot(
+            let snapshot = ParaStkRewardParamsSnapshot(
                 totalStaked: totalStaked,
                 totalIssuance: circulating,
                 inflation: inflationConfig,
                 inflationDistribution: inflationDistribution
             )
 
-            updateSnapshotAndNotify(snapshot)
+            updateSnapshotAndNotify(snapshot, chainId: chainId)
         }
     }
 
-    override func subscribe() {
-        super.subscribe()
+    override func start() {
+        super.start()
 
         subscribeAdditionalIssuance()
     }
 
-    override func unsubscribe() {
-        super.unsubscribe()
+    override func stop() {
+        super.stop()
 
         unsubscribeAdditionalIssuance()
     }

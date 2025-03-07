@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 final class ParaStkUnstakeConfirmPresenter {
-    weak var view: ParaStkUnstakeConfirmViewProtocol?
+    weak var view: CollatorStkUnstakeConfirmViewProtocol?
     let wireframe: ParaStkUnstakeConfirmWireframeProtocol
     let interactor: ParaStkUnstakeConfirmInteractorInputProtocol
 
@@ -13,7 +13,7 @@ final class ParaStkUnstakeConfirmPresenter {
     let callWrapper: UnstakeCallWrapper
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
+    let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -36,7 +36,7 @@ final class ParaStkUnstakeConfirmPresenter {
         callWrapper: UnstakeCallWrapper,
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
+        hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -122,7 +122,12 @@ final class ParaStkUnstakeConfirmPresenter {
         var hints: [String] = []
 
         if let stakingDuration = stakingDuration {
-            hints.append(hintViewModelFactory.unstakeHint(for: stakingDuration, locale: selectedLocale))
+            let durationHint = hintViewModelFactory.unstakeHintForParachainDuration(
+                stakingDuration,
+                locale: selectedLocale
+            )
+
+            hints.append(durationHint)
         }
 
         hints.append(hintViewModelFactory.unstakingRewards(for: selectedLocale))
@@ -167,7 +172,7 @@ final class ParaStkUnstakeConfirmPresenter {
     }
 }
 
-extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol {
+extension ParaStkUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterProtocol {
     func setup() {
         applyCurrentState()
 

@@ -31,14 +31,6 @@ struct AssetModel: Equatable, Codable, Hashable {
 
     var isUtility: Bool { assetId == Self.utilityAssetId }
 
-    var hasStaking: Bool {
-        stakings?.contains { $0 != .unsupported } ?? false
-    }
-
-    var hasPoolStaking: Bool {
-        stakings?.contains { $0 == .nominationPools } ?? false
-    }
-
     init(
         assetId: Id,
         icon: String?,
@@ -94,11 +86,5 @@ extension AssetModel {
             enabled: enabled,
             source: source
         )
-    }
-}
-
-extension AssetModel {
-    var supportedStakings: [StakingType]? {
-        stakings?.filter { $0 != .unsupported }
     }
 }

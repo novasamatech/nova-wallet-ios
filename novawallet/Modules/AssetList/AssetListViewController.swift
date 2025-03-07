@@ -5,6 +5,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetListViewLayout
 
     let presenter: AssetListPresenterProtocol
+    let bannersViewProvider: BannersViewProviderProtocol
 
     var collectionViewLayout: UICollectionViewFlowLayout? {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
@@ -12,7 +13,8 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     private lazy var collectionViewManager: AssetListCollectionManagerProtocol = {
         AssetListCollectionManager(
-            view: rootView,
+            viewController: self,
+            bannersViewProvider: bannersViewProvider,
             groupsViewModel: groupsViewModel,
             delegate: self,
             selectedLocale: selectedLocale
@@ -27,9 +29,11 @@ final class AssetListViewController: UIViewController, ViewHolder {
 
     init(
         presenter: AssetListPresenterProtocol,
+        bannersViewProvider: BannersViewProviderProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.bannersViewProvider = bannersViewProvider
 
         super.init(nibName: nil, bundle: nil)
 
@@ -125,28 +129,22 @@ extension AssetListViewController: AssetListViewProtocol {
         rootView.collectionView.refreshControl?.endRefreshing()
     }
 
-    func didReceivePromotion(viewModel: PromotionBannerView.ViewModel) {
-        collectionViewManager.updatePromotionBannerViewModel(with: viewModel)
+    func didReceiveBanners(available: Bool) {
+        collectionViewManager.updateBanners(available: available)
 
-        rootView.collectionView.reloadData()
+        let height = bannersViewProvider.getMaxBannerHeight()
 
-        let height = AssetListBannerCell.estimateHeight(for: viewModel)
-        activatePromotionWithHeight(height)
-    }
-
-    func didClosePromotion() {
-        guard collectionViewManager.ableToClosePromotion else {
-            return
+        if available {
+            activatePromotionWithHeight(height)
+        } else {
+            deactivatePromotion()
         }
 
-        rootView.collectionView.performBatchUpdates { [weak self] in
-            self?.collectionViewManager.updatePromotionBannerViewModel(with: nil)
-
-            let indexPath = AssetListFlowLayout.CellType.banner.indexPath
-            self?.rootView.collectionView.deleteItems(at: [indexPath])
+        rootView.collectionView.performBatchUpdates {
+            self.rootView.collectionView.reloadSections(
+                [AssetListFlowLayout.SectionType.banners.index]
+            )
         }
-
-        deactivatePromotion()
     }
 
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle) {
@@ -163,10 +161,6 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func selectNfts() {
         presenter.selectNfts()
-    }
-
-    func selectPromotion() {
-        presenter.selectPromotion()
     }
 
     func actionSelectAccount() {
@@ -220,10 +214,6 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func actionChangeAssetListStyle() {
         presenter.toggleAssetListStyle()
-    }
-
-    func promotionBannerDidRequestClose(view _: PromotionBannerView) {
-        presenter.closePromotion()
     }
 }
 

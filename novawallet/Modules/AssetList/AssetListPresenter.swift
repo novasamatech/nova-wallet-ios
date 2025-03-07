@@ -4,13 +4,15 @@ import SubstrateSdk
 import SoraFoundation
 import BigInt
 
-final class AssetListPresenter {
+final class AssetListPresenter: BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
 
     static let viewUpdatePeriod: TimeInterval = 1.0
 
     weak var view: AssetListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: AssetListWireframeProtocol
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
@@ -20,7 +22,6 @@ final class AssetListPresenter {
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
-    private var shouldShowPolkadotPromotion: Bool = true
     private var hasWalletsUpdates: Bool = false
 
     private(set) var walletConnectSessionsCount: Int = 0
@@ -47,14 +48,9 @@ final class AssetListPresenter {
 // MARK: Private
 
 private extension AssetListPresenter {
-    func providePolkadotStakingPromotion() {
-        guard shouldShowPolkadotPromotion else {
-            return
-        }
-
-        let viewModel = PromotionViewModelFactory.createPolkadotStakingPromotion(for: selectedLocale)
-
-        view?.didReceivePromotion(viewModel: viewModel)
+    func provideBanners(state: BannersState) {
+        let available = state == .available || state == .loading
+        view?.didReceiveBanners(available: available)
     }
 
     func provideHeaderViewModel() {
@@ -446,6 +442,10 @@ private extension AssetListPresenter {
 
 extension AssetListPresenter: AssetListPresenterProtocol {
     func setup() {
+        if let bannersModule {
+            provideBanners(state: bannersModule.bannersState)
+        }
+
         interactor.setup()
     }
 
@@ -463,6 +463,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func presentSearch() {
@@ -536,22 +537,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         } else {
             wireframe.showScan(from: view, delegate: self)
         }
-    }
-
-    func selectPromotion() {
-        shouldShowPolkadotPromotion = false
-        interactor.markPolkadotStakingPromotionSeen()
-
-        wireframe.showStaking(from: view)
-
-        view?.didClosePromotion()
-    }
-
-    func closePromotion() {
-        shouldShowPolkadotPromotion = false
-        interactor.markPolkadotStakingPromotionSeen()
-
-        view?.didClosePromotion()
     }
 
     func toggleAssetListStyle() {
@@ -633,11 +618,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         view?.didCompleteRefreshing()
     }
 
-    func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool) {
-        shouldShowPolkadotPromotion = shouldShowPolkadotStaking
-        providePolkadotStakingPromotion()
-    }
-
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsUpdates = hasUpdates
         provideHeaderViewModel()
@@ -650,6 +630,26 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
     }
 }
 
+// MARK: BannersModuleOutputProtocol
+
+extension AssetListPresenter: BannersModuleOutputProtocol {
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
+    }
+
+    func didReceiveBanners(state: BannersState) {
+        provideBanners(state: state)
+    }
+
+    func didUpdateContent(state: BannersState) {
+        provideBanners(state: state)
+    }
+}
+
 // MARK: Localizable
 
 extension AssetListPresenter: Localizable {
@@ -657,7 +657,7 @@ extension AssetListPresenter: Localizable {
         if let view = view, view.isSetup {
             updateAssetsView()
             updateNftView()
-            providePolkadotStakingPromotion()
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

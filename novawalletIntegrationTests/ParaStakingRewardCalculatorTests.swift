@@ -19,21 +19,17 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
         }
 
         let maxApr = calculator.calculateMaxEarnings(amount: 1.0, period: .year)
-        let avgApr = calculator.calculateAvgEarnings(amount: 1.0, period: .year)
 
         let logger = Logger.shared
 
         logger.info("Max APR: \(maxApr)")
-        logger.info("Average APR: \(avgApr)")
-
-        XCTAssertTrue(avgApr <= maxApr)
     }
 
     private func setupCalculator(
         for chainId: ChainModel.Id,
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol
-    ) throws -> ParaStakingRewardCalculatorEngineProtocol? {
+    ) throws -> CollatorStakingRewardCalculatorEngineProtocol? {
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
@@ -93,6 +89,7 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
             repositoryFactory: repositoryFactory,
             operationQueue: operationQueue,
             assetPrecision: assetDisplayInfo.assetPrecision,
+            eventCenter: EventCenter.shared,
             logger: logger
         )
 
