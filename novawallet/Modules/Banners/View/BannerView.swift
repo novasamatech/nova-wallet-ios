@@ -52,21 +52,20 @@ private extension BannerView {
             [titleLabel, detailsLabel]
         )
 
-        addSubview(textContainer)
         addSubview(contentImageView)
-
-        textContainer.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(Constants.textContainerBottomInset).priority(.high)
-            make.top.equalToSuperview().inset(Constants.textContainerTopInset).priority(.high)
-            make.leading.equalToSuperview().inset(Constants.textContainerTopInset)
-            make.width.equalTo(Constants.textContainerWidth)
-        }
+        addSubview(textContainer)
 
         contentImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(-Constants.contentImageViewVerticalInset)
-            make.bottom.equalToSuperview().inset(-Constants.contentImageViewVerticalInset)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(Constants.contentImageViewHeight)
             make.width.equalTo(Constants.contentImageViewWidth)
             make.trailing.equalToSuperview()
+        }
+
+        textContainer.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().inset(Constants.textContainerLeadingInset)
+            make.width.equalTo(Constants.textContainerWidth)
         }
     }
 
@@ -91,11 +90,12 @@ extension BannerView {
 
 extension BannerView {
     enum Constants {
-        static let textContainerTopInset: CGFloat = 16.0
-        static let textContainerBottomInset: CGFloat = 36.0
-        static let textContainerWidth: CGFloat = 200
-        static let textSpacing: CGFloat = 8.0
-        static let contentImageViewWidth: CGFloat = 202
+        static let textContainerVerticalInset: CGFloat = 12.0
+        static let textContainerWidth: CGFloat = 201.0
+        static let textContainerLeadingInset: CGFloat = 16.0
+        static let textSpacing: CGFloat = 2.0
+        static let contentImageViewWidth: CGFloat = 126
+        static let contentImageViewHeight: CGFloat = 96.0
         static let contentImageViewVerticalInset: CGFloat = 8.0
         static let cornerRadius: CGFloat = 12.0
     }

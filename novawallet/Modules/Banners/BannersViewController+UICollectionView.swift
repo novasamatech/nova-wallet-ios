@@ -53,9 +53,13 @@ extension BannersViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt _: IndexPath
     ) -> CGSize {
-        CGSize(
+        let height = maxContentHeight > BannersViewLayout.Constants.contentMinHeight
+            ? maxContentHeight
+            : BannersViewLayout.Constants.contentMinHeight
+
+        return CGSize(
             width: rootView.backgroundView.bounds.width,
-            height: maxWidgetHeight - BannersViewLayout.Constants.containerVerticalInset * 2
+            height: height
         )
     }
 

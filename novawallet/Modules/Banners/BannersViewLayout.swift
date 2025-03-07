@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import SnapKit
 
 final class BannersViewLayout: UIView {
     var loadingState: LoadingState = .none {
@@ -78,25 +79,27 @@ final class BannersViewLayout: UIView {
 
 private extension BannersViewLayout {
     func setupLayout() {
+        addSubview(pageControl)
+        pageControl.snp.makeConstraints { make in
+            make.bottom.centerX.equalToSuperview()
+            make.height.equalTo(Constants.pageControlHeight)
+        }
+
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.bottom.equalTo(pageControl.snp.top)
+        }
+
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview().inset(Constants.containerVerticalInset)
+            make.top.bottom.equalTo(collectionView).inset(Constants.containerVerticalInset)
         }
 
         containerView.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-
-        addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        containerView.addSubview(pageControl)
-        pageControl.snp.makeConstraints { make in
-            make.bottom.leading.equalTo(backgroundView).inset(Constants.contentLeadingOffset)
         }
 
         addSubview(closeButton)
@@ -107,6 +110,8 @@ private extension BannersViewLayout {
                 Constants.containerVerticalInset + Constants.closeButtontopOffset
             )
         }
+
+        bringSubviewToFront(collectionView)
     }
 }
 
@@ -196,6 +201,11 @@ extension BannersViewLayout {
 
 extension BannersViewLayout {
     enum Constants {
+        static let contentMinHeight: CGFloat = BannerView.Constants.contentImageViewHeight
+        static let containerViewMinHeight: CGFloat = contentMinHeight - containerVerticalInset * 2
+        static let pageControlHeight: CGFloat = ExtendedPageControl.Constants.dotSize
+        static let totalMinHeight: CGFloat = contentMinHeight + pageControlHeight
+
         static let closeButtonSize: CGFloat = 24
         static let closeButtontopOffset: CGFloat = 10
 
@@ -208,6 +218,6 @@ extension BannersViewLayout {
         static let skeletonYOffsets: [CGFloat] = [16.0, 16.0, 8.0]
         static let skeletonLineHeights: [CGFloat] = [14.0, 8.0, 8.0]
         static let skeletonLineWidths: [CGFloat] = [168.0, 125.0, 89.0]
-        static let skeletonViewHeight: CGFloat = 110.0
+        static let skeletonViewHeight: CGFloat = 80.0
     }
 }

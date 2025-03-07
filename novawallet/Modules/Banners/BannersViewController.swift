@@ -14,7 +14,11 @@ final class BannersViewController: UIViewController, ViewHolder {
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
-    var maxWidgetHeight = BannersViewLayout.Constants.skeletonViewHeight
+    var maxContentHeight = BannersViewLayout.Constants.contentMinHeight
+
+    var maxWidgetHeight: CGFloat {
+        maxContentHeight + BannersViewLayout.Constants.pageControlHeight
+    }
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
@@ -71,13 +75,12 @@ private extension BannersViewController {
     }
 
     func updateMaxWidgetHeight(for widgetViewModel: BannersWidgetViewModel) {
-        let oldHeight = maxWidgetHeight
+        let oldHeight = maxContentHeight
         let height = widgetViewModel.maxTextHeight
-            + BannerView.Constants.textContainerTopInset
-            + BannerView.Constants.textContainerBottomInset
+            + BannerView.Constants.textContainerVerticalInset * 2
             + BannerView.Constants.contentImageViewVerticalInset * 2
 
-        maxWidgetHeight = height
+        maxContentHeight = height
 
         if height != oldHeight {
             rootView.collectionView.collectionViewLayout.invalidateLayout()
