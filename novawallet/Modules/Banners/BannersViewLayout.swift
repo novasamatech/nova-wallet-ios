@@ -13,12 +13,7 @@ final class BannersViewLayout: UIView {
         }
     }
 
-    var skeletonView: SkrullableView? {
-        didSet {
-            skeletonView?.backgroundColor = R.color.colorBlockBackground()
-            skeletonView?.layer.cornerRadius = Constants.backgroundCornerRaius
-        }
-    }
+    var skeletonView: SkrullableView?
 
     let backgroundView: BannerBackgroundView = .create { view in
         view.clipsToBounds = true
@@ -56,9 +51,7 @@ final class BannersViewLayout: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if loadingState != .none {
-            updateLoadingState()
-        }
+        restartLoadingIfNeeded()
     }
 
     override init(frame: CGRect) {
@@ -111,11 +104,43 @@ extension BannersViewLayout: SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [backgroundView, closeButton]
+        [
+            backgroundView,
+            collectionView,
+            pageControl,
+            closeButton
+        ]
+    }
+
+    func createDecorations(for spaceSize: CGSize) -> [any Decorable] {
+        let cornerRadii = CGSize(
+            width: Constants.backgroundCornerRaius / spaceSize.width,
+            height: Constants.backgroundCornerRaius / spaceSize.height
+        )
+        let offset = CGPoint(
+            x: .zero,
+            y: Constants.containerVerticalInset
+        )
+        let size = CGSize(
+            width: spaceSize.width,
+            height: Constants.containerViewMinHeight
+        )
+
+        let decoration = SingleDecoration.createDecoration(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: offset,
+            size: size
+        )
+        .round(cornerRadii, mode: .allCorners)
+        .fill(R.color.colorBlockBackground()!)
+
+        return [decoration]
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [any Skeletonable] {
-        var lastY: CGFloat = 0
+        var lastY: CGFloat = Constants.containerVerticalInset
 
         let rows = zip(
             Constants.skeletonLineWidths,
@@ -167,6 +192,13 @@ extension BannersViewLayout {
     func setLoaded() {
         loadingState.remove(.content)
     }
+
+    func restartLoadingIfNeeded() {
+        if loadingState != .none {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
+    }
 }
 
 extension BannersViewLayout {
@@ -203,7 +235,7 @@ extension BannersViewLayout {
         static let contentLeadingOffset: CGFloat = 16.0
         static let containerVerticalInset: CGFloat = 8.0
 
-        static let skeletonYOffsets: [CGFloat] = [16.0, 16.0, 8.0]
+        static let skeletonYOffsets: [CGFloat] = [16.0, 10.0, 6.0]
         static let skeletonLineHeights: [CGFloat] = [14.0, 8.0, 8.0]
         static let skeletonLineWidths: [CGFloat] = [168.0, 125.0, 89.0]
         static let skeletonViewHeight: CGFloat = 80.0

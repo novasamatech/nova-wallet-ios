@@ -46,6 +46,7 @@ final class BannersViewController: UIViewController, ViewHolder {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        rootView.restartLoadingIfNeeded()
         setupAutoScroll()
     }
 
@@ -83,7 +84,6 @@ private extension BannersViewController {
         maxContentHeight = height
 
         if height != oldHeight {
-            rootView.updateContentHeight(height)
             rootView.collectionView.collectionViewLayout.invalidateLayout()
         }
     }
