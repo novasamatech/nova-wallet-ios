@@ -8,11 +8,12 @@ class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
 
     func bind(with viewModel: BannerViewModel) {
         view.bind(with: viewModel)
-        contentView.layer.masksToBounds = viewModel.clipsToBounds
     }
 }
 
 class BannerView: UIView {
+    let imageClippingContainer = UIView()
+
     let contentImageView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
     }
@@ -52,14 +53,21 @@ private extension BannerView {
             [titleLabel, detailsLabel]
         )
 
-        addSubview(contentImageView)
+        addSubview(imageClippingContainer)
+        imageClippingContainer.addSubview(contentImageView)
         addSubview(textContainer)
+
+        imageClippingContainer.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.height.equalTo(Constants.contentImageContainerHeight)
+            make.width.equalTo(Constants.contentImageViewWidth)
+            make.trailing.equalToSuperview()
+        }
 
         contentImageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
             make.height.equalTo(Constants.contentImageViewHeight)
-            make.width.equalTo(Constants.contentImageViewWidth)
-            make.trailing.equalToSuperview()
         }
 
         textContainer.snp.makeConstraints { make in
@@ -81,8 +89,7 @@ extension BannerView {
         titleLabel.text = viewModel.title
         detailsLabel.text = viewModel.details
         contentImageView.image = viewModel.contentImage
-        clipsToBounds = viewModel.clipsToBounds
-        layer.masksToBounds = viewModel.clipsToBounds
+        imageClippingContainer.clipsToBounds = viewModel.clipsToBounds
     }
 }
 
@@ -94,6 +101,7 @@ extension BannerView {
         static let textContainerWidth: CGFloat = 201.0
         static let textContainerLeadingInset: CGFloat = 16.0
         static let textSpacing: CGFloat = 4.0
+        static let contentImageContainerHeight: CGFloat = 80.0
         static let contentImageViewWidth: CGFloat = 126
         static let contentImageViewHeight: CGFloat = 96.0
         static let contentImageViewVerticalInset: CGFloat = 8.0
