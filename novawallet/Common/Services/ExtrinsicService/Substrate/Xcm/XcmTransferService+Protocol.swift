@@ -120,7 +120,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 reserve: request.reserve,
                 destination: request.destination,
                 amount: request.amount,
-                xcmTransfers: xcmTransfers
+                xcmTransfers: xcmTransfers,
+                version: .V3
             )
 
             let wrapper = createDestinationFeeWrapper(
@@ -158,7 +159,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 reserve: request.reserve,
                 destination: request.destination,
                 amount: request.amount,
-                xcmTransfers: xcmTransfers
+                xcmTransfers: xcmTransfers,
+                version: .V3
             )
 
             if let reserveMessage = feeMessages.reserve {
@@ -203,7 +205,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 reserve: request.reserve,
                 destination: request.destination,
                 amount: request.amount,
-                xcmTransfers: xcmTransfers
+                xcmTransfers: xcmTransfers,
+                version: .V3
             )
 
             let executionFeeWrapper = createExecutionFeeWrapper(
