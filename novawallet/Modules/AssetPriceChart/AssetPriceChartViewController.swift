@@ -6,16 +6,19 @@ final class AssetPriceChartViewController: UIViewController, ViewHolder {
 
     private let presenter: AssetPriceChartPresenterProtocol
     private let seekHapticPlayer: ProgressiveHapticPlayer
+    private let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
     private let dataSource: AssetPriceChartViewDataSourceProtocol
 
     init(
         presenter: AssetPriceChartPresenterProtocol,
         seekHapticPlayer: ProgressiveHapticPlayer,
+        chartLongPressHapticPlayer: HapticPlayer,
         periodControlHapticPlayer: HapticPlayer
     ) {
         self.presenter = presenter
         self.seekHapticPlayer = seekHapticPlayer
+        self.chartLongPressHapticPlayer = chartLongPressHapticPlayer
         self.periodControlHapticPlayer = periodControlHapticPlayer
         dataSource = AssetPriceChartViewDataSource()
         super.init(nibName: nil, bundle: nil)
@@ -186,7 +189,7 @@ private extension AssetPriceChartViewController {
             target: self,
             action: #selector(handleLongPress)
         )
-        longPressGestureRecognizer.minimumPressDuration = 0.1
+        longPressGestureRecognizer.minimumPressDuration = 0.05
         longPressGestureRecognizer.allowableMovement = 0
 
         rootView.chartView.addGestureRecognizer(longPressGestureRecognizer)
@@ -207,13 +210,19 @@ private extension AssetPriceChartViewController {
     }
 
     @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state == .began {
+            chartLongPressHapticPlayer.play()
+        }
+
         switch gestureRecognizer.state {
         case .began, .changed:
             let locationOnChart = gestureRecognizer.location(in: rootView.chartView)
             let highlight = rootView.chartView.getHighlightByTouchPoint(locationOnChart)
-            let entry = rootView.chartView.getEntryByTouchPoint(point: locationOnChart)
 
-            handleChartEntrySelected(entry, highlight: highlight)
+            rootView.chartView.highlightValue(
+                highlight,
+                callDelegate: true
+            )
         case .ended, .cancelled, .failed:
             handleEntrySelectionEnded()
         default:

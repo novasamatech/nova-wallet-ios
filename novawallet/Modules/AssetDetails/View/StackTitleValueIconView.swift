@@ -10,6 +10,14 @@ class StackTitleValueIconView: RowView<
         UILabel
     >
 >, StackTableViewCellProtocol {
+    var canSelect: Bool = true {
+        didSet {
+            if oldValue != canSelect {
+                updateSelection()
+            }
+        }
+    }
+
     convenience init() {
         self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
     }
@@ -26,14 +34,29 @@ class StackTitleValueIconView: RowView<
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func configure() {
+private extension StackTitleValueIconView {
+    func configure() {
         rowContentView.makeVertical()
         rowContentView.spacing = 4
         rowContentView.fView.makeHorizontal()
-        rowContentView.fView.fView.apply(style: .boldTitle2Primary)
-        rowContentView.sView.apply(style: .regularSubhedlineSecondary)
+    }
 
-        isUserInteractionEnabled = true
+    func updateSelection() {
+        if canSelect {
+            isUserInteractionEnabled = true
+            rowContentView.fView.sView.isHidden = false
+        } else {
+            isUserInteractionEnabled = false
+            rowContentView.fView.sView.isHidden = true
+        }
+    }
+}
+
+extension StackTitleValueIconView {
+    func bind(with model: BalanceViewModelProtocol) {
+        rowContentView.fView.fView.text = model.amount
+        rowContentView.sView.text = model.price
     }
 }

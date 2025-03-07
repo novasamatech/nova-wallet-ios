@@ -15,6 +15,7 @@ final class AssetPriceChartPresenter {
     private var selectedPeriod: PriceHistoryPeriod?
     private var priceData: PriceData?
     private var prices: [PriceHistoryPeriod: [PriceHistoryItem]]?
+    private var pricesByTime: [UInt64: Decimal]?
 
     init(
         interactor: AssetPriceChartInteractorInputProtocol,
@@ -74,20 +75,24 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
     }
 
     func selectEntry(_ entry: AssetPriceChart.Entry?) {
-        guard let entry, let selectedPeriod else {
+        guard
+            let entry,
+            let historyItemPrice = pricesByTime?[UInt64(entry.timestamp)],
+            let selectedPeriod
+        else {
             provideViewModel()
             return
         }
 
-        let priceHistoryItem = PriceHistoryItem(
+        let historyItem = PriceHistoryItem(
             startedAt: UInt64(entry.timestamp),
-            value: entry.price
+            value: historyItemPrice
         )
 
         let params = PriceChartPriceUpdateViewFactoryParams(
             entries: prices?[selectedPeriod],
             priceData: priceData,
-            lastEntry: priceHistoryItem,
+            lastEntry: historyItem,
             selectedPeriod: selectedPeriod,
             locale: locale
         )
@@ -104,6 +109,9 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
     func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]]) {
         self.prices = prices
+        pricesByTime = prices.values.reduce(into: [:]) { acc, values in
+            values.forEach { acc[$0.startedAt] = $0.value }
+        }
 
         provideViewModel()
     }

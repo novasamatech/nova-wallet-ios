@@ -52,11 +52,11 @@ final class CurrencyViewLayout: UIView {
 extension CurrencyViewLayout {
     private enum Constants {
         static let estimatedRowHeight: CGFloat = 56
-        static let absoluteHeaderHeight: CGFloat = 24
+        static let absoluteHeaderHeight: CGFloat = 18
         static let sectionContentInsets = NSDirectionalEdgeInsets(
-            top: 12,
+            top: 4,
             leading: 16,
-            bottom: 28,
+            bottom: 16,
             trailing: 16
         )
         static let interGroupSpacing: CGFloat = 0

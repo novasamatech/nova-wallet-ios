@@ -101,25 +101,15 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.set(assetDetailsModel: assetModel)
     }
 
-    func didReceive(totalBalance: BalanceViewModelProtocol) {
-        rootView.balanceWidget.totalTokensBalanceLabel.text = totalBalance.amount
-        rootView.balanceWidget.totalValueBalanceLabel.text = totalBalance.price
-    }
-
-    func didReceive(transferableBalance: BalanceViewModelProtocol) {
-        rootView.balanceWidget.transferrableCell.bind(viewModel: transferableBalance)
-    }
-
-    func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool) {
-        rootView.balanceWidget.lockCell.bind(viewModel: lockedBalance)
-        rootView.balanceWidget.lockCell.canSelect = isSelectable
-    }
-
     func didReceive(availableOperations: AssetDetailsOperation) {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.swapButton.isEnabled = availableOperations.contains(.swap)
         rootView.buyButton.isEnabled = availableOperations.contains(.buy)
+    }
+
+    func didReceive(balance: AssetDetailsBalanceModel) {
+        rootView.balanceWidget.bind(with: balance)
     }
 }
 

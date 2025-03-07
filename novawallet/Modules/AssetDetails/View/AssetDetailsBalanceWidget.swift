@@ -40,10 +40,9 @@ class AssetDetailsBalanceWidget: UIView {
     }
 
     let totalCell: StackTitleValueIconView = .create { view in
-        view.rowContentView.fView.sView.image = R.image.iconSmallArrowDown()?
-            .tinted(with: R.color.colorIconChip()!)?
-            .withAlignmentRectInsets(.init(inset: -4))
-        view.rowContentView.fView.sView.borderView.apply(style: .chips)
+        view.apply(style: .balanceWidgetStaticPart)
+        view.canSelect = false
+
         view.rowContentView.fView.sView.borderView.cornerRadius = Constants.arrowImageViewSize.width / 2
 
         view.frame = CGRect(
@@ -62,14 +61,6 @@ class AssetDetailsBalanceWidget: UIView {
         $0.canSelect = false
     }
 
-    var totalTokensBalanceLabel: UILabel {
-        totalCell.rowContentView.fView.fView
-    }
-
-    var totalValueBalanceLabel: UILabel {
-        totalCell.rowContentView.sView
-    }
-
     var rowIconImageView: UIImageView {
         totalCell.rowContentView.fView.sView
     }
@@ -78,9 +69,9 @@ class AssetDetailsBalanceWidget: UIView {
         super.init(frame: frame)
 
         setupLayout()
+        setupStyle()
         setupActions()
         hideDetails()
-        clipsToBounds = true
     }
 
     @available(*, unavailable)
@@ -99,6 +90,11 @@ private extension AssetDetailsBalanceWidget {
         balanceTableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    func setupStyle() {
+        clipsToBounds = true
+        totalCell.roundedBackgroundView.highlightedFillColor = .clear
     }
 
     func setupBalanceTableViewLayout() {
@@ -178,6 +174,16 @@ private extension AssetDetailsBalanceWidget {
 // MARK: Internal
 
 extension AssetDetailsBalanceWidget {
+    func bind(with model: AssetDetailsBalanceModel) {
+        totalCell.bind(with: model.total.balance)
+        totalCell.canSelect = model.total.interactive
+
+        lockCell.bind(viewModel: model.locked.balance)
+        lockCell.canSelect = model.locked.interactive
+
+        transferrableCell.bind(viewModel: model.transferrable)
+    }
+
     func set(locale: Locale) {
         let languages = locale.rLanguages
 
