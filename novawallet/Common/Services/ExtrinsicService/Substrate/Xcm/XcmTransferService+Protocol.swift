@@ -88,21 +88,15 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             feeWrapper.addDependency(wrapper: callBuilderWrapper)
 
-            feeWrapper.targetOperation.completionBlock = {
-                switch feeWrapper.targetOperation.result {
-                case let .success(fee):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(fee))
-                case let .failure(error):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
+            let totalWrapper = feeWrapper.insertingHead(operations: callBuilderWrapper.allOperations)
 
-            let operations = callBuilderWrapper.allOperations + feeWrapper.allOperations
+            execute(
+                wrapper: totalWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: queue,
+                callbackClosure: completionClosure
+            )
 
-            operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
         }
@@ -116,7 +110,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
     ) {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
-                for: request.origin.chain.chainId
+                for: request.destination.chain.chainId
             )
 
             let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
@@ -167,7 +161,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
     ) {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
-                for: request.origin.chain.chainId
+                for: request.reserve.chain.chainId
             )
 
             let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
@@ -221,17 +215,32 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
-                for: request.origin.chain.chainId
+            let destinationRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.destination.chain.chainId
             )
 
-            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
+            let reserveRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.reserve.chain.chainId
+            )
+
+            let destinationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+                for: destinationRuntimeProvider
+            )
+
+            let reserveVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+                for: reserveRuntimeProvider
+            )
 
             let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
             feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
             ) {
-                let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
+                let destinationVersion = try destinationVersionWrapper.targetOperation.extractNoCancellableResultData()
+                let reserveVersion = try reserveVersionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let version = [destinationVersion, reserveVersion]
+                    .compactMap { $0 }
+                    .max()
 
                 let feeMessages = try self.xcmFactory.createWeightMessages(
                     from: request.origin,
@@ -269,9 +278,12 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                     .insertingTail(operation: mergeOperation)
             }
 
-            feeWrapper.addDependency(wrapper: versionWrapper)
+            feeWrapper.addDependency(wrapper: destinationVersionWrapper)
+            feeWrapper.addDependency(wrapper: reserveVersionWrapper)
 
-            let totalWrapper = feeWrapper.insertingHead(operations: versionWrapper.allOperations)
+            let totalWrapper = feeWrapper
+                .insertingHead(operations: destinationVersionWrapper.allOperations)
+                .insertingHead(operations: reserveVersionWrapper.allOperations)
 
             execute(
                 wrapper: totalWrapper,

@@ -157,8 +157,7 @@ final class XcmLegacyTransferFactory {
         destination: XcmTransferDestination,
         xcmTransfer: XcmAssetTransfer,
         xcmTransfers: XcmTransfers,
-        multiasset: Xcm.Multiasset,
-        version: Xcm.Version?
+        multiasset: Xcm.Multiasset
     ) throws -> Xcm.Message {
         let multilocation = createMultilocation(origin: chainAsset.chain, destination: destination)
 
@@ -170,8 +169,7 @@ final class XcmLegacyTransferFactory {
         return try createWeightMessage(
             from: destinationInstructions,
             destination: multilocation,
-            asset: multiasset,
-            version: version
+            asset: multiasset
         )
     }
 
@@ -179,8 +177,7 @@ final class XcmLegacyTransferFactory {
         from chainAsset: ChainAsset,
         reserve: XcmTransferReserve,
         xcmTransfers: XcmTransfers,
-        multiasset: Xcm.Multiasset,
-        version: Xcm.Version?
+        multiasset: Xcm.Multiasset
     ) throws -> Xcm.Message? {
         guard let reserveFee = xcmTransfers.reserveFee(from: chainAsset.chainAssetId) else {
             return nil
@@ -195,16 +192,14 @@ final class XcmLegacyTransferFactory {
         return try createWeightMessage(
             from: reserveInstruction,
             destination: reserveMultilocation,
-            asset: multiasset,
-            version: version
+            asset: multiasset
         )
     }
 
     func createWeightMessage(
         from instructions: [String],
         destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset,
-        version _: Xcm.Version?
+        asset: Xcm.Multiasset
     ) throws -> Xcm.Message {
         let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
             switch rawInstruction {
@@ -282,7 +277,7 @@ extension XcmLegacyTransferFactory: XcmTransferFactoryProtocol {
         destination: XcmTransferDestination,
         amount: BigUInt,
         xcmTransfers: XcmTransfers,
-        version: Xcm.Version?
+        version _: Xcm.Version?
     ) throws -> XcmWeightMessages {
         let originChainAssetId = chainAsset.chainAssetId
 
@@ -309,16 +304,14 @@ extension XcmLegacyTransferFactory: XcmTransferFactoryProtocol {
             destination: destination,
             xcmTransfer: xcmTransfer,
             xcmTransfers: xcmTransfers,
-            multiasset: multiasset,
-            version: version
+            multiasset: multiasset
         )
 
         let reserveMessage = try createReserveWeightMessage(
             from: chainAsset,
             reserve: reserve,
             xcmTransfers: xcmTransfers,
-            multiasset: multiasset,
-            version: version
+            multiasset: multiasset
         )
 
         return XcmWeightMessages(destination: destinationMessage, reserve: reserveMessage)
