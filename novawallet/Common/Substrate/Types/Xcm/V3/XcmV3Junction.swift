@@ -69,12 +69,12 @@ extension XcmV3 {
             case accountId = "id"
         }
 
-        let network: NetworkId?
+        @NullCodable var network: NetworkId?
         @BytesCodable var accountId: AccountId
     }
 
     struct AccountId20Value: Equatable, Codable {
-        let network: NetworkId?
+        @NullCodable var network: NetworkId?
         @BytesCodable var key: AccountId
     }
 

@@ -5,14 +5,15 @@ import SubstrateSdk
 class XcmBaseMetadataQueryFactory {
     func createXcmTypeVersionWrapper(
         for runtimeProvider: RuntimeProviderProtocol,
-        typeName: String
+        oneOfTypes: [String]
     ) -> CompoundOperationWrapper<Xcm.Version?> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let searchOperation = ClosureOperation<Xcm.Version?> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
             guard
-                let node = try codingFactoryOperation.extractNoCancellableResultData().getTypeNode(
-                    for: typeName
-                ) else {
+                let typeName = oneOfTypes.first(where: { codingFactory.hasType(for: $0) }),
+                let node = codingFactory.getTypeNode(for: typeName) else {
                 return nil
             }
 
