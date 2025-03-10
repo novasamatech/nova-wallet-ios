@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import SnapKit
 
 final class BannersViewLayout: UIView {
     var loadingState: LoadingState = .none {
@@ -12,14 +13,7 @@ final class BannersViewLayout: UIView {
         }
     }
 
-    var skeletonView: SkrullableView? {
-        didSet {
-            skeletonView?.backgroundColor = R.color.colorBlockBackground()
-            skeletonView?.layer.cornerRadius = Constants.backgroundCornerRaius
-        }
-    }
-
-    let containerView = UIView()
+    var skeletonView: SkrullableView?
 
     let backgroundView: BannerBackgroundView = .create { view in
         view.clipsToBounds = true
@@ -30,7 +24,7 @@ final class BannersViewLayout: UIView {
 
     let closeButton: RoundedButton = .create { button in
         button.applyIconStyle()
-        button.imageWithTitleView?.iconImage = R.image.iconCloseWithBg()!
+        button.imageWithTitleView?.iconImage = R.image.iconBannerClose()!
     }
 
     lazy var pageControl = ExtendedPageControl()
@@ -54,12 +48,16 @@ final class BannersViewLayout: UIView {
         return collectionView
     }()
 
+    var availableTextWidth: CGFloat {
+        bounds.width
+            - Constants.contentLeadingOffset
+            - BannerView.Constants.contentImageViewWidth
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if loadingState != .none {
-            updateLoadingState()
-        }
+        restartLoadingIfNeeded()
     }
 
     override init(frame: CGRect) {
@@ -78,34 +76,28 @@ final class BannersViewLayout: UIView {
 
 private extension BannersViewLayout {
     func setupLayout() {
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview().inset(Constants.containerVerticalInset)
-        }
-
-        containerView.addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
+        addSubview(backgroundView)
         addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        containerView.addSubview(pageControl)
-        pageControl.snp.makeConstraints { make in
-            make.bottom.leading.equalTo(backgroundView).inset(Constants.contentLeadingOffset)
-        }
-
+        addSubview(pageControl)
         addSubview(closeButton)
+
+        backgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.bottom.equalTo(collectionView).inset(Constants.containerVerticalInset)
+            make.height.equalTo(Constants.containerViewMinHeight)
+        }
+        collectionView.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.bottom.equalTo(pageControl.snp.top)
+        }
+        pageControl.snp.makeConstraints { make in
+            make.bottom.centerX.equalToSuperview()
+            make.height.equalTo(Constants.pageControlHeight)
+        }
         closeButton.snp.makeConstraints { make in
-            make.size.equalTo(Constants.closeButtonSize)
-            make.trailing.equalToSuperview().inset(Constants.contentLeadingOffset)
-            make.top.equalToSuperview().inset(
-                Constants.containerVerticalInset + Constants.closeButtontopOffset
-            )
+            make.size.equalTo(CGSize(width: 32, height: 28))
+            make.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(Constants.containerVerticalInset)
         }
     }
 }
@@ -118,11 +110,43 @@ extension BannersViewLayout: SkeletonableView {
     }
 
     var hidingViews: [UIView] {
-        [containerView, closeButton]
+        [
+            backgroundView,
+            collectionView,
+            pageControl,
+            closeButton
+        ]
+    }
+
+    func createDecorations(for spaceSize: CGSize) -> [any Decorable] {
+        let cornerRadii = CGSize(
+            width: Constants.backgroundCornerRaius / spaceSize.width,
+            height: Constants.backgroundCornerRaius / spaceSize.height
+        )
+        let offset = CGPoint(
+            x: .zero,
+            y: Constants.containerVerticalInset
+        )
+        let size = CGSize(
+            width: spaceSize.width,
+            height: Constants.containerViewMinHeight
+        )
+
+        let decoration = SingleDecoration.createDecoration(
+            on: self,
+            containerView: self,
+            spaceSize: spaceSize,
+            offset: offset,
+            size: size
+        )
+        .round(cornerRadii, mode: .allCorners)
+        .fill(R.color.colorBlockBackground()!)
+
+        return [decoration]
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [any Skeletonable] {
-        var lastY: CGFloat = 0
+        var lastY: CGFloat = Constants.containerVerticalInset
 
         let rows = zip(
             Constants.skeletonLineWidths,
@@ -174,6 +198,13 @@ extension BannersViewLayout {
     func setLoaded() {
         loadingState.remove(.content)
     }
+
+    func restartLoadingIfNeeded() {
+        if loadingState != .none {
+            updateLoadingState()
+            skeletonView?.restartSkrulling()
+        }
+    }
 }
 
 extension BannersViewLayout {
@@ -196,6 +227,11 @@ extension BannersViewLayout {
 
 extension BannersViewLayout {
     enum Constants {
+        static let contentMinHeight: CGFloat = BannerView.Constants.contentImageViewHeight
+        static let containerViewMinHeight: CGFloat = contentMinHeight - containerVerticalInset * 2
+        static let pageControlHeight: CGFloat = ExtendedPageControl.Constants.dotSize
+        static let totalMinHeight: CGFloat = contentMinHeight + pageControlHeight
+
         static let closeButtonSize: CGFloat = 24
         static let closeButtontopOffset: CGFloat = 10
 
@@ -205,9 +241,9 @@ extension BannersViewLayout {
         static let contentLeadingOffset: CGFloat = 16.0
         static let containerVerticalInset: CGFloat = 8.0
 
-        static let skeletonYOffsets: [CGFloat] = [16.0, 16.0, 8.0]
+        static let skeletonYOffsets: [CGFloat] = [16.0, 10.0, 6.0]
         static let skeletonLineHeights: [CGFloat] = [14.0, 8.0, 8.0]
         static let skeletonLineWidths: [CGFloat] = [168.0, 125.0, 89.0]
-        static let skeletonViewHeight: CGFloat = 110.0
+        static let skeletonViewHeight: CGFloat = 80.0
     }
 }

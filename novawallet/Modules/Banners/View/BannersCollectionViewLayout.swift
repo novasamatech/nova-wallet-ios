@@ -18,7 +18,7 @@ final class BannersCollectionViewLayout: UICollectionViewFlowLayout {
 
     init(
         slideDistance: CGFloat = 20.0,
-        verticalInset: CGFloat = 8.0
+        verticalInset: CGFloat = 0.0
     ) {
         self.slideDistance = slideDistance
         self.verticalInset = verticalInset

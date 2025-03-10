@@ -3,8 +3,10 @@ import BigInt
 import SoraFoundation
 import Operation_iOS
 
-final class AssetDetailsPresenter: PurchaseFlowManaging {
+final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwnerProtocol {
     weak var view: AssetDetailsViewProtocol?
+    weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
+
     let wireframe: AssetDetailsWireframeProtocol
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
     let interactor: AssetDetailsInteractorInputProtocol
@@ -38,10 +40,6 @@ final class AssetDetailsPresenter: PurchaseFlowManaging {
         localizationManager = localizableManager
     }
 
-    private func hasLocks(for balance: AssetBalance, externalBalances: [ExternalAssetBalance]) -> Bool {
-        balance.locked > 0 || !externalBalances.isEmpty
-    }
-
     private func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
         externalBalances.reduce(0) { $0 + $1.amount }
     }
@@ -56,7 +54,6 @@ final class AssetDetailsPresenter: PurchaseFlowManaging {
         }
 
         let assetDetailsModel = viewModelFactory.createAssetDetailsModel(
-            balance: balance,
             priceData: priceData,
             chainAsset: chainAsset,
             locale: selectedLocale
@@ -65,33 +62,19 @@ final class AssetDetailsPresenter: PurchaseFlowManaging {
 
         let totalExternalBalances = calculateTotalExternalBalances(for: externalAssetBalances)
 
-        let totalBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.totalInPlank + totalExternalBalances,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            priceData: priceData,
-            locale: selectedLocale
+        let balanceModel = viewModelFactory.createBalanceViewModel(
+            params: .init(
+                total: balance.totalInPlank + totalExternalBalances,
+                locked: balance.locked + totalExternalBalances,
+                transferrable: balance.transferable,
+                externalBalances: externalAssetBalances,
+                assetDisplayInfo: chainAsset.assetDisplayInfo,
+                priceData: priceData,
+                locale: selectedLocale
+            )
         )
 
-        let transferableBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.transferable,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            priceData: priceData,
-            locale: selectedLocale
-        )
-
-        let lockedBalance = viewModelFactory.createBalanceViewModel(
-            value: balance.locked + totalExternalBalances,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            priceData: priceData,
-            locale: selectedLocale
-        )
-
-        view.didReceive(totalBalance: totalBalance)
-        view.didReceive(transferableBalance: transferableBalance)
-
-        let isSelectable = hasLocks(for: balance, externalBalances: externalAssetBalances)
-        view.didReceive(lockedBalance: lockedBalance, isSelectable: isSelectable)
-
+        view.didReceive(balance: balanceModel)
         view.didReceive(availableOperations: availableOperations)
     }
 
@@ -266,5 +249,16 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 extension AssetDetailsPresenter: PurchaseDelegate {
     func purchaseDidComplete() {
         wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+    }
+}
+
+extension AssetDetailsPresenter: AssetPriceChartModuleOutputProtocol {
+    func didReceiveChartState(_ state: AssetPriceChartState) {
+        switch state {
+        case .loading, .available:
+            view?.didReceiveChartAvailable(true)
+        case .unavailable:
+            view?.didReceiveChartAvailable(false)
+        }
     }
 }

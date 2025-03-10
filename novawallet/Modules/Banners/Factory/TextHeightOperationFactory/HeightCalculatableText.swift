@@ -14,8 +14,7 @@ struct TextHeightCalculationParams {
 }
 
 extension TextHeightCalculationParams {
-    static func createForBanners() -> [TextHeightCalculationParams] {
-        let availableWidth: CGFloat = 200.0
+    static func createForBanners(availableWidth: CGFloat) -> [TextHeightCalculationParams] {
         let title = TextHeightCalculationParams(
             availableWidth: availableWidth,
             font: .semiBoldBody,
@@ -25,7 +24,7 @@ extension TextHeightCalculationParams {
         let description = TextHeightCalculationParams(
             availableWidth: availableWidth,
             font: .caption1,
-            bottomInset: 8.0,
+            bottomInset: .zero,
             topInset: .zero
         )
 

@@ -325,7 +325,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var bannersContentPath: String {
-        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/content/"
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/v2/content/"
     }
 
     // swiftlint:enable line_length

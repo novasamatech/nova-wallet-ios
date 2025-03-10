@@ -94,9 +94,9 @@ private extension ExtendedPageControl {
 
     func createDot() -> UIView {
         let dot = UIView()
-        dot.backgroundColor = .white
         dot.layer.cornerRadius = Constants.dotSize / 2
         dot.layer.masksToBounds = true
+        dot.backgroundColor = R.color.colorIconInactive()
 
         return dot
     }
@@ -164,12 +164,10 @@ private extension ExtendedPageControl {
                 dot.snp.updateConstraints { make in
                     make.width.equalTo(Constants.extendedDotWidth)
                 }
-                dot.backgroundColor = R.color.colorIconChip()
             } else {
                 dot.snp.updateConstraints { make in
                     make.width.equalTo(Constants.dotSize)
                 }
-                dot.backgroundColor = R.color.colorIconInactive()
             }
         }
         layoutIfNeeded()
@@ -201,7 +199,7 @@ extension ExtendedPageControl {
 
 // MARK: Constants
 
-private extension ExtendedPageControl {
+extension ExtendedPageControl {
     enum Constants {
         static let animationDuration: CGFloat = 0.3
         static let dotSize: CGFloat = 6.0
