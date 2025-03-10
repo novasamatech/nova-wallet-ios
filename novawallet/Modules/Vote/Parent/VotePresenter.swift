@@ -30,7 +30,8 @@ final class VotePresenter {
         }
 
         let viewModel = walletSwitchViewModelFactory.createViewModel(
-            from: wallet.walletIdenticonData(),
+            from: wallet.identifier,
+            walletIdenticon: wallet.walletIdenticonData(),
             walletType: wallet.type,
             hasNotification: hasWalletsListUpdates
         )
