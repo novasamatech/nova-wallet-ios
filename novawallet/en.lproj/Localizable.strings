@@ -1799,3 +1799,5 @@
 "chart.period.month" = "Last Month";
 "chart.period.year" = "Last Year";
 "chart.period.max" = "All Time";
+"token.actions.picker.buy" = "Buy tokens";
+"token.actions.picker.sell" = "Sell tokens";

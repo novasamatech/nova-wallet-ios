@@ -128,6 +128,8 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
+    func showSellTokens(from _: AssetListViewProtocol?) {}
+
     func showSwapTokens(from view: AssetListViewProtocol?) {
         let completionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
             self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
