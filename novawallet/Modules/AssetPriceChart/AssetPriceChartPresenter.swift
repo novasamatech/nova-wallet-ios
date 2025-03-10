@@ -133,11 +133,6 @@ extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
     }
 
     func didReceive(price: PriceData?) {
-        guard let price else {
-            moduleOutput?.didReceiveChartState(.unavailable)
-            return
-        }
-
         priceData = price
 
         notifyIfChartAvailable()
@@ -146,11 +141,13 @@ extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
 
     func didReceive(_ error: AssetPriceChartInteractorError) {
         switch error {
-        case .chartDataNotAvailable, .priceDataNotAvailable:
+        case .chartDataNotAvailable,
+             .priceDataNotAvailable,
+             .missingPriceId:
             moduleOutput?.didReceiveChartState(.unavailable)
         }
 
-        logger.error("Failed loading chart price data with error: \(error)")
+        logger.error("Failed presenting chart price data with error: \(error)")
     }
 }
 

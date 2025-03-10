@@ -37,26 +37,25 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
 
 private extension AssetPriceChartInteractor {
     func fetchAndSubscribe() {
-        subscribePrice()
-        fetchChartData()
-    }
-
-    func subscribePrice() {
-        if let priceId = asset.priceId {
-            clear(streamableProvider: &priceProvider)
-
-            priceProvider = subscribeToPrice(
-                for: priceId,
-                currency: currency
-            )
-        } else {
-            presenter?.didReceive(price: nil)
+        guard let priceId = asset.priceId else {
+            presenter?.didReceive(.missingPriceId)
+            return
         }
+
+        subscribePrice(priceId: priceId)
+        fetchChartData(priceId: priceId)
     }
 
-    func fetchChartData() {
-        guard let priceId = asset.priceId else { return }
+    func subscribePrice(priceId: AssetModel.PriceId) {
+        clear(streamableProvider: &priceProvider)
 
+        priceProvider = subscribeToPrice(
+            for: priceId,
+            currency: currency
+        )
+    }
+
+    func fetchChartData(priceId: AssetModel.PriceId) {
         let wrapper = priceChartDataOperationFactory.createWrapper(
             tokenId: priceId,
             currency: currency
@@ -112,5 +111,6 @@ extension AssetPriceChartInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
 
 enum AssetPriceChartInteractorError {
     case priceDataNotAvailable
+    case missingPriceId
     case chartDataNotAvailable
 }
