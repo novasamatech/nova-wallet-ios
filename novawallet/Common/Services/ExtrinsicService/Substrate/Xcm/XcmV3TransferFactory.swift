@@ -2,97 +2,9 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-protocol XcmTransferFactoryProtocol {
-    func createVersionedMultilocation(
-        origin: ChainModel,
-        destination: XcmTransferDestination,
-        version: Xcm.Version?
-    ) -> Xcm.VersionedMultilocation
-
-    func createVersionedMultilocation(
-        origin: ChainModel,
-        reserve: XcmTransferReserve,
-        version: Xcm.Version?
-    ) -> Xcm.VersionedMultilocation
-
-    func createVersionedMultiasset(
-        origin: ChainModel,
-        reserve: ChainModel,
-        assetLocation: XcmAsset.ReservePath,
-        amount: BigUInt,
-        version: Xcm.Version?
-    ) throws -> Xcm.VersionedMultiasset
-
-    func createWeightMessages(
-        from chainAsset: ChainAsset,
-        reserve: XcmTransferReserve,
-        destination: XcmTransferDestination,
-        amount: BigUInt,
-        xcmTransfers: XcmTransfers
-    ) throws -> XcmWeightMessages
-}
-
-enum XcmTransferFactoryError: Error {
-    case noOriginAssetFound(ChainAssetId)
-    case noDestinationAssetFound(ChainAssetId)
-    case noDestinationFound(ChainModel.Id)
-    case noReserve(ChainAssetId)
-    case unsupportedInstruction(String)
-    case noInstructions(String)
-    case noDestinationFee(origin: ChainAssetId, destination: ChainModel.Id)
-    case noReserveFee(ChainAssetId)
-    case noBaseWeight(ChainModel.Id)
-}
-
-struct XcmMultilocationAssetParams {
-    let origin: ChainAsset
-    let reserve: ChainModel
-    let destination: XcmTransferDestination
-    let amount: BigUInt
-    let xcmTransfers: XcmTransfers
-}
-
-extension XcmTransferFactoryProtocol {
-    func createMultilocationAsset(
-        for params: XcmMultilocationAssetParams,
-        version: XcmMultilocationAssetVersion
-    ) throws -> XcmMultilocationAsset {
-        let chainAsset = params.origin
-
-        let multilocation = createVersionedMultilocation(
-            origin: chainAsset.chain,
-            destination: params.destination,
-            version: version.multiLocation
-        )
-
-        let originChainAssetId = chainAsset.chainAssetId
-
-        guard params.xcmTransfers.transfer(
-            from: originChainAssetId,
-            destinationChainId: params.destination.chain.chainId
-        ) != nil else {
-            throw XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
-        }
-
-        guard let reservePath = params.xcmTransfers.getReservePath(for: originChainAssetId) else {
-            throw XcmTransferFactoryError.noReserve(originChainAssetId)
-        }
-
-        let multiasset = try createVersionedMultiasset(
-            origin: chainAsset.chain,
-            reserve: params.reserve,
-            assetLocation: reservePath,
-            amount: params.amount,
-            version: version.multiAssets
-        )
-
-        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
-    }
-}
-
-final class XcmTransferFactory {
-    private func extractRelativeJunctions(from path: JSON) throws -> Xcm.JunctionsV2 {
-        var junctions: [Xcm.Junction] = []
+final class XcmV3TransferFactory {
+    private func extractRelativeJunctions(from path: JSON) throws -> XcmV3.Junctions {
+        var junctions: [XcmV3.Junction] = []
 
         if let palletInstance = path.palletInstance?.unsignedIntValue {
             junctions.append(.palletInstance(UInt8(palletInstance)))
@@ -109,10 +21,10 @@ final class XcmTransferFactory {
             junctions.append(.generalIndex(generalIndex))
         }
 
-        return Xcm.Junctions(items: junctions)
+        return XcmV3.Junctions(items: junctions)
     }
 
-    private func extractAbsoluteJunctions(from path: JSON) throws -> Xcm.JunctionsV2 {
+    private func extractAbsoluteJunctions(from path: JSON) throws -> XcmV3.Junctions {
         let commonJunctions = try extractRelativeJunctions(from: path)
 
         if let parachainId = path.parachainId?.unsignedIntValue {
@@ -148,9 +60,9 @@ final class XcmTransferFactory {
         type: XcmAsset.LocationType,
         origin: ChainModel,
         reserve: ChainModel
-    ) throws -> Xcm.Multilocation {
+    ) throws -> XcmV3.Multilocation {
         let parents = extractParents(from: path, type: type, origin: origin, reserve: reserve)
-        let junctions: Xcm.JunctionsV2
+        let junctions: XcmV3.Junctions
 
         switch type {
         case .absolute, .concrete:
@@ -163,21 +75,21 @@ final class XcmTransferFactory {
             }
         }
 
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        return XcmV3.Multilocation(parents: parents, interior: junctions)
     }
 
     func createMultilocation(
         origin: ChainModel,
         destination: XcmTransferDestination
-    ) -> Xcm.Multilocation {
-        let accountIdJunction: Xcm.Junction
+    ) -> XcmV3.Multilocation {
+        let accountIdJunction: XcmV3.Junction
 
         if destination.chain.isEthereumBased {
-            let accountIdValue = Xcm.AccountId20Value(network: .any, key: destination.accountId)
-            accountIdJunction = Xcm.Junction.accountKey20(accountIdValue)
+            let accountIdValue = XcmV3.AccountId20Value(network: nil, key: destination.accountId)
+            accountIdJunction = XcmV3.Junction.accountKey20(accountIdValue)
         } else {
-            let accountIdValue = Xcm.AccountId32Value(network: .any, accountId: destination.accountId)
-            accountIdJunction = Xcm.Junction.accountId32(accountIdValue)
+            let accountIdValue = XcmV3.AccountId32Value(network: nil, accountId: destination.accountId)
+            accountIdJunction = XcmV3.Junction.accountId32(accountIdValue)
         }
 
         let parents: UInt8
@@ -188,22 +100,22 @@ final class XcmTransferFactory {
             parents = 0
         }
 
-        let junctions: Xcm.JunctionsV2
+        let junctions: XcmV3.Junctions
 
         if let parachainId = destination.parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.Junctions(items: [networkJunction, accountIdJunction])
+            let networkJunction = XcmV3.Junction.parachain(parachainId)
+            junctions = XcmV3.Junctions(items: [networkJunction, accountIdJunction])
         } else {
-            junctions = Xcm.Junctions(items: [accountIdJunction])
+            junctions = XcmV3.Junctions(items: [accountIdJunction])
         }
 
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        return XcmV3.Multilocation(parents: parents, interior: junctions)
     }
 
     func createMultilocation(
         origin: ChainModel,
         reserve: XcmTransferReserve
-    ) -> Xcm.Multilocation {
+    ) -> XcmV3.Multilocation {
         let parents: UInt8
 
         if !origin.isRelaychain, origin.chainId != reserve.chain.chainId {
@@ -212,16 +124,16 @@ final class XcmTransferFactory {
             parents = 0
         }
 
-        let junctions: Xcm.JunctionsV2
+        let junctions: XcmV3.Junctions
 
         if let parachainId = reserve.parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.JunctionsV2(items: [networkJunction])
+            let networkJunction = XcmV3.Junction.parachain(parachainId)
+            junctions = XcmV3.Junctions(items: [networkJunction])
         } else {
-            junctions = Xcm.JunctionsV2(items: [])
+            junctions = XcmV3.Junctions(items: [])
         }
 
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        return XcmV3.Multilocation(parents: parents, interior: junctions)
     }
 
     func createMultiAsset(
@@ -229,7 +141,7 @@ final class XcmTransferFactory {
         reserve: ChainModel,
         assetLocation: XcmAsset.ReservePath,
         amount: BigUInt
-    ) throws -> Xcm.Multiasset {
+    ) throws -> XcmV3.Multiasset {
         let multilocation = try createAssetMultilocation(
             from: assetLocation.path,
             type: assetLocation.type,
@@ -237,7 +149,7 @@ final class XcmTransferFactory {
             reserve: reserve
         )
 
-        return Xcm.Multiasset(multilocation: multilocation, amount: amount)
+        return XcmV3.Multiasset(multilocation: multilocation, amount: amount)
     }
 
     func createDestinationWeightMessage(
@@ -245,7 +157,7 @@ final class XcmTransferFactory {
         destination: XcmTransferDestination,
         xcmTransfer: XcmAssetTransfer,
         xcmTransfers: XcmTransfers,
-        multiasset: Xcm.Multiasset
+        multiasset: XcmV3.Multiasset
     ) throws -> Xcm.Message {
         let multilocation = createMultilocation(origin: chainAsset.chain, destination: destination)
 
@@ -265,7 +177,7 @@ final class XcmTransferFactory {
         from chainAsset: ChainAsset,
         reserve: XcmTransferReserve,
         xcmTransfers: XcmTransfers,
-        multiasset: Xcm.Multiasset
+        multiasset: XcmV3.Multiasset
     ) throws -> Xcm.Message? {
         guard let reserveFee = xcmTransfers.reserveFee(from: chainAsset.chainAssetId) else {
             return nil
@@ -286,60 +198,59 @@ final class XcmTransferFactory {
 
     func createWeightMessage(
         from instructions: [String],
-        destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset
+        destination: XcmV3.Multilocation,
+        asset: XcmV3.Multiasset
     ) throws -> Xcm.Message {
-        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
+        let xcmInstructions: [XcmV3.Instruction] = try instructions.map { rawInstruction in
             switch rawInstruction {
-            case Xcm.Instruction.fieldWithdrawAsset:
+            case XcmV3.Instruction.fieldWithdrawAsset:
                 return .withdrawAsset([asset])
-            case Xcm.Instruction.fieldClearOrigin:
+            case XcmV3.Instruction.fieldClearOrigin:
                 return .clearOrigin
-            case Xcm.Instruction.fieldReserveAssetDeposited:
+            case XcmV3.Instruction.fieldReserveAssetDeposited:
                 return .reserveAssetDeposited([asset])
-            case Xcm.Instruction.fieldBuyExecution:
-                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
+            case XcmV3.Instruction.fieldBuyExecution:
+                let value = XcmV3.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
                 return .buyExecution(value)
-            case Xcm.Instruction.fieldDepositAsset:
-                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
+            case XcmV3.Instruction.fieldDepositAsset:
+                let value = XcmV3.DepositAssetValue(assets: .wild(.all), beneficiary: destination)
                 return .depositAsset(value)
-            case Xcm.Instruction.fieldDepositReserveAsset:
-                let value = Xcm.DepositReserveAssetValue(
+            case XcmV3.Instruction.fieldDepositReserveAsset:
+                let value = XcmV3.DepositReserveAssetValue(
                     assets: .wild(.all),
-                    maxAssets: 1,
                     dest: destination,
                     xcm: []
                 )
 
                 return .depositReserveAsset(value)
-            case Xcm.Instruction.fieldReceiveTeleportedAsset:
+            case XcmV3.Instruction.fieldReceiveTeleportedAsset:
                 return .receiveTeleportedAsset([asset])
             default:
                 throw XcmTransferFactoryError.unsupportedInstruction(rawInstruction)
             }
         }
 
-        return .V2(xcmInstructions)
+        return .V3(xcmInstructions)
     }
 }
 
-extension XcmTransferFactory: XcmTransferFactoryProtocol {
+extension XcmV3TransferFactory: XcmTransferFactoryProtocol {
     func createVersionedMultilocation(
         origin: ChainModel,
         destination: XcmTransferDestination,
-        version: Xcm.Version?
+        version _: Xcm.Version?
     ) -> Xcm.VersionedMultilocation {
         let multilocation = createMultilocation(origin: origin, destination: destination)
-        return .versionedMultiLocation(for: version, multiLocation: multilocation)
+        return .V3(multilocation)
     }
 
     func createVersionedMultilocation(
         origin: ChainModel,
         reserve: XcmTransferReserve,
-        version: Xcm.Version?
+        version _: Xcm.Version?
     ) -> Xcm.VersionedMultilocation {
         let multilocation = createMultilocation(origin: origin, reserve: reserve)
-        return .versionedMultiLocation(for: version, multiLocation: multilocation)
+        return .V3(multilocation)
     }
 
     func createVersionedMultiasset(
@@ -347,7 +258,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
         reserve: ChainModel,
         assetLocation: XcmAsset.ReservePath,
         amount: BigUInt,
-        version: Xcm.Version?
+        version _: Xcm.Version?
     ) throws -> Xcm.VersionedMultiasset {
         let multiasset = try createMultiAsset(
             origin: origin,
@@ -356,7 +267,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
             amount: amount
         )
 
-        return .versionedMultiasset(for: version, multiAsset: multiasset)
+        return .V3(multiasset)
     }
 
     func createWeightMessages(
@@ -364,7 +275,8 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
         reserve: XcmTransferReserve,
         destination: XcmTransferDestination,
         amount: BigUInt,
-        xcmTransfers: XcmTransfers
+        xcmTransfers: XcmTransfers,
+        version _: Xcm.Version?
     ) throws -> XcmWeightMessages {
         let originChainAssetId = chainAsset.chainAssetId
 
