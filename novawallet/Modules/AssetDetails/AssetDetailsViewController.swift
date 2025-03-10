@@ -8,7 +8,12 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     let presenter: AssetDetailsPresenterProtocol
     var observable = NovaWalletViewModelObserverContainer<ContainableObserver>()
     weak var reloadableDelegate: ReloadableDelegate?
-    var contentInsets: UIEdgeInsets = .zero
+    var contentInsets: UIEdgeInsets = .zero {
+        didSet {
+            rootView.setBottomInset(contentInsets.bottom)
+        }
+    }
+
     var preferredContentHeight: CGFloat { rootView.prefferedHeight }
 
     init(

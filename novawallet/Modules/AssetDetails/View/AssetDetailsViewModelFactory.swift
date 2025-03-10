@@ -18,11 +18,7 @@ protocol AssetDetailsViewModelFactoryProtocol {
 
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel
 
-    func createAssetDetailsModel(
-        priceData: PriceData?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> AssetDetailsModel
+    func createAssetDetailsModel(chainAsset: ChainAsset) -> AssetDetailsModel
 }
 
 final class AssetDetailsViewModelFactory {
@@ -77,30 +73,6 @@ private extension AssetDetailsViewModelFactory {
             price: priceString
         )
     }
-
-    func createPriceState(
-        priceData: PriceData?,
-        locale: Locale
-    ) -> AssetPriceViewModel {
-        let price: Decimal
-
-        if let priceData = priceData {
-            price = Decimal(string: priceData.price) ?? 0.0
-        } else {
-            price = 0.0
-        }
-
-        let priceChangeValue = (priceData?.dayChange ?? 0.0) / 100.0
-        let priceChangeString = priceChangePercentFormatter
-            .value(for: locale)
-            .stringFromDecimal(priceChangeValue) ?? ""
-        let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
-            ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
-        let priceString = priceFormatter(priceId: priceData?.currencyId)
-            .value(for: locale)
-            .stringFromDecimal(price) ?? ""
-        return AssetPriceViewModel(amount: priceString, change: priceChange)
-    }
 }
 
 extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
@@ -134,22 +106,13 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         )
     }
 
-    func createAssetDetailsModel(
-        priceData: PriceData?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> AssetDetailsModel {
+    func createAssetDetailsModel(chainAsset: ChainAsset) -> AssetDetailsModel {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         let assetIcon = assetIconViewModelFactory.createAssetIconViewModel(for: chainAsset.asset.icon)
-        let price = createPriceState(
-            priceData: priceData,
-            locale: locale
-        )
 
         return AssetDetailsModel(
             tokenName: chainAsset.asset.symbol,
             assetIcon: assetIcon,
-            price: price,
             network: networkViewModel
         )
     }
