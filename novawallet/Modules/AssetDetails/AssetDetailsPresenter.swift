@@ -253,7 +253,12 @@ extension AssetDetailsPresenter: PurchaseDelegate {
 }
 
 extension AssetDetailsPresenter: AssetPriceChartModuleOutputProtocol {
-    func didReceive(_ error: any Error) {
-        logger?.error("Did receive error: \(error)")
+    func didReceiveChartState(_ state: AssetPriceChartState) {
+        switch state {
+        case .loading, .available:
+            view?.didReceiveChartAvailable(true)
+        case .unavailable:
+            view?.didReceiveChartAvailable(false)
+        }
     }
 }

@@ -57,14 +57,6 @@ private extension AssetDetailsViewController {
             view: rootView.chartContainerView,
             insets: insets
         )
-
-        let widgetHeight = chartViewProvider.getProposedHeight()
-
-        rootView.setChartViewHeight(widgetHeight)
-
-        observable.observers.forEach {
-            $0.observer?.didChangePreferredContentHeight(to: preferredContentHeight)
-        }
     }
 
     func addHandlers() {
@@ -110,6 +102,18 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
 
     func didReceive(balance: AssetDetailsBalanceModel) {
         rootView.balanceWidget.bind(with: balance)
+    }
+
+    func didReceiveChartAvailable(_ available: Bool) {
+        let widgetHeight = available
+            ? chartViewProvider.getProposedHeight()
+            : .zero
+
+        rootView.setChartViewHeight(widgetHeight)
+
+        observable.observers.forEach {
+            $0.observer?.didChangePreferredContentHeight(to: preferredContentHeight)
+        }
     }
 }
 

@@ -37,26 +37,25 @@ final class AssetPriceChartInteractor: AnyProviderAutoCleaning {
 
 private extension AssetPriceChartInteractor {
     func fetchAndSubscribe() {
-        subscribePrice()
-        fetchChartData()
-    }
-
-    func subscribePrice() {
-        if let priceId = asset.priceId {
-            clear(streamableProvider: &priceProvider)
-
-            priceProvider = subscribeToPrice(
-                for: priceId,
-                currency: currency
-            )
-        } else {
-            presenter?.didReceive(price: nil)
+        guard let priceId = asset.priceId else {
+            presenter?.didReceive(.missingPriceId)
+            return
         }
+
+        subscribePrice(priceId: priceId)
+        fetchChartData(priceId: priceId)
     }
 
-    func fetchChartData() {
-        guard let priceId = asset.priceId else { return }
+    func subscribePrice(priceId: AssetModel.PriceId) {
+        clear(streamableProvider: &priceProvider)
 
+        priceProvider = subscribeToPrice(
+            for: priceId,
+            currency: currency
+        )
+    }
+
+    func fetchChartData(priceId: AssetModel.PriceId) {
         let wrapper = priceChartDataOperationFactory.createWrapper(
             tokenId: priceId,
             currency: currency
@@ -74,7 +73,7 @@ private extension AssetPriceChartInteractor {
             case let .success(prices):
                 self?.presenter?.didReceive(prices: prices)
             case let .failure(error):
-                self?.presenter?.didReceive(error)
+                self?.presenter?.didReceive(.chartDataNotAvailable)
             }
         }
     }
@@ -105,7 +104,13 @@ extension AssetPriceChartInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
         case let .success(priceData):
             presenter?.didReceive(price: priceData)
         case let .failure(error):
-            presenter?.didReceive(error)
+            presenter?.didReceive(.priceDataNotAvailable)
         }
     }
+}
+
+enum AssetPriceChartInteractorError {
+    case priceDataNotAvailable
+    case missingPriceId
+    case chartDataNotAvailable
 }
