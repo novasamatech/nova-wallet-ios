@@ -14,7 +14,11 @@ final class BannersViewController: UIViewController, ViewHolder {
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
 
-    var maxWidgetHeight = BannersViewLayout.Constants.skeletonViewHeight
+    var maxContentHeight = BannersViewLayout.Constants.contentMinHeight
+
+    var maxWidgetHeight: CGFloat {
+        maxContentHeight + BannersViewLayout.Constants.pageControlHeight
+    }
 
     init(presenter: BannersPresenterProtocol) {
         self.presenter = presenter
@@ -36,12 +40,18 @@ final class BannersViewController: UIViewController, ViewHolder {
 
         setupCollectionView()
         setupActions()
-        presenter.setup()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        presenter.setup(with: rootView.availableTextWidth)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        rootView.restartLoadingIfNeeded()
         setupAutoScroll()
     }
 
@@ -71,13 +81,12 @@ private extension BannersViewController {
     }
 
     func updateMaxWidgetHeight(for widgetViewModel: BannersWidgetViewModel) {
-        let oldHeight = maxWidgetHeight
+        let oldHeight = maxContentHeight
         let height = widgetViewModel.maxTextHeight
-            + BannerView.Constants.textContainerTopInset
-            + BannerView.Constants.textContainerBottomInset
+            + BannerView.Constants.textContainerVerticalInset * 2
             + BannerView.Constants.contentImageViewVerticalInset * 2
 
-        maxWidgetHeight = height
+        maxContentHeight = height
 
         if height != oldHeight {
             rootView.collectionView.collectionViewLayout.invalidateLayout()
@@ -228,7 +237,8 @@ private extension BannersViewController {
         if CGFloat(staticState.itemByActualOffset) == rawItemIndex {
             targetItemIndex = staticState.itemByActualOffset
         } else {
-            let newIndex = staticState.itemByActualOffset + (rawItemIndex > CGFloat(staticState.itemByActualOffset) ? 1 : -1)
+            let newIndex = staticState.itemByActualOffset
+                + (rawItemIndex > CGFloat(staticState.itemByActualOffset) ? 1 : -1)
             targetItemIndex = abs(Int(rawItemIndex) - staticState.itemByActualOffset) > 1 ? Int(rawItemIndex) : newIndex
         }
 
@@ -341,6 +351,10 @@ extension BannersViewController: BannersViewProtocol {
 
     func getMaxBannerHeight() -> CGFloat {
         maxWidgetHeight
+    }
+
+    func getAvailableTextWidth() -> CGFloat {
+        rootView.availableTextWidth
     }
 }
 
