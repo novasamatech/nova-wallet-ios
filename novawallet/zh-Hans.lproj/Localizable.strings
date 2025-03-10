@@ -488,10 +488,11 @@
 "common.copy.id" = "复制ID";
 "wallet.contacts.empty.title_v1.10" = "您发送转账的账户和联系人将出现在这里";
 "wallet.search.empty.title_v1.10.0" = "地址格式无效。确保地址属于正确的网络";
-"staking.analytics.period.7d" = "7天";
-"staking.analytics.period.30d" = "30天";
-"staking.analytics.period.1y" = "1年";
-"staking.analytics.period.all" = "全部";
+"common.period.1d" = "1天";
+"common.period.7d" = "7天";
+"common.period.30d" = "30天";
+"common.period.1y" = "1年";
+"common.period.all" = "全部";
 "staking.analytics.rewards.empty.message" = "您的奖励\n将出现在这里";
 "staking.analytics.stake.empty.message" = "您的质押变化\n将出现在这里";
 "common.details" = "详细信息";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "检测到高价格影响 (%@)";
 "swaps.max.price.diff.error.message" = "执行此交换将导致显著的滑点和经济损失。建议减小交易规模或将交易分拆为多笔交易。";
 "unstaking.limit.reached.message" = "您已达到解质押请求的上限（%@ 个活跃请求）";
+"chart.period.week" = "上周";
+"chart.period.month" = "上个月";
+"chart.period.year" = "去年";
+"chart.period.max" = "所有时间";
