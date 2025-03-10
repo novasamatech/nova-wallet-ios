@@ -42,15 +42,17 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     }
 
     func handleAppConnection(error: Error, deviceId: UUID) {
-        guard let view = view else {
-            return
-        }
+        guard
+            let view = view,
+            let device = devices.first(where: { $0.identifier == deviceId })
+        else { return }
 
         if let ledgerError = error as? LedgerError {
             baseWireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
                 networkName: appName,
+                deviceModel: device.model,
                 cancelClosure: {},
                 retryClosure: { [weak self] in
                     guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {

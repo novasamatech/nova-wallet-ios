@@ -14,6 +14,7 @@ struct GenericLedgerWalletViewFactory {
 
         let presenter = GenericLedgerWalletPresenter(
             deviceName: device.name,
+            deviceModel: device.model,
             appName: LedgerSubstrateApp.generic.displayName(for: nil),
             interactor: interactor,
             wireframe: wireframe,

@@ -19,6 +19,7 @@ protocol GenericLedgerWalletWireframeProtocol: AlertPresentable, ErrorPresentabl
     func showAddressVerification(
         on view: HardwareWalletAddressesViewProtocol?,
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         address: AccountAddress,
         cancelClosure: @escaping () -> Void
     )
