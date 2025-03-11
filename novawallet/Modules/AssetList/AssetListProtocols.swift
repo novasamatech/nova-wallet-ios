@@ -35,7 +35,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionLocks()
     func actionSend()
     func actionReceive()
-    func actionBuy()
+    func actionBuySell()
     func actionSwap()
     func actionChangeAssetListStyle()
 }
@@ -84,7 +84,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentLocks()
     func send()
     func receive()
-    func buy()
+    func buySell()
     func swap()
     func presentWalletConnect()
     func toggleAssetListStyle()
@@ -127,7 +127,8 @@ protocol AssetListWireframeProtocol: AnyObject,
     ErrorPresentable,
     CommonRetryable,
     WalletConnectScanPresentable,
-    WalletConnectErrorPresentable, ActionsManagePresentable {
+    WalletConnectErrorPresentable,
+    BuySellActionsPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showTokensManage(from view: AssetListViewProtocol?)
 
@@ -147,7 +148,7 @@ protocol AssetListWireframeProtocol: AnyObject,
         buyTokensClosure: @escaping BuyTokensClosure
     )
 
-    func showBuySellTokens(from view: AssetListViewProtocol?)
+    func showBuyTokens(from view: AssetListViewProtocol?)
 
     func showSwapTokens(from view: AssetListViewProtocol?)
 

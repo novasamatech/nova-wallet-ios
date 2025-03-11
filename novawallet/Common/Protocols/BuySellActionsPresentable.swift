@@ -36,7 +36,7 @@ extension BuySellActionsPresentable {
         presentActionsManage(
             from: view,
             actions: modalActionsContext.actions,
-            title: LocalizableResource { _ in "" },
+            title: nil,
             delegate: delegate,
             context: modalActionsContext.context
         )
