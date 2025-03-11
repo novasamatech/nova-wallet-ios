@@ -488,10 +488,11 @@
 "common.copy.id" = "Copy id";
 "wallet.contacts.empty.title_v1.10" = "Your accounts and contacts\nto whom you were sending\ntransfers will appear here";
 "wallet.search.empty.title_v1.10.0" = "Address format is invalid.\nMake sure that address\nbelongs to the right network";
-"staking.analytics.period.7d" = "7d";
-"staking.analytics.period.30d" = "30d";
-"staking.analytics.period.1y" = "1y";
-"staking.analytics.period.all" = "All";
+"common.period.1d" = "1d";
+"common.period.7d" = "7d";
+"common.period.30d" = "30d";
+"common.period.1y" = "1y";
+"common.period.all" = "All";
 "staking.analytics.rewards.empty.message" = "Your rewards \nwill appear here";
 "staking.analytics.stake.empty.message" = "Your stake changes\nwill appear here";
 "common.details" = "Details";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "High price impact detected (%@)";
 "swaps.max.price.diff.error.message" = "Executing this swap will result in significant slippage and financial losses. Consider reducing your trade size of splitting your trade into multiple transactions.";
 "unstaking.limit.reached.message" = "You have reached the unstaking limit requests (%@ active requests)";
+"chart.period.week" = "Last Week";
+"chart.period.month" = "Last Month";
+"chart.period.year" = "Last Year";
+"chart.period.max" = "All Time";

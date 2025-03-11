@@ -488,10 +488,11 @@
 "common.copy.id" = "IDをコピー";
 "wallet.contacts.empty.title_v1.10" = "ここには、\nあなたが送金した\nアカウントと連絡先が表示されます";
 "wallet.search.empty.title_v1.10.0" = "アドレス形式が無効です。アドレスが正しいネットワークに属していることを確認してください";
-"staking.analytics.period.7d" = "7日";
-"staking.analytics.period.30d" = "30日";
-"staking.analytics.period.1y" = "1年";
-"staking.analytics.period.all" = "全て";
+"common.period.1d" = "1日";
+"common.period.7d" = "7日";
+"common.period.30d" = "30日";
+"common.period.1y" = "1年";
+"common.period.all" = "全て";
 "staking.analytics.rewards.empty.message" = "報酬はここに表示されます";
 "staking.analytics.stake.empty.message" = "ステークの変更はここに表示されます";
 "common.details" = "詳細";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "高価格インパクト検出 (%@)";
 "swaps.max.price.diff.error.message" = "この交換を実行すると、大幅なスリッページと財務上の損失が発生します。取引サイズを減らすか、取引を複数のトランザクションに分けることを検討してください。";
 "unstaking.limit.reached.message" = "アンステーキングのリクエスト上限に達しました（%@ 件のアクティブなリクエスト）";
+"chart.period.week" = "先週";
+"chart.period.month" = "先月";
+"chart.period.year" = "昨年";
+"chart.period.max" = "全期間";

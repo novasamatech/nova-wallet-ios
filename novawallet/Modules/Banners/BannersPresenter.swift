@@ -15,6 +15,7 @@ final class BannersPresenter {
     private var banners: [Banner]?
     private var closedBanners: ClosedBanners?
     private var localizedResources: BannersLocalizedResources?
+    private var setUp: Bool = false
 
     init(
         interactor: BannersInteractorInputProtocol,
@@ -45,9 +46,16 @@ final class BannersPresenter {
 // MARK: BannersPresenterProtocol
 
 extension BannersPresenter: BannersPresenterProtocol {
-    func setup() {
+    func setup(with availableTextWidth: CGFloat) {
+        guard !setUp else { return }
+
         provideBanners()
-        interactor.setup(with: locale)
+
+        interactor.setup(
+            with: locale,
+            availableTextWidth: availableTextWidth
+        )
+        setUp = true
     }
 
     func action(for bannerId: String) {
@@ -127,12 +135,22 @@ extension BannersPresenter: BannersModuleInputProtocol {
     }
 
     func refresh() {
-        interactor.refresh(for: locale)
+        guard let availableTextWidth = view?.getAvailableTextWidth() else { return }
+
+        interactor.refresh(
+            for: locale,
+            availableTextWidth: availableTextWidth
+        )
     }
 
     func updateLocale(_ newLocale: Locale) {
+        guard let availableTextWidth = view?.getAvailableTextWidth() else { return }
+
         locale = newLocale
 
-        interactor.updateResources(for: newLocale)
+        interactor.updateResources(
+            for: newLocale,
+            availableTextWidth: availableTextWidth
+        )
     }
 }
