@@ -208,9 +208,9 @@ final class AssetDetailsViewLayout: UIView {
         return Constants.containerViewTopOffset
             + containerView.stackView.layoutMargins.top
             + balanceSectionHeight
-            + Constants.sectionSpace
+            + Constants.sectionSpace * 2
             + buttonsRowHeight
-            + Constants.sectionSpace
+            + Constants.chartWidgetInset * 2
             + chartViewHeight
             + Constants.bottomOffset
     }
@@ -239,7 +239,7 @@ extension AssetDetailsViewLayout {
         static let assetHeight: CGFloat = 28
         static let containerViewTopOffset: CGFloat = 12
         static let sectionSpace: CGFloat = 8
-        static let bottomOffset: CGFloat = 16
+        static let bottomOffset: CGFloat = 24
         static let assetImageViewSize: CGFloat = 28
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8

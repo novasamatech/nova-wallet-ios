@@ -4,7 +4,7 @@ import SoraUI
 
 class ContainerViewController: UIViewController, AdaptiveDesignable {
     private enum Constants {
-        static let minimumBottonInset: CGFloat = 151.0
+        static let minimumBottonInset: CGFloat = 159.0
         static let contentAnimationDuration: TimeInterval = 0.2
         static let draggableChangeDuration: TimeInterval = 0.25
         static let draggableCancellationThreshold: Double = 0.1
@@ -207,15 +207,10 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
     fileprivate func createPreferredContentInsets(for contentHeight: CGFloat) -> UIEdgeInsets {
         var contentInsets: UIEdgeInsets = inheritedInsets
 
-        let contentSize = contentInsets.top + contentHeight
-        let bottomInset = containerSize.height - contentSize
-
-        let finalInset = max(
-            bottomInset,
+        contentInsets.bottom = max(
+            containerSize.height - contentHeight - contentInsets.bottom,
             Constants.minimumBottonInset
         )
-
-        contentInsets.bottom = finalInset
 
         return contentInsets
     }
