@@ -30,8 +30,14 @@ final class BannersInteractor {
 // MARK: Private
 
 private extension BannersInteractor {
-    func fetchBanners(for locale: Locale) {
-        let fullFetchWrapper = createFullFetchWrapper(for: locale)
+    func fetchBanners(
+        for locale: Locale,
+        availableTextWidth: CGFloat
+    ) {
+        let fullFetchWrapper = createFullFetchWrapper(
+            for: locale,
+            availableTextWidth: availableTextWidth
+        )
 
         execute(
             wrapper: fullFetchWrapper,
@@ -48,20 +54,26 @@ private extension BannersInteractor {
         }
     }
 
-    func createFullFetchWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersFetchResult> {
+    func createFullFetchWrapper(
+        for locale: Locale,
+        availableTextWidth: CGFloat
+    ) -> CompoundOperationWrapper<BannersFetchResult> {
         let backgroundImageInfo = CommonImageInfo(
             size: CGSize(width: 343, height: 110),
             scale: UIScreen.main.scale
         )
         let contentImageInfo = CommonImageInfo(
-            size: CGSize(width: 202, height: 126),
+            size: CGSize(width: 126, height: 96),
             scale: UIScreen.main.scale
         )
         let bannersFetchWrapper = bannersFactory.createWrapper(
             backgroundImageInfo: backgroundImageInfo,
             contentImageInfo: contentImageInfo
         )
-        let localizationFetchWrapper = localizationFactory.createWrapper(for: locale)
+        let localizationFetchWrapper = localizationFactory.createWrapper(
+            for: locale,
+            availableWidth: availableTextWidth
+        )
 
         let mergeOperation: ClosureOperation<BannersFetchResult> = ClosureOperation { [weak self] in
             guard let self else {
@@ -93,8 +105,14 @@ private extension BannersInteractor {
 // MARK: BannersInteractorInputProtocol
 
 extension BannersInteractor: BannersInteractorInputProtocol {
-    func updateResources(for locale: Locale) {
-        let localizationFetchWrapper = localizationFactory.createWrapper(for: locale)
+    func updateResources(
+        for locale: Locale,
+        availableTextWidth: CGFloat
+    ) {
+        let localizationFetchWrapper = localizationFactory.createWrapper(
+            for: locale,
+            availableWidth: availableTextWidth
+        )
 
         execute(
             wrapper: localizationFetchWrapper,
@@ -111,12 +129,24 @@ extension BannersInteractor: BannersInteractorInputProtocol {
         }
     }
 
-    func setup(with locale: Locale) {
-        fetchBanners(for: locale)
+    func setup(
+        with locale: Locale,
+        availableTextWidth: CGFloat
+    ) {
+        fetchBanners(
+            for: locale,
+            availableTextWidth: availableTextWidth
+        )
     }
 
-    func refresh(for locale: Locale) {
-        fetchBanners(for: locale)
+    func refresh(
+        for locale: Locale,
+        availableTextWidth: CGFloat
+    ) {
+        fetchBanners(
+            for: locale,
+            availableTextWidth: availableTextWidth
+        )
     }
 
     func closeBanner(with id: String) {

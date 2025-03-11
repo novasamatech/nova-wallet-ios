@@ -9,6 +9,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
     private var sectionsExpandableState: [Int: Bool] = [:]
 
     private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
+    private var totalBalanceInsets: UIEdgeInsets = AssetListMeasurement.summaryInsets
 
     private var bannersHeight: CGFloat = AssetListMeasurement.bannerHeight
     private var bannersInsets: UIEdgeInsets = .zero
@@ -164,7 +165,7 @@ private extension AssetListFlowLayout {
                 totalBalanceHeight
         }
 
-        initialY += AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
+        initialY += totalBalanceInsets.top + totalBalanceInsets.bottom
 
         initialY += nftsInsets.top + nftsInsets.bottom
 
@@ -245,10 +246,18 @@ extension AssetListFlowLayout {
     }
 
     func updateTotalBalanceHeight(_ height: CGFloat) {
-        guard height != totalBalanceHeight else {
+        var newInsets = AssetListMeasurement.summaryInsets
+
+        if nftsInsets == .zero {
+            newInsets.bottom = AssetListMeasurement.nftsInsets.bottom
+        }
+
+        guard height != totalBalanceHeight || totalBalanceInsets != newInsets else {
             return
         }
+
         totalBalanceHeight = height
+        totalBalanceInsets = newInsets
         invalidateLayout()
     }
 
@@ -292,19 +301,19 @@ extension AssetListFlowLayout {
     ) -> CGFloat {
         switch type {
         case .account:
-            return AssetListMeasurement.accountHeight
+            AssetListMeasurement.accountHeight
         case .totalBalance:
-            return totalBalanceHeight
+            totalBalanceHeight
         case .yourNfts:
-            return AssetListMeasurement.nftsHeight
+            AssetListMeasurement.nftsHeight
         case .banner:
-            return bannersHeight
+            bannersHeight
         case .settings:
-            return AssetListMeasurement.settingsHeight
+            AssetListMeasurement.settingsHeight
         case .emptyState:
-            return AssetListMeasurement.emptyStateCellHeight
+            AssetListMeasurement.emptyStateCellHeight
         case .asset:
-            return assetCellHeight(for: indexPath)
+            assetCellHeight(for: indexPath)
         }
     }
 
@@ -314,15 +323,15 @@ extension AssetListFlowLayout {
     ) -> UIEdgeInsets {
         switch type {
         case .summary:
-            return AssetListMeasurement.summaryInsets
+            totalBalanceInsets
         case .nfts:
-            return nftsInsets
+            nftsInsets
         case .banners:
-            return bannersInsets
+            bannersInsets
         case .settings:
-            return AssetListMeasurement.settingsInsets
+            AssetListMeasurement.settingsInsets
         case .assetGroup:
-            return assetGroupInset(for: section)
+            assetGroupInset(for: section)
         }
     }
 

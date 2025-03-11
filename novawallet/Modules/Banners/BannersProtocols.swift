@@ -17,7 +17,7 @@ protocol BannersModuleInputProtocol: AnyObject {
     var bannersState: BannersState { get }
     var locale: Locale { get }
 
-    func setup()
+    func setup(with availableTextWidth: CGFloat)
     func refresh()
     func updateLocale(_ newLocale: Locale)
 }
@@ -58,18 +58,28 @@ extension BannersViewProviderProtocol {
 protocol BannersViewProtocol: ControllerBackedProtocol, BannersViewProviderProtocol {
     func update(with viewModel: LoadableViewModelState<BannersWidgetViewModel>?)
     func didCloseBanner(updatedViewModel: BannersWidgetViewModel)
+    func getAvailableTextWidth() -> CGFloat
 }
 
 protocol BannersPresenterProtocol: AnyObject {
-    func setup()
+    func setup(with availableTextWidth: CGFloat)
     func action(for bannerId: String)
     func closeBanner(with id: String)
 }
 
 protocol BannersInteractorInputProtocol: AnyObject {
-    func setup(with locale: Locale)
-    func refresh(for locale: Locale)
-    func updateResources(for locale: Locale)
+    func setup(
+        with locale: Locale,
+        availableTextWidth: CGFloat
+    )
+    func refresh(
+        for locale: Locale,
+        availableTextWidth: CGFloat
+    )
+    func updateResources(
+        for locale: Locale,
+        availableTextWidth: CGFloat
+    )
     func closeBanner(with id: String)
 }
 

@@ -2,21 +2,22 @@ import Foundation
 import Operation_iOS
 
 final class CoingeckoPriceHistoryProviderSource {
-    static let maxAllowedRange = 365.secondsFromDays
-
     let operationFactory: CoingeckoOperationFactoryProtocol
     let currency: Currency
+    let period: PriceHistoryPeriod
     let priceId: AssetModel.PriceId
     let logger: LoggerProtocol
 
     init(
         priceId: AssetModel.PriceId,
         currency: Currency,
+        period: PriceHistoryPeriod,
         operationFactory: CoingeckoOperationFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.priceId = priceId
         self.currency = currency
+        self.period = period
         self.operationFactory = operationFactory
         self.logger = logger
     }
@@ -37,14 +38,10 @@ extension CoingeckoPriceHistoryProviderSource: SingleValueProviderSourceProtocol
     typealias Model = PriceHistory
 
     func fetchOperation() -> CompoundOperationWrapper<Model?> {
-        let toTimeInterval = Date().timeIntervalSince1970
-        let fromTimeInterval = max(toTimeInterval - Self.maxAllowedRange, 0)
-
         let historyOperation = operationFactory.fetchPriceHistory(
             for: priceId,
             currency: currency,
-            startDate: Date(timeIntervalSince1970: fromTimeInterval),
-            endDate: Date(timeIntervalSince1970: toTimeInterval)
+            period: period
         )
 
         let mapOperation = ClosureOperation<Model?> { [weak self] in

@@ -8,6 +8,9 @@ enum XcmTransferServiceError: Error {
     case noXcmPalletFound([String])
     case noArgumentFound(String)
     case deliveryFeeNotAvailable
+    case noDestinationFee(origin: ChainAssetId, destination: ChainModel.Id)
+    case noReserveFee(ChainAssetId)
+    case noBaseWeight(ChainModel.Id)
 }
 
 final class XcmTransferService {
@@ -21,7 +24,8 @@ final class XcmTransferService {
     let substrateStorageFacade: StorageFacadeProtocol
     let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
 
-    private(set) lazy var xcmFactory = XcmTransferFactory()
+    private(set) lazy var xcmFactory = XcmModelFactory()
+    private(set) lazy var xcmWeightMessagesFactory = XcmWeightMessagesFactory()
     private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
     private(set) lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
 

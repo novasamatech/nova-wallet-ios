@@ -5,6 +5,7 @@ struct XcmMultilocationAsset {
     let asset: Xcm.VersionedMultiasset
 }
 
+// TODO: Have single version for xcm
 struct XcmMultilocationAssetVersion {
     let multiLocation: Xcm.Version?
     let multiAssets: Xcm.Version?

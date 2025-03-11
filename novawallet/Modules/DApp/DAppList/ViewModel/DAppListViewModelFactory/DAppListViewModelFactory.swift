@@ -277,7 +277,8 @@ private extension DAppListViewModelFactory {
         hasWalletsListUpdates: Bool
     ) -> DAppListSection {
         let headerViewModel = walletSwitchViewModelFactory.createViewModel(
-            from: wallet.walletIdenticonData(),
+            from: wallet.identifier,
+            walletIdenticon: wallet.walletIdenticonData(),
             walletType: wallet.type,
             hasNotification: hasWalletsListUpdates
         )

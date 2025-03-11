@@ -488,10 +488,11 @@
 "common.copy.id" = "Копировать идентификатор";
 "wallet.contacts.empty.title_v1.10" = "Здесь появятся ваши\nаккаунты и контакты, которым\nвы отправляли переводы";
 "wallet.search.empty.title_v1.10.0" = "Неверный формат адреса.\nУбедитесь, что адрес \nсоответствует сети";
-"staking.analytics.period.7d" = "7д";
-"staking.analytics.period.30d" = "30д";
-"staking.analytics.period.1y" = "1г";
-"staking.analytics.period.all" = "все";
+"common.period.1d" = "1д";
+"common.period.7d" = "7д";
+"common.period.30d" = "30д";
+"common.period.1y" = "1г";
+"common.period.all" = "все";
 "staking.analytics.rewards.empty.message" = "Здесь появятся\nваши вознаграждения";
 "staking.analytics.stake.empty.message" = "Здесь появятся ваши\nизменения по стейку";
 "common.details" = "Подробности";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "Обнаружено существенное влияние на цену (%@)";
 "swaps.max.price.diff.error.message" = "Выполнение этого свапа приведет к значительному проскальзыванию и финансовым потерям. Рассмотрите возможность уменьшения размера вашей сделки или разделения её на несколько транзакций.";
 "unstaking.limit.reached.message" = "Вы достигли предела запросов на отмену стейкинга (%@ активных запросов)";
+"chart.period.week" = "Прошлая неделя";
+"chart.period.month" = "Прошлый месяц";
+"chart.period.year" = "Прошлый год";
+"chart.period.max" = "Все время";

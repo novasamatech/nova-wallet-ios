@@ -47,7 +47,7 @@ extension XcmTransferService {
         let destChainId = request.destination.chain.chainId
         let originChainAssetId = request.origin.chainAssetId
         guard let xcmTransfer = xcmTransfers.transfer(from: originChainAssetId, destinationChainId: destChainId) else {
-            let error = XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
+            let error = XcmModelError.noDestinationAssetFound(originChainAssetId)
             return CompoundOperationWrapper.createWithError(error)
         }
 

@@ -488,10 +488,11 @@
 "common.copy.id" = "Sao chép id";
 "wallet.contacts.empty.title_v1.10" = "Tài khoản và liên hệ\nmà bạn đã gửi\nchuyển khoản sẽ xuất hiện ở đây";
 "wallet.search.empty.title_v1.10.0" = "Định dạng địa chỉ không hợp lệ. Đảm bảo rằng địa chỉ thuộc mạng đúng";
-"staking.analytics.period.7d" = "7 ngày";
-"staking.analytics.period.30d" = "30 ngày";
-"staking.analytics.period.1y" = "1 năm";
-"staking.analytics.period.all" = "Tất cả";
+"common.period.1d" = "1 ngày";
+"common.period.7d" = "7 ngày";
+"common.period.30d" = "30 ngày";
+"common.period.1y" = "1 năm";
+"common.period.all" = "Tất cả";
 "staking.analytics.rewards.empty.message" = "Phần thưởng của bạn \nsẽ xuất hiện tại đây";
 "staking.analytics.stake.empty.message" = "Thay đổi stake của bạn\nsẽ xuất hiện tại đây";
 "common.details" = "Chi tiết";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "Phát hiện tác động giá cao (%@)";
 "swaps.max.price.diff.error.message" = "Thực hiện giao dịch này sẽ dẫn đến trượt giá đáng kể và thiệt hại tài chính. Xem xét giảm kích thước giao dịch của bạn hoặc chia giao dịch thành nhiều lần thực hiện.";
 "unstaking.limit.reached.message" = "Bạn đã đạt đến giới hạn yêu cầu rút cược (%@ yêu cầu đang hoạt động)";
+"chart.period.week" = "Tuần trước";
+"chart.period.month" = "Tháng trước";
+"chart.period.year" = "Năm trước";
+"chart.period.max" = "Tất cả thời gian";

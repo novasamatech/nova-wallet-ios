@@ -54,7 +54,10 @@ private extension AssetListPresenter {
     }
 
     func provideHeaderViewModel() {
-        guard let walletType = walletType, let name = name else {
+        guard
+            let walletId = walletId,
+            let walletType = walletType,
+            let name = name else {
             return
         }
 
@@ -63,6 +66,7 @@ private extension AssetListPresenter {
                 params: .init(
                     title: name,
                     wallet: .init(
+                        identifier: walletId,
                         walletIdenticon: walletIdenticon,
                         walletType: walletType,
                         walletConnectSessionsCount: walletConnectSessionsCount,
@@ -80,7 +84,8 @@ private extension AssetListPresenter {
         }
 
         provideHeaderViewModel(
-            with: priceMapping,
+            with: walletId,
+            priceMapping: priceMapping,
             walletIdenticon: walletIdenticon,
             walletType: walletType,
             name: name
@@ -141,7 +146,8 @@ private extension AssetListPresenter {
     }
 
     func provideHeaderViewModel(
-        with priceMapping: [ChainAssetId: PriceData],
+        with walletId: String,
+        priceMapping: [ChainAssetId: PriceData],
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         name: String
@@ -154,6 +160,7 @@ private extension AssetListPresenter {
             params: .init(
                 title: name,
                 wallet: .init(
+                    identifier: walletId,
                     walletIdenticon: walletIdenticon,
                     walletType: walletType,
                     walletConnectSessionsCount: walletConnectSessionsCount,

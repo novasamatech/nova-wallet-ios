@@ -488,10 +488,11 @@
 "common.copy.id" = "Copiar id";
 "wallet.contacts.empty.title_v1.10" = "Tus cuentas y contactos\na quienes hayas enviado\ntransferencias aparecerán aquí";
 "wallet.search.empty.title_v1.10.0" = "El formato de la dirección es inválido.\nAsegúrate de que la dirección\npertenezca a la red correcta";
-"staking.analytics.period.7d" = "7d";
-"staking.analytics.period.30d" = "30d";
-"staking.analytics.period.1y" = "1a";
-"staking.analytics.period.all" = "Todo";
+"common.period.1d" = "1d";
+"common.period.7d" = "7d";
+"common.period.30d" = "30d";
+"common.period.1y" = "1a";
+"common.period.all" = "Todo";
 "staking.analytics.rewards.empty.message" = "Tus recompensas \naparecerán aquí";
 "staking.analytics.stake.empty.message" = "Los cambios en tu stake\naparecerán aquí";
 "common.details" = "Detalles";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "Impacto de precio alto detectado (%@)";
 "swaps.max.price.diff.error.message" = "Ejecutar este intercambio resultará en un deslizamiento significativo y pérdidas financieras. Considere reducir el tamaño de su transacción o dividir su operación en múltiples transacciones.";
 "unstaking.limit.reached.message" = "Has alcanzado el límite de solicitudes de desvinculación (%@ solicitudes activas)";
+"chart.period.week" = "Última semana";
+"chart.period.month" = "Último mes";
+"chart.period.year" = "Último año";
+"chart.period.max" = "Todo el tiempo";

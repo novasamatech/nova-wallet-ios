@@ -83,7 +83,7 @@ extension XcmTransferService {
             from: request.origin.chainAssetId,
             to: request.destination.chain.chainId
         ) else {
-            let error = XcmTransferFactoryError.noDestinationFee(
+            let error = XcmTransferServiceError.noDestinationFee(
                 origin: request.origin.chainAssetId,
                 destination: request.destination.chain.chainId
             )
@@ -92,7 +92,7 @@ extension XcmTransferService {
         }
 
         guard let baseWeight = xcmTransfers.baseWeight(for: request.destination.chain.chainId) else {
-            let error = XcmTransferFactoryError.noBaseWeight(request.destination.chain.chainId)
+            let error = XcmTransferServiceError.noBaseWeight(request.destination.chain.chainId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
@@ -110,12 +110,12 @@ extension XcmTransferService {
         xcmTransfers: XcmTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
-            let error = XcmTransferFactoryError.noReserveFee(request.origin.chainAssetId)
+            let error = XcmTransferServiceError.noReserveFee(request.origin.chainAssetId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
         guard let baseWeight = xcmTransfers.baseWeight(for: request.reserve.chain.chainId) else {
-            let error = XcmTransferFactoryError.noBaseWeight(request.reserve.chain.chainId)
+            let error = XcmTransferServiceError.noBaseWeight(request.reserve.chain.chainId)
             return CompoundOperationWrapper.createWithError(error)
         }
 

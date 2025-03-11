@@ -488,10 +488,11 @@
 "common.copy.id" = "Salin id";
 "wallet.contacts.empty.title_v1.10" = "Akun dan kontak Anda kepada siapa Anda mengirim transfer akan muncul di sini";
 "wallet.search.empty.title_v1.10.0" = "Format alamat tidak valid.\nPastikan alamat\ntermasuk dalam jaringan yang benar";
-"staking.analytics.period.7d" = "7 hari";
-"staking.analytics.period.30d" = "30 hari";
-"staking.analytics.period.1y" = "1 tahun";
-"staking.analytics.period.all" = "Semua";
+"common.period.1d" = "1 hari";
+"common.period.7d" = "7 hari";
+"common.period.30d" = "30 hari";
+"common.period.1y" = "1 tahun";
+"common.period.all" = "Semua";
 "staking.analytics.rewards.empty.message" = "Imbalan Anda\nakan muncul di sini";
 "staking.analytics.stake.empty.message" = "Perubahan staking Anda\nakan muncul di sini";
 "common.details" = "Detail";
@@ -1794,3 +1795,7 @@
 "swaps.max.price.diff.error.title" = "Dampak harga tinggi terdeteksi (%@)";
 "swaps.max.price.diff.error.message" = "Melakukan tukar ini akan mengakibatkan slippage signifikan dan kerugian finansial. Pertimbangkan untuk mengurangi ukuran perdagangan Anda atau membagi perdagangan Anda ke dalam beberapa transaksi.";
 "unstaking.limit.reached.message" = "Anda telah mencapai batas permintaan unstaking (%@ permintaan aktif)";
+"chart.period.week" = "Minggu Lalu";
+"chart.period.month" = "Bulan Lalu";
+"chart.period.year" = "Tahun Lalu";
+"chart.period.max" = "Sepanjang Masa";

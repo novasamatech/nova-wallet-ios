@@ -49,7 +49,7 @@ final class XcmTransferResolutionFactory {
             from: originChainAssetId.chainId,
             assetId: originChainAssetId.assetId
         ) else {
-            throw XcmTransferFactoryError.noReserve(originChainAssetId)
+            throw XcmModelError.noReserve(originChainAssetId)
         }
 
         guard let reserveChain = chainRegistry.getChain(for: reserveId) else {

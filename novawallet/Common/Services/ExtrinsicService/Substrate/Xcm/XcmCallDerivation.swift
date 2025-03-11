@@ -10,7 +10,7 @@ protocol XcmCallDerivating {
 }
 
 final class XcmCallDerivator {
-    private(set) lazy var xcmFactory = XcmTransferFactory()
+    private(set) lazy var xcmFactory = XcmModelFactory()
     private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
 }
 

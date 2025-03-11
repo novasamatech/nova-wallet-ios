@@ -38,8 +38,34 @@ final class DAppBrowserStateDataSource {
     }
 
     func fetchAccountList() throws -> [PolkadotExtensionAccount] {
+        var accounts: [PolkadotExtensionAccount] = []
+
+        if let substrateAccountId = wallet.substrateAccountId, let cryptoType = wallet.substrateCryptoType {
+            let substrateAccount = try createExtensionAccount(
+                for: substrateAccountId,
+                genesisHash: nil,
+                name: wallet.name,
+                chainFormat: .substrate(SubstrateConstants.genericAddressPrefix),
+                rawCryptoType: cryptoType
+            )
+
+            accounts.append(substrateAccount)
+        }
+
+        if let ethereumAddress = wallet.ethereumAddress {
+            let ethereumAccount = try createExtensionAccount(
+                for: ethereumAddress,
+                genesisHash: nil,
+                name: wallet.name,
+                chainFormat: .ethereum,
+                rawCryptoType: MultiassetCryptoType.ethereumEcdsa.rawValue
+            )
+
+            accounts.append(ethereumAccount)
+        }
+
         let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
-            guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
+            guard let chain = chainStore[chainAccount.chainId] else {
                 return nil
             }
 
@@ -55,19 +81,9 @@ final class DAppBrowserStateDataSource {
             )
         }
 
-        if let substrateAccountId = wallet.substrateAccountId, let cryptoType = wallet.substrateCryptoType {
-            let substrateAccount = try createExtensionAccount(
-                for: substrateAccountId,
-                genesisHash: nil,
-                name: wallet.name,
-                chainFormat: .substrate(42),
-                rawCryptoType: cryptoType
-            )
+        accounts.append(contentsOf: chainAccounts)
 
-            return [substrateAccount] + chainAccounts
-        } else {
-            return chainAccounts
-        }
+        return accounts
     }
 
     func fetchChainByEthereumChainId(_ chainId: String) -> ChainModel? {

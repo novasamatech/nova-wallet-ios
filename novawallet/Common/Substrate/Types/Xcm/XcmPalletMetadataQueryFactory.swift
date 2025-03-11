@@ -31,7 +31,7 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
     ) -> CompoundOperationWrapper<Xcm.Version?> {
         createXcmTypeVersionWrapper(
             for: runtimeProvider,
-            typeName: "xcm.VersionedMultiAssets"
+            oneOfTypes: ["xcm.VersionedMultiAssets", "xcm.VersionedAssets"]
         )
     }
 
@@ -40,7 +40,7 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
     ) -> CompoundOperationWrapper<Xcm.Version?> {
         createXcmTypeVersionWrapper(
             for: runtimeProvider,
-            typeName: "xcm.VersionedMultiAsset"
+            oneOfTypes: ["xcm.VersionedMultiAsset", "xcm.VersionedAsset"]
         )
     }
 
@@ -49,7 +49,7 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
     ) -> CompoundOperationWrapper<Xcm.Version?> {
         createXcmTypeVersionWrapper(
             for: runtimeProvider,
-            typeName: "xcm.VersionedMultiLocation"
+            oneOfTypes: ["xcm.VersionedMultiLocation", "xcm.VersionedLocation"]
         )
     }
 
