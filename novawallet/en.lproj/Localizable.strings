@@ -1807,3 +1807,6 @@
 "transak.sell.action.description" = "Sell crypto starting from just $10";
 "mercuryo.buy.action.description" = "Best price with fees up to 3.95%";
 "mercuryo.sell.action.description" = "Best price with fees up to 3.95%";
+"select.buy.provider.title" = "Select a provider to buy %@ token";
+"select.sell.provider.title" = "Select a provider to sell %@ token";
+"select.provider.disclaimer.text" = "Payment methods, fees and limits differ by provider. Compare their quotes to find the best option for you.";

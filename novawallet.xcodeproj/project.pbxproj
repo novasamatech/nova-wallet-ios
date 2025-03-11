@@ -1346,6 +1346,7 @@
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift */; };
+		2D53C6CD2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
@@ -7054,6 +7055,7 @@
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuySellActionsPresentable.swift; sourceTree = "<group>"; };
+		2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectRampProviderViewModelFactory.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
@@ -25465,6 +25467,7 @@
 				8FF85197C0F0F9613F485299 /* SelectRampProviderProtocols.swift */,
 				9E678E197906A7246BCF2D3C /* SelectRampProviderWireframe.swift */,
 				C4485B355F0C825BE382DCA2 /* SelectRampProviderPresenter.swift */,
+				2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */,
 				C377FBF81C3E8329E9A9F0C2 /* SelectRampProviderInteractor.swift */,
 				A3BB163EDA20F65EAAE34F30 /* SelectRampProviderViewController.swift */,
 				1043471C36FACB1CA4F5D841 /* SelectRampProviderViewLayout.swift */,
@@ -30405,6 +30408,7 @@
 				843A2C7326A8641400266F53 /* MultiValueView.swift in Sources */,
 				0CF609332B9438BD00DD4DB3 /* OperatingCall.swift in Sources */,
 				0CB261F52A9E188300287305 /* NominationPoolsBondExtraCall.swift in Sources */,
+				2D53C6CD2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift in Sources */,
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
 				77D326EA2B98DF900055FE88 /* TransferType.swift in Sources */,
 				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,

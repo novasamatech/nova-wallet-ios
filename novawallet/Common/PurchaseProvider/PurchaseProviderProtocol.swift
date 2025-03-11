@@ -54,7 +54,7 @@ protocol PurchaseProviderProtocol {
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [PurchaseAction]
-    func buildRampAction(
+    func buildRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction]

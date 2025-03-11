@@ -61,8 +61,8 @@ final class MercuryoProvider: PurchaseProviderProtocol {
             )
         ]
     }
-    
-    func buildRampAction(
+
+    func buildRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction] {
@@ -80,10 +80,10 @@ final class MercuryoProvider: PurchaseProviderProtocol {
               ) else {
             return []
         }
-        
+
         var paymentMethods = defaultPaymentMethods
         paymentMethods.append(.others("+5"))
-        
+
         let action = RampAction(
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
@@ -92,7 +92,7 @@ final class MercuryoProvider: PurchaseProviderProtocol {
             fiatPaymentMethods: paymentMethods,
             url: url
         )
-        
+
         return [action]
     }
 

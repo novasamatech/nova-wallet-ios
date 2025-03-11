@@ -57,8 +57,8 @@ final class TransakProvider: PurchaseProviderProtocol {
 
         return components?.url
     }
-    
-    func buildRampAction(
+
+    func buildRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction] {
@@ -74,10 +74,10 @@ final class TransakProvider: PurchaseProviderProtocol {
         guard let url = buildURLForToken(token, network: network, address: address) else {
             return []
         }
-        
+
         var paymentMethods = defaultPaymentMethods
         paymentMethods.append(.others("+12"))
-        
+
         let action = RampAction(
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
@@ -86,7 +86,7 @@ final class TransakProvider: PurchaseProviderProtocol {
             fiatPaymentMethods: paymentMethods,
             url: url
         )
-        
+
         return [action]
     }
 }

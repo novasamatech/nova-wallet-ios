@@ -47,8 +47,8 @@ final class BanxaProvider: PurchaseProviderProtocol {
             )
         ]
     }
-    
-    func buildRampAction(
+
+    func buildRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction] {
@@ -69,10 +69,10 @@ final class BanxaProvider: PurchaseProviderProtocol {
               ) else {
             return []
         }
-        
+
         var paymentMethods = defaultPaymentMethods
         paymentMethods.append(.others("+5"))
-        
+
         let action = RampAction(
             logo: R.image.banxaLogo()!,
             descriptionText: LocalizableResource { locale in
@@ -81,7 +81,7 @@ final class BanxaProvider: PurchaseProviderProtocol {
             fiatPaymentMethods: paymentMethods,
             url: url
         )
-        
+
         return [action]
     }
 

@@ -1,6 +1,6 @@
 import UIKit
 
-final class SelectRampProviderViewController: UIViewController {
+final class SelectRampProviderViewController: UIViewController, ViewHolder {
     typealias RootViewType = SelectRampProviderViewLayout
 
     let presenter: SelectRampProviderPresenterProtocol
@@ -26,4 +26,10 @@ final class SelectRampProviderViewController: UIViewController {
     }
 }
 
-extension SelectRampProviderViewController: SelectRampProviderViewProtocol {}
+// MARK: SelectRampProviderViewProtocol
+
+extension SelectRampProviderViewController: SelectRampProviderViewProtocol {
+    func didReceive(_ viewModel: SelectRampProvider.ViewModel) {
+        
+    }
+}
