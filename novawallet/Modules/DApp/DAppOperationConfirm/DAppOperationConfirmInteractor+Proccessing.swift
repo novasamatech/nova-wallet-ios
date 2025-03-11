@@ -97,15 +97,6 @@ extension DAppOperationConfirmInteractor {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "blockNumber")
             }
 
-            let expectedSignedExtensions = codingFactory.metadata.getSignedExtensions()
-
-            guard expectedSignedExtensions == extrinsic.signedExtensions else {
-                throw DAppOperationConfirmInteractorError.signedExtensionsMismatch(
-                    actual: extrinsic.signedExtensions,
-                    expected: expectedSignedExtensions
-                )
-            }
-
             guard let method = try? callOperation.extractNoCancellableResultData() else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "method")
             }
@@ -127,7 +118,6 @@ extension DAppOperationConfirmInteractor {
                 transactionVersion: UInt32(transactionVersion),
                 metadataHash: extrinsic.metadataHash,
                 withSignedTransaction: extrinsic.withSignedTransaction ?? false,
-                signedExtensions: expectedSignedExtensions,
                 version: extrinsic.version
             )
 

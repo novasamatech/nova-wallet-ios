@@ -3,7 +3,6 @@ import Foundation
 enum DAppOperationConfirmInteractorError: Error {
     case addressMismatch(actual: AccountAddress, expected: AccountAddress)
     case extrinsicBadField(name: String)
-    case signedExtensionsMismatch(actual: [String], expected: [String])
     case invalidRawSignature(data: Data)
     case signingFailed
 }
@@ -26,10 +25,6 @@ extension DAppOperationConfirmInteractorError: ErrorContentConvertible {
         case let .extrinsicBadField(name):
             message = R.string.localizable.dappConfirmationBadField(
                 name,
-                preferredLanguages: locale?.rLanguages
-            )
-        case .signedExtensionsMismatch:
-            message = R.string.localizable.dappConfirmationExtensionsMismatch(
                 preferredLanguages: locale?.rLanguages
             )
         case .invalidRawSignature:
