@@ -1801,3 +1801,9 @@
 "chart.period.max" = "All Time";
 "token.actions.picker.buy" = "Buy tokens";
 "token.actions.picker.sell" = "Sell tokens";
+"banxa.buy.action.description" = "Straightforward and efficient KYC process";
+"banxa.sell.action.description" = "Straightforward and efficient KYC process";
+"transak.buy.action.description" = "Buy crypto starting from just $5";
+"transak.sell.action.description" = "Sell crypto starting from just $10";
+"mercuryo.buy.action.description" = "Best price with fees up to 3.95%";
+"mercuryo.sell.action.description" = "Best price with fees up to 3.95%";

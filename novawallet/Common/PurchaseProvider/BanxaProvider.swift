@@ -1,6 +1,7 @@
 import Foundation
 import CryptoKit
 import SubstrateSdk
+import SoraFoundation
 
 final class BanxaProvider: PurchaseProviderProtocol {
     #if F_RELEASE
@@ -45,6 +46,43 @@ final class BanxaProvider: PurchaseProviderProtocol {
                 displayURL: displayURL
             )
         ]
+    }
+    
+    func buildRampAction(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        guard
+            let banxa = chainAsset.asset.buyProviders?.banxa,
+            let network = banxa.blockchain?.stringValue,
+            let token = banxa.coinType?.stringValue,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
+
+        guard let callbackUrl = self.callbackUrl,
+              let url = buildURL(
+                  address: address,
+                  token: token,
+                  network: network,
+                  callbackUrl: callbackUrl
+              ) else {
+            return []
+        }
+        
+        var paymentMethods = defaultPaymentMethods
+        paymentMethods.append(.others("+5"))
+        
+        let action = RampAction(
+            logo: R.image.banxaLogo()!,
+            descriptionText: LocalizableResource { locale in
+                R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
+            },
+            fiatPaymentMethods: paymentMethods,
+            url: url
+        )
+        
+        return [action]
     }
 
     private func buildURL(

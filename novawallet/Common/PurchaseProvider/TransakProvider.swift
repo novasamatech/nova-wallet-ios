@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class TransakProvider: PurchaseProviderProtocol {
     #if F_RELEASE
@@ -55,5 +56,37 @@ final class TransakProvider: PurchaseProviderProtocol {
         components?.queryItems = queryItems
 
         return components?.url
+    }
+    
+    func buildRampAction(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        guard
+            let transak = chainAsset.asset.buyProviders?.transak,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
+
+        let token = chainAsset.asset.symbol
+        let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
+
+        guard let url = buildURLForToken(token, network: network, address: address) else {
+            return []
+        }
+        
+        var paymentMethods = defaultPaymentMethods
+        paymentMethods.append(.others("+12"))
+        
+        let action = RampAction(
+            logo: R.image.transakLogo()!,
+            descriptionText: LocalizableResource { locale in
+                R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
+            },
+            fiatPaymentMethods: paymentMethods,
+            url: url
+        )
+        
+        return [action]
     }
 }

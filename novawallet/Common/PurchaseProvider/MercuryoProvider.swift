@@ -1,6 +1,7 @@
 import Foundation
 import CryptoKit
 import SubstrateSdk
+import SoraFoundation
 
 final class MercuryoProvider: PurchaseProviderProtocol {
     struct Configuration {
@@ -59,6 +60,40 @@ final class MercuryoProvider: PurchaseProviderProtocol {
                 displayURL: displayURL
             )
         ]
+    }
+    
+    func buildRampAction(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        guard
+            chainAsset.asset.buyProviders?.mercuryo != nil,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
+
+        guard let callbackUrl = self.callbackUrl,
+              let url = buildURL(
+                  address: address,
+                  token: chainAsset.asset.symbol,
+                  callbackUrl: callbackUrl
+              ) else {
+            return []
+        }
+        
+        var paymentMethods = defaultPaymentMethods
+        paymentMethods.append(.others("+5"))
+        
+        let action = RampAction(
+            logo: R.image.mercuryoLogo()!,
+            descriptionText: LocalizableResource { locale in
+                R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
+            },
+            fiatPaymentMethods: paymentMethods,
+            url: url
+        )
+        
+        return [action]
     }
 
     private func buildURL(address: AccountAddress, token: String, callbackUrl: URL) -> URL? {
