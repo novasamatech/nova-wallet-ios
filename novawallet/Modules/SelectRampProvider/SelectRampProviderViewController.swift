@@ -29,7 +29,5 @@ final class SelectRampProviderViewController: UIViewController, ViewHolder {
 // MARK: SelectRampProviderViewProtocol
 
 extension SelectRampProviderViewController: SelectRampProviderViewProtocol {
-    func didReceive(_ viewModel: SelectRampProvider.ViewModel) {
-        
-    }
+    func didReceive(_: SelectRampProvider.ViewModel) {}
 }

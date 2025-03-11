@@ -7,10 +7,10 @@ final class SelectRampProviderPresenter {
     let interactor: SelectRampProviderInteractorInputProtocol
     let viewModelFactory: SelectRampProviderViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
-    
+
     let chainAsset: ChainAsset
     let providerType: SelectRampProvider.ProviderType
-    
+
     var rampActions: [RampAction]?
 
     init(
@@ -35,15 +35,13 @@ final class SelectRampProviderPresenter {
 private extension SelectRampProviderPresenter {
     func provideViewModel() {
         guard let rampActions else { return }
-        
+
         let viewModel = viewModelFactory.createViewModel(
             for: providerType,
             asset: chainAsset.asset,
             actions: rampActions,
             locale: localizationManager.selectedLocale
         )
-        
-        
     }
 }
 
@@ -60,7 +58,7 @@ extension SelectRampProviderPresenter: SelectRampProviderPresenterProtocol {
 extension SelectRampProviderPresenter: SelectRampProviderInteractorOutputProtocol {
     func didReceive(_ rampActions: [RampAction]) {
         self.rampActions = rampActions
-        
+
         provideViewModel()
     }
 }

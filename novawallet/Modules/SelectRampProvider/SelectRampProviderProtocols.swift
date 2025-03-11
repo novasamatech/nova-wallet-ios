@@ -21,7 +21,7 @@ enum SelectRampProvider {
         case offramp
         case onramp
     }
-    
+
     struct ViewModel {
         let titleText: String
         let actions: [RampAction]

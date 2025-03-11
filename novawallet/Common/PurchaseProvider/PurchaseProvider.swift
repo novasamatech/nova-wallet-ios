@@ -42,7 +42,7 @@ extension PurchaseAggregator: PurchaseProviderProtocol {
         accountId: AccountId
     ) -> [RampAction] {
         providers.flatMap {
-            $0.buildRampAction(
+            $0.buildRampActions(
                 for: chainAsset,
                 accountId: accountId
             )

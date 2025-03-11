@@ -1347,6 +1347,7 @@
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift */; };
 		2D53C6CD2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */; };
+		2D53C6D12D80BABE00E7DDC4 /* RampProviderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6D02D80BABE00E7DDC4 /* RampProviderView.swift */; };
 		2D53EE192CF2635D0018EDBB /* FilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */; };
 		2D54932F2C03788200607BF7 /* MnemonicGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D54932E2C03788200607BF7 /* MnemonicGridView.swift */; };
 		2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */; };
@@ -7056,6 +7057,7 @@
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuySellActionsPresentable.swift; sourceTree = "<group>"; };
 		2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectRampProviderViewModelFactory.swift; sourceTree = "<group>"; };
+		2D53C6D02D80BABE00E7DDC4 /* RampProviderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampProviderView.swift; sourceTree = "<group>"; };
 		2D53EE182CF2635C0018EDBB /* FilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOperationFactory.swift; sourceTree = "<group>"; };
 		2D54932E2C03788200607BF7 /* MnemonicGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicGridView.swift; sourceTree = "<group>"; };
 		2D5493302C0490A900607BF7 /* GridUnitTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridUnitTransitionCoordinator.swift; sourceTree = "<group>"; };
@@ -14691,6 +14693,24 @@
 				2D4F552F2CCC388700B65B76 /* Send */,
 			);
 			path = Presenter;
+			sourceTree = "<group>";
+		};
+		2D53C6CE2D80BA8E00E7DDC4 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1043471C36FACB1CA4F5D841 /* SelectRampProviderViewLayout.swift */,
+				2D53C6D02D80BABE00E7DDC4 /* RampProviderView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		2D53C6CF2D80BA9800E7DDC4 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */,
+				C4CCA7057D4BAE6FF9EEC02D /* SelectRampProviderViewFactory.swift */,
+			);
+			path = Factory;
 			sourceTree = "<group>";
 		};
 		2D5493322C04C0C000607BF7 /* MnemonicCard */ = {
@@ -25464,14 +25484,13 @@
 		C3B81E7B6D31571BBB28B62C /* SelectRampProvider */ = {
 			isa = PBXGroup;
 			children = (
+				2D53C6CF2D80BA9800E7DDC4 /* Factory */,
+				2D53C6CE2D80BA8E00E7DDC4 /* View */,
 				8FF85197C0F0F9613F485299 /* SelectRampProviderProtocols.swift */,
 				9E678E197906A7246BCF2D3C /* SelectRampProviderWireframe.swift */,
 				C4485B355F0C825BE382DCA2 /* SelectRampProviderPresenter.swift */,
-				2D53C6CC2D80B11800E7DDC4 /* SelectRampProviderViewModelFactory.swift */,
 				C377FBF81C3E8329E9A9F0C2 /* SelectRampProviderInteractor.swift */,
 				A3BB163EDA20F65EAAE34F30 /* SelectRampProviderViewController.swift */,
-				1043471C36FACB1CA4F5D841 /* SelectRampProviderViewLayout.swift */,
-				C4CCA7057D4BAE6FF9EEC02D /* SelectRampProviderViewFactory.swift */,
 			);
 			path = SelectRampProvider;
 			sourceTree = "<group>";
@@ -27826,6 +27845,7 @@
 				843E9B3627C8B915009C143A /* NftFileDownloadService.swift in Sources */,
 				842B17FF28649CCD0014CC57 /* CrossChainSelectionState.swift in Sources */,
 				0CAB67532D49338000E3A844 /* StakingGenericRewardsViewController.swift in Sources */,
+				2D53C6D12D80BABE00E7DDC4 /* RampProviderView.swift in Sources */,
 				8437F7C12924FF6400DB6366 /* EvmSubscriptionMessage.swift in Sources */,
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
 				2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */,

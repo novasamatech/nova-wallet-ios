@@ -17,7 +17,7 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
         locale: Locale
     ) -> SelectRampProvider.ViewModel {
         let languages = locale.rLanguages
-        
+
         let title = switch providerType {
         case .offramp:
             R.string.localizable.selectSellProviderTitle(
@@ -30,9 +30,9 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
                 preferredLanguages: languages
             )
         }
-        
+
         let footerText = R.string.localizable.selectProviderDisclaimerText(preferredLanguages: languages)
-        
+
         return SelectRampProvider.ViewModel(
             titleText: title,
             actions: actions,
