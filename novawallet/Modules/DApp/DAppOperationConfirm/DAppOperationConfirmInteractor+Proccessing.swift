@@ -118,6 +118,7 @@ extension DAppOperationConfirmInteractor {
                 transactionVersion: UInt32(transactionVersion),
                 metadataHash: extrinsic.metadataHash,
                 withSignedTransaction: extrinsic.withSignedTransaction ?? false,
+                signedExtensions: extrinsic.signedExtensions,
                 version: extrinsic.version
             )
 
