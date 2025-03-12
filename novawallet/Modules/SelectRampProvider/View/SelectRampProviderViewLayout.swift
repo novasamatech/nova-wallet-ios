@@ -17,8 +17,6 @@ final class SelectRampProviderViewLayout: ScrollableContainerLayoutView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        configure()
     }
 
     @available(*, unavailable)
@@ -30,10 +28,6 @@ final class SelectRampProviderViewLayout: ScrollableContainerLayoutView {
 // MARK: Private
 
 private extension SelectRampProviderViewLayout {
-    func configure() {
-        stackView.alignment = .leading
-    }
-
     func createProviderViews(
         for viewModels: [SelectRampProvider.ViewModel.ProviderViewModel]
     ) -> [RowView<RampProviderView>] {
