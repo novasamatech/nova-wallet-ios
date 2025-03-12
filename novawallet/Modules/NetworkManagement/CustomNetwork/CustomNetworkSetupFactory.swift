@@ -70,6 +70,7 @@ extension CustomNetworkSetupFactory: CustomNetworkSetupFactoryProtocol {
                 nodes: filledPartialChain.nodes,
                 nodeSwitchStrategy: filledPartialChain.nodeSwitchStrategy,
                 addressPrefix: filledPartialChain.addressPrefix,
+                legacyAddressPrefix: nil,
                 types: nil,
                 icon: filledPartialChain.iconUrl,
                 options: filledPartialChain.options,
