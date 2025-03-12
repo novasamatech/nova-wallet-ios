@@ -1,24 +1,191 @@
 import Foundation
 import Operation_iOS
-import BigInt
 import SubstrateSdk
+import BigInt
 
-extension XcmTransferService {
+final class XcmLegacyCrosschainFeeCalculator {
+    static let weightPerSecond = BigUInt(1_000_000_000_000)
+
+    let chainRegistry: ChainRegistryProtocol
+    let operationQueue: OperationQueue
+    let wallet: MetaAccountModel
+    let userStorageFacade: StorageFacadeProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
+    let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
+
+    private lazy var xcmModelFactory = XcmModelFactory()
+    private lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
+    private lazy var xcmWeightMessagesFactory = XcmWeightMessagesFactory()
+    private lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
+
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue,
+        wallet: MetaAccountModel,
+        userStorageFacade: StorageFacadeProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
+    ) {
+        self.chainRegistry = chainRegistry
+        self.operationQueue = operationQueue
+        self.wallet = wallet
+        self.userStorageFacade = userStorageFacade
+        self.substrateStorageFacade = substrateStorageFacade
+        self.customFeeEstimatingFactory = customFeeEstimatingFactory
+    }
+
+    func destinationExecutionFeeWrapper(
+        request: XcmUnweightedTransferRequest,
+        xcmTransfers: XcmTransfers
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.destination.chain.chainId
+            )
+
+            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
+
+            let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+            feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let params = XcmWeightMessagesParams(
+                    chainAsset: request.origin,
+                    reserve: request.reserve,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers
+                )
+
+                let feeMessages = try self.xcmWeightMessagesFactory.createWeightMessages(
+                    from: params,
+                    version: version
+                )
+
+                return self.createDestinationFeeWrapper(
+                    for: feeMessages.destination,
+                    request: request,
+                    xcmTransfers: xcmTransfers
+                )
+            }
+
+            feeWrapper.addDependency(wrapper: versionWrapper)
+
+            return feeWrapper.insertingHead(operations: versionWrapper.allOperations)
+
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func reserveExecutionFeeWrapper(
+        request: XcmUnweightedTransferRequest,
+        xcmTransfers: XcmTransfers
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.reserve.chain.chainId
+            )
+
+            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
+
+            let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+            feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let params = XcmWeightMessagesParams(
+                    chainAsset: request.origin,
+                    reserve: request.reserve,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers
+                )
+
+                let feeMessages = try self.xcmWeightMessagesFactory.createWeightMessages(
+                    from: params,
+                    version: version
+                )
+
+                guard let reserveMessage = feeMessages.reserve else {
+                    throw XcmCrosschainFeeCalculatorError.reserveFeeNotAvailable
+                }
+
+                return self.createReserveFeeWrapper(
+                    for: reserveMessage,
+                    request: request,
+                    xcmTransfers: xcmTransfers
+                )
+            }
+
+            feeWrapper.addDependency(wrapper: versionWrapper)
+
+            return feeWrapper.insertingHead(operations: versionWrapper.allOperations)
+
+        } catch {
+            return .createWithError(error)
+        }
+    }
+}
+
+private extension XcmLegacyCrosschainFeeCalculator {
+    func createModuleResolutionWrapper(
+        for transferType: XcmTransferType,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<String> {
+        switch transferType {
+        case .xtokens:
+            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
+            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+        case .unknown:
+            return CompoundOperationWrapper.createWithError(XcmTransferTypeError.unknownType)
+        }
+    }
+
+    func createExtrinsicOperationFactory(
+        for chain: ChainModel,
+        chainAccount: ChainAccountResponse
+    ) throws -> ExtrinsicOperationFactoryProtocol {
+        let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
+
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
+
+        if let customFeeEstimatingFactory {
+            return ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeProvider,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade
+            ).createOperationFactory(
+                account: chainAccount,
+                chain: chain,
+                customFeeEstimatingFactory: customFeeEstimatingFactory
+            )
+        } else {
+            return ExtrinsicServiceFactory(
+                runtimeRegistry: runtimeProvider,
+                engine: connection,
+                operationQueue: operationQueue,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade
+            ).createOperationFactory(account: chainAccount, chain: chain)
+        }
+    }
+
     func createStardardFeeEstimationWrapper(
         chain: ChainModel,
         message: Xcm.Message,
         maxWeight: BigUInt
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
         do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
             let moduleWrapper = createModuleResolutionWrapper(for: .xcmpallet, runtimeProvider: runtimeProvider)
-
-            guard let chainAccount = wallet.fetch(for: chain.accountRequest()) else {
-                throw ChainAccountFetchingError.accountNotExists
-            }
+            let chainAccount = try wallet.fetchOrError(for: chain.accountRequest())
 
             let operationFactory = try createExtrinsicOperationFactory(for: chain, chainAccount: chainAccount)
 
@@ -83,7 +250,7 @@ extension XcmTransferService {
             from: request.origin.chainAssetId,
             to: request.destination.chain.chainId
         ) else {
-            let error = XcmTransferServiceError.noDestinationFee(
+            let error = XcmCrosschainFeeCalculatorError.noDestinationFee(
                 origin: request.origin.chainAssetId,
                 destination: request.destination.chain.chainId
             )
@@ -92,7 +259,7 @@ extension XcmTransferService {
         }
 
         guard let baseWeight = xcmTransfers.baseWeight(for: request.destination.chain.chainId) else {
-            let error = XcmTransferServiceError.noBaseWeight(request.destination.chain.chainId)
+            let error = XcmCrosschainFeeCalculatorError.noBaseWeight(request.destination.chain.chainId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
@@ -110,12 +277,12 @@ extension XcmTransferService {
         xcmTransfers: XcmTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
-            let error = XcmTransferServiceError.noReserveFee(request.origin.chainAssetId)
+            let error = XcmCrosschainFeeCalculatorError.noReserveFee(request.origin.chainAssetId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
         guard let baseWeight = xcmTransfers.baseWeight(for: request.reserve.chain.chainId) else {
-            let error = XcmTransferServiceError.noBaseWeight(request.reserve.chain.chainId)
+            let error = XcmCrosschainFeeCalculatorError.noBaseWeight(request.reserve.chain.chainId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
@@ -193,7 +360,7 @@ extension XcmTransferService {
                 let optFactorValue = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
 
                 guard let factor = optFactorValue?.value else {
-                    throw XcmTransferServiceError.deliveryFeeNotAvailable
+                    throw XcmCrosschainFeeCalculatorError.deliveryFeeNotAvailable
                 }
 
                 return factor
@@ -214,7 +381,7 @@ extension XcmTransferService {
                 let optFactorValue = try wrapper.targetOperation.extractNoCancellableResultData().value
 
                 guard let factor = optFactorValue?.value else {
-                    throw XcmTransferServiceError.deliveryFeeNotAvailable
+                    throw XcmCrosschainFeeCalculatorError.deliveryFeeNotAvailable
                 }
 
                 return factor
@@ -257,7 +424,7 @@ extension XcmTransferService {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             guard let messageType = optMessageType else {
-                throw XcmTransferServiceError.deliveryFeeNotAvailable
+                throw XcmCrosschainFeeCalculatorError.deliveryFeeNotAvailable
             }
 
             let factor = BigRational.fixedU128(value: factorValue)
@@ -386,6 +553,92 @@ extension XcmTransferService {
             )
 
             return originToDestinationWrapper
+        }
+    }
+}
+
+extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
+    func crossChainFeeWrapper(
+        request: XcmUnweightedTransferRequest,
+        xcmTransfers: XcmTransfers
+    ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
+        do {
+            let destinationRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.destination.chain.chainId
+            )
+
+            let reserveRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.reserve.chain.chainId
+            )
+
+            let destinationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+                for: destinationRuntimeProvider
+            )
+
+            let reserveVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+                for: reserveRuntimeProvider
+            )
+
+            let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+            feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let destinationVersion = try destinationVersionWrapper.targetOperation.extractNoCancellableResultData()
+                let reserveVersion = try reserveVersionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let version = [destinationVersion, reserveVersion]
+                    .compactMap { $0 }
+                    .max()
+
+                let params = XcmWeightMessagesParams(
+                    chainAsset: request.origin,
+                    reserve: request.reserve,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers
+                )
+
+                let feeMessages = try self.xcmWeightMessagesFactory.createWeightMessages(
+                    from: params,
+                    version: version
+                )
+
+                let executionFeeWrapper = self.createExecutionFeeWrapper(
+                    request: request,
+                    xcmTransfers: xcmTransfers,
+                    feeMessages: feeMessages
+                )
+
+                let deliveryFeeWrapper = self.createDeliveryFeeWrapper(
+                    request: request,
+                    xcmTransfers: xcmTransfers,
+                    feeMessages: feeMessages
+                )
+
+                let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
+                    let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
+                    let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
+
+                    return XcmFeeModel.combine(executionFee, deliveryFee)
+                }
+
+                mergeOperation.addDependency(deliveryFeeWrapper.targetOperation)
+                mergeOperation.addDependency(executionFeeWrapper.targetOperation)
+
+                return deliveryFeeWrapper
+                    .insertingHead(operations: executionFeeWrapper.allOperations)
+                    .insertingTail(operation: mergeOperation)
+            }
+
+            feeWrapper.addDependency(wrapper: destinationVersionWrapper)
+            feeWrapper.addDependency(wrapper: reserveVersionWrapper)
+
+            return feeWrapper
+                .insertingHead(operations: destinationVersionWrapper.allOperations)
+                .insertingHead(operations: reserveVersionWrapper.allOperations)
+
+        } catch {
+            return .createWithError(error)
         }
     }
 }

@@ -9,4 +9,6 @@ protocol XcmTransfersProtocol {
     func getReservePath(for chainAssetId: ChainAssetId) -> XcmAsset.ReservePath?
 }
 
-protocol XcmAssetTransferProtocol {}
+protocol XcmAssetTransferProtocol {
+    var type: XcmTransferType { get }
+}

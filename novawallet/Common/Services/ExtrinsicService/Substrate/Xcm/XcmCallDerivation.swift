@@ -1,24 +1,97 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
+
+typealias XcmCallDeriviation = (ExtrinsicBuilderClosure, CallCodingPath)
 
 protocol XcmCallDerivating {
     func createTransferCallDerivationWrapper(
         for transferRequest: XcmUnweightedTransferRequest,
-        transfers: XcmTransfersProtocol
-    ) -> CompoundOperationWrapper<RuntimeCall<JSON>>
+        transfers: XcmTransfersProtocol,
+        maxWeight: BigUInt
+    ) -> CompoundOperationWrapper<XcmCallDeriviation>
 }
 
 final class XcmCallDerivator {
-    private(set) lazy var xcmFactory = XcmModelFactory()
-    private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
+    let chainRegistry: ChainRegistryProtocol
+
+    private lazy var xcmModelFactory = XcmModelFactory()
+    private lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
+    private lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
+
+    init(chainRegistry: ChainRegistryProtocol) {
+        self.chainRegistry = chainRegistry
+    }
 }
 
 private extension XcmCallDerivator {
+    func createPalletXcmTransferMapping(
+        dependingOn moduleResolutionOperation: BaseOperation<String>,
+        callPathFactory: @escaping (String) -> CallCodingPath,
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
+        maxWeight _: BigUInt // TODO: Decide whether to leave unlimited
+    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+        let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
+            let module = try moduleResolutionOperation.extractNoCancellableResultData()
+            let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
+
+            let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenificiary()
+            let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+
+            let callPath = callPathFactory(module)
+
+            let call = Xcm.PalletTransferCall(
+                destination: destination,
+                beneficiary: beneficiary,
+                assets: assets,
+                feeAssetItem: 0,
+                weightLimit: .unlimited
+            )
+
+            return ({ try $0.adding(call: call.runtimeCall(for: callPath)) }, callPath)
+        }
+
+        return CompoundOperationWrapper(targetOperation: mapOperation)
+    }
+
+    func createOrmlTransferMapping(
+        dependingOn moduleResolutionOperation: BaseOperation<String>,
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
+        maxWeight: BigUInt,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
+            let module = try moduleResolutionOperation.extractNoCancellableResultData()
+            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+            let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
+
+            let asset = destinationAsset.asset
+            let location = destinationAsset.location
+
+            return try XTokens.appendTransferCall(
+                asset: asset,
+                destination: location,
+                weight: maxWeight,
+                module: module,
+                codingFactory: codingFactory
+            )
+        }
+
+        mapOperation.addDependency(coderFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [coderFactoryOperation]
+        )
+    }
+
     func createMultilocationAssetWrapper(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfersProtocol,
-        type: XcmAssetTransfer.TransferType,
+        type: XcmTransferType,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
         switch type {
@@ -46,7 +119,62 @@ private extension XcmCallDerivator {
                 runtimeProvider: runtimeProvider
             )
         case .unknown:
-            return .createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
+            return .createWithError(XcmTransferTypeError.unknownType)
+        }
+    }
+
+    func createModuleResolutionWrapper(
+        for transferType: XcmTransferType,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<String> {
+        switch transferType {
+        case .xtokens:
+            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
+            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+        case .unknown:
+            return CompoundOperationWrapper.createWithError(XcmTransferTypeError.unknownType)
+        }
+    }
+
+    func createTransferMappingWrapper(
+        dependingOn moduleResolutionOperation: BaseOperation<String>,
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
+        xcmTransfer: XcmAssetTransferProtocol,
+        maxWeight: BigUInt,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+        switch xcmTransfer.type {
+        case .xtokens:
+            return createOrmlTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                destinationAssetOperation: destinationAssetOperation,
+                maxWeight: maxWeight,
+                runtimeProvider: runtimeProvider
+            )
+        case .xcmpallet:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.limitedReserveTransferAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation,
+                maxWeight: maxWeight
+            )
+        case .teleport:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.limitedTeleportAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation,
+                maxWeight: maxWeight
+            )
+        case .xcmpalletTransferAssets:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.transferAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation,
+                maxWeight: maxWeight
+            )
+        case .unknown:
+            return .createWithError(XcmTransferTypeError.unknownType)
         }
     }
 
@@ -60,14 +188,12 @@ private extension XcmCallDerivator {
             for: runtimeProvider
         )
 
-        let transferFactory = xcmFactory
-
-        let mappingOperation = ClosureOperation<XcmMultilocationAsset> {
+        let mappingOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
             let multiassetVersion = try multiassetVersionWrapper.targetOperation.extractNoCancellableResultData()
             let multilocationVersion = try multilocationVersionWrapper.targetOperation
                 .extractNoCancellableResultData()
 
-            return try transferFactory.createMultilocationAsset(
+            return try xcmModelFactory.createMultilocationAsset(
                 for: .init(
                     origin: request.origin,
                     reserve: request.reserve.chain,
@@ -90,9 +216,55 @@ private extension XcmCallDerivator {
 
 extension XcmCallDerivator: XcmCallDerivating {
     func createTransferCallDerivationWrapper(
-        for _: XcmUnweightedTransferRequest,
-        transfers _: XcmTransfersProtocol
-    ) -> CompoundOperationWrapper<RuntimeCall<JSON>> {
-        .createWithError(CommonError.undefined)
+        for transferRequest: XcmUnweightedTransferRequest,
+        transfers: XcmTransfersProtocol,
+        maxWeight: BigUInt
+    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+        do {
+            let destChainId = transferRequest.destination.chain.chainId
+            let originChainAssetId = transferRequest.origin.chainAssetId
+
+            guard
+                let xcmTransfer = transfers.getAssetTransfer(
+                    from: originChainAssetId,
+                    destinationChainId: destChainId
+                ) else {
+                let error = XcmModelError.noDestinationAssetFound(originChainAssetId)
+                return CompoundOperationWrapper.createWithError(error)
+            }
+
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: transferRequest.origin.chain.chainId
+            )
+
+            let destinationAssetWrapper = createMultilocationAssetWrapper(
+                request: transferRequest,
+                xcmTransfers: transfers,
+                type: xcmTransfer.type,
+                runtimeProvider: runtimeProvider
+            )
+
+            let moduleResolutionWrapper = createModuleResolutionWrapper(
+                for: xcmTransfer.type,
+                runtimeProvider: runtimeProvider
+            )
+
+            let mapWrapper = createTransferMappingWrapper(
+                dependingOn: moduleResolutionWrapper.targetOperation,
+                destinationAssetOperation: destinationAssetWrapper.targetOperation,
+                xcmTransfer: xcmTransfer,
+                maxWeight: maxWeight,
+                runtimeProvider: runtimeProvider
+            )
+
+            mapWrapper.addDependency(wrapper: moduleResolutionWrapper)
+            mapWrapper.addDependency(wrapper: destinationAssetWrapper)
+
+            return mapWrapper
+                .insertingHead(operations: moduleResolutionWrapper.allOperations)
+                .insertingHead(operations: destinationAssetWrapper.allOperations)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }

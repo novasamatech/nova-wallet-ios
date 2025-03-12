@@ -3,19 +3,7 @@ import BigInt
 import Operation_iOS
 import SubstrateSdk
 
-enum XcmTransferServiceError: Error {
-    case reserveFeeNotAvailable
-    case noXcmPalletFound([String])
-    case noArgumentFound(String)
-    case deliveryFeeNotAvailable
-    case noDestinationFee(origin: ChainAssetId, destination: ChainModel.Id)
-    case noReserveFee(ChainAssetId)
-    case noBaseWeight(ChainModel.Id)
-}
-
 final class XcmTransferService {
-    static let weightPerSecond = BigUInt(1_000_000_000_000)
-
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -24,10 +12,8 @@ final class XcmTransferService {
     let substrateStorageFacade: StorageFacadeProtocol
     let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
 
-    private(set) lazy var xcmFactory = XcmModelFactory()
-    private(set) lazy var xcmWeightMessagesFactory = XcmWeightMessagesFactory()
-    private(set) lazy var xcmPalletQueryFactory = XcmPalletMetadataQueryFactory()
-    private(set) lazy var xTokensQueryFactory = XTokensMetadataQueryFactory()
+    let callDerivator: XcmCallDerivating
+    let crosschainFeeCalculator: XcmCrosschainFeeCalculating
 
     init(
         wallet: MetaAccountModel,
@@ -45,33 +31,25 @@ final class XcmTransferService {
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
         self.customFeeEstimatingFactory = customFeeEstimatingFactory
-    }
 
-    func createModuleResolutionWrapper(
-        for transferType: XcmAssetTransfer.TransferType,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<String> {
-        switch transferType {
-        case .xtokens:
-            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
-            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .unknown:
-            return CompoundOperationWrapper.createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
-        }
+        callDerivator = XcmCallDerivator(chainRegistry: chainRegistry)
+        crosschainFeeCalculator = XcmLegacyCrosschainFeeCalculator(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            wallet: wallet,
+            userStorageFacade: userStorageFacade,
+            substrateStorageFacade: substrateStorageFacade,
+            customFeeEstimatingFactory: customFeeEstimatingFactory
+        )
     }
 
     func createExtrinsicOperationFactory(
         for chain: ChainModel,
         chainAccount: ChainAccountResponse
     ) throws -> ExtrinsicOperationFactoryProtocol {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
 
         if let customFeeEstimatingFactory {
             return ExtrinsicServiceFactory(
