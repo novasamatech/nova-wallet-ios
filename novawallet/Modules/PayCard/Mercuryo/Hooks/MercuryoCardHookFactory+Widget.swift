@@ -6,7 +6,7 @@ extension MercuryoCardHookFactory {
 
         let scriptSource = """
             window.addEventListener("message", ({ data }) => {
-                window.webkit.messageHandlers.\(statusAction).postMessage(data);
+                window.webkit.messageHandlers.\(statusAction).postMessage(JSON.stringify(data));
             });
         """
 
