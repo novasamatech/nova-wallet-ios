@@ -21,7 +21,6 @@ final class AssetDetailsViewLayout: UIView {
 
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
-    let topBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
@@ -36,12 +35,14 @@ final class AssetDetailsViewLayout: UIView {
         textAlignment: .center
     )
 
-    let priceLabel = UILabel(style: .footnoteSecondary, textAlignment: .right)
-    let priceChangeLabel = UILabel(style: .init(textColor: .clear, font: .regularFootnote))
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 6, left: 16, bottom: 24, right: 16)
+        view.stackView.layoutMargins = UIEdgeInsets(
+            top: 6,
+            left: 16,
+            bottom: .zero,
+            right: 16
+        )
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
@@ -93,24 +94,6 @@ final class AssetDetailsViewLayout: UIView {
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        addSubview(topBackgroundView)
-
-        let priceStack = UIStackView(arrangedSubviews: [priceLabel, priceChangeLabel])
-        priceStack.spacing = 4
-
-        addSubview(priceStack)
-        priceStack.snp.makeConstraints {
-            $0.leading.greaterThanOrEqualToSuperview()
-            $0.trailing.lessThanOrEqualToSuperview()
-            $0.centerX.equalToSuperview()
-            $0.height.equalTo(Constants.priceStackHeight)
-            $0.top.equalTo(self.safeAreaLayoutGuide.snp.top)
-        }
-
-        topBackgroundView.snp.makeConstraints {
-            $0.leading.trailing.top.equalToSuperview()
-            $0.bottom.equalTo(priceStack.snp.bottom).offset(Constants.priceBottomSpace)
-        }
 
         let assetView = UIStackView(arrangedSubviews: [assetIconView, assetLabel])
         assetView.spacing = 8
@@ -127,7 +110,7 @@ final class AssetDetailsViewLayout: UIView {
             $0.leading.greaterThanOrEqualToSuperview()
             $0.centerX.equalToSuperview()
             $0.height.equalTo(Constants.assetHeight)
-            $0.bottom.equalTo(priceStack.snp.top).offset(-7)
+            $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.top).offset(-7.0)
         }
 
         addSubview(chainView)
@@ -139,7 +122,7 @@ final class AssetDetailsViewLayout: UIView {
         addSubview(containerView)
         containerView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalTo(priceStack.snp.bottom).offset(Constants.containerViewTopOffset)
+            $0.top.equalToSuperview().inset(Constants.containerViewTopOffset)
         }
 
         balanceWidget.snp.makeConstraints { make in
@@ -194,23 +177,6 @@ final class AssetDetailsViewLayout: UIView {
         )
         assetLabel.text = assetDetailsModel.tokenName
         chainView.bind(viewModel: assetDetailsModel.network)
-
-        guard let priceModel = assetDetailsModel.price else {
-            priceChangeLabel.text = ""
-            priceLabel.text = ""
-            return
-        }
-
-        priceLabel.text = priceModel.amount
-
-        switch priceModel.change {
-        case let .increase(value):
-            priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorTextPositive()
-        case let .decrease(value):
-            priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorTextNegative()
-        }
     }
 
     func setChartViewHeight(_ height: CGFloat) {
@@ -230,17 +196,23 @@ final class AssetDetailsViewLayout: UIView {
         layoutIfNeeded()
     }
 
+    func setBottomInset(_ inset: CGFloat) {
+        containerView.stackView.layoutMargins.bottom = inset + Constants.bottomOffset
+    }
+
     var prefferedHeight: CGFloat {
         let balanceSectionHeight = Constants.containerViewTopOffset
             + currentBalanceHeight
         let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
 
-        return priceLabel.font.lineHeight
+        return Constants.containerViewTopOffset
+            + containerView.stackView.layoutMargins.top
             + balanceSectionHeight
-            + Constants.sectionSpace
+            + Constants.sectionSpace * 2
             + buttonsRowHeight
-            + Constants.bottomOffset
+            + Constants.chartWidgetInset * 2
             + chartViewHeight
+            + Constants.bottomOffset
     }
 }
 
@@ -267,7 +239,7 @@ extension AssetDetailsViewLayout {
         static let assetHeight: CGFloat = 28
         static let containerViewTopOffset: CGFloat = 12
         static let sectionSpace: CGFloat = 8
-        static let bottomOffset: CGFloat = 46
+        static let bottomOffset: CGFloat = 24
         static let assetImageViewSize: CGFloat = 28
         static let assetIconSize: CGFloat = 21
         static let priceBottomSpace: CGFloat = 8

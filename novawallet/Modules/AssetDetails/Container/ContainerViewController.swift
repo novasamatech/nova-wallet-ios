@@ -4,7 +4,7 @@ import SoraUI
 
 class ContainerViewController: UIViewController, AdaptiveDesignable {
     private enum Constants {
-        static let minimumBottonInset: CGFloat = 60.0
+        static let minimumBottonInset: CGFloat = 159.0
         static let contentAnimationDuration: TimeInterval = 0.2
         static let draggableChangeDuration: TimeInterval = 0.25
         static let draggableCancellationThreshold: Double = 0.1
@@ -15,8 +15,8 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
     private var shadowView: UIView?
 
-    private var containerSize = CGSize(width: 375.0, height: 667.0)
-    private var boundsHeight: CGFloat = 667.0
+    private lazy var containerSize = baseDesignSize
+    private lazy var boundsHeight = baseDesignSize.height
 
     var presentationNavigationItem: UINavigationItem? {
         nil
@@ -37,10 +37,6 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
         contentInsets.top = view.safeAreaInsets.top
         contentInsets.bottom = view.safeAreaInsets.bottom
-
-        if let view = viewIfLoaded {
-            contentInsets.bottom += containerSize.height - view.bounds.height
-        }
 
         return contentInsets
     }
@@ -88,7 +84,6 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
         configurePanRecognizer()
     }
 
-    @available(iOS 11.0, *)
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
@@ -101,6 +96,7 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
         super.viewWillLayoutSubviews()
 
         if abs(boundsHeight - view.bounds.height) > CGFloat.leastNonzeroMagnitude {
+            containerSize = view.bounds.size
             boundsHeight = view.bounds.height
 
             updateContentInsets()
@@ -180,7 +176,9 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
     fileprivate func updateContentInsets(animated: Bool = false) {
         if let content = content {
-            let contentInsets = createPreferredContentInsets(for: content.preferredContentHeight)
+            var contentInsets = createPreferredContentInsets(for: content.preferredContentHeight)
+            contentInsets.bottom += UIScreen.main.bounds.height - view.bounds.height
+
             content.setContentInsets(contentInsets, animated: animated)
         }
     }
@@ -209,8 +207,8 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
     fileprivate func createPreferredContentInsets(for contentHeight: CGFloat) -> UIEdgeInsets {
         var contentInsets: UIEdgeInsets = inheritedInsets
 
-        contentInsets.bottom += max(
-            containerSize.height - contentInsets.top - contentInsets.bottom - contentHeight,
+        contentInsets.bottom = max(
+            containerSize.height - contentHeight - contentInsets.bottom,
             Constants.minimumBottonInset
         )
 

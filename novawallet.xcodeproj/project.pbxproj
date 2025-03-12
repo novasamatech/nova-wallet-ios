@@ -268,6 +268,7 @@
 		0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */; };
 		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
+		0C277D982D80779B004FF053 /* KodadotMediaViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
@@ -5951,6 +5952,7 @@
 		0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TypeRegistry+Node.swift"; sourceTree = "<group>"; };
 		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
+		0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodadotMediaViewModelFactory.swift; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
 		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
@@ -18395,6 +18397,7 @@
 			children = (
 				843E9B2C27C8AC57009C143A /* NftMediaViewModel.swift */,
 				844518D027CAB6FC00D0C52B /* NftImageViewModel.swift */,
+				0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -30600,6 +30603,7 @@
 				8846FFA629C850CE00796A7E /* AsciiDataString.swift in Sources */,
 				84C5ADEA28147BC2006D7388 /* InlineAlertView.swift in Sources */,
 				BE3F6213B26F35EB6324DBD8 /* ControllerAccountWireframe.swift in Sources */,
+				0C277D982D80779B004FF053 /* KodadotMediaViewModelFactory.swift in Sources */,
 				77A6F5AE2A2E0C7C004AFD1A /* ReceiveAssetOperationWireframe.swift in Sources */,
 				0C543E972AAB1B350035F45F /* ElectedAndPrefValidators.swift in Sources */,
 				8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */,
