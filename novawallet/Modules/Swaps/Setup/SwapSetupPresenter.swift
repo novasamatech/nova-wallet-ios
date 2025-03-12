@@ -903,9 +903,9 @@ extension SwapSetupPresenter: Localizable {
     }
 }
 
-extension SwapSetupPresenter: PurchaseFlowManaging, PurchaseDelegate, ModalPickerViewControllerDelegate {
+extension SwapSetupPresenter: PurchaseFlowManaging, RampDelegate, ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard let actions = context as? [PurchaseAction] else {
+        guard let actions = context as? [RampAction] else {
             return
         }
 
@@ -917,7 +917,7 @@ extension SwapSetupPresenter: PurchaseFlowManaging, PurchaseDelegate, ModalPicke
         )
     }
 
-    func purchaseDidComplete() {
+    func rampDidComplete() {
         wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }

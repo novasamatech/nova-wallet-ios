@@ -15,16 +15,3 @@ protocol SelectRampProviderInteractorOutputProtocol: AnyObject {
 }
 
 protocol SelectRampProviderWireframeProtocol: AnyObject {}
-
-enum SelectRampProvider {
-    enum ProviderType {
-        case offramp
-        case onramp
-    }
-
-    struct ViewModel {
-        let titleText: String
-        let actions: [RampAction]
-        let footerText: String
-    }
-}

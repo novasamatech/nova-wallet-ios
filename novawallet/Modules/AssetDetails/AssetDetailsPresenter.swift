@@ -19,7 +19,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
     private var locks: [AssetLock] = []
     private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
-    private var purchaseActions: [PurchaseAction] = []
+    private var purchaseActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
     init(
@@ -83,6 +83,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
             from: view,
             purchaseActions: purchaseActions,
             wireframe: wireframe,
+            assetSymbol: chainAsset.asset.symbol,
             locale: selectedLocale
         )
     }
@@ -207,7 +208,7 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(purchaseActions: [PurchaseAction]) {
+    func didReceive(purchaseActions: [RampAction]) {
         self.purchaseActions = purchaseActions
         updateView()
     }
@@ -246,8 +247,8 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
     }
 }
 
-extension AssetDetailsPresenter: PurchaseDelegate {
-    func purchaseDidComplete() {
+extension AssetDetailsPresenter: RampDelegate {
+    func rampDidComplete() {
         wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }

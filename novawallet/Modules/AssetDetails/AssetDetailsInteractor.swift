@@ -127,7 +127,7 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
             operations.insert(.send)
         }
 
-        let actions: [PurchaseAction] = purchaseProvider.buildPurchaseActions(
+        let actions: [RampAction] = purchaseProvider.buildRampActions(
             for: chainAsset,
             accountId: accountId
         )

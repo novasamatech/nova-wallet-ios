@@ -53,7 +53,7 @@ protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
     ShortTextInfoPresentable,
-    PurchasePresentable,
+    RampPresentable,
     FeeAssetSelectionPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,

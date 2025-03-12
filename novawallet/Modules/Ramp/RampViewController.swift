@@ -1,8 +1,8 @@
 import UIKit
 import SafariServices
 
-final class PurchaseViewController: SFSafariViewController {
-    var presenter: PurchasePresenterProtocol!
+final class RampViewController: SFSafariViewController {
+    var presenter: RampPresenterProtocol!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,4 +17,4 @@ final class PurchaseViewController: SFSafariViewController {
     }
 }
 
-extension PurchaseViewController: PurchaseViewProtocol {}
+extension RampViewController: RampViewProtocol {}

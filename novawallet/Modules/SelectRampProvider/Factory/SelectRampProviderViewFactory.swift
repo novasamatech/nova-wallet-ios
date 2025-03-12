@@ -4,20 +4,11 @@ import SoraFoundation
 struct SelectRampProviderViewFactory {
     static func createView(
         providerType: SelectRampProvider.ProviderType,
-        chainAsset: ChainAsset,
-        accountId: AccountId
+        rampActions: [RampAction],
+        assetSymbol: AssetModel.Symbol
     ) -> SelectRampProviderViewProtocol? {
-        let provider = switch providerType {
-        case .onramp:
-            PurchaseAggregator.defaultAggregator()
-        case .offramp:
-            PurchaseAggregator.defaultAggregator()
-        }
-
         let interactor = SelectRampProviderInteractor(
-            rampProvider: provider,
-            chainAsset: chainAsset,
-            accountId: accountId
+            rampActions: rampActions
         )
         let wireframe = SelectRampProviderWireframe()
 
@@ -28,7 +19,7 @@ struct SelectRampProviderViewFactory {
             wireframe: wireframe,
             viewModelFactory: SelectRampProviderViewModelFactory(),
             localizationManager: localizationManager,
-            chainAsset: chainAsset,
+            assetSymbol: assetSymbol,
             providerType: providerType
         )
 

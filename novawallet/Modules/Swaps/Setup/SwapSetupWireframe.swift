@@ -126,6 +126,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
                     from: view,
                     purchaseActions: actions,
                     wireframe: self,
+                    assetSymbol: destinationChainAsset.asset.symbol,
                     locale: locale
                 )
             }

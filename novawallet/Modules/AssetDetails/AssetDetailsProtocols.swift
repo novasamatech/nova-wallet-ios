@@ -28,10 +28,10 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)
-    func didReceive(purchaseActions: [PurchaseAction])
+    func didReceive(purchaseActions: [RampAction])
 }
 
-protocol AssetDetailsWireframeProtocol: AnyObject, PurchasePresentable, AlertPresentable {
+protocol AssetDetailsWireframeProtocol: AnyObject, RampPresentable, AlertPresentable {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
     func showReceiveTokens(
         from view: AssetDetailsViewProtocol?,

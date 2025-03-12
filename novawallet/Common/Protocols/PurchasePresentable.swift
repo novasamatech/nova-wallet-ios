@@ -1,15 +1,16 @@
 import Foundation
 
-protocol PurchasePresentable {
-    func showPurchaseTokens(
+protocol RampPresentable {
+    func showRampAction(
         from view: ControllerBackedProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
+        action: RampAction,
+        delegate: RampDelegate
     )
 
     func showPurchaseProviders(
         from view: ControllerBackedProtocol?,
-        actions: [PurchaseAction],
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
         delegate: ModalPickerViewControllerDelegate
     )
 
@@ -19,13 +20,13 @@ protocol PurchasePresentable {
     )
 }
 
-extension PurchasePresentable {
-    func showPurchaseTokens(
+extension RampPresentable {
+    func showRampAction(
         from view: ControllerBackedProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
+        action: RampAction,
+        delegate: RampDelegate
     ) {
-        guard let purchaseView = PurchaseViewFactory.createView(
+        guard let purchaseView = RampViewFactory.createView(
             for: action,
             delegate: delegate
         ) else {
@@ -37,20 +38,22 @@ extension PurchasePresentable {
 
     func showPurchaseProviders(
         from view: ControllerBackedProtocol?,
-        actions: [PurchaseAction],
-        delegate: ModalPickerViewControllerDelegate
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate _: ModalPickerViewControllerDelegate
     ) {
-        guard let pickerView = ModalPickerFactory.createPickerForList(
-            actions,
-            delegate: delegate,
-            context: actions as NSArray
+        guard let purchaseProvidersView = SelectRampProviderViewFactory.createView(
+            providerType: .onramp,
+            rampActions: actions,
+            assetSymbol: assetSymbol
         ) else {
             return
         }
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        navigationController.present(pickerView, animated: true)
+
+        view?.controller.navigationController?.pushViewController(
+            purchaseProvidersView.controller,
+            animated: true
+        )
     }
 
     func presentPurchaseDidComplete(

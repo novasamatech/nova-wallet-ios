@@ -8,7 +8,7 @@ final class SelectRampProviderPresenter {
     let viewModelFactory: SelectRampProviderViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
-    let chainAsset: ChainAsset
+    let assetSymbol: AssetModel.Symbol
     let providerType: SelectRampProvider.ProviderType
 
     var rampActions: [RampAction]?
@@ -18,14 +18,14 @@ final class SelectRampProviderPresenter {
         wireframe: SelectRampProviderWireframeProtocol,
         viewModelFactory: SelectRampProviderViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        chainAsset: ChainAsset,
+        assetSymbol: AssetModel.Symbol,
         providerType: SelectRampProvider.ProviderType
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
-        self.chainAsset = chainAsset
+        self.assetSymbol = assetSymbol
         self.providerType = providerType
     }
 }
@@ -38,10 +38,12 @@ private extension SelectRampProviderPresenter {
 
         let viewModel = viewModelFactory.createViewModel(
             for: providerType,
-            asset: chainAsset.asset,
+            assetSymbol: assetSymbol,
             actions: rampActions,
             locale: localizationManager.selectedLocale
         )
+
+        view?.didReceive(viewModel)
     }
 }
 

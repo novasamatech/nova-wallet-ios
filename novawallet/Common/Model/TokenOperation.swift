@@ -29,11 +29,11 @@ extension TokenOperation {
     }
 
     static func checkBuyOperationAvailable(
-        purchaseActions: [PurchaseAction],
+        rampActions: [RampAction],
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
     ) -> BuyAvailableCheckResult {
-        guard !purchaseActions.isEmpty else {
+        guard !rampActions.isEmpty else {
             return .noBuyOptions
         }
 

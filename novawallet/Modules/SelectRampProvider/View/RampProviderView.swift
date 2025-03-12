@@ -16,16 +16,6 @@ class RampProviderView: UIView {
         view.numberOfLines = 0
     }
 
-    var model: RampAction?
-
-    var locale: Locale? {
-        didSet {
-            guard locale != oldValue, let model else { return }
-
-            bind(with: model)
-        }
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -56,7 +46,8 @@ private extension RampProviderView {
         }
         descriptionLabel.snp.makeConstraints { make in
             make.leading.equalTo(providerLogoImageView)
-            make.top.equalTo(providerLogoImageView.snp.bottom).inset(Constants.descriptionTopInset)
+            make.top.equalTo(providerLogoImageView.snp.bottom).inset(-Constants.descriptionTopInset)
+            make.bottom.equalToSuperview()
         }
     }
 }
@@ -64,11 +55,9 @@ private extension RampProviderView {
 // MARK: Internal
 
 extension RampProviderView {
-    func bind(with model: RampAction) {
-        guard let locale else { return }
-
+    func bind(with model: SelectRampProvider.ViewModel.ProviderViewModel) {
         providerLogoImageView.image = model.logo
-        descriptionLabel.text = model.descriptionText.value(for: locale)
+        descriptionLabel.text = model.descriptionText
 
         paymentMethodsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 

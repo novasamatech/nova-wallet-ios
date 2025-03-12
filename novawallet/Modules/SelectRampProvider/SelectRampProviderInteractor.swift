@@ -2,18 +2,10 @@ import UIKit
 
 final class SelectRampProviderInteractor {
     weak var presenter: SelectRampProviderInteractorOutputProtocol?
-    let rampProvider: PurchaseProviderProtocol
-    let chainAsset: ChainAsset
-    let accountId: AccountId
+    let rampActions: [RampAction]
 
-    init(
-        rampProvider: PurchaseProviderProtocol,
-        chainAsset: ChainAsset,
-        accountId: AccountId
-    ) {
-        self.rampProvider = rampProvider
-        self.chainAsset = chainAsset
-        self.accountId = accountId
+    init(rampActions: [RampAction]) {
+        self.rampActions = rampActions
     }
 }
 
@@ -21,11 +13,6 @@ final class SelectRampProviderInteractor {
 
 extension SelectRampProviderInteractor: SelectRampProviderInteractorInputProtocol {
     func setup() {
-        let rampActions = rampProvider.buildRampActions(
-            for: chainAsset,
-            accountId: accountId
-        )
-
         presenter?.didReceive(rampActions)
     }
 }

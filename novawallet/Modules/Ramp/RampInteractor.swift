@@ -1,7 +1,7 @@
 import UIKit
 
-final class PurchaseInteractor {
-    weak var presenter: PurchaseInteractorOutputProtocol!
+final class RampInteractor {
+    weak var presenter: RampInteractorOutputProtocol!
 
     let eventCenter: EventCenterProtocol
 
@@ -10,14 +10,14 @@ final class PurchaseInteractor {
     }
 }
 
-extension PurchaseInteractor: PurchaseInteractorInputProtocol {
+extension RampInteractor: RampInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
     }
 }
 
-extension PurchaseInteractor: EventVisitorProtocol {
+extension RampInteractor: EventVisitorProtocol {
     func processPurchaseCompletion(event _: PurchaseCompleted) {
-        presenter.didCompletePurchase()
+        presenter.didCompleteOperation()
     }
 }

@@ -6,7 +6,7 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
     let purchaseProvider: PurchaseProviderProtocol
 
     private let wireframe: BuyAssetOperationWireframeProtocol
-    private var purchaseActions: [PurchaseAction] = []
+    private var purchaseActions: [RampAction] = []
 
     init(
         interactor: AssetOperationNetworkListInteractorInputProtocol,
@@ -47,10 +47,10 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
             return
         }
 
-        purchaseActions = purchaseProvider.buildPurchaseActions(for: chainAsset, accountId: accountId)
+        purchaseActions = purchaseProvider.buildRampActions(for: chainAsset, accountId: accountId)
 
         let checkResult = TokenOperation.checkBuyOperationAvailable(
-            purchaseActions: purchaseActions,
+            rampActions: purchaseActions,
             walletType: selectedAccount.type,
             chainAsset: chainAsset
         )
@@ -68,6 +68,7 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
                         from: self.view,
                         purchaseActions: self.purchaseActions,
                         wireframe: wireframe,
+                        assetSymbol: chainAsset.asset.symbol,
                         locale: selectedLocale
                     )
                 }
@@ -93,8 +94,8 @@ extension BuyOperationNetworkListPresenter: ModalPickerViewControllerDelegate {
 
 // MARK: PurchaseDelegate
 
-extension BuyOperationNetworkListPresenter: PurchaseDelegate {
-    func purchaseDidComplete() {
+extension BuyOperationNetworkListPresenter: RampDelegate {
+    func rampDidComplete() {
         wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }

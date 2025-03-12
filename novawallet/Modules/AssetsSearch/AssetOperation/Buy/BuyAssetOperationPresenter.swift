@@ -10,7 +10,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManag
 
     let selectedAccount: MetaAccountModel
     let purchaseProvider: PurchaseProviderProtocol
-    private var purchaseActions: [PurchaseAction] = []
+    private var purchaseActions: [RampAction] = []
 
     init(
         interactor: AssetsSearchInteractorInputProtocol,
@@ -62,10 +62,13 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManag
             return
         }
 
-        purchaseActions = purchaseProvider.buildPurchaseActions(for: chainAsset, accountId: accountId)
+        purchaseActions = purchaseProvider.buildRampActions(
+            for: chainAsset,
+            accountId: accountId
+        )
 
         let checkResult = TokenOperation.checkBuyOperationAvailable(
-            purchaseActions: purchaseActions,
+            rampActions: purchaseActions,
             walletType: selectedAccount.type,
             chainAsset: chainAsset
         )
@@ -83,6 +86,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManag
                         from: self.view,
                         purchaseActions: self.purchaseActions,
                         wireframe: self.buyAssetWireframe,
+                        assetSymbol: chainAsset.asset.symbol,
                         locale: selectedLocale
                     )
                 }
@@ -104,8 +108,8 @@ extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
     }
 }
 
-extension BuyAssetOperationPresenter: PurchaseDelegate {
-    func purchaseDidComplete() {
+extension BuyAssetOperationPresenter: RampDelegate {
+    func rampDidComplete() {
         buyAssetWireframe?.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }

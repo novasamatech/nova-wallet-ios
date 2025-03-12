@@ -1,8 +1,10 @@
 import UIKit
 import SoraUI
 
-protocol BuyAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol, MessageSheetPresentable,
-    PurchasePresentable, AlertPresentable {
+protocol BuyAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol,
+    MessageSheetPresentable,
+    RampPresentable,
+    AlertPresentable {
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,

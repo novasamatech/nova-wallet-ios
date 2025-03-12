@@ -41,7 +41,7 @@ final class GetTokenOptionsInteractor {
         }
 
         let availableXcmOrigins = determineAvailableXcmOrigins()
-        let purchaseActions = purchaseProvider.buildPurchaseActions(
+        let purchaseActions = purchaseProvider.buildRampActions(
             for: destinationChainAsset,
             accountId: selectedAccount.chainAccount.accountId
         )
@@ -52,7 +52,7 @@ final class GetTokenOptionsInteractor {
         ).available
 
         let buyAvailable = TokenOperation.checkBuyOperationAvailable(
-            purchaseActions: purchaseActions,
+            rampActions: purchaseActions,
             walletType: selectedWallet.type,
             chainAsset: destinationChainAsset
         ).available

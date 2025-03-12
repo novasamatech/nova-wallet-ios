@@ -17,10 +17,10 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
 
     func showPurchaseTokens(
         from view: AssetDetailsViewProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
+        action: RampAction,
+        delegate: RampDelegate
     ) {
-        guard let purchaseView = PurchaseViewFactory.createView(
+        guard let purchaseView = RampViewFactory.createView(
             for: action,
             delegate: delegate
         ) else {
