@@ -41,7 +41,7 @@ extension MercuryoCardStatusHandler: PayCardMessageHandling {
             }
 
         } catch {
-            logger.error("Unexpected error: \(error)")
+            logger.warning("Not interested message: \(error)")
         }
     }
 }
