@@ -1799,3 +1799,12 @@
 "chart.period.month" = "Último Mês";
 "chart.period.year" = "Último Ano";
 "chart.period.max" = "Todo o Tempo";
+"common.pay" = "Pagar";
+"common.card.issued" = "Cartão emitido";
+"card.top.up.dot.setup.title" = "Recarregar cartão com DOT";
+"common.manage.debit.card" = "Gerenciar Cartão de Débito";
+"common.estimated.timer" = "Estimativa ~%@";
+"card.open.pending.sheet.title" = "Seu cartão está sendo emitido!";
+"card.open.pending.sheet.message" = "Pode levar até %@.\nEsta janela será fechada automaticamente.";
+"card.open.failed.alert.title" = "Entre em contato com o suporte";
+"card.open.failed.alert.message" = "Por favor, entre em contato com support@novawallet.io. Inclua o endereço de email que você usou para emitir o cartão.";

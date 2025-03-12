@@ -1799,3 +1799,12 @@
 "chart.period.month" = "Прошлый месяц";
 "chart.period.year" = "Прошлый год";
 "chart.period.max" = "Все время";
+"common.pay" = "Оплатить";
+"common.card.issued" = "Карта выпущена";
+"card.top.up.dot.setup.title" = "Пополнить карту с помощью DOT";
+"common.manage.debit.card" = "Управление картой";
+"common.estimated.timer" = "Примерно ~%@";
+"card.open.pending.sheet.title" = "Ваша карта выпускается!";
+"card.open.pending.sheet.message" = "Это может занять до %@.\nЭто окно закроется автоматически.";
+"card.open.failed.alert.title" = "Связаться с поддержкой";
+"card.open.failed.alert.message" = "Пожалуйста, обратитесь в support@novawallet.io. Укажите адрес электронной почты, который вы использовали для выпуска карты.";
