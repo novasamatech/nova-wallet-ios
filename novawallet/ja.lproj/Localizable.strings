@@ -1799,3 +1799,12 @@
 "chart.period.month" = "先月";
 "chart.period.year" = "昨年";
 "chart.period.max" = "全期間";
+"common.pay" = "支払う";
+"common.card.issued" = "カードが発行されました";
+"card.top.up.dot.setup.title" = "カードにDOTをチャージ";
+"common.manage.debit.card" = "デビットカードを管理";
+"common.estimated.timer" = "推定 ~%@";
+"card.open.pending.sheet.title" = "カードが発行されています！";
+"card.open.pending.sheet.message" = "最大で%@かかる場合があります。\nこのウィンドウは自動的に閉じられます。";
+"card.open.failed.alert.title" = "サポートに連絡";
+"card.open.failed.alert.message" = "support@novawallet.ioに連絡してください。カードを発行するために使用したメールアドレスを添えてください。";

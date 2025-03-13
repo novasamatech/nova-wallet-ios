@@ -1799,3 +1799,12 @@
 "chart.period.month" = "지난달";
 "chart.period.year" = "지난해";
 "chart.period.max" = "전체 기간";
+"common.pay" = "결제";
+"common.card.issued" = "카드 발급됨";
+"card.top.up.dot.setup.title" = "카드에 DOT 충전";
+"common.manage.debit.card" = "직불카드 관리";
+"common.estimated.timer" = "예상 ~%@";
+"card.open.pending.sheet.title" = "카드가 발급되고 있습니다!";
+"card.open.pending.sheet.message" = "최대 %@까지 소요될 수 있습니다.\n이 창은 자동으로 닫힙니다.";
+"card.open.failed.alert.title" = "지원에 문의";
+"card.open.failed.alert.message" = "support@novawallet.io에 문의하세요. 카드 발급에 사용된 이메일 주소를 포함하세요.";

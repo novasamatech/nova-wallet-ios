@@ -1730,6 +1730,9 @@
 "gov.vote.conviction.alert.message" = "Abstain votes can only be done with 0.1x conviction. Vote with 0.1x conviction?";
 "cloud.backup.password.confirm.title" = "Confirm backup password";
 "cloud.backup.password.confirm.details" = "Please enter the password you created on the previous screen";
+"common.pay" = "Pay";
+"common.card.issued" = "Card issued";
+"card.top.up.dot.setup.title" = "Top up card with DOT";
 "common.swipe.gov" = "SwipeGov";
 "common.counted.referenda" = "%d referenda";
 "swipe.gov.banner.message" = "Swipe to vote on referenda with our AI summaries. Fast & easy!";
@@ -1794,6 +1797,12 @@
 "dapp.list.section.popular" = "Popular";
 "swaps.max.price.diff.error.title" = "High price impact detected (%@)";
 "swaps.max.price.diff.error.message" = "Executing this swap will result in significant slippage and financial losses. Consider reducing your trade size of splitting your trade into multiple transactions.";
+"common.manage.debit.card" = "Manage Debit Card";
+"common.estimated.timer" = "Estimated ~%@";
+"card.open.pending.sheet.title" = "Your card is being issued!";
+"card.open.pending.sheet.message" = "It can take up to %@.\nThis window will be closed automatically.";
+"card.open.failed.alert.title" = "Contact support";
+"card.open.failed.alert.message" = "Please contact support@novawallet.io. Include email address that you have used for issuing the card.";
 "unstaking.limit.reached.message" = "You have reached the unstaking limit requests (%@ active requests)";
 "chart.period.week" = "Last Week";
 "chart.period.month" = "Last Month";

@@ -141,6 +141,7 @@ private extension DAppBrowserInteractor {
 
                 return DAppTransportModel(
                     name: transportName,
+                    handlerNames: [transportName],
                     scripts: [bridgeScript, subscriptionScript]
                 )
             }
