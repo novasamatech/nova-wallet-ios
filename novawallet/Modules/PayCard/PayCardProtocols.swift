@@ -11,7 +11,7 @@ protocol PayCardPresenterProtocol: AnyObject {
 
 protocol PayCardInteractorInputProtocol: AnyObject {
     func setup()
-    func processIssueInit()
+    func processFundInit()
     func processMessage(body: Any, of name: String)
     func checkPendingTimeout()
 }
@@ -19,7 +19,7 @@ protocol PayCardInteractorInputProtocol: AnyObject {
 protocol PayCardInteractorOutputProtocol: AnyObject {
     func didReceive(model: PayCardModel)
     func didRequestTopup(for model: PayCardTopupModel)
-    func didReceiveCardStatus(_ cardStatus: PayCardStatus)
+    func didReceivePayStatus(_ payStatus: PayCardStatus)
 }
 
 protocol PayCardWireframeProtocol: AlertPresentable, ErrorPresentable {
@@ -29,8 +29,9 @@ protocol PayCardWireframeProtocol: AlertPresentable, ErrorPresentable {
         transferCompletion: @escaping TransferCompletionClosure
     )
 
-    func showCardOpenPending(
+    func showCardFundingState(
         from view: ControllerBackedProtocol?,
+        mode: PayCardSheetMode,
         timerMediator: CountdownTimerMediator,
         totalTime: TimeInterval,
         locale: Locale?

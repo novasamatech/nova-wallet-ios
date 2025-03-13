@@ -23,13 +23,15 @@ final class PayCardWireframe: PayCardWireframeProtocol {
         )
     }
 
-    func showCardOpenPending(
+    func showCardFundingState(
         from view: ControllerBackedProtocol?,
+        mode: PayCardSheetMode,
         timerMediator: CountdownTimerMediator,
         totalTime: TimeInterval,
         locale: Locale?
     ) {
-        guard let sheetView = PayCardSheetViewFactory.createCardPendingSheet(
+        guard let sheetView = PayCardSheetViewFactory.createCardFundingSheet(
+            for: mode,
             timerMediator: timerMediator,
             totalTime: totalTime,
             locale: locale
