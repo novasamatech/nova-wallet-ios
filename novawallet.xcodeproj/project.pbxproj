@@ -460,8 +460,7 @@
 		0C6108302CD5ED1400909928 /* ExtrinsicCustomFeeEstimatingFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61082F2CD5ED1400909928 /* ExtrinsicCustomFeeEstimatingFactoryProtocol.swift */; };
 		0C6108322CD5EEBD00909928 /* AssetConversionFeeEstimatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108312CD5EEBD00909928 /* AssetConversionFeeEstimatingFactory.swift */; };
 		0C6108342CD5F77E00909928 /* ExtrinsicFeeEstimatorHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108332CD5F77E00909928 /* ExtrinsicFeeEstimatorHost.swift */; };
-		0C6108362CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108352CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift */; };
-		0C6108382CD7333100909928 /* ExtrinsicCustomFeeInstallingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108372CD7333100909928 /* ExtrinsicCustomFeeInstallingWrapperFactory.swift */; };
+		0C6108382CD7333100909928 /* ExtrinsicFeeInstallingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108372CD7333100909928 /* ExtrinsicFeeInstallingFactory.swift */; };
 		0C61083E2CD7382E00909928 /* AssetConversionFeeInstallingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C61083D2CD7382E00909928 /* AssetConversionFeeInstallingFactory.swift */; };
 		0C6108412CD74DD200909928 /* AssetExchangeFeeEstimatingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108402CD74DD200909928 /* AssetExchangeFeeEstimatingFactory.swift */; };
 		0C6108432CD755A300909928 /* AssetExchangeGraphProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6108422CD755A300909928 /* AssetExchangeGraphProxy.swift */; };
@@ -6118,8 +6117,7 @@
 		0C61082F2CD5ED1400909928 /* ExtrinsicCustomFeeEstimatingFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicCustomFeeEstimatingFactoryProtocol.swift; sourceTree = "<group>"; };
 		0C6108312CD5EEBD00909928 /* AssetConversionFeeEstimatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeEstimatingFactory.swift; sourceTree = "<group>"; };
 		0C6108332CD5F77E00909928 /* ExtrinsicFeeEstimatorHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatorHost.swift; sourceTree = "<group>"; };
-		0C6108352CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeInstallingWrapperFactory.swift; sourceTree = "<group>"; };
-		0C6108372CD7333100909928 /* ExtrinsicCustomFeeInstallingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicCustomFeeInstallingWrapperFactory.swift; sourceTree = "<group>"; };
+		0C6108372CD7333100909928 /* ExtrinsicFeeInstallingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeInstallingFactory.swift; sourceTree = "<group>"; };
 		0C61083D2CD7382E00909928 /* AssetConversionFeeInstallingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeInstallingFactory.swift; sourceTree = "<group>"; };
 		0C6108402CD74DD200909928 /* AssetExchangeFeeEstimatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeEstimatingFactory.swift; sourceTree = "<group>"; };
 		0C6108422CD755A300909928 /* AssetExchangeGraphProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphProxy.swift; sourceTree = "<group>"; };
@@ -14465,8 +14463,7 @@
 				2D32BE0B2C6A49900047F520 /* ExtrinsicFeeInstalling.swift */,
 				2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */,
 				0C61082F2CD5ED1400909928 /* ExtrinsicCustomFeeEstimatingFactoryProtocol.swift */,
-				0C6108352CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift */,
-				0C6108372CD7333100909928 /* ExtrinsicCustomFeeInstallingWrapperFactory.swift */,
+				0C6108372CD7333100909928 /* ExtrinsicFeeInstallingFactory.swift */,
 			);
 			path = FeeManaging;
 			sourceTree = "<group>";
@@ -28018,7 +28015,7 @@
 				84C74363251E4C2F009576C6 /* DummySigner.swift in Sources */,
 				8454C26A2632B8CE00657DAD /* BalancesPallet+Events.swift in Sources */,
 				0C0CB38A2AC56A1600EAC516 /* AssetConversionPallet+Path.swift in Sources */,
-				0C6108382CD7333100909928 /* ExtrinsicCustomFeeInstallingWrapperFactory.swift in Sources */,
+				0C6108382CD7333100909928 /* ExtrinsicFeeInstallingFactory.swift in Sources */,
 				2D1C5D2A2C25AD0200E2DBDD /* CustomNetworkPresenterProtocols.swift in Sources */,
 				84DD5F3E263DE5FF00425ACF /* DataValidationProtocols.swift in Sources */,
 				2D32BE1B2C6A49900047F520 /* ExtrinsicNativeFeeInstaller.swift in Sources */,
@@ -28395,7 +28392,6 @@
 				0CEBAD502D5C5FDE000EBA45 /* CollatorStakingRewardService.swift in Sources */,
 				2D5D0CE92D54A24C000E32F6 /* BannerBackgroundView.swift in Sources */,
 				849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */,
-				0C6108362CD5FC7300909928 /* ExtrinsicFeeInstallingWrapperFactory.swift in Sources */,
 				84A70D9B29CCECC100C648AD /* GovMetadataOperationFactory.swift in Sources */,
 				8490895428D4BA7C00C3CCE9 /* CustomSiMappers.swift in Sources */,
 				84100F3A26A60B0900A5054E /* YourValidatorListStatusSectionView.swift in Sources */,
