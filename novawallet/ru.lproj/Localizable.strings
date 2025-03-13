@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "Это может занять до %@.\nЭто окно закроется автоматически.";
 "card.open.failed.alert.title" = "Связаться с поддержкой";
 "card.open.failed.alert.message" = "Пожалуйста, обратитесь в support@novawallet.io. Укажите адрес электронной почты, который вы использовали для выпуска карты.";
+"card.topup.pending.sheet.title" = "Ваша карта пополняется!";
