@@ -279,6 +279,7 @@
 		0C277DA42D829EDC004FF053 /* XcmDynamicAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA32D829EDC004FF053 /* XcmDynamicAsset.swift */; };
 		0C277DA62D829F33004FF053 /* XcmDynamicAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */; };
 		0C277DA82D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */; };
+		0C277DAD2D82E7FA004FF053 /* SubstratePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
@@ -5944,6 +5945,7 @@
 		0C277DA32D829EDC004FF053 /* XcmDynamicAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicAsset.swift; sourceTree = "<group>"; };
 		0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicAssetTransfer.swift; sourceTree = "<group>"; };
 		0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmDynamicTransfers+Protocol.swift"; sourceTree = "<group>"; };
+		0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstratePrimitives.swift; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
 		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
@@ -12232,6 +12234,22 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0C277DA92D82E61D004FF053 /* DryRun */ = {
+			isa = PBXGroup;
+			children = (
+				0CD61EC52D3554B80064AC97 /* DryRunOperationFactory.swift */,
+			);
+			path = DryRun;
+			sourceTree = "<group>";
+		};
+		0C277DAE2D82E873004FF053 /* Primitives */ = {
+			isa = PBXGroup;
+			children = (
+				0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */,
+			);
+			path = Primitives;
+			sourceTree = "<group>";
+		};
 		0C2A3C962CDCCEB200A0E2B3 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -13539,6 +13557,7 @@
 		0CCE3AAD2BF5BBBF00D55F03 /* Operations */ = {
 			isa = PBXGroup;
 			children = (
+				0C277DA92D82E61D004FF053 /* DryRun */,
 				0CE862272D659AF000245992 /* Identity */,
 				0CE862262D659AE400245992 /* StateCall */,
 			);
@@ -18119,6 +18138,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				0C277DAE2D82E873004FF053 /* Primitives */,
 				0C0F6D992D3E75CE00943A7C /* Session */,
 				0C0F6D6A2D394C8E00943A7C /* MythosStaking */,
 				0CA7CEE52CE0C23B004328F2 /* System */,
@@ -21559,7 +21579,6 @@
 				0C71046C2C29B3D200487E64 /* MetadataHashOperationFactory.swift */,
 				0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */,
 				2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */,
-				0CD61EC52D3554B80064AC97 /* DryRunOperationFactory.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -29620,6 +29639,7 @@
 				F419FD7A273D05B00061652C /* SettingsSection.swift in Sources */,
 				DAEE468553039B3600F64A0E /* AccountManagementWireframe.swift in Sources */,
 				F4E117B9264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift in Sources */,
+				0C277DAD2D82E7FA004FF053 /* SubstratePrimitives.swift in Sources */,
 				77740BBC2AD4A7B800E8C06F /* CollapsableContainerView.swift in Sources */,
 				AE74EBCA25F90CA500C494E7 /* URL+Helpers.swift in Sources */,
 				8468B87024F63D2000B76BC6 /* AddAccount+UsernameSetupWireframe.swift in Sources */,
