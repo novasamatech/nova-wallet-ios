@@ -1799,3 +1799,12 @@
 "chart.period.month" = "Tháng trước";
 "chart.period.year" = "Năm trước";
 "chart.period.max" = "Tất cả thời gian";
+"common.pay" = "Thanh toán";
+"common.card.issued" = "Thẻ đã được phát hành";
+"card.top.up.dot.setup.title" = "Nạp thẻ bằng DOT";
+"common.manage.debit.card" = "Quản lý Thẻ Ghi Nợ";
+"common.estimated.timer" = "Dự đoán ~%@";
+"card.open.pending.sheet.title" = "Thẻ của bạn đang được phát hành!";
+"card.open.pending.sheet.message" = "Có thể mất đến %@.\nCửa sổ này sẽ tự động đóng.";
+"card.open.failed.alert.title" = "Liên hệ hỗ trợ";
+"card.open.failed.alert.message" = "Vui lòng liên hệ support@novawallet.io. Bao gồm địa chỉ email mà bạn đã sử dụng để phát hành thẻ.";
