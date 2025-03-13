@@ -7,6 +7,10 @@ extension XcmTransfers: XcmTransfersProtocol {
     ) -> XcmAssetTransferProtocol? {
         transfer(from: chainAssetId, destinationChainId: destinationChainId)
     }
+
+    func getAssetReservePath(for chainAsset: ChainAsset) -> XcmAsset.ReservePath? {
+        getReservePath(for: chainAsset.chainAssetId)
+    }
 }
 
 extension XcmAssetTransfer: XcmAssetTransferProtocol {}

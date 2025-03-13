@@ -274,6 +274,11 @@
 		0C277D9A2D814CB1004FF053 /* XcmTransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D992D814CB1004FF053 /* XcmTransferType.swift */; };
 		0C277D9C2D8151C9004FF053 /* XcmCrosschainFeeCalculation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D9B2D8151C9004FF053 /* XcmCrosschainFeeCalculation.swift */; };
 		0C277D9E2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D9D2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift */; };
+		0C277DA02D829DB1004FF053 /* XcmDynamicTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D9F2D829DB1004FF053 /* XcmDynamicTransfers.swift */; };
+		0C277DA22D829EC0004FF053 /* XcmDynamicChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA12D829EC0004FF053 /* XcmDynamicChain.swift */; };
+		0C277DA42D829EDC004FF053 /* XcmDynamicAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA32D829EDC004FF053 /* XcmDynamicAsset.swift */; };
+		0C277DA62D829F33004FF053 /* XcmDynamicAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */; };
+		0C277DA82D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
@@ -913,7 +918,6 @@
 		0CD61EC62D3554B80064AC97 /* DryRunOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61EC52D3554B80064AC97 /* DryRunOperationFactory.swift */; };
 		0CD61EC82D356B770064AC97 /* XcmTransfersProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61EC72D356B770064AC97 /* XcmTransfersProtocol.swift */; };
 		0CD61ECA2D356BCF0064AC97 /* XcmCallDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61EC92D356BCF0064AC97 /* XcmCallDerivation.swift */; };
-		0CD61ECC2D356D1D0064AC97 /* ExtrinsicCallWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61ECB2D356D1D0064AC97 /* ExtrinsicCallWrapper.swift */; };
 		0CD61ECE2D3572AC0064AC97 /* XcmTransfers+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD61ECD2D3572AC0064AC97 /* XcmTransfers+Protocol.swift */; };
 		0CD846152BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */; };
 		0CD846172BDA5B040026B5CA /* AttributedString+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */; };
@@ -5935,6 +5939,11 @@
 		0C277D992D814CB1004FF053 /* XcmTransferType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferType.swift; sourceTree = "<group>"; };
 		0C277D9B2D8151C9004FF053 /* XcmCrosschainFeeCalculation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCrosschainFeeCalculation.swift; sourceTree = "<group>"; };
 		0C277D9D2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmLegacyCrosschainFeeCalculator.swift; sourceTree = "<group>"; };
+		0C277D9F2D829DB1004FF053 /* XcmDynamicTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicTransfers.swift; sourceTree = "<group>"; };
+		0C277DA12D829EC0004FF053 /* XcmDynamicChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicChain.swift; sourceTree = "<group>"; };
+		0C277DA32D829EDC004FF053 /* XcmDynamicAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicAsset.swift; sourceTree = "<group>"; };
+		0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicAssetTransfer.swift; sourceTree = "<group>"; };
+		0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmDynamicTransfers+Protocol.swift"; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
 		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
@@ -6612,7 +6621,6 @@
 		0CD61EC52D3554B80064AC97 /* DryRunOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DryRunOperationFactory.swift; sourceTree = "<group>"; };
 		0CD61EC72D356B770064AC97 /* XcmTransfersProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersProtocol.swift; sourceTree = "<group>"; };
 		0CD61EC92D356BCF0064AC97 /* XcmCallDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCallDerivation.swift; sourceTree = "<group>"; };
-		0CD61ECB2D356D1D0064AC97 /* ExtrinsicCallWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicCallWrapper.swift; sourceTree = "<group>"; };
 		0CD61ECD2D3572AC0064AC97 /* XcmTransfers+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmTransfers+Protocol.swift"; sourceTree = "<group>"; };
 		0CD846142BDA525B0026B5CA /* CloudBackupMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AttributedString+Style.swift"; sourceTree = "<group>"; };
@@ -17269,6 +17277,11 @@
 				0CD61EC72D356B770064AC97 /* XcmTransfersProtocol.swift */,
 				0CD61ECD2D3572AC0064AC97 /* XcmTransfers+Protocol.swift */,
 				0C277D992D814CB1004FF053 /* XcmTransferType.swift */,
+				0C277D9F2D829DB1004FF053 /* XcmDynamicTransfers.swift */,
+				0C277DA12D829EC0004FF053 /* XcmDynamicChain.swift */,
+				0C277DA32D829EDC004FF053 /* XcmDynamicAsset.swift */,
+				0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */,
+				0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -21547,7 +21560,6 @@
 				0C7104762C2AC00000487E64 /* CommonMetadataShortenerError.swift */,
 				2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */,
 				0CD61EC52D3554B80064AC97 /* DryRunOperationFactory.swift */,
-				0CD61ECB2D356D1D0064AC97 /* ExtrinsicCallWrapper.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -27900,6 +27912,7 @@
 				849F144029434E4B00D9F9BA /* TextInputView+Empty.swift in Sources */,
 				849013DE24A927E2008F705E /* LocalizationManager+Shared.swift in Sources */,
 				8412AF9B2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift in Sources */,
+				0C277DA62D829F33004FF053 /* XcmDynamicAssetTransfer.swift in Sources */,
 				84F1CB3727CE5EC30095D523 /* NftListViewModelFactory.swift in Sources */,
 				0CA7CEFA2CE13126004328F2 /* TokenDepositEventMatcherFactory.swift in Sources */,
 				849013DC24A927E2008F705E /* ApplicationConfigs.swift in Sources */,
@@ -29188,6 +29201,7 @@
 				0C63908B2BF073C20015D467 /* CloudBackupSyncMonitoring.swift in Sources */,
 				844C3E6F2A08E74D00C4305F /* BalanceCalculator.swift in Sources */,
 				8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */,
+				0C277DA02D829DB1004FF053 /* XcmDynamicTransfers.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
 				841221A228F0520300715C82 /* GovMetadataLocalStorageHandler.swift in Sources */,
 				AE2C84DF25EF98BA00986716 /* AnyValidatorInfoInteractor.swift in Sources */,
@@ -29239,6 +29253,7 @@
 				0C0F6DEE2D4286E000943A7C /* CollatorStakingStakableFactory.swift in Sources */,
 				77D326E92B98DF380055FE88 /* Payload.swift in Sources */,
 				84D184F82A04F9D60060C1BD /* WalletConnectSessionViewModelFactory.swift in Sources */,
+				0C277DA42D829EDC004FF053 /* XcmDynamicAsset.swift in Sources */,
 				0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */,
 				84CA68E126BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift in Sources */,
 				842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */,
@@ -29547,6 +29562,7 @@
 				84E83AA428632AF50000B418 /* XcmPalletTransfer.swift in Sources */,
 				8455F1982A1DD74D003F072D /* SubqueryFilter.swift in Sources */,
 				8499FE6827BD1EA600712589 /* DistributedStorageFactory.swift in Sources */,
+				0C277DA82D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift in Sources */,
 				2D5493312C0490A900607BF7 /* GridUnitTransitionCoordinator.swift in Sources */,
 				0CA72A952D4B4C5900B3FD02 /* ChainAccountId.swift in Sources */,
 				2DE668692C9D5839007883AF /* ReferendumTracksVotingDistribution+Diffable.swift in Sources */,
@@ -30423,6 +30439,7 @@
 				8498534F2A17390900993977 /* PalletAssets.swift in Sources */,
 				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
 				2DE4EBCF2BFB515E005E2D81 /* ExportData.swift in Sources */,
+				0C277DA22D829EC0004FF053 /* XcmDynamicChain.swift in Sources */,
 				0C37AFC12B56EBC000009ECA /* MaxNominationsOperationFactory.swift in Sources */,
 				0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
@@ -31178,7 +31195,6 @@
 				A14308E2633921838166C843 /* ParaStkUnstakeConfirmViewFactory.swift in Sources */,
 				841AB78F2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift in Sources */,
 				135E979B52DC1BD29A5FC389 /* ParaStkRedeemProtocols.swift in Sources */,
-				0CD61ECC2D356D1D0064AC97 /* ExtrinsicCallWrapper.swift in Sources */,
 				88F34FDD28FFE6E400712BDE /* MultiValueView+Model.swift in Sources */,
 				54D334605E9A7C71A4873CFC /* ParaStkRedeemWireframe.swift in Sources */,
 				413CCB7C7B22831147B8E815 /* ParaStkRedeemPresenter.swift in Sources */,

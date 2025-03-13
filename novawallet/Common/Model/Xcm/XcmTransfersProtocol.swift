@@ -6,7 +6,7 @@ protocol XcmTransfersProtocol {
         destinationChainId: ChainModel.Id
     ) -> XcmAssetTransferProtocol?
 
-    func getReservePath(for chainAssetId: ChainAssetId) -> XcmAsset.ReservePath?
+    func getAssetReservePath(for chainAsset: ChainAsset) -> XcmAsset.ReservePath?
 }
 
 protocol XcmAssetTransferProtocol {

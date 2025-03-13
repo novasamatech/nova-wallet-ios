@@ -176,14 +176,14 @@ extension XcmV3ModelFactory: XcmModelFactoryProtocol {
         for params: XcmMultilocationAssetParams,
         version: XcmMultilocationAssetVersion
     ) throws -> XcmMultilocationAsset {
-        let chainAsset = params.origin
+        let originChainAsset = params.origin
 
         let multilocation = createVersionedMultilocation(
-            origin: chainAsset.chain,
+            origin: originChainAsset.chain,
             destination: params.destination
         )
 
-        let originChainAssetId = chainAsset.chainAssetId
+        let originChainAssetId = originChainAsset.chainAssetId
 
         guard params.xcmTransfers.getAssetTransfer(
             from: originChainAssetId,
@@ -192,12 +192,12 @@ extension XcmV3ModelFactory: XcmModelFactoryProtocol {
             throw XcmModelError.noDestinationAssetFound(originChainAssetId)
         }
 
-        guard let reservePath = params.xcmTransfers.getReservePath(for: originChainAssetId) else {
+        guard let reservePath = params.xcmTransfers.getAssetReservePath(for: originChainAsset) else {
             throw XcmModelError.noReserve(originChainAssetId)
         }
 
         let multiasset = try createVersionedMultiasset(
-            origin: chainAsset.chain,
+            origin: originChainAsset.chain,
             reserve: params.reserve,
             assetLocation: reservePath,
             amount: params.amount,
