@@ -1799,3 +1799,12 @@
 "chart.period.month" = "Bulan Lalu";
 "chart.period.year" = "Tahun Lalu";
 "chart.period.max" = "Sepanjang Masa";
+"common.pay" = "Bayar";
+"common.card.issued" = "Kartu diterbitkan";
+"card.top.up.dot.setup.title" = "Isi ulang kartu dengan DOT";
+"common.manage.debit.card" = "Kelola Kartu Debit";
+"common.estimated.timer" = "Perkiraan ~%@";
+"card.open.pending.sheet.title" = "Kartu Anda sedang diterbitkan!";
+"card.open.pending.sheet.message" = "Ini dapat memakan waktu hingga %@.\nJendela ini akan ditutup secara otomatis.";
+"card.open.failed.alert.title" = "Hubungi dukungan";
+"card.open.failed.alert.message" = "Silakan hubungi support@novawallet.io. Sertakan alamat email yang Anda gunakan untuk menerbitkan kartu.";
