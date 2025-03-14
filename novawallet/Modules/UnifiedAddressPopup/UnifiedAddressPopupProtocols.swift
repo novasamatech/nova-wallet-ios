@@ -4,6 +4,9 @@ protocol UnifiedAddressPopupViewProtocol: ControllerBackedProtocol {
 
 protocol UnifiedAddressPopupPresenterProtocol: AnyObject {
     func setup()
+    func copyNewAddress()
+    func copyLegacyAddress()
+    func close()
 }
 
 protocol UnifiedAddressPopupInteractorInputProtocol: AnyObject {
@@ -15,4 +18,6 @@ protocol UnifiedAddressPopupInteractorOutputProtocol: AnyObject {
     func didReceiveDontShow(_ value: Bool)
 }
 
-protocol UnifiedAddressPopupWireframeProtocol: AnyObject {}
+protocol UnifiedAddressPopupWireframeProtocol: AnyObject, CopyAddressPresentable {
+    func close(from view: ControllerBackedProtocol?)
+}

@@ -22,7 +22,42 @@ final class UnifiedAddressPopupViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupActions()
         presenter.setup()
+    }
+}
+
+// MARK: Private
+
+private extension UnifiedAddressPopupViewController {
+    func setupActions() {
+        rootView.newAddressContainer.addTarget(
+            self,
+            action: #selector(actionNewAddress),
+            for: .touchUpInside
+        )
+        rootView.legacyAddressContainer.addTarget(
+            self,
+            action: #selector(actionLegacyAddress),
+            for: .touchUpInside
+        )
+        rootView.button.addTarget(
+            self,
+            action: #selector(actionButton),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionNewAddress() {
+        presenter.copyNewAddress()
+    }
+
+    @objc func actionLegacyAddress() {
+        presenter.copyLegacyAddress()
+    }
+
+    @objc func actionButton() {
+        presenter.close()
     }
 }
 

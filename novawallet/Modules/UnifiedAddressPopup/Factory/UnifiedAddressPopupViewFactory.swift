@@ -21,6 +21,8 @@ struct UnifiedAddressPopupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            newAddress: newAddress,
+            legacyAddress: legacyAddress,
             localizationManager: localizationManager
         )
 

@@ -8,17 +8,24 @@ final class UnifiedAddressPopupPresenter {
     let viewModelFactory: UnifiedAddressPopup.ViewModelFactory
     let localizationManager: LocalizationManagerProtocol
 
+    let newAddress: AccountAddress
+    let legacyAddress: AccountAddress
+
     var dontShowAgain: Bool?
 
     init(
         interactor: UnifiedAddressPopupInteractorInputProtocol,
         wireframe: UnifiedAddressPopupWireframeProtocol,
         viewModelFactory: UnifiedAddressPopup.ViewModelFactory,
+        newAddress: AccountAddress,
+        legacyAddress: AccountAddress,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.newAddress = newAddress
+        self.legacyAddress = legacyAddress
         self.localizationManager = localizationManager
     }
 }
@@ -43,6 +50,26 @@ private extension UnifiedAddressPopupPresenter {
 extension UnifiedAddressPopupPresenter: UnifiedAddressPopupPresenterProtocol {
     func setup() {
         interactor.setup()
+    }
+
+    func copyNewAddress() {
+        wireframe.copyAddress(
+            from: view,
+            address: newAddress,
+            locale: localizationManager.selectedLocale
+        )
+    }
+
+    func copyLegacyAddress() {
+        wireframe.copyAddress(
+            from: view,
+            address: legacyAddress,
+            locale: localizationManager.selectedLocale
+        )
+    }
+
+    func close() {
+        wireframe.close(from: view)
     }
 }
 
