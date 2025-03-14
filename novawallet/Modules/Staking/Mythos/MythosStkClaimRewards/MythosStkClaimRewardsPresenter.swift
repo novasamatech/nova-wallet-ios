@@ -19,7 +19,7 @@ final class MythosStkClaimRewardsPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var details: MythosStakingDetails?
-    var autoCompound: MythosStakingPallet.AutoCompound?
+    var autoCompound: Percent?
     var claimStrategy: StakingClaimRewardsStrategy = .restake
 
     init(
@@ -231,7 +231,7 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputP
         refreshFee()
     }
 
-    func didReceiveAutoCompound(_ autoCompound: MythosStakingPallet.AutoCompound?) {
+    func didReceiveAutoCompound(_ autoCompound: Percent?) {
         logger.debug("Auto compound: \(String(describing: autoCompound))")
 
         self.autoCompound = autoCompound

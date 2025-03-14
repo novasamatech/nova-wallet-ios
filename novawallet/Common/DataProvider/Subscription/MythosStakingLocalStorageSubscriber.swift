@@ -29,7 +29,7 @@ protocol MythosStakingLocalStorageSubscriber: LocalStorageProviderObserving {
     func subscribeToAutoCompound(
         for chainId: ChainModel.Id,
         accountId: AccountId
-    ) -> AnyDataProvider<MythosStakingPallet.DecodedAutoCompound>?
+    ) -> AnyDataProvider<DecodedPercent>?
 
     func subscribeToCollatorRewardsPercentage(
         for chainId: ChainModel.Id,
@@ -183,7 +183,7 @@ extension MythosStakingLocalStorageSubscriber {
     func subscribeToAutoCompound(
         for chainId: ChainModel.Id,
         accountId: AccountId
-    ) -> AnyDataProvider<MythosStakingPallet.DecodedAutoCompound>? {
+    ) -> AnyDataProvider<DecodedPercent>? {
         guard let provider = try? stakingLocalSubscriptionFactory.getAutoCompoundProvider(
             for: chainId,
             accountId: accountId
@@ -193,9 +193,9 @@ extension MythosStakingLocalStorageSubscriber {
 
         addDataProviderObserver(
             for: provider,
-            updateClosure: { [weak self] value in
+            updateClosure: { [weak self] decodedValue in
                 self?.stakingLocalSubscriptionHandler.handleAutoCompound(
-                    result: .success(value),
+                    result: .success(decodedValue?.value),
                     chainId: chainId,
                     accountId: accountId
                 )

@@ -4,14 +4,14 @@ struct MythosStkClaimRewardsState {
     let details: MythosStakingDetails
     let claimableRewards: MythosStakingClaimableRewards
     let claimStrategy: StakingClaimRewardsStrategy
-    let autoCompound: MythosStakingPallet.AutoCompound?
+    let autoCompound: Percent?
 
     func deriveModel() -> MythosStkClaimRewardsModel? {
         guard claimableRewards.shouldClaim else { return nil }
 
         guard
             case .restake = claimStrategy,
-            autoCompound == nil,
+            (autoCompound ?? 0) == 0,
             claimableRewards.total > 0 else {
             return MythosStkClaimRewardsModel()
         }

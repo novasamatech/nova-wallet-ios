@@ -57,7 +57,4 @@ enum MythosStakingPallet {
             staker = try jsonList[1].map(to: BytesCodable.self, with: context).wrappedValue
         }
     }
-
-    // for now we don't instered in specic settings
-    typealias AutoCompound = JSON
 }

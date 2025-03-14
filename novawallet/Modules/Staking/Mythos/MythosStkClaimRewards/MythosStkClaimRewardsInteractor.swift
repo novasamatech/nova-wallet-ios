@@ -26,7 +26,7 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
     var assetId: AssetModel.Id { asset.assetId }
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var autoCompoundProvider: AnyDataProvider<MythosStakingPallet.DecodedAutoCompound>?
+    private var autoCompoundProvider: AnyDataProvider<DecodedPercent>?
     private var priceProvider: StreamableProvider<PriceData>?
 
     init(
@@ -225,7 +225,7 @@ extension MythosStkClaimRewardsInteractor: WalletLocalStorageSubscriber, WalletL
 
 extension MythosStkClaimRewardsInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {
     func handleAutoCompound(
-        result: Result<MythosStakingPallet.AutoCompound?, Error>,
+        result: Result<Percent?, Error>,
         chainId _: ChainModel.Id,
         accountId _: AccountId
     ) {

@@ -4,7 +4,6 @@ import Operation_iOS
 extension MythosStakingPallet {
     typealias DecodedUserStake = ChainStorageDecodedItem<MythosStakingPallet.UserStake>
     typealias DecodedReleaseQueue = ChainStorageDecodedItem<MythosStakingPallet.ReleaseQueue>
-    typealias DecodedAutoCompound = ChainStorageDecodedItem<MythosStakingPallet.AutoCompound>
 }
 
 protocol MythosStakingLocalSubscriptionFactoryProtocol {
@@ -29,7 +28,7 @@ protocol MythosStakingLocalSubscriptionFactoryProtocol {
     func getAutoCompoundProvider(
         for chainId: ChainModel.Id,
         accountId: AccountId
-    ) throws -> AnyDataProvider<MythosStakingPallet.DecodedAutoCompound>
+    ) throws -> AnyDataProvider<DecodedPercent>
 
     func getCollatorRewardsPercentageProvider(
         for chainId: ChainModel.Id
@@ -85,7 +84,7 @@ final class MythosStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFac
     func getAutoCompoundProvider(
         for chainId: ChainModel.Id,
         accountId: AccountId
-    ) throws -> AnyDataProvider<MythosStakingPallet.DecodedAutoCompound> {
+    ) throws -> AnyDataProvider<DecodedPercent> {
         try getAccountProvider(
             for: chainId,
             accountId: accountId,

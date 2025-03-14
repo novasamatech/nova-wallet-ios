@@ -25,7 +25,7 @@ protocol MythosStakingLocalStorageHandler {
     )
 
     func handleAutoCompound(
-        result: Result<MythosStakingPallet.AutoCompound?, Error>,
+        result: Result<Percent?, Error>,
         chainId: ChainModel.Id,
         accountId: AccountId
     )
@@ -75,7 +75,7 @@ extension MythosStakingLocalStorageHandler {
     ) {}
 
     func handleAutoCompound(
-        result _: Result<MythosStakingPallet.AutoCompound?, Error>,
+        result _: Result<Percent?, Error>,
         chainId _: ChainModel.Id,
         accountId _: AccountId
     ) {}

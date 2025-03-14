@@ -18,7 +18,7 @@ protocol MythosStkClaimRewardsInteractorOutputProtocol: AnyObject {
     func didReceivePrice(_ price: PriceData?)
     func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards)
     func didReceiveStakingDetails(_ stakingDetails: MythosStakingDetails?)
-    func didReceiveAutoCompound(_ autoCompound: MythosStakingPallet.AutoCompound?)
+    func didReceiveAutoCompound(_ autoCompound: Percent?)
     func didReceiveClaimStragegy(_ claimStrategy: StakingClaimRewardsStrategy)
     func didReceiveFeeResult(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveSubmissionResult(_ result: Result<String, Error>)
