@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Số tiền còn lại trong stake quá nhỏ";
 "staking.unstake.no.space.message" = "Hiện tại không còn chỗ trống trong hàng chờ unstaking cho nhóm của bạn. Vui lòng thử lại sau %@";
 "staking.unstake.no.space.title" = "Quá nhiều người đang unstaking từ nhóm của bạn";
-"staking.restake.message" = "Token của bạn sẽ được thêm lại vào stake";
 "staking.claim.rewards" = "Yêu cầu phần thưởng";
 "common.recommended" = "Đề xuất";
 "staking.setup.amount.direct.type.subtitle" = "Đã chọn: %li (tối đa %li)";
@@ -1809,3 +1808,4 @@
 "card.open.failed.alert.title" = "Liên hệ hỗ trợ";
 "card.open.failed.alert.message" = "Vui lòng liên hệ support@novawallet.io. Bao gồm địa chỉ email mà bạn đã sử dụng để phát hành thẻ.";
 "card.topup.pending.sheet.title" = "Thẻ của bạn đang được nạp tiền!";
+"staking.restake.message" = "Phần thưởng của bạn sẽ được thêm vào phần staking của bạn";

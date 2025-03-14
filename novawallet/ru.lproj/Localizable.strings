@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "В стейкинге остается слишком маленькая сумма";
 "staking.unstake.no.space.message" = "В настоящее время в очереди на вывод средств для вашего пула нет свободных мест. Пожалуйста, повторите попытку через %@";
 "staking.unstake.no.space.title" = "Слишком много участников выводят средства из вашего пула";
-"staking.restake.message" = "Ваши токены будут добавлены обратно в стейкинг";
 "staking.claim.rewards" = "Забрать награды";
 "common.recommended" = "Рекомендовано";
 "staking.setup.amount.direct.type.subtitle" = "Выбрано: %d (макс. %d)";
@@ -1809,3 +1808,4 @@
 "card.open.failed.alert.title" = "Связаться с поддержкой";
 "card.open.failed.alert.message" = "Пожалуйста, обратитесь в support@novawallet.io. Укажите адрес электронной почты, который вы использовали для выпуска карты.";
 "card.topup.pending.sheet.title" = "Ваша карта пополняется!";
+"staking.restake.message" = "Ваши награды будут добавлены к вашему стекингу";
