@@ -77,4 +77,30 @@ extension BorderedLabelView.Style {
             highlightedFillColor: R.color.colorChipsBackground()!
         )
     )
+    
+    static let new = BorderedLabelView.Style(
+        text: .init(
+            textColor: R.color.colorTextPositive()!,
+            font: .semiBoldCaps2
+        ),
+        background: .init(
+            shadowOpacity: 0,
+            strokeWidth: 0,
+            fillColor: R.color.colorChipsBackground()!,
+            highlightedFillColor: R.color.colorChipsBackground()!
+        )
+    )
+    
+    static let legacy = BorderedLabelView.Style(
+        text: .init(
+            textColor: R.color.colorChipText()!,
+            font: .semiBoldCaps2
+        ),
+        background: .init(
+            shadowOpacity: 0,
+            strokeWidth: 0,
+            fillColor: R.color.colorChipsBackground()!,
+            highlightedFillColor: R.color.colorChipsBackground()!
+        )
+    )
 }
