@@ -391,18 +391,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionFavorite() {
-        guard let url = rootView.webView?.url else {
-            return
-        }
-
-        let title = rootView.webView?.title ?? ""
-
-        let page = DAppBrowserPage(
-            url: url,
-            title: title
-        )
-
-        presenter.actionFavorite(page: page)
+        presenter.actionFavorite()
     }
 
     @objc private func actionRefresh() {
@@ -414,7 +403,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionSearch() {
-        presenter.activateSearch(with: rootView.webView?.url?.absoluteString)
+        presenter.activateSearch()
     }
 
     @objc private func actionClose() {
