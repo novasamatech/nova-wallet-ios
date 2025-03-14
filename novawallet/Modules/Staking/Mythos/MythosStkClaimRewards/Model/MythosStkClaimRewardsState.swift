@@ -34,11 +34,11 @@ struct MythosStkClaimRewardsState {
         // add remained amount to the collator with max stake
         if
             remainedAmount > 0,
-            let minCollatorId = details.stakeDistribution.max(
+            let maxCollatorId = details.stakeDistribution.max(
                 by: { $0.value.stake < $1.value.stake }
             )?.key {
-            let minColAmount = restakeDistribution[minCollatorId] ?? 0
-            restakeDistribution[minCollatorId] = minColAmount + remainedAmount
+            let maxColAmount = restakeDistribution[maxCollatorId] ?? 0
+            restakeDistribution[maxCollatorId] = maxColAmount + remainedAmount
         }
 
         // leave collators with non zero restaked amount
