@@ -407,14 +407,18 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-            let queueMessage = QueueMessage(
-                host: host,
-                transportName: name,
-                underliningMessage: message
-            )
-            self?.messageQueue.append(queueMessage)
+            self?.verifyPhishing(for: host) { isNotPhishing in
+                if isNotPhishing {
+                    let queueMessage = QueueMessage(
+                        host: host,
+                        transportName: name,
+                        underliningMessage: message
+                    )
+                    self?.messageQueue.append(queueMessage)
 
-            self?.processMessageIfNeeded()
+                    self?.processMessageIfNeeded()
+                }
+            }
         }
     }
 

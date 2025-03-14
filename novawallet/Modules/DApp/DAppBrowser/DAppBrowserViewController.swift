@@ -459,6 +459,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
             setupWebView(with: viewModel)
         }
 
+        if !reload {
+            let page = DAppBrowserPage(
+                url: viewModel.selectedTab.url,
+                title: rootView.webView?.title ?? ""
+            )
+
+            presenter.process(page: page)
+        }
+
         self.viewModel = viewModel
 
         isDesktop = viewModel.isDesktop
