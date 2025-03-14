@@ -278,6 +278,7 @@ extension DAppBrowserPresenter: DAppAuthDelegate {
 extension DAppBrowserPresenter: DAppPhishingViewDelegate {
     func dappPhishingViewDidHide() {
         view?.didDecideClose()
+        interactor.close()
         wireframe.close(view: view)
     }
 }

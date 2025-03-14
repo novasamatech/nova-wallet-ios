@@ -61,6 +61,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func save(settings: DAppGlobalSettings)
     func saveTabIfNeeded()
     func saveLastTabState(render: DAppBrowserTabRenderProtocol)
+    func close()
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
