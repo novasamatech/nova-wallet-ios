@@ -158,10 +158,11 @@ private extension SubqueryHistoryOperationFactory {
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
             var address = try accountId.toAddress(using: chainFormat)
-            let legacyAddress = try address.toLegacySubstrateAddress(for: chainFormat)
+            var legacyAddress = try address.toLegacySubstrateAddress(for: chainFormat)
 
             if ethereumBased {
                 address = address.toEthereumAddressWithChecksum() ?? address
+                legacyAddress = legacyAddress?.toEthereumAddressWithChecksum() ?? legacyAddress
             }
 
             let after = cursor.map { "\"\($0)\"" } ?? "null"

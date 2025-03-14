@@ -113,7 +113,7 @@ extension AccountAddress {
 
     func toLegacySubstrateAddress(for chainFormat: ChainFormat) throws -> AccountAddress? {
         guard
-            case let .substrate(prefix, legacyPrefix) = chainFormat,
+            case let .substrate(_, legacyPrefix) = chainFormat,
             let legacyPrefix
         else { return nil }
 
