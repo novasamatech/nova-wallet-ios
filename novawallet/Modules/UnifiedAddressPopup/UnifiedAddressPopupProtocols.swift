@@ -18,6 +18,8 @@ protocol UnifiedAddressPopupInteractorOutputProtocol: AnyObject {
     func didReceiveDontShow(_ value: Bool)
 }
 
-protocol UnifiedAddressPopupWireframeProtocol: AnyObject, CopyAddressPresentable {
+protocol UnifiedAddressPopupWireframeProtocol: AnyObject,
+    ModalAlertPresenting,
+    CopyAddressPresentable {
     func close(from view: ControllerBackedProtocol?)
 }
