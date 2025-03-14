@@ -1,6 +1,6 @@
 import UIKit
 
-final class UnifiedAddressPopupViewController: UIViewController {
+final class UnifiedAddressPopupViewController: UIViewController, ViewHolder {
     typealias RootViewType = UnifiedAddressPopupViewLayout
 
     let presenter: UnifiedAddressPopupPresenterProtocol
@@ -26,4 +26,10 @@ final class UnifiedAddressPopupViewController: UIViewController {
     }
 }
 
-extension UnifiedAddressPopupViewController: UnifiedAddressPopupViewProtocol {}
+// MARK: UnifiedAddressPopupViewProtocol
+
+extension UnifiedAddressPopupViewController: UnifiedAddressPopupViewProtocol {
+    func didReceive(_ viewModel: UnifiedAddressPopup.ViewModel) {
+        rootView.bind(viewModel)
+    }
+}

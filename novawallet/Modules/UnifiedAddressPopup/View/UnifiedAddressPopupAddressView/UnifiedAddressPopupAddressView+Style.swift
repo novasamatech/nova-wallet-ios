@@ -15,7 +15,7 @@ extension UnifiedAddressPopupAddressView.Style {
             chipsStyle: .new
         )
     }
-    
+
     static var legacyFormat: Self {
         .init(
             addressStyle: .footnoteSecondary,

@@ -1444,6 +1444,7 @@
 		2D7C64542D84397300FD658E /* UnifiedAddressPopupAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C64532D84397300FD658E /* UnifiedAddressPopupAddressView.swift */; };
 		2D7C64572D84402E00FD658E /* UnifiedAddressPopupAddressView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C64562D84402E00FD658E /* UnifiedAddressPopupAddressView+Style.swift */; };
 		2D7C645A2D84420800FD658E /* UnifiedAddressPopupAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C64592D84420800FD658E /* UnifiedAddressPopupAddressViewModel.swift */; };
+		2D7C645D2D84B1BA00FD658E /* UnifiedAddressPopupViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C645C2D84B1BA00FD658E /* UnifiedAddressPopupViewModelFactory.swift */; };
 		2D7C8A8F2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */; };
 		2D7C8A912C2DA2280044E601 /* NetworkNodeConnectingTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */; };
 		2D7C8A932C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7C8A922C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift */; };
@@ -7155,6 +7156,7 @@
 		2D7C64532D84397300FD658E /* UnifiedAddressPopupAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedAddressPopupAddressView.swift; sourceTree = "<group>"; };
 		2D7C64562D84402E00FD658E /* UnifiedAddressPopupAddressView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UnifiedAddressPopupAddressView+Style.swift"; sourceTree = "<group>"; };
 		2D7C64592D84420800FD658E /* UnifiedAddressPopupAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedAddressPopupAddressViewModel.swift; sourceTree = "<group>"; };
+		2D7C645C2D84B1BA00FD658E /* UnifiedAddressPopupViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedAddressPopupViewModelFactory.swift; sourceTree = "<group>"; };
 		2D7C8A8E2C2DA1EF0044E601 /* NetworkNodeCreatorTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeCreatorTrait.swift; sourceTree = "<group>"; };
 		2D7C8A902C2DA2280044E601 /* NetworkNodeConnectingTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeConnectingTrait.swift; sourceTree = "<group>"; };
 		2D7C8A922C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkNodeCorrespondingTrait.swift; sourceTree = "<group>"; };
@@ -11423,6 +11425,7 @@
 		028384EC1D6B48710C2236A2 /* UnifiedAddressPopup */ = {
 			isa = PBXGroup;
 			children = (
+				2D7C645B2D84B1A300FD658E /* Factory */,
 				2D7C64582D84420200FD658E /* Model */,
 				2D7C64522D84391B00FD658E /* View */,
 				334A9D6E2BA7EE096D564FEF /* UnifiedAddressPopupProtocols.swift */,
@@ -11431,7 +11434,6 @@
 				710BEEB9E42E69CCD7FDD552 /* UnifiedAddressPopupInteractor.swift */,
 				3F422D17016EBE301C876BC1 /* UnifiedAddressPopupViewController.swift */,
 				EBE8AD52DEE774059844DCBE /* UnifiedAddressPopupViewLayout.swift */,
-				683CDF030218DF76037B60D9 /* UnifiedAddressPopupViewFactory.swift */,
 			);
 			path = UnifiedAddressPopup;
 			sourceTree = "<group>";
@@ -14990,6 +14992,15 @@
 				2D7C64592D84420800FD658E /* UnifiedAddressPopupAddressViewModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		2D7C645B2D84B1A300FD658E /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				683CDF030218DF76037B60D9 /* UnifiedAddressPopupViewFactory.swift */,
+				2D7C645C2D84B1BA00FD658E /* UnifiedAddressPopupViewModelFactory.swift */,
+			);
+			path = Factory;
 			sourceTree = "<group>";
 		};
 		2D7C8A8D2C2DA1DE0044E601 /* Traits */ = {
@@ -29462,6 +29473,7 @@
 				8473B4782A207FE0003DE213 /* StakingDashboardOffchainMapper.swift in Sources */,
 				77D2E2712B05416E0098F188 /* AssetListGroupModelCompator.swift in Sources */,
 				84F4386625D9B8C600AEDA56 /* TypeRegistryPrepared.swift in Sources */,
+				2D7C645D2D84B1BA00FD658E /* UnifiedAddressPopupViewModelFactory.swift in Sources */,
 				84282298289BC50A00163031 /* SwitchAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */,
 				AE805FC526B3DF8B00007CE9 /* ValidatorInfoInteractorBase.swift in Sources */,
