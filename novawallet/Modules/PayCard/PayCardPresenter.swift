@@ -10,7 +10,8 @@ final class PayCardPresenter {
     private let localizationManager: LocalizationManagerProtocol
 
     private var openCardTimestamp: TimeInterval?
-    private var cardStatus: PayCardStatus?
+    private var isCardExists: Bool = false
+    private var fundingStatus: PayCardStatus?
 
     init(
         interactor: PayCardInteractorInputProtocol,
@@ -49,13 +50,17 @@ final class PayCardPresenter {
         )
     }
 
-    private func showCardOpenPending(for remainedTime: TimeInterval, totalTime: TimeInterval) {
+    private func showCardPending(
+        for remainedTime: TimeInterval,
+        totalTime: TimeInterval
+    ) {
         let timer = CountdownTimerMediator()
         timer.addObserver(self)
         timer.start(with: remainedTime)
 
-        wireframe.showCardOpenPending(
+        wireframe.showCardFundingState(
             from: view,
+            mode: isCardExists ? .topup : .issue,
             timerMediator: timer,
             totalTime: totalTime,
             locale: localizationManager.selectedLocale
@@ -84,12 +89,8 @@ extension PayCardPresenter: PayCardInteractorOutputProtocol {
                 return
             }
 
-            let isCardCreated = cardStatus?.isCreated ?? false
-
-            if !isCardCreated {
-                cardStatus = nil
-                interactor.processIssueInit()
-            }
+            fundingStatus = nil
+            interactor.processFundInit()
         }
     }
 
@@ -99,24 +100,29 @@ extension PayCardPresenter: PayCardInteractorOutputProtocol {
         logger.debug("Card open timestamp \(timestamp)")
     }
 
-    func didReceiveCardStatus(_ cardStatus: PayCardStatus) {
-        logger.debug("Card status \(cardStatus)")
+    func didReceivePayStatus(_ payStatus: PayCardStatus) {
+        logger.debug("Card status \(payStatus)")
 
-        switch (self.cardStatus, cardStatus) {
-        case (.failed, .created), (.pending, .created):
+        // don't change card existing state if detected once in the session
+        if !isCardExists, payStatus.isCompleted {
+            isCardExists = true
+        }
+
+        switch (fundingStatus, payStatus) {
+        case (.failed, .completed), (.pending, .completed):
             wireframe.closeCardOpenSheet(
                 from: view,
                 completion: nil
             )
         case let (.none, .pending(remained, total)), let (.failed, .pending(remained, total)):
-            showCardOpenPending(for: remained, totalTime: total)
+            showCardPending(for: remained, totalTime: total)
         case (.none, .failed), (.pending, .failed):
             showFailAlert()
         default:
             break
         }
 
-        self.cardStatus = cardStatus
+        fundingStatus = payStatus
     }
 }
 

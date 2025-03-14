@@ -1800,6 +1800,7 @@
 "common.manage.debit.card" = "Manage Debit Card";
 "common.estimated.timer" = "Estimated ~%@";
 "card.open.pending.sheet.title" = "Your card is being issued!";
+"card.topup.pending.sheet.title" = "Your card is being funded!";
 "card.open.pending.sheet.message" = "It can take up to %@.\nThis window will be closed automatically.";
 "card.open.failed.alert.title" = "Contact support";
 "card.open.failed.alert.message" = "Please contact support@novawallet.io. Include email address that you have used for issuing the card.";

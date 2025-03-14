@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "Ini dapat memakan waktu hingga %@.\nJendela ini akan ditutup secara otomatis.";
 "card.open.failed.alert.title" = "Hubungi dukungan";
 "card.open.failed.alert.message" = "Silakan hubungi support@novawallet.io. Sertakan alamat email yang Anda gunakan untuk menerbitkan kartu.";
+"card.topup.pending.sheet.title" = "Kartu Anda sedang dibiayai!";

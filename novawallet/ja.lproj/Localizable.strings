@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "最大で%@かかる場合があります。\nこのウィンドウは自動的に閉じられます。";
 "card.open.failed.alert.title" = "サポートに連絡";
 "card.open.failed.alert.message" = "support@novawallet.ioに連絡してください。カードを発行するために使用したメールアドレスを添えてください。";
+"card.topup.pending.sheet.title" = "あなたのカードに資金が追加されています！";

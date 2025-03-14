@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "Può richiedere fino a %@.\nQuesta finestra si chiuderà automaticamente.";
 "card.open.failed.alert.title" = "Contatta il supporto";
 "card.open.failed.alert.message" = "Si prega di contattare support@novawallet.io. Includere l'indirizzo email che hai usato per emettere la carta.";
+"card.topup.pending.sheet.title" = "La tua carta sta ricevendo fondi!";

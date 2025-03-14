@@ -87,18 +87,18 @@ extension PayCardInteractor: PayCardInteractorInputProtocol {
         let elapsedTime = currentTimestamp - TimeInterval(cardOpenTimestamp)
 
         if elapsedTime < pendingTimeout {
-            presenter?.didReceiveCardStatus(
+            presenter?.didReceivePayStatus(
                 .pending(
                     remained: pendingTimeout - elapsedTime,
                     total: pendingTimeout
                 )
             )
         } else {
-            presenter?.didReceiveCardStatus(.failed)
+            presenter?.didReceivePayStatus(.failed)
         }
     }
 
-    func processIssueInit() {
+    func processFundInit() {
         let timestamp = Date().timeIntervalSince1970
         settingsManager.novaCardOpenTimestamp = UInt64(timestamp)
 
@@ -129,11 +129,11 @@ extension PayCardInteractor: PayCardHookDelegate {
     }
 
     func didOpenCard() {
-        let createdStatus = PayCardStatus.created
+        let createdStatus = PayCardStatus.completed
 
         settingsManager.novaCardOpenTimestamp = nil
 
-        presenter?.didReceiveCardStatus(createdStatus)
+        presenter?.didReceivePayStatus(createdStatus)
     }
 
     func didFailToOpenCard() {
@@ -141,14 +141,14 @@ extension PayCardInteractor: PayCardHookDelegate {
 
         settingsManager.novaCardOpenTimestamp = nil
 
-        presenter?.didReceiveCardStatus(failedStatus)
+        presenter?.didReceivePayStatus(failedStatus)
     }
 
     func didReceivePendingCardOpen() {
         if settingsManager.novaCardOpenTimestamp != nil {
             checkPendingTimeout()
         } else {
-            processIssueInit()
+            processFundInit()
         }
     }
 }

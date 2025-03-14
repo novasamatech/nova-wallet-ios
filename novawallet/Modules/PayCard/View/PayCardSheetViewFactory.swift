@@ -3,7 +3,8 @@ import SoraUI
 import SoraFoundation
 
 enum PayCardSheetViewFactory {
-    static func createCardPendingSheet(
+    static func createCardFundingSheet(
+        for mode: PayCardSheetMode,
         timerMediator: CountdownTimerMediator,
         totalTime: TimeInterval,
         locale: Locale?
@@ -13,7 +14,16 @@ enum PayCardSheetViewFactory {
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
         let title = LocalizableResource { locale in
-            R.string.localizable.cardOpenPendingSheetTitle(preferredLanguages: locale.rLanguages)
+            switch mode {
+            case .issue:
+                return R.string.localizable.cardOpenPendingSheetTitle(
+                    preferredLanguages: locale.rLanguages
+                )
+            case .topup:
+                return R.string.localizable.cardTopupPendingSheetTitle(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
         }
 
         let message = LocalizableResource { locale in

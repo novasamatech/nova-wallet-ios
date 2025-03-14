@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "Eltarthat akár %@-ig.\nEz az ablak automatikusan bezáródik.";
 "card.open.failed.alert.title" = "Lépj kapcsolatba a támogatással";
 "card.open.failed.alert.message" = "Kérjük, vedd fel a kapcsolatot a support@novawallet.io címen. Add meg az e-mail címed, amelyet használtál a kártya kiállításához.";
+"card.topup.pending.sheet.title" = "A kártyád feltöltése folyamatban van!";

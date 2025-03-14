@@ -2,14 +2,14 @@ import Foundation
 
 enum PayCardStatus {
     case pending(remained: TimeInterval, total: TimeInterval)
-    case created
+    case completed
     case failed
 
-    var isCreated: Bool {
+    var isCompleted: Bool {
         switch self {
         case .pending, .failed:
             false
-        case .created:
+        case .completed:
             true
         }
     }
