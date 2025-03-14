@@ -430,13 +430,19 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(stateRender: DAppBrowserTabRenderProtocol) {
+        let transportSaveWrapper = createTransportSaveWrapper()
+
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
             render: stateRender
         )
 
+        renderUpdateWrapper.addDependency(wrapper: transportSaveWrapper)
+
+        let totalWrapper = renderUpdateWrapper.insertingHead(operations: transportSaveWrapper.allOperations)
+
         operationQueue.addOperations(
-            renderUpdateWrapper.allOperations,
+            totalWrapper.allOperations,
             waitUntilFinished: false
         )
     }

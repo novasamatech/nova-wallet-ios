@@ -160,7 +160,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 
     func close(stateRender: DAppBrowserTabRenderProtocol) {
-        interactor.saveLastTabState(render: stateRender)
+        interactor.process(stateRender: stateRender)
         view?.didDecideClose()
         wireframe.close(view: view)
     }
