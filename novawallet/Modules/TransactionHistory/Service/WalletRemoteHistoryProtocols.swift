@@ -37,3 +37,7 @@ protocol WalletRemoteHistoryFactoryProtocol {
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData>
 }
+
+enum WalletRemoteHistoryError: Error {
+    case fetchParamsCreation
+}

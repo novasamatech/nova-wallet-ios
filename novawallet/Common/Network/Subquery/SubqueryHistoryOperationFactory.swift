@@ -3,39 +3,37 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol SubqueryHistoryOperationFactoryProtocol {
-    func createWrapper(
+    func createOperation(
         accountId: AccountId,
         chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> CompoundOperationWrapper<SubqueryHistoryData>
+    ) -> BaseOperation<SubqueryHistoryData>
+}
+
+enum SubqueryHistoryError: Error {
+    case requestFactoryCreation
 }
 
 final class SubqueryHistoryOperationFactory {
     let url: URL
     let filter: WalletHistoryFilter
     let assetId: String?
-    let ethereumBased: Bool
     let hasPoolStaking: Bool
     let hasSwaps: Bool
-    let operationManager: OperationManagerProtocol
 
     init(
         url: URL,
         filter: WalletHistoryFilter,
         assetId: String?,
-        ethereumBased: Bool,
         hasPoolStaking: Bool,
-        hasSwaps: Bool,
-        operationManager: OperationManagerProtocol
+        hasSwaps: Bool
     ) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
-        self.ethereumBased = ethereumBased
         self.hasPoolStaking = hasPoolStaking
         self.hasSwaps = hasSwaps
-        self.operationManager = operationManager
     }
 }
 
@@ -148,148 +146,123 @@ private extension SubqueryHistoryOperationFactory {
         return filterStrings.joined(separator: ",")
     }
 
-    func createQueryOperation(
+    func createQuery(
         _ accountId: AccountId,
         chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> BaseOperation<String> {
-        ClosureOperation { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
+    ) throws -> String {
+        var address = try accountId.toAddress(using: chainFormat)
+        var legacyAddress = try address.toLegacySubstrateAddress(for: chainFormat)
 
-            var address = try accountId.toAddress(using: chainFormat)
-            var legacyAddress = try address.toLegacySubstrateAddress(for: chainFormat)
-
-            if ethereumBased {
-                address = address.toEthereumAddressWithChecksum() ?? address
-                legacyAddress = legacyAddress?.toEthereumAddressWithChecksum() ?? legacyAddress
-            }
-
-            let after = cursor.map { "\"\($0)\"" } ?? "null"
-            let transferField = assetId != nil ? "assetTransfer" : "transfer"
-            let filterString = prepareFilter()
-            let poolRewardField = hasPoolStaking ? "poolReward" : ""
-            let swapField = hasSwaps ? "swap" : ""
-            let addressFilter = if let legacyAddress {
-                "address: { in: [\"\(address)\", \"\(legacyAddress)\"] }"
-            } else {
-                "address: { equalTo: \"\(address)\"}"
-            }
-
-            return """
-            {
-                historyElements(
-                     after: \(after),
-                     first: \(count),
-                     orderBy: TIMESTAMP_DESC,
-                     filter: {
-                         \(addressFilter),
-                         or: [
-                            \(filterString)
-                         ]
-                     }
-                 ) {
-                     pageInfo {
-                         startCursor,
-                         endCursor
-                     },
-                     nodes {
-                         id
-                         blockNumber
-                         extrinsicIdx
-                         extrinsicHash
-                         timestamp
-                         address
-                         reward
-                         extrinsic
-                         \(transferField)
-                         \(poolRewardField)
-                         \(swapField)
-                     }
-                 }
-            }
-            """
+        if case .ethereum = chainFormat {
+            address = address.toEthereumAddressWithChecksum() ?? address
+            legacyAddress = legacyAddress?.toEthereumAddressWithChecksum() ?? legacyAddress
         }
+
+        let after = cursor.map { "\"\($0)\"" } ?? "null"
+        let transferField = assetId != nil ? "assetTransfer" : "transfer"
+        let filterString = prepareFilter()
+        let poolRewardField = hasPoolStaking ? "poolReward" : ""
+        let swapField = hasSwaps ? "swap" : ""
+        let addressFilter = if let legacyAddress {
+            "address: { in: [\"\(address)\", \"\(legacyAddress)\"] }"
+        } else {
+            "address: { equalTo: \"\(address)\"}"
+        }
+
+        return """
+        {
+            historyElements(
+                 after: \(after),
+                 first: \(count),
+                 orderBy: TIMESTAMP_DESC,
+                 filter: {
+                     \(addressFilter),
+                     or: [
+                        \(filterString)
+                     ]
+                 }
+             ) {
+                 pageInfo {
+                     startCursor,
+                     endCursor
+                 },
+                 nodes {
+                     id
+                     blockNumber
+                     extrinsicIdx
+                     extrinsicHash
+                     timestamp
+                     address
+                     reward
+                     extrinsic
+                     \(transferField)
+                     \(poolRewardField)
+                     \(swapField)
+                 }
+             }
+        }
+        """
     }
 
-    func createRequestFactoryWrapper(
+    func createRequestFactory(
         accountId: AccountId,
         chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> CompoundOperationWrapper<BlockNetworkRequestFactory> {
-        let queryOperation = createQueryOperation(
+    ) throws -> BlockNetworkRequestFactory {
+        let queryString = try createQuery(
             accountId,
             chainFormat: chainFormat,
             count: count,
             cursor: cursor
         )
 
-        let requestFactoryOperation: BaseOperation<BlockNetworkRequestFactory> = ClosureOperation {
-            let queryString = try queryOperation.extractNoCancellableResultData()
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: self.url)
 
-            let requestFactory = BlockNetworkRequestFactory {
-                var request = URLRequest(url: self.url)
+            let info = JSON.dictionaryValue(["query": JSON.stringValue(queryString)])
+            request.httpBody = try JSONEncoder().encode(info)
+            request.setValue(
+                HttpContentType.json.rawValue,
+                forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
+            )
 
-                let info = JSON.dictionaryValue(["query": JSON.stringValue(queryString)])
-                request.httpBody = try JSONEncoder().encode(info)
-                request.setValue(
-                    HttpContentType.json.rawValue,
-                    forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
-                )
+            request.httpMethod = HttpMethod.post.rawValue
 
-                request.httpMethod = HttpMethod.post.rawValue
-
-                return request
-            }
-
-            return requestFactory
+            return request
         }
 
-        requestFactoryOperation.addDependency(queryOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: requestFactoryOperation,
-            dependencies: [queryOperation]
-        )
+        return requestFactory
     }
 }
 
 extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtocol {
-    func createWrapper(
+    func createOperation(
         accountId: AccountId,
         chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> CompoundOperationWrapper<SubqueryHistoryData> {
-        let requestFactoryWrapper = createRequestFactoryWrapper(
+    ) -> BaseOperation<SubqueryHistoryData> {
+        guard let requestFactory = try? createRequestFactory(
             accountId: accountId,
             chainFormat: chainFormat,
             count: count,
             cursor: cursor
-        )
-
-        let wrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: operationManager
-        ) { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-
-            let requestFactory = try requestFactoryWrapper.targetOperation.extractNoCancellableResultData()
-
-            let processResultBlock = createProcessingBlock()
-            let resultFactory = AnyNetworkResultFactory(block: processResultBlock)
-
-            let operation = NetworkOperation(
-                requestFactory: requestFactory,
-                resultFactory: resultFactory
-            )
-
-            return CompoundOperationWrapper(targetOperation: operation)
+        ) else {
+            return .createWithError(SubqueryHistoryError.requestFactoryCreation)
         }
 
-        wrapper.addDependency(wrapper: requestFactoryWrapper)
+        let processResultBlock = createProcessingBlock()
+        let resultFactory = AnyNetworkResultFactory(block: processResultBlock)
 
-        return wrapper.insertingHead(operations: requestFactoryWrapper.allOperations)
+        let operation = NetworkOperation(
+            requestFactory: requestFactory,
+            resultFactory: resultFactory
+        )
+
+        return operation
     }
 
     private func createProcessingBlock() -> NetworkResultFactoryBlock<SubqueryHistoryData> {

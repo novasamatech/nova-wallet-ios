@@ -8,15 +8,13 @@ final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
     init(
         filter: WalletHistoryFilter,
         baseUrl: URL,
-        chainId: ChainModel.Id,
-        operationManager: OperationManagerProtocol
+        chainId: ChainModel.Id
     ) {
         self.filter = filter
 
         super.init(
             baseUrl: baseUrl,
-            chainId: chainId,
-            operationManager: operationManager
+            chainId: chainId
         )
     }
 }
@@ -42,23 +40,21 @@ private extension EtherscanNativeOperationFactory {
         return components.url
     }
 
-    func createInfoOperation(
+    func createInfo(
         accountId: AccountId,
         chainFormat: ChainFormat,
         pagination: EtherscanPagination
-    ) -> BaseOperation<EtherscanNativeHistoryInfo> {
-        ClosureOperation {
-            let address = try accountId.toAddress(using: chainFormat)
-            let ethereumAddress = address.toEthereumAddressWithChecksum() ?? address
+    ) throws -> EtherscanNativeHistoryInfo {
+        let address = try accountId.toAddress(using: chainFormat)
+        let ethereumAddress = address.toEthereumAddressWithChecksum() ?? address
 
-            let info = EtherscanNativeHistoryInfo(
-                address: ethereumAddress,
-                page: pagination.page,
-                offset: pagination.offset
-            )
+        let info = EtherscanNativeHistoryInfo(
+            address: ethereumAddress,
+            page: pagination.page,
+            offset: pagination.offset
+        )
 
-            return info
-        }
+        return info
     }
 
     func createFetchWrapper(
@@ -66,37 +62,24 @@ private extension EtherscanNativeOperationFactory {
         chainFormat: ChainFormat,
         pagination: EtherscanPagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
-        let infoOperation = createInfoOperation(
+        guard let info = try? createInfo(
             accountId: accountId,
             chainFormat: chainFormat,
             pagination: pagination
-        )
-
-        let wrapper: CompoundOperationWrapper<WalletRemoteHistoryData>
-        wrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: operationManager
-        ) { [weak self] in
-            guard let self else {
-                return .createWithError(BaseOperationError.parentOperationCancelled)
-            }
-
-            let info = try infoOperation.extractNoCancellableResultData()
-
-            guard let url = buildUrl(for: info) else {
-                return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
-            }
-
-            return createFetchWrapper(
-                for: url,
-                page: info.page,
-                offset: info.offset,
-                responseType: EtherscanTxHistoryResponse.self
-            )
+        ) else {
+            return .createWithError(WalletRemoteHistoryError.fetchParamsCreation)
         }
 
-        wrapper.addDependency(operations: [infoOperation])
+        guard let url = buildUrl(for: info) else {
+            return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
+        }
 
-        return wrapper.insertingHead(operations: [infoOperation])
+        return createFetchWrapper(
+            for: url,
+            page: info.page,
+            offset: info.offset,
+            responseType: EtherscanTxHistoryResponse.self
+        )
     }
 
     func createFilterOperation(
