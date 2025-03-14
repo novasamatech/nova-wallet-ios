@@ -1,5 +1,6 @@
 import UIKit
 import Operation_iOS
+import SoraKeystore
 
 final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
     weak var presenter: MythosStkClaimRewardsInteractorOutputProtocol?
@@ -14,8 +15,10 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
 
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
     let rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol
+    let settingsManager: SettingsManagerProtocol
 
     var accountId: AccountId { selectedAccount.chainAccount.accountId }
     var chainId: ChainModel.Id { chainAsset.chain.chainId }
@@ -23,6 +26,7 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
     var assetId: AssetModel.Id { asset.assetId }
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var autoCompoundProvider: AnyDataProvider<MythosStakingPallet.DecodedAutoCompound>?
     private var priceProvider: StreamableProvider<PriceData>?
 
     init(
@@ -33,8 +37,10 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
         signingWrapper: SigningWrapperProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
         stakingDetailsService: MythosStakingDetailsSyncServiceProtocol,
         rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol,
+        settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
@@ -46,8 +52,10 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
         self.signingWrapper = signingWrapper
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.stakingDetailsService = stakingDetailsService
         self.rewardsSyncService = rewardsSyncService
+        self.settingsManager = settingsManager
         self.logger = logger
         self.operationQueue = operationQueue
 
@@ -99,6 +107,15 @@ private extension MythosStkClaimRewardsInteractor {
         }
     }
 
+    func makeAutoCompoundSubscription() {
+        clear(dataProvider: &autoCompoundProvider)
+
+        autoCompoundProvider = subscribeToAutoCompound(
+            for: chainId,
+            accountId: accountId
+        )
+    }
+
     func getExtrinsicBuilderClosure(for model: MythosStkClaimRewardsModel) -> ExtrinsicBuilderClosure {
         { builder in
             var currentBuilder = try builder.adding(
@@ -120,19 +137,40 @@ private extension MythosStkClaimRewardsInteractor {
         makePriceSubscription()
         makeClaimableRewardsSubscription()
         makeStakingDetailsSubscription()
+        makeAutoCompoundSubscription()
     }
 
     func clearDataRetrieval() {
         clear(streamableProvider: &balanceProvider)
         clear(streamableProvider: &priceProvider)
+        clear(dataProvider: &autoCompoundProvider)
         rewardsSyncService.remove(observer: self)
         stakingDetailsService.remove(observer: self)
+    }
+
+    func provideMythosRestakeState() {
+        if settingsManager.isMythosRestakeEnabled {
+            presenter?.didReceiveClaimStragegy(.restake)
+        } else {
+            presenter?.didReceiveClaimStragegy(.freeBalance)
+        }
     }
 }
 
 extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputProtocol {
     func setup() {
         setupDataRetrieval()
+
+        provideMythosRestakeState()
+    }
+
+    func save(claimStrategy: StakingClaimRewardsStrategy) {
+        switch claimStrategy {
+        case .restake:
+            settingsManager.isMythosRestakeEnabled = true
+        case .freeBalance:
+            settingsManager.isMythosRestakeEnabled = false
+        }
     }
 
     func estimateFee(for model: MythosStkClaimRewardsModel) {
@@ -181,6 +219,21 @@ extension MythosStkClaimRewardsInteractor: WalletLocalStorageSubscriber, WalletL
             presenter?.didReceiveAssetBalance(assetBalance)
         case let .failure(error):
             logger.error("Balance subscription: \(error)")
+        }
+    }
+}
+
+extension MythosStkClaimRewardsInteractor: MythosStakingLocalStorageSubscriber, MythosStakingLocalStorageHandler {
+    func handleAutoCompound(
+        result: Result<MythosStakingPallet.AutoCompound?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(autoCompound):
+            presenter?.didReceiveAutoCompound(autoCompound)
+        case let .failure(error):
+            logger.error("AutoCompound subscription: \(error)")
         }
     }
 }

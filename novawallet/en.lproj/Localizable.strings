@@ -1320,7 +1320,7 @@
 "staking.unstake.crossed.min.title" = "Too small amount remains in stake";
 "staking.unstake.no.space.message" = "There are currently no free spots in unstaking queue for your pool. Please try again in %@";
 "staking.unstake.no.space.title" = "Too many people are unstaking from your pool";
-"staking.restake.message" = "Your tokens will be added back to the stake";
+"staking.restake.message" = "Your rewards will be added to your staking";
 "staking.claim.rewards" = "Claim rewards";
 "common.recommended" = "Recommended";
 "staking.setup.amount.direct.type.subtitle" = "Selected: %d (max %d)";

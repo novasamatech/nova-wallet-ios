@@ -24,6 +24,12 @@ protocol MythosStakingLocalStorageHandler {
         accountId: AccountId
     )
 
+    func handleAutoCompound(
+        result: Result<MythosStakingPallet.AutoCompound?, Error>,
+        chainId: ChainModel.Id,
+        accountId: AccountId
+    )
+
     func handleCollatorRewardsPercentage(
         result: Result<Percent?, Error>,
         chainId: ChainModel.Id
@@ -66,5 +72,11 @@ extension MythosStakingLocalStorageHandler {
     func handleExtraReward(
         result _: Result<Balance?, Error>,
         chainId _: ChainModel.Id
+    ) {}
+
+    func handleAutoCompound(
+        result _: Result<MythosStakingPallet.AutoCompound?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
     ) {}
 }

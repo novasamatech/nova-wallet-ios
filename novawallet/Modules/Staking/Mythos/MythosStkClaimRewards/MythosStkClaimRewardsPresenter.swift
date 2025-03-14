@@ -19,6 +19,7 @@ final class MythosStkClaimRewardsPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var details: MythosStakingDetails?
+    var autoCompound: MythosStakingPallet.AutoCompound?
     var claimStrategy: StakingClaimRewardsStrategy = .restake
 
     init(
@@ -51,7 +52,8 @@ private extension MythosStkClaimRewardsPresenter {
         return MythosStkClaimRewardsState(
             details: details,
             claimableRewards: claimableRewards,
-            claimStrategy: claimStrategy
+            claimStrategy: claimStrategy,
+            autoCompound: autoCompound
         ).deriveModel()
     }
 
@@ -144,6 +146,8 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsPresenterProtocol
             claimStrategy = .freeBalance
         }
 
+        interactor.save(claimStrategy: claimStrategy)
+
         refreshFee()
     }
 
@@ -214,6 +218,23 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputP
         logger.debug("Staking details: \(String(describing: stakingDetails))")
 
         details = stakingDetails
+
+        refreshFee()
+    }
+
+    func didReceiveClaimStragegy(_ claimStrategy: StakingClaimRewardsStrategy) {
+        logger.debug("Claim strategy: \(claimStrategy)")
+
+        self.claimStrategy = claimStrategy
+
+        provideClaimStrategy()
+        refreshFee()
+    }
+
+    func didReceiveAutoCompound(_ autoCompound: MythosStakingPallet.AutoCompound?) {
+        logger.debug("Auto compound: \(String(describing: autoCompound))")
+
+        self.autoCompound = autoCompound
 
         refreshFee()
     }

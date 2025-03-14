@@ -63,7 +63,7 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
             preferredLanguages: languages
         )
 
-        rootView.rewardsView.titleLabel.text = R.string.localizable.stakingSetupPayoutTitle(
+        rootView.rewardsView.titleLabel.text = R.string.localizable.stakingEstimatedEarnings(
             preferredLanguages: languages
         )
 

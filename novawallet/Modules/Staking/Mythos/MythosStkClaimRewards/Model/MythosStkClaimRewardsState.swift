@@ -4,12 +4,14 @@ struct MythosStkClaimRewardsState {
     let details: MythosStakingDetails
     let claimableRewards: MythosStakingClaimableRewards
     let claimStrategy: StakingClaimRewardsStrategy
+    let autoCompound: MythosStakingPallet.AutoCompound?
 
     func deriveModel() -> MythosStkClaimRewardsModel? {
         guard claimableRewards.shouldClaim else { return nil }
 
         guard
             case .restake = claimStrategy,
+            autoCompound == nil,
             claimableRewards.total > 0 else {
             return MythosStkClaimRewardsModel()
         }
@@ -29,10 +31,10 @@ struct MythosStkClaimRewardsState {
         // as we rounding down during stake distribution there might be something remained
         let remainedAmount = claimableRewards.total.subtractOrZero(totalRestaked)
 
-        // add remained amount to the collator with min stake
+        // add remained amount to the collator with max stake
         if
             remainedAmount > 0,
-            let minCollatorId = details.stakeDistribution.min(
+            let minCollatorId = details.stakeDistribution.max(
                 by: { $0.value.stake < $1.value.stake }
             )?.key {
             let minColAmount = restakeDistribution[minCollatorId] ?? 0

@@ -4,7 +4,8 @@ import Operation_iOS
 
 final class MythosStakingAccountSubscriptionService: RemoteSubscriptionService {
     private static let storagePaths: [StorageCodingPath] = [
-        MythosStakingPallet.releaseQueuesPath
+        MythosStakingPallet.releaseQueuesPath,
+        MythosStakingPallet.autoCompoundPath
     ]
 }
 
