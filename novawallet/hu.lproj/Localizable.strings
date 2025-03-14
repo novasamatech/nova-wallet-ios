@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Túl kis összeg marad a stake-ben";
 "staking.unstake.no.space.message" = "Jeleneg nincs szabad hely a pool-od unstake-elési sorában. Kérlek, próbáld újra %@ múlva";
 "staking.unstake.no.space.title" = "Túl sokan unstake-elnek a pool-odból";
-"staking.restake.message" = "Tokeneid vissza fognak kerülni a stake-be";
 "staking.claim.rewards" = "Jutalmak igénylése";
 "common.recommended" = "Ajánlott";
 "staking.setup.amount.direct.type.subtitle" = "Kiválasztott: %d (max. %d)";
@@ -1809,3 +1808,4 @@
 "card.open.failed.alert.title" = "Lépj kapcsolatba a támogatással";
 "card.open.failed.alert.message" = "Kérjük, vedd fel a kapcsolatot a support@novawallet.io címen. Add meg az e-mail címed, amelyet használtál a kártya kiállításához.";
 "card.topup.pending.sheet.title" = "A kártyád feltöltése folyamatban van!";
+"staking.restake.message" = "A jutalmaid hozzáadódnak a stakingedhez";

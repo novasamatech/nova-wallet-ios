@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Stake에 남은 금액이 너무 적습니다";
 "staking.unstake.no.space.message" = "현재 귀하의 풀에 대한 Unstaking 대기열에 빈 자리가 없습니다. %@ 후에 다시 시도해 주세요";
 "staking.unstake.no.space.title" = "너무 많은 사람들이 귀하의 풀에서 Unstaking 하고 있습니다";
-"staking.restake.message" = "귀하의 토큰이 다시 Stake에 추가됩니다";
 "staking.claim.rewards" = "보상 청구";
 "common.recommended" = "추천";
 "staking.setup.amount.direct.type.subtitle" = "선택됨: %li (최대 %li)";
@@ -1809,3 +1808,4 @@
 "card.open.failed.alert.title" = "지원에 문의";
 "card.open.failed.alert.message" = "support@novawallet.io에 문의하세요. 카드 발급에 사용된 이메일 주소를 포함하세요.";
 "card.topup.pending.sheet.title" = "카드가 충전 중입니다!";
+"staking.restake.message" = "귀하의 리워드가 스테이킹에 추가됩니다";
