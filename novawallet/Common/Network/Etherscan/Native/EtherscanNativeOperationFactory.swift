@@ -4,13 +4,16 @@ import SoraFoundation
 
 final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
     let filter: WalletHistoryFilter
+    let chainFormat: ChainFormat
 
     init(
         filter: WalletHistoryFilter,
+        chainFormat: ChainFormat,
         baseUrl: URL,
         chainId: ChainModel.Id
     ) {
         self.filter = filter
+        self.chainFormat = chainFormat
 
         super.init(
             baseUrl: baseUrl,
@@ -116,7 +119,6 @@ private extension EtherscanNativeOperationFactory {
 extension EtherscanNativeOperationFactory: WalletRemoteHistoryFactoryProtocol {
     func createOperationWrapper(
         for accountId: AccountId,
-        chainFormat: ChainFormat,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         guard let etherscanPagination = preparePagination(from: pagination) else {

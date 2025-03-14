@@ -4,13 +4,16 @@ import SoraFoundation
 
 final class EtherscanERC20OperationFactory: EtherscanBaseOperationFactory {
     let contractAddress: AccountAddress
+    let chainFormat: ChainFormat
 
     init(
         contractAddress: AccountAddress,
+        chainFormat: ChainFormat,
         baseUrl: URL,
         chainId: ChainModel.Id
     ) {
         self.contractAddress = contractAddress
+        self.chainFormat = chainFormat
 
         super.init(
             baseUrl: baseUrl,
@@ -95,7 +98,6 @@ extension EtherscanERC20OperationFactory: WalletRemoteHistoryFactoryProtocol {
 
     func createOperationWrapper(
         for accountId: AccountId,
-        chainFormat: ChainFormat,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         guard let etherscanPagination = preparePagination(from: pagination) else {

@@ -5,7 +5,6 @@ import SubstrateSdk
 protocol SubqueryHistoryOperationFactoryProtocol {
     func createOperation(
         accountId: AccountId,
-        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
     ) -> BaseOperation<SubqueryHistoryData>
@@ -21,19 +20,22 @@ final class SubqueryHistoryOperationFactory {
     let assetId: String?
     let hasPoolStaking: Bool
     let hasSwaps: Bool
+    let chainFormat: ChainFormat
 
     init(
         url: URL,
         filter: WalletHistoryFilter,
         assetId: String?,
         hasPoolStaking: Bool,
-        hasSwaps: Bool
+        hasSwaps: Bool,
+        chainFormat: ChainFormat
     ) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
         self.hasPoolStaking = hasPoolStaking
         self.hasSwaps = hasSwaps
+        self.chainFormat = chainFormat
     }
 }
 
@@ -148,7 +150,6 @@ private extension SubqueryHistoryOperationFactory {
 
     func createQuery(
         _ accountId: AccountId,
-        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
     ) throws -> String {
@@ -208,13 +209,11 @@ private extension SubqueryHistoryOperationFactory {
 
     func createRequestFactory(
         accountId: AccountId,
-        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
     ) throws -> BlockNetworkRequestFactory {
         let queryString = try createQuery(
             accountId,
-            chainFormat: chainFormat,
             count: count,
             cursor: cursor
         )
@@ -241,13 +240,11 @@ private extension SubqueryHistoryOperationFactory {
 extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtocol {
     func createOperation(
         accountId: AccountId,
-        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
     ) -> BaseOperation<SubqueryHistoryData> {
         guard let requestFactory = try? createRequestFactory(
             accountId: accountId,
-            chainFormat: chainFormat,
             count: count,
             cursor: cursor
         ) else {

@@ -38,7 +38,8 @@ final class AssetHistoryFacade {
                 filter: mappedFilter,
                 assetId: historyAssetId,
                 hasPoolStaking: asset.hasPoolStaking,
-                hasSwaps: chainAsset.chain.hasSwaps
+                hasSwaps: chainAsset.chain.hasSwaps,
+                chainFormat: chainAsset.chain.chainFormat
             )
         } catch {
             return nil
@@ -64,6 +65,7 @@ final class AssetHistoryFacade {
 
         return EtherscanERC20OperationFactory(
             contractAddress: contractAddress,
+            chainFormat: chainAsset.chain.chainFormat,
             baseUrl: url,
             chainId: chainAsset.chain.chainId
         )
@@ -83,6 +85,7 @@ final class AssetHistoryFacade {
 
         return EtherscanNativeOperationFactory(
             filter: filter,
+            chainFormat: chainAsset.chain.chainFormat,
             baseUrl: url,
             chainId: chainAsset.chain.chainId
         )

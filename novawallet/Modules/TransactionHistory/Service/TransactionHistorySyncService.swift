@@ -77,7 +77,6 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
 
         return remoteOperationFactory.createOperationWrapper(
             for: accountId,
-            chainFormat: chainAsset.chain.chainFormat,
             pagination: pagination
         )
     }
