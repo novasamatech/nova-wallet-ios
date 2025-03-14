@@ -37,8 +37,12 @@ final class AssetReceivePresenter {
         self.networkViewModelFactory = networkViewModelFactory
         self.localizationManager = localizationManager
     }
+}
 
-    private func createChainAccountViewModel(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModel {
+// MARK: Private
+
+private extension AssetReceivePresenter {
+    func createChainAccountViewModel(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModel {
         let icon = try? iconGenerator.generateFromAccountId(accountId)
         let accountAddress = try? accountId.toAddress(using: chain.chainFormat)
 
@@ -53,7 +57,7 @@ final class AssetReceivePresenter {
         return viewModel
     }
 
-    private func provideNetwork() {
+    func provideNetwork() {
         guard let chain else { return }
 
         let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
@@ -61,7 +65,7 @@ final class AssetReceivePresenter {
         view?.didReceive(networkViewModel: networkViewModel)
     }
 
-    private func provideAddress() {
+    func provideAddress() {
         guard
             let account,
             let chain,
@@ -81,6 +85,8 @@ final class AssetReceivePresenter {
         )
     }
 }
+
+// MARK: AssetReceivePresenterProtocol
 
 extension AssetReceivePresenter: AssetReceivePresenterProtocol {
     func setup() {
@@ -109,17 +115,23 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
     }
 
     func copyAddress() {
-        guard let address = account?.chainAccount.toAddress() else {
+        guard
+            let address = account?.chainAccount.toAddress(),
+            let chain
+        else {
             return
         }
 
         wireframe.copyAddress(
             from: view,
             address: address,
+            chain: chain,
             locale: localizationManager.selectedLocale
         )
     }
 }
+
+// MARK: AssetReceiveInteractorOutputProtocol
 
 extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
     func didReceive(

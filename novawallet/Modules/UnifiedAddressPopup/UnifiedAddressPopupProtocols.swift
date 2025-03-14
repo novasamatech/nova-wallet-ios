@@ -23,3 +23,31 @@ protocol UnifiedAddressPopupWireframeProtocol: AnyObject,
     CopyAddressPresentable {
     func close(from view: ControllerBackedProtocol?)
 }
+
+protocol UnifiedAddressPopupPresentable {
+    func presentUnifiedAddressPopup(
+        from view: ControllerBackedProtocol?,
+        newAddress: AccountAddress,
+        legacyAddress: AccountAddress
+    )
+}
+
+extension UnifiedAddressPopupPresentable {
+    func presentUnifiedAddressPopup(
+        from view: ControllerBackedProtocol?,
+        newAddress: AccountAddress,
+        legacyAddress: AccountAddress
+    ) {
+        guard let popupView = UnifiedAddressPopupViewFactory.createView(
+            newAddress: newAddress,
+            legacyAddress: legacyAddress
+        ) else {
+            return
+        }
+
+        view?.controller.present(
+            popupView.controller,
+            animated: true
+        )
+    }
+}
