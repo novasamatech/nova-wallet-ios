@@ -3,35 +3,46 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol SubqueryHistoryOperationFactoryProtocol {
-    func createOperation(
-        address: String,
+    func createWrapper(
+        accountId: AccountId,
+        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> BaseOperation<SubqueryHistoryData>
+    ) -> CompoundOperationWrapper<SubqueryHistoryData>
 }
 
 final class SubqueryHistoryOperationFactory {
     let url: URL
     let filter: WalletHistoryFilter
     let assetId: String?
+    let ethereumBased: Bool
     let hasPoolStaking: Bool
     let hasSwaps: Bool
+    let operationManager: OperationManagerProtocol
 
     init(
         url: URL,
         filter: WalletHistoryFilter,
         assetId: String?,
+        ethereumBased: Bool,
         hasPoolStaking: Bool,
-        hasSwaps: Bool
+        hasSwaps: Bool,
+        operationManager: OperationManagerProtocol
     ) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
+        self.ethereumBased = ethereumBased
         self.hasPoolStaking = hasPoolStaking
         self.hasSwaps = hasSwaps
+        self.operationManager = operationManager
     }
+}
 
-    private func prepareExtrinsicInclusionFilter() -> String {
+// MARK: Private
+
+private extension SubqueryHistoryOperationFactory {
+    func prepareExtrinsicInclusionFilter() -> String {
         let transferCallNames = ["transfer", "transferKeepAlive", "forceTransfer", "transferAll", "transferAllowDeath"]
 
         let transferFilters = transferCallNames.map { transferCallName in
@@ -77,7 +88,7 @@ final class SubqueryHistoryOperationFactory {
         ).rawSubqueryFilter()
     }
 
-    private func prepareAssetIdFilter(_ assetId: String) -> String {
+    func prepareAssetIdFilter(_ assetId: String) -> String {
         """
         {
             assetTransfer: { contains: {assetId: \"\(assetId)\"} }
@@ -85,7 +96,7 @@ final class SubqueryHistoryOperationFactory {
         """
     }
 
-    private func prepareSwapAssetIdFilter(_ assetId: String?) -> String {
+    func prepareSwapAssetIdFilter(_ assetId: String?) -> String {
         let assetIdOrNative = assetId ?? SubqueryHistoryElement.nativeFeeAssetId
 
         let filters = [
@@ -102,7 +113,7 @@ final class SubqueryHistoryOperationFactory {
         return SubqueryInnerFilter(inner: SubqueryCompoundFilter.or(filters)).rawSubqueryFilter()
     }
 
-    private func prepareFilter() -> String {
+    func prepareFilter() -> String {
         var filterStrings: [String] = []
 
         if filter.contains(.extrinsics) {
@@ -137,81 +148,147 @@ final class SubqueryHistoryOperationFactory {
         return filterStrings.joined(separator: ",")
     }
 
-    private func prepareQueryForAddress(
-        _ address: String,
+    func createQueryOperation(
+        _ accountId: AccountId,
+        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> String {
-        let after = cursor.map { "\"\($0)\"" } ?? "null"
-        let transferField = assetId != nil ? "assetTransfer" : "transfer"
-        let filterString = prepareFilter()
-        let poolRewardField = hasPoolStaking ? "poolReward" : ""
-        let swapField = hasSwaps ? "swap" : ""
-        return """
-        {
-            historyElements(
-                 after: \(after),
-                 first: \(count),
-                 orderBy: TIMESTAMP_DESC,
-                 filter: {
-                     address: { equalTo: \"\(address)\"},
-                     or: [
-                        \(filterString)
-                     ]
+    ) -> BaseOperation<String> {
+        ClosureOperation { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            var address = try accountId.toAddress(using: chainFormat)
+            let legacyAddress = try address.toLegacySubstrateAddress(for: chainFormat)
+
+            if ethereumBased {
+                address = address.toEthereumAddressWithChecksum() ?? address
+            }
+
+            let after = cursor.map { "\"\($0)\"" } ?? "null"
+            let transferField = assetId != nil ? "assetTransfer" : "transfer"
+            let filterString = prepareFilter()
+            let poolRewardField = hasPoolStaking ? "poolReward" : ""
+            let swapField = hasSwaps ? "swap" : ""
+            let addressFilter = if let legacyAddress {
+                "address: { in: [\"\(address)\", \"\(legacyAddress)\"] }"
+            } else {
+                "address: { equalTo: \"\(address)\"}"
+            }
+
+            return """
+            {
+                historyElements(
+                     after: \(after),
+                     first: \(count),
+                     orderBy: TIMESTAMP_DESC,
+                     filter: {
+                         \(addressFilter),
+                         or: [
+                            \(filterString)
+                         ]
+                     }
+                 ) {
+                     pageInfo {
+                         startCursor,
+                         endCursor
+                     },
+                     nodes {
+                         id
+                         blockNumber
+                         extrinsicIdx
+                         extrinsicHash
+                         timestamp
+                         address
+                         reward
+                         extrinsic
+                         \(transferField)
+                         \(poolRewardField)
+                         \(swapField)
+                     }
                  }
-             ) {
-                 pageInfo {
-                     startCursor,
-                     endCursor
-                 },
-                 nodes {
-                     id
-                     blockNumber
-                     extrinsicIdx
-                     extrinsicHash
-                     timestamp
-                     address
-                     reward
-                     extrinsic
-                     \(transferField)
-                     \(poolRewardField)
-                     \(swapField)
-                 }
-             }
+            }
+            """
         }
-        """
+    }
+
+    func createRequestFactoryWrapper(
+        accountId: AccountId,
+        chainFormat: ChainFormat,
+        count: Int,
+        cursor: String?
+    ) -> CompoundOperationWrapper<BlockNetworkRequestFactory> {
+        let queryOperation = createQueryOperation(
+            accountId,
+            chainFormat: chainFormat,
+            count: count,
+            cursor: cursor
+        )
+
+        let requestFactoryOperation: BaseOperation<BlockNetworkRequestFactory> = ClosureOperation {
+            let queryString = try queryOperation.extractNoCancellableResultData()
+
+            let requestFactory = BlockNetworkRequestFactory {
+                var request = URLRequest(url: self.url)
+
+                let info = JSON.dictionaryValue(["query": JSON.stringValue(queryString)])
+                request.httpBody = try JSONEncoder().encode(info)
+                request.setValue(
+                    HttpContentType.json.rawValue,
+                    forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
+                )
+
+                request.httpMethod = HttpMethod.post.rawValue
+
+                return request
+            }
+
+            return requestFactory
+        }
+
+        requestFactoryOperation.addDependency(queryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: requestFactoryOperation,
+            dependencies: [queryOperation]
+        )
     }
 }
 
 extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtocol {
-    func createOperation(
-        address: String,
+    func createWrapper(
+        accountId: AccountId,
+        chainFormat: ChainFormat,
         count: Int,
         cursor: String?
-    ) -> BaseOperation<SubqueryHistoryData> {
-        let queryString = prepareQueryForAddress(address, count: count, cursor: cursor)
+    ) -> CompoundOperationWrapper<SubqueryHistoryData> {
+        let requestFactoryWrapper = createRequestFactoryWrapper(
+            accountId: accountId,
+            chainFormat: chainFormat,
+            count: count,
+            cursor: cursor
+        )
 
-        let requestFactory = BlockNetworkRequestFactory {
-            var request = URLRequest(url: self.url)
+        let wrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: operationManager
+        ) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let info = JSON.dictionaryValue(["query": JSON.stringValue(queryString)])
-            request.httpBody = try JSONEncoder().encode(info)
-            request.setValue(
-                HttpContentType.json.rawValue,
-                forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
+            let requestFactory = try requestFactoryWrapper.targetOperation.extractNoCancellableResultData()
+
+            let processResultBlock = createProcessingBlock()
+            let resultFactory = AnyNetworkResultFactory(block: processResultBlock)
+
+            let operation = NetworkOperation(
+                requestFactory: requestFactory,
+                resultFactory: resultFactory
             )
 
-            request.httpMethod = HttpMethod.post.rawValue
-            return request
+            return CompoundOperationWrapper(targetOperation: operation)
         }
 
-        let processResultBlock = createProcessingBlock()
+        wrapper.addDependency(wrapper: requestFactoryWrapper)
 
-        let resultFactory = AnyNetworkResultFactory(block: processResultBlock)
-
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-
-        return operation
+        return wrapper.insertingHead(operations: requestFactoryWrapper.allOperations)
     }
 
     private func createProcessingBlock() -> NetworkResultFactoryBlock<SubqueryHistoryData> {

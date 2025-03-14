@@ -1,4 +1,5 @@
 import Foundation
+import Operation_iOS
 
 protocol AssetHistoryFactoryFacadeProtocol {
     func createOperationFactory(
@@ -8,6 +9,12 @@ protocol AssetHistoryFactoryFacadeProtocol {
 }
 
 final class AssetHistoryFacade {
+    let operationManager: OperationManagerProtocol
+
+    init(operationManager: OperationManagerProtocol = OperationManagerFacade.sharedManager) {
+        self.operationManager = operationManager
+    }
+
     func createSubqueryFactory(
         for chainAsset: ChainAsset,
         filter: WalletHistoryFilter
@@ -36,8 +43,10 @@ final class AssetHistoryFacade {
                 url: url,
                 filter: mappedFilter,
                 assetId: historyAssetId,
+                ethereumBased: chainAsset.chain.isEthereumBased,
                 hasPoolStaking: asset.hasPoolStaking,
-                hasSwaps: chainAsset.chain.hasSwaps
+                hasSwaps: chainAsset.chain.hasSwaps,
+                operationManager: operationManager
             )
         } catch {
             return nil
@@ -64,7 +73,8 @@ final class AssetHistoryFacade {
         return EtherscanERC20OperationFactory(
             contractAddress: contractAddress,
             baseUrl: url,
-            chainId: chainAsset.chain.chainId
+            chainId: chainAsset.chain.chainId,
+            operationManager: operationManager
         )
     }
 
@@ -80,7 +90,12 @@ final class AssetHistoryFacade {
             return nil
         }
 
-        return EtherscanNativeOperationFactory(filter: filter, baseUrl: url, chainId: chainAsset.chain.chainId)
+        return EtherscanNativeOperationFactory(
+            filter: filter,
+            baseUrl: url,
+            chainId: chainAsset.chain.chainId,
+            operationManager: operationManager
+        )
     }
 }
 

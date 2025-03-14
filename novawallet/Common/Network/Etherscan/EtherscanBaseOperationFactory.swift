@@ -4,10 +4,16 @@ import Operation_iOS
 class EtherscanBaseOperationFactory {
     let baseUrl: URL
     let chainId: ChainModel.Id
+    let operationManager: OperationManagerProtocol
 
-    init(baseUrl: URL, chainId: ChainModel.Id) {
+    init(
+        baseUrl: URL,
+        chainId: ChainModel.Id,
+        operationManager: OperationManagerProtocol
+    ) {
         self.baseUrl = baseUrl
         self.chainId = chainId
+        self.operationManager = operationManager
     }
 
     func createFetchWrapper<R: EtherscanWalletHistoryDecodable>(

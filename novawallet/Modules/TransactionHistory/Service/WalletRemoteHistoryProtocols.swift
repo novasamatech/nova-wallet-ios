@@ -31,6 +31,9 @@ struct WalletRemoteHistoryData {
 protocol WalletRemoteHistoryFactoryProtocol {
     func isComplete(pagination: Pagination) -> Bool
 
-    func createOperationWrapper(for address: String, pagination: Pagination)
-        -> CompoundOperationWrapper<WalletRemoteHistoryData>
+    func createOperationWrapper(
+        for accountId: AccountId,
+        chainFormat: ChainFormat,
+        pagination: Pagination
+    ) -> CompoundOperationWrapper<WalletRemoteHistoryData>
 }

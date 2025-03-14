@@ -5,13 +5,26 @@ import SoraFoundation
 final class EtherscanERC20OperationFactory: EtherscanBaseOperationFactory {
     let contractAddress: AccountAddress
 
-    init(contractAddress: AccountAddress, baseUrl: URL, chainId: ChainModel.Id) {
+    init(
+        contractAddress: AccountAddress,
+        baseUrl: URL,
+        chainId: ChainModel.Id,
+        operationManager: OperationManagerProtocol
+    ) {
         self.contractAddress = contractAddress
 
-        super.init(baseUrl: baseUrl, chainId: chainId)
+        super.init(
+            baseUrl: baseUrl,
+            chainId: chainId,
+            operationManager: operationManager
+        )
     }
+}
 
-    private func buildUrl(for info: EtherscanERC20HistoryInfo) -> URL? {
+// MARK: Private
+
+private extension EtherscanERC20OperationFactory {
+    func buildUrl(for info: EtherscanERC20HistoryInfo) -> URL? {
         guard var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false) else {
             return nil
         }
@@ -30,21 +43,70 @@ final class EtherscanERC20OperationFactory: EtherscanBaseOperationFactory {
         return components.url
     }
 
+    func createInfoOperation(
+        accountId: AccountId,
+        chainFormat: ChainFormat,
+        pagination: EtherscanPagination
+    ) -> BaseOperation<EtherscanERC20HistoryInfo> {
+        ClosureOperation { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let address = try accountId.toAddress(using: chainFormat)
+            let ethereumAddress = address.toEthereumAddressWithChecksum() ?? address
+
+            let info = EtherscanERC20HistoryInfo(
+                address: ethereumAddress,
+                contractaddress: contractAddress,
+                page: pagination.page,
+                offset: pagination.offset
+            )
+
+            return info
+        }
+    }
+
     func createFetchWrapper(
-        for info: EtherscanERC20HistoryInfo
+        for accountId: AccountId,
+        chainFormat: ChainFormat,
+        pagination: EtherscanPagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
-        guard let url = buildUrl(for: info) else {
-            return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
+        let infoOperation = createInfoOperation(
+            accountId: accountId,
+            chainFormat: chainFormat,
+            pagination: pagination
+        )
+
+        let wrapper: CompoundOperationWrapper<WalletRemoteHistoryData>
+        wrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: operationManager
+        ) { [weak self] in
+            guard let self else {
+                return .createWithError(BaseOperationError.parentOperationCancelled)
+            }
+
+            let info = try infoOperation.extractNoCancellableResultData()
+
+            guard let url = buildUrl(for: info) else {
+                return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
+            }
+
+            return createFetchWrapper(
+                for: url,
+                page: info.page,
+                offset: info.offset,
+                responseType: EtherscanERC20HistoryResponse.self
+            )
         }
 
-        return createFetchWrapper(
-            for: url,
-            page: info.page,
-            offset: info.offset,
-            responseType: EtherscanERC20HistoryResponse.self
-        )
+        wrapper.addDependency(operations: [infoOperation])
+
+        return wrapper.insertingHead(operations: [infoOperation])
     }
 }
+
+// MARK: WalletRemoteHistoryFactoryProtocol
 
 extension EtherscanERC20OperationFactory: WalletRemoteHistoryFactoryProtocol {
     func isComplete(pagination: Pagination) -> Bool {
@@ -53,7 +115,8 @@ extension EtherscanERC20OperationFactory: WalletRemoteHistoryFactoryProtocol {
     }
 
     func createOperationWrapper(
-        for address: String,
+        for accountId: AccountId,
+        chainFormat: ChainFormat,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         guard let etherscanPagination = preparePagination(from: pagination) else {
@@ -61,13 +124,10 @@ extension EtherscanERC20OperationFactory: WalletRemoteHistoryFactoryProtocol {
             return CompoundOperationWrapper.createWithResult(historyData)
         }
 
-        let info = EtherscanERC20HistoryInfo(
-            address: address,
-            contractaddress: contractAddress,
-            page: etherscanPagination.page,
-            offset: etherscanPagination.offset
+        return createFetchWrapper(
+            for: accountId,
+            chainFormat: chainFormat,
+            pagination: etherscanPagination
         )
-
-        return createFetchWrapper(for: info)
     }
 }

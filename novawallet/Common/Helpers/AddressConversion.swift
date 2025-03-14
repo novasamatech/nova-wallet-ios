@@ -50,7 +50,7 @@ extension AccountAddress {
                 prefix
             }
 
-            return try SS58AddressFactory().accountId(
+            return try factory.accountId(
                 fromAddress: self,
                 type: correspondingPrefix
             )
@@ -109,6 +109,19 @@ extension AccountAddress {
 
     func normalize(for chainFormat: ChainFormat) -> AccountAddress? {
         try? toAccountId(using: chainFormat).toAddress(using: chainFormat)
+    }
+
+    func toLegacySubstrateAddress(for chainFormat: ChainFormat) throws -> AccountAddress? {
+        guard
+            case let .substrate(prefix, legacyPrefix) = chainFormat,
+            let legacyPrefix
+        else { return nil }
+
+        let factory = SS58AddressFactory()
+        let accountId = try toAccountId(using: chainFormat)
+        let legacyAddress = try factory.address(fromAccountId: accountId, type: legacyPrefix)
+
+        return legacyAddress
     }
 }
 
