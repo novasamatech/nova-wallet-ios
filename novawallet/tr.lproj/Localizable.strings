@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "Bu işlem %@ kadar sürebilir.\nBu pencere otomatik olarak kapatılacaktır.";
 "card.open.failed.alert.title" = "Destek ile iletişime geçin";
 "card.open.failed.alert.message" = "Lütfen support@novawallet.io ile iletişime geçin. Kartınızı almak için kullandığınız e-posta adresini belirtin.";
+"card.topup.pending.sheet.title" = "Kartınız finanse ediliyor!";

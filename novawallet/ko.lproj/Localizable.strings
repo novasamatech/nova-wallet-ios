@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "최대 %@까지 소요될 수 있습니다.\n이 창은 자동으로 닫힙니다.";
 "card.open.failed.alert.title" = "지원에 문의";
 "card.open.failed.alert.message" = "support@novawallet.io에 문의하세요. 카드 발급에 사용된 이메일 주소를 포함하세요.";
+"card.topup.pending.sheet.title" = "카드가 충전 중입니다!";

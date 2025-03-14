@@ -1808,3 +1808,4 @@
 "card.open.pending.sheet.message" = "Có thể mất đến %@.\nCửa sổ này sẽ tự động đóng.";
 "card.open.failed.alert.title" = "Liên hệ hỗ trợ";
 "card.open.failed.alert.message" = "Vui lòng liên hệ support@novawallet.io. Bao gồm địa chỉ email mà bạn đã sử dụng để phát hành thẻ.";
+"card.topup.pending.sheet.title" = "Thẻ của bạn đang được nạp tiền!";
