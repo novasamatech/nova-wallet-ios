@@ -4,7 +4,7 @@ import Operation_iOS
 final class TransactionHistoryHybridFetcher {
     let remoteOperationFactory: WalletRemoteHistoryFactoryProtocol
     let repository: AnyDataProviderRepository<TransactionHistoryItem>
-    let address: AccountAddress
+    let accountId: AccountId
     let chainAsset: ChainAsset
     let pageSize: Int
     let operationQueue: OperationQueue
@@ -15,7 +15,7 @@ final class TransactionHistoryHybridFetcher {
     @Atomic(defaultValue: nil) private var syncService: TransactionHistorySyncService?
 
     init(
-        address: AccountAddress,
+        accountId: AccountId,
         chainAsset: ChainAsset,
         remoteOperationFactory: WalletRemoteHistoryFactoryProtocol,
         repository: AnyDataProviderRepository<TransactionHistoryItem>,
@@ -23,7 +23,7 @@ final class TransactionHistoryHybridFetcher {
         operationQueue: OperationQueue,
         pageSize: Int
     ) {
-        self.address = address
+        self.accountId = accountId
         self.chainAsset = chainAsset
         self.remoteOperationFactory = remoteOperationFactory
         self.repository = repository
@@ -34,7 +34,7 @@ final class TransactionHistoryHybridFetcher {
 
     private func createRemoteFetcher(from result: WalletRemoteHistoryData) {
         remoteFetcher = TransactionHistoryRemoteFetcher(
-            address: address,
+            accountId: accountId,
             chainAsset: chainAsset,
             operationFactory: remoteOperationFactory,
             operationQueue: operationQueue,
@@ -75,7 +75,7 @@ extension TransactionHistoryHybridFetcher: TransactionHistoryFetching {
 
         syncService = TransactionHistorySyncService(
             chainAsset: chainAsset,
-            address: address,
+            accountId: accountId,
             remoteOperationFactory: remoteOperationFactory,
             repository: repository,
             pageSize: pageSize,

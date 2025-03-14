@@ -4,10 +4,14 @@ import SubstrateSdk
 
 protocol SubqueryHistoryOperationFactoryProtocol {
     func createOperation(
-        address: String,
+        accountId: AccountId,
         count: Int,
         cursor: String?
     ) -> BaseOperation<SubqueryHistoryData>
+}
+
+enum SubqueryHistoryError: Error {
+    case requestFactoryCreation
 }
 
 final class SubqueryHistoryOperationFactory {
@@ -16,22 +20,29 @@ final class SubqueryHistoryOperationFactory {
     let assetId: String?
     let hasPoolStaking: Bool
     let hasSwaps: Bool
+    let chainFormat: ChainFormat
 
     init(
         url: URL,
         filter: WalletHistoryFilter,
         assetId: String?,
         hasPoolStaking: Bool,
-        hasSwaps: Bool
+        hasSwaps: Bool,
+        chainFormat: ChainFormat
     ) {
         self.url = url
         self.filter = filter
         self.assetId = assetId
         self.hasPoolStaking = hasPoolStaking
         self.hasSwaps = hasSwaps
+        self.chainFormat = chainFormat
     }
+}
 
-    private func prepareExtrinsicInclusionFilter() -> String {
+// MARK: Private
+
+private extension SubqueryHistoryOperationFactory {
+    func prepareExtrinsicInclusionFilter() -> String {
         let transferCallNames = ["transfer", "transferKeepAlive", "forceTransfer", "transferAll", "transferAllowDeath"]
 
         let transferFilters = transferCallNames.map { transferCallName in
@@ -77,7 +88,7 @@ final class SubqueryHistoryOperationFactory {
         ).rawSubqueryFilter()
     }
 
-    private func prepareAssetIdFilter(_ assetId: String) -> String {
+    func prepareAssetIdFilter(_ assetId: String) -> String {
         """
         {
             assetTransfer: { contains: {assetId: \"\(assetId)\"} }
@@ -85,7 +96,7 @@ final class SubqueryHistoryOperationFactory {
         """
     }
 
-    private func prepareSwapAssetIdFilter(_ assetId: String?) -> String {
+    func prepareSwapAssetIdFilter(_ assetId: String?) -> String {
         let assetIdOrNative = assetId ?? SubqueryHistoryElement.nativeFeeAssetId
 
         let filters = [
@@ -102,7 +113,7 @@ final class SubqueryHistoryOperationFactory {
         return SubqueryInnerFilter(inner: SubqueryCompoundFilter.or(filters)).rawSubqueryFilter()
     }
 
-    private func prepareFilter() -> String {
+    func prepareFilter() -> String {
         var filterStrings: [String] = []
 
         if filter.contains(.extrinsics) {
@@ -137,16 +148,30 @@ final class SubqueryHistoryOperationFactory {
         return filterStrings.joined(separator: ",")
     }
 
-    private func prepareQueryForAddress(
-        _ address: String,
+    func createQuery(
+        _ accountId: AccountId,
         count: Int,
         cursor: String?
-    ) -> String {
+    ) throws -> String {
+        var address = try accountId.toAddress(using: chainFormat)
+        var legacyAddress = try address.toLegacySubstrateAddress(for: chainFormat)
+
+        if case .ethereum = chainFormat {
+            address = address.toEthereumAddressWithChecksum() ?? address
+            legacyAddress = legacyAddress?.toEthereumAddressWithChecksum() ?? legacyAddress
+        }
+
         let after = cursor.map { "\"\($0)\"" } ?? "null"
         let transferField = assetId != nil ? "assetTransfer" : "transfer"
         let filterString = prepareFilter()
         let poolRewardField = hasPoolStaking ? "poolReward" : ""
         let swapField = hasSwaps ? "swap" : ""
+        let addressFilter = if let legacyAddress {
+            "address: { in: [\"\(address)\", \"\(legacyAddress)\"] }"
+        } else {
+            "address: { equalTo: \"\(address)\"}"
+        }
+
         return """
         {
             historyElements(
@@ -154,7 +179,7 @@ final class SubqueryHistoryOperationFactory {
                  first: \(count),
                  orderBy: TIMESTAMP_DESC,
                  filter: {
-                     address: { equalTo: \"\(address)\"},
+                     \(addressFilter),
                      or: [
                         \(filterString)
                      ]
@@ -181,15 +206,17 @@ final class SubqueryHistoryOperationFactory {
         }
         """
     }
-}
 
-extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtocol {
-    func createOperation(
-        address: String,
+    func createRequestFactory(
+        accountId: AccountId,
         count: Int,
         cursor: String?
-    ) -> BaseOperation<SubqueryHistoryData> {
-        let queryString = prepareQueryForAddress(address, count: count, cursor: cursor)
+    ) throws -> BlockNetworkRequestFactory {
+        let queryString = try createQuery(
+            accountId,
+            count: count,
+            cursor: cursor
+        )
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: self.url)
@@ -202,14 +229,35 @@ extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtoc
             )
 
             request.httpMethod = HttpMethod.post.rawValue
+
             return request
         }
 
-        let processResultBlock = createProcessingBlock()
+        return requestFactory
+    }
+}
 
+extension SubqueryHistoryOperationFactory: SubqueryHistoryOperationFactoryProtocol {
+    func createOperation(
+        accountId: AccountId,
+        count: Int,
+        cursor: String?
+    ) -> BaseOperation<SubqueryHistoryData> {
+        guard let requestFactory = try? createRequestFactory(
+            accountId: accountId,
+            count: count,
+            cursor: cursor
+        ) else {
+            return .createWithError(SubqueryHistoryError.requestFactoryCreation)
+        }
+
+        let processResultBlock = createProcessingBlock()
         let resultFactory = AnyNetworkResultFactory(block: processResultBlock)
 
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        let operation = NetworkOperation(
+            requestFactory: requestFactory,
+            resultFactory: resultFactory
+        )
 
         return operation
     }

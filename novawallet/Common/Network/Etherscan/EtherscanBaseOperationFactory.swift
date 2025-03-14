@@ -5,7 +5,10 @@ class EtherscanBaseOperationFactory {
     let baseUrl: URL
     let chainId: ChainModel.Id
 
-    init(baseUrl: URL, chainId: ChainModel.Id) {
+    init(
+        baseUrl: URL,
+        chainId: ChainModel.Id
+    ) {
         self.baseUrl = baseUrl
         self.chainId = chainId
     }

@@ -39,8 +39,8 @@ extension ChainFormat {
         switch self {
         case .ethereum:
             return .ethereum
-        case let .substrate(type):
-            return .substrate(type: type)
+        case let .substrate(prefix, _):
+            return .substrate(type: prefix)
         }
     }
 }

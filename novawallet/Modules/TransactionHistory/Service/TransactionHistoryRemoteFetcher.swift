@@ -4,7 +4,7 @@ import Operation_iOS
 final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     let operationFactory: WalletRemoteHistoryFactoryProtocol
     let operationQueue: OperationQueue
-    let address: AccountAddress
+    let accountId: AccountId
     let chainAsset: ChainAsset
     let pageSize: Int
 
@@ -14,14 +14,14 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     weak var delegate: TransactionHistoryFetcherDelegate?
 
     init(
-        address: AccountAddress,
+        accountId: AccountId,
         chainAsset: ChainAsset,
         operationFactory: WalletRemoteHistoryFactoryProtocol,
         operationQueue: OperationQueue,
         pageSize: Int,
         initPagination: Pagination? = nil
     ) {
-        self.address = address
+        self.accountId = accountId
         self.chainAsset = chainAsset
         self.operationFactory = operationFactory
         self.operationQueue = operationQueue
@@ -40,15 +40,10 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
 
         let currentPagination = pagination ?? Pagination(count: pageSize, context: nil)
 
-        let remoteAddress: AccountAddress
-
-        if chainAsset.chain.isEthereumBased {
-            remoteAddress = address.toEthereumAddressWithChecksum() ?? address
-        } else {
-            remoteAddress = address
-        }
-
-        let wrapper = operationFactory.createOperationWrapper(for: remoteAddress, pagination: currentPagination)
+        let wrapper = operationFactory.createOperationWrapper(
+            for: accountId,
+            pagination: currentPagination
+        )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
