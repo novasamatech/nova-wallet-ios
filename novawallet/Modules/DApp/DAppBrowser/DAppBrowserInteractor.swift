@@ -264,7 +264,6 @@ private extension DAppBrowserInteractor {
             case let .success(isNotPhishing):
                 if !isNotPhishing {
                     bringPhishingDetectedStateAndNotify(for: host)
-                    tabManager.removeTab(with: currentTab.uuid)
                 }
 
                 completion?(isNotPhishing)
@@ -517,6 +516,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         let transportStates = transports.compactMap { $0.makeOpaqueState() }
 
         return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    }
+
+    func close() {
+        tabManager.removeTab(with: currentTab.uuid)
     }
 }
 

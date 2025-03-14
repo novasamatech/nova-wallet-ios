@@ -391,18 +391,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionFavorite() {
-        guard let url = rootView.webView?.url else {
-            return
-        }
-
-        let title = rootView.webView?.title ?? ""
-
-        let page = DAppBrowserPage(
-            url: url,
-            title: title
-        )
-
-        presenter.actionFavorite(page: page)
+        presenter.actionFavorite()
     }
 
     @objc private func actionRefresh() {
@@ -414,7 +403,7 @@ private extension DAppBrowserViewController {
     }
 
     @objc private func actionSearch() {
-        presenter.activateSearch(with: rootView.webView?.url?.absoluteString)
+        presenter.activateSearch()
     }
 
     @objc private func actionClose() {
@@ -457,6 +446,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         if self.viewModel?.selectedTab.uuid != viewModel.selectedTab.uuid {
             reload = !webViewPool.webViewExists(for: viewModel.selectedTab.uuid)
             setupWebView(with: viewModel)
+        }
+
+        if !reload {
+            let page = DAppBrowserPage(
+                url: viewModel.selectedTab.url,
+                title: rootView.webView?.title ?? ""
+            )
+
+            presenter.process(page: page)
         }
 
         self.viewModel = viewModel
