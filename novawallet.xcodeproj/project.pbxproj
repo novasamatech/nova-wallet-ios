@@ -12272,6 +12272,13 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0C277DBA2D8475B8004FF053 /* MythosStaking */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MythosStaking;
+			sourceTree = "<group>";
+		};
 		0C2A3C962CDCCEB200A0E2B3 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -22090,6 +22097,7 @@
 		84B7C6C1289BFA79001A3566 /* Staking */ = {
 			isa = PBXGroup;
 			children = (
+				0C277DBA2D8475B8004FF053 /* MythosStaking */,
 				0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */,
 				84B7C6C4289BFA79001A3566 /* SelectValidatorsFlow */,
 				84B7C6DA289BFA79001A3566 /* BondMoreConfirm */,
