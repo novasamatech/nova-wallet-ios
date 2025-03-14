@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Cantidad demasiado pequeña permanece en la apuesta";
 "staking.unstake.no.space.message" = "Actualmente no hay lugares libres en la cola de desvinculación para tu pool. Por favor, intenta de nuevo en %@";
 "staking.unstake.no.space.title" = "Demasiadas personas están desvinculando de tu pool";
-"staking.restake.message" = "Tus tokens se agregarán de nuevo al stake";
 "staking.claim.rewards" = "Reclamar recompensas";
 "common.recommended" = "Recomendado";
 "staking.setup.amount.direct.type.subtitle" = "Seleccionados: %li (máx %li)";
@@ -1809,3 +1808,4 @@
 "card.open.failed.alert.title" = "Contactar soporte";
 "card.open.failed.alert.message" = "Por favor, contacta a support@novawallet.io. Incluye la dirección de correo electrónico que usaste para emitir la tarjeta.";
 "card.topup.pending.sheet.title" = "¡Tu tarjeta está siendo financiada!";
+"staking.restake.message" = "Tus recompensas se añadirán a tu staking";

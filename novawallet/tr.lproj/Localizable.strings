@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Stakette kalan miktar çok küçük";
 "staking.unstake.no.space.message" = "Havuzunuz için çıkarılma kuyruğunda şu anda boş yer yok. Lütfen %@ sonra tekrar deneyin";
 "staking.unstake.no.space.title" = "Havuzunuzdan çok sayıda kişi payını çekiyor";
-"staking.restake.message" = "Tokenleriniz stake'e geri eklenecek";
 "staking.claim.rewards" = "Ödülleri Talep Et";
 "common.recommended" = "Önerilen";
 "staking.setup.amount.direct.type.subtitle" = "Seçilen: %li (maksimum %li)";
@@ -1809,3 +1808,4 @@
 "card.open.failed.alert.title" = "Destek ile iletişime geçin";
 "card.open.failed.alert.message" = "Lütfen support@novawallet.io ile iletişime geçin. Kartınızı almak için kullandığınız e-posta adresini belirtin.";
 "card.topup.pending.sheet.title" = "Kartınız finanse ediliyor!";
+"staking.restake.message" = "Ödülleriniz staking hesabınıza eklenecektir";

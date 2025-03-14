@@ -270,6 +270,10 @@
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
 		0C277D982D80779B004FF053 /* KodadotMediaViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */; };
 		0C277DB22D8336A5004FF053 /* PayCardSheetMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */; };
+		0C277DB42D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */; };
+		0C277DB72D83F310004FF053 /* MythosStkClaimRewardsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */; };
+		0C277DB92D83F360004FF053 /* MythosStkClaimRewardsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */; };
+		0C277DBC2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
@@ -5954,6 +5958,10 @@
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
 		0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodadotMediaViewModelFactory.swift; sourceTree = "<group>"; };
 		0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetMode.swift; sourceTree = "<group>"; };
+		0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsViewController.swift; sourceTree = "<group>"; };
+		0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsState.swift; sourceTree = "<group>"; };
+		0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsModel.swift; sourceTree = "<group>"; };
+		0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosClaimRewardsStateTests.swift; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
 		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
@@ -12255,6 +12263,23 @@
 				0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0C277DB52D83F2F3004FF053 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */,
+				0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0C277DBA2D8475B8004FF053 /* MythosStaking */ = {
+			isa = PBXGroup;
+			children = (
+				0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */,
+			);
+			path = MythosStaking;
 			sourceTree = "<group>";
 		};
 		0C2A3C962CDCCEB200A0E2B3 /* Model */ = {
@@ -22075,6 +22100,7 @@
 		84B7C6C1289BFA79001A3566 /* Staking */ = {
 			isa = PBXGroup;
 			children = (
+				0C277DBA2D8475B8004FF053 /* MythosStaking */,
 				0CE550B42A4973BA00F0A7AC /* StakingUnbondSetup */,
 				84B7C6C4289BFA79001A3566 /* SelectValidatorsFlow */,
 				84B7C6DA289BFA79001A3566 /* BondMoreConfirm */,
@@ -24771,11 +24797,13 @@
 		A28FE7F9F3AC40F14DC4FAA2 /* MythosStkClaimRewards */ = {
 			isa = PBXGroup;
 			children = (
+				0C277DB52D83F2F3004FF053 /* Model */,
 				E7E7A7A05C3D2501194234E0 /* MythosStkClaimRewardsProtocols.swift */,
 				29E93D7DCB98917F11CC994D /* MythosStkClaimRewardsWireframe.swift */,
 				196CF53E8DA7174E33118BCB /* MythosStkClaimRewardsPresenter.swift */,
 				EB1764F0D73F5D0564BA7C30 /* MythosStkClaimRewardsInteractor.swift */,
 				393C843031AAEF9F257DB6C6 /* MythosStkClaimRewardsViewFactory.swift */,
+				0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */,
 			);
 			path = MythosStkClaimRewards;
 			sourceTree = "<group>";
@@ -28193,6 +28221,7 @@
 				2D039DE22BFBB08400A928E5 /* ExportNetworkView.swift in Sources */,
 				84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */,
 				84E258A52893D27E00DC8A51 /* AddressScanPresentable.swift in Sources */,
+				0C277DB92D83F360004FF053 /* MythosStkClaimRewardsModel.swift in Sources */,
 				2DD018C12D635B110063F9BB /* HeightCalculatableText.swift in Sources */,
 				AEE5FB1026457806002B8FDC /* StakingRewardDestSetupViewFactory.swift in Sources */,
 				849B563327A70D71007D5528 /* ExtrinsicProcessor+Fee.swift in Sources */,
@@ -28496,6 +28525,7 @@
 				84F30E9725FD3C5300039D09 /* EventEmittingStorageSubscription.swift in Sources */,
 				848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */,
 				84333BDB285772F300C76A4F /* UInt64+TimeInterval.swift in Sources */,
+				0C277DB42D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift in Sources */,
 				847999AD2888646000D1BAD2 /* WatchOnlyWalletOperationFactory.swift in Sources */,
 				88B1C34429BA0CB900DCA101 /* NetworkStakingInfo+BagList.swift in Sources */,
 				8427495128FEB6E500B2B70B /* GovernanceLockState.swift in Sources */,
@@ -29272,6 +29302,7 @@
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
 				84A5915C292B390800BCCF8F /* EvmTransactionBuilder.swift in Sources */,
 				7725EB442B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift in Sources */,
+				0C277DB72D83F310004FF053 /* MythosStkClaimRewardsState.swift in Sources */,
 				842A738627DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift in Sources */,
 				0CA72A9B2D4B874700B3FD02 /* BlockCountdownDisplay.swift in Sources */,
 				8489A6DA27FDC49D0040C066 /* StakingUnbondingsView.swift in Sources */,
@@ -32740,6 +32771,7 @@
 				84B7C711289BFA79001A3566 /* OnboardingMainTests.swift in Sources */,
 				84625101263EDBD4001039B2 /* ExtrinsicServiceFactoryStub.swift in Sources */,
 				846A2C54252A0FDF00731018 /* FilterTests.swift in Sources */,
+				0C277DBC2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift in Sources */,
 				84F13F0E26F1D9B1006725FF /* CrowdloadSettingsTests.swift in Sources */,
 				845C7F06263C45EC0024E797 /* AnyProviderAutoCleaner.swift in Sources */,
 				84B7C734289BFA79001A3566 /* StakingRewardDetailsTests.swift in Sources */,

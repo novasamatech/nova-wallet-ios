@@ -26,6 +26,7 @@ enum SettingsKey: String {
     case assetIconsAppearance
     case novaCardOpenTimestamp
     case closedBanners
+    case mythosRestakeEnabled
 }
 
 extension SettingsManagerProtocol {
@@ -312,6 +313,16 @@ extension SettingsManagerProtocol {
                 value: newValue,
                 for: SettingsKey.closedBanners.rawValue
             )
+        }
+    }
+
+    var isMythosRestakeEnabled: Bool {
+        get {
+            bool(for: SettingsKey.mythosRestakeEnabled.rawValue) ?? true
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.mythosRestakeEnabled.rawValue)
         }
     }
 }
