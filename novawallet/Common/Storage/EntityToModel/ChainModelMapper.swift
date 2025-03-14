@@ -411,6 +411,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             nodes: Set(nodes),
             nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: UInt64(bitPattern: entity.addressPrefix),
+            legacyAddressPrefix: entity.legacyAddressPrefix?.uint64Value,
             types: types,
             icon: entity.icon,
             options: options,
@@ -436,6 +437,13 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.typesOverrideCommon = model.types.map { NSNumber(value: $0.overridesCommon) }
 
         entity.addressPrefix = Int64(bitPattern: model.addressPrefix)
+
+        entity.legacyAddressPrefix = if let legacyAddressPrefix = model.legacyAddressPrefix {
+            NSNumber(value: legacyAddressPrefix)
+        } else {
+            nil
+        }
+
         entity.icon = model.icon
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet

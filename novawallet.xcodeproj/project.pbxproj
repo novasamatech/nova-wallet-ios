@@ -7011,6 +7011,7 @@
 		2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardViewModel.swift; sourceTree = "<group>"; };
 		2D389B142C87036100256C7B /* ReferendumFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFilter.swift; sourceTree = "<group>"; };
 		2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInteractor.swift; sourceTree = "<group>"; };
+		2D397C3B2D81E54D0026CA01 /* SubstrateDataModel36.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel36.xcdatamodel; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -33518,6 +33519,7 @@
 		0C8FDB7E2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2D397C3B2D81E54D0026CA01 /* SubstrateDataModel36.xcdatamodel */,
 				0C0F6D612D37FE0800943A7C /* SubstrateDataModel35.xcdatamodel */,
 				0C029E292CE4D2AB00649C28 /* SubstrateDataModel34.xcdatamodel */,
 				2D65F6DA2CD0C2DC00CC6F72 /* SubstrateDataModel33.xcdatamodel */,
@@ -33554,7 +33556,7 @@
 				0C8FDB9D2CAD022700775D7F /* SubstrateDataModel25.xcdatamodel */,
 				0C8FDB9E2CAD022700775D7F /* SubstrateDataModel17.xcdatamodel */,
 			);
-			currentVersion = 0C0F6D612D37FE0800943A7C /* SubstrateDataModel35.xcdatamodel */;
+			currentVersion = 2D397C3B2D81E54D0026CA01 /* SubstrateDataModel36.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
