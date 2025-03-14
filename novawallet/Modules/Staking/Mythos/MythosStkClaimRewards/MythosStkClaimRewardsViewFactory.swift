@@ -45,8 +45,8 @@ struct MythosStkClaimRewardsViewFactory {
             logger: Logger.shared
         )
 
-        let view = StakingBaseRewardsViewController(
-            basePresenter: presenter,
+        let view = MythosStkClaimRewardsViewController(
+            presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 
@@ -65,6 +65,7 @@ struct MythosStkClaimRewardsViewFactory {
     ) -> MythosStkClaimRewardsInteractor? {
         guard
             let rewardsSyncService = state.claimableRewardsService,
+            let detailsSyncService = state.detailsSyncService,
             let runtimeService = state.chainRegistry.getRuntimeProvider(
                 for: chainAsset.chain.chainId
             ),
@@ -108,6 +109,7 @@ struct MythosStkClaimRewardsViewFactory {
             signingWrapper: signingWrapper,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            stakingDetailsService: detailsSyncService,
             rewardsSyncService: rewardsSyncService,
             operationQueue: operationQueue,
             currencyManager: currencyManager,

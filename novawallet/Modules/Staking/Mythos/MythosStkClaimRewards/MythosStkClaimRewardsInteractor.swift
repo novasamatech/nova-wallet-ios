@@ -14,6 +14,7 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
 
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let stakingDetailsService: MythosStakingDetailsSyncServiceProtocol
     let rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol
 
     var accountId: AccountId { selectedAccount.chainAccount.accountId }
@@ -32,6 +33,7 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
         signingWrapper: SigningWrapperProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        stakingDetailsService: MythosStakingDetailsSyncServiceProtocol,
         rewardsSyncService: MythosStakingClaimableRewardsServiceProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
@@ -44,6 +46,7 @@ final class MythosStkClaimRewardsInteractor: AnyProviderAutoCleaning {
         self.signingWrapper = signingWrapper
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.stakingDetailsService = stakingDetailsService
         self.rewardsSyncService = rewardsSyncService
         self.logger = logger
         self.operationQueue = operationQueue
@@ -82,9 +85,33 @@ private extension MythosStkClaimRewardsInteractor {
         }
     }
 
-    func getExtrinsicBuilderClosure() -> ExtrinsicBuilderClosure {
+    func makeStakingDetailsSubscription() {
+        stakingDetailsService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, detailsState in
+            guard case let .defined(details) = detailsState else {
+                return
+            }
+
+            self?.presenter?.didReceiveStakingDetails(details)
+        }
+    }
+
+    func getExtrinsicBuilderClosure(for model: MythosStkClaimRewardsModel) -> ExtrinsicBuilderClosure {
         { builder in
-            try builder.adding(call: MythosStakingPallet.ClaimRewardsCall().runtimeCall())
+            var currentBuilder = try builder.adding(
+                call: MythosStakingPallet.ClaimRewardsCall().runtimeCall()
+            )
+
+            if let restake = model.getRestake() {
+                currentBuilder = try currentBuilder
+                    .adding(call: restake.lock.runtimeCall())
+                    .adding(call: restake.stake.runtimeCall())
+            }
+
+            return currentBuilder
         }
     }
 
@@ -92,12 +119,14 @@ private extension MythosStkClaimRewardsInteractor {
         makeAssetBalanceSubscription()
         makePriceSubscription()
         makeClaimableRewardsSubscription()
+        makeStakingDetailsSubscription()
     }
 
     func clearDataRetrieval() {
         clear(streamableProvider: &balanceProvider)
         clear(streamableProvider: &priceProvider)
         rewardsSyncService.remove(observer: self)
+        stakingDetailsService.remove(observer: self)
     }
 }
 
@@ -106,16 +135,16 @@ extension MythosStkClaimRewardsInteractor: MythosStkClaimRewardsInteractorInputP
         setupDataRetrieval()
     }
 
-    func estimateFee() {
-        let closure = getExtrinsicBuilderClosure()
+    func estimateFee(for model: MythosStkClaimRewardsModel) {
+        let closure = getExtrinsicBuilderClosure(for: model)
 
         extrinsicService.estimateFee(closure, runningIn: .main) { [weak self] result in
             self?.presenter?.didReceiveFeeResult(result)
         }
     }
 
-    func submit() {
-        let closure = getExtrinsicBuilderClosure()
+    func submit(model: MythosStkClaimRewardsModel) {
+        let closure = getExtrinsicBuilderClosure(for: model)
 
         let wrapper = submissionMonitor.submitAndMonitorWrapper(
             extrinsicBuilderClosure: closure,
