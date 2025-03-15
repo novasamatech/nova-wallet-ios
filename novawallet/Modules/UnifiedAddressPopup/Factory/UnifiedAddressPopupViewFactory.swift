@@ -33,9 +33,14 @@ struct UnifiedAddressPopupViewFactory {
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
+        let preferredSize = CGSize(
+            width: .zero,
+            height: 392
+        )
+
         view.modalTransitioningFactory = factory
         view.modalPresentationStyle = .custom
-        view.preferredContentSize = CGSize(width: .zero, height: 442)
+        view.preferredContentSize = preferredSize
 
         return view
     }

@@ -35,16 +35,33 @@ class UnifiedAddressPopupAddressView: RowView<
 private extension UnifiedAddressPopupAddressView {
     func setupLayout() {
         contentInsets = Constants.contentInsets
+
+        rowContentView.makeHorizontal()
+
+        rowContentView.fView.stackView.alignment = .leading
+        rowContentView.fView.stackView.distribution = .fillProportionally
         rowContentView.fView.spacing = Constants.labelSpacing
 
-        rowContentView.sView.snp.makeConstraints { make in
-            make.size.equalTo(Constants.iconSize)
+        copyIcon.snp.makeConstraints { make in
+            make.width.equalTo(Constants.iconWidth)
+        }
+        addressLabel.snp.makeConstraints { make in
+            make.width.equalTo(self).multipliedBy(Constants.addressLabelWidthMultiplier)
+        }
+        rowContentView.fView.snp.makeConstraints { make in
+            make.height.equalTo(Constants.textContainerHeight)
         }
     }
 
     func setupStyle() {
+        addressLabel.lineBreakMode = .byTruncatingMiddle
+        formatLabel.contentInsets = Constants.formatLabelContentInset
         roundedBackgroundView.apply(style: .roundedLightCell)
-        copyIcon.image = R.image.iconActionCopy()?.tinted(with: R.color.colorIconAccent()!)
+
+        copyIcon.contentMode = .scaleAspectFit
+        copyIcon.image = R.image.iconActionCopy()?
+            .tinted(with: R.color.colorIconAccent()!)?
+            .withAlignmentRectInsets(Constants.iconImageInsets)
     }
 }
 
@@ -66,13 +83,24 @@ extension UnifiedAddressPopupAddressView {
 
 private extension UnifiedAddressPopupAddressView {
     enum Constants {
-        static let iconSize: CGFloat = 32.0
+        static let iconWidth: CGFloat = 32.0
+        static let textContainerHeight: CGFloat = 42.0
+        static let addressLabelWidthMultiplier: CGFloat = 0.612
+
         static let labelSpacing: CGFloat = 8.0
-        static let contentInsets: UIEdgeInsets = .init(
+
+        static let formatLabelContentInset = UIEdgeInsets(
+            top: 2.0,
+            left: 6.0,
+            bottom: 2.0,
+            right: 6.0
+        )
+        static let contentInsets = UIEdgeInsets(
             top: 11.0,
             left: 16,
             bottom: 11.0,
             right: 16
         )
+        static let iconImageInsets = UIEdgeInsets(inset: -9.0)
     }
 }
