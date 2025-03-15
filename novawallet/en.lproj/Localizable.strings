@@ -1799,3 +1799,8 @@
 "chart.period.month" = "Last Month";
 "chart.period.year" = "Last Year";
 "chart.period.max" = "All Time";
+"unified.address.popup.title" = "New Unified Address";
+"unified.address.popup.subtitle" = "Some exchanges may still require the legacy format\nfor operations while they update.";
+"unified.address.popup.checkbox.text" = "Do not show this again.\nYou can find legacy address in Receive.";
+"unified.address.new.format" = "New format";
+"unified.address.legacy.format" = "Legacy format";

@@ -151,7 +151,7 @@ final class AccountManagementPresenter {
 
         var actions: [ChainAddressDetailsAction] = []
 
-        let copyAction = createCopyAction(for: address)
+        let copyAction = createCopyAction(for: address, chain: chain)
         actions.append(copyAction)
 
         let explorerActions = createExplorerActions(for: chain, address: address)
@@ -240,7 +240,7 @@ final class AccountManagementPresenter {
 
         var actions: [ChainAddressDetailsAction] = []
 
-        let copyAction = createCopyAction(for: address)
+        let copyAction = createCopyAction(for: address, chain: chain)
         actions.append(copyAction)
 
         let explorerActions = createExplorerActions(for: chain, address: address)
@@ -298,7 +298,7 @@ final class AccountManagementPresenter {
 
         var actions: [ChainAddressDetailsAction] = []
 
-        let copyAction = createCopyAction(for: address)
+        let copyAction = createCopyAction(for: address, chain: chain)
         actions.append(copyAction)
 
         let explorerActions = createExplorerActions(for: chain, address: address)
@@ -327,12 +327,16 @@ final class AccountManagementPresenter {
 
     // MARK: - Actions
 
-    private func activateCopyAddress(_ address: String) {
-        UIPasteboard.general.string = address
-
-        let locale = localizationManager?.selectedLocale
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
-        wireframe.presentSuccessNotification(title, from: view)
+    private func activateCopyAddress(
+        _ address: String,
+        chain: ChainModel
+    ) {
+        wireframe.copyAddressCheckingFormat(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
     }
 
     private func activateChangeAccount(for chainModel: ChainModel, walletType: MetaAccountModelType) {
@@ -419,7 +423,10 @@ final class AccountManagementPresenter {
         } ?? []
     }
 
-    private func createCopyAction(for address: String) -> ChainAddressDetailsAction {
+    private func createCopyAction(
+        for address: String,
+        chain: ChainModel
+    ) -> ChainAddressDetailsAction {
         let copyTitle = LocalizableResource { locale in
             R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
         }
@@ -429,7 +436,7 @@ final class AccountManagementPresenter {
             icon: R.image.iconActionCopy(),
             indicator: .none
         ) { [weak self] in
-            self?.activateCopyAddress(address)
+            self?.activateCopyAddress(address, chain: chain)
         }
     }
 

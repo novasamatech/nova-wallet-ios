@@ -25,6 +25,7 @@ enum SettingsKey: String {
     case assetListGroupStyle
     case assetIconsAppearance
     case closedBanners
+    case hideUnifiedAddressPopup
 }
 
 extension SettingsManagerProtocol {
@@ -297,6 +298,16 @@ extension SettingsManagerProtocol {
                 value: newValue,
                 for: SettingsKey.closedBanners.rawValue
             )
+        }
+    }
+
+    var hideUnifiedAddressPopup: Bool {
+        get {
+            bool(for: SettingsKey.hideUnifiedAddressPopup.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.hideUnifiedAddressPopup.rawValue)
         }
     }
 }

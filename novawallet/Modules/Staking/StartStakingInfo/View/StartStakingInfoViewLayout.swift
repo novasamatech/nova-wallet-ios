@@ -12,8 +12,6 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     lazy var wikiView: UITextView = .create {
         $0.textAlignment = .center
-        $0.linkTextAttributes = [.foregroundColor: R.color.colorTextSecondary()!,
-                                 .font: UIFont.semiBoldCallout]
         $0.font = .regularCallout
         $0.textColor = R.color.colorTextSecondary()
         $0.isScrollEnabled = false
@@ -24,8 +22,6 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     lazy var termsView: UITextView = .create {
         $0.textAlignment = .center
-        $0.linkTextAttributes = [.foregroundColor: R.color.colorTextSecondary()!,
-                                 .font: UIFont.semiBoldCallout]
         $0.font = .regularCallout
         $0.textColor = R.color.colorTextSecondary()
         $0.isScrollEnabled = false
@@ -145,13 +141,25 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     private func setWiki(urlModel model: StartStakingUrlModel) {
-        wikiView.bind(url: model.url, urlText: model.urlName, in: model.text)
+        wikiView.bind(
+            url: model.url,
+            urlText: model.urlName,
+            in: model.text,
+            iconSize: CGSize(width: 20.0, height: 20.0),
+            linkFont: .semiBoldCallout
+        )
         addArrangedSubview(wikiView)
         stackView.setCustomSpacing(Constants.wikiAndTermsSpacing, after: wikiView)
     }
 
     private func setTerms(urlModel model: StartStakingUrlModel) {
-        termsView.bind(url: model.url, urlText: model.urlName, in: model.text)
+        termsView.bind(
+            url: model.url,
+            urlText: model.urlName,
+            in: model.text,
+            iconSize: CGSize(width: 20.0, height: 20.0),
+            linkFont: .semiBoldCallout
+        )
         addArrangedSubview(termsView)
     }
 }
