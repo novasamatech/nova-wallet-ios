@@ -71,6 +71,12 @@ extension UnifiedAddressPopupPresenter: UnifiedAddressPopupPresenterProtocol {
     func close() {
         wireframe.close(from: view)
     }
+
+    func toggleHide() {
+        guard let dontShowAgain else { return }
+
+        interactor.setDontShow(!dontShowAgain)
+    }
 }
 
 // MARK: UnifiedAddressPopupInteractorOutputProtocol

@@ -46,6 +46,12 @@ private extension UnifiedAddressPopupViewController {
             action: #selector(actionButton),
             for: .touchUpInside
         )
+        rootView.checkBoxImageView.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target: self,
+                action: #selector(actionCheckBox)
+            )
+        )
     }
 
     @objc func actionNewAddress() {
@@ -58,6 +64,10 @@ private extension UnifiedAddressPopupViewController {
 
     @objc func actionButton() {
         presenter.close()
+    }
+
+    @objc func actionCheckBox() {
+        presenter.toggleHide()
     }
 }
 

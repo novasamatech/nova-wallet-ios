@@ -27,6 +27,7 @@ final class UnifiedAddressPopupViewLayout: UIView {
         view.spacing = Constants.checkboxContainerSpacing
         view.detailsLabel.apply(style: .footnoteSecondary)
         view.iconWidth = Constants.iconSize
+        view.imageView.isUserInteractionEnabled = true
     }
 
     var titleLabel: UILabel {

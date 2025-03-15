@@ -7,6 +7,7 @@ protocol UnifiedAddressPopupPresenterProtocol: AnyObject {
     func copyNewAddress()
     func copyLegacyAddress()
     func close()
+    func toggleHide()
 }
 
 protocol UnifiedAddressPopupInteractorInputProtocol: AnyObject {
