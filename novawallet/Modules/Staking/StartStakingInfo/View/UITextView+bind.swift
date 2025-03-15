@@ -36,16 +36,13 @@ extension UITextView {
             }
 
             attributedString.addAttribute(
-                .font,
-                value: linkFont,
-                range: nsRange
+                .foregroundColor,
+                value: R.color.colorTextLink()!,
+                range: NSRange(location: nsRange.location, length: nsRangeLength)
             )
             attributedString.addAttributes(
-                [
-                    .link: url,
-                    .foregroundColor: R.color.colorTextLink()!
-                ],
-                range: NSRange(location: nsRange.location, length: nsRangeLength)
+                [.font: linkFont, .link: url],
+                range: nsRange
             )
         }
 

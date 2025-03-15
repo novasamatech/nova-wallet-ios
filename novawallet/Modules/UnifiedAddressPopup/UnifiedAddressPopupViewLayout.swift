@@ -123,7 +123,7 @@ private extension UnifiedAddressPopupViewLayout {
         subtitleTextView.bind(
             url: viewModel.wikiURL,
             urlText: viewModel.wikiText,
-            in: [viewModel.text, viewModel.wikiText].joined(with: .space),
+            in: [viewModel.subtitleText, viewModel.wikiText].joined(with: .space),
             style: .footnoteSecondary
         )
     }
