@@ -24,6 +24,7 @@ extension UnifiedAddressPopup.ViewModelFactory {
 
         let title = R.string.localizable.unifiedAddressPopupTitle(preferredLanguages: languages)
         let subtitle = R.string.localizable.unifiedAddressPopupSubtitle(preferredLanguages: languages)
+        let wikiText = R.string.localizable.commonLearnMore(preferredLanguages: languages)
         let checkboxText = R.string.localizable.unifiedAddressPopupCheckboxText(preferredLanguages: languages)
 
         let newFormatText = R.string.localizable
@@ -43,10 +44,13 @@ extension UnifiedAddressPopup.ViewModelFactory {
         )
 
         let buttonText = R.string.localizable.commonOk(preferredLanguages: languages).uppercased()
+        let wikiURL = URL(string: "https://wiki.polkadot.network/docs/learn-accounts#unified-address-format")!
 
         return UnifiedAddressPopup.ViewModel(
             titleText: title,
             subtitleText: subtitle,
+            wikiText: wikiText,
+            wikiURL: wikiURL,
             newAddress: newAddress,
             legacyAddress: legacyAddress,
             checkboxText: checkboxText,

@@ -2,11 +2,16 @@ import UIKit
 import SoraUI
 
 final class UnifiedAddressPopupViewLayout: UIView {
-    private let titleValueView: MultiValueView = .create { view in
+    private let titleValueView: GenericMultiValueView<UITextView> = .create { view in
         view.valueTop.apply(style: .boldTitle3Primary)
         view.valueBottom.apply(style: .footnoteSecondary)
-        view.valueBottom.numberOfLines = 0
         view.valueBottom.textAlignment = .center
+
+        view.valueBottom.textAlignment = .center
+        view.valueBottom.isScrollEnabled = false
+        view.valueBottom.backgroundColor = .clear
+        view.valueBottom.isEditable = false
+        view.valueBottom.textContainerInset = .zero
 
         view.stackView.alignment = .center
 
@@ -34,7 +39,7 @@ final class UnifiedAddressPopupViewLayout: UIView {
         titleValueView.valueTop
     }
 
-    var descriptionLabel: UILabel {
+    var subtitleTextView: UITextView {
         titleValueView.valueBottom
     }
 
@@ -114,6 +119,19 @@ private extension UnifiedAddressPopupViewLayout {
     func setupStyle() {
         backgroundColor = R.color.colorBottomSheetBackground()
     }
+
+    func setDescription(
+        text: String,
+        wikiText: String,
+        wikiURL: URL
+    ) {
+        subtitleTextView.bind(
+            url: wikiURL,
+            urlText: wikiText,
+            in: [text, wikiText].joined(with: .space),
+            iconSize: CGSize(width: 16, height: 16)
+        )
+    }
 }
 
 // MARK: Internal
@@ -121,7 +139,12 @@ private extension UnifiedAddressPopupViewLayout {
 extension UnifiedAddressPopupViewLayout {
     func bind(_ viewModel: UnifiedAddressPopup.ViewModel) {
         titleLabel.text = viewModel.titleText
-        descriptionLabel.text = viewModel.subtitleText
+
+        setDescription(
+            text: viewModel.subtitleText,
+            wikiText: viewModel.wikiText,
+            wikiURL: viewModel.wikiURL
+        )
 
         newAddressContainer.bind(with: viewModel.newAddress)
         legacyAddressContainer.bind(with: viewModel.legacyAddress)

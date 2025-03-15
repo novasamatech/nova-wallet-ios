@@ -2,26 +2,317 @@ import UIKit
 import Foundation
 
 extension UITextView {
-    func bind(url: URL, urlText: String, in text: String) {
-        let font = UIFont.regularCallout
+    func bind(
+        url: URL,
+        urlText: String,
+        in text: String,
+        iconSize: CGSize?,
+        linkFont: UIFont? = nil
+    ) {
+        let font = self.font ?? UIFont.regularCallout
+
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
+
         let attributedString = NSMutableAttributedString(
             string: text,
-            attributes: [.foregroundColor: R.color.colorTextSecondary()!,
-                         .font: font,
-                         .paragraphStyle: paragraphStyle]
+            attributes: [
+                .font: font,
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: textColor ?? R.color.colorTextSecondary()!
+            ]
         )
+
         if let range = text.range(of: urlText) {
-            let imageSize = CGSize(width: 20, height: 20)
             let nsRange = NSRange(range, in: text)
-            attributedString.addAttribute(.link, value: url, range: nsRange)
-            let imageAttachment = NSTextAttachment()
-            imageAttachment.image = R.image.iconLinkChevron()!.tinted(with: R.color.colorTextLink()!)
-            let centerImageY = 2 * font.descender - imageSize.height / 2 + font.capHeight
-            imageAttachment.bounds = .init(origin: .init(x: 0, y: centerImageY), size: imageSize)
-            attributedString.append(.init(attachment: imageAttachment))
+
+            var nsRangeLength = nsRange.length
+
+            if let iconSize {
+                let imageAttachment = NSTextAttachment()
+                imageAttachment.image = R.image.iconLinkChevron()!
+                let centerImageY = 2 * font.descender - iconSize.height / 2 + font.capHeight
+                imageAttachment.bounds = .init(origin: .init(x: 0, y: centerImageY), size: iconSize)
+                attributedString.append(.init(attachment: imageAttachment))
+
+                nsRangeLength += 1
+            }
+
+            attributedString.addAttribute(
+                .font,
+                value: linkFont ?? font,
+                range: nsRange
+            )
+            attributedString.addAttributes(
+                [
+                    .link: url,
+                    .foregroundColor: R.color.colorTextLink()!
+                ],
+                range: NSRange(location: nsRange.location, length: nsRangeLength)
+            )
         }
+
         attributedText = attributedString
     }
+}
+
+extension UITextView {
+    struct Style {
+        let textColor: UIColor?
+        let font: UIFont
+    }
+
+    convenience init(style: Style, textAlignment: NSTextAlignment = .left) {
+        self.init()
+        self.textAlignment = textAlignment
+
+        apply(style: style)
+    }
+
+    func apply(style: Style) {
+        textColor = style.textColor
+        font = style.font
+    }
+}
+
+extension UITextView.Style {
+    static let footnotePrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .regularFootnote
+    )
+
+    static let footnoteSecondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .regularFootnote
+    )
+
+    static let footnoteSecondaryOnWhite = UITextView.Style(
+        textColor: R.color.colorTextSecondaryOnWhite(),
+        font: .regularFootnote
+    )
+
+    static let semiboldSubhedlineSecondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldSubheadline
+    )
+
+    static let semiboldSubhedlinePrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldSubheadline
+    )
+
+    static let semiboldSubheadlineAccent = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldSubheadline
+    )
+
+    static let semiboldBodyButtonAccent = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldBody
+    )
+
+    static let semiboldBodyPrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldBody
+    )
+
+    static let semiboldBodySecondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldBody
+    )
+
+    static let semiboldChip = UITextView.Style(
+        textColor: R.color.colorChipText(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnotePrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnotePositive = UITextView.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnoteButtonInactive = UITextView.Style(
+        textColor: R.color.colorButtonTextInactive(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnoteButtonText = UITextView.Style(
+        textColor: R.color.colorButtonText(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldFootnoteAccentText = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .semiBoldFootnote
+    )
+
+    static let semiboldCalloutPrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCallout
+    )
+
+    static let semiboldCalloutPositive = UITextView.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldCallout
+    )
+
+    static let footnoteIconChip = UITextView.Style(
+        textColor: R.color.colorIconChip(),
+        font: .regularFootnote
+    )
+
+    static let footnoteAccentText = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .regularFootnote
+    )
+
+    static let semiboldCaption1Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCaption1
+    )
+
+    static let caption1Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .caption1
+    )
+
+    static let caption1Secondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .caption1
+    )
+
+    static let caption1Positive = UITextView.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .caption1
+    )
+
+    static let caption1Negative = UITextView.Style(
+        textColor: R.color.colorTextNegative(),
+        font: .caption1
+    )
+
+    static let caption2Secondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .caption2
+    )
+
+    static let semiboldCaps2Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCaps2
+    )
+
+    static let semiboldCaps2Positive = UITextView.Style(
+        textColor: R.color.colorTextPositive(),
+        font: .semiBoldCaps2
+    )
+
+    static let semiboldCaps1ChipText = UITextView.Style(
+        textColor: R.color.colorChipText(),
+        font: .semiBoldCaps1
+    )
+
+    static let semiboldCaps2Secondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .semiBoldCaps2
+    )
+
+    static let semiboldCaps2Inactive = UITextView.Style(
+        textColor: R.color.colorButtonTextInactive(),
+        font: .semiBoldCaps2
+    )
+
+    static let regularSubhedlinePrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlinePrimaryOnWhite = UITextView.Style(
+        textColor: R.color.colorTextPrimaryOnWhite(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlineInactive = UITextView.Style(
+        textColor: R.color.colorIconInactive(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlineSecondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .regularSubheadline
+    )
+
+    static let regularSubhedlineAccent = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .regularSubheadline
+    )
+
+    static let rowLink = UITextView.Style(
+        textColor: R.color.colorButtonTextAccent(),
+        font: .p2Paragraph
+    )
+
+    static let secondaryScreenTitle = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle3
+    )
+
+    static let bottomSheetTitle = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldBody
+    )
+
+    static let title3Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldTitle3
+    )
+
+    static let title3Secondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary()!,
+        font: .semiBoldTitle3
+    )
+
+    static let boldTitle1Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle1
+    )
+
+    static let boldTitle1Positive = UITextView.Style(
+        textColor: R.color.colorTextPositive()!,
+        font: .boldTitle1
+    )
+
+    static let boldTitle1Negative = UITextView.Style(
+        textColor: R.color.colorTextNegative()!,
+        font: .boldTitle1
+    )
+
+    static let boldTitle2Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle2
+    )
+
+    static let boldTitle3Primary = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle3
+    )
+
+    static let boldTitle3Warning = UITextView.Style(
+        textColor: R.color.colorTextWarning()!,
+        font: .boldTitle3
+    )
+
+    static let sourceCodePrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .regularFootnote
+    )
+
+    static let boldLargePrimary = UITextView.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldLargeTitle
+    )
 }
