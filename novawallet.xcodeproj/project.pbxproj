@@ -273,6 +273,7 @@
 		0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */; };
 		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
+		0C277D982D80779B004FF053 /* KodadotMediaViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */; };
 		0C277D9A2D814CB1004FF053 /* XcmTransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D992D814CB1004FF053 /* XcmTransferType.swift */; };
 		0C277D9C2D8151C9004FF053 /* XcmCrosschainFeeCalculation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D9B2D8151C9004FF053 /* XcmCrosschainFeeCalculation.swift */; };
 		0C277D9E2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D9D2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift */; };
@@ -282,7 +283,6 @@
 		0C277DA62D829F33004FF053 /* XcmDynamicAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */; };
 		0C277DA82D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */; };
 		0C277DAD2D82E7FA004FF053 /* SubstratePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */; };
-		0C277D982D80779B004FF053 /* KodadotMediaViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */; };
 		0C277DB22D8336A5004FF053 /* PayCardSheetMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */; };
 		0C277DB42D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */; };
 		0C277DB72D83F310004FF053 /* MythosStkClaimRewardsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */; };
@@ -769,6 +769,7 @@
 		0CA8AD662CE08FEE00ED9746 /* ExtrinsicEventsMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD5C2CE08FEE00ED9746 /* ExtrinsicEventsMatching.swift */; };
 		0CA8AD672CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD602CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift */; };
 		0CA8AD692CE0904D00ED9746 /* XcmDepositMonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD682CE0904D00ED9746 /* XcmDepositMonitoringService.swift */; };
+		0CA8AF1E2D85450800DB4E6A /* DryRun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF1D2D85450800DB4E6A /* DryRun.swift */; };
 		0CA957222B6A507A009AD757 /* HydraSwapParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */; };
 		0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957242B6A566B009AD757 /* HydraDx+Call.swift */; };
 		0CAB674C2D49136100E3A844 /* StakingClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */; };
@@ -5976,6 +5977,7 @@
 		0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TypeRegistry+Node.swift"; sourceTree = "<group>"; };
 		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
+		0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodadotMediaViewModelFactory.swift; sourceTree = "<group>"; };
 		0C277D992D814CB1004FF053 /* XcmTransferType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferType.swift; sourceTree = "<group>"; };
 		0C277D9B2D8151C9004FF053 /* XcmCrosschainFeeCalculation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCrosschainFeeCalculation.swift; sourceTree = "<group>"; };
 		0C277D9D2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmLegacyCrosschainFeeCalculator.swift; sourceTree = "<group>"; };
@@ -5985,7 +5987,6 @@
 		0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicAssetTransfer.swift; sourceTree = "<group>"; };
 		0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmDynamicTransfers+Protocol.swift"; sourceTree = "<group>"; };
 		0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstratePrimitives.swift; sourceTree = "<group>"; };
-		0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodadotMediaViewModelFactory.swift; sourceTree = "<group>"; };
 		0C277DB12D8336A5004FF053 /* PayCardSheetMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetMode.swift; sourceTree = "<group>"; };
 		0C277DB32D83F1AD004FF053 /* MythosStkClaimRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsViewController.swift; sourceTree = "<group>"; };
 		0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsState.swift; sourceTree = "<group>"; };
@@ -6509,6 +6510,7 @@
 		0CA8AD5F2CE08FEE00ED9746 /* SubstrateExtrinsicEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateExtrinsicEvents.swift; sourceTree = "<group>"; };
 		0CA8AD602CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateExtrinsicStatus.swift; sourceTree = "<group>"; };
 		0CA8AD682CE0904D00ED9746 /* XcmDepositMonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDepositMonitoringService.swift; sourceTree = "<group>"; };
+		0CA8AF1D2D85450800DB4E6A /* DryRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DryRun.swift; sourceTree = "<group>"; };
 		0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParamsService.swift; sourceTree = "<group>"; };
 		0CA957242B6A566B009AD757 /* HydraDx+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+Call.swift"; sourceTree = "<group>"; };
 		0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimRewardsProtocols.swift; sourceTree = "<group>"; };
@@ -12313,6 +12315,7 @@
 			isa = PBXGroup;
 			children = (
 				0CD61EC52D3554B80064AC97 /* DryRunOperationFactory.swift */,
+				0CA8AF1D2D85450800DB4E6A /* DryRun.swift */,
 			);
 			path = DryRun;
 			sourceTree = "<group>";
@@ -31209,6 +31212,7 @@
 				C2DD387223F4520ADC49AE9B /* NftDetailsInteractor.swift in Sources */,
 				6FDC1CD23BEAF8D4FAF9982D /* NftDetailsViewController.swift in Sources */,
 				84117076285B0F1F006F4DFB /* XcmAsset.swift in Sources */,
+				0CA8AF1E2D85450800DB4E6A /* DryRun.swift in Sources */,
 				842EBB2B289091B400B952D8 /* WalletSelectionTableViewCell.swift in Sources */,
 				0CB3135F2C0F051700353724 /* EnterCloudPasswordFlow.swift in Sources */,
 				3DD5BEEA01B8C52530A5FF00 /* NftDetailsViewLayout.swift in Sources */,
