@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "ステークに残る金額が少なすぎます";
 "staking.unstake.no.space.message" = "現在、お使いのプールにはUnstakingキューに空きがありません。%@後に再試行してください";
 "staking.unstake.no.space.title" = "プールからのUnstakingが多すぎます";
-"staking.restake.message" = "トークンが再びStakeに追加されます";
 "staking.claim.rewards" = "報酬を請求";
 "common.recommended" = "おすすめ";
 "staking.setup.amount.direct.type.subtitle" = "選択済み: %li (最大 %li)";
@@ -1799,3 +1798,14 @@
 "chart.period.month" = "先月";
 "chart.period.year" = "昨年";
 "chart.period.max" = "全期間";
+"common.pay" = "支払う";
+"common.card.issued" = "カードが発行されました";
+"card.top.up.dot.setup.title" = "カードにDOTをチャージ";
+"common.manage.debit.card" = "デビットカードを管理";
+"common.estimated.timer" = "推定 ~%@";
+"card.open.pending.sheet.title" = "カードが発行されています！";
+"card.open.pending.sheet.message" = "最大で%@かかる場合があります。\nこのウィンドウは自動的に閉じられます。";
+"card.open.failed.alert.title" = "サポートに連絡";
+"card.open.failed.alert.message" = "support@novawallet.ioに連絡してください。カードを発行するために使用したメールアドレスを添えてください。";
+"card.topup.pending.sheet.title" = "あなたのカードに資金が追加されています！";
+"staking.restake.message" = "報酬はステーキングに追加されます";

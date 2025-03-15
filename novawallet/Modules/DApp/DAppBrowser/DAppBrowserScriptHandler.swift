@@ -60,7 +60,9 @@ extension DAppBrowserScriptHandler {
             contentController.addUserScript(wkScript)
         }
 
-        contentController.add(self, name: viewModel.name)
+        viewModel.handlerNames.forEach { handlerName in
+            contentController.add(self, name: handlerName)
+        }
     }
 }
 
@@ -71,7 +73,7 @@ extension DAppBrowserScriptHandler: WKScriptMessageHandler {
         _: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
-        guard viewModel?.name == message.name else {
+        guard let viewModel, viewModel.handlerNames.contains(message.name) else {
             return
         }
 

@@ -71,30 +71,41 @@ private extension AssetListCollectionViewDataSource {
         )!
 
         totalBalanceCell.locale = selectedLocale
-        totalBalanceCell.locksView.addGestureRecognizer(UITapGestureRecognizer(
+
+        let totalBalanceView = totalBalanceCell.totalView
+        totalBalanceView.locksView.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
             action: #selector(actionLocks)
         ))
-        totalBalanceCell.sendButton.addTarget(
+        totalBalanceView.sendButton.addTarget(
             self,
             action: #selector(actionSend),
             for: .touchUpInside
         )
-        totalBalanceCell.receiveButton.addTarget(
+        totalBalanceView.receiveButton.addTarget(
             self,
             action: #selector(actionReceive),
             for: .touchUpInside
         )
-        totalBalanceCell.buyButton.addTarget(
+        totalBalanceView.buyButton.addTarget(
             self,
             action: #selector(actionBuy),
             for: .touchUpInside
         )
-        totalBalanceCell.swapButton.addTarget(
+        totalBalanceView.swapButton.addTarget(
             self,
             action: #selector(actionSwap),
             for: .touchUpInside
         )
+
+        let cardView = totalBalanceCell.cardView
+
+        cardView.addTarget(
+            self,
+            action: #selector(actionCardOpen),
+            for: .touchUpInside
+        )
+
         if let viewModel = headerViewModel {
             totalBalanceCell.bind(viewModel: viewModel)
         }
@@ -330,6 +341,10 @@ private extension AssetListCollectionViewDataSource {
 
     @objc func actionSwitchStyle() {
         actionsDelegate?.actionChangeAssetListStyle()
+    }
+
+    @objc func actionCardOpen() {
+        actionsDelegate?.actionCardOpen()
     }
 }
 
