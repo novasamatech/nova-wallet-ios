@@ -42,7 +42,6 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
 
         let wrapper = operationFactory.createOperationWrapper(
             for: accountId,
-            chainFormat: chainAsset.chain.chainFormat,
             pagination: currentPagination
         )
 

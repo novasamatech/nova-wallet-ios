@@ -8,7 +8,6 @@ extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
 
     func createOperationWrapper(
         for accountId: AccountId,
-        chainFormat: ChainFormat,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         guard !isComplete(pagination: pagination) else {
@@ -18,15 +17,14 @@ extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
 
         let subqueryContext = SubqueryHistoryContext(context: pagination.context ?? [:])
 
-        let fetchWrapper = createWrapper(
+        let fetchOperation = createOperation(
             accountId: accountId,
-            chainFormat: chainFormat,
             count: pagination.count,
             cursor: subqueryContext.cursor
         )
 
         let mapOperation = ClosureOperation<WalletRemoteHistoryData> {
-            let subqueryData = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            let subqueryData = try fetchOperation.extractNoCancellableResultData()
 
             let nextCursor = subqueryData.historyElements.pageInfo.endCursor
             let nextContext = SubqueryHistoryContext(cursor: nextCursor, isFirst: false).toContext()
@@ -37,8 +35,11 @@ extension SubqueryHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
             )
         }
 
-        mapOperation.addDependency(fetchWrapper.targetOperation)
+        mapOperation.addDependency(fetchOperation)
 
-        return fetchWrapper.insertingTail(operation: mapOperation)
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation]
+        )
     }
 }

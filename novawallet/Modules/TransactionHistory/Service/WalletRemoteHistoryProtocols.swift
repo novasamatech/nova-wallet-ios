@@ -33,7 +33,10 @@ protocol WalletRemoteHistoryFactoryProtocol {
 
     func createOperationWrapper(
         for accountId: AccountId,
-        chainFormat: ChainFormat,
         pagination: Pagination
     ) -> CompoundOperationWrapper<WalletRemoteHistoryData>
+}
+
+enum WalletRemoteHistoryError: Error {
+    case fetchParamsCreation
 }
