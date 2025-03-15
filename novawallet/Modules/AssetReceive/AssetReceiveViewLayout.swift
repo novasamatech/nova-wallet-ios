@@ -21,6 +21,7 @@ final class AssetReceiveViewLayout: UIView {
         view.valueTop.numberOfLines = 0
 
         view.valueBottom.applyTextStyle()
+        view.valueBottom.imageWithTitleView?.titleFont = .semiBoldSubheadline
 
         view.spacing = .zero
     }
