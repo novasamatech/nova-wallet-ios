@@ -73,9 +73,11 @@ private extension AssetReceivePresenter {
         else {
             return
         }
+
         let addressViewModel = AccountAddressViewModel(
             walletName: account.chainAccount.name,
-            address: account.chainAccount.toAddress()
+            address: account.chainAccount.toAddress(),
+            hasLegacyAddress: chain.hasUnifiedAddressPrefix
         )
 
         view?.didReceive(
@@ -89,6 +91,22 @@ private extension AssetReceivePresenter {
 // MARK: AssetReceivePresenterProtocol
 
 extension AssetReceivePresenter: AssetReceivePresenterProtocol {
+    func viewAddressFormats() {
+        guard
+            let chain,
+            let address = account?.chainAccount.toAddress(),
+            let legacyAddress = try? address.toLegacySubstrateAddress(for: chain.chainFormat)
+        else {
+            return
+        }
+
+        wireframe.presentUnifiedAddressPopup(
+            from: view,
+            newAddress: address,
+            legacyAddress: legacyAddress
+        )
+    }
+
     func setup() {
         interactor.setup()
     }

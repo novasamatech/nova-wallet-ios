@@ -15,6 +15,7 @@ protocol AssetReceivePresenterProtocol: AnyObject {
     func set(qrCodeSize: CGSize)
     func share()
     func copyAddress()
+    func viewAddressFormats()
 }
 
 protocol AssetReceiveInteractorInputProtocol: AnyObject {
