@@ -35,7 +35,7 @@ struct UnifiedAddressPopupViewFactory {
 
         let preferredSize = CGSize(
             width: .zero,
-            height: 392
+            height: 408
         )
 
         view.modalTransitioningFactory = factory
