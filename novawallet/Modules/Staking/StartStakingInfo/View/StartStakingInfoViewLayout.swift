@@ -145,7 +145,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             url: model.url,
             urlText: model.urlName,
             in: model.text,
-            iconSize: CGSize(width: 20.0, height: 20.0),
+            style: .regularCalloutSecondary,
             linkFont: .semiBoldCallout
         )
         addArrangedSubview(wikiView)
@@ -157,7 +157,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             url: model.url,
             urlText: model.urlName,
             in: model.text,
-            iconSize: CGSize(width: 20.0, height: 20.0),
+            style: .regularCalloutSecondary,
             linkFont: .semiBoldCallout
         )
         addArrangedSubview(termsView)
@@ -295,5 +295,6 @@ extension StartStakingInfoViewLayout {
         static let wikiAndTermsSpacing: CGFloat = 16
         static let actionViewHeight: CGFloat = UIConstants.actionHeight
         static let footerBorderWidth: CGFloat = 1
+        static let linkChevronSize: CGFloat = 20.0
     }
 }

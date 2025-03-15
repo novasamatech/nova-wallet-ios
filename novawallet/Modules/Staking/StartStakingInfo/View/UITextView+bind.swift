@@ -6,41 +6,38 @@ extension UITextView {
         url: URL,
         urlText: String,
         in text: String,
-        iconSize: CGSize?,
+        style: UITextView.Style,
+        showsLinkChevron: Bool = true,
         linkFont: UIFont? = nil
     ) {
-        let font = self.font ?? UIFont.regularCallout
-
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
 
         let attributedString = NSMutableAttributedString(
             string: text,
             attributes: [
-                .font: font,
+                .font: style.font,
                 .paragraphStyle: paragraphStyle,
-                .foregroundColor: textColor ?? R.color.colorTextSecondary()!
+                .foregroundColor: style.textColor
             ]
         )
 
         if let range = text.range(of: urlText) {
-            let nsRange = NSRange(range, in: text)
+            let linkFont = linkFont ?? style.font
 
+            let nsRange = NSRange(range, in: text)
             var nsRangeLength = nsRange.length
 
-            if let iconSize {
-                let imageAttachment = NSTextAttachment()
-                imageAttachment.image = R.image.iconLinkChevron()!
-                let centerImageY = 2 * font.descender - iconSize.height / 2 + font.capHeight
-                imageAttachment.bounds = .init(origin: .init(x: 0, y: centerImageY), size: iconSize)
-                attributedString.append(.init(attachment: imageAttachment))
+            if showsLinkChevron {
+                let attachment = createChevronAttachment(font: linkFont)
 
+                attributedString.append(attachment)
                 nsRangeLength += 1
             }
 
             attributedString.addAttribute(
                 .font,
-                value: linkFont ?? font,
+                value: linkFont,
                 range: nsRange
             )
             attributedString.addAttributes(
@@ -53,6 +50,17 @@ extension UITextView {
         }
 
         attributedText = attributedString
+    }
+
+    private func createChevronAttachment(font: UIFont) -> NSAttributedString {
+        let size = CGSize(width: font.lineHeight, height: font.lineHeight)
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = R.image.iconLinkChevron()!
+
+        let centerImageY = 2 * font.descender - size.height / 2 + font.capHeight
+        imageAttachment.bounds = CGRect(origin: .init(x: 0, y: centerImageY), size: size)
+
+        return NSAttributedString(attachment: imageAttachment)
     }
 }
 
@@ -314,5 +322,15 @@ extension UITextView.Style {
     static let boldLargePrimary = UITextView.Style(
         textColor: R.color.colorTextPrimary()!,
         font: .boldLargeTitle
+    )
+
+    static let regularCalloutSecondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary()!,
+        font: .regularCallout
+    )
+
+    static let semiboldCalloutSecondary = UITextView.Style(
+        textColor: R.color.colorTextSecondary()!,
+        font: .semiBoldCallout
     )
 }

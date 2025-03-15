@@ -4,7 +4,6 @@ import SoraUI
 final class UnifiedAddressPopupViewLayout: UIView {
     private let titleValueView: GenericMultiValueView<UITextView> = .create { view in
         view.valueTop.apply(style: .boldTitle3Primary)
-        view.valueBottom.apply(style: .footnoteSecondary)
         view.valueBottom.textAlignment = .center
 
         view.valueBottom.textAlignment = .center
@@ -120,16 +119,12 @@ private extension UnifiedAddressPopupViewLayout {
         backgroundColor = R.color.colorBottomSheetBackground()
     }
 
-    func setDescription(
-        text: String,
-        wikiText: String,
-        wikiURL: URL
-    ) {
+    func setDescription(viewModel: UnifiedAddressPopup.ViewModel) {
         subtitleTextView.bind(
-            url: wikiURL,
-            urlText: wikiText,
-            in: [text, wikiText].joined(with: .space),
-            iconSize: CGSize(width: 16, height: 16)
+            url: viewModel.wikiURL,
+            urlText: viewModel.wikiText,
+            in: [viewModel.text, viewModel.wikiText].joined(with: .space),
+            style: .footnoteSecondary
         )
     }
 }
@@ -140,11 +135,7 @@ extension UnifiedAddressPopupViewLayout {
     func bind(_ viewModel: UnifiedAddressPopup.ViewModel) {
         titleLabel.text = viewModel.titleText
 
-        setDescription(
-            text: viewModel.subtitleText,
-            wikiText: viewModel.wikiText,
-            wikiURL: viewModel.wikiURL
-        )
+        setDescription(viewModel: viewModel)
 
         newAddressContainer.bind(with: viewModel.newAddress)
         legacyAddressContainer.bind(with: viewModel.legacyAddress)
@@ -164,6 +155,7 @@ private extension UnifiedAddressPopupViewLayout {
     enum Constants {
         static let iconSize: CGFloat = 24.0
         static let addressContainerHeight: CGFloat = 64.0
+        static let chevronIconSize: CGFloat = 16.0
 
         static let titleValueSpacing: CGFloat = 8.0
         static let addressContainerSpacing: CGFloat = 12.0
