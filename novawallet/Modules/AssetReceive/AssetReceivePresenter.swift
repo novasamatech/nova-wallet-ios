@@ -122,7 +122,7 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
             return
         }
 
-        wireframe.copyAddress(
+        wireframe.copyAddressCheckingFormat(
             from: view,
             address: address,
             chain: chain,

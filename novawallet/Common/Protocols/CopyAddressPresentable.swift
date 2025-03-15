@@ -17,7 +17,7 @@ extension CopyAddressPresentable where Self: ModalAlertPresenting {
     ) {
         UIPasteboard.general.string = address
 
-        let title = R.string.localizable.commonAddressCoppied(preferredLanguages: locale.rLanguages)
+        let title = R.string.localizable.commonCopied(preferredLanguages: locale.rLanguages)
 
         presentSuccessNotification(
             title,
@@ -27,7 +27,7 @@ extension CopyAddressPresentable where Self: ModalAlertPresenting {
 }
 
 extension CopyAddressPresentable where Self: ModalAlertPresenting & UnifiedAddressPopupPresentable {
-    func copyAddress(
+    func copyAddressCheckingFormat(
         from view: ControllerBackedProtocol?,
         address: String,
         chain: ChainModel,
@@ -44,13 +44,10 @@ extension CopyAddressPresentable where Self: ModalAlertPresenting & UnifiedAddre
                 legacyAddress: legacyAddress
             )
         } else {
-            UIPasteboard.general.string = address
-
-            let title = R.string.localizable.commonAddressCoppied(preferredLanguages: locale.rLanguages)
-
-            presentSuccessNotification(
-                title,
-                from: view
+            copyAddress(
+                from: view,
+                address: address,
+                locale: locale
             )
         }
     }
