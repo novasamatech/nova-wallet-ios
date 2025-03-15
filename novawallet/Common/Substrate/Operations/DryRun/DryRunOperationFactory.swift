@@ -5,7 +5,7 @@ import Operation_iOS
 protocol DryRunOperationFactoryProtocol {
     func createDryRunCallWrapper<A>(
         _ call: RuntimeCall<A>,
-        origin: DryRun.Origin,
+        origin: RuntimeCallOrigin,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<JSON>
 }
@@ -28,7 +28,7 @@ final class DryRunOperationFactory {
 extension DryRunOperationFactory: DryRunOperationFactoryProtocol {
     func createDryRunCallWrapper<A>(
         _ call: RuntimeCall<A>,
-        origin: DryRun.Origin,
+        origin: RuntimeCallOrigin,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<JSON> {
         do {

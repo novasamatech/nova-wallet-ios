@@ -1,6 +1,6 @@
 import Foundation
 
-extension XcmTransfers: XcmTransfersProtocol {
+extension XcmLegacyTransfers: XcmTransfersProtocol {
     func getAssetTransfer(
         from chainAssetId: ChainAssetId,
         destinationChainId: ChainModel.Id

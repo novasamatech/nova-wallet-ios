@@ -68,8 +68,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             )
 
             let feeWrapper = operationFactory.estimateFeeOperation({ builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
-                return try callClosure(builder)
+                let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                return try collector.addingToExtrinsic(builder: builder)
             }, payingIn: request.originFeeAsset)
 
             feeWrapper.addDependency(wrapper: callBuilderWrapper)
@@ -131,8 +131,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             )
 
             let submitWrapper = operationFactory.submit({ builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
-                return try callClosure(builder)
+                let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                return try collector.addingToExtrinsic(builder: builder)
             }, signer: signer, payingIn: request.originFeeAsset)
 
             submitWrapper.addDependency(wrapper: callBuilderWrapper)
@@ -140,8 +140,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             submitWrapper.targetOperation.completionBlock = {
                 do {
                     let txHash = try submitWrapper.targetOperation.extractNoCancellableResultData()
-                    let callPath = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().1
-                    let extrinsicResult = XcmSubmitExtrinsic(txHash: txHash, callPath: callPath)
+                    let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                    let extrinsicResult = XcmSubmitExtrinsic(txHash: txHash, callPath: collector.callPath)
 
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .success(extrinsicResult))
                 } catch {

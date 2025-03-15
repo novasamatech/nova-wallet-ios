@@ -770,6 +770,14 @@
 		0CA8AD672CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD602CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift */; };
 		0CA8AD692CE0904D00ED9746 /* XcmDepositMonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD682CE0904D00ED9746 /* XcmDepositMonitoringService.swift */; };
 		0CA8AF1E2D85450800DB4E6A /* DryRun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF1D2D85450800DB4E6A /* DryRun.swift */; };
+		0CA8AF212D85E6E300DB4E6A /* RuntimeCallBuilding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF202D85E6E300DB4E6A /* RuntimeCallBuilding.swift */; };
+		0CA8AF232D85E8E800DB4E6A /* RuntimeCallOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */; };
+		0CA8AF252D85EB5500DB4E6A /* UtilityBatchType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF242D85EB5500DB4E6A /* UtilityBatchType.swift */; };
+		0CA8AF272D85F16900DB4E6A /* RuntimeCall+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */; };
+		0CA8AF2B2D862CE100DB4E6A /* DryRunBasedFeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */; };
+		0CA8AF2F2D86364100DB4E6A /* RuntimeCallCollecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */; };
+		0CA8AF312D86412400DB4E6A /* XcmTransfersSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */; };
+		0CA8AF332D86419400DB4E6A /* XcmTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */; };
 		0CA957222B6A507A009AD757 /* HydraSwapParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */; };
 		0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957242B6A566B009AD757 /* HydraDx+Call.swift */; };
 		0CAB674C2D49136100E3A844 /* StakingClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */; };
@@ -2531,8 +2539,8 @@
 		84117076285B0F1F006F4DFB /* XcmAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117075285B0F1F006F4DFB /* XcmAsset.swift */; };
 		84117078285B1050006F4DFB /* XcmAssetTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117077285B1050006F4DFB /* XcmAssetTransfer.swift */; };
 		8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84117079285B10F5006F4DFB /* XcmAssetTransferFee.swift */; };
-		8411707C285B1214006F4DFB /* XcmTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8411707B285B1214006F4DFB /* XcmTransfers.swift */; };
-		8411707F285B15E0006F4DFB /* XcmTransfersSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8411707E285B15E0006F4DFB /* XcmTransfersSyncService.swift */; };
+		8411707C285B1214006F4DFB /* XcmLegacyTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8411707B285B1214006F4DFB /* XcmLegacyTransfers.swift */; };
+		8411707F285B15E0006F4DFB /* XcmGenericTransfersSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8411707E285B15E0006F4DFB /* XcmGenericTransfersSyncService.swift */; };
 		8412219B28F04EA600715C82 /* GovMetadataLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412219A28F04EA600715C82 /* GovMetadataLocalSubscriptionFactory.swift */; };
 		8412219E28F0514400715C82 /* ReferendumsMetadataPreviewProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412219D28F0514400715C82 /* ReferendumsMetadataPreviewProviderSource.swift */; };
 		841221A028F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412219F28F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift */; };
@@ -6511,6 +6519,14 @@
 		0CA8AD602CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateExtrinsicStatus.swift; sourceTree = "<group>"; };
 		0CA8AD682CE0904D00ED9746 /* XcmDepositMonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDepositMonitoringService.swift; sourceTree = "<group>"; };
 		0CA8AF1D2D85450800DB4E6A /* DryRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DryRun.swift; sourceTree = "<group>"; };
+		0CA8AF202D85E6E300DB4E6A /* RuntimeCallBuilding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCallBuilding.swift; sourceTree = "<group>"; };
+		0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCallOrigin.swift; sourceTree = "<group>"; };
+		0CA8AF242D85EB5500DB4E6A /* UtilityBatchType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityBatchType.swift; sourceTree = "<group>"; };
+		0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCall+Init.swift"; sourceTree = "<group>"; };
+		0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DryRunBasedFeeTests.swift; sourceTree = "<group>"; };
+		0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCallCollecting.swift; sourceTree = "<group>"; };
+		0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersSyncService.swift; sourceTree = "<group>"; };
+		0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfers.swift; sourceTree = "<group>"; };
 		0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParamsService.swift; sourceTree = "<group>"; };
 		0CA957242B6A566B009AD757 /* HydraDx+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+Call.swift"; sourceTree = "<group>"; };
 		0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimRewardsProtocols.swift; sourceTree = "<group>"; };
@@ -8217,8 +8233,8 @@
 		84117075285B0F1F006F4DFB /* XcmAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAsset.swift; sourceTree = "<group>"; };
 		84117077285B1050006F4DFB /* XcmAssetTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetTransfer.swift; sourceTree = "<group>"; };
 		84117079285B10F5006F4DFB /* XcmAssetTransferFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetTransferFee.swift; sourceTree = "<group>"; };
-		8411707B285B1214006F4DFB /* XcmTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfers.swift; sourceTree = "<group>"; };
-		8411707E285B15E0006F4DFB /* XcmTransfersSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersSyncService.swift; sourceTree = "<group>"; };
+		8411707B285B1214006F4DFB /* XcmLegacyTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmLegacyTransfers.swift; sourceTree = "<group>"; };
+		8411707E285B15E0006F4DFB /* XcmGenericTransfersSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmGenericTransfersSyncService.swift; sourceTree = "<group>"; };
 		8412219A28F04EA600715C82 /* GovMetadataLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovMetadataLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		8412219D28F0514400715C82 /* ReferendumsMetadataPreviewProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsMetadataPreviewProviderSource.swift; sourceTree = "<group>"; };
 		8412219F28F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovMetadataLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -12359,6 +12375,7 @@
 				0C2DA8AC2CC2B156001F79C8 /* AssetsExchangeTests.swift */,
 				0C2DA8AE2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift */,
 				0C03877B2D09A1AA000A2F24 /* MockAssetExchangePathCostEstimator.swift */,
+				0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */,
 			);
 			path = AssetsExchange;
 			sourceTree = "<group>";
@@ -13295,6 +13312,17 @@
 			path = ExtrinsicStatusService;
 			sourceTree = "<group>";
 		};
+		0CA8AF1F2D85E5B000DB4E6A /* Builder */ = {
+			isa = PBXGroup;
+			children = (
+				0CA8AF202D85E6E300DB4E6A /* RuntimeCallBuilding.swift */,
+				0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */,
+				0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */,
+				0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */,
+			);
+			path = Builder;
+			sourceTree = "<group>";
+		};
 		0CA957232B6A565D009AD757 /* HydraDx */ = {
 			isa = PBXGroup;
 			children = (
@@ -14017,6 +14045,7 @@
 			isa = PBXGroup;
 			children = (
 				0CFA161B2B0CE851007AF885 /* Utility+Calls.swift */,
+				0CA8AF242D85EB5500DB4E6A /* UtilityBatchType.swift */,
 			);
 			path = UtilityPallet;
 			sourceTree = "<group>";
@@ -17450,7 +17479,7 @@
 				84117075285B0F1F006F4DFB /* XcmAsset.swift */,
 				84117077285B1050006F4DFB /* XcmAssetTransfer.swift */,
 				84117079285B10F5006F4DFB /* XcmAssetTransferFee.swift */,
-				8411707B285B1214006F4DFB /* XcmTransfers.swift */,
+				8411707B285B1214006F4DFB /* XcmLegacyTransfers.swift */,
 				84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */,
 				84EBFCE3285E734C0006327E /* XcmTransferDestination.swift */,
 				84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */,
@@ -17470,6 +17499,7 @@
 				0C277DA32D829EDC004FF053 /* XcmDynamicAsset.swift */,
 				0C277DA52D829F33004FF053 /* XcmDynamicAssetTransfer.swift */,
 				0C277DA72D82A2F9004FF053 /* XcmDynamicTransfers+Protocol.swift */,
+				0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -17477,7 +17507,8 @@
 		8411707D285B15C8006F4DFB /* XcmService */ = {
 			isa = PBXGroup;
 			children = (
-				8411707E285B15E0006F4DFB /* XcmTransfersSyncService.swift */,
+				8411707E285B15E0006F4DFB /* XcmGenericTransfersSyncService.swift */,
+				0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */,
 			);
 			path = XcmService;
 			sourceTree = "<group>";
@@ -19055,6 +19086,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				0CA8AF1F2D85E5B000DB4E6A /* Builder */,
 				0C0F6DE52D423B3300943A7C /* MythosStaking */,
 				0CA957232B6A565D009AD757 /* HydraDx */,
 				0C495B8E2B42909600B8D339 /* Proxy */,
@@ -27457,6 +27489,7 @@
 				AEE4E37225ECF83F00D6DF31 /* StakingInfoTests.swift in Sources */,
 				E2F3E726280823CF00CF31B5 /* ETHAccountInjection.swift in Sources */,
 				F441BE13263986BE0096B67B /* ExtrinsicServiceTests.swift in Sources */,
+				0CA8AF2B2D862CE100DB4E6A /* DryRunBasedFeeTests.swift in Sources */,
 				843B6F4F28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift in Sources */,
 				0C8AF7B62B36C75400005AC9 /* Pdc20OperationTests.swift in Sources */,
 				0C0F6DAC2D3EB19D00943A7C /* MythosCollatorsTests.swift in Sources */,
@@ -27741,7 +27774,7 @@
 				845BB8B825E4465F00E5FCDC /* ExtrinsicService.swift in Sources */,
 				8482F625280C45340006C3A0 /* DisplayWalletViewModel.swift in Sources */,
 				846B748F28B41C6B00C39B93 /* ChainAccountTableViewCell.swift in Sources */,
-				8411707F285B15E0006F4DFB /* XcmTransfersSyncService.swift in Sources */,
+				8411707F285B15E0006F4DFB /* XcmGenericTransfersSyncService.swift in Sources */,
 				0C992C392B5187A800ACC129 /* EraStakersRemoteKey.swift in Sources */,
 				84BAD220293B574900C55C49 /* MultichainToken.swift in Sources */,
 				F4F2297C260DC05600ACFDB8 /* StakingRewardTokenUsdViewModel.swift in Sources */,
@@ -29639,7 +29672,7 @@
 				84D17ED828053E3200F7BAFF /* DAppFavoriteMapper.swift in Sources */,
 				8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */,
 				2D389B132C86FF7300256C7B /* VoteCardViewModel.swift in Sources */,
-				8411707C285B1214006F4DFB /* XcmTransfers.swift in Sources */,
+				8411707C285B1214006F4DFB /* XcmLegacyTransfers.swift in Sources */,
 				840D627A29CC362500D5E894 /* PriceDataMapper.swift in Sources */,
 				84BCC7182924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift in Sources */,
 				84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */,
@@ -29976,6 +30009,7 @@
 				84644A0725670B03004EAA4B /* BlockBackgroundView.swift in Sources */,
 				84D1ABD827E0A0600073C631 /* AssetStorageInfo.swift in Sources */,
 				AEA0C8B0267B82BA00F9666F /* SelectedValidatorListHeaderView.swift in Sources */,
+				0CA8AF232D85E8E800DB4E6A /* RuntimeCallOrigin.swift in Sources */,
 				AEA2C1BE2681E9DD0069492E /* ValidatorSearchViewController.swift in Sources */,
 				84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */,
 				8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */,
@@ -30949,6 +30983,7 @@
 				93434E8E407A6C63D8862A21 /* ChainAssetSelectionProtocols.swift in Sources */,
 				84E25BEC27E87D5400290BF1 /* TransferDataValidatorFactory.swift in Sources */,
 				8499FE7127BE214A00712589 /* StorageKeyDecodingOperation.swift in Sources */,
+				0CA8AF252D85EB5500DB4E6A /* UtilityBatchType.swift in Sources */,
 				0C0F6E312D46474C00943A7C /* MythosStakingErrorPresentable.swift in Sources */,
 				775F19532A5BDFB6009915B6 /* StartStakingInfoParachainPresenter.swift in Sources */,
 				84E8BA1C29FFB38600FD9F40 /* EthereumTransactionReceipt.swift in Sources */,
@@ -31472,6 +31507,7 @@
 				84E8BA0B29FF760400FD9F40 /* DAppExtrinsicBuilderOperationFactory.swift in Sources */,
 				8434B602298D363C00FACF4C /* GovernanceAddDelegationTracksViewController.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
+				0CA8AF332D86419400DB4E6A /* XcmTransfers.swift in Sources */,
 				8407716828CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift in Sources */,
 				2D4F55052CCA611200B65B76 /* AssetsSearchCollectionViewDelegate.swift in Sources */,
 				73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */,
@@ -31772,6 +31808,7 @@
 				2B287EEF431ED9FE9510BAA4 /* ReferendumFullDetailsPresenter.swift in Sources */,
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,
+				0CA8AF212D85E6E300DB4E6A /* RuntimeCallBuilding.swift in Sources */,
 				842D8B7C2A4179A000660005 /* ShimmeringAnimator.swift in Sources */,
 				0C90C6C02B4DAB440084B5C2 /* NestedExtrinsicCallMapper.swift in Sources */,
 				2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */,
@@ -32087,6 +32124,7 @@
 				844C3E692A07BC4500C4305F /* StackWalletAmountCell.swift in Sources */,
 				2D442CF12CD0F85400A0380F /* IconAppearanceDepending.swift in Sources */,
 				C29BA2F7EBAFED5D118E0C0C /* GovernanceRevokeDelegationConfirmViewFactory.swift in Sources */,
+				0CA8AF272D85F16900DB4E6A /* RuntimeCall+Init.swift in Sources */,
 				0C8FDBCA2CB10CB100775D7F /* MercuryoCardResourceProvider.swift in Sources */,
 				642FDAC7A745ECC92BFF0CC0 /* DelegationReferendumVotersProtocols.swift in Sources */,
 				AD877F7F77F9CB862DC7D5B3 /* DelegationReferendumVotersWireframe.swift in Sources */,
@@ -32139,6 +32177,7 @@
 				0154E387EC40EF553FC7BD02 /* StackingRewardFiltersProtocols.swift in Sources */,
 				3030DB7C067CC906E6794B1A /* StakingRewardFiltersWireframe.swift in Sources */,
 				2D4F55362CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift in Sources */,
+				0CA8AF2F2D86364100DB4E6A /* RuntimeCallCollecting.swift in Sources */,
 				77DAFF6D2B297DB500D4220C /* ProxyAccountMapper.swift in Sources */,
 				4C06C526C22782939922BEB0 /* StakingRewardFiltersPresenter.swift in Sources */,
 				3D798C32B3C960FC6216C8C9 /* StakingRewardFiltersViewController.swift in Sources */,
@@ -32737,6 +32776,7 @@
 				4168083DD8DFE723C738A873 /* MythosStkYourCollatorsViewFactory.swift in Sources */,
 				5786E683E29D17521A5BEEB6 /* BannersProtocols.swift in Sources */,
 				1C50003ECAFD943EB67B092D /* BannersWireframe.swift in Sources */,
+				0CA8AF312D86412400DB4E6A /* XcmTransfersSyncService.swift in Sources */,
 				D41AAE4BD2B4250443B1BAAF /* BannersPresenter.swift in Sources */,
 				137883A9CF55F9858E48BEF8 /* BannersInteractor.swift in Sources */,
 				0FB3F446C7DA3A1394EF94D5 /* BannersViewController.swift in Sources */,

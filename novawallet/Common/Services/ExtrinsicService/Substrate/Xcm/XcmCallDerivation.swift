@@ -3,14 +3,12 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-typealias XcmCallDeriviation = (ExtrinsicBuilderClosure, CallCodingPath)
-
 protocol XcmCallDerivating {
     func createTransferCallDerivationWrapper(
         for transferRequest: XcmUnweightedTransferRequest,
         transfers: XcmTransfersProtocol,
         maxWeight: BigUInt
-    ) -> CompoundOperationWrapper<XcmCallDeriviation>
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting>
 }
 
 final class XcmCallDerivator {
@@ -31,8 +29,8 @@ private extension XcmCallDerivator {
         callPathFactory: @escaping (String) -> CallCodingPath,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
         maxWeight _: BigUInt // TODO: Decide whether to leave unlimited
-    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
-        let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
+        let mapOperation = ClosureOperation<RuntimeCallCollecting> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
             let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
@@ -47,9 +45,9 @@ private extension XcmCallDerivator {
                 assets: assets,
                 feeAssetItem: 0,
                 weightLimit: .unlimited
-            )
+            ).runtimeCall(for: callPath)
 
-            return ({ try $0.adding(call: call.runtimeCall(for: callPath)) }, callPath)
+            return RuntimeCallCollector(call: call)
         }
 
         return CompoundOperationWrapper(targetOperation: mapOperation)
@@ -60,10 +58,10 @@ private extension XcmCallDerivator {
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
         maxWeight: BigUInt,
         runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
+        let mapOperation = ClosureOperation<RuntimeCallCollecting> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
             let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
@@ -143,7 +141,7 @@ private extension XcmCallDerivator {
         xcmTransfer: XcmAssetTransferProtocol,
         maxWeight: BigUInt,
         runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         switch xcmTransfer.type {
         case .xtokens:
             return createOrmlTransferMapping(
@@ -219,7 +217,7 @@ extension XcmCallDerivator: XcmCallDerivating {
         for transferRequest: XcmUnweightedTransferRequest,
         transfers: XcmTransfersProtocol,
         maxWeight: BigUInt
-    ) -> CompoundOperationWrapper<XcmCallDeriviation> {
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         do {
             let destChainId = transferRequest.destination.chain.chainId
             let originChainAssetId = transferRequest.origin.chainAssetId

@@ -51,17 +51,21 @@ extension XTokens {
         }
     }
 
+    enum TransferDerivationError: Error {
+        case callNotFound(CallCodingPath)
+    }
+
     static func appendTransferCall(
         asset: Xcm.VersionedMultiasset,
         destination: Xcm.VersionedMultilocation,
         weight: BigUInt,
         module: String,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> (ExtrinsicBuilderClosure, CallCodingPath) {
+    ) throws -> RuntimeCallCollecting {
         let path = CallCodingPath(moduleName: module, callName: XTokens.transferCallName)
 
         guard let callType = codingFactory.getCall(for: path) else {
-            return ({ $0 }, path)
+            throw TransferDerivationError.callNotFound(path)
         }
 
         let paramNameV1 = TransferCallV1.CodingKeys.destinationWeight.rawValue
@@ -72,17 +76,17 @@ extension XTokens {
         }
 
         if isV1 {
-            let call = TransferCallV1(asset: asset, destination: destination, destinationWeight: weight)
+            let args = TransferCallV1(asset: asset, destination: destination, destinationWeight: weight)
 
-            return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
+            return RuntimeCallCollector(call: RuntimeCall(path: path, args: args))
         } else {
-            let call = TransferCallV2(
+            let args = TransferCallV2(
                 asset: asset,
                 destination: destination,
                 destinationWeightLimit: .unlimited
             )
 
-            return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
+            return RuntimeCallCollector(call: RuntimeCall(path: path, args: args))
         }
     }
 }
