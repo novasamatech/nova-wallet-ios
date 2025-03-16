@@ -13,6 +13,9 @@ protocol XcmGenericTransfersSyncServiceProtocol: AnyObject, ApplicationServicePr
     var notificationQueue: DispatchQueue { get set }
 }
 
+typealias XcmLegacyTransfersSyncService = XcmGenericTransfersSyncService<XcmLegacyTransfers>
+typealias XcmDynamicTransfersSyncService = XcmGenericTransfersSyncService<XcmDynamicTransfers>
+
 final class XcmGenericTransfersSyncService<X: Decodable>: BaseSyncService, XcmGenericTransfersSyncServiceProtocol {
     typealias XcmTranferType = X
 

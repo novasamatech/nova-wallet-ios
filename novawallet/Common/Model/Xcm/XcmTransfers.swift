@@ -1,26 +1,8 @@
 import Foundation
 
 struct XcmTransfersResult {
-    let legacyTransfersResult: Result<XcmLegacyTransfers, Error>
-    let dynamicTransfersResult: Result<XcmDynamicTransfers, Error>
-
-    func transfersContainingTransfer(
-        from originChainAssetId: ChainAssetId,
-        destinationAssetId: ChainAssetId
-    ) -> Result<XcmTransfers, Error> {
-        let optDynamicTransfers = try? dynamicTransfersResult.get()
-
-        if
-            let dynamicTransfers = optDynamicTransfers,
-            dynamicTransfers.getAssetTransfer(
-                from: originChainAssetId,
-                destinationChainId: destinationAssetId
-            ) != nil {
-            return .success(.dynamic(dynamicTransfers))
-        }
-
-        return legacyTransfersResult.map { XcmTransfers.legacy($0) }
-    }
+    let legacy: XcmLegacyTransfers
+    let dynamic: XcmDynamicTransfers
 }
 
 enum XcmTransfers {
@@ -40,7 +22,7 @@ extension XcmTransfers: XcmTransfersProtocol {
                 destinationChainId: destinationChainId
             )
         case let .dynamic(dynamicTransfers):
-            return dynamicTransfers.getAssetTransfer(
+            dynamicTransfers.getAssetTransfer(
                 from: chainAssetId,
                 destinationChainId: destinationChainId
             )

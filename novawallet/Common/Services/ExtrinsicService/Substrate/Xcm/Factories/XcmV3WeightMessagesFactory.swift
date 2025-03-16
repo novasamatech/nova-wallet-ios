@@ -9,7 +9,7 @@ private extension XcmV3WeightMessagesFactory {
         from chainAsset: ChainAsset,
         destination: XcmTransferDestination,
         xcmTransfer: XcmAssetTransfer,
-        xcmTransfers: XcmTransfers,
+        xcmTransfers: XcmLegacyTransfers,
         multiasset: XcmV3.Multiasset
     ) throws -> Xcm.Message {
         let multilocation = modelFactory.createMultilocation(origin: chainAsset.chain, destination: destination)
@@ -29,7 +29,7 @@ private extension XcmV3WeightMessagesFactory {
     func createReserveWeightMessage(
         from chainAsset: ChainAsset,
         reserve: XcmTransferReserve,
-        xcmTransfers: XcmTransfers,
+        xcmTransfers: XcmLegacyTransfers,
         multiasset: XcmV3.Multiasset
     ) throws -> Xcm.Message? {
         guard let reserveFee = xcmTransfers.reserveFee(from: chainAsset.chainAssetId) else {

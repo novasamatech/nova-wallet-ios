@@ -36,7 +36,7 @@ final class XcmLegacyCrosschainFeeCalculator {
 
     func destinationExecutionFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers
+        xcmTransfers: XcmLegacyTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
@@ -82,7 +82,7 @@ final class XcmLegacyCrosschainFeeCalculator {
 
     func reserveExecutionFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers
+        xcmTransfers: XcmLegacyTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
@@ -244,7 +244,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
     func createDestinationFeeWrapper(
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers
+        xcmTransfers: XcmLegacyTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let feeInfo = xcmTransfers.destinationFee(
             from: request.origin.chainAssetId,
@@ -274,7 +274,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
     func createReserveFeeWrapper(
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers
+        xcmTransfers: XcmLegacyTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
             let error = XcmCrosschainFeeCalculatorError.noReserveFee(request.origin.chainAssetId)
@@ -296,7 +296,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createChainDeliveryFeeWrapper(
         for request: XcmDeliveryRequest,
-        xcmTransfers: XcmTransfers,
+        xcmTransfers: XcmLegacyTransfers,
         sendingFromOrigin: Bool
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
@@ -461,7 +461,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createExecutionFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
+        xcmTransfers: XcmLegacyTransfers,
         feeMessages: XcmWeightMessages
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         let destMsg = feeMessages.destination
@@ -503,7 +503,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createDeliveryFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
+        xcmTransfers: XcmLegacyTransfers,
         feeMessages: XcmWeightMessages
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
@@ -560,7 +560,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
     func crossChainFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers
+        xcmTransfers: XcmLegacyTransfers
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let destinationRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
