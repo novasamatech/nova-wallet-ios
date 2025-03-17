@@ -69,12 +69,11 @@ final class DAppBrowserStateDataSource {
                 return nil
             }
 
-            let genesisHash = try Data(hexString: chain.chainId)
             let name = wallet.name + " (\(chain.name))"
 
             return try createExtensionAccount(
                 for: chainAccount.accountId,
-                genesisHash: genesisHash,
+                genesisHash: chain.genesisHash,
                 name: name,
                 chainFormat: chain.chainFormat,
                 rawCryptoType: chainAccount.cryptoType

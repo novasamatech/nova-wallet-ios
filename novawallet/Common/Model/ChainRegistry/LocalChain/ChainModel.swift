@@ -606,6 +606,14 @@ extension ChainModel {
         let priceIds = assets.compactMap(\.priceId)
         return Set(priceIds)
     }
+
+    var genesisHash: Data? {
+        guard !isPureEvm else {
+            return nil
+        }
+
+        return try? Data(hexString: chainId)
+    }
 }
 
 extension ChainModel.AddressPrefix {

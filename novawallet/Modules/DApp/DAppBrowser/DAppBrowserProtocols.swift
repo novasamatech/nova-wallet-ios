@@ -31,9 +31,9 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
     func process(stateRender: DAppBrowserTabRenderProtocol)
 
-    func actionFavorite(page: DAppBrowserPage)
+    func actionFavorite()
 
-    func activateSearch(with query: String?)
+    func activateSearch()
     func showSettings(using isDesktop: Bool)
     func close(stateRender: DAppBrowserTabRenderProtocol)
     func showTabs(stateRender: DAppBrowserTabRenderProtocol)
@@ -61,6 +61,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func save(settings: DAppGlobalSettings)
     func saveTabIfNeeded()
     func saveLastTabState(render: DAppBrowserTabRenderProtocol)
+    func close()
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {

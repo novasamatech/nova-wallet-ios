@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 final class MythosStkClaimRewardsPresenter {
-    weak var view: StakingGenericRewardsViewProtocol?
+    weak var view: MythosStkClaimRewardsViewProtocol?
     let wireframe: MythosStkClaimRewardsWireframeProtocol
     let interactor: MythosStkClaimRewardsInteractorInputProtocol
     let chainAsset: ChainAsset
@@ -18,6 +18,9 @@ final class MythosStkClaimRewardsPresenter {
     var claimableRewards: MythosStakingClaimableRewards?
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
+    var details: MythosStakingDetails?
+    var autoCompound: Percent?
+    var claimStrategy: StakingClaimRewardsStrategy = .restake
 
     init(
         interactor: MythosStkClaimRewardsInteractorInputProtocol,
@@ -37,6 +40,21 @@ final class MythosStkClaimRewardsPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+}
+
+private extension MythosStkClaimRewardsPresenter {
+    private func getClaimRewardsModel() -> MythosStkClaimRewardsModel? {
+        guard let details, let claimableRewards else {
+            return nil
+        }
+
+        return MythosStkClaimRewardsState(
+            details: details,
+            claimableRewards: claimableRewards,
+            claimStrategy: claimStrategy,
+            autoCompound: autoCompound
+        ).deriveModel()
     }
 
     private func provideAmountViewModel() {
@@ -87,26 +105,48 @@ final class MythosStkClaimRewardsPresenter {
         view?.didReceiveFee(viewModel: viewModel)
     }
 
+    private func provideClaimStrategy() {
+        view?.didReceiveClaimStrategy(viewModel: claimStrategy)
+    }
+
     private func updateView() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideFee()
+        provideClaimStrategy()
     }
 
     private func refreshFee() {
         fee = nil
         provideFee()
 
-        interactor.estimateFee()
+        guard let model = getClaimRewardsModel() else {
+            return
+        }
+
+        interactor.estimateFee(for: model)
     }
 }
 
-extension MythosStkClaimRewardsPresenter: StakingGenericRewardsPresenterProtocol {
+extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsPresenterProtocol {
     func setup() {
         updateView()
 
         interactor.setup()
+
+        refreshFee()
+    }
+
+    func toggleClaimStrategy() {
+        switch claimStrategy {
+        case .freeBalance:
+            claimStrategy = .restake
+        case .restake:
+            claimStrategy = .freeBalance
+        }
+
+        interactor.save(claimStrategy: claimStrategy)
 
         refreshFee()
     }
@@ -123,9 +163,13 @@ extension MythosStkClaimRewardsPresenter: StakingGenericRewardsPresenterProtocol
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in
+            guard let model = self?.getClaimRewardsModel() else {
+                return
+            }
+
             self?.view?.didStartLoading()
 
-            self?.interactor.submit()
+            self?.interactor.submit(model: model)
         }
     }
 
@@ -167,6 +211,32 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputP
         self.claimableRewards = claimableRewards
 
         provideAmountViewModel()
+        refreshFee()
+    }
+
+    func didReceiveStakingDetails(_ stakingDetails: MythosStakingDetails?) {
+        logger.debug("Staking details: \(String(describing: stakingDetails))")
+
+        details = stakingDetails
+
+        refreshFee()
+    }
+
+    func didReceiveClaimStragegy(_ claimStrategy: StakingClaimRewardsStrategy) {
+        logger.debug("Claim strategy: \(claimStrategy)")
+
+        self.claimStrategy = claimStrategy
+
+        provideClaimStrategy()
+        refreshFee()
+    }
+
+    func didReceiveAutoCompound(_ autoCompound: Percent?) {
+        logger.debug("Auto compound: \(String(describing: autoCompound))")
+
+        self.autoCompound = autoCompound
+
+        refreshFee()
     }
 
     func didReceiveFeeResult(_ result: Result<ExtrinsicFeeProtocol, Error>) {

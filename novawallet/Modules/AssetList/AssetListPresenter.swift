@@ -481,6 +481,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showTokensManage(from: view)
     }
 
+    func presentCard() {
+        wireframe.showCard(from: view)
+    }
+
     func presentLocks() {
         guard
             checkNonZeroLocks(),

@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Jumlah yang tersisa dalam penyetoran terlalu sedikit";
 "staking.unstake.no.space.message" = "Saat ini tidak ada ruang kosong dalam antrian penarikan dana untuk pool Anda. Harap coba lagi dalam %@";
 "staking.unstake.no.space.title" = "Terlalu banyak orang mencabut staking dari pool Anda";
-"staking.restake.message" = "Token Anda akan ditambahkan kembali ke staking";
 "staking.claim.rewards" = "Klaim hadiah";
 "common.recommended" = "Disarankan";
 "staking.setup.amount.direct.type.subtitle" = "Dipilih: %li (maks %li)";
@@ -1799,3 +1798,14 @@
 "chart.period.month" = "Bulan Lalu";
 "chart.period.year" = "Tahun Lalu";
 "chart.period.max" = "Sepanjang Masa";
+"common.pay" = "Bayar";
+"common.card.issued" = "Kartu diterbitkan";
+"card.top.up.dot.setup.title" = "Isi ulang kartu dengan DOT";
+"common.manage.debit.card" = "Kelola Kartu Debit";
+"common.estimated.timer" = "Perkiraan ~%@";
+"card.open.pending.sheet.title" = "Kartu Anda sedang diterbitkan!";
+"card.open.pending.sheet.message" = "Ini dapat memakan waktu hingga %@.\nJendela ini akan ditutup secara otomatis.";
+"card.open.failed.alert.title" = "Hubungi dukungan";
+"card.open.failed.alert.message" = "Silakan hubungi support@novawallet.io. Sertakan alamat email yang Anda gunakan untuk menerbitkan kartu.";
+"card.topup.pending.sheet.title" = "Kartu Anda sedang dibiayai!";
+"staking.restake.message" = "Rewards Anda akan ditambahkan ke staking Anda";

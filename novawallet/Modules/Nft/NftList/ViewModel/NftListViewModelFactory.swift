@@ -282,15 +282,10 @@ final class NftListViewModelFactory {
             label = createUnlimitedIssuanceLabel(for: locale)
         }
 
-        let mediaViewModel: NftMediaViewModelProtocol?
-
-        if
-            let imageReference = model.media,
-            let imageUrl = nftDownloadService.imageUrl(from: imageReference) {
-            mediaViewModel = NftImageViewModel(url: imageUrl)
-        } else {
-            mediaViewModel = nil
-        }
+        let mediaViewModel = KodadotMediaViewModelFactory.createMediaViewModel(
+            from: model.media,
+            using: nftDownloadService
+        )
 
         return NftListStaticViewModel(name: name, label: label, media: mediaViewModel)
     }

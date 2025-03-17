@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Zbyt mała kwota pozostaje w Stake";
 "staking.unstake.no.space.message" = "Obecnie nie ma wolnych miejsc w kolejce do unstake w twojej puli. Spróbuj ponownie za %@";
 "staking.unstake.no.space.title" = "Zbyt wiele osób wycofuje środki z twojej puli";
-"staking.restake.message" = "Twoje tokeny zostaną ponownie dodane do stake";
 "staking.claim.rewards" = "Odbierz nagrody";
 "common.recommended" = "Polecane";
 "staking.setup.amount.direct.type.subtitle" = "Wybrane: %li (maks. %li)";
@@ -1799,3 +1798,14 @@
 "chart.period.month" = "Ostatni miesiąc";
 "chart.period.year" = "Ostatni rok";
 "chart.period.max" = "Cały czas";
+"common.pay" = "Zapłać";
+"common.card.issued" = "Karta wydana";
+"card.top.up.dot.setup.title" = "Doładuj kartę DOT";
+"common.manage.debit.card" = "Zarządzaj kartą debetową";
+"common.estimated.timer" = "Szacowany ~%@";
+"card.open.pending.sheet.title" = "Twoja karta jest w trakcie wydawania!";
+"card.open.pending.sheet.message" = "Może to potrwać do %@.\nTo okno zostanie zamknięte automatycznie.";
+"card.open.failed.alert.title" = "Skontaktuj się z pomocą techniczną";
+"card.open.failed.alert.message" = "Proszę skontaktować się z support@novawallet.io. Dołącz adres e-mail, którego użyłeś do wydania karty.";
+"card.topup.pending.sheet.title" = "Twoja karta jest doładowywana!";
+"staking.restake.message" = "Twoje nagrody zostaną dodane do twojego stakingu";
