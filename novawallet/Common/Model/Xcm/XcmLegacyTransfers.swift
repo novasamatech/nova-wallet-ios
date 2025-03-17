@@ -55,10 +55,10 @@ struct XcmLegacyTransfers: Decodable {
         return Set(assetIds)
     }
 
-    func getReserveTransfering(from chainId: ChainModel.Id, assetId: AssetModel.Id) -> ChainModel.Id? {
+    func getReserveChainId(for chainAssetId: ChainAssetId) -> ChainModel.Id? {
         guard
-            let chain = chains.first(where: { $0.chainId == chainId }),
-            let asset = chain.assets.first(where: { $0.assetId == assetId }),
+            let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }),
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
             let assetLocation = assetsLocation[asset.assetLocation] else {
             return nil
         }

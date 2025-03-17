@@ -5,6 +5,7 @@ struct XcmUnweightedTransferRequest {
     let origin: ChainAsset
     let destination: XcmTransferDestination
     let reserve: XcmTransferReserve
+    let metadata: XcmTransferMetadata
     let amount: BigUInt
 
     var isNonReserveTransfer: Bool {
@@ -15,11 +16,13 @@ struct XcmUnweightedTransferRequest {
         origin: ChainAsset,
         destination: XcmTransferDestination,
         reserve: XcmTransferReserve,
+        metadata: XcmTransferMetadata,
         amount: BigUInt
     ) {
         self.origin = origin
         self.destination = destination
         self.reserve = reserve
+        self.metadata = metadata
         self.amount = amount
     }
 }

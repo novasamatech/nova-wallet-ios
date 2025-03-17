@@ -22,7 +22,7 @@ struct XcmMultilocationAssetParams {
     let reserve: ChainModel
     let destination: XcmTransferDestination
     let amount: BigUInt
-    let xcmTransfers: XcmTransfersProtocol
+    let metadata: XcmTransferMetadata
 }
 
 final class XcmModelFactory {}

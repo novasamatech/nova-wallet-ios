@@ -185,21 +185,10 @@ extension XcmV3ModelFactory: XcmModelFactoryProtocol {
 
         let originChainAssetId = originChainAsset.chainAssetId
 
-        guard params.xcmTransfers.getAssetTransfer(
-            from: originChainAssetId,
-            destinationChainId: params.destination.chain.chainId
-        ) != nil else {
-            throw XcmModelError.noDestinationAssetFound(originChainAssetId)
-        }
-
-        guard let reservePath = params.xcmTransfers.getAssetReservePath(for: originChainAsset) else {
-            throw XcmModelError.noReserve(originChainAssetId)
-        }
-
         let multiasset = try createVersionedMultiasset(
             origin: originChainAsset.chain,
             reserve: params.reserve,
-            assetLocation: reservePath,
+            assetLocation: params.metadata.reserve.path,
             amount: params.amount,
             version: version.multiAssets
         )

@@ -4,4 +4,5 @@ struct XcmTransferParties {
     let origin: ChainAsset
     let destination: XcmTransferDestination
     let reserve: XcmTransferReserve
+    let metadata: XcmTransferMetadata
 }

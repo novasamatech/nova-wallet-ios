@@ -19,7 +19,6 @@ typealias XcmExtrinsicSubmitClosure = (XcmSubmitExtrinsicResult) -> Void
 protocol XcmTransferServiceProtocol {
     func estimateOriginFee(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferOriginFeeClosure
     )
@@ -27,14 +26,12 @@ protocol XcmTransferServiceProtocol {
     // Note: weight of the result contains max between reserve and destination weights
     func estimateCrossChainFee(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     )
 
     func submit(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmExtrinsicSubmitClosure
@@ -44,7 +41,6 @@ protocol XcmTransferServiceProtocol {
 extension XcmTransferService: XcmTransferServiceProtocol {
     func estimateOriginFee(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferOriginFeeClosure
     ) {
@@ -54,7 +50,6 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             let callBuilderWrapper = callDerivator.createTransferCallDerivationWrapper(
                 for: unweighted,
-                transfers: xcmTransfers,
                 maxWeight: maxWeight
             )
 
@@ -90,13 +85,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
     func estimateCrossChainFee(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         let wrapper = crosschainFeeCalculator.crossChainFeeWrapper(
-            request: request,
-            xcmTransfers: xcmTransfers
+            request: request
         )
 
         execute(
@@ -109,7 +102,6 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
     func submit(
         request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmExtrinsicSubmitClosure
@@ -117,7 +109,6 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         do {
             let callBuilderWrapper = callDerivator.createTransferCallDerivationWrapper(
                 for: request.unweighted,
-                transfers: xcmTransfers,
                 maxWeight: request.maxWeight
             )
 

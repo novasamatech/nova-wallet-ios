@@ -1,7 +1,7 @@
 import Foundation
 
 protocol XcmTransfersSyncServiceProtocol: AnyObject, ApplicationServiceProtocol {
-    var notificationCallback: ((Result<XcmTransfersResult, Error>) -> Void)? { get set }
+    var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)? { get set }
     var notificationQueue: DispatchQueue { get set }
 }
 
@@ -12,7 +12,7 @@ final class XcmTransfersSyncService {
     private var legacyResult: Result<XcmLegacyTransfers, Error>?
     private var dynamicResult: Result<XcmDynamicTransfers, Error>?
 
-    var notificationCallback: ((Result<XcmTransfersResult, Error>) -> Void)?
+    var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)?
     var notificationQueue: DispatchQueue = .main
 
     private let syncQueue = DispatchQueue(label: "com.nova.wallet.xcm.sync.service")
@@ -27,7 +27,7 @@ final class XcmTransfersSyncService {
 }
 
 private extension XcmTransfersSyncService {
-    func getResult() -> Result<XcmTransfersResult, Error>? {
+    func getResult() -> Result<XcmTransfers, Error>? {
         guard let legacyResult = legacyResult, let dynamicResult = dynamicResult else {
             return nil
         }
@@ -36,7 +36,7 @@ private extension XcmTransfersSyncService {
             let legacy = try legacyResult.get()
             let dynamic = try dynamicResult.get()
 
-            let transfers = XcmTransfersResult(legacy: legacy, dynamic: dynamic)
+            let transfers = XcmTransfers(legacyTransfers: legacy, dynamicTransfers: dynamic)
 
             return .success(transfers)
         } catch {

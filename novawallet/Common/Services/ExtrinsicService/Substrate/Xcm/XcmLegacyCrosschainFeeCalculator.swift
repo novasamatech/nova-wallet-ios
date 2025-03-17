@@ -3,6 +3,12 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
+// TODO: Review errors
+enum XcmLegacyCrosschainFeeCalculatorError: Error {
+    case unsupportedFee(XcmTransferMetadata.Fee)
+    case deliveryFeeNotAvailable
+}
+
 final class XcmLegacyCrosschainFeeCalculator {
     static let weightPerSecond = BigUInt(1_000_000_000_000)
 
@@ -35,8 +41,7 @@ final class XcmLegacyCrosschainFeeCalculator {
     }
 
     func destinationExecutionFeeWrapper(
-        request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers
+        request: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
@@ -51,12 +56,17 @@ final class XcmLegacyCrosschainFeeCalculator {
             ) {
                 let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
 
+                guard case let .legacy(feeParams) = request.metadata.fee else {
+                    throw XcmLegacyCrosschainFeeCalculatorError.unsupportedFee(request.metadata.fee)
+                }
+
                 let params = XcmWeightMessagesParams(
                     chainAsset: request.origin,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
-                    xcmTransfers: xcmTransfers
+                    feeParams: feeParams,
+                    reserveParams: request.metadata.reserve
                 )
 
                 let feeMessages = try self.xcmWeightMessagesFactory.createWeightMessages(
@@ -67,7 +77,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 return self.createDestinationFeeWrapper(
                     for: feeMessages.destination,
                     request: request,
-                    xcmTransfers: xcmTransfers
+                    destinationFee: feeParams.destinationExecution
                 )
             }
 
@@ -82,7 +92,7 @@ final class XcmLegacyCrosschainFeeCalculator {
 
     func reserveExecutionFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers
+        feeParams: XcmTransferMetadata.LegacyFee
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
@@ -97,12 +107,17 @@ final class XcmLegacyCrosschainFeeCalculator {
             ) {
                 let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
 
+                guard case let .legacy(feeParams) = request.metadata.fee else {
+                    throw XcmLegacyCrosschainFeeCalculatorError.unsupportedFee(request.metadata.fee)
+                }
+
                 let params = XcmWeightMessagesParams(
                     chainAsset: request.origin,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
-                    xcmTransfers: xcmTransfers
+                    feeParams: feeParams,
+                    reserveParams: request.metadata.reserve
                 )
 
                 let feeMessages = try self.xcmWeightMessagesFactory.createWeightMessages(
@@ -110,14 +125,14 @@ final class XcmLegacyCrosschainFeeCalculator {
                     version: version
                 )
 
-                guard let reserveMessage = feeMessages.reserve else {
+                guard let reserveMessage = feeMessages.reserve, let reserveFee = feeParams.reserveExecution else {
                     throw XcmCrosschainFeeCalculatorError.reserveFeeNotAvailable
                 }
 
                 return self.createReserveFeeWrapper(
                     for: reserveMessage,
                     request: request,
-                    xcmTransfers: xcmTransfers
+                    reserveFee: reserveFee
                 )
             }
 
@@ -244,91 +259,59 @@ private extension XcmLegacyCrosschainFeeCalculator {
     func createDestinationFeeWrapper(
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers
+        destinationFee: XcmTransferMetadata.LegacyFeeDetails
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        guard let feeInfo = xcmTransfers.destinationFee(
-            from: request.origin.chainAssetId,
-            to: request.destination.chain.chainId
-        ) else {
-            let error = XcmCrosschainFeeCalculatorError.noDestinationFee(
-                origin: request.origin.chainAssetId,
-                destination: request.destination.chain.chainId
-            )
-
-            return CompoundOperationWrapper.createWithError(error)
-        }
-
-        guard let baseWeight = xcmTransfers.baseWeight(for: request.destination.chain.chainId) else {
-            let error = XcmCrosschainFeeCalculatorError.noBaseWeight(request.destination.chain.chainId)
-            return CompoundOperationWrapper.createWithError(error)
-        }
-
-        return createOneOfFeeEstimationWrapper(
+        createOneOfFeeEstimationWrapper(
             for: request.destination.chain,
             message: message,
-            info: feeInfo,
-            baseWeight: baseWeight
+            info: destinationFee.mode,
+            baseWeight: destinationFee.baseWeight
         )
     }
 
     func createReserveFeeWrapper(
         for message: Xcm.Message,
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers
+        reserveFee: XcmTransferMetadata.LegacyFeeDetails
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
-            let error = XcmCrosschainFeeCalculatorError.noReserveFee(request.origin.chainAssetId)
-            return CompoundOperationWrapper.createWithError(error)
-        }
-
-        guard let baseWeight = xcmTransfers.baseWeight(for: request.reserve.chain.chainId) else {
-            let error = XcmCrosschainFeeCalculatorError.noBaseWeight(request.reserve.chain.chainId)
-            return CompoundOperationWrapper.createWithError(error)
-        }
-
-        return createOneOfFeeEstimationWrapper(
+        createOneOfFeeEstimationWrapper(
             for: request.reserve.chain,
             message: message,
-            info: feeInfo,
-            baseWeight: baseWeight
+            info: reserveFee.mode,
+            baseWeight: reserveFee.baseWeight
         )
     }
 
     func createChainDeliveryFeeWrapper(
         for request: XcmDeliveryRequest,
-        xcmTransfers: XcmLegacyTransfers,
+        deliveryFee: XcmDeliveryFee?,
         sendingFromOrigin: Bool
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        do {
-            guard
-                let deliveryFee = try xcmTransfers.deliveryFee(from: request.fromChainId) else {
-                return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
-            }
+        guard let deliveryFee else {
+            return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
+        }
 
-            let optPrice: XcmDeliveryFee.Price?
+        let optPrice: XcmDeliveryFee.Price?
 
-            if request.toParachainId != nil {
-                optPrice = deliveryFee.toParachain
-            } else {
-                optPrice = deliveryFee.toParent
-            }
+        if request.toParachainId != nil {
+            optPrice = deliveryFee.toParachain
+        } else {
+            optPrice = deliveryFee.toParent
+        }
 
-            guard let price = optPrice else {
-                return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
-            }
+        guard let price = optPrice else {
+            return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
+        }
 
-            switch price {
-            case let .exponential(params):
-                return createExponentialDeliveryFeeWrapper(
-                    for: request,
-                    params: params,
-                    sendingFromOrigin: sendingFromOrigin
-                )
-            case .undefined:
-                return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
-            }
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
+        switch price {
+        case let .exponential(params):
+            return createExponentialDeliveryFeeWrapper(
+                for: request,
+                params: params,
+                sendingFromOrigin: sendingFromOrigin
+            )
+        case .undefined:
+            return CompoundOperationWrapper.createWithResult(XcmFeeModel.zero())
         }
     }
 
@@ -360,7 +343,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
                 let optFactorValue = try wrapper.targetOperation.extractNoCancellableResultData().first?.value
 
                 guard let factor = optFactorValue?.value else {
-                    throw XcmCrosschainFeeCalculatorError.deliveryFeeNotAvailable
+                    throw XcmLegacyCrosschainFeeCalculatorError.deliveryFeeNotAvailable
                 }
 
                 return factor
@@ -381,7 +364,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
                 let optFactorValue = try wrapper.targetOperation.extractNoCancellableResultData().value
 
                 guard let factor = optFactorValue?.value else {
-                    throw XcmCrosschainFeeCalculatorError.deliveryFeeNotAvailable
+                    throw XcmLegacyCrosschainFeeCalculatorError.deliveryFeeNotAvailable
                 }
 
                 return factor
@@ -424,7 +407,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             guard let messageType = optMessageType else {
-                throw XcmCrosschainFeeCalculatorError.deliveryFeeNotAvailable
+                throw XcmLegacyCrosschainFeeCalculatorError.deliveryFeeNotAvailable
             }
 
             let factor = BigRational.fixedU128(value: factorValue)
@@ -461,21 +444,28 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createExecutionFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers,
-        feeMessages: XcmWeightMessages
+        feeMessages: XcmWeightMessages,
+        feeParams: XcmTransferMetadata.LegacyFee
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         let destMsg = feeMessages.destination
-        let destWrapper = createDestinationFeeWrapper(for: destMsg, request: request, xcmTransfers: xcmTransfers)
+        let destWrapper = createDestinationFeeWrapper(
+            for: destMsg,
+            request: request,
+            destinationFee: feeParams.destinationExecution
+        )
 
         var dependencies = destWrapper.allOperations
 
         let optReserveWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>?
 
-        if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
+        if
+            request.isNonReserveTransfer,
+            let reserveMessage = feeMessages.reserve,
+            let reserveFee = feeParams.reserveExecution {
             let wrapper = createReserveFeeWrapper(
                 for: reserveMessage,
                 request: request,
-                xcmTransfers: xcmTransfers
+                reserveFee: reserveFee
             )
 
             dependencies.append(contentsOf: wrapper.allOperations)
@@ -503,8 +493,8 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
     func createDeliveryFeeWrapper(
         request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers,
-        feeMessages: XcmWeightMessages
+        feeMessages: XcmWeightMessages,
+        feeParams: XcmTransferMetadata.LegacyFee
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
             let originToReserveWrapper = createChainDeliveryFeeWrapper(
@@ -513,7 +503,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
                     fromChainId: request.origin.chain.chainId,
                     toParachainId: request.reserve.parachainId
                 ),
-                xcmTransfers: xcmTransfers,
+                deliveryFee: feeParams.originDelivery,
                 sendingFromOrigin: true
             )
 
@@ -523,7 +513,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
                     fromChainId: request.reserve.chain.chainId,
                     toParachainId: request.destination.parachainId
                 ),
-                xcmTransfers: xcmTransfers,
+                deliveryFee: feeParams.reserveDelivery,
                 sendingFromOrigin: false
             )
 
@@ -548,7 +538,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
                     fromChainId: request.origin.chain.chainId,
                     toParachainId: request.destination.parachainId
                 ),
-                xcmTransfers: xcmTransfers,
+                deliveryFee: feeParams.originDelivery,
                 sendingFromOrigin: true
             )
 
@@ -559,8 +549,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
 extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
     func crossChainFeeWrapper(
-        request: XcmUnweightedTransferRequest,
-        xcmTransfers: XcmLegacyTransfers
+        request: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let destinationRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
@@ -590,12 +579,17 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                     .compactMap { $0 }
                     .max()
 
+                guard case let .legacy(feeParams) = request.metadata.fee else {
+                    throw XcmLegacyCrosschainFeeCalculatorError.unsupportedFee(request.metadata.fee)
+                }
+
                 let params = XcmWeightMessagesParams(
                     chainAsset: request.origin,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
-                    xcmTransfers: xcmTransfers
+                    feeParams: feeParams,
+                    reserveParams: request.metadata.reserve
                 )
 
                 let feeMessages = try self.xcmWeightMessagesFactory.createWeightMessages(
@@ -605,14 +599,14 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
 
                 let executionFeeWrapper = self.createExecutionFeeWrapper(
                     request: request,
-                    xcmTransfers: xcmTransfers,
-                    feeMessages: feeMessages
+                    feeMessages: feeMessages,
+                    feeParams: feeParams
                 )
 
                 let deliveryFeeWrapper = self.createDeliveryFeeWrapper(
                     request: request,
-                    xcmTransfers: xcmTransfers,
-                    feeMessages: feeMessages
+                    feeMessages: feeMessages,
+                    feeParams: feeParams
                 )
 
                 let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {

@@ -1,16 +1,29 @@
 import Foundation
 
 extension XcmLegacyTransfers: XcmTransfersProtocol {
-    func getAssetTransfer(
-        from chainAssetId: ChainAssetId,
-        destinationChainId: ChainModel.Id
-    ) -> XcmAssetTransferProtocol? {
-        transfer(from: chainAssetId, destinationChainId: destinationChainId)
-    }
-
-    func getAssetReservePath(for chainAsset: ChainAsset) -> XcmAsset.ReservePath? {
-        getReservePath(for: chainAsset.chainAssetId)
+    func getChains() -> [XcmTransferChainProtocol] {
+        chains
     }
 }
 
-extension XcmAssetTransfer: XcmAssetTransferProtocol {}
+extension XcmChain: XcmTransferChainProtocol {
+    func getAssets() -> [XcmTransferAssetProtocol] {
+        assets
+    }
+}
+
+extension XcmAsset: XcmTransferAssetProtocol {
+    func getDestinations() -> [XcmTransferDestinationProtocol] {
+        xcmTransfers
+    }
+}
+
+extension XcmAssetTransfer: XcmTransferDestinationProtocol {
+    var chainId: ChainModel.Id {
+        destination.chainId
+    }
+
+    var assetId: AssetModel.Id {
+        destination.assetId
+    }
+}

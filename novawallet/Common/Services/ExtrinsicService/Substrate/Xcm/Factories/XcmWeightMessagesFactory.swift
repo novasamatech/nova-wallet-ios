@@ -13,7 +13,8 @@ struct XcmWeightMessagesParams {
     let reserve: XcmTransferReserve
     let destination: XcmTransferDestination
     let amount: BigUInt
-    let xcmTransfers: XcmLegacyTransfers
+    let feeParams: XcmTransferMetadata.LegacyFee
+    let reserveParams: XcmTransferMetadata.Reserve
 }
 
 enum XcmWeightMessagesFactoryError: Error {

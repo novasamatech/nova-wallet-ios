@@ -1,28 +1,23 @@
 import Foundation
 
 extension XcmDynamicTransfers: XcmTransfersProtocol {
-    func getAssetTransfer(
-        from chainAssetId: ChainAssetId,
-        destinationChainId: ChainModel.Id
-    ) -> XcmAssetTransferProtocol? {
-        transfer(from: chainAssetId, destinationChainId: destinationChainId)
-    }
-
-    func getAssetReservePath(for chainAsset: ChainAsset) -> XcmAsset.ReservePath? {
-        let chainId = chainAsset.chain.chainId
-        let assetIdKey = String(chainAsset.asset.assetId)
-
-        let assetLocationId = reserveIdOverrides[chainId]?[assetIdKey] ?? chainAsset.asset.symbol
-
-        guard let path = assetsLocation[assetLocationId]?.multiLocation else {
-            return nil
-        }
-
-        // TODO: Clarify whether we need other reserve types
-        return XcmAsset.ReservePath(type: .relative, path: path)
+    func getChains() -> [XcmTransferChainProtocol] {
+        chains
     }
 }
 
-extension XcmDynamicAssetTransfer: XcmAssetTransferProtocol {
+extension XcmDynamicChain: XcmTransferChainProtocol {
+    func getAssets() -> [XcmTransferAssetProtocol] {
+        assets
+    }
+}
+
+extension XcmDynamicAsset: XcmTransferAssetProtocol {
+    func getDestinations() -> [XcmTransferDestinationProtocol] {
+        xcmTransfers
+    }
+}
+
+extension XcmDynamicAssetTransfer: XcmTransferDestinationProtocol {
     var type: XcmTransferType { .xcmpalletTransferAssets }
 }

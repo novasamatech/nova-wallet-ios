@@ -48,6 +48,7 @@ final class CrosschainExchangeAtomicOperation {
                 origin: transferParties.origin,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
+                metadata: transferParties.metadata,
                 amount: amount
             )
 
@@ -60,7 +61,6 @@ final class CrosschainExchangeAtomicOperation {
             let feeOperation = AsyncClosureOperation<ExtrinsicFeeProtocol> { completion in
                 self.host.xcmService.estimateOriginFee(
                     request: transferRequest,
-                    xcmTransfers: self.host.xcmTransfers,
                     runningIn: self.workingQueue
                 ) { result in
                     completion(result)
@@ -85,13 +85,13 @@ final class CrosschainExchangeAtomicOperation {
                 origin: transferParties.origin,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
+                metadata: transferParties.metadata,
                 amount: amount
             )
 
             let feeOperation = AsyncClosureOperation<XcmFeeModelProtocol> { completion in
                 self.host.xcmService.estimateCrossChainFee(
                     request: request,
-                    xcmTransfers: self.host.xcmTransfers,
                     runningIn: self.workingQueue
                 ) { result in
                     completion(result)
@@ -125,6 +125,7 @@ final class CrosschainExchangeAtomicOperation {
                 origin: transferParties.origin,
                 destination: transferParties.destination,
                 reserve: transferParties.reserve,
+                metadata: transferParties.metadata,
                 amount: amount
             )
 
@@ -145,7 +146,6 @@ final class CrosschainExchangeAtomicOperation {
             return transactService.transferAndWaitArrivalWrapper(
                 transferRequest,
                 destinationChainAsset: destinationAsset,
-                xcmTransfers: self.host.xcmTransfers,
                 signer: signer
             )
         }

@@ -94,6 +94,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                 origin: originChainAsset,
                 destination: destination,
                 reserve: transferParties.reserve,
+                metadata: transferParties.metadata,
                 amount: amount
             )
 
@@ -103,7 +104,6 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
             extrinsicService.submit(
                 request: transferRequest,
-                xcmTransfers: xcmTransfers,
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in

@@ -8,19 +8,13 @@ private extension XcmPreV3WeightMessagesFactory {
     func createDestinationWeightMessage(
         from chainAsset: ChainAsset,
         destination: XcmTransferDestination,
-        xcmTransfer: XcmAssetTransfer,
-        xcmTransfers: XcmLegacyTransfers,
+        feeParams: XcmTransferMetadata.LegacyFee,
         multiasset: Xcm.Multiasset
     ) throws -> Xcm.Message {
         let multilocation = modelFactory.createMultilocation(origin: chainAsset.chain, destination: destination)
 
-        let destinationInstructionsKey = xcmTransfer.destination.fee.instructions
-        guard let destinationInstructions = xcmTransfers.instructions(for: destinationInstructionsKey) else {
-            throw XcmModelError.noInstructions(destinationInstructionsKey)
-        }
-
         return try createWeightMessage(
-            from: destinationInstructions,
+            from: feeParams.destinationExecution.instructions,
             destination: multilocation,
             asset: multiasset
         )
@@ -29,21 +23,17 @@ private extension XcmPreV3WeightMessagesFactory {
     func createReserveWeightMessage(
         from chainAsset: ChainAsset,
         reserve: XcmTransferReserve,
-        xcmTransfers: XcmLegacyTransfers,
+        feeParams: XcmTransferMetadata.LegacyFee,
         multiasset: Xcm.Multiasset
     ) throws -> Xcm.Message? {
-        guard let reserveFee = xcmTransfers.reserveFee(from: chainAsset.chainAssetId) else {
+        guard let reserveInstructions = feeParams.reserveExecution?.instructions else {
             return nil
         }
 
         let reserveMultilocation = modelFactory.createMultilocation(origin: chainAsset.chain, reserve: reserve)
 
-        guard let reserveInstruction = xcmTransfers.instructions(for: reserveFee.instructions) else {
-            throw XcmModelError.noInstructions(reserveFee.instructions)
-        }
-
         return try createWeightMessage(
-            from: reserveInstruction,
+            from: reserveInstructions,
             destination: reserveMultilocation,
             asset: multiasset
         )
@@ -93,38 +83,24 @@ extension XcmPreV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
         from params: XcmWeightMessagesParams,
         version _: Xcm.Version?
     ) throws -> XcmWeightMessages {
-        let originChainAssetId = params.chainAsset.chainAssetId
-
-        guard let xcmTransfer = params.xcmTransfers.transfer(
-            from: originChainAssetId,
-            destinationChainId: params.destination.chain.chainId
-        ) else {
-            throw XcmModelError.noDestinationAssetFound(originChainAssetId)
-        }
-
-        guard let reservePath = params.xcmTransfers.getReservePath(for: originChainAssetId) else {
-            throw XcmModelError.noReserve(originChainAssetId)
-        }
-
         let multiasset = try modelFactory.createMultiAsset(
             origin: params.chainAsset.chain,
             reserve: params.reserve.chain,
-            assetLocation: reservePath,
+            assetLocation: params.reserveParams.path,
             amount: params.amount
         )
 
         let destinationMessage = try createDestinationWeightMessage(
             from: params.chainAsset,
             destination: params.destination,
-            xcmTransfer: xcmTransfer,
-            xcmTransfers: params.xcmTransfers,
+            feeParams: params.feeParams,
             multiasset: multiasset
         )
 
         let reserveMessage = try createReserveWeightMessage(
             from: params.chainAsset,
             reserve: params.reserve,
-            xcmTransfers: params.xcmTransfers,
+            feeParams: params.feeParams,
             multiasset: multiasset
         )
 
