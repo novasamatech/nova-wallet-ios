@@ -354,6 +354,8 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func removeTab(with id: UUID) {
+        observableTabs.state.removeValue(for: id)
+
         let wrapper = removeWrapper(for: id)
 
         execute(
@@ -367,7 +369,9 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
-        saveWrapper(for: tab)
+        observableTabs.state.store(value: tab, for: tab.uuid)
+
+        return saveWrapper(for: tab)
     }
 
     func updateRenderForTab(
@@ -378,13 +382,15 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             return .createWithResult(())
         }
 
+        let newTab = tab.updating(renderModifiedAt: Date())
+
         let updateRenderWrapper = updateRenderWrapper(
             render: render,
-            tab: tab
+            tab: newTab
         )
 
         var resultWrapper = saveWrapper(
-            for: tab.updating(renderModifiedAt: Date())
+            for: newTab
         )
 
         resultWrapper.addDependency(wrapper: updateRenderWrapper)
