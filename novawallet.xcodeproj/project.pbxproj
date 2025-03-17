@@ -778,6 +778,7 @@
 		0CA8AF2F2D86364100DB4E6A /* RuntimeCallCollecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */; };
 		0CA8AF312D86412400DB4E6A /* XcmTransfersSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */; };
 		0CA8AF332D86419400DB4E6A /* XcmTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */; };
+		0CA8AF392D88C33C00DB4E6A /* BalancesPallet+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF382D88C33C00DB4E6A /* BalancesPallet+Calls.swift */; };
 		0CA957222B6A507A009AD757 /* HydraSwapParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */; };
 		0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957242B6A566B009AD757 /* HydraDx+Call.swift */; };
 		0CAB674C2D49136100E3A844 /* StakingClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */; };
@@ -6527,6 +6528,7 @@
 		0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCallCollecting.swift; sourceTree = "<group>"; };
 		0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersSyncService.swift; sourceTree = "<group>"; };
 		0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfers.swift; sourceTree = "<group>"; };
+		0CA8AF382D88C33C00DB4E6A /* BalancesPallet+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalancesPallet+Calls.swift"; sourceTree = "<group>"; };
 		0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParamsService.swift; sourceTree = "<group>"; };
 		0CA957242B6A566B009AD757 /* HydraDx+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+Call.swift"; sourceTree = "<group>"; };
 		0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimRewardsProtocols.swift; sourceTree = "<group>"; };
@@ -12375,7 +12377,6 @@
 				0C2DA8AC2CC2B156001F79C8 /* AssetsExchangeTests.swift */,
 				0C2DA8AE2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift */,
 				0C03877B2D09A1AA000A2F24 /* MockAssetExchangePathCostEstimator.swift */,
-				0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */,
 			);
 			path = AssetsExchange;
 			sourceTree = "<group>";
@@ -13321,6 +13322,25 @@
 				0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */,
 			);
 			path = Builder;
+			sourceTree = "<group>";
+		};
+		0CA8AF362D888F1C00DB4E6A /* XcmTransfers */ = {
+			isa = PBXGroup;
+			children = (
+				0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */,
+				844133BC2860532C00845987 /* XcmTransfersSync+Setup.swift */,
+				84264EE0285B6C6700BF6D4A /* XcmTransfersSyncTests.swift */,
+				844133BA2860528500845987 /* XcmTransfersFeeTests.swift */,
+			);
+			path = XcmTransfers;
+			sourceTree = "<group>";
+		};
+		0CA8AF372D88C31A00DB4E6A /* BalancesPallet */ = {
+			isa = PBXGroup;
+			children = (
+				0CA8AF382D88C33C00DB4E6A /* BalancesPallet+Calls.swift */,
+			);
+			path = BalancesPallet;
 			sourceTree = "<group>";
 		};
 		0CA957232B6A565D009AD757 /* HydraDx */ = {
@@ -18280,6 +18300,7 @@
 		8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				0CA8AF362D888F1C00DB4E6A /* XcmTransfers */,
 				0C0F6DAA2D3EB18300943A7C /* MythosStaking */,
 				0CEBAD572D61A8CF000EBA45 /* ExtrinsicStatusFetch */,
 				0CEBAD5F2D61BD88000EBA45 /* StateCall */,
@@ -18300,7 +18321,6 @@
 				8461CC8426BC1306007460E4 /* MortalEraFactoryTests.swift */,
 				8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */,
 				846CA7832709C2BE0011124C /* ChainRegistry+Setup.swift */,
-				844133BC2860532C00845987 /* XcmTransfersSync+Setup.swift */,
 				849E16E32714D1BD0065B305 /* EthereumBaseIntegrationTests.swift */,
 				84E8AC7627BBC8E400402635 /* NFTIntegrationTests.swift */,
 				8499FE7C27BE61E000712589 /* UniquesIntegrationTests.swift */,
@@ -18311,8 +18331,6 @@
 				8418167628253B120007684A /* ParachainStakingCollatorsTests.swift */,
 				84216FD72827A35F00479375 /* ParaStakingRewardCalculatorTests.swift */,
 				84C3420E2831A67200156569 /* BlockTimeEstimationServiceTests.swift */,
-				84264EE0285B6C6700BF6D4A /* XcmTransfersSyncTests.swift */,
-				844133BA2860528500845987 /* XcmTransfersFeeTests.swift */,
 				84BFE8A128C2420A00140F1F /* AutocompounDelegateStakeTests.swift */,
 				847A25C228D84A9C006AC9F5 /* ReferendumFetchTests.swift */,
 				84532D5E28E4210E00EF4ADC /* ConvictionVotesFetchTests.swift */,
@@ -19086,6 +19104,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				0CA8AF372D88C31A00DB4E6A /* BalancesPallet */,
 				0CA8AF1F2D85E5B000DB4E6A /* Builder */,
 				0C0F6DE52D423B3300943A7C /* MythosStaking */,
 				0CA957232B6A565D009AD757 /* HydraDx */,
@@ -31793,6 +31812,7 @@
 				7D2906130F25492872637EFC /* ReferendumDetailsPresenter.swift in Sources */,
 				5E3B1E6B9E94848B186FD4D1 /* ReferendumDetailsInteractor.swift in Sources */,
 				77740BC02AD4A80D00E8C06F /* SwapInfoView.swift in Sources */,
+				0CA8AF392D88C33C00DB4E6A /* BalancesPallet+Calls.swift in Sources */,
 				0C495B9B2B452CD600B8D339 /* ProxyResolutionGraph.swift in Sources */,
 				0C3272952CD24F9600FC1B42 /* AssetHubExchangeAtomicOperation.swift in Sources */,
 				488E4467895040EA85FDCC79 /* ReferendumDetailsViewController.swift in Sources */,

@@ -11,7 +11,7 @@ enum RuntimeCallOrigin: Codable {
         let type = try container.decode(String.self)
 
         switch type {
-        case "System":
+        case "system":
             let model = try container.decode(System.self)
             self = .system(model)
         default:
@@ -24,7 +24,7 @@ enum RuntimeCallOrigin: Codable {
 
         switch self {
         case let .system(model):
-            try container.encode("System")
+            try container.encode("system")
             try container.encode(model)
         case let .unsupported(type):
             throw EncodingError.invalidValue(
