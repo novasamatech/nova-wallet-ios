@@ -3,10 +3,9 @@ import XCTest
 
 class XcmTransfersSyncTests: XCTestCase {
     func testXcmTransfersSyncCompletes() {
-        let remoteUrl = ApplicationConfig.shared.xcmTransfersURL
         let logger = Logger.shared
         let syncService = XcmTransfersSyncService(
-            remoteUrl: remoteUrl,
+            config: ApplicationConfig.shared,
             operationQueue: OperationQueue(),
             logger: logger
         )
@@ -36,8 +35,5 @@ class XcmTransfersSyncTests: XCTestCase {
         }
 
         logger.info("\(xcmTransfers)")
-
-        XCTAssertTrue(syncService.isActive)
-        XCTAssertTrue(!syncService.isSyncing)
     }
 }

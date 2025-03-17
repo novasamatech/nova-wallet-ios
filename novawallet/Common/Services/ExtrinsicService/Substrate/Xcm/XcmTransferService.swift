@@ -7,7 +7,6 @@ final class XcmTransferService {
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
-    let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     let userStorageFacade: StorageFacadeProtocol
     let substrateStorageFacade: StorageFacadeProtocol
     let customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol?
@@ -18,7 +17,6 @@ final class XcmTransferService {
     init(
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
-        metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
@@ -26,7 +24,6 @@ final class XcmTransferService {
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
-        self.metadataHashOperationFactory = metadataHashOperationFactory
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue

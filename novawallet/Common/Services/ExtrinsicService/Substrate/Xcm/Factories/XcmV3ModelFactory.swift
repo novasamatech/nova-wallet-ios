@@ -183,8 +183,6 @@ extension XcmV3ModelFactory: XcmModelFactoryProtocol {
             destination: params.destination
         )
 
-        let originChainAssetId = originChainAsset.chainAssetId
-
         let multiasset = try createVersionedMultiasset(
             origin: originChainAsset.chain,
             reserve: params.reserve,

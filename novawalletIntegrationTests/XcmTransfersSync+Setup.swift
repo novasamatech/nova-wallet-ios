@@ -2,10 +2,12 @@ import Foundation
 @testable import novawallet
 
 extension XcmTransfersSyncService {
-    static func setupForIntegrationTest(for remoteUrl: URL) throws -> XcmTransfers {
+    static func setupForIntegrationTest(
+        for applicationConfig: ApplicationConfigProtocol
+    ) throws -> XcmTransfers {
         let logger = Logger.shared
         let syncService = XcmTransfersSyncService(
-            remoteUrl: remoteUrl,
+            config: applicationConfig,
             operationQueue: OperationQueue(),
             logger: logger
         )

@@ -166,8 +166,7 @@ class XcmTransfersFeeTests: XCTestCase {
             let storageFacade = SubstrateStorageTestFacade()
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
-            let remoteUrl = ApplicationConfig.shared.xcmTransfersURL
-            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: remoteUrl)
+            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: ApplicationConfig.shared)
 
             let parties = try resolveParties(
                 from: originChainAssetId,
@@ -230,8 +229,9 @@ class XcmTransfersFeeTests: XCTestCase {
             let storageFacade = SubstrateStorageTestFacade()
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
-            let remoteUrl = ApplicationConfig.shared.xcmTransfersURL
-            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: remoteUrl)
+            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(
+                for: ApplicationConfig.shared
+            )
 
             let parties = try resolveParties(
                 from: originChainAssetId,
@@ -328,61 +328,32 @@ class XcmTransfersFeeTests: XCTestCase {
     ) throws -> XcmFeeModelProtocol {
         let operationQueue = OperationQueue()
         
-        let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-            operationQueue: operationQueue
-        )
-        
-        let service = XcmTransferService(
-            wallet: wallet,
+        let feeService = XcmLegacyCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
-            metadataHashOperationFactory: metadataHashFactory,
+            operationQueue: operationQueue,
+            wallet: wallet,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: substrateStorageFacade,
-            operationQueue: operationQueue
+            customFeeEstimatingFactory: nil
         )
-
-        let semaphore = DispatchSemaphore(value: 0)
-
-        var feeResult: XcmTransferCrosschainFeeResult?
 
         let request = XcmUnweightedTransferRequest(
             origin: parties.origin,
             destination: parties.destination,
             reserve: parties.reserve,
+            metadata: parties.metadata,
             amount: amount
         )
         
-        if isForDestination {
-            service.estimateDestinationExecutionFee(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                runningIn: .global()
-            ) { result in
-                feeResult = result
-                semaphore.signal()
-            }
+        let feeWrapper = if isForDestination {
+            feeService.reserveExecutionFeeWrapper(request: request)
         } else {
-            service.estimateReserveExecutionFee(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                runningIn: .global()
-            ) { result in
-                feeResult = result
-                semaphore.signal()
-            }
+            feeService.destinationExecutionFeeWrapper(request: request)
         }
 
-        _ = semaphore.wait(timeout: .now() + .seconds(600))
-
-        switch feeResult {
-        case let .success(parties):
-            return parties
-        case let .failure(error):
-            throw error
-        case .none:
-            throw BaseOperationError.parentOperationCancelled
-        }
+        operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
+        
+        return try feeWrapper.targetOperation.extractNoCancellableResultData()
     }
     
     private func estimateCrosschainFee(
@@ -395,18 +366,12 @@ class XcmTransfersFeeTests: XCTestCase {
     ) throws -> XcmFeeModelProtocol {
         let operationQueue = OperationQueue()
         
-        let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-            operationQueue: operationQueue
-        )
-        
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            metadataHashOperationFactory: metadataHashFactory,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: substrateStorageFacade,
-            operationQueue: OperationQueue()
+            operationQueue: operationQueue
         )
 
         let semaphore = DispatchSemaphore(value: 0)
@@ -417,12 +382,12 @@ class XcmTransfersFeeTests: XCTestCase {
             origin: parties.origin,
             destination: parties.destination,
             reserve: parties.reserve,
+            metadata: parties.metadata,
             amount: amount
         )
         
         service.estimateCrossChainFee(
             request: request,
-            xcmTransfers: xcmTransfers,
             runningIn: .global()
         ) { result in
             feeResult = result

@@ -91,8 +91,7 @@ final class XcmLegacyCrosschainFeeCalculator {
     }
 
     func reserveExecutionFeeWrapper(
-        request: XcmUnweightedTransferRequest,
-        feeParams: XcmTransferMetadata.LegacyFee
+        request: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
