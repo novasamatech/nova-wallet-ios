@@ -26,6 +26,11 @@ protocol MythosStakingLocalStorageSubscriber: LocalStorageProviderObserving {
         accountId: AccountId
     ) -> AnyDataProvider<MythosStakingPallet.DecodedReleaseQueue>?
 
+    func subscribeToAutoCompound(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> AnyDataProvider<DecodedPercent>?
+
     func subscribeToCollatorRewardsPercentage(
         for chainId: ChainModel.Id,
         callbackQueue: DispatchQueue
@@ -165,6 +170,38 @@ extension MythosStakingLocalStorageSubscriber {
             },
             failureClosure: { [weak self] error in
                 self?.stakingLocalSubscriptionHandler.handleReleaseQueue(
+                    result: .failure(error),
+                    chainId: chainId,
+                    accountId: accountId
+                )
+            }
+        )
+
+        return provider
+    }
+
+    func subscribeToAutoCompound(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> AnyDataProvider<DecodedPercent>? {
+        guard let provider = try? stakingLocalSubscriptionFactory.getAutoCompoundProvider(
+            for: chainId,
+            accountId: accountId
+        ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] decodedValue in
+                self?.stakingLocalSubscriptionHandler.handleAutoCompound(
+                    result: .success(decodedValue?.value),
+                    chainId: chainId,
+                    accountId: accountId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleAutoCompound(
                     result: .failure(error),
                     chainId: chainId,
                     accountId: accountId

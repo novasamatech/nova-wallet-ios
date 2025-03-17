@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "质押的金额过小";
 "staking.unstake.no.space.message" = "您的池目前在解绑队列中没有空闲位置。请在 %@ 后再试。";
 "staking.unstake.no.space.title" = "太多人正在从您的池中解绑";
-"staking.restake.message" = "您的代币将被重新加入到质押中";
 "staking.claim.rewards" = "领取奖励";
 "common.recommended" = "推荐";
 "staking.setup.amount.direct.type.subtitle" = "已选：%li（最多 %li）";
@@ -1799,3 +1798,14 @@
 "chart.period.month" = "上个月";
 "chart.period.year" = "去年";
 "chart.period.max" = "所有时间";
+"common.pay" = "支付";
+"common.card.issued" = "卡已发行";
+"card.top.up.dot.setup.title" = "使用DOT充值卡";
+"common.manage.debit.card" = "管理借记卡";
+"common.estimated.timer" = "预计 ~%@";
+"card.open.pending.sheet.title" = "您的卡正在发行！";
+"card.open.pending.sheet.message" = "最多可能需要%@。\n此窗口将自动关闭。";
+"card.open.failed.alert.title" = "联系支持";
+"card.open.failed.alert.message" = "请联系support@novawallet.io。包括您用于发卡的电子邮件地址。";
+"card.topup.pending.sheet.title" = "您的卡正在充值中！";
+"staking.restake.message" = "您的奖励将添加到您的质押中";

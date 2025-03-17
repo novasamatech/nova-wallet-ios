@@ -169,9 +169,7 @@ struct DAppOperationConfirmViewFactory {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         let metadataHashFactory = MetadataHashOperationFactory(
