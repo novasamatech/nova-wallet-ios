@@ -1804,3 +1804,5 @@
 "unified.address.popup.checkbox.text" = "Do not show this again.\nYou can find legacy address in Receive.";
 "unified.address.new.format" = "New format";
 "unified.address.legacy.format" = "Legacy format";
+"asset.receive.looking.for.address.message" = "Looking for your legacy address for an exchange?";
+"asset.receive.view.address.format" = "View Address Formats";
