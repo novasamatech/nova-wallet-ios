@@ -18,13 +18,13 @@ enum DryRun {
 
     struct ForwardedXcm: Decodable {
         let location: Xcm.VersionedMultilocation
-        let xcms: [Xcm.Message]
+        let messages: [Xcm.Message]
 
         init(from decoder: any Decoder) throws {
             var container = try decoder.unkeyedContainer()
 
             location = try container.decode(Xcm.VersionedMultilocation.self)
-            xcms = try container.decode([Xcm.Message].self)
+            messages = try container.decode([Xcm.Message].self)
         }
     }
 

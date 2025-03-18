@@ -7,7 +7,7 @@ extension Xcm {
         case fungible(amount: BigUInt)
 
         init(from decoder: any Decoder) throws {
-            var container = try try decoder.unkeyedContainer()
+            var container = try decoder.unkeyedContainer()
 
             let type = try container.decode(String.self)
 
