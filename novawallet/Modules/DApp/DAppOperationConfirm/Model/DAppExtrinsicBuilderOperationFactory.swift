@@ -109,15 +109,20 @@ final class DAppExtrinsicBuilderOperationFactory {
             runtimeProvider: runtimeProvider
         )
 
-        let feeInstallerWrapper = feeRegistry.createFeeInstallerWrapper(payingIn: feeAssetId) {
-            result.account
+        // don't install fee asset if no provided
+        let feeInstallerWrapper: CompoundOperationWrapper<ExtrinsicFeeInstalling>? = if let feeAssetId {
+            feeRegistry.createFeeInstallerWrapper(payingIn: feeAssetId) {
+                result.account
+            }
+        } else {
+            nil
         }
 
         let builderOperation = ClosureOperation<ExtrinsicSenderBuilderResult> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let runtimeContext = codingFactory.createRuntimeJsonContext()
             let metadataHashResult = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
-            let feeInstaller = try feeInstallerWrapper.targetOperation.extractNoCancellableResultData()
+            let feeInstaller = try feeInstallerWrapper?.targetOperation.extractNoCancellableResultData()
 
             let extrinsic = result.extrinsic
 
@@ -155,12 +160,14 @@ final class DAppExtrinsicBuilderOperationFactory {
                 builder = builder.with(tip: extrinsic.tip)
             }
 
-            builder = try feeInstaller.installingFeeSettings(
-                to: builder,
-                coderFactory: codingFactory
-            )
+            if let feeInstaller {
+                builder = try feeInstaller.installingFeeSettings(
+                    to: builder,
+                    coderFactory: codingFactory
+                )
+            }
 
-            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal || feeAssetId != nil
+            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal || feeInstaller != nil
 
             return ExtrinsicSenderBuilderResult(
                 sender: sender,
@@ -170,11 +177,16 @@ final class DAppExtrinsicBuilderOperationFactory {
         }
 
         builderOperation.addDependency(metadataHashWrapper.targetOperation)
-        builderOperation.addDependency(feeInstallerWrapper.targetOperation)
 
-        return metadataHashWrapper
-            .insertingHead(operations: feeInstallerWrapper.allOperations)
-            .insertingTail(operation: builderOperation)
+        if let feeInstallerWrapper {
+            builderOperation.addDependency(feeInstallerWrapper.targetOperation)
+
+            return metadataHashWrapper
+                .insertingHead(operations: feeInstallerWrapper.allOperations)
+                .insertingTail(operation: builderOperation)
+        } else {
+            return metadataHashWrapper.insertingTail(operation: builderOperation)
+        }
     }
 
     private func createRawSignatureOperation(
