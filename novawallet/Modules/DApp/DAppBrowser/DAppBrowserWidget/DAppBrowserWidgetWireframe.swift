@@ -40,6 +40,8 @@ class DAppBrowserWidgetWireframe: NSObject, DAppBrowserWidgetWireframeProtocol {
         }
 
         view?.controller.children.forEach { child in
+            // We need to clear the navigation stack because of `.zoom` preferredTransition set on one of the controllers.
+            // If we don't do this, controllers pushed with zoom animation won't be deinitialized.
             if let navigationController = child as? UINavigationController {
                 navigationController.setViewControllers([], animated: false)
                 childRemoveClosure(navigationController)
