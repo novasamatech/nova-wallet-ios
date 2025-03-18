@@ -6,8 +6,3 @@ protocol XcmCrosschainFeeCalculating {
         request: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol>
 }
-
-enum XcmCrosschainFeeCalculatorError: Error {
-    case reserveFeeNotAvailable
-    case noArgumentFound(String)
-}

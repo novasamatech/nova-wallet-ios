@@ -5,6 +5,7 @@ import BigInt
 
 // TODO: Review errors
 enum XcmLegacyCrosschainFeeCalculatorError: Error {
+    case reserveFeeNotAvailable
     case unsupportedFee(XcmTransferMetadata.Fee)
     case deliveryFeeNotAvailable
 }
@@ -125,7 +126,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 )
 
                 guard let reserveMessage = feeMessages.reserve, let reserveFee = feeParams.reserveExecution else {
-                    throw XcmCrosschainFeeCalculatorError.reserveFeeNotAvailable
+                    throw XcmLegacyCrosschainFeeCalculatorError.reserveFeeNotAvailable
                 }
 
                 return self.createReserveFeeWrapper(
