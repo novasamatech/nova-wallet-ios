@@ -779,6 +779,7 @@
 		0CA8AF312D86412400DB4E6A /* XcmTransfersSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */; };
 		0CA8AF332D86419400DB4E6A /* XcmTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */; };
 		0CA8AF392D88C33C00DB4E6A /* BalancesPallet+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF382D88C33C00DB4E6A /* BalancesPallet+Calls.swift */; };
+		0CA8AF3B2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF3A2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift */; };
 		0CA957222B6A507A009AD757 /* HydraSwapParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */; };
 		0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA957242B6A566B009AD757 /* HydraDx+Call.swift */; };
 		0CAB674C2D49136100E3A844 /* StakingClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */; };
@@ -4545,7 +4546,6 @@
 		84FB9E20285C5C9E00B42FC0 /* XcmJunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1F285C5C9E00B42FC0 /* XcmJunction.swift */; };
 		84FB9E24285C6ACC00B42FC0 /* XcmMultiasset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */; };
 		84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */; };
-		84FB9E28285C736A00B42FC0 /* XcmPreV3ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E27285C736A00B42FC0 /* XcmPreV3ModelFactory.swift */; };
 		84FBDBDB28C7737200CC1037 /* ParaStkYieldBoostSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBDA28C7737200CC1037 /* ParaStkYieldBoostSupport.swift */; };
 		84FBDBDD28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBDC28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift */; };
 		84FBDBDF28C8811D00CC1037 /* ParaStkYieldBoostProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBDE28C8811D00CC1037 /* ParaStkYieldBoostProviderFactory.swift */; };
@@ -6529,6 +6529,7 @@
 		0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersSyncService.swift; sourceTree = "<group>"; };
 		0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfers.swift; sourceTree = "<group>"; };
 		0CA8AF382D88C33C00DB4E6A /* BalancesPallet+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalancesPallet+Calls.swift"; sourceTree = "<group>"; };
+		0CA8AF3A2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPreV3ModelFactory.swift; sourceTree = "<group>"; };
 		0CA957212B6A507A009AD757 /* HydraSwapParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParamsService.swift; sourceTree = "<group>"; };
 		0CA957242B6A566B009AD757 /* HydraDx+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraDx+Call.swift"; sourceTree = "<group>"; };
 		0CAB674B2D49136100E3A844 /* StakingClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingClaimRewardsProtocols.swift; sourceTree = "<group>"; };
@@ -10260,7 +10261,6 @@
 		84FB9E1F285C5C9E00B42FC0 /* XcmJunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmJunction.swift; sourceTree = "<group>"; };
 		84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultiasset.swift; sourceTree = "<group>"; };
 		84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedMultiasset.swift; sourceTree = "<group>"; };
-		84FB9E27285C736A00B42FC0 /* XcmPreV3ModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPreV3ModelFactory.swift; sourceTree = "<group>"; };
 		84FBDBDA28C7737200CC1037 /* ParaStkYieldBoostSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSupport.swift; sourceTree = "<group>"; };
 		84FBDBDC28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostTasksSource.swift; sourceTree = "<group>"; };
 		84FBDBDE28C8811D00CC1037 /* ParaStkYieldBoostProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostProviderFactory.swift; sourceTree = "<group>"; };
@@ -12157,7 +12157,7 @@
 		0C1666882D7FF03D005E6CD3 /* Factories */ = {
 			isa = PBXGroup;
 			children = (
-				84FB9E27285C736A00B42FC0 /* XcmPreV3ModelFactory.swift */,
+				0CA8AF3A2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift */,
 				0CF606D02D7B311E0041B7AE /* XcmV3ModelFactory.swift */,
 				0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */,
 				0C16668B2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift */,
@@ -28895,6 +28895,7 @@
 				84DC3CE7279679230038E2ED /* SubqueryHistory+Wallet.swift in Sources */,
 				846A835828B8BC7B00D92892 /* LedgerTxConfirmViewController.swift in Sources */,
 				84BA1F7E27CE23C1000AAB82 /* NftChainModel.swift in Sources */,
+				0CA8AF3B2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift in Sources */,
 				84BFE8A028C23D7A00140F1F /* AutomationTimeOperationFactory.swift in Sources */,
 				84B677D626AED45500863DC6 /* SharedList.swift in Sources */,
 				84C5ADD32811F6D0006D7388 /* WalletAccountView.swift in Sources */,
@@ -29731,8 +29732,6 @@
 				84282298289BC50A00163031 /* SwitchAccount+ParitySignerAddConfirmWireframe.swift in Sources */,
 				2D95DF5D2C6F9129009BB063 /* HydraExtrinsicFeeInstaller.swift in Sources */,
 				AE805FC526B3DF8B00007CE9 /* ValidatorInfoInteractorBase.swift in Sources */,
-				84FB9E28285C736A00B42FC0 /* XcmPreV3ModelFactory.swift in Sources */,
-				84FB9E28285C736A00B42FC0 /* XcmPreV3ModelFactory.swift in Sources */,
 				0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */,
 				0C0F6DC62D40442900943A7C /* MythosStakingBalanceState.swift in Sources */,
 				AEE5FB0526415E5D002B8FDC /* StakingRebondSetupViewFactory.swift in Sources */,
