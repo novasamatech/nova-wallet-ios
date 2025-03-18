@@ -3,8 +3,27 @@ import BigInt
 import SubstrateSdk
 
 extension Xcm {
-    enum Fungibility: Encodable {
+    enum Fungibility: Codable {
         case fungible(amount: BigUInt)
+
+        init(from decoder: any Decoder) throws {
+            var container = try try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Fungible":
+                let amount = try container.decode(StringScaleMapper<Balance>.self).value
+                self = .fungible(amount: amount)
+            default:
+                throw DecodingError.dataCorrupted(
+                    DecodingError.Context(
+                        codingPath: decoder.codingPath,
+                        debugDescription: "Unsupported Fungibility type \(type)"
+                    )
+                )
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -17,7 +36,7 @@ extension Xcm {
         }
     }
 
-    struct Multiasset: Encodable {
+    struct Multiasset: Codable {
         enum CodingKeys: String, CodingKey {
             case assetId = "id"
             case fun

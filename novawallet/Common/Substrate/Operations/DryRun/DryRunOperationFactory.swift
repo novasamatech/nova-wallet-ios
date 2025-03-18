@@ -7,7 +7,7 @@ protocol DryRunOperationFactoryProtocol {
         _ call: RuntimeCall<A>,
         origin: RuntimeCallOrigin,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<JSON>
+    ) -> CompoundOperationWrapper<DryRun.CallResult>
 }
 
 enum DryRunOperationFactoryError: Error {
@@ -30,7 +30,7 @@ extension DryRunOperationFactory: DryRunOperationFactoryProtocol {
         _ call: RuntimeCall<A>,
         origin: RuntimeCallOrigin,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<JSON> {
+    ) -> CompoundOperationWrapper<DryRun.CallResult> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
             let connection = try chainRegistry.getConnectionOrError(for: chainId)

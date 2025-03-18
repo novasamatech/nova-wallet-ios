@@ -7,6 +7,8 @@ extension Xcm.VersionedMultilocation {
             return multilocation.accountId
         case let .V3(multilocation):
             return multilocation.accountId
+        case let .V4(multilocation):
+            return multilocation.accountId
         }
     }
 }

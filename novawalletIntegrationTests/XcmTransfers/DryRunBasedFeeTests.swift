@@ -20,7 +20,7 @@ final class DryRunBasedFeeTests: XCTestCase {
         let polkadot = try chainRegistry.getChainOrError(for: KnowChainId.polkadot)
         let dotPolkadot = polkadot.utilityChainAsset()!
         
-        let amount = Decimal(1).toSubstrateAmount(
+        let amount = Decimal(2).toSubstrateAmount(
             precision: dotPolkadot.assetDisplayInfo.assetPrecision
         )!
         
