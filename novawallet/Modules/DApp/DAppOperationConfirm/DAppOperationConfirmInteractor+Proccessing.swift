@@ -56,19 +56,12 @@ extension DAppOperationConfirmInteractor {
             }
 
             guard chain.hasAssetHubFees else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(
-                    name: "Unsupported fee asset in \(chain.name)"
-                )
+                return nil
             }
 
-            let remoteAsset = try StatemineAssetSerializer.decodeFeeAssetId(
-                assetId,
-                codingFactory: codingFactory
-            )
-
             guard
-                let localAsset = AssetHubTokensConverter.convertToLocalAsset(
-                    for: remoteAsset,
+                let localAsset = AssetHubTokensConverter.convertRawFeeAssetToLocalAsset(
+                    assetId,
                     on: chain,
                     using: codingFactory
                 ) else {
