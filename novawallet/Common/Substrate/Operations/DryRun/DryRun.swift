@@ -4,18 +4,6 @@ import SubstrateSdk
 enum DryRun {
     static let apiName = "DryRunApi"
 
-    /*
-     pub struct CallDryRunEffects<Event> {
-         /// The result of executing the extrinsic.
-         pub execution_result: DispatchResultWithPostInfo,
-         /// The list of events fired by the extrinsic.
-         pub emitted_events: Vec<Event>,
-         /// The local XCM that was attempted to be executed, if any.
-         pub local_xcm: Option<VersionedXcm<()>>,
-         /// The list of XCMs that were queued for sending.
-         pub forwarded_xcms: Vec<(VersionedLocation, Vec<VersionedXcm<()>>)>,
-     }*/
-
     struct ForwardedXcm: Decodable {
         let location: Xcm.VersionedMultilocation
         let messages: [Xcm.Message]
@@ -31,9 +19,18 @@ enum DryRun {
     struct CallDryRunEffects: Decodable {
         let executionResult: ExecutionResult
         let emittedEvents: [Event]
+        let localXcm: Xcm.Message?
         let forwardedXcms: [ForwardedXcm]
     }
 
     typealias CallResult = Substrate.Result<CallDryRunEffects, JSON>
     typealias ExecutionResult = Substrate.Result<JSON, JSON>
+
+    struct XcmDryRunEffects: Decodable {
+        let executionResult: ExecutionResult
+        let emittedEvents: [Event]
+        let forwardedXcms: [ForwardedXcm]
+    }
+
+    typealias XcmResult = Substrate.Result<XcmDryRunEffects, JSON>
 }

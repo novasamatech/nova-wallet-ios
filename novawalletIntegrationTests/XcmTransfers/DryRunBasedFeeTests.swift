@@ -96,8 +96,25 @@ final class DryRunBasedFeeTests: XCTestCase {
         
         operationQueue.addOperations(dryRunCallWrapper.allOperations, waitUntilFinished: true)
         
-        let dryRunResult = try dryRunCallWrapper.targetOperation.extractNoCancellableResultData()
+        let dryRunCallResult = try dryRunCallWrapper.targetOperation.extractNoCancellableResultData()
         
-        Logger.shared.debug("Dry run: \(dryRunResult)")
+        Logger.shared.debug("Dry run call: \(dryRunCallResult)")
+        
+        guard case let .success(callEffects) = dryRunCallResult else {
+            XCTFail("call dry run failed")
+            return
+        }
+        
+        let dryRunXcmWrapper = dryRunOperationFactory.createDryRunXcmWrapper(
+            from: callEffects.forwardedXcms[0].location,
+            xcm: callEffects.forwardedXcms[0].messages[0],
+            chainId: hydration.chainId
+        )
+        
+        operationQueue.addOperations(dryRunXcmWrapper.allOperations, waitUntilFinished: true)
+        
+        let dryRunXcmResult = try dryRunXcmWrapper.targetOperation.extractNoCancellableResultData()
+        
+        Logger.shared.debug("Dry run xcm: \(dryRunXcmResult)")
     }
 }
