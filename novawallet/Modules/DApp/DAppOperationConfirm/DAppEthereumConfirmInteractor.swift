@@ -151,6 +151,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: chainAccountId,
             chainAddress: transaction.from,
+            feeAsset: nil,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )
