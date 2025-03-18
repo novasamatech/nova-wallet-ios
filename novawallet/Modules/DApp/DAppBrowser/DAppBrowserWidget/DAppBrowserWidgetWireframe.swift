@@ -33,11 +33,22 @@ class DAppBrowserWidgetWireframe: NSObject, DAppBrowserWidgetWireframeProtocol {
     }
 
     func showMiniature(from view: (any DAppBrowserParentWidgetViewProtocol)?) {
+        let childRemoveClosure: (UIViewController) -> Void = { child in
+            child.willMove(toParent: nil)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
+        }
+
         view?.controller.children.forEach { child in
-            child.dismiss(animated: true) {
-                child.willMove(toParent: nil)
-                child.view.removeFromSuperview()
-                child.removeFromParent()
+            // We need to clear the navigation stack because of `.zoom` preferredTransition set on one of the controllers.
+            // If we don't do this, controllers pushed with zoom animation won't be deinitialized.
+            if let navigationController = child as? UINavigationController {
+                navigationController.setViewControllers([], animated: false)
+                childRemoveClosure(navigationController)
+            } else {
+                child.dismiss(animated: true) {
+                    childRemoveClosure(child)
+                }
             }
         }
     }

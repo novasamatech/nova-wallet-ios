@@ -376,6 +376,12 @@ private extension DAppBrowserInteractor {
             }
         }
     }
+
+    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
+        let transportStates = transports.compactMap { $0.makeOpaqueState() }
+
+        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    }
 }
 
 // MARK: DAppBrowserInteractorInputProtocol
@@ -430,13 +436,19 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(stateRender: DAppBrowserTabRenderProtocol) {
+        let transportSaveWrapper = createTransportSaveWrapper()
+
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
             render: stateRender
         )
 
+        renderUpdateWrapper.addDependency(wrapper: transportSaveWrapper)
+
+        let totalWrapper = renderUpdateWrapper.insertingHead(operations: transportSaveWrapper.allOperations)
+
         operationQueue.addOperations(
-            renderUpdateWrapper.allOperations,
+            totalWrapper.allOperations,
             waitUntilFinished: false
         )
     }
@@ -510,12 +522,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         ) { [weak self] _ in
             self?.presenter?.didSaveLastTabState()
         }
-    }
-
-    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
-        let transportStates = transports.compactMap { $0.makeOpaqueState() }
-
-        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
     }
 
     func close() {
