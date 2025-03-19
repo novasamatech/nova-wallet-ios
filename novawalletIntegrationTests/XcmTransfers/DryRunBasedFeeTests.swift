@@ -106,7 +106,12 @@ final class DryRunBasedFeeTests: XCTestCase {
         }
         
         let dryRunXcmWrapper = dryRunOperationFactory.createDryRunXcmWrapper(
-            from: callEffects.forwardedXcms[0].location,
+            from: Xcm.VersionedMultilocation.V3(
+                .init(
+                    parents: 1,
+                    interior: .init(items: [])
+                )
+            ),
             xcm: callEffects.forwardedXcms[0].messages[0],
             chainId: hydration.chainId
         )

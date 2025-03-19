@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 enum Substrate {
     enum Result<T: Decodable, E: Decodable>: Decodable {
