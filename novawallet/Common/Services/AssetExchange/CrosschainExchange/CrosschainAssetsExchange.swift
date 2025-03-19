@@ -8,28 +8,24 @@ final class CrosschainAssetsExchange {
         self.host = host
     }
 
-    private func createExchange(from origin: ChainAssetId, destination: ChainAssetId) -> CrosschainExchangeEdge? {
-        .init(origin: origin, destination: destination, host: host)
+    private func createExchange(from origin: ChainAssetId, destination: ChainAssetId) -> CrosschainExchangeEdge {
+        CrosschainExchangeEdge(origin: origin, destination: destination, host: host)
     }
 }
 
 extension CrosschainAssetsExchange: AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
         let operation = ClosureOperation<[any AssetExchangableGraphEdge]> {
-            self.host.xcmTransfers.chains.flatMap { xcmChain in
-                xcmChain.assets.flatMap { xcmAsset in
-                    let origin = ChainAssetId(chainId: xcmChain.chainId, assetId: xcmAsset.assetId)
-
-                    return xcmAsset.xcmTransfers.compactMap { xcmTransfer in
-                        let destination = ChainAssetId(
-                            chainId: xcmTransfer.destination.chainId,
-                            assetId: xcmTransfer.destination.assetId
+            self.host.xcmTransfers.getAllTransfers()
+                .map { keyValue in
+                    keyValue.value.map { destinationAssetId in
+                        self.createExchange(
+                            from: keyValue.key,
+                            destination: destinationAssetId
                         )
-
-                        return self.createExchange(from: origin, destination: destination)
                     }
                 }
-            }
+                .flatMap { $0 }
         }
 
         return CompoundOperationWrapper(targetOperation: operation)

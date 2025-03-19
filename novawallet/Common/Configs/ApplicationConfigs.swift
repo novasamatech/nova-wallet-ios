@@ -20,6 +20,7 @@ protocol ApplicationConfigProtocol {
     var phishingListURL: URL { get }
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
+    var xcmDynamicTransfersURL: URL { get }
     var xcmTransfersURL: URL { get }
     var stakingGlobalConfigURL: URL { get }
     var dAppsListURL: URL { get }
@@ -176,6 +177,16 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers_dev.json")!
+        #endif
+    }
+
+    // TODO: Change url in production
+    var xcmDynamicTransfersURL: URL {
+        // swiftlint:disable:next line_length
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/dynamic_transfers_base/xcm/v7/transfers_dev.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/dynamic_transfers_base/xcm/v7/transfers_dynamic_dev.json")!
         #endif
     }
 

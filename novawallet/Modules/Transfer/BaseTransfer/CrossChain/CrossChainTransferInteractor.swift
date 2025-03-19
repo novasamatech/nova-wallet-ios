@@ -522,6 +522,7 @@ extension CrossChainTransferInteractor {
             origin: originChainAsset,
             destination: destination,
             reserve: transferParties.reserve,
+            metadata: transferParties.metadata,
             amount: amount
         )
 
@@ -530,7 +531,6 @@ extension CrossChainTransferInteractor {
         feeProxy.estimateOriginFee(
             using: extrinsicService,
             xcmTransferRequest: transferRequest,
-            xcmTransfers: xcmTransfers,
             reuseIdentifier: identifier
         )
     }
@@ -549,13 +549,13 @@ extension CrossChainTransferInteractor {
             origin: originChainAsset,
             destination: destination,
             reserve: transferParties.reserve,
+            metadata: transferParties.metadata,
             amount: amount
         )
 
         feeProxy.estimateCrossChainFee(
             using: extrinsicService,
             xcmTransferRequest: request,
-            xcmTransfers: xcmTransfers,
             reuseIdentifier: identifier
         )
     }

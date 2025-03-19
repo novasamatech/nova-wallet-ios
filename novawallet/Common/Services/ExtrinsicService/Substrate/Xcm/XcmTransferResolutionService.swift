@@ -15,6 +15,7 @@ final class XcmTransferResolutionFactory {
         let origin: ChainAsset
         let destination: ChainModel
         let reserve: ChainModel
+        let metadata: XcmTransferMetadata
     }
 
     let chainRegistry: ChainRegistryProtocol
@@ -33,30 +34,24 @@ final class XcmTransferResolutionFactory {
         destinationId: XcmTransferDestinationId,
         xcmTransfers: XcmTransfers
     ) throws -> ResolvedChains {
-        guard
-            let originChain = chainRegistry.getChain(for: originChainAssetId.chainId),
-            let originAsset = originChain.asset(for: originChainAssetId.assetId) else {
-            throw ChainRegistryError.noChain(originChainAssetId.chainId)
-        }
+        let originChain = try chainRegistry.getChainOrError(for: originChainAssetId.chainId)
+        let originChainAsset = try originChain.chainAssetOrError(for: originChainAssetId.assetId)
 
-        let originChainAsset = ChainAsset(chain: originChain, asset: originAsset)
+        let destinationChain = try chainRegistry.getChainOrError(for: destinationId.chainId)
 
-        guard let destinationChain = chainRegistry.getChain(for: destinationId.chainId) else {
-            throw ChainRegistryError.noChain(destinationId.chainId)
-        }
+        let metadata = try xcmTransfers.getTransferMetadata(
+            for: originChainAsset,
+            destinationChain: destinationChain
+        )
 
-        guard let reserveId = xcmTransfers.getReserveTransfering(
-            from: originChainAssetId.chainId,
-            assetId: originChainAssetId.assetId
-        ) else {
-            throw XcmTransferFactoryError.noReserve(originChainAssetId)
-        }
+        let reserveChain = try chainRegistry.getChainOrError(for: metadata.reserve.reserveId)
 
-        guard let reserveChain = chainRegistry.getChain(for: reserveId) else {
-            throw ChainRegistryError.noChain(reserveId)
-        }
-
-        return ResolvedChains(origin: originChainAsset, destination: destinationChain, reserve: reserveChain)
+        return ResolvedChains(
+            origin: originChainAsset,
+            destination: destinationChain,
+            reserve: reserveChain,
+            metadata: metadata
+        )
     }
 
     private func createParachainIdWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<ParaId> {
@@ -81,7 +76,12 @@ final class XcmTransferResolutionFactory {
 
             let reserve = XcmTransferReserve(chain: resolvedChains.reserve, parachainId: reserveParaId)
 
-            return XcmTransferParties(origin: resolvedChains.origin, destination: destination, reserve: reserve)
+            return XcmTransferParties(
+                origin: resolvedChains.origin,
+                destination: destination,
+                reserve: reserve,
+                metadata: resolvedChains.metadata
+            )
         }
     }
 }

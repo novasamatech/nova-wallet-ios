@@ -72,10 +72,6 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
             xcmService: XcmTransferService(
                 wallet: wallet,
                 chainRegistry: chainRegistry,
-                metadataHashOperationFactory: MetadataHashOperationFactory(
-                    metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-                    operationQueue: operationQueue
-                ),
                 userStorageFacade: userStorageFacade,
                 substrateStorageFacade: substrateStorageFacade,
                 operationQueue: operationQueue,

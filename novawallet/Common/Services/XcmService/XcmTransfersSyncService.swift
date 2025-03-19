@@ -1,211 +1,111 @@
 import Foundation
-import SubstrateSdk
-import Operation_iOS
-
-enum XcmTransfersSyncServiceError: Error {
-    case invalidLocalFile(remote: URL)
-}
 
 protocol XcmTransfersSyncServiceProtocol: AnyObject, ApplicationServiceProtocol {
     var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)? { get set }
     var notificationQueue: DispatchQueue { get set }
 }
 
-final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServiceProtocol {
-    struct FetchResult {
-        let data: Data?
-        let transfers: XcmTransfers?
-    }
+final class XcmTransfersSyncService {
+    let legacySyncService: XcmGenericTransfersSyncService<XcmLegacyTransfers>
+    let dynamicSyncService: XcmGenericTransfersSyncService<XcmDynamicTransfers>
 
-    let remoteUrl: URL
-    let fileDownloader: DataOperationFactoryProtocol
-    let fileRepository: FileRepositoryProtocol
-    let fileManager: FileManager
-    let operationQueue: OperationQueue
+    private var legacyResult: Result<XcmLegacyTransfers, Error>?
+    private var dynamicResult: Result<XcmDynamicTransfers, Error>?
 
     var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)?
-    var notificationQueue = DispatchQueue.main
+    var notificationQueue: DispatchQueue = .main
 
-    private var operations: [Operation]?
+    private let syncQueue = DispatchQueue(label: "com.nova.wallet.xcm.sync.service")
 
     init(
-        remoteUrl: URL,
-        operationQueue: OperationQueue,
-        fileDownloader: DataOperationFactoryProtocol = DataOperationFactory(),
-        fileRepository: FileRepositoryProtocol = FileRepository(),
-        fileManager: FileManager = FileManager.default,
-        retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
-        logger: LoggerProtocol = Logger.shared
+        legacySyncService: XcmGenericTransfersSyncService<XcmLegacyTransfers>,
+        dynamicSyncService: XcmGenericTransfersSyncService<XcmDynamicTransfers>
     ) {
-        self.remoteUrl = remoteUrl
-        self.fileDownloader = fileDownloader
-        self.fileRepository = fileRepository
-        self.fileManager = fileManager
-        self.operationQueue = operationQueue
-
-        super.init(retryStrategy: retryStrategy, logger: logger)
+        self.legacySyncService = legacySyncService
+        self.dynamicSyncService = dynamicSyncService
     }
+}
 
-    private func creteLocalFilePath() -> String? {
-        let remoteFilename = remoteUrl.lastPathComponent
-
-        let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first
-        return cachesDirectory?.appendingPathComponent(remoteFilename).absoluteString
-    }
-
-    private func notify(with result: Result<XcmTransfers, Error>) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
+private extension XcmTransfersSyncService {
+    func getResult() -> Result<XcmTransfers, Error>? {
+        guard let legacyResult = legacyResult, let dynamicResult = dynamicResult else {
+            return nil
         }
 
-        guard let notificationCallback = notificationCallback else {
+        do {
+            let legacy = try legacyResult.get()
+            let dynamic = try dynamicResult.get()
+
+            let transfers = XcmTransfers(legacyTransfers: legacy, dynamicTransfers: dynamic)
+
+            return .success(transfers)
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    func notifyIfReady() {
+        guard let result = getResult(), let notificationCallback else {
             return
         }
 
-        notificationQueue.async {
+        dispatchInQueueWhenPossible(notificationQueue) {
             notificationCallback(result)
         }
     }
+}
 
-    private func clearOperations() -> Bool {
-        mutex.lock()
+extension XcmTransfersSyncService: XcmTransfersSyncServiceProtocol {
+    func setup() {
+        legacySyncService.notificationQueue = syncQueue
+        dynamicSyncService.notificationQueue = syncQueue
 
-        defer {
-            mutex.unlock()
-        }
-
-        let exists = operations != nil
-
-        operations = nil
-
-        return exists
-    }
-
-    private func createLocalWrapper(for localPath: String) -> CompoundOperationWrapper<FetchResult> {
-        let fetchOperation = fileRepository.readOperation(at: localPath)
-        let decodingOperation = ClosureOperation<FetchResult> {
-            let data = try? fetchOperation.extractNoCancellableResultData()
-            let transfers = data.flatMap { try? JSONDecoder().decode(XcmTransfers.self, from: $0) }
-
-            return FetchResult(data: data, transfers: transfers)
-        }
-
-        decodingOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: decodingOperation, dependencies: [fetchOperation])
-    }
-
-    private func createRemoteWrapper(
-        dependingOn localOperation: BaseOperation<FetchResult>,
-        localPath: String
-    ) -> CompoundOperationWrapper<XcmTransfers?> {
-        let fetchRemoteOperation = fileDownloader.fetchData(from: remoteUrl)
-
-        let newDataOperation = ClosureOperation<Data?> {
-            let localData = try? localOperation.extractNoCancellableResultData().data
-            let remoteData = try fetchRemoteOperation.extractNoCancellableResultData()
-
-            if localData != remoteData {
-                return remoteData
-            } else {
-                return nil
+        legacySyncService.notificationCallback = { [weak self] result in
+            guard let self else {
+                return
             }
+
+            legacyResult = result
+            notifyIfReady()
         }
 
-        newDataOperation.addDependency(fetchRemoteOperation)
+        dynamicSyncService.notificationCallback = { [weak self] result in
+            guard let self else {
+                return
+            }
 
-        let saveFileOperation = fileRepository.writeOperation(
-            dataClosure: {
-                try fetchRemoteOperation.extractNoCancellableResultData()
-            },
-            at: localPath
+            dynamicResult = result
+            notifyIfReady()
+        }
+
+        legacySyncService.setup()
+        dynamicSyncService.setup()
+    }
+
+    func throttle() {
+        legacySyncService.throttle()
+        dynamicSyncService.throttle()
+    }
+}
+
+extension XcmTransfersSyncService {
+    convenience init(
+        config: ApplicationConfigProtocol,
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        logger: LoggerProtocol = Logger.shared
+    ) {
+        let legacySyncService = XcmLegacyTransfersSyncService(
+            remoteUrl: config.xcmTransfersURL,
+            operationQueue: operationQueue,
+            logger: logger
         )
 
-        saveFileOperation.addDependency(newDataOperation)
+        let dynamicSyncService = XcmDynamicTransfersSyncService(
+            remoteUrl: config.xcmDynamicTransfersURL,
+            operationQueue: operationQueue,
+            logger: logger
+        )
 
-        saveFileOperation.configurationBlock = {
-            do {
-                let newData = try newDataOperation.extractNoCancellableResultData()
-
-                // don't override local file if doesn't changed
-
-                if newData == nil {
-                    saveFileOperation.result = .success(())
-                }
-            } catch {
-                saveFileOperation.result = .failure(error)
-            }
-        }
-
-        let completionOperation = ClosureOperation<XcmTransfers?> {
-            // check that file was saved
-            _ = try saveFileOperation.extractResultData()
-
-            if let data = try newDataOperation.extractNoCancellableResultData() {
-                return try JSONDecoder().decode(XcmTransfers.self, from: data)
-            } else {
-                return nil
-            }
-        }
-
-        completionOperation.addDependency(saveFileOperation)
-
-        let dependencies = [fetchRemoteOperation, newDataOperation, saveFileOperation]
-
-        return CompoundOperationWrapper(targetOperation: completionOperation, dependencies: dependencies)
-    }
-
-    override func performSyncUp() {
-        guard let localPath = creteLocalFilePath() else {
-            completeImmediate(XcmTransfersSyncServiceError.invalidLocalFile(remote: remoteUrl))
-            return
-        }
-
-        let localWrapper = createLocalWrapper(for: localPath)
-        let remoteWrapper = createRemoteWrapper(dependingOn: localWrapper.targetOperation, localPath: localPath)
-
-        localWrapper.targetOperation.completionBlock = { [weak self] in
-            do {
-                if let transfers = try localWrapper.targetOperation.extractNoCancellableResultData().transfers {
-                    self?.notify(with: .success(transfers))
-                }
-            } catch {
-                self?.notify(with: .failure(error))
-            }
-        }
-
-        remoteWrapper.addDependency(wrapper: localWrapper)
-
-        remoteWrapper.targetOperation.completionBlock = { [weak self] in
-            do {
-                guard self?.clearOperations() == true else {
-                    return
-                }
-
-                if let xcmTransfers = try remoteWrapper.targetOperation.extractNoCancellableResultData() {
-                    self?.notify(with: .success(xcmTransfers))
-                }
-
-                self?.complete(nil)
-            } catch {
-                self?.notify(with: .failure(error))
-            }
-        }
-
-        let operations = localWrapper.allOperations + remoteWrapper.allOperations
-
-        self.operations = operations
-
-        operationQueue.addOperations(operations, waitUntilFinished: false)
-    }
-
-    override func stopSyncUp() {
-        let operations = self.operations
-
-        self.operations = nil
-
-        operations?.forEach { $0.cancel() }
+        self.init(legacySyncService: legacySyncService, dynamicSyncService: dynamicSyncService)
     }
 }
