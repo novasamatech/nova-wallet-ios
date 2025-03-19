@@ -27,5 +27,59 @@ enum Xcm {
             lhs.rawValue < rhs.rawValue
         }
     }
+
     // swiftlint:enable identifier_name
+
+    enum Outcome<W: Decodable, E: Decodable>: Decodable {
+        struct Complete: Decodable {
+            let used: W
+        }
+
+        struct Incomplete: Decodable {
+            let used: W
+            let error: E
+        }
+
+        struct Error: Decodable {
+            let error: E
+        }
+
+        case complete(Complete)
+        case incomplete(Incomplete)
+        case error(Error)
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Complete":
+                let model = try container.decode(Complete.self)
+                self = .complete(model)
+            case "Incomplete":
+                let model = try container.decode(Incomplete.self)
+                self = .incomplete(model)
+            case "Error":
+                let model = try container.decode(Error.self)
+                self = .error(model)
+            default:
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: decoder.codingPath,
+                        debugDescription: "Unsupported outcome \(type)"
+                    )
+                )
+            }
+        }
+
+        var isComplete: Bool {
+            switch self {
+            case .complete:
+                return true
+            case .incomplete, .error:
+                return false
+            }
+        }
+    }
 }

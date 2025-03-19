@@ -16,18 +16,21 @@ enum DryRun {
         }
     }
 
+    typealias CallExecutionResult = Substrate.Result<JSON, JSON>
+
     struct CallDryRunEffects: Decodable {
-        let executionResult: ExecutionResult
+        let executionResult: CallExecutionResult
         let emittedEvents: [Event]
         let localXcm: Xcm.Message?
         let forwardedXcms: [ForwardedXcm]
     }
 
     typealias CallResult = Substrate.Result<CallDryRunEffects, JSON>
-    typealias ExecutionResult = Substrate.Result<JSON, JSON>
+
+    typealias XcmExecutionResult = Xcm.Outcome<BlockchainWeight.WeightV2, JSON>
 
     struct XcmDryRunEffects: Decodable {
-        let executionResult: ExecutionResult
+        let executionResult: XcmExecutionResult
         let emittedEvents: [Event]
         let forwardedXcms: [ForwardedXcm]
     }

@@ -121,5 +121,12 @@ final class DryRunBasedFeeTests: XCTestCase {
         let dryRunXcmResult = try dryRunXcmWrapper.targetOperation.extractNoCancellableResultData()
         
         Logger.shared.debug("Dry run xcm: \(dryRunXcmResult)")
+        
+        guard case let .success(xcmEffects) = dryRunXcmResult else {
+            XCTFail("Xcm dry run failed")
+            return
+        }
+        
+        XCTAssert(xcmEffects.executionResult.isComplete, "Xcm Dry run failed")
     }
 }
