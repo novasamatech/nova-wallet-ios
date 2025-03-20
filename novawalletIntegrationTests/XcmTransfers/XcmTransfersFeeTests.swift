@@ -6,18 +6,19 @@ import Operation_iOS
 class XcmTransfersFeeTests: XCTestCase {
     func testKaruraMoonriverBnc() throws {
         let originChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
+        let originAssetId: AssetModel.Id = 4
         let destinationChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
-        let assetId: AssetModel.Id = 4
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 20)
         let amount: BigUInt = 1_000_000_000
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -25,18 +26,19 @@ class XcmTransfersFeeTests: XCTestCase {
 
     func testMoonriverKusama() throws {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let originAssetId: AssetModel.Id = 2
         let destinationChainId = "b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
-        let assetId: AssetModel.Id = 2
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -44,18 +46,19 @@ class XcmTransfersFeeTests: XCTestCase {
 
     func testMoonriverBifrost() throws {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = "9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed"
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 4
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_000_000_000
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -63,18 +66,19 @@ class XcmTransfersFeeTests: XCTestCase {
 
     func testMoonriverKarura() throws {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let originAssetId: AssetModel.Id = 4
         let destinationChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
-        let assetId: AssetModel.Id = 4
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -82,18 +86,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testWestendWestmintSeparatedFee() throws {
         let originChainId = KnowChainId.westend
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.westmint
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -101,18 +106,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testWestendWestmintCrosschainFee() throws {
         let originChainId = KnowChainId.westend
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.westmint
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestCrosschainFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -120,18 +126,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testKusamaStatemineCrosschainFee() throws {
         let originChainId = KnowChainId.kusama
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.kusamaAssetHub
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestCrosschainFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -139,18 +146,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testStatemineKusamaCrosschainFee() throws {
         let originChainId = KnowChainId.kusamaAssetHub
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.kusama
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestCrosschainFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )

@@ -119,12 +119,19 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 nativeTokenMintWrapper = nil
             }
 
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: request.originChain.chainId)
+
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
             let callBuilderOperation = ClosureOperation<InitialModel> {
                 let xcmCallCollector = try xcmDerivationWrapper.targetOperation.extractNoCancellableResultData()
                 let targetMintCollector = try targetTokenMintWrapper.targetOperation.extractNoCancellableResultData()
                 let nativeMintCollector = try nativeTokenMintWrapper?.targetOperation.extractNoCancellableResultData()
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                var callBuilder: RuntimeCallBuilding = RuntimeCallBuilder()
+                var callBuilder: RuntimeCallBuilding = RuntimeCallBuilder(
+                    context: codingFactory.createRuntimeJsonContext()
+                )
 
                 callBuilder = try xcmCallCollector
                     .addingToCall(builder: callBuilder, toEnd: true)
@@ -153,6 +160,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 )
             }
 
+            callBuilderOperation.addDependency(codingFactoryOperation)
             callBuilderOperation.addDependency(targetTokenMintWrapper.targetOperation)
             callBuilderOperation.addDependency(xcmDerivationWrapper.targetOperation)
 
@@ -161,10 +169,12 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 return xcmDerivationWrapper
                     .insertingHead(operations: targetTokenMintWrapper.allOperations)
                     .insertingHead(operations: nativeTokenMintWrapper.allOperations)
+                    .insertingHead(operations: [codingFactoryOperation])
                     .insertingTail(operation: callBuilderOperation)
             } else {
                 return xcmDerivationWrapper
                     .insertingHead(operations: targetTokenMintWrapper.allOperations)
+                    .insertingHead(operations: [codingFactoryOperation])
                     .insertingTail(operation: callBuilderOperation)
             }
 
@@ -350,7 +360,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
                     logger: self.logger
                 )?.searchDepositInEvents(
                     effects.emittedEvents,
-                    accountId: initialModel.sender,
+                    accountId: request.destination.accountId,
                     codingFactory: codingFactory
                 )
 

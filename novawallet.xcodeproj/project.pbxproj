@@ -774,7 +774,7 @@
 		0CA8AF232D85E8E800DB4E6A /* RuntimeCallOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */; };
 		0CA8AF252D85EB5500DB4E6A /* UtilityBatchType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF242D85EB5500DB4E6A /* UtilityBatchType.swift */; };
 		0CA8AF272D85F16900DB4E6A /* RuntimeCall+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */; };
-		0CA8AF2B2D862CE100DB4E6A /* DryRunBasedFeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */; };
+		0CA8AF2B2D862CE100DB4E6A /* XcmDynamicFeeCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF2A2D862CE100DB4E6A /* XcmDynamicFeeCalculatorTests.swift */; };
 		0CA8AF2F2D86364100DB4E6A /* RuntimeCallCollecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */; };
 		0CA8AF312D86412400DB4E6A /* XcmTransfersSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */; };
 		0CA8AF332D86419400DB4E6A /* XcmTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */; };
@@ -6536,7 +6536,7 @@
 		0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCallOrigin.swift; sourceTree = "<group>"; };
 		0CA8AF242D85EB5500DB4E6A /* UtilityBatchType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityBatchType.swift; sourceTree = "<group>"; };
 		0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCall+Init.swift"; sourceTree = "<group>"; };
-		0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DryRunBasedFeeTests.swift; sourceTree = "<group>"; };
+		0CA8AF2A2D862CE100DB4E6A /* XcmDynamicFeeCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmDynamicFeeCalculatorTests.swift; sourceTree = "<group>"; };
 		0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCallCollecting.swift; sourceTree = "<group>"; };
 		0CA8AF302D86412400DB4E6A /* XcmTransfersSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfersSyncService.swift; sourceTree = "<group>"; };
 		0CA8AF322D86419400DB4E6A /* XcmTransfers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransfers.swift; sourceTree = "<group>"; };
@@ -13351,7 +13351,7 @@
 		0CA8AF362D888F1C00DB4E6A /* XcmTransfers */ = {
 			isa = PBXGroup;
 			children = (
-				0CA8AF2A2D862CE100DB4E6A /* DryRunBasedFeeTests.swift */,
+				0CA8AF2A2D862CE100DB4E6A /* XcmDynamicFeeCalculatorTests.swift */,
 				844133BC2860532C00845987 /* XcmTransfersSync+Setup.swift */,
 				84264EE0285B6C6700BF6D4A /* XcmTransfersSyncTests.swift */,
 				844133BA2860528500845987 /* XcmTransfersFeeTests.swift */,
@@ -27560,7 +27560,7 @@
 				AEE4E37225ECF83F00D6DF31 /* StakingInfoTests.swift in Sources */,
 				E2F3E726280823CF00CF31B5 /* ETHAccountInjection.swift in Sources */,
 				F441BE13263986BE0096B67B /* ExtrinsicServiceTests.swift in Sources */,
-				0CA8AF2B2D862CE100DB4E6A /* DryRunBasedFeeTests.swift in Sources */,
+				0CA8AF2B2D862CE100DB4E6A /* XcmDynamicFeeCalculatorTests.swift in Sources */,
 				843B6F4F28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift in Sources */,
 				0C8AF7B62B36C75400005AC9 /* Pdc20OperationTests.swift in Sources */,
 				0C0F6DAC2D3EB19D00943A7C /* MythosCollatorsTests.swift in Sources */,

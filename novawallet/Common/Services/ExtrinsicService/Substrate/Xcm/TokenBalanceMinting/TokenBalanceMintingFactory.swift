@@ -132,11 +132,7 @@ extension TokenBalanceMintingFactory: TokenBalanceMintingFactoryProtocol {
 
                 switch assetInfo {
                 case .native:
-                    return self.createTokenMintingWrapper(
-                        for: accountId,
-                        amount: amount,
-                        chainAsset: chainAsset
-                    )
+                    return self.createNativeTokenMintWrapper(accountId: accountId, amount: amount)
                 case let .statemine(info):
                     return self.createStatemineTokenMintWrapper(
                         accountId: accountId,

@@ -36,6 +36,7 @@ extension Xcm {
         case buyExecution(BuyExecutionValue)
         case depositReserveAsset(DepositReserveAssetValue)
         case receiveTeleportedAsset([Multiasset])
+        case other(String, JSON)
 
         init(from decoder: any Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -64,12 +65,8 @@ extension Xcm {
                 let value = try container.decode([Multiasset].self)
                 self = .receiveTeleportedAsset(value)
             default:
-                throw DecodingError.dataCorrupted(
-                    .init(
-                        codingPath: container.codingPath,
-                        debugDescription: "Unsupported instruction \(type)"
-                    )
-                )
+                let value = try container.decode(JSON.self)
+                self = .other(type, value)
             }
         }
 
@@ -98,6 +95,9 @@ extension Xcm {
             case let .receiveTeleportedAsset(assets):
                 try container.encode(Self.fieldReceiveTeleportedAsset)
                 try container.encode(assets)
+            case let .other(type, value):
+                try container.encode(type)
+                try container.encode(value)
             }
         }
     }
