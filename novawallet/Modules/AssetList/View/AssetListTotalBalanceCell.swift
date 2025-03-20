@@ -41,7 +41,12 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
     private func setupLayout() {
         contentView.addSubview(cellBackgroundView)
 
-        let cellContentView = UIView.vStack(spacing: 0, [totalView, cardView])
+        // TODO: Remove conditional compilation on cards release
+        #if F_RELEASE
+            let cellContentView = UIView.vStack(spacing: 0, [totalView])
+        #else
+            let cellContentView = UIView.vStack(spacing: 0, [totalView, cardView])
+        #endif
 
         contentView.addSubview(cellContentView)
         cellContentView.snp.makeConstraints { make in
