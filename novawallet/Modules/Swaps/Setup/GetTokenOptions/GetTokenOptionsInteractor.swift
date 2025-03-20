@@ -7,7 +7,7 @@ final class GetTokenOptionsInteractor {
     let assetModelObservable: AssetListModelObservable
     let destinationChainAsset: ChainAsset
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
-    let purchaseProvider: PurchaseProviderProtocol
+    let rampProvider: RampProviderProtocol
     let logger: LoggerProtocol
 
     private var xcmTransfers: XcmTransfers?
@@ -17,14 +17,14 @@ final class GetTokenOptionsInteractor {
         destinationChainAsset: ChainAsset,
         assetModelObservable: AssetListModelObservable,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
-        purchaseProvider: PurchaseProviderProtocol,
+        rampProvider: RampProviderProtocol,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.destinationChainAsset = destinationChainAsset
         self.assetModelObservable = assetModelObservable
         self.xcmTransfersSyncService = xcmTransfersSyncService
-        self.purchaseProvider = purchaseProvider
+        self.rampProvider = rampProvider
         self.logger = logger
     }
 
@@ -41,7 +41,7 @@ final class GetTokenOptionsInteractor {
         }
 
         let availableXcmOrigins = determineAvailableXcmOrigins()
-        let purchaseActions = purchaseProvider.buildRampActions(
+        let purchaseActions = rampProvider.buildOnRampActions(
             for: destinationChainAsset,
             accountId: selectedAccount.chainAccount.accountId
         )

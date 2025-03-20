@@ -1,15 +1,15 @@
 import Foundation
 import UIKit.UIImage
 
-final class PurchaseAggregator {
-    private var providers: [PurchaseProviderProtocol]
+final class RampAggregator {
+    private var providers: [RampProviderProtocol]
 
-    init(providers: [PurchaseProviderProtocol]) {
+    init(providers: [RampProviderProtocol]) {
         self.providers = providers
     }
 }
 
-extension PurchaseAggregator: PurchaseProviderProtocol {
+extension RampAggregator: RampProviderProtocol {
     func with(appName: String) -> Self {
         providers = providers.map { $0.with(appName: appName) }
         return self
@@ -30,22 +30,17 @@ extension PurchaseAggregator: PurchaseProviderProtocol {
         return self
     }
 
-    func buildPurchaseActions(
-        for chainAsset: ChainAsset,
-        accountId: AccountId
-    ) -> [PurchaseAction] {
-        providers.flatMap { $0.buildPurchaseActions(for: chainAsset, accountId: accountId) }
-    }
-
-    func buildRampActions(
+    func buildOnRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction] {
-        providers.flatMap {
-            $0.buildRampActions(
-                for: chainAsset,
-                accountId: accountId
-            )
-        }
+        providers.flatMap { $0.buildOnRampActions(for: chainAsset, accountId: accountId) }
+    }
+
+    func buildOffRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        providers.flatMap { $0.buildOffRampActions(for: chainAsset, accountId: accountId) }
     }
 }

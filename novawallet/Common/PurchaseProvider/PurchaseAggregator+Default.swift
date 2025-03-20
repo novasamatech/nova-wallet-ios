@@ -1,15 +1,15 @@
 import Foundation
 
-extension PurchaseAggregator {
-    static func defaultAggregator() -> PurchaseAggregator {
+extension RampAggregator {
+    static func defaultAggregator() -> RampAggregator {
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
-        let purchaseProviders: [PurchaseProviderProtocol] = [
+        let rampProviders: [RampProviderProtocol] = [
             MercuryoProvider(),
             TransakProvider(),
             BanxaProvider()
         ]
-        return PurchaseAggregator(providers: purchaseProviders)
+        return RampAggregator(providers: rampProviders)
             .with(appName: config.purchaseAppName)
             .with(logoUrl: config.logoURL)
             .with(colorCode: R.color.colorIconAccent()!.hexRGB)

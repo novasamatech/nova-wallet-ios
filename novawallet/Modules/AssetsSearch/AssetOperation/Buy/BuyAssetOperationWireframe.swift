@@ -9,7 +9,7 @@ protocol BuyAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol,
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol
+        rampProvider: RampProviderProtocol
     )
 }
 
@@ -20,13 +20,13 @@ extension BuyAssetOperationWireframe: AssetsSearchWireframeProtocol {
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol
+        rampProvider: RampProviderProtocol
     ) {
         guard let selectNetworkView = AssetOperationNetworkListViewFactory.createBuyView(
             with: multichainToken,
             stateObservable: stateObservable,
             selectedAccount: selectedAccount,
-            purchaseProvider: purchaseProvider
+            rampProvider: rampProvider
         ) else {
             return
         }

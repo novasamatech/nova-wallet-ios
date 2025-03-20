@@ -4,6 +4,7 @@ protocol SelectRampProviderViewProtocol: ControllerBackedProtocol {
 
 protocol SelectRampProviderPresenterProtocol: AnyObject {
     func setup()
+    func selectProvider(with id: String)
 }
 
 protocol SelectRampProviderInteractorInputProtocol: AnyObject {
@@ -14,4 +15,9 @@ protocol SelectRampProviderInteractorOutputProtocol: AnyObject {
     func didReceive(_ rampActions: [RampAction])
 }
 
-protocol SelectRampProviderWireframeProtocol: AnyObject {}
+protocol SelectRampProviderWireframeProtocol: AnyObject {
+    func openRampProvider(
+        from view: ControllerBackedProtocol?,
+        for action: RampAction
+    )
+}

@@ -5,12 +5,13 @@ struct SelectRampProviderViewFactory {
     static func createView(
         providerType: SelectRampProvider.ProviderType,
         rampActions: [RampAction],
-        assetSymbol: AssetModel.Symbol
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
     ) -> SelectRampProviderViewProtocol? {
         let interactor = SelectRampProviderInteractor(
             rampActions: rampActions
         )
-        let wireframe = SelectRampProviderWireframe()
+        let wireframe = SelectRampProviderWireframe(delegate: delegate)
 
         let localizationManager = LocalizationManager.shared
 

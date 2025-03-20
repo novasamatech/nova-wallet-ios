@@ -45,22 +45,24 @@ enum FiatPaymentMethods {
     }
 }
 
-protocol PurchaseProviderProtocol {
+protocol RampProviderProtocol {
     func with(appName: String) -> Self
     func with(logoUrl: URL) -> Self
     func with(colorCode: String) -> Self
     func with(callbackUrl: URL) -> Self
-    func buildPurchaseActions(
+
+    func buildOffRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
-    ) -> [PurchaseAction]
-    func buildRampActions(
+    ) -> [RampAction]
+
+    func buildOnRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction]
 }
 
-extension PurchaseProviderProtocol {
+extension RampProviderProtocol {
     var defaultPaymentMethods: [FiatPaymentMethods] {
         [
             .visa(R.image.visaLogo()!),

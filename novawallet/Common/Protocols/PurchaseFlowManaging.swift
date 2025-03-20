@@ -29,7 +29,7 @@ extension PurchaseFlowManaging where Self: ModalPickerViewControllerDelegate & R
                 locale: locale
             )
         } else {
-            wireframe?.showPurchaseProviders(
+            wireframe?.showOnRampProviders(
                 from: view,
                 actions: purchaseActions,
                 assetSymbol: assetSymbol,

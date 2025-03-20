@@ -9,19 +9,19 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManag
     }
 
     let selectedAccount: MetaAccountModel
-    let purchaseProvider: PurchaseProviderProtocol
+    let rampProvider: RampProviderProtocol
     private var purchaseActions: [RampAction] = []
 
     init(
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol,
+        rampProvider: RampProviderProtocol,
         wireframe: BuyAssetOperationWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
-        self.purchaseProvider = purchaseProvider
+        self.rampProvider = rampProvider
 
         super.init(
             delegate: nil,
@@ -43,7 +43,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManag
                     from: view,
                     multichainToken: multichainToken,
                     selectedAccount: selectedAccount,
-                    purchaseProvider: purchaseProvider
+                    rampProvider: rampProvider
                 )
             }
         )
@@ -62,7 +62,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, PurchaseFlowManag
             return
         }
 
-        purchaseActions = purchaseProvider.buildRampActions(
+        purchaseActions = rampProvider.buildOnRampActions(
             for: chainAsset,
             accountId: accountId
         )

@@ -3,7 +3,7 @@ import SoraFoundation
 
 class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, PurchaseFlowManaging {
     let selectedAccount: MetaAccountModel
-    let purchaseProvider: PurchaseProviderProtocol
+    let rampProvider: RampProviderProtocol
 
     private let wireframe: BuyAssetOperationWireframeProtocol
     private var purchaseActions: [RampAction] = []
@@ -14,11 +14,11 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol,
+        rampProvider: RampProviderProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
-        self.purchaseProvider = purchaseProvider
+        self.rampProvider = rampProvider
         self.wireframe = wireframe
 
         super.init(
@@ -47,7 +47,7 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
             return
         }
 
-        purchaseActions = purchaseProvider.buildRampActions(for: chainAsset, accountId: accountId)
+        purchaseActions = rampProvider.buildOnRampActions(for: chainAsset, accountId: accountId)
 
         let checkResult = TokenOperation.checkBuyOperationAvailable(
             rampActions: purchaseActions,

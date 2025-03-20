@@ -84,7 +84,7 @@ extension AssetOperationNetworkListViewFactory {
         with multichainToken: MultichainToken,
         stateObservable: AssetListModelObservable,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol
+        rampProvider: RampProviderProtocol
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -104,7 +104,7 @@ extension AssetOperationNetworkListViewFactory {
                 multichainToken: multichainToken,
                 stateObservable: stateObservable,
                 selectedAccount: selectedAccount,
-                purchaseProvider: purchaseProvider,
+                rampProvider: rampProvider,
                 currencyManager: currencyManager
             )
         )
@@ -130,7 +130,7 @@ extension AssetOperationNetworkListViewFactory {
             multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
             selectedAccount: dependencies.selectedAccount,
-            purchaseProvider: dependencies.purchaseProvider,
+            rampProvider: dependencies.rampProvider,
             localizationManager: LocalizationManager.shared
         )
     }
@@ -274,7 +274,7 @@ private extension AssetOperationNetworkListViewFactory {
         let multichainToken: MultichainToken
         let stateObservable: AssetListModelObservable
         let selectedAccount: MetaAccountModel
-        let purchaseProvider: PurchaseProviderProtocol
+        let rampProvider: RampProviderProtocol
         let currencyManager: CurrencyManager
     }
 

@@ -16,6 +16,8 @@ class RampProviderView: UIView {
         view.numberOfLines = 0
     }
 
+    var viewModel: SelectRampProvider.ViewModel.ProviderViewModel?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -56,6 +58,8 @@ private extension RampProviderView {
 
 extension RampProviderView {
     func bind(with model: SelectRampProvider.ViewModel.ProviderViewModel) {
+        viewModel = model
+
         providerLogoImageView.image = model.logo
         descriptionLabel.text = model.descriptionText
 

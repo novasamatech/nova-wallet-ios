@@ -1,6 +1,12 @@
 import UIKit
 
+protocol SelectRampProviderViewLayoutDelegate: AnyObject {
+    func didSelectProvider(with id: String)
+}
+
 final class SelectRampProviderViewLayout: ScrollableContainerLayoutView {
+    weak var delegate: SelectRampProviderViewLayoutDelegate?
+
     let titleView: StackTableHeaderCell = .create { view in
         view.titleLabel.apply(style: .title3Primary)
         view.titleLabel.numberOfLines = 0
@@ -39,8 +45,23 @@ private extension SelectRampProviderViewLayout {
 
             view.rowContentView.bind(with: providerModel)
 
+            view.addTarget(
+                self,
+                action: #selector(actionSelectProvider),
+                for: .touchUpInside
+            )
+
             return view
         }
+    }
+
+    @objc func actionSelectProvider(_ sender: UIControl) {
+        guard
+            let rowView = sender as? RowView<RampProviderView>,
+            let viewModel = rowView.rowContentView.viewModel
+        else { return }
+
+        delegate?.didSelectProvider(with: viewModel.id)
     }
 }
 

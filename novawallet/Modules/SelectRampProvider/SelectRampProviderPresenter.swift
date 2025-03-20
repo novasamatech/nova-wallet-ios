@@ -53,6 +53,17 @@ extension SelectRampProviderPresenter: SelectRampProviderPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func selectProvider(with id: String) {
+        guard let action = rampActions?.first(where: { $0.url == URL(string: id) }) else {
+            return
+        }
+
+        wireframe.openRampProvider(
+            from: view,
+            for: action
+        )
+    }
 }
 
 // MARK: SelectRampProviderInteractorOutputProtocol

@@ -198,7 +198,7 @@ enum AssetOperationViewFactory {
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         wallet: MetaAccountModel
     ) -> BuyAssetOperationPresenter {
-        let purchaseProvider = PurchaseAggregator.defaultAggregator()
+        let rampProvider = RampAggregator.defaultAggregator()
 
         let filter: ChainAssetsFilter = { chainAsset in
             guard
@@ -208,7 +208,7 @@ enum AssetOperationViewFactory {
                 return false
             }
 
-            let purchaseActions = purchaseProvider.buildPurchaseActions(
+            let purchaseActions = rampProvider.buildOnRampActions(
                 for: chainAsset,
                 accountId: accountId
             )
@@ -226,7 +226,7 @@ enum AssetOperationViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             selectedAccount: wallet,
-            purchaseProvider: purchaseProvider,
+            rampProvider: rampProvider,
             wireframe: BuyAssetOperationWireframe(stateObservable: stateObservable),
             localizationManager: LocalizationManager.shared
         )

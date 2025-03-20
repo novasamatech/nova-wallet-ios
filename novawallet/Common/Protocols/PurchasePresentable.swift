@@ -7,11 +7,18 @@ protocol RampPresentable {
         delegate: RampDelegate
     )
 
-    func showPurchaseProviders(
+    func showOnRampProviders(
         from view: ControllerBackedProtocol?,
         actions: [RampAction],
         assetSymbol: AssetModel.Symbol,
-        delegate: ModalPickerViewControllerDelegate
+        delegate: RampDelegate
+    )
+
+    func showOffRampProviders(
+        from view: ControllerBackedProtocol?,
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
     )
 
     func presentPurchaseDidComplete(
@@ -36,22 +43,44 @@ extension RampPresentable {
         view?.controller.present(purchaseView.controller, animated: true)
     }
 
-    func showPurchaseProviders(
+    func showOnRampProviders(
         from view: ControllerBackedProtocol?,
         actions: [RampAction],
         assetSymbol: AssetModel.Symbol,
-        delegate _: ModalPickerViewControllerDelegate
+        delegate: RampDelegate
     ) {
-        guard let purchaseProvidersView = SelectRampProviderViewFactory.createView(
+        guard let onRampProvidersView = SelectRampProviderViewFactory.createView(
             providerType: .onramp,
             rampActions: actions,
-            assetSymbol: assetSymbol
+            assetSymbol: assetSymbol,
+            delegate: delegate
         ) else {
             return
         }
 
         view?.controller.navigationController?.pushViewController(
-            purchaseProvidersView.controller,
+            onRampProvidersView.controller,
+            animated: true
+        )
+    }
+
+    func showOffRampProviders(
+        from view: ControllerBackedProtocol?,
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
+    ) {
+        guard let offRampProvidersView = SelectRampProviderViewFactory.createView(
+            providerType: .offramp,
+            rampActions: actions,
+            assetSymbol: assetSymbol,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            offRampProvidersView.controller,
             animated: true
         )
     }

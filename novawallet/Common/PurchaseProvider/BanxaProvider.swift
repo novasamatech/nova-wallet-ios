@@ -3,7 +3,7 @@ import CryptoKit
 import SubstrateSdk
 import SoraFoundation
 
-final class BanxaProvider: PurchaseProviderProtocol {
+final class BanxaProvider {
     #if F_RELEASE
         let host = "https://novawallet.banxa.com"
     #else
@@ -14,41 +14,35 @@ final class BanxaProvider: PurchaseProviderProtocol {
     private var colorCode: String?
     private let displayURL = "banxa.com"
 
+    private func buildURL(
+        address: AccountAddress,
+        token: String,
+        network: String,
+        callbackUrl _: URL
+    ) -> URL? {
+        var components = URLComponents(string: host)
+
+        let queryItems = [
+            URLQueryItem(name: "coinType", value: token),
+            URLQueryItem(name: "blockchain", value: network),
+            URLQueryItem(name: "walletAddress", value: address)
+        ]
+
+        components?.queryItems = queryItems
+
+        return components?.url
+    }
+}
+
+// MARK: RampProviderProtocol
+
+extension BanxaProvider: RampProviderProtocol {
     func with(callbackUrl: URL) -> Self {
         self.callbackUrl = callbackUrl
         return self
     }
 
-    func buildPurchaseActions(for chainAsset: ChainAsset, accountId: AccountId) -> [PurchaseAction] {
-        guard
-            let banxa = chainAsset.asset.buyProviders?.banxa,
-            let network = banxa.blockchain?.stringValue,
-            let token = banxa.coinType?.stringValue,
-            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
-            return []
-        }
-
-        guard let callbackUrl = self.callbackUrl,
-              let url = buildURL(
-                  address: address,
-                  token: token,
-                  network: network,
-                  callbackUrl: callbackUrl
-              ) else {
-            return []
-        }
-
-        return [
-            PurchaseAction(
-                title: "Banxa",
-                url: url,
-                icon: R.image.iconBanxa()!,
-                displayURL: displayURL
-            )
-        ]
-    }
-
-    func buildRampActions(
+    func buildOffRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction] {
@@ -85,22 +79,40 @@ final class BanxaProvider: PurchaseProviderProtocol {
         return [action]
     }
 
-    private func buildURL(
-        address: AccountAddress,
-        token: String,
-        network: String,
-        callbackUrl _: URL
-    ) -> URL? {
-        var components = URLComponents(string: host)
+    func buildOnRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        guard
+            let banxa = chainAsset.asset.buyProviders?.banxa,
+            let network = banxa.blockchain?.stringValue,
+            let token = banxa.coinType?.stringValue,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
 
-        let queryItems = [
-            URLQueryItem(name: "coinType", value: token),
-            URLQueryItem(name: "blockchain", value: network),
-            URLQueryItem(name: "walletAddress", value: address)
-        ]
+        guard let callbackUrl = self.callbackUrl,
+              let url = buildURL(
+                  address: address,
+                  token: token,
+                  network: network,
+                  callbackUrl: callbackUrl
+              ) else {
+            return []
+        }
 
-        components?.queryItems = queryItems
+        var paymentMethods = defaultPaymentMethods
+        paymentMethods.append(.others("+5"))
 
-        return components?.url
+        let action = RampAction(
+            logo: R.image.banxaLogo()!,
+            descriptionText: LocalizableResource { locale in
+                R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
+            },
+            fiatPaymentMethods: paymentMethods,
+            url: url
+        )
+
+        return [action]
     }
 }

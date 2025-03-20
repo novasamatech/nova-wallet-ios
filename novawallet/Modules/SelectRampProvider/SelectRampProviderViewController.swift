@@ -22,7 +22,16 @@ final class SelectRampProviderViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupView()
         presenter.setup()
+    }
+}
+
+// MARK: Private
+
+private extension SelectRampProviderViewController {
+    func setupView() {
+        rootView.delegate = self
     }
 }
 
@@ -31,5 +40,13 @@ final class SelectRampProviderViewController: UIViewController, ViewHolder {
 extension SelectRampProviderViewController: SelectRampProviderViewProtocol {
     func didReceive(_ viewModel: SelectRampProvider.ViewModel) {
         rootView.bind(with: viewModel)
+    }
+}
+
+// MARK: SelectRampProviderViewLayoutDelegate
+
+extension SelectRampProviderViewController: SelectRampProviderViewLayoutDelegate {
+    func didSelectProvider(with id: String) {
+        presenter.selectProvider(with: id)
     }
 }

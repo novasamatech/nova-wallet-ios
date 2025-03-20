@@ -20,6 +20,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
     private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
     private var purchaseActions: [RampAction] = []
+    private var sellActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
     init(
@@ -39,12 +40,16 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         self.logger = logger
         localizationManager = localizableManager
     }
+}
 
-    private func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
+// MARK: Private
+
+private extension AssetDetailsPresenter {
+    func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
         externalBalances.reduce(0) { $0 + $1.amount }
     }
 
-    private func updateView() {
+    func updateView() {
         guard let view, let balance else {
             return
         }
@@ -70,7 +75,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         view.didReceive(availableOperations: availableOperations)
     }
 
-    private func showPurchase() {
+    func showPurchase() {
         startPuchaseFlow(
             from: view,
             purchaseActions: purchaseActions,
@@ -80,7 +85,7 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         )
     }
 
-    private func showReceiveTokens() {
+    func showReceiveTokens() {
         guard let view = view,
               let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(
                   for: chainAsset.chain.accountRequest()
@@ -95,6 +100,8 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         )
     }
 }
+
+// MARK: AssetDetailsPresenterProtocol
 
 extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func setup() {
@@ -179,7 +186,18 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 }
 
+// MARK: AssetDetailsInteractorOutputProtocol
+
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
+    func didReceive(
+        onRampActions: [RampAction],
+        offRampActions: [RampAction]
+    ) {
+        purchaseActions = onRampActions
+        sellActions = offRampActions
+        updateView()
+    }
+
     func didReceive(balance: AssetBalance?) {
         self.balance = balance
         updateView()
@@ -200,11 +218,6 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(purchaseActions: [RampAction]) {
-        self.purchaseActions = purchaseActions
-        updateView()
-    }
-
     func didReceive(availableOperations: AssetDetailsOperation) {
         self.availableOperations = availableOperations
         updateView()
@@ -220,6 +233,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     }
 }
 
+// MARK: Localizable
+
 extension AssetDetailsPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
@@ -227,6 +242,8 @@ extension AssetDetailsPresenter: Localizable {
         }
     }
 }
+
+// MARK: ModalPickerViewControllerDelegate
 
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
@@ -239,11 +256,15 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
     }
 }
 
+// MARK: RampDelegate
+
 extension AssetDetailsPresenter: RampDelegate {
     func rampDidComplete() {
         wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }
+
+// MARK: AssetPriceChartModuleOutputProtocol
 
 extension AssetDetailsPresenter: AssetPriceChartModuleOutputProtocol {
     func didReceiveChartState(_ state: AssetPriceChartState) {
