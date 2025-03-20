@@ -1,6 +1,32 @@
 import Foundation
 import Operation_iOS
 
+private typealias PriceChartDataFilterPeriod = StakingRewardFiltersPeriod
+
+extension PriceChartDataFilterPeriod {
+    init?(from priceHistoryPeriod: PriceHistoryPeriod) {
+        switch priceHistoryPeriod {
+        case .week:
+            self = .lastWeek
+        case .month:
+            self = .lastMonth
+        case .year:
+            self = .lastYear
+        case .allTime:
+            self = .allTime
+        default:
+            return nil
+        }
+    }
+}
+
+private struct PriceDataOptimizationMapping {
+    let mappingValue: [PriceHistoryPeriod: Set<PriceHistoryPeriod>] = [
+        .month: Set(arrayLiteral: .week),
+        .allTime: Set(arrayLiteral: .year)
+    ]
+}
+
 protocol PriceChartDataOperationFactoryProtocol {
     func createWrapper(
         tokenId: String,
@@ -9,8 +35,9 @@ protocol PriceChartDataOperationFactoryProtocol {
 }
 
 class PriceChartDataOperationFactory {
-    let fetchOperationFactory: CoingeckoOperationFactoryProtocol
-    let availablePeriods: [PriceHistoryPeriod]
+    private let fetchOperationFactory: CoingeckoOperationFactoryProtocol
+    private let availablePeriods: [PriceHistoryPeriod]
+    private let chartDataOptimizationMapping: PriceDataOptimizationMapping = .init()
 
     init(
         fetchOperationFactory: CoingeckoOperationFactoryProtocol,
@@ -48,6 +75,59 @@ private extension PriceChartDataOperationFactory {
             dependencies: [fetchOperation]
         )
     }
+
+    func filterPeriods(
+        _ periods: [PriceHistoryPeriod],
+        mapping: PriceDataOptimizationMapping
+    ) -> [PriceHistoryPeriod] {
+        var mutablePeriods = periods
+
+        periods.forEach { period in
+            guard let innerPeriods = mapping.mappingValue[period] else { return }
+
+            mutablePeriods.removeAll { innerPeriods.contains($0) }
+        }
+
+        return mutablePeriods
+    }
+
+    func fillPeriodGaps(
+        in priceHistory: [PriceHistoryPeriod: [PriceHistoryItem]]
+    ) -> [PriceHistoryPeriod: [PriceHistoryItem]] {
+        var mutableHistory = priceHistory
+
+        priceHistory.forEach { key, value in
+            guard let periods = chartDataOptimizationMapping.mappingValue[key] else { return }
+
+            periods.forEach { period in
+                guard let startedAt = PriceChartDataFilterPeriod(from: period)?.interval.startTimestamp else {
+                    return
+                }
+
+                mutableHistory[period] = createHistory(
+                    from: value,
+                    startedAt: UInt64(startedAt)
+                )
+            }
+        }
+
+        return mutableHistory
+    }
+
+    func createHistory(
+        from longerHistory: [PriceHistoryItem],
+        startedAt: UInt64
+    ) -> [PriceHistoryItem] {
+        var history: [PriceHistoryItem] = []
+
+        for item in longerHistory.reversed() {
+            guard item.startedAt >= startedAt else { break }
+
+            history.append(item)
+        }
+
+        return history.reversed()
+    }
 }
 
 // MARK: PriceChartDataOperationFactoryProtocol
@@ -57,9 +137,12 @@ extension PriceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol
         tokenId: String,
         currency: Currency
     ) -> CompoundOperationWrapper<[PriceHistoryPeriod: [PriceHistoryItem]]> {
-        let allPeriods = availablePeriods
+        let requestingPeriods = filterPeriods(
+            availablePeriods,
+            mapping: chartDataOptimizationMapping
+        )
 
-        let wrappers = allPeriods.map {
+        let wrappers = requestingPeriods.map {
             createFetchHistoryWrapper(
                 for: tokenId,
                 currency: currency,
@@ -67,12 +150,18 @@ extension PriceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol
             )
         }
 
-        let mapOperation = ClosureOperation<[PriceHistoryPeriod: [PriceHistoryItem]]> {
-            let result: [PriceHistoryPeriod: [PriceHistoryItem]] = [:]
+        let mapOperation = ClosureOperation<[PriceHistoryPeriod: [PriceHistoryItem]]> { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            return try zip(allPeriods, wrappers).reduce(into: result) { acc, pair in
-                acc[pair.0] = try pair.1.targetOperation.extractNoCancellableResultData()
+            var result: [PriceHistoryPeriod: [PriceHistoryItem]] = [:]
+
+            try zip(requestingPeriods, wrappers).forEach { pair in
+                result[pair.0] = try pair.1.targetOperation.extractNoCancellableResultData()
             }
+
+            result = fillPeriodGaps(in: result)
+
+            return result
         }
 
         wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
