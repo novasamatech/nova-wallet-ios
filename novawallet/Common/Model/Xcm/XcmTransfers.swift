@@ -235,18 +235,18 @@ extension XcmTransfers {
         for chainAsset: ChainAsset,
         destinationChain: ChainModel
     ) throws -> XcmTransferMetadata {
-        if let legacyMetadata = try getLegacyTransferMetadata(
-            for: chainAsset,
-            destinationChain: destinationChain
-        ) {
-            return legacyMetadata
-        }
-
         if let dynamicMetadata = try getDynamicTransferMetadata(
             for: chainAsset,
             destinationChain: destinationChain
         ) {
             return dynamicMetadata
+        }
+
+        if let legacyMetadata = try getLegacyTransferMetadata(
+            for: chainAsset,
+            destinationChain: destinationChain
+        ) {
+            return legacyMetadata
         }
 
         throw XcmTransfersError.noTransfer(chainAsset.chainAssetId, destinationChain.chainId)
