@@ -53,12 +53,12 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 maxWeight: maxWeight
             )
 
-            guard let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest()) else {
+            guard let chainAccount = wallet.fetch(for: unweighted.originChain.accountRequest()) else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
             let operationFactory = try createExtrinsicOperationFactory(
-                for: unweighted.origin.chain,
+                for: unweighted.originChain,
                 chainAccount: chainAccount
             )
 
@@ -112,12 +112,12 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 maxWeight: request.maxWeight
             )
 
-            guard let chainAccount = wallet.fetch(for: request.unweighted.origin.chain.accountRequest()) else {
+            guard let chainAccount = wallet.fetch(for: request.unweighted.originChain.accountRequest()) else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
             let operationFactory = try createExtrinsicOperationFactory(
-                for: request.unweighted.origin.chain,
+                for: request.unweighted.originChain,
                 chainAccount: chainAccount
             )
 

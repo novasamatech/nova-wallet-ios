@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 extension XcmV4 {
-    struct GenericJunctions<J>: Codable where J: Codable {
+    struct GenericJunctions<J>: Codable, Equatable where J: Codable & Equatable {
         let items: [J]
 
         init(items: [J]) {

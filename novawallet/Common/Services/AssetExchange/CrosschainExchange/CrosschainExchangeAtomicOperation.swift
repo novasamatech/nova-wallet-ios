@@ -25,7 +25,7 @@ final class CrosschainExchangeAtomicOperation {
         host.resolutionFactory.createResolutionWrapper(
             for: edge.origin,
             transferDestinationId: .init(
-                chainId: edge.destination.chainId,
+                chainAssetId: edge.destination,
                 accountId: destinationAccount.accountId
             ),
             xcmTransfers: host.xcmTransfers

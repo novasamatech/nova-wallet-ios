@@ -91,7 +91,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
             let destination = transferParties.destination.replacing(accountId: recepientAccountId)
             let unweightedRequest = XcmUnweightedTransferRequest(
-                origin: originChainAsset,
+                origin: transferParties.origin,
                 destination: destination,
                 reserve: transferParties.reserve,
                 metadata: transferParties.metadata,

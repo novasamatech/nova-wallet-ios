@@ -12,9 +12,10 @@ final class DryRunBasedFeeTests: XCTestCase {
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: substrateStorageFacade)
         
         let operationQueue = OperationQueue()
-        let dryRunOperationFactory = DryRunOperationFactory(
+        let feeService = XcmDynamicCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
         
         let polkadot = try chainRegistry.getChainOrError(for: KnowChainId.polkadot)
@@ -61,72 +62,12 @@ final class DryRunBasedFeeTests: XCTestCase {
             amount: amount
         )
         
-        let callDeriver = XcmCallDerivator(chainRegistry: chainRegistry)
+        let feeWrapper = feeService.crossChainFeeWrapper(request: request)
         
-        let callWrapper = callDeriver.createTransferCallDerivationWrapper(
-            for: request,
-            maxWeight: BigUInt(UInt64.max)
-        )
+        operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
         
-        operationQueue.addOperations(callWrapper.allOperations, waitUntilFinished: true)
+        let fee = try feeWrapper.targetOperation.extractNoCancellableResultData()
         
-        let callCollecting = try callWrapper.targetOperation.extractNoCancellableResultData()
-        
-        var callBuilder: RuntimeCallBuilding = RuntimeCallBuilder()
-        
-        callBuilder = try callCollecting
-            .addingToCall(builder: callBuilder)
-            .dispatchingAs(.system(.signed(accountId)))
-        
-        let dryRunCall = try callBuilder
-            .addingFirst(
-                BalancesPallet.ForceSetBalance(
-                    who: .accoundId(accountId),
-                    newFree: 2 * amount
-                ).runtimeCall()
-            )
-            .batching(.batchAll)
-            .build()
-        
-        let dryRunCallWrapper = dryRunOperationFactory.createDryRunCallWrapper(
-            dryRunCall,
-            origin: .system(.root),
-            chainId: polkadot.chainId
-        )
-        
-        operationQueue.addOperations(dryRunCallWrapper.allOperations, waitUntilFinished: true)
-        
-        let dryRunCallResult = try dryRunCallWrapper.targetOperation.extractNoCancellableResultData()
-        
-        Logger.shared.debug("Dry run call: \(dryRunCallResult)")
-        
-        guard case let .success(callEffects) = dryRunCallResult else {
-            XCTFail("call dry run failed")
-            return
-        }
-        
-        let dryRunXcmWrapper = dryRunOperationFactory.createDryRunXcmWrapper(
-            from: Xcm.VersionedMultilocation.V3(
-                .init(
-                    parents: 1,
-                    interior: .init(items: [])
-                )
-            ),
-            xcm: callEffects.forwardedXcms[0].messages[0],
-            chainId: hydration.chainId
-        )
-        
-        operationQueue.addOperations(dryRunXcmWrapper.allOperations, waitUntilFinished: true)
-        
-        let dryRunXcmResult = try dryRunXcmWrapper.targetOperation.extractNoCancellableResultData()
-        
-        Logger.shared.debug("Dry run xcm: \(dryRunXcmResult)")
-        
-        guard case let .success(xcmEffects) = dryRunXcmResult else {
-            XCTFail("Xcm dry run failed")
-            return
-        }
-        
-        XCTAssert(xcmEffects.executionResult.isComplete, "Xcm Dry run failed")
+        Logger.shared.debug("Fee: \(fee)")
     }
 }

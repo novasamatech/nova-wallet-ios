@@ -187,7 +187,7 @@ private extension XcmCallDerivator {
 
             return try xcmModelFactory.createMultilocationAsset(
                 for: .init(
-                    origin: request.origin,
+                    origin: request.origin.chainAsset,
                     reserve: request.reserve.chain,
                     destination: request.destination,
                     amount: request.amount,
@@ -213,7 +213,7 @@ extension XcmCallDerivator: XcmCallDerivating {
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
-                for: transferRequest.origin.chain.chainId
+                for: transferRequest.originChain.chainId
             )
 
             let destinationAssetWrapper = createMultilocationAssetWrapper(

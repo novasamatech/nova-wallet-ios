@@ -2,7 +2,7 @@ import Foundation
 
 extension Xcm {
     // swiftlint:disable identifier_name
-    enum VersionedMultilocation: Codable {
+    enum VersionedMultilocation: Codable, Equatable {
         case V1(Xcm.Multilocation)
         case V2(Xcm.Multilocation)
         case V3(XcmV3.Multilocation)
@@ -141,7 +141,7 @@ extension Xcm.VersionedMultilocation {
             return .V2(multiLocation)
         }
     }
-    
+
     var version: Xcm.Version {
         switch self {
         case .V1:
@@ -152,6 +152,41 @@ extension Xcm.VersionedMultilocation {
             return .V3
         case .V4:
             return .V4
+        }
+    }
+
+    static func location(
+        for targetChain: ChainModel,
+        parachainId: ParaId?,
+        relativeTo origin: ChainModel,
+        version: Xcm.Version
+    ) -> Xcm.VersionedMultilocation {
+        switch version {
+        case .V0, .V1, .V2:
+            versionedMultiLocation(
+                for: version,
+                multiLocation: Xcm.Multilocation.location(
+                    for: targetChain,
+                    parachainId: parachainId,
+                    relativeTo: origin
+                )
+            )
+        case .V3:
+            .V3(
+                XcmV3.Multilocation.location(
+                    for: targetChain,
+                    parachainId: parachainId,
+                    relativeTo: origin
+                )
+            )
+        case .V4:
+            .V4(
+                XcmV4.Multilocation.location(
+                    for: targetChain,
+                    parachainId: parachainId,
+                    relativeTo: origin
+                )
+            )
         }
     }
 }

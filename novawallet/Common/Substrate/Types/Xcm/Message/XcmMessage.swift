@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 extension Xcm {
     // swiftlint:disable identifier_name
@@ -60,4 +61,48 @@ extension Xcm {
         }
     }
     // swiftlint:enable identifier_name
+}
+
+extension Xcm.Message {
+    var version: Xcm.Version {
+        switch self {
+        case .V2:
+            .V2
+        case .V3:
+            .V3
+        case .V4:
+            .V4
+        }
+    }
+
+    init(
+        rawInstructions: JSON,
+        version: Xcm.Version,
+        context: RuntimeJsonContext
+    ) throws {
+        switch version {
+        case .V0, .V1, .V2:
+            let instructions = try rawInstructions.map(
+                to: [Xcm.Instruction].self,
+                with: context.toRawContext()
+            )
+
+            self = .V2(instructions)
+        case .V3:
+            let instructions = try rawInstructions.map(
+                to: [XcmV3.Instruction].self,
+                with: context.toRawContext()
+            )
+
+            self = .V3(instructions)
+
+        case .V4:
+            let instructions = try rawInstructions.map(
+                to: [XcmV4.Instruction].self,
+                with: context.toRawContext()
+            )
+
+            self = .V4(instructions)
+        }
+    }
 }

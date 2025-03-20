@@ -27,10 +27,12 @@ enum DryRun {
 
     typealias CallResult = Substrate.Result<CallDryRunEffects, JSON>
 
-    enum CallDryRunError: Error {
+    enum DryRunError<R>: Error {
         case failure(JSON)
         case execution(JSON)
     }
+
+    typealias CallDryRunError = DryRunError<JSON>
 
     typealias XcmExecutionResult = Xcm.Outcome<BlockchainWeight.WeightV2, JSON>
 
@@ -41,6 +43,8 @@ enum DryRun {
     }
 
     typealias XcmResult = Substrate.Result<XcmDryRunEffects, JSON>
+
+    typealias XcmDryRunError = DryRunError<JSON>
 }
 
 extension DryRun.CallResult {
@@ -56,5 +60,15 @@ extension DryRun.CallResult {
 extension DryRun.CallDryRunEffects {
     func xcmVersion() -> Xcm.Version? {
         forwardedXcms.first?.location.version
+    }
+}
+
+extension DryRun.XcmResult {
+    func ensureSuccessExecution() throws -> DryRun.XcmDryRunEffects {
+        let effects = try ensureOkOrError { DryRun.XcmDryRunError.failure($0) }
+
+        try effects.executionResult.ensureCompleteOrError { DryRun.XcmDryRunError.execution($0) }
+
+        return effects
     }
 }

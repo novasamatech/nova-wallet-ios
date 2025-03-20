@@ -1,59 +1,43 @@
 import Foundation
-import SubstrateSdk
 
-protocol XcmForwardedMessageByEventMatching {
-    func matchFromEvent(
-        _ event: Event,
+protocol XcmForwardedMessageMatching {
+    func matchMessage(
+        from events: [Event],
+        forwardedXcms: [DryRun.ForwardedXcm],
+        origin: Xcm.VersionedMultilocation,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) -> JSON?
+    ) throws -> Xcm.Message?
 }
 
-extension XcmForwardedMessageByEventMatching {
-    func matchFromEventList(
-        _ eventList: [Event],
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) -> JSON? {
-        for event in eventList {
-            if let message = matchFromEvent(event, codingFactory: codingFactory) {
-                return message
-            }
-        }
-
-        return nil
-    }
-}
-
-final class XcmForwardedMessageByEventMatcher {
-    let palletName: String
-    let logger: LoggerProtocol
+final class XcmForwardedMessageMatcher {
+    let byEventMatcher: XcmForwardedMessageByEventMatching
+    let byLocationMatcher: XcmForwardedMessageByLocationMatching
 
     init(palletName: String, logger: LoggerProtocol) {
-        self.palletName = palletName
-        self.logger = logger
+        byEventMatcher = XcmForwardedMessageByEventMatcher(
+            palletName: palletName,
+            logger: logger
+        )
+
+        byLocationMatcher = XcmForwardedMessageByLocationMatcher()
     }
 }
 
-extension XcmForwardedMessageByEventMatcher: XcmForwardedMessageByEventMatching {
-    func matchFromEvent(
-        _ event: Event,
+extension XcmForwardedMessageMatcher: XcmForwardedMessageMatching {
+    func matchMessage(
+        from events: [Event],
+        forwardedXcms: [DryRun.ForwardedXcm],
+        origin: Xcm.VersionedMultilocation,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) -> JSON? {
-        do {
-            let eventPath = EventCodingPath(moduleName: palletName, eventName: "Sent")
-            guard codingFactory.metadata.eventMatches(event, path: eventPath) else {
-                return nil
-            }
-
-            let params = try event.params.map(
-                to: Xcm.SentEvent<JSON>.self,
-                with: codingFactory.createRuntimeJsonContext().toRawContext()
+    ) throws -> Xcm.Message? {
+        if let rawInstructions = byEventMatcher.matchFromEventList(events, codingFactory: codingFactory) {
+            return try Xcm.Message(
+                rawInstructions: rawInstructions,
+                version: origin.version,
+                context: codingFactory.createRuntimeJsonContext()
             )
-
-            return params.message
-        } catch {
-            logger.error("Parsing failed: \(error)")
-
-            return nil
         }
+
+        return byLocationMatcher.matchFromForwardedXcms(forwardedXcms, from: origin)
     }
 }

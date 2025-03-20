@@ -62,7 +62,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin,
+                    chainAsset: request.origin.chainAsset,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
@@ -112,7 +112,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin,
+                    chainAsset: request.origin.chainAsset,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
@@ -500,7 +500,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let originToReserveWrapper = createChainDeliveryFeeWrapper(
                 for: .init(
                     message: reserveMessage,
-                    fromChainId: request.origin.chain.chainId,
+                    fromChainId: request.originChain.chainId,
                     toParachainId: request.reserve.parachainId
                 ),
                 deliveryFee: feeParams.originDelivery,
@@ -535,7 +535,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let originToDestinationWrapper = createChainDeliveryFeeWrapper(
                 for: .init(
                     message: feeMessages.destination,
-                    fromChainId: request.origin.chain.chainId,
+                    fromChainId: request.originChain.chainId,
                     toParachainId: request.destination.parachainId
                 ),
                 deliveryFee: feeParams.originDelivery,
@@ -584,7 +584,7 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin,
+                    chainAsset: request.origin.chainAsset,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,

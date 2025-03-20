@@ -43,13 +43,13 @@ enum Xcm {
             let error: E
         }
 
-        struct Error: Decodable {
+        struct ErrorModel: Decodable {
             let error: E
         }
 
         case complete(Complete)
         case incomplete(Incomplete)
-        case error(Error)
+        case error(ErrorModel)
 
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -64,7 +64,7 @@ enum Xcm {
                 let model = try container.decode(Incomplete.self)
                 self = .incomplete(model)
             case "Error":
-                let model = try container.decode(Error.self)
+                let model = try container.decode(ErrorModel.self)
                 self = .error(model)
             default:
                 throw DecodingError.dataCorrupted(
@@ -82,6 +82,18 @@ enum Xcm {
                 return true
             case .incomplete, .error:
                 return false
+            }
+        }
+
+        @discardableResult
+        func ensureCompleteOrError(_ errorClosure: (E) -> Error) throws -> W {
+            switch self {
+            case let .complete(complete):
+                return complete.used
+            case let .incomplete(incomplete):
+                throw errorClosure(incomplete.error)
+            case let .error(errorModel):
+                throw errorClosure(errorModel.error)
             }
         }
     }
