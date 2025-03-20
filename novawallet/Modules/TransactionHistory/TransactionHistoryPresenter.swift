@@ -113,7 +113,7 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
             break
         case .priceFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeSubscriptions()
+                self?.interactor.refetchPrices()
             }
         case .localFilter:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

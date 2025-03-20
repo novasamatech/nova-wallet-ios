@@ -31,7 +31,7 @@ protocol PriceChartDataOperationFactoryProtocol {
     func createWrapper(
         tokenId: String,
         currency: Currency
-    ) -> CompoundOperationWrapper<[PriceHistoryPeriod: [PriceHistoryItem]]>
+    ) -> CompoundOperationWrapper<[PriceHistoryPeriod: PriceHistory]>
 }
 
 class PriceChartDataOperationFactory {
@@ -55,17 +55,17 @@ private extension PriceChartDataOperationFactory {
         for tokenId: String,
         currency: Currency,
         period: PriceHistoryPeriod
-    ) -> CompoundOperationWrapper<[PriceHistoryItem]> {
+    ) -> CompoundOperationWrapper<PriceHistory> {
         let fetchOperation = fetchOperationFactory.fetchPriceHistory(
             for: tokenId,
             currency: currency,
             period: period
         )
 
-        let mapOperation: BaseOperation<[PriceHistoryItem]> = ClosureOperation {
+        let mapOperation: BaseOperation<PriceHistory> = ClosureOperation {
             let priceHistory = try fetchOperation.extractNoCancellableResultData()
 
-            return priceHistory.items
+            return priceHistory
         }
 
         mapOperation.addDependency(fetchOperation)
@@ -92,8 +92,8 @@ private extension PriceChartDataOperationFactory {
     }
 
     func fillPeriodGaps(
-        in priceHistory: [PriceHistoryPeriod: [PriceHistoryItem]]
-    ) -> [PriceHistoryPeriod: [PriceHistoryItem]] {
+        in priceHistory: [PriceHistoryPeriod: PriceHistory]
+    ) -> [PriceHistoryPeriod: PriceHistory] {
         var mutableHistory = priceHistory
 
         priceHistory.forEach { key, value in
@@ -115,18 +115,21 @@ private extension PriceChartDataOperationFactory {
     }
 
     func createHistory(
-        from longerHistory: [PriceHistoryItem],
+        from longerHistory: PriceHistory,
         startedAt: UInt64
-    ) -> [PriceHistoryItem] {
-        var history: [PriceHistoryItem] = []
+    ) -> PriceHistory {
+        var historyItems: [PriceHistoryItem] = []
 
-        for item in longerHistory.reversed() {
+        for item in longerHistory.items.reversed() {
             guard item.startedAt >= startedAt else { break }
 
-            history.append(item)
+            historyItems.append(item)
         }
 
-        return history.reversed()
+        return PriceHistory(
+            currencyId: longerHistory.currencyId,
+            items: historyItems.reversed()
+        )
     }
 }
 
@@ -136,7 +139,7 @@ extension PriceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol
     func createWrapper(
         tokenId: String,
         currency: Currency
-    ) -> CompoundOperationWrapper<[PriceHistoryPeriod: [PriceHistoryItem]]> {
+    ) -> CompoundOperationWrapper<[PriceHistoryPeriod: PriceHistory]> {
         let requestingPeriods = filterPeriods(
             availablePeriods,
             mapping: chartDataOptimizationMapping
@@ -150,10 +153,10 @@ extension PriceChartDataOperationFactory: PriceChartDataOperationFactoryProtocol
             )
         }
 
-        let mapOperation = ClosureOperation<[PriceHistoryPeriod: [PriceHistoryItem]]> { [weak self] in
+        let mapOperation = ClosureOperation<[PriceHistoryPeriod: PriceHistory]> { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            var result: [PriceHistoryPeriod: [PriceHistoryItem]] = [:]
+            var result: [PriceHistoryPeriod: PriceHistory] = [:]
 
             try zip(requestingPeriods, wrappers).forEach { pair in
                 result[pair.0] = try pair.1.targetOperation.extractNoCancellableResultData()
