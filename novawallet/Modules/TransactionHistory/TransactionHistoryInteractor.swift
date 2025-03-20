@@ -2,18 +2,19 @@ import UIKit
 import SoraUI
 import Operation_iOS
 
-final class TransactionHistoryInteractor: AnyCancellableCleaning {
+final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning {
     weak var presenter: TransactionHistoryInteractorOutputProtocol?
 
     let fetcherFactory: TransactionHistoryFetcherFactoryProtocol
     let chainAsset: ChainAsset
-    let priceHistoryOperationFactory: PriceChartDataOperationFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol
     let accountId: AccountId
     let pageSize: Int
     let operationQueue: OperationQueue
 
     private var fetcher: TransactionHistoryFetching?
+    private var priceProvider: AnySingleValueProvider<PriceHistory>?
 
     private var localFilterCancellable: CancellableCall?
 
@@ -22,7 +23,7 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning {
         chainAsset: ChainAsset,
         fetcherFactory: TransactionHistoryFetcherFactoryProtocol,
         localFilterFactory: TransactionHistoryLocalFilterFactoryProtocol,
-        priceHistoryOperationFactory: PriceChartDataOperationFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         pageSize: Int
@@ -31,7 +32,7 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning {
         self.chainAsset = chainAsset
         self.fetcherFactory = fetcherFactory
         self.localFilterFactory = localFilterFactory
-        self.priceHistoryOperationFactory = priceHistoryOperationFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.pageSize = pageSize
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -40,12 +41,8 @@ final class TransactionHistoryInteractor: AnyCancellableCleaning {
     deinit {
         clear(cancellable: &localFilterCancellable)
     }
-}
 
-// MARK: Private
-
-private extension TransactionHistoryInteractor {
-    func setupFetcher(for filter: WalletHistoryFilter) {
+    private func setupFetcher(for filter: WalletHistoryFilter) {
         do {
             fetcher = try fetcherFactory.createFetcher(
                 for: accountId,
@@ -63,34 +60,18 @@ private extension TransactionHistoryInteractor {
         }
     }
 
-    func fetchHistoricalPrices() {
+    private func setupPriceHistorySubscription() {
         guard let priceId = chainAsset.asset.priceId else {
+            priceProvider = nil
             return
         }
 
-        let wrapper = priceHistoryOperationFactory.createWrapper(
-            tokenId: priceId,
-            currency: selectedCurrency
-        )
+        clear(singleValueProvider: &priceProvider)
 
-        execute(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(historyByPeriod):
-                guard let history = historyByPeriod[.allTime] else { return }
-
-                let calculator = TokenPriceCalculator(history: history)
-                self?.presenter?.didReceive(priceCalculator: calculator)
-            case let .failure(error):
-                self?.presenter?.didReceive(error: .priceFailed(error))
-            }
-        }
+        priceProvider = subscribeToPriceHistory(for: priceId, currency: selectedCurrency)
     }
 
-    func provideLocalFilter() {
+    private func provideLocalFilter() {
         clear(cancellable: &localFilterCancellable)
 
         let wrapper = localFilterFactory.createWrapper()
@@ -118,8 +99,6 @@ private extension TransactionHistoryInteractor {
     }
 }
 
-// MARK: TransactionHistoryInteractorInputProtocol
-
 extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtocol {
     func loadNext() {
         guard let fetcher = fetcher, !fetcher.isFetching, !fetcher.isComplete else {
@@ -132,12 +111,12 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
 
     func setup() {
         provideLocalFilter()
-        fetchHistoricalPrices()
+        setupPriceHistorySubscription()
         setupFetcher(for: .all)
     }
 
-    func refetchPrices() {
-        fetchHistoricalPrices()
+    func remakeSubscriptions() {
+        setupPriceHistorySubscription()
     }
 
     func retryLocalFilter() {
@@ -149,7 +128,23 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
     }
 }
 
-// MARK: TransactionHistoryFetcherDelegate
+extension TransactionHistoryInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePriceHistory(
+        result: Result<PriceHistory?, Error>,
+        priceId _: AssetModel.PriceId
+    ) {
+        switch result {
+        case let .success(optHistory):
+            if let history = optHistory {
+                let calculator = TokenPriceCalculator(history: history)
+                presenter?.didReceive(priceCalculator: calculator)
+            }
+
+        case let .failure(error):
+            presenter?.didReceive(error: .priceFailed(error))
+        }
+    }
+}
 
 extension TransactionHistoryInteractor: TransactionHistoryFetcherDelegate {
     func didReceiveHistoryChanges(
@@ -169,12 +164,10 @@ extension TransactionHistoryInteractor: TransactionHistoryFetcherDelegate {
     }
 }
 
-// MARK: SelectedCurrencyDepending
-
 extension TransactionHistoryInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil {
-            fetchHistoricalPrices()
+            setupPriceHistorySubscription()
         }
     }
 }

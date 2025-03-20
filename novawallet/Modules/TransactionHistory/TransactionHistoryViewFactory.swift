@@ -94,17 +94,12 @@ struct TransactionHistoryViewFactory {
             logger: Logger.shared
         )
 
-        let priceHistoryFetchFactory = PriceChartDataOperationFactory(
-            fetchOperationFactory: CoingeckoOperationFactory(),
-            availablePeriods: [.allTime]
-        )
-
         return .init(
             accountId: accountId,
             chainAsset: chainAsset,
             fetcherFactory: fetcherFactory,
             localFilterFactory: localFilterFactory,
-            priceHistoryOperationFactory: priceHistoryFetchFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             pageSize: 100

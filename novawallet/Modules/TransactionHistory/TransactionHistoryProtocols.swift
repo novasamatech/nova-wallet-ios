@@ -17,7 +17,7 @@ protocol TransactionHistoryInteractorInputProtocol: AnyObject {
     func setup()
     func set(filter: WalletHistoryFilter)
     func retryLocalFilter()
-    func refetchPrices()
+    func remakeSubscriptions()
     func loadNext()
 }
 
