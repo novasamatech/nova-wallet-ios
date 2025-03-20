@@ -38,6 +38,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionBuySell()
     func actionSwap()
     func actionChangeAssetListStyle()
+    func actionCardOpen()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
@@ -82,6 +83,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentSearch()
     func presentAssetsManage()
     func presentLocks()
+    func presentCard()
     func send()
     func receive()
     func buySell()
@@ -153,6 +155,8 @@ protocol AssetListWireframeProtocol: AnyObject,
     func showSwapTokens(from view: AssetListViewProtocol?)
 
     func showStaking(from view: AssetListViewProtocol?)
+
+    func showCard(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

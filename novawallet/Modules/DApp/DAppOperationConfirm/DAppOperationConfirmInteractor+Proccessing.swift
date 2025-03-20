@@ -42,6 +42,38 @@ extension DAppOperationConfirmInteractor {
         }
     }
 
+    func createFeeAssetIdOperation(
+        dependingOn extrinsicOperation: BaseOperation<PolkadotExtensionExtrinsic>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        chain: ChainModel
+    ) -> BaseOperation<ChainAsset?> {
+        ClosureOperation {
+            let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            guard let assetId = extrinsic.assetId else {
+                return nil
+            }
+
+            guard chain.hasAssetHubFees else {
+                return nil
+            }
+
+            guard
+                let localAsset = AssetHubTokensConverter.convertRawFeeAssetToLocalAsset(
+                    assetId,
+                    on: chain,
+                    using: codingFactory
+                ) else {
+                throw DAppOperationConfirmInteractorError.extrinsicBadField(
+                    name: "Fee asset decoding failed"
+                )
+            }
+
+            return localAsset
+        }
+    }
+
     // swiftlint:disable:next function_body_length
     func createParsedExtrinsicOperation(
         wallet: MetaAccountModel,
@@ -56,9 +88,13 @@ extension DAppOperationConfirmInteractor {
 
         let eraOperation = createEraParsingOperation(dependingOn: extrinsicOperation)
 
-        let resultOperation = ClosureOperation<DAppOperationProcessedResult> {
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+        let feeAssetOperation = createFeeAssetIdOperation(
+            dependingOn: extrinsicOperation,
+            codingFactoryOperation: codingFactoryOperation,
+            chain: chain
+        )
 
+        let resultOperation = ClosureOperation<DAppOperationProcessedResult> {
             let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
 
             guard
@@ -97,15 +133,6 @@ extension DAppOperationConfirmInteractor {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "blockNumber")
             }
 
-            let expectedSignedExtensions = codingFactory.metadata.getSignedExtensions()
-
-            guard expectedSignedExtensions == extrinsic.signedExtensions else {
-                throw DAppOperationConfirmInteractorError.signedExtensionsMismatch(
-                    actual: extrinsic.signedExtensions,
-                    expected: expectedSignedExtensions
-                )
-            }
-
             guard let method = try? callOperation.extractNoCancellableResultData() else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "method")
             }
@@ -126,15 +153,22 @@ extension DAppOperationConfirmInteractor {
                 tip: tip,
                 transactionVersion: UInt32(transactionVersion),
                 metadataHash: extrinsic.metadataHash,
+                assetId: extrinsic.assetId,
                 withSignedTransaction: extrinsic.withSignedTransaction ?? false,
-                signedExtensions: expectedSignedExtensions,
+                signedExtensions: extrinsic.signedExtensions,
                 version: extrinsic.version
             )
 
-            return DAppOperationProcessedResult(account: accountResponse, extrinsic: parsedExtrinsic)
+            let feeAsset = try feeAssetOperation.extractNoCancellableResultData()
+
+            return DAppOperationProcessedResult(
+                account: accountResponse,
+                extrinsic: parsedExtrinsic,
+                feeAsset: feeAsset
+            )
         }
 
-        let dependencies = [eraOperation, callOperation]
+        let dependencies = [eraOperation, callOperation, feeAssetOperation]
 
         dependencies.forEach { resultOperation.addDependency($0) }
 

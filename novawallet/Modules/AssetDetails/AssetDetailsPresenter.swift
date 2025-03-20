@@ -45,19 +45,11 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
     }
 
     private func updateView() {
-        guard let view = view else {
+        guard let view, let balance else {
             return
         }
 
-        guard let balance = balance else {
-            return
-        }
-
-        let assetDetailsModel = viewModelFactory.createAssetDetailsModel(
-            priceData: priceData,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        )
+        let assetDetailsModel = viewModelFactory.createAssetDetailsModel(chainAsset: chainAsset)
         view.didReceive(assetModel: assetDetailsModel)
 
         let totalExternalBalances = calculateTotalExternalBalances(for: externalAssetBalances)

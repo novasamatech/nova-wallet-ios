@@ -1319,7 +1319,6 @@
 "staking.unstake.crossed.min.title" = "Túl kis összeg marad a stake-ben";
 "staking.unstake.no.space.message" = "Jeleneg nincs szabad hely a pool-od unstake-elési sorában. Kérlek, próbáld újra %@ múlva";
 "staking.unstake.no.space.title" = "Túl sokan unstake-elnek a pool-odból";
-"staking.restake.message" = "Tokeneid vissza fognak kerülni a stake-be";
 "staking.claim.rewards" = "Jutalmak igénylése";
 "common.recommended" = "Ajánlott";
 "staking.setup.amount.direct.type.subtitle" = "Kiválasztott: %d (max. %d)";
@@ -1799,3 +1798,14 @@
 "chart.period.month" = "Elmúlt hónap";
 "chart.period.year" = "Elmúlt év";
 "chart.period.max" = "Teljes idő";
+"common.pay" = "Fizetés";
+"common.card.issued" = "Kártya kiállítva";
+"card.top.up.dot.setup.title" = "Töltsd fel a kártyát DOT-tal";
+"common.manage.debit.card" = "Bankkártya kezelése";
+"common.estimated.timer" = "Becsült ~%@";
+"card.open.pending.sheet.title" = "<font>A kártyád kiállítása folyamatban van!</font>";
+"card.open.pending.sheet.message" = "Eltarthat akár %@-ig.\nEz az ablak automatikusan bezáródik.";
+"card.open.failed.alert.title" = "Lépj kapcsolatba a támogatással";
+"card.open.failed.alert.message" = "Kérjük, vedd fel a kapcsolatot a support@novawallet.io címen. Add meg az e-mail címed, amelyet használtál a kártya kiállításához.";
+"card.topup.pending.sheet.title" = "A kártyád feltöltése folyamatban van!";
+"staking.restake.message" = "A jutalmaid hozzáadódnak a stakingedhez";

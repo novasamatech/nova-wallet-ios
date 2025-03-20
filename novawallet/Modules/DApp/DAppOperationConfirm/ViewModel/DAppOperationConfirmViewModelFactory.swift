@@ -4,7 +4,6 @@ import BigInt
 
 protocol DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel
-    func convertBalanceToDecimal(_ balance: BigUInt) -> Decimal?
 }
 
 final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
@@ -45,13 +44,5 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
             networkName: chain.networkName,
             networkIconViewModel: networkIcon
         )
-    }
-
-    func convertBalanceToDecimal(_ balance: BigUInt) -> Decimal? {
-        guard let precision = chain.utilityAssetBalanceInfo?.assetPrecision else {
-            return nil
-        }
-
-        return Decimal.fromSubstrateAmount(balance, precision: precision)
     }
 }

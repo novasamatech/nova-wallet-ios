@@ -22,6 +22,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let operationQueue: OperationQueue
 
     var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
+    var feeAsset: ChainAsset?
 
     var priceProvider: StreamableProvider<PriceData>?
     let feeCancellable = CancellableCallStore()
@@ -92,14 +93,18 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
             chain: chain,
             runtimeProvider: runtimeProvider,
             connection: connection,
+            feeRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashFactory
         )
+
+        feeAsset = result.feeAsset
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: result.account.accountId,
             chainAddress: result.account.toAddress() ?? "",
+            feeAsset: feeAsset,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )
@@ -113,7 +118,9 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         for extrinsicFactory: DAppExtrinsicBuilderOperationFactory,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<SignatureResult> {
-        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper { data, context in
+        let signatureWrapper = extrinsicFactory.createRawSignatureWrapper(
+            payingFeeIn: feeAsset?.chainAssetId
+        ) { data, context in
             try signer.sign(data, context: context).rawData()
         }
 

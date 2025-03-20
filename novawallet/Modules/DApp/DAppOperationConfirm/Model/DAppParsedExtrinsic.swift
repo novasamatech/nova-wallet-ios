@@ -14,6 +14,7 @@ struct DAppParsedExtrinsic: Encodable {
     let tip: BigUInt
     let transactionVersion: UInt32
     let metadataHash: String?
+    let assetId: String?
     let withSignedTransaction: Bool
     let signedExtensions: [String]
     let version: UInt
