@@ -27,6 +27,11 @@ enum DryRun {
 
     typealias CallResult = Substrate.Result<CallDryRunEffects, JSON>
 
+    enum CallDryRunError: Error {
+        case failure(JSON)
+        case execution(JSON)
+    }
+
     typealias XcmExecutionResult = Xcm.Outcome<BlockchainWeight.WeightV2, JSON>
 
     struct XcmDryRunEffects: Decodable {
@@ -36,4 +41,20 @@ enum DryRun {
     }
 
     typealias XcmResult = Substrate.Result<XcmDryRunEffects, JSON>
+}
+
+extension DryRun.CallResult {
+    func ensureSuccessExecution() throws -> DryRun.CallDryRunEffects {
+        let effects = try ensureOkOrError { DryRun.CallDryRunError.failure($0) }
+
+        try effects.executionResult.ensureOkOrError { DryRun.CallDryRunError.execution($0) }
+
+        return effects
+    }
+}
+
+extension DryRun.CallDryRunEffects {
+    func xcmVersion() -> Xcm.Version? {
+        forwardedXcms.first?.location.version
+    }
 }

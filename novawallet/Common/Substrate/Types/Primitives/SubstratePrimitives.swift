@@ -36,5 +36,15 @@ enum Substrate {
                 return false
             }
         }
+
+        @discardableResult
+        func ensureOkOrError(_ closure: (E) -> Error) throws -> T {
+            switch self {
+            case let .success(model):
+                return model
+            case let .failure(error):
+                throw closure(error)
+            }
+        }
     }
 }

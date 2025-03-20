@@ -363,4 +363,12 @@ extension ChainModel {
             return 20
         }
     }
+
+    func emptyAccountId() throws -> AccountId {
+        guard let accountId = Data.random(of: accountIdSize) else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+
+        return accountId
+    }
 }

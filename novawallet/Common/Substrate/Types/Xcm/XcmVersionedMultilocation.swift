@@ -141,4 +141,17 @@ extension Xcm.VersionedMultilocation {
             return .V2(multiLocation)
         }
     }
+    
+    var version: Xcm.Version {
+        switch self {
+        case .V1:
+            return .V1
+        case .V2:
+            return .V2
+        case .V3:
+            return .V3
+        case .V4:
+            return .V4
+        }
+    }
 }

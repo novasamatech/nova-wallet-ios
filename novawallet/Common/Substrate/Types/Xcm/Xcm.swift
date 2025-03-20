@@ -7,6 +7,7 @@ enum Xcm {
         case V1
         case V2
         case V3
+        case V4
 
         init?(rawName: String) {
             switch rawName {
@@ -18,6 +19,8 @@ enum Xcm {
                 self = .V2
             case "V3":
                 self = .V3
+            case "V4":
+                self = .V4
             default:
                 return nil
             }
