@@ -3,14 +3,20 @@ import BigInt
 import Operation_iOS
 import SoraFoundation
 
-final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManaging {
-    var buyAssetWireframe: BuyAssetOperationWireframeProtocol? {
+final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging {
+    var rampWireframe: BuyAssetOperationWireframeProtocol? {
         wireframe as? BuyAssetOperationWireframeProtocol
     }
 
     let selectedAccount: MetaAccountModel
     let rampProvider: RampProviderProtocol
-    private var purchaseActions: [RampAction] = []
+
+    private let checkResultClosure: RampOperationAvailabilityCheckClosure
+    private let rampActionsProviderClosure: RampActionProviderClosure
+    private let flowManagingClosure: RampFlowManagingClosure
+    private let rampCompletionClosure: RampCompletionClosure
+
+    private var rampActions: [RampAction] = []
 
     init(
         interactor: AssetsSearchInteractorInputProtocol,
@@ -18,10 +24,18 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
         selectedAccount: MetaAccountModel,
         rampProvider: RampProviderProtocol,
         wireframe: BuyAssetOperationWireframeProtocol,
+        checkResultClosure: @escaping RampOperationAvailabilityCheckClosure,
+        rampActionsProviderClosure: @escaping RampActionProviderClosure,
+        flowManagingClosure: @escaping RampFlowManagingClosure,
+        rampCompletionClosure: @escaping RampCompletionClosure,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.rampProvider = rampProvider
+        self.checkResultClosure = checkResultClosure
+        self.rampActionsProviderClosure = rampActionsProviderClosure
+        self.flowManagingClosure = flowManagingClosure
+        self.rampCompletionClosure = rampCompletionClosure
 
         super.init(
             delegate: nil,
@@ -39,7 +53,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
                 processAssetSelected(chainAsset)
             },
             onMultipleInstances: { multichainToken in
-                buyAssetWireframe?.showSelectNetwork(
+                rampWireframe?.showSelectNetwork(
                     from: view,
                     multichainToken: multichainToken,
                     selectedAccount: selectedAccount,
@@ -62,32 +76,31 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
             return
         }
 
-        purchaseActions = rampProvider.buildOnRampActions(
-            for: chainAsset,
-            accountId: accountId
+        rampActions = rampActionsProviderClosure(rampProvider)(
+            chainAsset,
+            accountId
         )
 
-        let checkResult = TokenOperation.checkBuyOperationAvailable(
-            rampActions: purchaseActions,
-            walletType: selectedAccount.type,
-            chainAsset: chainAsset
+        let checkResult = checkResultClosure(
+            rampActions,
+            selectedAccount.type,
+            chainAsset
         )
 
         switch checkResult {
         case let .common(commonCheckResult):
-            buyAssetWireframe?.presentOperationCompletion(
+            rampWireframe?.presentOperationCompletion(
                 on: view,
                 by: commonCheckResult,
                 successRouteClosure: { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    self.startOnRampFlow(
-                        from: self.view,
-                        actions: self.purchaseActions,
-                        wireframe: self.buyAssetWireframe,
-                        assetSymbol: chainAsset.asset.symbol,
-                        locale: selectedLocale
+                    guard let self else { return }
+
+                    flowManagingClosure(self)(
+                        view,
+                        rampActions,
+                        rampWireframe,
+                        chainAsset.asset.symbol,
+                        selectedLocale
                     )
                 }
             )
@@ -97,19 +110,13 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
     }
 }
 
-extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        startFlow(
-            from: view,
-            action: purchaseActions[index],
-            wireframe: buyAssetWireframe,
-            locale: selectedLocale
-        )
-    }
-}
-
-extension BuyAssetOperationPresenter: RampDelegate {
+extension RampAssetOperationPresenter: RampDelegate {
     func rampDidComplete() {
-        buyAssetWireframe?.presentOnRampDidComplete(view: view, locale: selectedLocale)
+        guard let rampWireframe else { return }
+
+        rampCompletionClosure(rampWireframe)(
+            view,
+            selectedLocale
+        )
     }
 }

@@ -151,6 +151,8 @@ protocol AssetListWireframeProtocol: AnyObject,
     )
 
     func showBuyTokens(from view: AssetListViewProtocol?)
+    
+    func showSellTokens(from view: AssetListViewProtocol?)
 
     func showSwapTokens(from view: AssetListViewProtocol?)
 

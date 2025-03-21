@@ -535,7 +535,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             from: view,
             delegate: self,
             buyAction: { [weak self] in self?.wireframe.showBuyTokens(from: self?.view) },
-            sellAction: { [weak self] in self?.wireframe.showBuyTokens(from: self?.view) }
+            sellAction: { [weak self] in self?.wireframe.showSellTokens(from: self?.view) }
         )
     }
 

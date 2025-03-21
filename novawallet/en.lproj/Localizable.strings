@@ -1824,3 +1824,4 @@
 "wallet.asset.buySell" = "Buy/Sell";
 "sell.completed" = "Sale initiated! Please wait up to 60 minutes. You can track status on the email.";
 "sell.operation.network.list.title" = "Select network for selling %@";
+"asset.operation.sell.title" = "Sell";
