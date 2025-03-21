@@ -87,7 +87,7 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionReceive),
             for: .touchUpInside
         )
-        totalBalanceView.buyButton.addTarget(
+        totalBalanceView.buySellButton.addTarget(
             self,
             action: #selector(actionBuySell),
             for: .touchUpInside
