@@ -70,7 +70,7 @@ protocol AssetPriceChartInteractorInputProtocol: AnyObject {
 }
 
 protocol AssetPriceChartInteractorOutputProtocol: AnyObject {
-    func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]])
+    func didReceive(prices: [PriceHistoryPeriod: PriceHistory])
     func didReceive(price: PriceData?)
     func didReceive(_ error: AssetPriceChartInteractorError)
 }

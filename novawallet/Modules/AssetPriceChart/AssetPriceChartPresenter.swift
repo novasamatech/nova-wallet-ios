@@ -14,7 +14,7 @@ final class AssetPriceChartPresenter {
     private var locale: Locale
     private var selectedPeriod: PriceHistoryPeriod?
     private var priceData: PriceData?
-    private var prices: [PriceHistoryPeriod: [PriceHistoryItem]]?
+    private var prices: [PriceHistoryPeriod: PriceHistory]?
     private var pricesByTime: [UInt64: Decimal]?
 
     init(
@@ -46,7 +46,7 @@ private extension AssetPriceChartPresenter {
 
         let params = PriceChartWidgetFactoryParams(
             asset: assetModel,
-            entries: prices?[selectedPeriod],
+            entries: prices?[selectedPeriod]?.items,
             availablePeriods: availablePeriods,
             selectedPeriod: selectedPeriod,
             priceData: priceData,
@@ -100,7 +100,7 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
         )
 
         let params = PriceChartPriceUpdateViewFactoryParams(
-            entries: prices?[selectedPeriod],
+            entries: prices?[selectedPeriod]?.items,
             priceData: priceData,
             lastEntry: historyItem,
             selectedPeriod: selectedPeriod,
@@ -117,7 +117,7 @@ extension AssetPriceChartPresenter: AssetPriceChartPresenterProtocol {
 // MARK: AssetPriceChartInteractorOutputProtocol
 
 extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
-    func didReceive(prices: [PriceHistoryPeriod: [PriceHistoryItem]]) {
+    func didReceive(prices: [PriceHistoryPeriod: PriceHistory]) {
         guard !prices.isEmpty else {
             moduleOutput?.didReceiveChartState(.unavailable)
             return
@@ -125,7 +125,7 @@ extension AssetPriceChartPresenter: AssetPriceChartInteractorOutputProtocol {
 
         self.prices = prices
         pricesByTime = prices.values.reduce(into: [:]) { acc, values in
-            values.forEach { acc[$0.startedAt] = $0.value }
+            values.items.forEach { acc[$0.startedAt] = $0.value }
         }
 
         notifyIfChartAvailable()
