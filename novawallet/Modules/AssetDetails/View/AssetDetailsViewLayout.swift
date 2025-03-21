@@ -158,11 +158,6 @@ final class AssetDetailsViewLayout: UIView {
             preferredLanguages: languages
         )
         swapButton.invalidateLayout()
-
-        buySellButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
-            preferredLanguages: languages
-        )
-        buySellButton.invalidateLayout()
     }
 
     func set(assetDetailsModel: AssetDetailsModel) {

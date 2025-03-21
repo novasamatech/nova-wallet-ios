@@ -1820,3 +1820,5 @@
 "select.buy.provider.title" = "Select a provider to buy %@ token";
 "select.sell.provider.title" = "Select a provider to sell %@ token";
 "select.provider.disclaimer.text" = "Payment methods, fees and limits differ by provider. Compare their quotes to find the best option for you.";
+"wallet.asset.sell" = "Sell";
+"wallet.asset.buySell" = "Buy/Sell";

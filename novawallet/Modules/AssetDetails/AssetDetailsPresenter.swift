@@ -76,32 +76,43 @@ private extension AssetDetailsPresenter {
     }
 
     func showRamp() {
-        wireframe.presentBuySellSheet(
-            from: view,
-            delegate: self,
-            buyAction: { [weak self] in
-                guard let self, !purchaseActions.isEmpty else { return }
+        guard availableOperations.rampAvailable() else { return }
 
-                startOnRampFlow(
-                    from: view,
-                    actions: purchaseActions,
-                    wireframe: wireframe,
-                    assetSymbol: chainAsset.asset.symbol,
-                    locale: selectedLocale
-                )
-            },
-            sellAction: { [weak self] in
-                guard let self, !sellActions.isEmpty else { return }
+        let showOnRampClosure: () -> Void = { [weak self] in
+            guard let self, !purchaseActions.isEmpty else { return }
 
-                startOffRampFlow(
-                    from: view,
-                    actions: sellActions,
-                    wireframe: wireframe,
-                    assetSymbol: chainAsset.asset.symbol,
-                    locale: selectedLocale
-                )
-            }
-        )
+            startOnRampFlow(
+                from: view,
+                actions: purchaseActions,
+                wireframe: wireframe,
+                assetSymbol: chainAsset.asset.symbol,
+                locale: selectedLocale
+            )
+        }
+        let showOffRampClosure: () -> Void = { [weak self] in
+            guard let self, !sellActions.isEmpty else { return }
+
+            startOffRampFlow(
+                from: view,
+                actions: sellActions,
+                wireframe: wireframe,
+                assetSymbol: chainAsset.asset.symbol,
+                locale: selectedLocale
+            )
+        }
+
+        if availableOperations.buySellAvailable() {
+            wireframe.presentBuySellSheet(
+                from: view,
+                delegate: self,
+                buyAction: showOnRampClosure,
+                sellAction: showOffRampClosure
+            )
+        } else if availableOperations.buyAvailable() {
+            showOnRampClosure()
+        } else {
+            showOffRampClosure()
+        }
     }
 
     func showReceiveTokens() {

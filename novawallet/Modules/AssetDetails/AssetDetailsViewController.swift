@@ -72,6 +72,26 @@ private extension AssetDetailsViewController {
         rootView.balanceWidget.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
     }
 
+    func configureBuySellAction(for availableOperations: AssetDetailsOperation) {
+        let buySellTitle = if availableOperations.buySellAvailable() || !availableOperations.rampAvailable() {
+            R.string.localizable.walletAssetBuySell(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else if availableOperations.buyAvailable() {
+            R.string.localizable.walletAssetBuy(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            R.string.localizable.walletAssetSell(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        rootView.buySellButton.imageWithTitleView?.title = buySellTitle
+        rootView.buySellButton.isEnabled = availableOperations.rampAvailable()
+        rootView.buySellButton.invalidateLayout()
+    }
+
     @objc func didTapSendButton() {
         presenter.handleSend()
     }
@@ -102,7 +122,8 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.swapButton.isEnabled = availableOperations.contains(.swap)
-        rootView.buySellButton.isEnabled = availableOperations.contains(.buy)
+
+        configureBuySellAction(for: availableOperations)
     }
 
     func didReceive(balance: AssetDetailsBalanceModel) {
