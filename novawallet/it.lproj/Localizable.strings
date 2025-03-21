@@ -1810,7 +1810,7 @@
 "card.topup.pending.sheet.title" = "La tua carta sta ricevendo fondi!";
 "staking.restake.message" = "Le tue ricompense saranno aggiunte al tuo staking";
 "unified.address.popup.title" = "Nuovo Indirizzo Unificato";
-"unified.address.popup.subtitle" = "A <font>l</font>cuni exchange possono ancora richiedere il formato legacy\nper operazioni mentre sono in aggiornamento.";
+"unified.address.popup.subtitle" = "Alcuni exchange possono ancora richiedere il formato legacy\nper operazioni mentre sono in aggiornamento.";
 "unified.address.popup.checkbox.text" = "Non mostrare più.\nPuoi trovare l'indirizzo legacy in Ricevi.";
 "unified.address.new.format" = "Nuovo formato";
 "unified.address.legacy.format" = "Formato legacy";
