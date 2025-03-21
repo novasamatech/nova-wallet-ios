@@ -1375,7 +1375,7 @@
 		2D4F552A2CCC211B00B65B76 /* AssetOperationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */; };
 		2D4F552C2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */; };
 		2D4F55342CCC396200B65B76 /* SendOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55332CCC396200B65B76 /* SendOperationNetworkListPresenter.swift */; };
-		2D4F55362CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */; };
+		2D4F55362CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */; };
 		2D4F55382CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */; };
 		2D4F553B2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */; };
 		2D53C6CB2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D53C6CA2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift */; };
@@ -7129,7 +7129,7 @@
 		2D4F55292CCC211B00B65B76 /* AssetOperationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationWireframe.swift; sourceTree = "<group>"; };
 		2D4F552B2CCC383100B65B76 /* AssetOperationNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetOperationNetworkViewModel.swift; sourceTree = "<group>"; };
 		2D4F55332CCC396200B65B76 /* SendOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
-		2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
+		2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F55372CCC3B3B00B65B76 /* ReceiveOperationNetworkListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveOperationNetworkListPresenter.swift; sourceTree = "<group>"; };
 		2D4F553A2CCC48D700B65B76 /* AssetListModelHelpers+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetListModelHelpers+Sorting.swift"; sourceTree = "<group>"; };
 		2D53C6CA2D7F036E00E7DDC4 /* BuySellActionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuySellActionsPresentable.swift; sourceTree = "<group>"; };
@@ -14814,12 +14814,12 @@
 			path = Receive;
 			sourceTree = "<group>";
 		};
-		2D4F552E2CCC387A00B65B76 /* Buy */ = {
+		2D4F552E2CCC387A00B65B76 /* Ramp */ = {
 			isa = PBXGroup;
 			children = (
-				2D4F55352CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift */,
+				2D4F55352CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift */,
 			);
-			path = Buy;
+			path = Ramp;
 			sourceTree = "<group>";
 		};
 		2D4F552F2CCC388700B65B76 /* Send */ = {
@@ -14856,7 +14856,7 @@
 				4F7095E8DFCBC16F925C919E /* AssetOperationNetworkListPresenter.swift */,
 				2D65F6C72CCED75C00CC6F72 /* Swap */,
 				2D4F552D2CCC387400B65B76 /* Receive */,
-				2D4F552E2CCC387A00B65B76 /* Buy */,
+				2D4F552E2CCC387A00B65B76 /* Ramp */,
 				2D4F552F2CCC388700B65B76 /* Send */,
 			);
 			path = Presenter;
@@ -32154,7 +32154,7 @@
 				0C90C6C22B4FA9FB0084B5C2 /* WalletsUpdateMediator.swift in Sources */,
 				0154E387EC40EF553FC7BD02 /* StackingRewardFiltersProtocols.swift in Sources */,
 				3030DB7C067CC906E6794B1A /* StakingRewardFiltersWireframe.swift in Sources */,
-				2D4F55362CCC3B2400B65B76 /* BuyOperationNetworkListPresenter.swift in Sources */,
+				2D4F55362CCC3B2400B65B76 /* RampOperationNetworkListPresenter.swift in Sources */,
 				77DAFF6D2B297DB500D4220C /* ProxyAccountMapper.swift in Sources */,
 				4C06C526C22782939922BEB0 /* StakingRewardFiltersPresenter.swift in Sources */,
 				3D798C32B3C960FC6216C8C9 /* StakingRewardFiltersViewController.swift in Sources */,

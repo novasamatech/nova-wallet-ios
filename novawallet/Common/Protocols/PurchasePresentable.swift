@@ -21,7 +21,12 @@ protocol RampPresentable {
         delegate: RampDelegate
     )
 
-    func presentPurchaseDidComplete(
+    func presentOnRampDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    )
+
+    func presentOffRampDidComplete(
         view: ControllerBackedProtocol?,
         locale: Locale
     )
@@ -85,13 +90,25 @@ extension RampPresentable {
         )
     }
 
-    func presentPurchaseDidComplete(
+    func presentOnRampDidComplete(
         view: ControllerBackedProtocol?,
         locale: Locale
     ) {
         let languages = locale.rLanguages
         let message = R.string.localizable
             .buyCompleted(preferredLanguages: languages)
+
+        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
+        view?.controller.present(alertController, animated: true)
+    }
+
+    func presentOffRampDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+        let message = R.string.localizable
+            .sellCompleted(preferredLanguages: languages)
 
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)

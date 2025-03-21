@@ -77,7 +77,7 @@ struct AssetOperationNetworkListViewFactory {
     }
 }
 
-// MARK: BUY
+// MARK: BUY/SELL
 
 extension AssetOperationNetworkListViewFactory {
     static func createBuyView(
@@ -98,15 +98,16 @@ extension AssetOperationNetworkListViewFactory {
             logger: logger
         )
 
-        let presenter = createBuyPresenter(
-            dependencies: BuyPresenterDependencies(
-                interactor: interactor,
-                multichainToken: multichainToken,
-                stateObservable: stateObservable,
-                selectedAccount: selectedAccount,
-                rampProvider: rampProvider,
-                currencyManager: currencyManager
-            )
+        let baseRampPresenterDependencies = RampPresenterDependencies.Base(
+            interactor: interactor,
+            multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount,
+            rampProvider: rampProvider,
+            currencyManager: currencyManager
+        )
+        let presenter = createRampPresenter(
+            dependencies: createOnRampPresenterDependencies(base: baseRampPresenterDependencies)
         )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
@@ -117,20 +118,90 @@ extension AssetOperationNetworkListViewFactory {
         return view
     }
 
-    private static func createBuyPresenter(
-        dependencies: BuyPresenterDependencies
-    ) -> BuyOperationNetworkListPresenter {
-        let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
+    static func createSellView(
+        with multichainToken: MultichainToken,
+        stateObservable: AssetListModelObservable,
+        selectedAccount: MetaAccountModel,
+        rampProvider: RampProviderProtocol
+    ) -> AssetOperationNetworkListViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
 
-        let wireframe = BuyAssetOperationWireframe(stateObservable: dependencies.stateObservable)
+        let logger = Logger.shared
 
-        return BuyOperationNetworkListPresenter(
-            interactor: dependencies.interactor,
+        let interactor = AssetOperationNetworkListInteractor(
+            multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            logger: logger
+        )
+
+        let baseRampPresenterDependencies = RampPresenterDependencies.Base(
+            interactor: interactor,
+            multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount,
+            rampProvider: rampProvider,
+            currencyManager: currencyManager
+        )
+        let presenter = createRampPresenter(
+            dependencies: createOffRampPresenterDependencies(base: baseRampPresenterDependencies)
+        )
+
+        let view = AssetOperationNetworkListViewController(presenter: presenter)
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createOnRampPresenterDependencies(
+        base: RampPresenterDependencies.Base
+    ) -> RampPresenterDependencies {
+        .init(
+            base: base,
+            closures: .init(
+                checkResultClosure: TokenOperation.checkBuyOperationAvailable,
+                rampActionsProviderClosure: { $0.buildOnRampActions },
+                flowManagingClosure: { $0.startOnRampFlow },
+                rampCompletionClosure: { $0.presentOnRampDidComplete }
+            )
+        )
+    }
+
+    private static func createOffRampPresenterDependencies(
+        base: RampPresenterDependencies.Base
+    ) -> RampPresenterDependencies {
+        .init(
+            base: base,
+            closures: .init(
+                checkResultClosure: TokenOperation.checkSellOperationAvailable,
+                rampActionsProviderClosure: { $0.buildOffRampActions },
+                flowManagingClosure: { $0.startOffRampFlow },
+                rampCompletionClosure: { $0.presentOffRampDidComplete }
+            )
+        )
+    }
+
+    private static func createRampPresenter(
+        dependencies: RampPresenterDependencies
+    ) -> RampOperationNetworkListPresenter {
+        let viewModelFactory = createViewModelFactory(with: dependencies.base.currencyManager)
+
+        let wireframe = BuyAssetOperationWireframe(stateObservable: dependencies.base.stateObservable)
+
+        return RampOperationNetworkListPresenter(
+            interactor: dependencies.base.interactor,
             wireframe: wireframe,
-            multichainToken: dependencies.multichainToken,
+            rampProvider: dependencies.base.rampProvider,
+            multichainToken: dependencies.base.multichainToken,
             viewModelFactory: viewModelFactory,
-            selectedAccount: dependencies.selectedAccount,
-            rampProvider: dependencies.rampProvider,
+            selectedAccount: dependencies.base.selectedAccount,
+            checkResultClosure: dependencies.closures.checkResultClosure,
+            rampActionsProviderClosure: dependencies.closures.rampActionsProviderClosure,
+            flowManagingClosure: dependencies.closures.flowManagingClosure,
+            rampCompletionClosure: dependencies.closures.rampCompletionClosure,
             localizationManager: LocalizationManager.shared
         )
     }
@@ -269,13 +340,25 @@ private extension AssetOperationNetworkListViewFactory {
         let currencyManager: CurrencyManager
     }
 
-    struct BuyPresenterDependencies {
-        let interactor: AssetOperationNetworkListInteractor
-        let multichainToken: MultichainToken
-        let stateObservable: AssetListModelObservable
-        let selectedAccount: MetaAccountModel
-        let rampProvider: RampProviderProtocol
-        let currencyManager: CurrencyManager
+    struct RampPresenterDependencies {
+        struct Closures {
+            let checkResultClosure: RampOperationAvailabilityCheckClosure
+            let rampActionsProviderClosure: RampActionProviderClosure
+            let flowManagingClosure: RampFlowManagingClosure
+            let rampCompletionClosure: RampCompletionClosure
+        }
+
+        struct Base {
+            let interactor: AssetOperationNetworkListInteractor
+            let multichainToken: MultichainToken
+            let stateObservable: AssetListModelObservable
+            let selectedAccount: MetaAccountModel
+            let rampProvider: RampProviderProtocol
+            let currencyManager: CurrencyManager
+        }
+
+        let base: Base
+        let closures: Closures
     }
 
     struct ReceivePresenterDependencies {

@@ -1822,3 +1822,5 @@
 "select.provider.disclaimer.text" = "Payment methods, fees and limits differ by provider. Compare their quotes to find the best option for you.";
 "wallet.asset.sell" = "Sell";
 "wallet.asset.buySell" = "Buy/Sell";
+"sell.completed" = "Sale initiated! Please wait up to 60 minutes. You can track status on the email.";
+"sell.operation.network.list.title" = "Select network for selling %@";

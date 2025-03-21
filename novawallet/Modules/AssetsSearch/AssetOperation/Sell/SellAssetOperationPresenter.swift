@@ -91,7 +91,7 @@ final class SellAssetOperationPresenter: AssetsSearchPresenter, OffRampFlowManag
                     )
                 }
             )
-        case .noBuyOptions:
+        case .noRampOptions:
             break
         }
     }
@@ -99,6 +99,6 @@ final class SellAssetOperationPresenter: AssetsSearchPresenter, OffRampFlowManag
 
 extension SellAssetOperationPresenter: RampDelegate {
     func rampDidComplete() {
-        buyAssetWireframe?.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+        buyAssetWireframe?.presentOffRampDidComplete(view: view, locale: selectedLocale)
     }
 }

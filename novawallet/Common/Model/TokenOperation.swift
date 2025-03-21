@@ -32,9 +32,32 @@ extension TokenOperation {
         rampActions: [RampAction],
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
-    ) -> BuyAvailableCheckResult {
+    ) -> RampAvailableCheckResult {
         guard !rampActions.isEmpty else {
-            return .noBuyOptions
+            return .noRampOptions
+        }
+
+        switch walletType {
+        case .secrets, .paritySigner, .polkadotVault, .proxied:
+            return .common(.available)
+        case .ledger, .genericLedger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                return .common(.ledgerNotSupported)
+            } else {
+                return .common(.available)
+            }
+        case .watchOnly:
+            return .common(.noSigning)
+        }
+    }
+
+    static func checkSellOperationAvailable(
+        rampActions: [RampAction],
+        walletType: MetaAccountModelType,
+        chainAsset: ChainAsset
+    ) -> RampAvailableCheckResult {
+        guard !rampActions.isEmpty else {
+            return .noRampOptions
         }
 
         switch walletType {
@@ -65,15 +88,15 @@ enum ReceiveAvailableCheckResult {
     }
 }
 
-enum BuyAvailableCheckResult {
+enum RampAvailableCheckResult {
     case common(OperationCheckCommonResult)
-    case noBuyOptions
+    case noRampOptions
 
     var available: Bool {
         switch self {
         case let .common(operationCheckCommonResult):
             return operationCheckCommonResult == .available
-        case .noBuyOptions:
+        case .noRampOptions:
             return false
         }
     }

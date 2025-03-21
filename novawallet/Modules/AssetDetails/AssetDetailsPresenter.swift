@@ -285,7 +285,7 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 
 extension AssetDetailsPresenter: RampDelegate {
     func rampDidComplete() {
-        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+        wireframe.presentOnRampDidComplete(view: view, locale: selectedLocale)
     }
 }
 

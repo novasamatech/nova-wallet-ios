@@ -91,7 +91,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
                     )
                 }
             )
-        case .noBuyOptions:
+        case .noRampOptions:
             break
         }
     }
@@ -110,6 +110,6 @@ extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
 
 extension BuyAssetOperationPresenter: RampDelegate {
     func rampDidComplete() {
-        buyAssetWireframe?.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+        buyAssetWireframe?.presentOnRampDidComplete(view: view, locale: selectedLocale)
     }
 }
