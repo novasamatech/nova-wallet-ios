@@ -1,4 +1,4 @@
-name: PR Workflow
+name: Release notes
 
 on:
   pull_request:
