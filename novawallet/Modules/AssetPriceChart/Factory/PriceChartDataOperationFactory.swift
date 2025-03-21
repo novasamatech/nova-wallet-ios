@@ -1,29 +1,10 @@
 import Foundation
 import Operation_iOS
 
-private typealias PriceChartDataFilterPeriod = StakingRewardFiltersPeriod
-
-extension PriceChartDataFilterPeriod {
-    init?(from priceHistoryPeriod: PriceHistoryPeriod) {
-        switch priceHistoryPeriod {
-        case .week:
-            self = .lastWeek
-        case .month:
-            self = .lastMonth
-        case .year:
-            self = .lastYear
-        case .allTime:
-            self = .allTime
-        default:
-            return nil
-        }
-    }
-}
-
 private struct PriceDataOptimizationMapping {
     let mappingValue: [PriceHistoryPeriod: Set<PriceHistoryPeriod>] = [
-        .month: Set(arrayLiteral: .week),
-        .allTime: Set(arrayLiteral: .year)
+        .month: Set([.week]),
+        .allTime: Set([.year])
     ]
 }
 
@@ -100,7 +81,7 @@ private extension PriceChartDataOperationFactory {
             guard let periods = chartDataOptimizationMapping.mappingValue[key] else { return }
 
             periods.forEach { period in
-                guard let startedAt = PriceChartDataFilterPeriod(from: period)?.interval.startTimestamp else {
+                guard let startedAt = period.startedAt else {
                     return
                 }
 

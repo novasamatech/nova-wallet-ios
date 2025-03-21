@@ -36,4 +36,26 @@ enum PriceHistoryPeriod {
     case month
     case year
     case allTime
+
+    var startedAt: UInt64? {
+        let calendar = Calendar.current
+        let endToday = calendar.dateInterval(of: .day, for: Date())?.end ?? Date()
+
+        var interval: TimeInterval?
+
+        switch self {
+        case .allTime:
+            interval = nil
+        case .week:
+            interval = calendar.date(byAdding: .day, value: -7, to: endToday)?.timeIntervalSince1970
+        case .month:
+            interval = calendar.date(byAdding: .month, value: -1, to: endToday)?.timeIntervalSince1970
+        case .year:
+            interval = calendar.date(byAdding: .year, value: -1, to: endToday)?.timeIntervalSince1970
+        case .day:
+            interval = calendar.date(byAdding: .day, value: -1, to: endToday)?.timeIntervalSince1970
+        }
+
+        return interval.map { UInt64($0) }
+    }
 }
