@@ -1809,3 +1809,10 @@
 "card.open.failed.alert.message" = "support@novawallet.ioに連絡してください。カードを発行するために使用したメールアドレスを添えてください。";
 "card.topup.pending.sheet.title" = "あなたのカードに資金が追加されています！";
 "staking.restake.message" = "報酬はステーキングに追加されます";
+"unified.address.popup.title" = "新しい統一アドレス";
+"unified.address.popup.subtitle" = "いくつかの取引所では、更新中に操作用に従来の形式が必要な場合があります。";
+"unified.address.popup.checkbox.text" = "再び表示しない。\n受取で従来のアドレスを見つけることができます。";
+"unified.address.new.format" = "新しい形式";
+"unified.address.legacy.format" = "従来の形式";
+"asset.receive.looking.for.address.message" = "取引のための従来のアドレスをお探しですか？";
+"asset.receive.view.address.format" = "アドレス形式を表示";

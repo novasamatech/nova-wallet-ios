@@ -27,6 +27,7 @@ enum SettingsKey: String {
     case novaCardOpenTimestamp
     case closedBanners
     case mythosRestakeEnabled
+    case hideUnifiedAddressPopup
 }
 
 extension SettingsManagerProtocol {
@@ -323,6 +324,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.mythosRestakeEnabled.rawValue)
+        }
+    }
+
+    var hideUnifiedAddressPopup: Bool {
+        get {
+            bool(for: SettingsKey.hideUnifiedAddressPopup.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.hideUnifiedAddressPopup.rawValue)
         }
     }
 }
