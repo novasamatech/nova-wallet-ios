@@ -1809,3 +1809,10 @@
 "card.open.failed.alert.message" = "Silakan hubungi support@novawallet.io. Sertakan alamat email yang Anda gunakan untuk menerbitkan kartu.";
 "card.topup.pending.sheet.title" = "Kartu Anda sedang dibiayai!";
 "staking.restake.message" = "Rewards Anda akan ditambahkan ke staking Anda";
+"unified.address.popup.title" = "Alamat Baru Terpadu";
+"unified.address.popup.subtitle" = "Beberapa pertukaran mungkin masih memerlukan format warisan\nuntuk operasi saat mereka memperbarui.";
+"unified.address.popup.checkbox.text" = "Jangan tampilkan ini lagi.\nAnda dapat menemukan alamat warisan di Terima.";
+"unified.address.new.format" = "Format baru";
+"unified.address.legacy.format" = "Format warisan";
+"asset.receive.looking.for.address.message" = "Mencari alamat warisan Anda untuk pertukaran?";
+"asset.receive.view.address.format" = "Lihat Format Alamat";

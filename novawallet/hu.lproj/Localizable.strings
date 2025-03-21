@@ -1809,3 +1809,10 @@
 "card.open.failed.alert.message" = "Kérjük, vedd fel a kapcsolatot a support@novawallet.io címen. Add meg az e-mail címed, amelyet használtál a kártya kiállításához.";
 "card.topup.pending.sheet.title" = "A kártyád feltöltése folyamatban van!";
 "staking.restake.message" = "A jutalmaid hozzáadódnak a stakingedhez";
+"unified.address.popup.title" = "Új egységes cím";
+"unified.address.popup.subtitle" = "Egyes cseréknek még szükségük lehet az örökölt formátumra,\namíg frissítik a rendszert.";
+"unified.address.popup.checkbox.text" = "Ne mutassa újra.\nAz örökölt címet a Befogadásnál találhatja meg.";
+"unified.address.new.format" = "Új formátum";
+"unified.address.legacy.format" = "Örökölt formátum";
+"asset.receive.looking.for.address.message" = "Az örökölt címedet keresed egy cseréhez?";
+"asset.receive.view.address.format" = "Címformátumok megtekintése";
