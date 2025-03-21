@@ -29,6 +29,7 @@ final class DAppExtrinsicBuilderOperationFactory {
     let chain: ChainModel
     let runtimeProvider: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
+    let feeRegistry: ExtrinsicFeeEstimationRegistring
     let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
@@ -36,12 +37,14 @@ final class DAppExtrinsicBuilderOperationFactory {
         chain: ChainModel,
         runtimeProvider: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
+        feeRegistry: ExtrinsicFeeEstimationRegistring,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     ) {
         self.chain = chain
         self.processedResult = processedResult
         self.runtimeProvider = runtimeProvider
         self.connection = connection
+        self.feeRegistry = feeRegistry
         self.metadataHashOperationFactory = metadataHashOperationFactory
     }
 
@@ -96,6 +99,7 @@ final class DAppExtrinsicBuilderOperationFactory {
 
     private func createBaseBuilderWrapper(
         for result: DAppOperationProcessedResult,
+        feeAssetId: ChainAssetId?,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<ExtrinsicSenderBuilderResult> {
         let metadataHashWrapper = createActualMetadataHashWrapper(
@@ -105,9 +109,20 @@ final class DAppExtrinsicBuilderOperationFactory {
             runtimeProvider: runtimeProvider
         )
 
+        // don't install fee asset if no provided
+        let feeInstallerWrapper: CompoundOperationWrapper<ExtrinsicFeeInstalling>? = if let feeAssetId {
+            feeRegistry.createFeeInstallerWrapper(payingIn: feeAssetId) {
+                result.account
+            }
+        } else {
+            nil
+        }
+
         let builderOperation = ClosureOperation<ExtrinsicSenderBuilderResult> {
-            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let runtimeContext = codingFactory.createRuntimeJsonContext()
             let metadataHashResult = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
+            let feeInstaller = try feeInstallerWrapper?.targetOperation.extractNoCancellableResultData()
 
             let extrinsic = result.extrinsic
 
@@ -145,26 +160,45 @@ final class DAppExtrinsicBuilderOperationFactory {
                 builder = builder.with(tip: extrinsic.tip)
             }
 
+            if let feeInstaller {
+                builder = try feeInstaller.installingFeeSettings(
+                    to: builder,
+                    coderFactory: codingFactory
+                )
+            }
+
+            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal || feeInstaller != nil
+
             return ExtrinsicSenderBuilderResult(
                 sender: sender,
                 builder: builder,
-                modifiedOriginalExtrinsic: metadataHashResult.modifiedOriginal
+                modifiedOriginalExtrinsic: isModifiedExtrinsic
             )
         }
 
         builderOperation.addDependency(metadataHashWrapper.targetOperation)
 
-        return metadataHashWrapper.insertingTail(operation: builderOperation)
+        if let feeInstallerWrapper {
+            builderOperation.addDependency(feeInstallerWrapper.targetOperation)
+
+            return metadataHashWrapper
+                .insertingHead(operations: feeInstallerWrapper.allOperations)
+                .insertingTail(operation: builderOperation)
+        } else {
+            return metadataHashWrapper.insertingTail(operation: builderOperation)
+        }
     }
 
     private func createRawSignatureOperation(
         for result: DAppOperationProcessedResult,
+        feeAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<DAppExtrinsicRawExtrinsicResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let builderWrapper = createBaseBuilderWrapper(
             for: result,
+            feeAssetId: feeAssetId,
             codingFactoryOperation: codingFactoryOperation
         )
 
@@ -205,11 +239,12 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     func createWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
-        payingFeeIn _: ChainAssetId?,
+        payingFeeIn feeAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         let signatureWrapper = createRawSignatureOperation(
             for: processedResult,
+            feeAssetId: feeAssetId,
             signingClosure: signingClosure
         )
 
@@ -233,12 +268,14 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     }
 
     func createRawSignatureWrapper(
-        for signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+        payingFeeIn feeAssetId: ChainAssetId?,
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<DAppExtrinsicRawSignatureResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let builderWrapper = createBaseBuilderWrapper(
             for: processedResult,
+            feeAssetId: feeAssetId,
             codingFactoryOperation: codingFactoryOperation
         )
 
