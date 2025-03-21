@@ -132,12 +132,16 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
             tableView.separatorInset = separatorInset
         }
 
-        headerHeightConstraint.constant = headerHeight
-
         if let icon = icon {
             headerView.iconImage = icon
         } else {
             headerView.spacingBetweenLabelAndIcon = 0
+        }
+
+        if icon != nil || localizedTitle != nil {
+            headerHeightConstraint.constant = headerHeight
+        } else {
+            headerHeightConstraint.constant = .zero
         }
 
         headerBackgroundView.borderType = headerBorderType

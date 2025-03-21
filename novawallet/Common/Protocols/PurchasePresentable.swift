@@ -1,31 +1,44 @@
 import Foundation
 
-protocol PurchasePresentable {
-    func showPurchaseTokens(
+protocol RampPresentable {
+    func showRampAction(
         from view: ControllerBackedProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
+        action: RampAction,
+        delegate: RampDelegate
     )
 
-    func showPurchaseProviders(
+    func showOnRampProviders(
         from view: ControllerBackedProtocol?,
-        actions: [PurchaseAction],
-        delegate: ModalPickerViewControllerDelegate
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
     )
 
-    func presentPurchaseDidComplete(
+    func showOffRampProviders(
+        from view: ControllerBackedProtocol?,
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
+    )
+
+    func presentOnRampDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    )
+
+    func presentOffRampDidComplete(
         view: ControllerBackedProtocol?,
         locale: Locale
     )
 }
 
-extension PurchasePresentable {
-    func showPurchaseTokens(
+extension RampPresentable {
+    func showRampAction(
         from view: ControllerBackedProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
+        action: RampAction,
+        delegate: RampDelegate
     ) {
-        guard let purchaseView = PurchaseViewFactory.createView(
+        guard let purchaseView = RampViewFactory.createView(
             for: action,
             delegate: delegate
         ) else {
@@ -35,31 +48,67 @@ extension PurchasePresentable {
         view?.controller.present(purchaseView.controller, animated: true)
     }
 
-    func showPurchaseProviders(
+    func showOnRampProviders(
         from view: ControllerBackedProtocol?,
-        actions: [PurchaseAction],
-        delegate: ModalPickerViewControllerDelegate
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
     ) {
-        guard let pickerView = ModalPickerFactory.createPickerForList(
-            actions,
-            delegate: delegate,
-            context: actions as NSArray
+        guard let onRampProvidersView = SelectRampProviderViewFactory.createView(
+            providerType: .onramp,
+            rampActions: actions,
+            assetSymbol: assetSymbol,
+            delegate: delegate
         ) else {
             return
         }
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        navigationController.present(pickerView, animated: true)
+
+        view?.controller.navigationController?.pushViewController(
+            onRampProvidersView.controller,
+            animated: true
+        )
     }
 
-    func presentPurchaseDidComplete(
+    func showOffRampProviders(
+        from view: ControllerBackedProtocol?,
+        actions: [RampAction],
+        assetSymbol: AssetModel.Symbol,
+        delegate: RampDelegate
+    ) {
+        guard let offRampProvidersView = SelectRampProviderViewFactory.createView(
+            providerType: .offramp,
+            rampActions: actions,
+            assetSymbol: assetSymbol,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            offRampProvidersView.controller,
+            animated: true
+        )
+    }
+
+    func presentOnRampDidComplete(
         view: ControllerBackedProtocol?,
         locale: Locale
     ) {
         let languages = locale.rLanguages
         let message = R.string.localizable
             .buyCompleted(preferredLanguages: languages)
+
+        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
+        view?.controller.present(alertController, animated: true)
+    }
+
+    func presentOffRampDidComplete(
+        view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+        let message = R.string.localizable
+            .sellCompleted(preferredLanguages: languages)
 
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)

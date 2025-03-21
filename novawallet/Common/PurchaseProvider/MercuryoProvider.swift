@@ -1,8 +1,9 @@
 import Foundation
 import CryptoKit
 import SubstrateSdk
+import SoraFoundation
 
-final class MercuryoProvider: PurchaseProviderProtocol {
+final class MercuryoProvider {
     struct Configuration {
         let baseUrl: String
         let widgetId: String
@@ -30,37 +31,6 @@ final class MercuryoProvider: PurchaseProviderProtocol {
     private var callbackUrl: URL?
     private let displayURL = "mercuryo.io"
 
-    func with(callbackUrl: URL) -> Self {
-        self.callbackUrl = callbackUrl
-        return self
-    }
-
-    func buildPurchaseActions(for chainAsset: ChainAsset, accountId: AccountId) -> [PurchaseAction] {
-        guard
-            chainAsset.asset.buyProviders?.mercuryo != nil,
-            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
-            return []
-        }
-
-        guard let callbackUrl = self.callbackUrl,
-              let url = buildURL(
-                  address: address,
-                  token: chainAsset.asset.symbol,
-                  callbackUrl: callbackUrl
-              ) else {
-            return []
-        }
-
-        return [
-            PurchaseAction(
-                title: "Mercuryo",
-                url: url,
-                icon: R.image.iconMercuryo()!,
-                displayURL: displayURL
-            )
-        ]
-    }
-
     private func buildURL(address: AccountAddress, token: String, callbackUrl: URL) -> URL? {
         guard let signatureData = [address, configuration.secret].joined().data(using: .utf8) else {
             return nil
@@ -80,5 +50,82 @@ final class MercuryoProvider: PurchaseProviderProtocol {
         components?.queryItems = queryItems
 
         return components?.url
+    }
+}
+
+// MARK: RampProviderProtocol
+
+extension MercuryoProvider: RampProviderProtocol {
+    func with(callbackUrl: URL) -> Self {
+        self.callbackUrl = callbackUrl
+        return self
+    }
+
+    func buildOnRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        guard
+            chainAsset.asset.buyProviders?.mercuryo != nil,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
+
+        guard let callbackUrl = self.callbackUrl,
+              let url = buildURL(
+                  address: address,
+                  token: chainAsset.asset.symbol,
+                  callbackUrl: callbackUrl
+              ) else {
+            return []
+        }
+
+        var paymentMethods = defaultPaymentMethods
+        paymentMethods.append(.others("+5"))
+
+        let action = RampAction(
+            logo: R.image.mercuryoLogo()!,
+            descriptionText: LocalizableResource { locale in
+                R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
+            },
+            fiatPaymentMethods: paymentMethods,
+            url: url
+        )
+
+        return [action]
+    }
+
+    func buildOffRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        guard
+            chainAsset.asset.buyProviders?.mercuryo != nil,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
+
+        guard let callbackUrl = self.callbackUrl,
+              let url = buildURL(
+                  address: address,
+                  token: chainAsset.asset.symbol,
+                  callbackUrl: callbackUrl
+              ) else {
+            return []
+        }
+
+        var paymentMethods = defaultPaymentMethods
+        paymentMethods.append(.others("+5"))
+
+        let action = RampAction(
+            logo: R.image.mercuryoLogo()!,
+            descriptionText: LocalizableResource { locale in
+                R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
+            },
+            fiatPaymentMethods: paymentMethods,
+            url: url
+        )
+
+        return [action]
     }
 }

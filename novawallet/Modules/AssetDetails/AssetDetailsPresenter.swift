@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import Operation_iOS
 
-final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwnerProtocol {
+final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerProtocol {
     weak var view: AssetDetailsViewProtocol?
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
 
@@ -19,7 +19,8 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
     private var locks: [AssetLock] = []
     private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
-    private var purchaseActions: [PurchaseAction] = []
+    private var purchaseActions: [RampAction] = []
+    private var sellActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
     init(
@@ -39,12 +40,16 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         self.logger = logger
         localizationManager = localizableManager
     }
+}
 
-    private func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
+// MARK: Private
+
+private extension AssetDetailsPresenter {
+    func calculateTotalExternalBalances(for externalBalances: [ExternalAssetBalance]) -> BigUInt {
         externalBalances.reduce(0) { $0 + $1.amount }
     }
 
-    private func updateView() {
+    func updateView() {
         guard let view, let balance else {
             return
         }
@@ -70,16 +75,47 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         view.didReceive(availableOperations: availableOperations)
     }
 
-    private func showPurchase() {
-        startPuchaseFlow(
-            from: view,
-            purchaseActions: purchaseActions,
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
+    func showRamp() {
+        guard availableOperations.rampAvailable() else { return }
+
+        let showOnRampClosure: () -> Void = { [weak self] in
+            guard let self, !purchaseActions.isEmpty else { return }
+
+            startOnRampFlow(
+                from: view,
+                actions: purchaseActions,
+                wireframe: wireframe,
+                assetSymbol: chainAsset.asset.symbol,
+                locale: selectedLocale
+            )
+        }
+        let showOffRampClosure: () -> Void = { [weak self] in
+            guard let self, !sellActions.isEmpty else { return }
+
+            startOffRampFlow(
+                from: view,
+                actions: sellActions,
+                wireframe: wireframe,
+                assetSymbol: chainAsset.asset.symbol,
+                locale: selectedLocale
+            )
+        }
+
+        if availableOperations.buySellAvailable() {
+            wireframe.presentBuySellSheet(
+                from: view,
+                delegate: self,
+                buyAction: showOnRampClosure,
+                sellAction: showOffRampClosure
+            )
+        } else if availableOperations.buyAvailable() {
+            showOnRampClosure()
+        } else {
+            showOffRampClosure()
+        }
     }
 
-    private func showReceiveTokens() {
+    func showReceiveTokens() {
         guard let view = view,
               let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(
                   for: chainAsset.chain.accountRequest()
@@ -94,6 +130,8 @@ final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwn
         )
     }
 }
+
+// MARK: AssetDetailsPresenterProtocol
 
 extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func setup() {
@@ -124,19 +162,15 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         }
     }
 
-    func handleBuy() {
-        guard !purchaseActions.isEmpty else {
-            return
-        }
-
+    func handleBuySell() {
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
-            showPurchase()
+            showRamp()
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
-                showPurchase()
+                showRamp()
             }
         case .watchOnly:
             wireframe.showNoSigning(from: view)
@@ -178,7 +212,18 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 }
 
+// MARK: AssetDetailsInteractorOutputProtocol
+
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
+    func didReceive(
+        onRampActions: [RampAction],
+        offRampActions: [RampAction]
+    ) {
+        purchaseActions = onRampActions
+        sellActions = offRampActions
+        updateView()
+    }
+
     func didReceive(balance: AssetBalance?) {
         self.balance = balance
         updateView()
@@ -199,11 +244,6 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(purchaseActions: [PurchaseAction]) {
-        self.purchaseActions = purchaseActions
-        updateView()
-    }
-
     func didReceive(availableOperations: AssetDetailsOperation) {
         self.availableOperations = availableOperations
         updateView()
@@ -219,6 +259,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     }
 }
 
+// MARK: Localizable
+
 extension AssetDetailsPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
@@ -227,22 +269,27 @@ extension AssetDetailsPresenter: Localizable {
     }
 }
 
+// MARK: ModalPickerViewControllerDelegate
+
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        startPuchaseFlow(
-            from: view,
-            purchaseAction: purchaseActions[index],
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let modalPickerContext = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        modalPickerContext.process(selectedIndex: index)
     }
 }
 
-extension AssetDetailsPresenter: PurchaseDelegate {
-    func purchaseDidComplete() {
-        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
+// MARK: RampDelegate
+
+extension AssetDetailsPresenter: RampDelegate {
+    func rampDidComplete() {
+        wireframe.presentOnRampDidComplete(view: view, locale: selectedLocale)
     }
 }
+
+// MARK: AssetPriceChartModuleOutputProtocol
 
 extension AssetDetailsPresenter: AssetPriceChartModuleOutputProtocol {
     func didReceiveChartState(_ state: AssetPriceChartState) {

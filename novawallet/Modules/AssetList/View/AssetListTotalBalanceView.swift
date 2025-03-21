@@ -59,8 +59,8 @@ final class AssetListTotalBalanceView: UIView {
         ),
         icon: R.image.iconActionChange()
     )
-    lazy var buyButton = createActionButton(
-        title: R.string.localizable.walletAssetBuy(
+    lazy var buySellButton = createActionButton(
+        title: R.string.localizable.walletAssetBuySell(
             preferredLanguages: locale.rLanguages
         ),
         icon: R.image.iconBuy()
@@ -72,7 +72,7 @@ final class AssetListTotalBalanceView: UIView {
             sendButton,
             receiveButton,
             swapButton,
-            buyButton
+            buySellButton
         ]
     )
 
@@ -214,7 +214,7 @@ final class AssetListTotalBalanceView: UIView {
             preferredLanguages: locale.rLanguages)
         receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
             preferredLanguages: locale.rLanguages)
-        buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
+        buySellButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuySell(
             preferredLanguages: locale.rLanguages
         )
         swapButton.imageWithTitleView?.title = R.string.localizable.commonSwapAction(

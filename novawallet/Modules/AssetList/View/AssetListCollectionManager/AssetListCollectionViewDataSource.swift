@@ -87,9 +87,9 @@ private extension AssetListCollectionViewDataSource {
             action: #selector(actionReceive),
             for: .touchUpInside
         )
-        totalBalanceView.buyButton.addTarget(
+        totalBalanceView.buySellButton.addTarget(
             self,
-            action: #selector(actionBuy),
+            action: #selector(actionBuySell),
             for: .touchUpInside
         )
         totalBalanceView.swapButton.addTarget(
@@ -241,7 +241,7 @@ private extension AssetListCollectionViewDataSource {
         )
 
         cell.bind(text: text, actionTitle: actionTitle)
-        cell.actionButton.addTarget(self, action: #selector(actionBuy), for: .touchUpInside)
+        cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)
 
         return cell
     }
@@ -331,8 +331,8 @@ private extension AssetListCollectionViewDataSource {
         actionsDelegate?.actionReceive()
     }
 
-    @objc func actionBuy() {
-        actionsDelegate?.actionBuy()
+    @objc func actionBuySell() {
+        actionsDelegate?.actionBuySell()
     }
 
     @objc func actionSwap() {

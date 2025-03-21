@@ -8,7 +8,7 @@ typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewMode
 
 enum ModalPickerFactory {
     static func createActionsList(
-        title: LocalizableResource<String>,
+        title: LocalizableResource<String>?,
         actions: [LocalizableResource<ActionManageViewModel>],
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?

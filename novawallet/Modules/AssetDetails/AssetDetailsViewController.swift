@@ -67,9 +67,29 @@ private extension AssetDetailsViewController {
     func addHandlers() {
         rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
         rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
-        rootView.buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
+        rootView.buySellButton.addTarget(self, action: #selector(didTapBuySellButton), for: .touchUpInside)
         rootView.swapButton.addTarget(self, action: #selector(didTapSwapButton), for: .touchUpInside)
         rootView.balanceWidget.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
+    }
+
+    func configureBuySellAction(for availableOperations: AssetDetailsOperation) {
+        let buySellTitle = if availableOperations.buySellAvailable() || !availableOperations.rampAvailable() {
+            R.string.localizable.walletAssetBuySell(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else if availableOperations.buyAvailable() {
+            R.string.localizable.walletAssetBuy(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            R.string.localizable.walletAssetSell(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        rootView.buySellButton.imageWithTitleView?.title = buySellTitle
+        rootView.buySellButton.isEnabled = availableOperations.rampAvailable()
+        rootView.buySellButton.invalidateLayout()
     }
 
     @objc func didTapSendButton() {
@@ -80,8 +100,8 @@ private extension AssetDetailsViewController {
         presenter.handleReceive()
     }
 
-    @objc func didTapBuyButton() {
-        presenter.handleBuy()
+    @objc func didTapBuySellButton() {
+        presenter.handleBuySell()
     }
 
     @objc func didTapSwapButton() {
@@ -102,7 +122,8 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.swapButton.isEnabled = availableOperations.contains(.swap)
-        rootView.buyButton.isEnabled = availableOperations.contains(.buy)
+
+        configureBuySellAction(for: availableOperations)
     }
 
     func didReceive(balance: AssetDetailsBalanceModel) {

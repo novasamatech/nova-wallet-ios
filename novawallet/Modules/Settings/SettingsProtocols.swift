@@ -44,10 +44,19 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(pushNotificationsStatus: PushNotificationsStatus)
 }
 
-protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable,
-    OperationAuthPresentable, WalletConnectScanPresentable, WalletConnectErrorPresentable,
-    PurchasePresentable {
+protocol SettingsWireframeProtocol:
+    AuthorizationPresentable,
+    ErrorPresentable,
+    AlertPresentable,
+    WebPresentable,
+    ModalAlertPresenting,
+    EmailPresentable,
+    WalletSwitchPresentable,
+    ApplicationSettingsPresentable,
+    OperationAuthPresentable,
+    WalletConnectScanPresentable,
+    WalletConnectErrorPresentable,
+    RampPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)

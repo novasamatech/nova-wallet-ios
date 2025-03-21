@@ -200,8 +200,8 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.receive()
     }
 
-    func actionBuy() {
-        presenter.buy()
+    func actionBuySell() {
+        presenter.buySell()
     }
 
     func actionSwap() {

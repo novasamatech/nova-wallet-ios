@@ -128,6 +128,21 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
+    func showSellTokens(from view: AssetListViewProtocol?) {
+        guard let assetOperationView = AssetOperationViewFactory.createSellView(for: assetListModelObservable) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(
+            rootViewController: assetOperationView.controller
+        )
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
+            animated: true
+        )
+    }
+
     func showSwapTokens(from view: AssetListViewProtocol?) {
         let completionClosure: (ChainAsset) -> Void = { [weak self] chainAsset in
             self?.showAssetDetails(from: view, chain: chainAsset.chain, asset: chainAsset.asset)
