@@ -53,6 +53,7 @@ private extension XcmCallDerivator {
     func createOrmlTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
+        transferMetadata: XcmTransferMetadata,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -69,6 +70,7 @@ private extension XcmCallDerivator {
                 asset: asset,
                 destination: location,
                 module: module,
+                weightOption: transferMetadata.fee,
                 codingFactory: codingFactory
             )
         }
@@ -129,14 +131,15 @@ private extension XcmCallDerivator {
     func createTransferMappingWrapper(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        xcmTransferType: XcmTransferType,
+        transferMetadata: XcmTransferMetadata,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
-        switch xcmTransferType {
+        switch transferMetadata.callType {
         case .xtokens:
             return createOrmlTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 destinationAssetOperation: destinationAssetOperation,
+                transferMetadata: transferMetadata,
                 runtimeProvider: runtimeProvider
             )
         case .xcmpallet:
@@ -219,7 +222,7 @@ extension XcmCallDerivator: XcmCallDerivating {
             let mapWrapper = createTransferMappingWrapper(
                 dependingOn: moduleResolutionWrapper.targetOperation,
                 destinationAssetOperation: destinationAssetWrapper.targetOperation,
-                xcmTransferType: transferRequest.metadata.callType,
+                transferMetadata: transferRequest.metadata,
                 runtimeProvider: runtimeProvider
             )
 

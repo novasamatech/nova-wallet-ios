@@ -280,6 +280,10 @@ struct XcmTransferMetadata {
         let instructions: [String]
         let mode: XcmAssetTransferFee
         let baseWeight: BigUInt
+
+        var maxWeight: BigUInt {
+            baseWeight * BigUInt(instructions.count)
+        }
     }
 
     struct LegacyFee {
@@ -287,6 +291,12 @@ struct XcmTransferMetadata {
         let reserveExecution: LegacyFeeDetails?
         let originDelivery: XcmDeliveryFee?
         let reserveDelivery: XcmDeliveryFee?
+
+        var maxWeight: BigUInt {
+            let reserveMaxWeight = reserveExecution?.maxWeight ?? 0
+
+            return destinationExecution.maxWeight + reserveMaxWeight
+        }
     }
 
     let callType: XcmTransferType
