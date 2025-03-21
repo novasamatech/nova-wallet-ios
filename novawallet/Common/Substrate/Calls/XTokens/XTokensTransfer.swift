@@ -58,7 +58,6 @@ extension XTokens {
     static func appendTransferCall(
         asset: Xcm.VersionedMultiasset,
         destination: Xcm.VersionedMultilocation,
-        weight: BigUInt,
         module: String,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> RuntimeCallCollecting {
@@ -76,7 +75,9 @@ extension XTokens {
         }
 
         if isV1 {
-            let args = TransferCallV1(asset: asset, destination: destination, destinationWeight: weight)
+            // TODO: Check if we still need support V1
+            let bigWeight = BigUInt(UInt64.max)
+            let args = TransferCallV1(asset: asset, destination: destination, destinationWeight: bigWeight)
 
             return RuntimeCallCollector(call: RuntimeCall(path: path, args: args))
         } else {

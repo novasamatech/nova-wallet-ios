@@ -21,7 +21,6 @@ final class XcmDynamicCrosschainFeeCalculator {
         let deliveryFee: BigUInt
     }
 
-    static let maxWeight = BigUInt(UInt64.max) // TODO: Move to enum
     static let minimumSendAmount: Decimal = 100
     static let minimumFundAmount: Decimal = minimumSendAmount * 2
 
@@ -86,8 +85,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
     ) -> CompoundOperationWrapper<InitialModel> {
         do {
             let xcmDerivationWrapper = callDerivator.createTransferCallDerivationWrapper(
-                for: request,
-                maxWeight: Self.maxWeight
+                for: request
             )
 
             let senderAccount = try request.originChain.emptyAccountId()
@@ -372,8 +370,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
                 let feeModel = XcmFeeModel(
                     senderPart: intermediateResult.deliveryFee,
-                    holdingPart: totalFee,
-                    weightLimit: 0 // TODO: Fix weight limit
+                    holdingPart: totalFee
                 )
 
                 return feeModel

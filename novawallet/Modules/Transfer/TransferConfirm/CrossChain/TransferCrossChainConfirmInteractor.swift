@@ -81,7 +81,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
 }
 
 extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: ExtrinsicFeeProtocol?) {
+    func submit(amount: BigUInt, recepient: AccountAddress, originFee: ExtrinsicFeeProtocol?) {
         do {
             guard let transferParties = transferParties else {
                 throw CommonError.dataCorruption
@@ -98,7 +98,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                 amount: amount
             )
 
-            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit)
+            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest)
 
             let sender = try selectedAccount.accountId.toAddress(using: originChainAsset.chain.chainFormat)
 

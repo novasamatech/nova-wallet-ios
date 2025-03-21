@@ -224,7 +224,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let mappingOperation = ClosureOperation<XcmFeeModelProtocol> {
                 let fee = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                return XcmFeeModel(senderPart: 0, holdingPart: fee.amount, weightLimit: fee.weight)
+                return XcmFeeModel(senderPart: 0, holdingPart: fee.amount)
             }
 
             mappingOperation.addDependency(wrapper.targetOperation)
@@ -249,7 +249,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
         case .proportional:
             let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
             let fee = coefficient * maxWeight / Self.weightPerSecond
-            let model = XcmFeeModel(senderPart: 0, holdingPart: fee, weightLimit: maxWeight)
+            let model = XcmFeeModel(senderPart: 0, holdingPart: fee)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:
             return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeight)
@@ -429,8 +429,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
             return XcmFeeModel(
                 senderPart: isSenderPart ? amount : 0,
-                holdingPart: !isSenderPart ? amount : 0,
-                weightLimit: 0
+                holdingPart: !isSenderPart ? amount : 0
             )
         }
 

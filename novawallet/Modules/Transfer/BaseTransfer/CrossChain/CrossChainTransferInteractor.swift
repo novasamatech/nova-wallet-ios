@@ -505,16 +505,14 @@ extension CrossChainTransferInteractor {
         operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?, weightLimit: BigUInt?) {
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?) {
         guard let transferParties = transferParties else {
             return
         }
 
         let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: destinationChainAsset.chain.accountIdSize)
 
-        let maxWeight = weightLimit ?? 0
-        let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex() +
-            "-" + String(maxWeight)
+        let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex()
 
         let destination = transferParties.destination.replacing(accountId: recepientAccountId)
         let unweightedRequest = XcmUnweightedTransferRequest(
@@ -525,7 +523,7 @@ extension CrossChainTransferInteractor {
             amount: amount
         )
 
-        let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit ?? 0)
+        let transferRequest = XcmTransferRequest(unweighted: unweightedRequest)
 
         feeProxy.estimateOriginFee(
             using: extrinsicService,

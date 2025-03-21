@@ -46,11 +46,9 @@ extension XcmTransferService: XcmTransferServiceProtocol {
     ) {
         do {
             let unweighted = request.unweighted
-            let maxWeight = request.maxWeight
 
             let callBuilderWrapper = callDerivator.createTransferCallDerivationWrapper(
-                for: unweighted,
-                maxWeight: maxWeight
+                for: unweighted
             )
 
             guard let chainAccount = wallet.fetch(for: unweighted.originChain.accountRequest()) else {
@@ -108,8 +106,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
     ) {
         do {
             let callBuilderWrapper = callDerivator.createTransferCallDerivationWrapper(
-                for: request.unweighted,
-                maxWeight: request.maxWeight
+                for: request.unweighted
             )
 
             guard let chainAccount = wallet.fetch(for: request.unweighted.originChain.accountRequest()) else {

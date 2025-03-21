@@ -5,8 +5,7 @@ import BigInt
 
 protocol XcmCallDerivating {
     func createTransferCallDerivationWrapper(
-        for transferRequest: XcmUnweightedTransferRequest,
-        maxWeight: BigUInt
+        for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting>
 }
 
@@ -26,8 +25,7 @@ private extension XcmCallDerivator {
     func createPalletXcmTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         callPathFactory: @escaping (String) -> CallCodingPath,
-        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        maxWeight _: BigUInt // TODO: Decide whether to leave unlimited
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let mapOperation = ClosureOperation<RuntimeCallCollecting> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
@@ -55,7 +53,6 @@ private extension XcmCallDerivator {
     func createOrmlTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        maxWeight: BigUInt,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -71,7 +68,6 @@ private extension XcmCallDerivator {
             return try XTokens.appendTransferCall(
                 asset: asset,
                 destination: location,
-                weight: maxWeight,
                 module: module,
                 codingFactory: codingFactory
             )
@@ -134,7 +130,6 @@ private extension XcmCallDerivator {
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
         xcmTransferType: XcmTransferType,
-        maxWeight: BigUInt,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         switch xcmTransferType {
@@ -142,29 +137,25 @@ private extension XcmCallDerivator {
             return createOrmlTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight,
                 runtimeProvider: runtimeProvider
             )
         case .xcmpallet:
             return createPalletXcmTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 callPathFactory: { Xcm.limitedReserveTransferAssetsPath(for: $0) },
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight
+                destinationAssetOperation: destinationAssetOperation
             )
         case .teleport:
             return createPalletXcmTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 callPathFactory: { Xcm.limitedTeleportAssetsPath(for: $0) },
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight
+                destinationAssetOperation: destinationAssetOperation
             )
         case .xcmpalletTransferAssets:
             return createPalletXcmTransferMapping(
                 dependingOn: moduleResolutionOperation,
                 callPathFactory: { Xcm.transferAssetsPath(for: $0) },
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight
+                destinationAssetOperation: destinationAssetOperation
             )
         case .unknown:
             return .createWithError(XcmTransferTypeError.unknownType)
@@ -208,8 +199,7 @@ private extension XcmCallDerivator {
 
 extension XcmCallDerivator: XcmCallDerivating {
     func createTransferCallDerivationWrapper(
-        for transferRequest: XcmUnweightedTransferRequest,
-        maxWeight: BigUInt
+        for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
@@ -230,7 +220,6 @@ extension XcmCallDerivator: XcmCallDerivating {
                 dependingOn: moduleResolutionWrapper.targetOperation,
                 destinationAssetOperation: destinationAssetWrapper.targetOperation,
                 xcmTransferType: transferRequest.metadata.callType,
-                maxWeight: maxWeight,
                 runtimeProvider: runtimeProvider
             )
 
