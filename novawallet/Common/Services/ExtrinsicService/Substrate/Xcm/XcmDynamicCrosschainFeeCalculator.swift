@@ -9,7 +9,28 @@ enum XcmDynamicCrosschainFeeCalculatorError: Error {
     case noDepositFound
 }
 
+/**
+ *  This class estimates the base fee for an XCM (Cross-Consensus Message) transaction using dry runs.
+ *
+ *  The process involves the following steps:
+ *    1. Derive the initial XCM call.
+ *    2. Create a temporary (empty) sender account and prepare additional calls to top it up.
+ *    3. Batch the top-up call with the XCM call and perform a dry run on the origin chain.
+ *    4. Extract the forwarded XCM message and delivery fee from the dry run result.
+ *    5. Perform a dry run of the extracted XCM message on the reserve chain.
+ *    6. Extract the next forwarded XCM message from the result.
+ *    7. Perform a dry run of the final XCM message on the destination chain.
+ *    8. Determine the received (arrived) amount.
+ *    9. Calculate the execution fee as the difference between the sent and received amounts.
+ *
+ *  This process helps to estimate the total cost of executing an XCM call across multiple chains.
+ */
 final class XcmDynamicCrosschainFeeCalculator {
+    struct MintingCalls {
+        let targetTokenMintCollector: RuntimeCallCollecting
+        let nativeTokenMintCollector: RuntimeCallCollecting?
+    }
+
     struct InitialModel {
         let call: AnyRuntimeCall
         let sender: AccountId
@@ -80,42 +101,69 @@ private extension XcmDynamicCrosschainFeeCalculator {
         return max(2 * sendAmount, minimumAmount ?? 2 * sendAmount)
     }
 
-    func createCallWrapper(
-        for request: XcmUnweightedTransferRequest
-    ) -> CompoundOperationWrapper<InitialModel> {
-        do {
-            let xcmDerivationWrapper = callDerivator.createTransferCallDerivationWrapper(
-                for: request
+    func prepareAccountSetupCallsForDryRun(
+        for request: XcmUnweightedTransferRequest,
+        senderAccount: AccountId
+    ) -> CompoundOperationWrapper<MintingCalls> {
+        let amountToFund = ensureSafeAmountToFund(
+            for: request.amount,
+            chainAsset: request.origin.chainAsset
+        )
+
+        let targetTokenMintWrapper = tokenMintingFactory.createTokenMintingWrapper(
+            for: senderAccount,
+            amount: amountToFund,
+            chainAsset: request.origin.chainAsset
+        )
+
+        var dependencies: [Operation] = targetTokenMintWrapper.allOperations
+
+        let nativeTokenMintWrapper: CompoundOperationWrapper<RuntimeCallCollecting>?
+
+        if
+            !request.origin.chainAsset.isUtilityAsset,
+            let nativeAsset = request.originChain.utilityChainAsset() {
+            let nativeAmountToFund = ensureSafeAmountToFund(for: nil, chainAsset: nativeAsset)
+
+            let wrapper = tokenMintingFactory.createTokenMintingWrapper(
+                for: senderAccount,
+                amount: nativeAmountToFund,
+                chainAsset: nativeAsset
             )
+
+            dependencies.append(contentsOf: wrapper.allOperations)
+
+            nativeTokenMintWrapper = wrapper
+
+        } else {
+            nativeTokenMintWrapper = nil
+        }
+
+        let mergeOperation = ClosureOperation<MintingCalls> {
+            let targetMintCollector = try targetTokenMintWrapper.targetOperation.extractNoCancellableResultData()
+            let nativeMintCollector = try nativeTokenMintWrapper?.targetOperation.extractNoCancellableResultData()
+
+            return MintingCalls(
+                targetTokenMintCollector: targetMintCollector,
+                nativeTokenMintCollector: nativeMintCollector
+            )
+        }
+
+        dependencies.forEach { mergeOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+    }
+
+    func createDryCallWrapper(for request: XcmUnweightedTransferRequest) -> CompoundOperationWrapper<InitialModel> {
+        do {
+            let xcmDerivationWrapper = callDerivator.createTransferCallDerivationWrapper(for: request)
 
             let senderAccount = try request.originChain.emptyAccountId()
 
-            let amountToFund = ensureSafeAmountToFund(
-                for: request.amount,
-                chainAsset: request.origin.chainAsset
+            let mintingCallsWrapper = prepareAccountSetupCallsForDryRun(
+                for: request,
+                senderAccount: senderAccount
             )
-
-            let targetTokenMintWrapper = tokenMintingFactory.createTokenMintingWrapper(
-                for: senderAccount,
-                amount: amountToFund,
-                chainAsset: request.origin.chainAsset
-            )
-
-            let nativeTokenMintWrapper: CompoundOperationWrapper<RuntimeCallCollecting>?
-
-            if
-                !request.origin.chainAsset.isUtilityAsset,
-                let nativeAsset = request.originChain.utilityChainAsset() {
-                let nativeAmountToFund = ensureSafeAmountToFund(for: nil, chainAsset: nativeAsset)
-
-                nativeTokenMintWrapper = tokenMintingFactory.createTokenMintingWrapper(
-                    for: senderAccount,
-                    amount: nativeAmountToFund,
-                    chainAsset: nativeAsset
-                )
-            } else {
-                nativeTokenMintWrapper = nil
-            }
 
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: request.originChain.chainId)
 
@@ -123,8 +171,8 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let callBuilderOperation = ClosureOperation<InitialModel> {
                 let xcmCallCollector = try xcmDerivationWrapper.targetOperation.extractNoCancellableResultData()
-                let targetMintCollector = try targetTokenMintWrapper.targetOperation.extractNoCancellableResultData()
-                let nativeMintCollector = try nativeTokenMintWrapper?.targetOperation.extractNoCancellableResultData()
+                let mintingCalls = try mintingCallsWrapper.targetOperation.extractNoCancellableResultData()
+
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
                 var callBuilder: RuntimeCallBuilding = RuntimeCallBuilder(
@@ -135,12 +183,12 @@ private extension XcmDynamicCrosschainFeeCalculator {
                     .addingToCall(builder: callBuilder, toEnd: true)
                     .dispatchingAs(.system(.signed(senderAccount)))
 
-                callBuilder = try targetMintCollector.addingToCall(
+                callBuilder = try mintingCalls.targetTokenMintCollector.addingToCall(
                     builder: callBuilder,
                     toEnd: false
                 )
 
-                if let nativeMintCollector {
+                if let nativeMintCollector = mintingCalls.nativeTokenMintCollector {
                     callBuilder = try nativeMintCollector.addingToCall(
                         builder: callBuilder,
                         toEnd: false
@@ -159,26 +207,59 @@ private extension XcmDynamicCrosschainFeeCalculator {
             }
 
             callBuilderOperation.addDependency(codingFactoryOperation)
-            callBuilderOperation.addDependency(targetTokenMintWrapper.targetOperation)
+            callBuilderOperation.addDependency(mintingCallsWrapper.targetOperation)
             callBuilderOperation.addDependency(xcmDerivationWrapper.targetOperation)
 
-            if let nativeTokenMintWrapper {
-                callBuilderOperation.addDependency(nativeTokenMintWrapper.targetOperation)
-                return xcmDerivationWrapper
-                    .insertingHead(operations: targetTokenMintWrapper.allOperations)
-                    .insertingHead(operations: nativeTokenMintWrapper.allOperations)
-                    .insertingHead(operations: [codingFactoryOperation])
-                    .insertingTail(operation: callBuilderOperation)
-            } else {
-                return xcmDerivationWrapper
-                    .insertingHead(operations: targetTokenMintWrapper.allOperations)
-                    .insertingHead(operations: [codingFactoryOperation])
-                    .insertingTail(operation: callBuilderOperation)
-            }
+            return xcmDerivationWrapper
+                .insertingHead(operations: mintingCallsWrapper.allOperations)
+                .insertingHead(operations: [codingFactoryOperation])
+                .insertingTail(operation: callBuilderOperation)
 
         } catch {
             return .createWithError(error)
         }
+    }
+
+    func createOriginIntermediateResult(
+        for request: XcmUnweightedTransferRequest,
+        dryRunResult: DryRun.CallResult,
+        palletName: String,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> IntermediateResult {
+        let effects = try dryRunResult.ensureSuccessExecution()
+
+        let deliveryFee = XcmDeliveryFeeMatcher(
+            palletName: palletName,
+            logger: logger
+        ).matchEventList(
+            effects.emittedEvents,
+            using: codingFactory
+        )
+
+        guard let xcmVersion = effects.forwardedXcms.first?.location.version else {
+            throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
+        }
+
+        let forwardedMessage = try XcmForwardedMessageMatcher(
+            palletName: palletName,
+            logger: logger
+        ).matchMessage(
+            from: effects.emittedEvents,
+            forwardedXcms: effects.forwardedXcms,
+            origin: .location(
+                for: request.nextChainAfterOrigin,
+                parachainId: request.nextParaIdAfterOrigin,
+                relativeTo: request.originChain,
+                version: xcmVersion
+            ),
+            codingFactory: codingFactory
+        )
+
+        guard let forwardedMessage else {
+            throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
+        }
+
+        return IntermediateResult(forwardedXcm: forwardedMessage, deliveryFee: deliveryFee ?? 0)
     }
 
     func dryRunOnOriginWrapper(
@@ -202,42 +283,15 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let resultOperation = ClosureOperation<IntermediateResult> {
                 let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let effects = try dryRunResult.ensureSuccessExecution()
                 let palletName = try palletResolutionWrapper.targetOperation.extractNoCancellableResultData()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                let deliveryFee = XcmDeliveryFeeMatcher(
+                return try self.createOriginIntermediateResult(
+                    for: request,
+                    dryRunResult: dryRunResult,
                     palletName: palletName,
-                    logger: self.logger
-                ).matchEventList(
-                    effects.emittedEvents,
-                    using: codingFactory
-                )
-
-                guard let xcmVersion = effects.forwardedXcms.first?.location.version else {
-                    throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
-                }
-
-                let forwardedMessage = try XcmForwardedMessageMatcher(
-                    palletName: palletName,
-                    logger: self.logger
-                ).matchMessage(
-                    from: effects.emittedEvents,
-                    forwardedXcms: effects.forwardedXcms,
-                    origin: .location(
-                        for: request.nextChainAfterOrigin,
-                        parachainId: request.nextParaIdAfterOrigin,
-                        relativeTo: request.originChain,
-                        version: xcmVersion
-                    ),
                     codingFactory: codingFactory
                 )
-
-                guard let forwardedMessage else {
-                    throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
-                }
-
-                return IntermediateResult(forwardedXcm: forwardedMessage, deliveryFee: deliveryFee ?? 0)
             }
 
             resultOperation.addDependency(codingFactoryOperation)
@@ -249,6 +303,41 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 .insertingHead(operations: [codingFactoryOperation])
                 .insertingTail(operation: resultOperation)
         }
+    }
+
+    func createReserveIntermediateResult(
+        for request: XcmUnweightedTransferRequest,
+        originResult: IntermediateResult,
+        dryRunResult: DryRun.XcmResult,
+        palletName: String,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> IntermediateResult {
+        let effects = try dryRunResult.ensureSuccessExecution()
+
+        guard let xcmVersion = effects.forwardedXcms.first?.location.version else {
+            throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
+        }
+
+        let forwardedMessage = try XcmForwardedMessageMatcher(
+            palletName: palletName,
+            logger: logger
+        ).matchMessage(
+            from: effects.emittedEvents,
+            forwardedXcms: effects.forwardedXcms,
+            origin: .location(
+                for: request.destinationChain,
+                parachainId: request.destination.parachainId,
+                relativeTo: request.reserveChain,
+                version: xcmVersion
+            ),
+            codingFactory: codingFactory
+        )
+
+        guard let forwardedMessage else {
+            throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
+        }
+
+        return IntermediateResult(forwardedXcm: forwardedMessage, deliveryFee: originResult.deliveryFee)
     }
 
     func dryRunReserveWrapper(
@@ -281,34 +370,16 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let resultOperation = ClosureOperation<IntermediateResult> {
                 let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let effects = try dryRunResult.ensureSuccessExecution()
                 let palletName = try palletResolutionWrapper.targetOperation.extractNoCancellableResultData()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                guard let xcmVersion = effects.forwardedXcms.first?.location.version else {
-                    throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
-                }
-
-                let forwardedMessage = try XcmForwardedMessageMatcher(
+                return try self.createReserveIntermediateResult(
+                    for: request,
+                    originResult: intermediateResult,
+                    dryRunResult: dryRunResult,
                     palletName: palletName,
-                    logger: self.logger
-                ).matchMessage(
-                    from: effects.emittedEvents,
-                    forwardedXcms: effects.forwardedXcms,
-                    origin: .location(
-                        for: request.destinationChain,
-                        parachainId: request.destination.parachainId,
-                        relativeTo: request.reserveChain,
-                        version: xcmVersion
-                    ),
                     codingFactory: codingFactory
                 )
-
-                guard let forwardedMessage else {
-                    throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
-                }
-
-                return IntermediateResult(forwardedXcm: forwardedMessage, deliveryFee: intermediateResult.deliveryFee)
             }
 
             resultOperation.addDependency(codingFactoryOperation)
@@ -392,7 +463,7 @@ extension XcmDynamicCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
         let updatedRequest = ensureSafeAmountToSend(for: request)
 
-        let initialModelWrapper = createCallWrapper(for: updatedRequest)
+        let initialModelWrapper = createDryCallWrapper(for: updatedRequest)
         let originDryRunWrapper = dryRunOnOriginWrapper(
             for: updatedRequest,
             dependingOn: initialModelWrapper.targetOperation

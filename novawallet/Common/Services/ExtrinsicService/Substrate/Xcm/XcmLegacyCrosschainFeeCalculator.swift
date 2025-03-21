@@ -3,7 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-// TODO: Review errors
 enum XcmLegacyCrosschainFeeCalculatorError: Error {
     case reserveFeeNotAvailable
     case unsupportedFee(XcmTransferMetadata.Fee)
