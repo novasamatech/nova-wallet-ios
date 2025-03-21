@@ -13,7 +13,8 @@ struct UnifiedAddressPopupViewFactory {
 
         let viewModelFactory = UnifiedAddressPopup.ViewModelFactory(
             newAddress: newAddress,
-            legacyAddress: legacyAddress
+            legacyAddress: legacyAddress,
+            applicationConfig: ApplicationConfig.shared
         )
         let localizationManager = LocalizationManager.shared
 

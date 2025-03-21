@@ -4,13 +4,16 @@ extension UnifiedAddressPopup {
     class ViewModelFactory {
         let newAddress: AccountAddress
         let legacyAddress: AccountAddress
+        let applicationConfig: ApplicationConfigProtocol
 
         init(
             newAddress: AccountAddress,
-            legacyAddress: AccountAddress
+            legacyAddress: AccountAddress,
+            applicationConfig: ApplicationConfigProtocol
         ) {
             self.newAddress = newAddress
             self.legacyAddress = legacyAddress
+            self.applicationConfig = applicationConfig
         }
     }
 }
@@ -44,7 +47,7 @@ extension UnifiedAddressPopup.ViewModelFactory {
         )
 
         let buttonText = R.string.localizable.commonOk(preferredLanguages: languages).uppercased()
-        let wikiURL = URL(string: "https://wiki.polkadot.network/docs/learn-accounts#unified-address-format")!
+        let wikiURL = applicationConfig.unifiedAddressWikiURL
 
         return UnifiedAddressPopup.ViewModel(
             titleText: title,
