@@ -30,7 +30,7 @@ typealias RampCompletionClosure = (_ rampPresentable: RampPresentable) -> (
 class RampOperationNetworkListPresenter: AssetOperationNetworkListPresenter, RampFlowManaging {
     let selectedAccount: MetaAccountModel
 
-    private let wireframe: BuyAssetOperationWireframeProtocol
+    private let wireframe: RampAssetOperationWireframeProtocol
     private let rampProvider: RampProviderProtocol
 
     private let checkResultClosure: RampOperationAvailabilityCheckClosure
@@ -42,7 +42,7 @@ class RampOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Ram
 
     init(
         interactor: AssetOperationNetworkListInteractorInputProtocol,
-        wireframe: BuyAssetOperationWireframeProtocol,
+        wireframe: RampAssetOperationWireframeProtocol,
         rampProvider: RampProviderProtocol,
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory,
