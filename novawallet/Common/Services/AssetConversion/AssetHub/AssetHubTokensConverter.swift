@@ -183,4 +183,24 @@ enum AssetHubTokensConverter {
             )
         )
     }
+
+    static func convertRawFeeAssetToLocalAsset(
+        _ remoteAssetId: String,
+        on chain: ChainModel,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) -> ChainAsset? {
+        guard
+            let remoteAsset = try? StatemineAssetSerializer.decodeFeeAssetId(
+                remoteAssetId,
+                codingFactory: codingFactory
+            ) else {
+            return nil
+        }
+
+        return AssetHubTokensConverter.convertToLocalAsset(
+            for: remoteAsset,
+            on: chain,
+            using: codingFactory
+        )
+    }
 }
