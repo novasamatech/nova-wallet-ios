@@ -11,7 +11,7 @@ protocol AssetDetailsPresenterProtocol: AnyObject {
     func setup()
     func handleSend()
     func handleReceive()
-    func handleBuy()
+    func handleBuySell()
     func handleLocks()
     func handleSwap()
 }
@@ -35,7 +35,11 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     )
 }
 
-protocol AssetDetailsWireframeProtocol: AnyObject, RampPresentable, AlertPresentable {
+protocol AssetDetailsWireframeProtocol:
+    AnyObject,
+    BuySellActionsPresentable,
+    RampPresentable,
+    AlertPresentable {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
     func showReceiveTokens(
         from view: AssetDetailsViewProtocol?,

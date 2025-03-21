@@ -83,7 +83,7 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
 
     func showGetTokenOptions(
         form view: ControllerBackedProtocol?,
-        purchaseHadler: PurchaseFlowManaging,
+        purchaseHadler: OnRampFlowManaging & RampDelegate,
         destinationChainAsset: ChainAsset,
         locale: Locale
     )

@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 import SoraFoundation
 
-final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManaging {
+final class SellAssetOperationPresenter: AssetsSearchPresenter, OffRampFlowManaging {
     var buyAssetWireframe: BuyAssetOperationWireframeProtocol? {
         wireframe as? BuyAssetOperationWireframeProtocol
     }
@@ -82,7 +82,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
                     guard let self = self else {
                         return
                     }
-                    self.startOnRampFlow(
+                    self.startOffRampFlow(
                         from: self.view,
                         actions: self.purchaseActions,
                         wireframe: self.buyAssetWireframe,
@@ -97,18 +97,7 @@ final class BuyAssetOperationPresenter: AssetsSearchPresenter, OnRampFlowManagin
     }
 }
 
-extension BuyAssetOperationPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        startFlow(
-            from: view,
-            action: purchaseActions[index],
-            wireframe: buyAssetWireframe,
-            locale: selectedLocale
-        )
-    }
-}
-
-extension BuyAssetOperationPresenter: RampDelegate {
+extension SellAssetOperationPresenter: RampDelegate {
     func rampDidComplete() {
         buyAssetWireframe?.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }

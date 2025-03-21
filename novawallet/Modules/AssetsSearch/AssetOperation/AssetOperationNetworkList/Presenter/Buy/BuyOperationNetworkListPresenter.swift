@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, PurchaseFlowManaging {
+class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, OnRampFlowManaging {
     let selectedAccount: MetaAccountModel
     let rampProvider: RampProviderProtocol
 
@@ -64,9 +64,9 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
                     guard let self else {
                         return
                     }
-                    self.startPuchaseFlow(
+                    self.startOnRampFlow(
                         from: self.view,
-                        purchaseActions: self.purchaseActions,
+                        actions: self.purchaseActions,
                         wireframe: wireframe,
                         assetSymbol: chainAsset.asset.symbol,
                         locale: selectedLocale
@@ -76,19 +76,6 @@ class BuyOperationNetworkListPresenter: AssetOperationNetworkListPresenter, Purc
         case .noBuyOptions:
             break
         }
-    }
-}
-
-// MARK: ModalPickerViewControllerDelegate
-
-extension BuyOperationNetworkListPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        startPuchaseFlow(
-            from: view,
-            purchaseAction: purchaseActions[index],
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
     }
 }
 

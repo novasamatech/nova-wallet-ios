@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import Operation_iOS
 
-final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwnerProtocol {
+final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerProtocol {
     weak var view: AssetDetailsViewProtocol?
     weak var assetPriceChartModule: AssetPriceChartModuleInputProtocol?
 
@@ -75,13 +75,32 @@ private extension AssetDetailsPresenter {
         view.didReceive(availableOperations: availableOperations)
     }
 
-    func showPurchase() {
-        startPuchaseFlow(
+    func showRamp() {
+        wireframe.presentBuySellSheet(
             from: view,
-            purchaseActions: purchaseActions,
-            wireframe: wireframe,
-            assetSymbol: chainAsset.asset.symbol,
-            locale: selectedLocale
+            delegate: self,
+            buyAction: { [weak self] in
+                guard let self, !purchaseActions.isEmpty else { return }
+
+                startOnRampFlow(
+                    from: view,
+                    actions: purchaseActions,
+                    wireframe: wireframe,
+                    assetSymbol: chainAsset.asset.symbol,
+                    locale: selectedLocale
+                )
+            },
+            sellAction: { [weak self] in
+                guard let self, !sellActions.isEmpty else { return }
+
+                startOffRampFlow(
+                    from: view,
+                    actions: sellActions,
+                    wireframe: wireframe,
+                    assetSymbol: chainAsset.asset.symbol,
+                    locale: selectedLocale
+                )
+            }
         )
     }
 
@@ -132,19 +151,15 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         }
     }
 
-    func handleBuy() {
-        guard !purchaseActions.isEmpty else {
-            return
-        }
-
+    func handleBuySell() {
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
-            showPurchase()
+            showRamp()
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
                 wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
-                showPurchase()
+                showRamp()
             }
         case .watchOnly:
             wireframe.showNoSigning(from: view)
@@ -246,13 +261,12 @@ extension AssetDetailsPresenter: Localizable {
 // MARK: ModalPickerViewControllerDelegate
 
 extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        startPuchaseFlow(
-            from: view,
-            purchaseAction: purchaseActions[index],
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let modalPickerContext = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        modalPickerContext.process(selectedIndex: index)
     }
 }
 
