@@ -4,8 +4,8 @@ import Operation_iOS
 import SoraFoundation
 
 final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging {
-    var rampWireframe: BuyAssetOperationWireframeProtocol? {
-        wireframe as? BuyAssetOperationWireframeProtocol
+    var rampWireframe: RampAssetOperationWireframeProtocol? {
+        wireframe as? RampAssetOperationWireframeProtocol
     }
 
     let selectedAccount: MetaAccountModel
@@ -23,7 +23,7 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         selectedAccount: MetaAccountModel,
         rampProvider: RampProviderProtocol,
-        wireframe: BuyAssetOperationWireframeProtocol,
+        wireframe: RampAssetOperationWireframeProtocol,
         checkResultClosure: @escaping RampOperationAvailabilityCheckClosure,
         rampActionsProviderClosure: @escaping RampActionProviderClosure,
         flowManagingClosure: @escaping RampFlowManagingClosure,
