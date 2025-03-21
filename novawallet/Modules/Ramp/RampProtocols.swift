@@ -21,6 +21,6 @@ protocol RampWireframeProtocol: AnyObject {
 protocol RampViewFactoryProtocol: AnyObject {
     static func createView(
         for action: RampAction,
-        delegate: RampDelegate
+        delegate: RampDelegate?
     ) -> RampViewProtocol?
 }

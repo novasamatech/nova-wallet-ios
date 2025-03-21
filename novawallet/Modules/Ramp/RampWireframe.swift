@@ -5,7 +5,7 @@ import SoraFoundation
 final class RampWireframe: RampWireframeProtocol {
     private weak var delegate: RampDelegate?
 
-    init(delegate: RampDelegate) {
+    init(delegate: RampDelegate?) {
         self.delegate = delegate
     }
 

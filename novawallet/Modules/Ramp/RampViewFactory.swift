@@ -4,7 +4,7 @@ import SoraFoundation
 final class RampViewFactory: RampViewFactoryProtocol {
     static func createView(
         for action: RampAction,
-        delegate: RampDelegate
+        delegate: RampDelegate?
     ) -> RampViewProtocol? {
         let view = RampViewController(url: action.url)
 

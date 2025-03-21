@@ -1,7 +1,7 @@
 import Foundation
 
 final class SelectRampProviderWireframe {
-    private let delegate: RampDelegate
+    weak var delegate: RampDelegate?
 
     init(delegate: RampDelegate) {
         self.delegate = delegate
