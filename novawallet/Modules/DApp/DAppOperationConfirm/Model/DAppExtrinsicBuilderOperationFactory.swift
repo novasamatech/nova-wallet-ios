@@ -165,9 +165,16 @@ final class DAppExtrinsicBuilderOperationFactory {
                     to: builder,
                     coderFactory: codingFactory
                 )
+            } else if let rawFeeAssetId = result.extrinsic.assetId {
+                let txPayment = AssetConversionTxPayment(
+                    tip: extrinsic.tip,
+                    assetId: rawFeeAssetId
+                )
+
+                builder = builder.adding(extrinsicSignedExtension: txPayment)
             }
 
-            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal || feeInstaller != nil
+            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal || result.extrinsic.hasAssetId
 
             return ExtrinsicSenderBuilderResult(
                 sender: sender,
