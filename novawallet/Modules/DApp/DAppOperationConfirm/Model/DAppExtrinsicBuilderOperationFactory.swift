@@ -111,7 +111,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                 builder = builder.adding(extrinsicSignedExtension: txPayment)
             }
 
-            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal || result.extrinsic.hasAssetId
+            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal
 
             return ExtrinsicSenderBuilderResult(
                 sender: sender,
