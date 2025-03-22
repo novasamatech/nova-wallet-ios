@@ -196,10 +196,9 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func createSetupWrapper() -> CompoundOperationWrapper<(XcmTransferParties, CrossChainAssetsStorageInfo)> {
-        let chain = destinationChainAsset.chain
         let destinationId = XcmTransferDestinationId(
-            chainId: chain.chainId,
-            accountId: AccountId.zeroAccountId(of: chain.accountIdSize)
+            chainAssetId: destinationChainAsset.chainAssetId,
+            accountId: AccountId.zeroAccountId(of: destinationChainAsset.chain.accountIdSize)
         )
 
         let transferResolution = resolutionFactory.createResolutionWrapper(
@@ -506,27 +505,25 @@ extension CrossChainTransferInteractor {
         operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?, weightLimit: BigUInt?) {
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?) {
         guard let transferParties = transferParties else {
             return
         }
 
         let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: destinationChainAsset.chain.accountIdSize)
 
-        let maxWeight = weightLimit ?? 0
-        let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex() +
-            "-" + String(maxWeight)
+        let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex()
 
         let destination = transferParties.destination.replacing(accountId: recepientAccountId)
         let unweightedRequest = XcmUnweightedTransferRequest(
-            origin: originChainAsset,
+            origin: transferParties.origin,
             destination: destination,
             reserve: transferParties.reserve,
             metadata: transferParties.metadata,
             amount: amount
         )
 
-        let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit ?? 0)
+        let transferRequest = XcmTransferRequest(unweighted: unweightedRequest)
 
         feeProxy.estimateOriginFee(
             using: extrinsicService,
@@ -546,7 +543,7 @@ extension CrossChainTransferInteractor {
 
         let destination = transferParties.destination.replacing(accountId: recepientAccountId)
         let request = XcmUnweightedTransferRequest(
-            origin: originChainAsset,
+            origin: transferParties.origin,
             destination: destination,
             reserve: transferParties.reserve,
             metadata: transferParties.metadata,

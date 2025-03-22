@@ -3,7 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-// TODO: Review errors
 enum XcmLegacyCrosschainFeeCalculatorError: Error {
     case reserveFeeNotAvailable
     case unsupportedFee(XcmTransferMetadata.Fee)
@@ -62,7 +61,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin,
+                    chainAsset: request.origin.chainAsset,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
@@ -112,7 +111,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin,
+                    chainAsset: request.origin.chainAsset,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
@@ -224,7 +223,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let mappingOperation = ClosureOperation<XcmFeeModelProtocol> {
                 let fee = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                return XcmFeeModel(senderPart: 0, holdingPart: fee.amount, weightLimit: fee.weight)
+                return XcmFeeModel(senderPart: 0, holdingPart: fee.amount)
             }
 
             mappingOperation.addDependency(wrapper.targetOperation)
@@ -249,7 +248,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
         case .proportional:
             let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
             let fee = coefficient * maxWeight / Self.weightPerSecond
-            let model = XcmFeeModel(senderPart: 0, holdingPart: fee, weightLimit: maxWeight)
+            let model = XcmFeeModel(senderPart: 0, holdingPart: fee)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:
             return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeight)
@@ -429,8 +428,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
 
             return XcmFeeModel(
                 senderPart: isSenderPart ? amount : 0,
-                holdingPart: !isSenderPart ? amount : 0,
-                weightLimit: 0
+                holdingPart: !isSenderPart ? amount : 0
             )
         }
 
@@ -500,7 +498,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let originToReserveWrapper = createChainDeliveryFeeWrapper(
                 for: .init(
                     message: reserveMessage,
-                    fromChainId: request.origin.chain.chainId,
+                    fromChainId: request.originChain.chainId,
                     toParachainId: request.reserve.parachainId
                 ),
                 deliveryFee: feeParams.originDelivery,
@@ -535,7 +533,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
             let originToDestinationWrapper = createChainDeliveryFeeWrapper(
                 for: .init(
                     message: feeMessages.destination,
-                    fromChainId: request.origin.chain.chainId,
+                    fromChainId: request.originChain.chainId,
                     toParachainId: request.destination.parachainId
                 ),
                 deliveryFee: feeParams.originDelivery,
@@ -584,7 +582,7 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin,
+                    chainAsset: request.origin.chainAsset,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,

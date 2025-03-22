@@ -5,7 +5,7 @@ protocol RuntimeCallCollecting {
     var callPath: CallCodingPath { get }
 
     func addingToExtrinsic(builder: ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol
-    func addingToCall(builder: RuntimeCallBuilding) throws -> RuntimeCallBuilding
+    func addingToCall(builder: RuntimeCallBuilding, toEnd: Bool) throws -> RuntimeCallBuilding
 }
 
 struct RuntimeCallCollector<T: Codable> {
@@ -21,7 +21,11 @@ extension RuntimeCallCollector: RuntimeCallCollecting {
         try builder.adding(call: call)
     }
 
-    func addingToCall(builder: RuntimeCallBuilding) throws -> RuntimeCallBuilding {
-        try builder.addingLast(call)
+    func addingToCall(builder: RuntimeCallBuilding, toEnd: Bool) throws -> RuntimeCallBuilding {
+        if toEnd {
+            try builder.addingLast(call)
+        } else {
+            try builder.addingFirst(call)
+        }
     }
 }

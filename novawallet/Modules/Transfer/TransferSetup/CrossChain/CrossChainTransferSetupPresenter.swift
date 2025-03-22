@@ -255,12 +255,9 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         updateOriginFee(nil)
         updateOriginFeeView()
 
-        let weightLimit = crossChainFee?.weightLimit ?? 0
-
         interactor.estimateOriginFee(
             for: amount,
-            recepient: getRecepientAccountId(),
-            weightLimit: weightLimit
+            recepient: getRecepientAccountId()
         )
     }
 

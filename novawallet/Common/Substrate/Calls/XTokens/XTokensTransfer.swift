@@ -53,13 +53,14 @@ extension XTokens {
 
     enum TransferDerivationError: Error {
         case callNotFound(CallCodingPath)
+        case destinationWeightRequired
     }
 
     static func appendTransferCall(
         asset: Xcm.VersionedMultiasset,
         destination: Xcm.VersionedMultilocation,
-        weight: BigUInt,
         module: String,
+        weightOption: XcmTransferMetadata.Fee,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> RuntimeCallCollecting {
         let path = CallCodingPath(moduleName: module, callName: XTokens.transferCallName)
@@ -76,7 +77,15 @@ extension XTokens {
         }
 
         if isV1 {
-            let args = TransferCallV1(asset: asset, destination: destination, destinationWeight: weight)
+            guard case let .legacy(legacyFee) = weightOption else {
+                throw TransferDerivationError.destinationWeightRequired
+            }
+
+            let args = TransferCallV1(
+                asset: asset,
+                destination: destination,
+                destinationWeight: legacyFee.maxWeight
+            )
 
             return RuntimeCallCollector(call: RuntimeCall(path: path, args: args))
         } else {

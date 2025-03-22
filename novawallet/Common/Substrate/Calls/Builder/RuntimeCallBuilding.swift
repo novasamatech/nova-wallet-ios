@@ -14,10 +14,10 @@ enum RuntimeCallBuilderError: Error {
 }
 
 final class RuntimeCallBuilder {
-    let context: RuntimeJsonContext?
+    let context: RuntimeJsonContext
     private var calls: [AnyRuntimeCall] = []
 
-    init(context: RuntimeJsonContext? = nil) {
+    init(context: RuntimeJsonContext) {
         self.context = context
     }
 }

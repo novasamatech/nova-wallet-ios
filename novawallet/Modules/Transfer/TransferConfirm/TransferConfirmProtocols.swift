@@ -28,7 +28,7 @@ protocol TransferConfirmOnChainInteractorInputProtocol: OnChainTransferSetupInte
 }
 
 protocol TransferConfirmCrossChainInteractorInputProtocol: CrossChainTransferSetupInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: ExtrinsicFeeProtocol?)
+    func submit(amount: BigUInt, recepient: AccountAddress, originFee: ExtrinsicFeeProtocol?)
 }
 
 protocol TransferConfirmOnChainInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {

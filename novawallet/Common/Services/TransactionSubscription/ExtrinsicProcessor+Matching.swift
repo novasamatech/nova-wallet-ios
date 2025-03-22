@@ -160,7 +160,7 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> OrmlParsingResult {
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
-        let optResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokenTransfer>>?
+        let optResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokensPallet.TransferCall>>?
         optResult = try? callMapper.mapRuntimeCall(
             call: extrinsic.call,
             context: context
@@ -175,7 +175,7 @@ extension ExtrinsicProcessor {
 
             return (callPath, isAccountMatched, callAccountId, callResult.callSender, currencyId, call.args.amount)
         } else {
-            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokenTransferAll>>
+            let callResult: NestedExtrinsicCallMapResult<RuntimeCall<OrmlTokensPallet.TransferAllCall>>
             callResult = try callMapper.mapRuntimeCall(
                 call: extrinsic.call,
                 context: context
@@ -427,7 +427,7 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> AssetsParsingResult {
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
-        let callResult: NestedExtrinsicCallMapResult<RuntimeCall<AssetsTransfer>> = try callMapper.mapRuntimeCall(
+        let callResult: NestedExtrinsicCallMapResult<RuntimeCall<PalletAssets.TransferCall>> = try callMapper.mapRuntimeCall(
             call: extrinsic.call,
             context: context
         )

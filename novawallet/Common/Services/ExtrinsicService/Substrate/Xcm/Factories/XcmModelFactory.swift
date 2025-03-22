@@ -25,6 +25,10 @@ struct XcmMultilocationAssetParams {
     let metadata: XcmTransferMetadata
 }
 
+enum XcmModelFactoryError: Error {
+    case unsupported(Xcm.Version?)
+}
+
 final class XcmModelFactory {}
 
 extension XcmModelFactory: XcmModelFactoryProtocol {
@@ -52,6 +56,9 @@ extension XcmModelFactory: XcmModelFactoryProtocol {
                 amount: amount,
                 version: version
             )
+        case .V4:
+            // TODO: Add support
+            throw XcmModelFactoryError.unsupported(version)
         }
     }
 
@@ -70,6 +77,8 @@ extension XcmModelFactory: XcmModelFactoryProtocol {
                 for: params,
                 version: version
             )
+        case .V4:
+            throw XcmModelFactoryError.unsupported(version.multiLocation)
         }
     }
 }

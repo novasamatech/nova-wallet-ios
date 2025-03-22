@@ -20,6 +20,7 @@ struct XcmWeightMessagesParams {
 enum XcmWeightMessagesFactoryError: Error {
     case unsupportedInstruction(String)
     case noInstructions(String)
+    case unsupportedVersion(Xcm.Version?)
 }
 
 final class XcmWeightMessagesFactory {}
@@ -40,6 +41,9 @@ extension XcmWeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
                 from: params,
                 version: version
             )
+        case .V4:
+            // TODO: Add support
+            throw XcmWeightMessagesFactoryError.unsupportedVersion(version)
         }
     }
 }

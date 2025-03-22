@@ -78,7 +78,8 @@ final class CrosschainAssetsExchangeProvider: AssetsExchangeBaseProvider {
                 customFeeEstimatingFactory: AssetExchangeFeeEstimatingFactory(
                     graphProxy: graphProxy,
                     operationQueue: operationQueue
-                )
+                ),
+                logger: logger
             ),
             resolutionFactory: XcmTransferResolutionFactory(
                 chainRegistry: chainRegistry,

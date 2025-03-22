@@ -2,46 +2,8 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-extension XcmV3 {
-    enum AssetId: Equatable, Codable {
-        case concrete(XcmV3.Multilocation)
-        case abstract(Data)
-
-        init(from decoder: Decoder) throws {
-            var container = try decoder.unkeyedContainer()
-
-            let type = try container.decode(String.self)
-
-            switch type {
-            case "Concrete":
-                let multilocation = try container.decode(XcmV3.Multilocation.self)
-                self = .concrete(multilocation)
-            case "Abstract":
-                let data = try container.decode(BytesCodable.self).wrappedValue
-                self = .abstract(data)
-            default:
-                throw DecodingError.dataCorrupted(
-                    .init(
-                        codingPath: container.codingPath,
-                        debugDescription: "Unsupported type: \(type)"
-                    )
-                )
-            }
-        }
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            switch self {
-            case let .concrete(multilocation):
-                try container.encode("Concrete")
-                try container.encode(multilocation)
-            case let .abstract(data):
-                try container.encode("Abstract")
-                try container.encode(BytesCodable(wrappedValue: data))
-            }
-        }
-    }
+extension XcmV4 {
+    typealias AssetId = XcmV4.Multilocation
 
     enum WildFungibility: Int, Codable {
         case fungible
@@ -119,7 +81,47 @@ extension XcmV3 {
         }
     }
 
-    typealias Fungibility = Xcm.Fungibility
+    typealias AssetInstance = JSON
+
+    enum Fungibility: Codable {
+        case fungible(Balance)
+        case nonFungible(AssetInstance)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Fungible":
+                let amount = try container.decode(StringScaleMapper<Balance>.self).value
+                self = .fungible(amount)
+            case "NonFungible":
+                let assetInstance = try container.decode(AssetInstance.self)
+                self = .nonFungible(assetInstance)
+            default:
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unknown fungibility \(type)"
+                    )
+                )
+            }
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+
+            switch self {
+            case let .fungible(amount):
+                try container.encode("Fungible")
+                try container.encode(StringScaleMapper(value: amount))
+            case let .nonFungible(assetInstance):
+                try container.encode("NonFungible")
+                try container.encode(assetInstance)
+            }
+        }
+    }
 
     struct Multiasset: Codable {
         enum CodingKeys: String, CodingKey {
@@ -130,15 +132,15 @@ extension XcmV3 {
         let assetId: AssetId
         let fun: Fungibility
 
-        init(multilocation: XcmV3.Multilocation, amount: BigUInt) {
-            assetId = .concrete(multilocation)
+        init(assetId: AssetId, amount: BigUInt) {
+            self.assetId = assetId
 
             // starting from xcmV3 zero amount is prohibited
-            fun = .fungible(amount: max(amount, 1))
+            fun = .fungible(max(amount, 1))
         }
     }
 
-    enum MultiassetFilter: Codable {
+    enum AssetFilter: Codable {
         case definite([Multiasset])
         case wild(WildMultiasset)
 

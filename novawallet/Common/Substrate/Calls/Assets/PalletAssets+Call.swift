@@ -1,52 +1,37 @@
 import Foundation
+import SubstrateSdk
+import BigInt
 
 extension PalletAssets {
-    static let knownPalletNames: [String] = [
-        PalletAssets.name,
-        "LocalAssets",
-        "ForeignAssets"
-    ]
+    struct TransferCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case assetId = "id"
+            case target
+            case amount
+        }
 
-    static func assetsTransfer(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? PalletAssets.name, callName: "transfer")
+        let assetId: JSON
+        let target: MultiAddress
+        @StringCodable var amount: BigUInt
     }
 
-    static func assetsTransferKeepAlive(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? PalletAssets.name, callName: "transfer_keep_alive")
-    }
+    struct MintCall<A: Codable>: Codable {
+        enum CodingKeys: String, CodingKey {
+            case assetId = "id"
+            case beneficiary
+            case amount
+        }
 
-    static func assetsForceTransfer(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? PalletAssets.name, callName: "force_transfer")
-    }
+        let assetId: A
+        let beneficiary: MultiAddress
+        @StringCodable var amount: Balance
 
-    static func assetsTransferAll(for palletName: String?) -> CallCodingPath {
-        CallCodingPath(moduleName: palletName ?? PalletAssets.name, callName: "transfer_all")
-    }
-
-    static func possibleTransferCallPaths() -> [CallCodingPath] {
-        knownPalletNames.map { palletName in
-            [
-                assetsTransfer(for: palletName),
-                assetsTransferKeepAlive(for: palletName),
-                assetsForceTransfer(for: palletName),
-                assetsTransferAll(for: palletName)
-            ]
-        }.flatMap { $0 }
-    }
-
-    static var localAssetsTransfer: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "transfer")
-    }
-
-    static var localAssetsTransferKeepAlive: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "transfer_keep_alive")
-    }
-
-    static var localAssetsForceTransfer: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "force_transfer")
-    }
-
-    static var localAssetsTransferAll: CallCodingPath {
-        CallCodingPath(moduleName: "LocalAssets", callName: "transfer_all")
+        func runtimeCall(for palletName: String) -> RuntimeCall<Self> {
+            RuntimeCall(
+                moduleName: palletName,
+                callName: "mint",
+                args: self
+            )
+        }
     }
 }

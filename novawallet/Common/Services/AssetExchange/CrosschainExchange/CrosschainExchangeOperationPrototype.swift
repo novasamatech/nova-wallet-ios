@@ -16,7 +16,7 @@ final class CrosschainExchangeOperationPrototype: AssetExchangeBaseOperationProt
         host.resolutionFactory.createResolutionWrapper(
             for: assetIn.chainAssetId,
             transferDestinationId: .init(
-                chainId: assetOut.chain.chainId,
+                chainAssetId: assetOut.chainAssetId,
                 accountId: destinationAccount.accountId
             ),
             xcmTransfers: host.xcmTransfers
@@ -64,9 +64,9 @@ extension CrosschainExchangeOperationPrototype: AssetExchangeOperationPrototypeP
         ) {
             let partiesResolution = try resolutionWrapper.targetOperation.extractNoCancellableResultData()
 
-            let originChain = partiesResolution.origin.chain
-            let destinationChain = partiesResolution.destination.chain
-            let reserveChain = partiesResolution.reserve.chain
+            let originChain = partiesResolution.originChain
+            let destinationChain = partiesResolution.destinationChain
+            let reserveChain = partiesResolution.reserveChain
 
             let relaychainId = [originChain, destinationChain, reserveChain]
                 .compactMap(\.parentId)
