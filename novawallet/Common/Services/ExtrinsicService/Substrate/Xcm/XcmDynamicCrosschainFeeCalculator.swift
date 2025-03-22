@@ -10,7 +10,7 @@ enum XcmDynamicCrosschainFeeCalculatorError: Error {
 }
 
 /**
- *  This class estimates the base fee for an XCM (Cross-Consensus Message) transaction using dry runs.
+ *  This class estimates the fee for an XCM (Cross-Consensus Message) transaction using dry runs.
  *
  *  The process involves the following steps:
  *    1. Derive the initial XCM call.
