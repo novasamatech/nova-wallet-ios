@@ -40,8 +40,10 @@ extension XcmModelFactory: XcmModelFactoryProtocol {
                 version: version
             )
         case .V4:
-            // TODO: Implement
-            throw XcmModelFactoryError.unsupported(version)
+            try XcmV4ModelFactory().createMultilocationAsset(
+                for: params,
+                version: version
+            )
         }
     }
 }

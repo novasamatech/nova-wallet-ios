@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 extension XcmV4 {
     struct Multilocation: Equatable, Codable {
@@ -30,5 +31,25 @@ extension XcmV4.Multilocation {
         }
 
         return XcmV4.Multilocation(parents: parents, interior: junctions)
+    }
+
+    func appendingAccountId(
+        _ accountId: AccountId,
+        in chain: ChainModel
+    ) -> XcmV4.Multilocation {
+        let accountIdJunction: XcmV4.Junction
+
+        if chain.isEthereumBased {
+            let accountIdValue = XcmV4.AccountId20Value(network: nil, key: accountId)
+            accountIdJunction = XcmV4.Junction.accountKey20(accountIdValue)
+        } else {
+            let accountIdValue = XcmV4.AccountId32Value(network: nil, accountId: accountId)
+            accountIdJunction = XcmV4.Junction.accountId32(accountIdValue)
+        }
+
+        return XcmV4.Multilocation(
+            parents: parents,
+            interior: interior.appending(components: [accountIdJunction])
+        )
     }
 }

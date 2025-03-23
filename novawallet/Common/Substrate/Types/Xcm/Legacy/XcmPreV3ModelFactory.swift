@@ -23,58 +23,25 @@ final class XcmPreV3ModelFactory {
         origin: ChainModel,
         destination: XcmTransferDestination
     ) -> Xcm.Multilocation {
-        let accountIdJunction: Xcm.Junction
-
-        if destination.chain.isEthereumBased {
-            let accountIdValue = Xcm.AccountId20Value(network: .any, key: destination.accountId)
-            accountIdJunction = Xcm.Junction.accountKey20(accountIdValue)
-        } else {
-            let accountIdValue = Xcm.AccountId32Value(network: .any, accountId: destination.accountId)
-            accountIdJunction = Xcm.Junction.accountId32(accountIdValue)
-        }
-
-        let parents: UInt8
-
-        if !origin.isRelaychain, origin.chainId != destination.chain.chainId {
-            parents = 1
-        } else {
-            parents = 0
-        }
-
-        let junctions: Xcm.JunctionsV2
-
-        if let parachainId = destination.parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.Junctions(items: [networkJunction, accountIdJunction])
-        } else {
-            junctions = Xcm.Junctions(items: [accountIdJunction])
-        }
-
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        Xcm.Multilocation.location(
+            for: destination.chain,
+            parachainId: destination.parachainId,
+            relativeTo: origin
+        ).appendingAccountId(
+            destination.accountId,
+            in: destination.chain
+        )
     }
 
     func createMultilocation(
         origin: ChainModel,
         reserve: XcmTransferReserve
     ) -> Xcm.Multilocation {
-        let parents: UInt8
-
-        if !origin.isRelaychain, origin.chainId != reserve.chain.chainId {
-            parents = 1
-        } else {
-            parents = 0
-        }
-
-        let junctions: Xcm.JunctionsV2
-
-        if let parachainId = reserve.parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.JunctionsV2(items: [networkJunction])
-        } else {
-            junctions = Xcm.JunctionsV2(items: [])
-        }
-
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        Xcm.Multilocation.location(
+            for: reserve.chain,
+            parachainId: reserve.parachainId,
+            relativeTo: origin
+        )
     }
 }
 

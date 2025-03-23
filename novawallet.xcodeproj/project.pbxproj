@@ -232,7 +232,6 @@
 		0C1666862D7FEF90005E6CD3 /* XcmModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */; };
 		0C16668C2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C16668B2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift */; };
 		0C16668E2D80065D005E6CD3 /* XcmPreV3WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C16668D2D80065D005E6CD3 /* XcmPreV3WeightMessagesFactory.swift */; };
-		0C1666902D800763005E6CD3 /* XcmModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C16668F2D800763005E6CD3 /* XcmModelError.swift */; };
 		0C1666922D8007FA005E6CD3 /* XcmV3WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1666912D8007FA005E6CD3 /* XcmV3WeightMessagesFactory.swift */; };
 		0C17BD972A42F162004AF9E7 /* WalletViewModelObserverContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */; };
 		0C17BD992A42F1BE004AF9E7 /* MoneyPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */; };
@@ -1120,6 +1119,8 @@
 		0CFF82332D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */; };
 		0CFF82352D8C305A00DB17A4 /* XcmTransferOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */; };
 		0CFF82372D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */; };
+		0CFF82452D904ADB00DB17A4 /* XcmV4ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */; };
+		0CFF82472D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */; };
 		0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */; };
 		0CFFB9D92D17592500172E8C /* OperatingSystemApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */; };
 		0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD8B98AB03AAF06AA891695 /* TransferConfirmViewLayout.swift */; };
@@ -5957,7 +5958,6 @@
 		0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmModelFactory.swift; sourceTree = "<group>"; };
 		0C16668B2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmWeightMessagesFactory.swift; sourceTree = "<group>"; };
 		0C16668D2D80065D005E6CD3 /* XcmPreV3WeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPreV3WeightMessagesFactory.swift; sourceTree = "<group>"; };
-		0C16668F2D800763005E6CD3 /* XcmModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmModelError.swift; sourceTree = "<group>"; };
 		0C1666912D8007FA005E6CD3 /* XcmV3WeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV3WeightMessagesFactory.swift; sourceTree = "<group>"; };
 		0C17BD962A42F162004AF9E7 /* WalletViewModelObserverContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModelObserverContainer.swift; sourceTree = "<group>"; };
 		0C17BD982A42F1BE004AF9E7 /* MoneyPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyPresentable.swift; sourceTree = "<group>"; };
@@ -6882,6 +6882,8 @@
 		0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmForwardedMessageMatcher.swift; sourceTree = "<group>"; };
 		0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferOrigin.swift; sourceTree = "<group>"; };
 		0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCrosschainFeeCalculator.swift; sourceTree = "<group>"; };
+		0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4ModelFactory.swift; sourceTree = "<group>"; };
+		0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4WeightMessagesFactory.swift; sourceTree = "<group>"; };
 		0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTokensArrivalDetector.swift; sourceTree = "<group>"; };
 		0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingSystemApi.swift; sourceTree = "<group>"; };
 		0D32A720511D1D3B0F479AFE /* DAppBrowserTabListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListProtocols.swift; sourceTree = "<group>"; };
@@ -12180,20 +12182,6 @@
 			path = ExtrinsicProxy;
 			sourceTree = "<group>";
 		};
-		0C1666882D7FF03D005E6CD3 /* Factories */ = {
-			isa = PBXGroup;
-			children = (
-				0CA8AF3A2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift */,
-				0CF606D02D7B311E0041B7AE /* XcmV3ModelFactory.swift */,
-				0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */,
-				0C16668B2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift */,
-				0C16668D2D80065D005E6CD3 /* XcmPreV3WeightMessagesFactory.swift */,
-				0C16668F2D800763005E6CD3 /* XcmModelError.swift */,
-				0C1666912D8007FA005E6CD3 /* XcmV3WeightMessagesFactory.swift */,
-			);
-			path = Factories;
-			sourceTree = "<group>";
-		};
 		0C1998EB2C4CB218000EBFB8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -13676,6 +13664,8 @@
 				0CEB6B322CA425E500609DC2 /* XcmV3LocatableAsset.swift */,
 				0CEB6B3B2CA459C500609DC2 /* XcmV3Multilocation+AccountId.swift */,
 				0CF606CE2D7B2E2E0041B7AE /* XcmV3Instruction.swift */,
+				0CF606D02D7B311E0041B7AE /* XcmV3ModelFactory.swift */,
+				0C1666912D8007FA005E6CD3 /* XcmV3WeightMessagesFactory.swift */,
 			);
 			path = V3;
 			sourceTree = "<group>";
@@ -13975,6 +13965,8 @@
 				0CA8AF3C2D8936A100DB4E6A /* XcmV4Instruction.swift */,
 				0CA8AF3E2D8937F800DB4E6A /* XcmV4Asset.swift */,
 				0CA8AF402D893ED300DB4E6A /* XcmV4Multilocation+AccountId.swift */,
+				0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */,
+				0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */,
 			);
 			path = V4;
 			sourceTree = "<group>";
@@ -14018,6 +14010,8 @@
 		0CF606D22D7B351A0041B7AE /* Legacy */ = {
 			isa = PBXGroup;
 			children = (
+				0CA8AF3A2D89280A00DB4E6A /* XcmPreV3ModelFactory.swift */,
+				0C16668D2D80065D005E6CD3 /* XcmPreV3WeightMessagesFactory.swift */,
 				84FB9E1B285C57EF00B42FC0 /* XcmMultilocation.swift */,
 				84FB9E1F285C5C9E00B42FC0 /* XcmJunction.swift */,
 				84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */,
@@ -22794,7 +22788,6 @@
 			isa = PBXGroup;
 			children = (
 				0CFF82202D8B671A00DB17A4 /* TokenBalanceMinting */,
-				0C1666882D7FF03D005E6CD3 /* Factories */,
 				0CA7CEEA2CE0CA13004328F2 /* TokenDepositEventMatching */,
 				844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */,
 				84468A102867BCD400BCBE00 /* XcmTransferService+Protocol.swift */,
@@ -22812,6 +22805,8 @@
 				0CFF82302D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift */,
 				0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */,
 				0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */,
+				0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */,
+				0C16668B2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -27905,6 +27900,7 @@
 				845E49832636C87B002F8C22 /* ActionManageViewModel.swift in Sources */,
 				8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */,
 				0C13D3132A80D06B0054BB6F /* StakingRecommendationValidationFactory.swift in Sources */,
+				0CFF82452D904ADB00DB17A4 /* XcmV4ModelFactory.swift in Sources */,
 				77A0B2ED2A3B7F3300CBF653 /* DAppCollectionViewCell.swift in Sources */,
 				2D1D66022CD82330009C6C2F /* ImageRetrieveOperationFactory.swift in Sources */,
 				77DB70EE2B709E4300288F26 /* Web3AlertRemoteModel.swift in Sources */,
@@ -30555,7 +30551,6 @@
 				2D6F51B12CE11EB100564C00 /* SpendAssetOperationNetworkBuilder.swift in Sources */,
 				84F6B6502619E1ED0038F10D /* Int+Operations.swift in Sources */,
 				8487010E2907DF2F00F2C0C3 /* MultiValueView+Style.swift in Sources */,
-				0C1666902D800763005E6CD3 /* XcmModelError.swift in Sources */,
 				84770F2A291F864500852A33 /* GovernanceUnlockInitData.swift in Sources */,
 				7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */,
 				85547F698B551ACD387D84E2 /* SelectValidatorsStartViewController.swift in Sources */,
@@ -32510,6 +32505,7 @@
 				C044A73D956CAFB926D4BEC1 /* StakingConfirmProxyViewController.swift in Sources */,
 				DA33289649E281A2D6378C1C /* StakingConfirmProxyViewLayout.swift in Sources */,
 				2AFCF6923D31691A53BEC762 /* StakingConfirmProxyViewFactory.swift in Sources */,
+				0CFF82472D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift in Sources */,
 				C4D962BDC211A38CA3536425 /* StakingProxyManagementProtocols.swift in Sources */,
 				D5F1C910930BA08E5F7681B2 /* StakingProxyManagementWireframe.swift in Sources */,
 				5AEA54E0691BD6DC6B570ACF /* StakingProxyManagementPresenter.swift in Sources */,

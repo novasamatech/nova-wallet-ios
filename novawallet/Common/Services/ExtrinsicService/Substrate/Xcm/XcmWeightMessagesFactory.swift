@@ -42,8 +42,10 @@ extension XcmWeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
                 version: version
             )
         case .V4:
-            // TODO: Add support
-            throw XcmWeightMessagesFactoryError.unsupportedVersion(version)
+            try XcmV4WeightMessagesFactory().createWeightMessages(
+                from: params,
+                version: version
+            )
         }
     }
 }

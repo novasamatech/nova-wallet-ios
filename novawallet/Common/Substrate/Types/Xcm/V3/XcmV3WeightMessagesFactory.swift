@@ -69,7 +69,7 @@ private extension XcmV3WeightMessagesFactory {
             case XcmV3.Instruction.fieldReceiveTeleportedAsset:
                 return .receiveTeleportedAsset([asset])
             default:
-                throw XcmModelError.unsupportedInstruction(rawInstruction)
+                throw XcmWeightMessagesFactoryError.unsupportedInstruction(rawInstruction)
             }
         }
 
