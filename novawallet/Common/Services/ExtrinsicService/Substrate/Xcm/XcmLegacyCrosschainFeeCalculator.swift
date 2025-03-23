@@ -48,7 +48,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 for: request.destination.chain.chainId
             )
 
-            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
+            let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
 
             let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
             feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -98,7 +98,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 for: request.reserve.chain.chainId
             )
 
-            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
+            let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
 
             let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
             feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -558,11 +558,11 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 for: request.reserve.chain.chainId
             )
 
-            let destinationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+            let destinationVersionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(
                 for: destinationRuntimeProvider
             )
 
-            let reserveVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+            let reserveVersionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(
                 for: reserveRuntimeProvider
             )
 
@@ -573,9 +573,7 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 let destinationVersion = try destinationVersionWrapper.targetOperation.extractNoCancellableResultData()
                 let reserveVersion = try reserveVersionWrapper.targetOperation.extractNoCancellableResultData()
 
-                let version = [destinationVersion, reserveVersion]
-                    .compactMap { $0 }
-                    .max()
+                let version = max(destinationVersion, reserveVersion)
 
                 guard case let .legacy(feeParams) = request.metadata.fee else {
                     throw XcmLegacyCrosschainFeeCalculatorError.unsupportedFee(request.metadata.fee)

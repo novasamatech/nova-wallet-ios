@@ -171,38 +171,13 @@ private extension XcmPreV3ModelFactory {
         let multilocation = createMultilocation(origin: origin, reserve: reserve)
         return .versionedMultiLocation(for: version, multiLocation: multilocation)
     }
-}
-
-extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
-    func createMultilocationAsset(
-        for params: XcmMultilocationAssetParams,
-        version: XcmMultilocationAssetVersion
-    ) throws -> XcmMultilocationAsset {
-        let originChainAsset = params.origin
-
-        let multilocation = createVersionedMultilocation(
-            origin: originChainAsset.chain,
-            destination: params.destination,
-            version: version.multiLocation
-        )
-
-        let multiasset = try createVersionedMultiasset(
-            origin: originChainAsset.chain,
-            reserve: params.reserve,
-            assetLocation: params.metadata.reserve.path,
-            amount: params.amount,
-            version: version.multiAssets
-        )
-
-        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
-    }
 
     func createVersionedMultiasset(
         origin: ChainModel,
         reserve: ChainModel,
         assetLocation: XcmAsset.ReservePath,
         amount: BigUInt,
-        version: Xcm.Version?
+        version: Xcm.Version
     ) throws -> Xcm.VersionedMultiasset {
         let multiasset = try createMultiAsset(
             origin: origin,
@@ -212,5 +187,30 @@ extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
         )
 
         return .versionedMultiasset(for: version, multiAsset: multiasset)
+    }
+}
+
+extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
+    func createMultilocationAsset(
+        for params: XcmMultilocationAssetParams,
+        version: Xcm.Version
+    ) throws -> XcmMultilocationAsset {
+        let originChainAsset = params.origin
+
+        let multilocation = createVersionedMultilocation(
+            origin: originChainAsset.chain,
+            destination: params.destination,
+            version: version
+        )
+
+        let multiasset = try createVersionedMultiasset(
+            origin: originChainAsset.chain,
+            reserve: params.reserve,
+            assetLocation: params.metadata.reserve.path,
+            amount: params.amount,
+            version: version
+        )
+
+        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
     }
 }

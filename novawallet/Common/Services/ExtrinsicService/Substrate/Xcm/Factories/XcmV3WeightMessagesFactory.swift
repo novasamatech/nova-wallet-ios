@@ -80,7 +80,7 @@ private extension XcmV3WeightMessagesFactory {
 extension XcmV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
     func createWeightMessages(
         from params: XcmWeightMessagesParams,
-        version _: Xcm.Version?
+        version _: Xcm.Version
     ) throws -> XcmWeightMessages {
         let multiasset = try modelFactory.createMultiAsset(
             origin: params.chainAsset.chain,

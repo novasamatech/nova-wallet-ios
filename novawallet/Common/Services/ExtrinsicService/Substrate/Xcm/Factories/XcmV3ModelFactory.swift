@@ -169,12 +169,28 @@ private extension XcmV3ModelFactory {
         let multilocation = createMultilocation(origin: origin, reserve: reserve)
         return .V3(multilocation)
     }
+
+    func createVersionedMultiasset(
+        origin: ChainModel,
+        reserve: ChainModel,
+        assetLocation: XcmAsset.ReservePath,
+        amount: BigUInt
+    ) throws -> Xcm.VersionedMultiasset {
+        let multiasset = try createMultiAsset(
+            origin: origin,
+            reserve: reserve,
+            assetLocation: assetLocation,
+            amount: amount
+        )
+
+        return .V3(multiasset)
+    }
 }
 
 extension XcmV3ModelFactory: XcmModelFactoryProtocol {
     func createMultilocationAsset(
         for params: XcmMultilocationAssetParams,
-        version: XcmMultilocationAssetVersion
+        version _: Xcm.Version
     ) throws -> XcmMultilocationAsset {
         let originChainAsset = params.origin
 
@@ -187,27 +203,9 @@ extension XcmV3ModelFactory: XcmModelFactoryProtocol {
             origin: originChainAsset.chain,
             reserve: params.reserve,
             assetLocation: params.metadata.reserve.path,
-            amount: params.amount,
-            version: version.multiAssets
+            amount: params.amount
         )
 
         return XcmMultilocationAsset(location: multilocation, asset: multiasset)
-    }
-
-    func createVersionedMultiasset(
-        origin: ChainModel,
-        reserve: ChainModel,
-        assetLocation: XcmAsset.ReservePath,
-        amount: BigUInt,
-        version _: Xcm.Version?
-    ) throws -> Xcm.VersionedMultiasset {
-        let multiasset = try createMultiAsset(
-            origin: origin,
-            reserve: reserve,
-            assetLocation: assetLocation,
-            amount: amount
-        )
-
-        return .V3(multiasset)
     }
 }
