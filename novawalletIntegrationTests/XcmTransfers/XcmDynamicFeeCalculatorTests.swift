@@ -35,6 +35,21 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         }
     }
     
+    func testDOTPolkadotAssetHubPolkadot() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.polkadotAssetHub,
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.polkadot,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     func testDOTHydraMoonbeam() throws {
         do {
             let fee = try calculateFee(
@@ -42,6 +57,21 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
                 originAssetSymbol: "DOT",
                 destinationChainId: KnowChainId.moonbeam,
                 destinationAssetSymbol: "xcDOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDOTMoonbeamHydra() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.moonbeam,
+                originAssetSymbol: "xcDOT",
+                destinationChainId: KnowChainId.hydra,
+                destinationAssetSymbol: "DOT"
             )
             
             Logger.shared.debug("Fee: \(fee)")

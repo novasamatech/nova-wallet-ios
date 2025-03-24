@@ -1121,6 +1121,7 @@
 		0CFF82372D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */; };
 		0CFF82452D904ADB00DB17A4 /* XcmV4ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */; };
 		0CFF82472D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */; };
+		0CFF82492D91242100DB17A4 /* ExtrinsicStatusValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82482D91242100DB17A4 /* ExtrinsicStatusValidator.swift */; };
 		0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */; };
 		0CFFB9D92D17592500172E8C /* OperatingSystemApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */; };
 		0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD8B98AB03AAF06AA891695 /* TransferConfirmViewLayout.swift */; };
@@ -6884,6 +6885,7 @@
 		0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCrosschainFeeCalculator.swift; sourceTree = "<group>"; };
 		0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4ModelFactory.swift; sourceTree = "<group>"; };
 		0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4WeightMessagesFactory.swift; sourceTree = "<group>"; };
+		0CFF82482D91242100DB17A4 /* ExtrinsicStatusValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicStatusValidator.swift; sourceTree = "<group>"; };
 		0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTokensArrivalDetector.swift; sourceTree = "<group>"; };
 		0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingSystemApi.swift; sourceTree = "<group>"; };
 		0D32A720511D1D3B0F479AFE /* DAppBrowserTabListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListProtocols.swift; sourceTree = "<group>"; };
@@ -13323,6 +13325,7 @@
 				0CA8AD602CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift */,
 				0CA7CEE12CE0BBE9004328F2 /* SubstrateEventsRepository.swift */,
 				0CEBAD552D61A275000EBA45 /* ExtrinsicStatusServiceInput.swift */,
+				0CFF82482D91242100DB17A4 /* ExtrinsicStatusValidator.swift */,
 			);
 			path = ExtrinsicStatusService;
 			sourceTree = "<group>";
@@ -28926,6 +28929,7 @@
 				882808C829009CA500AE8089 /* DotsView.swift in Sources */,
 				84C355BD29892885005072CF /* SubqueryBaseOperationFactory.swift in Sources */,
 				8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */,
+				0CFF82492D91242100DB17A4 /* ExtrinsicStatusValidator.swift in Sources */,
 				0C3205C02A867DD6002EB914 /* EvmMaxPriorityGasPriceProvider.swift in Sources */,
 				8499FECF27BFA25100712589 /* NftType.swift in Sources */,
 				0C9680F12A8A85BB006A411B /* TokenAddValidationFactory.swift in Sources */,

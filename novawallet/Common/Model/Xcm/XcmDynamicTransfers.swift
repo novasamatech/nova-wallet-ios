@@ -27,13 +27,16 @@ struct XcmDynamicTransfers: Decodable {
         let chainId = chainAsset.chain.chainId
         let assetIdKey = String(chainAsset.asset.assetId)
 
-        let assetLocationId = reserveIdOverrides[chainId]?[assetIdKey] ?? chainAsset.asset.symbol
+        let overridenLocation = reserveIdOverrides[chainId]?[assetIdKey]
+        let assetLocationId = overridenLocation ?? chainAsset.asset.symbol
 
         guard let path = assetsLocation[assetLocationId]?.multiLocation else {
             return nil
         }
 
-        return XcmAsset.ReservePath(type: .relative, path: path)
+        let locationType: XcmAsset.LocationType = overridenLocation != nil ? .absolute : .relative
+
+        return XcmAsset.ReservePath(type: locationType, path: path)
     }
 
     func getReserveChainId(for chainAsset: ChainAsset) -> ChainModel.Id? {
