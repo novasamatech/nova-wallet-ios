@@ -19,7 +19,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
     private var locks: [AssetLock] = []
     private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
-    private var purchaseActions: [RampAction] = []
+    private var buyActions: [RampAction] = []
     private var sellActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
@@ -79,11 +79,11 @@ private extension AssetDetailsPresenter {
         guard availableOperations.rampAvailable() else { return }
 
         let showOnRampClosure: () -> Void = { [weak self] in
-            guard let self, !purchaseActions.isEmpty else { return }
+            guard let self, !buyActions.isEmpty else { return }
 
             startOnRampFlow(
                 from: view,
-                actions: purchaseActions,
+                actions: buyActions,
                 wireframe: wireframe,
                 assetSymbol: chainAsset.asset.symbol,
                 locale: selectedLocale
@@ -219,7 +219,7 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         onRampActions: [RampAction],
         offRampActions: [RampAction]
     ) {
-        purchaseActions = onRampActions
+        buyActions = onRampActions
         sellActions = offRampActions
         updateView()
     }

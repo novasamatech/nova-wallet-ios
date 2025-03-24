@@ -2,13 +2,6 @@ import Foundation
 import SoraFoundation
 import UIKit.UIImage
 
-struct PurchaseAction {
-    let title: String
-    let url: URL
-    let icon: UIImage
-    let displayURL: String
-}
-
 struct RampAction {
     let logo: UIImage
     let descriptionText: LocalizableResource<String>

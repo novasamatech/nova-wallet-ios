@@ -11,7 +11,7 @@ private enum ManageActions: Int {
     case sell
 }
 
-protocol BuySellActionsPresentable: ActionsManagePresentable {
+protocol RampActionsPresentable: ActionsManagePresentable {
     func presentBuySellSheet(
         from view: ControllerBackedProtocol?,
         delegate: ModalPickerViewControllerDelegate?,
@@ -20,7 +20,7 @@ protocol BuySellActionsPresentable: ActionsManagePresentable {
     )
 }
 
-extension BuySellActionsPresentable {
+extension RampActionsPresentable {
     func presentBuySellSheet(
         from view: ControllerBackedProtocol?,
         delegate: ModalPickerViewControllerDelegate?,

@@ -37,7 +37,7 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
 
 protocol AssetDetailsWireframeProtocol:
     AnyObject,
-    BuySellActionsPresentable,
+    RampActionsPresentable,
     RampPresentable,
     AlertPresentable {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)

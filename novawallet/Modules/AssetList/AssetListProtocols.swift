@@ -130,7 +130,7 @@ protocol AssetListWireframeProtocol: AnyObject,
     CommonRetryable,
     WalletConnectScanPresentable,
     WalletConnectErrorPresentable,
-    BuySellActionsPresentable {
+    RampActionsPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showTokensManage(from view: AssetListViewProtocol?)
 
