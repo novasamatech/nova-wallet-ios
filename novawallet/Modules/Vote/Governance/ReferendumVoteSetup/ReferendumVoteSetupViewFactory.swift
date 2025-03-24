@@ -10,6 +10,7 @@ struct ReferendumVoteSetupViewFactory {
         initData: ReferendumVotingInitData
     ) -> ReferendumVoteSetupViewProtocol? {
         guard
+            let govOption = state.settings.value,
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
@@ -23,7 +24,8 @@ struct ReferendumVoteSetupViewFactory {
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: govOption.type)
         )
 
         guard
@@ -97,6 +99,7 @@ struct ReferendumVoteSetupViewFactory {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumDisplayStringFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: LocalizationManager.shared,

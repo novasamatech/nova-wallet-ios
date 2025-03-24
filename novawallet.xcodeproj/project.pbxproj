@@ -1022,7 +1022,6 @@
 		0CEB6B4F2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */; };
 		0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */; };
 		0CEB6B532CA6E92700609DC2 /* VotingPowerSetClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */; };
-		0CEB6B552CA70CB400609DC2 /* AssetBalance+OpenGov.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */; };
 		0CEBAD4E2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD4D2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift */; };
 		0CEBAD502D5C5FDE000EBA45 /* CollatorStakingRewardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBAD4F2D5C5FDE000EBA45 /* CollatorStakingRewardService.swift */; };
 		0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FDD282B979900479375 /* Decimal+Conversion.swift */; };
@@ -1081,6 +1080,7 @@
 		0CFF823B2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */; };
 		0CFF823C2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */; };
 		0CFF824B2D91584500DB17A4 /* ChargeAssetTxSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF824A2D91584500DB17A4 /* ChargeAssetTxSerializer.swift */; };
+		0CFF824D2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */; };
 		0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */; };
 		0CFFB9D92D17592500172E8C /* OperatingSystemApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */; };
 		0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD8B98AB03AAF06AA891695 /* TransferConfirmViewLayout.swift */; };
@@ -6762,7 +6762,6 @@
 		0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIEdgeInsets+Init.swift"; sourceTree = "<group>"; };
 		0CEB6B502CA6B31800609DC2 /* VoteCardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardOverlayView.swift; sourceTree = "<group>"; };
 		0CEB6B522CA6E92700609DC2 /* VotingPowerSetClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingPowerSetClosure.swift; sourceTree = "<group>"; };
-		0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetBalance+OpenGov.swift"; sourceTree = "<group>"; };
 		0CEBAD4D2D5A2BD9000EBA45 /* SwapsDifferenceModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapsDifferenceModelFactory.swift; sourceTree = "<group>"; };
 		0CEBAD4F2D5C5FDE000EBA45 /* CollatorStakingRewardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingRewardService.swift; sourceTree = "<group>"; };
 		0CEBAD532D5F941E000EBA45 /* CallDispatchErrorDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDispatchErrorDecoder.swift; sourceTree = "<group>"; };
@@ -6819,6 +6818,7 @@
 		0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppParsedAsset.swift; sourceTree = "<group>"; };
 		0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Operation+Dependency.swift"; sourceTree = "<group>"; };
 		0CFF824A2D91584500DB17A4 /* ChargeAssetTxSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeAssetTxSerializer.swift; sourceTree = "<group>"; };
+		0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceBalanceCalculator.swift; sourceTree = "<group>"; };
 		0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTokensArrivalDetector.swift; sourceTree = "<group>"; };
 		0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingSystemApi.swift; sourceTree = "<group>"; };
 		0D32A720511D1D3B0F479AFE /* DAppBrowserTabListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListProtocols.swift; sourceTree = "<group>"; };
@@ -23161,7 +23161,6 @@
 		84D8753B28EB1796004065BD /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				0CEB6B542CA70CB400609DC2 /* AssetBalance+OpenGov.swift */,
 				84D8753C28EB17B2004065BD /* GovernanceSharedState.swift */,
 				84A1742328ED3CF70096F943 /* ReferendumLocal.swift */,
 				84DD49F528EE974B00B804F3 /* ReferendumDecidingFunctionProtocol.swift */,
@@ -23186,6 +23185,7 @@
 				84002AA42992516D00A80672 /* GovernanceDelegateState.swift */,
 				84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */,
 				84F0D9FB299D87A700F82CBC /* GovernanceBalanceConviction.swift */,
+				0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -30198,7 +30198,6 @@
 				0CB4334C2CC10C3C00F2CB59 /* AssetsHydraExchangeProvider.swift in Sources */,
 				77A6F5AB2A2E0B31004AFD1A /* ReceiveAssetOperationPresenter.swift in Sources */,
 				845B891C295960AD00EE25B0 /* SecuredPresentable.swift in Sources */,
-				0CEB6B552CA70CB400609DC2 /* AssetBalance+OpenGov.swift in Sources */,
 				84B24F9E2A2E307F00F9BF59 /* StakingDashboardViewModelFactory.swift in Sources */,
 				99A4B2A357ADEA45EFF515A5 /* AccountExportPasswordProtocols.swift in Sources */,
 				84355CEC28B5611F004E5C5E /* LedgerAccountStackCell.swift in Sources */,
@@ -32068,6 +32067,7 @@
 				0C13D3262A8275400054BB6F /* StartStakingFeeIdFactory.swift in Sources */,
 				81ADC94E1CC47A2C6F0F1BEA /* GovernanceEditDelegationTracksProtocols.swift in Sources */,
 				78E0B6963A8D0A07E742232C /* GovernanceEditDelegationTracksWireframe.swift in Sources */,
+				0CFF824D2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift in Sources */,
 				C7E68F5B6EC7B21B8797F874 /* GovernanceEditDelegationTracksPresenter.swift in Sources */,
 				0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */,
 				FF985AA0ABA33118AC02A761 /* GovernanceEditDelegationTracksViewFactory.swift in Sources */,

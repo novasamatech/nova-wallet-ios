@@ -16,11 +16,12 @@ final class ReferendumsPresenter {
     let sorting: ReferendumsSorting
     let selectedMetaAccount: MetaAccountModel
     let accountManagementFilter: AccountManagementFilterProtocol
+    let govBalanceCalculatorFactory: GovBalanceCalculatorFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
-    private(set) var freeBalance: BigUInt?
+    private(set) var balance: AssetBalance?
     private(set) var selectedOption: GovernanceSelectedOption?
     private(set) var price: PriceData?
     private(set) var sortedReferendums: [ReferendumLocal]?
@@ -78,6 +79,7 @@ final class ReferendumsPresenter {
         selectedMetaAccount: MetaAccountModel,
         accountManagementFilter: AccountManagementFilterProtocol,
         sorting: ReferendumsSorting,
+        govBalanceCalculatorFactory: GovBalanceCalculatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
         logger: LoggerProtocol
@@ -93,6 +95,7 @@ final class ReferendumsPresenter {
         self.selectedMetaAccount = selectedMetaAccount
         self.accountManagementFilter = accountManagementFilter
         self.sorting = sorting
+        self.govBalanceCalculatorFactory = govBalanceCalculatorFactory
         self.logger = logger
         self.localizationManager = localizationManager
         self.appearanceFacade = appearanceFacade
@@ -120,7 +123,7 @@ final class ReferendumsPresenter {
     }
 
     func clearState() {
-        freeBalance = nil
+        balance = nil
         price = nil
         sortedReferendums = nil
         observableState.state = .init(value: ReferendumsState())
@@ -379,7 +382,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
-        freeBalance = balance?.freeInPlank ?? 0
+        self.balance = balance
 
         provideChainBalance()
     }
