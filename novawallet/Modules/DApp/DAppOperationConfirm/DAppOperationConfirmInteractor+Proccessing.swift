@@ -46,31 +46,30 @@ extension DAppOperationConfirmInteractor {
         dependingOn extrinsicOperation: BaseOperation<PolkadotExtensionExtrinsic>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         chain: ChainModel
-    ) -> BaseOperation<ChainAsset?> {
+    ) -> BaseOperation<DAppParsedAsset?> {
         ClosureOperation {
             let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            guard let assetId = extrinsic.assetId else {
-                return nil
-            }
-
-            guard chain.hasAssetHubFees else {
+            guard let remoteAssetId = extrinsic.assetId else {
                 return nil
             }
 
             guard
-                let localAsset = AssetHubTokensConverter.convertRawFeeAssetToLocalAsset(
-                    assetId,
-                    on: chain,
-                    using: codingFactory
+                let remoteAsset = try? ChargeAssetTxSerializer.decodeFeeAssetId(
+                    remoteAssetId,
+                    codingFactory: codingFactory
                 ) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(
-                    name: "Fee asset decoding failed"
-                )
+                return nil
             }
 
-            return localAsset
+            let localAsset = AssetHubTokensConverter.convertToLocalAsset(
+                for: remoteAsset,
+                on: chain,
+                using: codingFactory
+            )
+
+            return DAppParsedAsset(remoteAsset: remoteAsset, localAsset: localAsset)
         }
     }
 
@@ -141,6 +140,8 @@ extension DAppOperationConfirmInteractor {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "era")
             }
 
+            let parsedAsset = try feeAssetOperation.extractNoCancellableResultData()
+
             let parsedExtrinsic = DAppParsedExtrinsic(
                 address: extrinsic.address,
                 blockHash: extrinsic.blockHash,
@@ -153,18 +154,16 @@ extension DAppOperationConfirmInteractor {
                 tip: tip,
                 transactionVersion: UInt32(transactionVersion),
                 metadataHash: extrinsic.metadataHash,
-                assetId: extrinsic.assetId,
+                assetId: parsedAsset?.remoteAsset,
                 withSignedTransaction: extrinsic.withSignedTransaction ?? false,
                 signedExtensions: extrinsic.signedExtensions,
                 version: extrinsic.version
             )
 
-            let feeAsset = try feeAssetOperation.extractNoCancellableResultData()
-
             return DAppOperationProcessedResult(
                 account: accountResponse,
                 extrinsic: parsedExtrinsic,
-                feeAsset: feeAsset
+                feeAsset: parsedAsset?.localAsset
             )
         }
 
