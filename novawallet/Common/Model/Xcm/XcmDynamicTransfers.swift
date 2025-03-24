@@ -33,7 +33,6 @@ struct XcmDynamicTransfers: Decodable {
             return nil
         }
 
-        // TODO: Clarify whether we need other reserve types
         return XcmAsset.ReservePath(type: .relative, path: path)
     }
 
