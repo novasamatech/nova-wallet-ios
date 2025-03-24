@@ -56,7 +56,7 @@ extension DAppOperationConfirmInteractor {
             }
 
             guard
-                let remoteAsset = try? StatemineAssetSerializer.decodeFeeAssetId(
+                let remoteAsset = try? ChargeAssetTxSerializer.decodeFeeAssetId(
                     remoteAssetId,
                     codingFactory: codingFactory
                 ) else {
