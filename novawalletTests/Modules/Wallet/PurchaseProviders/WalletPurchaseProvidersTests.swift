@@ -40,7 +40,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         // when
         let expectation = XCTestExpectation()
 
-        let actions = provider.buildPurchaseActions(for: chainAsset, accountId: accountId)
+        let actions = provider.buildOnRampActions(for: chainAsset, accountId: accountId)
         XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
         expectation.fulfill()
 
@@ -72,7 +72,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         // when
         let expectation = XCTestExpectation()
 
-        let actions = provider.buildPurchaseActions(for: chainAsset, accountId: accountId)
+        let actions = provider.buildOnRampActions(for: chainAsset, accountId: accountId)
         XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
         expectation.fulfill()
 
