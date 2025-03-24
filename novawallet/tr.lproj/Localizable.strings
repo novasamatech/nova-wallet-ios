@@ -1809,3 +1809,10 @@
 "card.open.failed.alert.message" = "Lütfen support@novawallet.io ile iletişime geçin. Kartınızı almak için kullandığınız e-posta adresini belirtin.";
 "card.topup.pending.sheet.title" = "Kartınız finanse ediliyor!";
 "staking.restake.message" = "Ödülleriniz staking hesabınıza eklenecektir";
+"unified.address.popup.title" = "Yeni Birleştirilmiş Adres";
+"unified.address.popup.subtitle" = "Bazı borsalar işlemler için hala eski formatı\ngüncelleme yaparken kullanmanızı isteyebilir.";
+"unified.address.popup.checkbox.text" = "Bunu tekrar gösterme.\nEski adresi Al bölümünde bulabilirsiniz.";
+"unified.address.new.format" = "Yeni format";
+"unified.address.legacy.format" = "Eski format";
+"asset.receive.looking.for.address.message" = "Bir borsa için eski adresinizi mi arıyorsunuz?";
+"asset.receive.view.address.format" = "Adres Formatlarını Görüntüle";

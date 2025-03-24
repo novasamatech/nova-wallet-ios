@@ -1809,3 +1809,10 @@
 "card.open.failed.alert.message" = "Vui lòng liên hệ support@novawallet.io. Bao gồm địa chỉ email mà bạn đã sử dụng để phát hành thẻ.";
 "card.topup.pending.sheet.title" = "Thẻ của bạn đang được nạp tiền!";
 "staking.restake.message" = "Phần thưởng của bạn sẽ được thêm vào phần staking của bạn";
+"unified.address.popup.title" = "Địa Chỉ Thống Nhất Mới";
+"unified.address.popup.subtitle" = "Một số sàn giao dịch có thể vẫn yêu cầu định dạng cũ\ncho các hoạt động trong khi họ cập nhật.";
+"unified.address.popup.checkbox.text" = "Không hiển thị lại điều này.\nBạn có thể tìm thấy địa chỉ cũ trong Nhận.";
+"unified.address.new.format" = "Định dạng mới";
+"unified.address.legacy.format" = "Định dạng cũ";
+"asset.receive.looking.for.address.message" = "Đang tìm địa chỉ cũ của bạn để trao đổi?";
+"asset.receive.view.address.format" = "Xem Định Dạng Địa Chỉ";
