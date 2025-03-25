@@ -424,25 +424,17 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                     self?.interactor.saveSelected(option: option)
                 }
             }
-        case .referendumsFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshReferendums()
-            }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
              .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
-        case .blockTimeFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryBlockTime()
-            }
         case .unlockScheduleFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshUnlockSchedule()
             }
-        case .offchainVotingFetchFailed:
-            // we don't bother user with offchain retry and wait next block
+        case .offchainVotingFetchFailed, .referendumsFetchFailed, .blockTimeFetchFailed:
+            // we don't bother user with retry and wait next block
             break
         }
     }
