@@ -12,7 +12,7 @@ final class SwipeGovPresenter {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let localizationManager: LocalizationManagerProtocol
     private let utilityAssetInfo: AssetBalanceDisplayInfo
-    private let govBalanceCalculator: GovernanceBalanceCalculating
+    private let govBalanceCalculator: AvailableBalanceMapping
 
     private var model: SwipeGovModelBuilder.Result.Model?
     private var votingPower: VotingPowerLocal?
@@ -25,7 +25,7 @@ final class SwipeGovPresenter {
         viewModelFactory: SwipeGovViewModelFactoryProtocol,
         cardsViewModelFactory: VoteCardViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        govBalanceCalculator: GovernanceBalanceCalculating,
+        govBalanceCalculator: AvailableBalanceMapping,
         utilityAssetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol
     ) {

@@ -16,7 +16,7 @@ final class ReferendumVoteSetupPresenter {
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
-    let govBalanceCalculator: GovernanceBalanceCalculating
+    let govBalanceCalculator: AvailableBalanceMapping
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
@@ -42,7 +42,7 @@ final class ReferendumVoteSetupPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
-        govBalanceCalculator: GovernanceBalanceCalculating,
+        govBalanceCalculator: AvailableBalanceMapping,
         interactor: ReferendumVoteSetupInteractorInputProtocol,
         wireframe: ReferendumVoteSetupWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,

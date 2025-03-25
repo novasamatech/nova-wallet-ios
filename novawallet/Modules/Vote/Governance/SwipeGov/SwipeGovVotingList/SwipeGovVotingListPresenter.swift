@@ -14,7 +14,7 @@ final class SwipeGovVotingListPresenter {
 
     private let votingListViewModelFactory: SwipeGovVotingListViewModelFactory
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    private let govBalanceCalculator: GovernanceBalanceCalculating
+    private let govBalanceCalculator: AvailableBalanceMapping
 
     private var votingListItems: [VotingBasketItemLocal] = []
     private var referendumsMetadata: [ReferendumMetadataLocal] = []
@@ -28,7 +28,7 @@ final class SwipeGovVotingListPresenter {
         observableState: ReferendumsObservableState,
         votingListViewModelFactory: SwipeGovVotingListViewModelFactory,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        govBalanceCalculator: GovernanceBalanceCalculating,
+        govBalanceCalculator: AvailableBalanceMapping,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor

@@ -69,13 +69,13 @@ final class GovernanceValidatorFactory {
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
     let presentable: GovernanceErrorPresentable
-    let govBalanceCalculator: GovernanceBalanceCalculating
+    let govBalanceCalculator: AvailableBalanceMapping
 
     init(
         presentable: GovernanceErrorPresentable,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         quantityFormatter: LocalizableResource<NumberFormatter>,
-        govBalanceCalculator: GovernanceBalanceCalculating
+        govBalanceCalculator: AvailableBalanceMapping
     ) {
         self.presentable = presentable
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory

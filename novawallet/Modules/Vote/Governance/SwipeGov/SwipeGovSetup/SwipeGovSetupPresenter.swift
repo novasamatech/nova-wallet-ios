@@ -17,7 +17,7 @@ final class SwipeGovSetupPresenter {
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
-    let govBalanceCalculator: GovernanceBalanceCalculating
+    let govBalanceCalculator: AvailableBalanceMapping
     let logger: LoggerProtocol
 
     private(set) var assetBalance: AssetBalance?
@@ -43,7 +43,7 @@ final class SwipeGovSetupPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
-        govBalanceCalculator: GovernanceBalanceCalculating,
+        govBalanceCalculator: AvailableBalanceMapping,
         interactor: SwipeGovSetupInteractorInputProtocol,
         wireframe: SwipeGovSetupWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,

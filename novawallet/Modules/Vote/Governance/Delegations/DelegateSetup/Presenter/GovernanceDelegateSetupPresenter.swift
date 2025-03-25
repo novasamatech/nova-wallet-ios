@@ -17,7 +17,7 @@ final class GovernanceDelegateSetupPresenter {
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
-    let govBalanceCalculator: GovernanceBalanceCalculating
+    let govBalanceCalculator: AvailableBalanceMapping
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -39,7 +39,7 @@ final class GovernanceDelegateSetupPresenter {
         tracks: [GovernanceTrackInfoLocal],
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        govBalanceCalculator: GovernanceBalanceCalculating,
+        govBalanceCalculator: AvailableBalanceMapping,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,

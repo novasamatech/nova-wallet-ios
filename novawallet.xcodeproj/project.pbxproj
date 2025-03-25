@@ -1081,6 +1081,7 @@
 		0CFF823C2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */; };
 		0CFF824B2D91584500DB17A4 /* ChargeAssetTxSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF824A2D91584500DB17A4 /* ChargeAssetTxSerializer.swift */; };
 		0CFF824D2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */; };
+		0CFF82512D9275C900DB17A4 /* AvailableBalanceMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82502D9275C900DB17A4 /* AvailableBalanceMapping.swift */; };
 		0CFFB9D32D11A67C00172E8C /* XcmTokensArrivalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */; };
 		0CFFB9D92D17592500172E8C /* OperatingSystemApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */; };
 		0D5245ED354CC52A842C85A0 /* TransferConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD8B98AB03AAF06AA891695 /* TransferConfirmViewLayout.swift */; };
@@ -6819,6 +6820,7 @@
 		0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Operation+Dependency.swift"; sourceTree = "<group>"; };
 		0CFF824A2D91584500DB17A4 /* ChargeAssetTxSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeAssetTxSerializer.swift; sourceTree = "<group>"; };
 		0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceBalanceCalculator.swift; sourceTree = "<group>"; };
+		0CFF82502D9275C900DB17A4 /* AvailableBalanceMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableBalanceMapping.swift; sourceTree = "<group>"; };
 		0CFFB9D22D11A67C00172E8C /* XcmTokensArrivalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTokensArrivalDetector.swift; sourceTree = "<group>"; };
 		0CFFB9D82D17592500172E8C /* OperatingSystemApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatingSystemApi.swift; sourceTree = "<group>"; };
 		0D32A720511D1D3B0F479AFE /* DAppBrowserTabListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabListProtocols.swift; sourceTree = "<group>"; };
@@ -20639,6 +20641,7 @@
 				77C35CE62B56D07300308F16 /* ScanAddressPresentable.swift */,
 				0C1998EE2C4CC51D000EBFB8 /* SCLoadableControllerProtocol.swift */,
 				2D74CA3E2CF7262E004EAD8C /* BrowserOpening.swift */,
+				0CFF82502D9275C900DB17A4 /* AvailableBalanceMapping.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -28153,6 +28156,7 @@
 				2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */,
 				844CB56E26F9CB1500396E13 /* CrowdloanLocalStorageSubscriber.swift in Sources */,
 				8401AEC32642A71D000B03E3 /* StakingRebondConfirmationViewController.swift in Sources */,
+				0CFF82512D9275C900DB17A4 /* AvailableBalanceMapping.swift in Sources */,
 				841AAC2D26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift in Sources */,
 				842EBB392890A8E400B952D8 /* WalletSelectionViewProtocols.swift in Sources */,
 				2DAF6AB72CF46BE500A8D132 /* DAppBrowserTabLocalSubscriptionHandler.swift in Sources */,

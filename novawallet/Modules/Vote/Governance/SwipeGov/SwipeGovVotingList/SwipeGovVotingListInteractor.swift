@@ -7,7 +7,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let govBalanceCalculator: GovernanceBalanceCalculating
+    let govBalanceCalculator: AvailableBalanceMapping
 
     private let observableState: ReferendumsObservableState
 
@@ -38,7 +38,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
-        govBalanceCalculator: GovernanceBalanceCalculating,
+        govBalanceCalculator: AvailableBalanceMapping,
         operationQueue: OperationQueue
     ) {
         self.observableState = observableState

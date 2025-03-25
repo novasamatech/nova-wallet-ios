@@ -11,7 +11,6 @@ final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let assetFilter: ChainAssetSelectionFilter
     let operationQueue: OperationQueue
-    let balanceSlice: KeyPath<AssetBalance, BigUInt>
 
     private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
     private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
@@ -20,7 +19,6 @@ final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
 
     init(
         selectedMetaAccount: MetaAccountModel,
-        balanceSlice: KeyPath<AssetBalance, BigUInt>,
         repository: AnyDataProviderRepository<ChainModel>,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -29,7 +27,6 @@ final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
         operationQueue: OperationQueue
     ) {
         self.selectedMetaAccount = selectedMetaAccount
-        self.balanceSlice = balanceSlice
         self.repository = repository
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -147,7 +144,7 @@ extension ChainAssetSelectionInteractor: ChainAssetSelectionInteractorInputProto
 extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
         let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
+            into: [ChainAssetId: Result<AssetBalance?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -170,7 +167,7 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
     ) {
         // prepopulate non existing balances with zeros
         let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
+            into: [ChainAssetId: Result<AssetBalance?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -181,7 +178,12 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                 assetId: assetBalanceId.assetId
             )
 
-            accum[chainAssetId] = .success(nil)
+            let balance = AssetBalance.createZero(
+                for: chainAssetId,
+                accountId: accountId
+            )
+
+            accum[chainAssetId] = .success(balance)
         }
 
         let results = changes.reduce(
@@ -200,7 +202,7 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(balance[keyPath: balanceSlice])
+                accum[chainAssetId] = .success(balance)
             case let .delete(deletedIdentifier):
                 guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
                     return
@@ -211,7 +213,12 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(0)
+                let balance = AssetBalance.createZero(
+                    for: chainAssetId,
+                    accountId: accountId
+                )
+
+                accum[chainAssetId] = .success(balance)
             }
         }
 
