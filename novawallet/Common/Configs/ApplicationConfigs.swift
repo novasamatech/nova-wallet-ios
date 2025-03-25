@@ -175,19 +175,17 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v6/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers_dev.json")!
         #endif
     }
 
-    // TODO: Change url in production
     var xcmDynamicTransfersURL: URL {
-        // swiftlint:disable:next line_length
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/dynamic_transfers_base/xcm/v7/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers_dynamic.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/dynamic_transfers_base/xcm/v7/transfers_dynamic_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/xcm/v7/transfers_dynamic_dev.json")!
         #endif
     }
 
