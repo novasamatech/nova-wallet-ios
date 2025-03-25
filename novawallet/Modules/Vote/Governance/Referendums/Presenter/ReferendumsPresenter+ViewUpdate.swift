@@ -121,7 +121,7 @@ extension ReferendumsPresenter {
         }
 
         let govBalanceCalculator = govBalanceCalculatorFactory.createCalculator(for: governanceType)
-        let balanceInPlank = govBalanceCalculator.mapAvailableBalance(from: balance)
+        let balanceInPlank = govBalanceCalculator.availableBalanceElseZero(from: balance)
 
         let viewModel = chainBalanceFactory.createViewModel(
             from: governanceType.title(for: chain),
