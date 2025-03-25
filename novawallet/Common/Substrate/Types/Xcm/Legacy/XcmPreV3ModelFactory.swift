@@ -23,58 +23,25 @@ final class XcmPreV3ModelFactory {
         origin: ChainModel,
         destination: XcmTransferDestination
     ) -> Xcm.Multilocation {
-        let accountIdJunction: Xcm.Junction
-
-        if destination.chain.isEthereumBased {
-            let accountIdValue = Xcm.AccountId20Value(network: .any, key: destination.accountId)
-            accountIdJunction = Xcm.Junction.accountKey20(accountIdValue)
-        } else {
-            let accountIdValue = Xcm.AccountId32Value(network: .any, accountId: destination.accountId)
-            accountIdJunction = Xcm.Junction.accountId32(accountIdValue)
-        }
-
-        let parents: UInt8
-
-        if !origin.isRelaychain, origin.chainId != destination.chain.chainId {
-            parents = 1
-        } else {
-            parents = 0
-        }
-
-        let junctions: Xcm.JunctionsV2
-
-        if let parachainId = destination.parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.Junctions(items: [networkJunction, accountIdJunction])
-        } else {
-            junctions = Xcm.Junctions(items: [accountIdJunction])
-        }
-
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        Xcm.Multilocation.location(
+            for: destination.chain,
+            parachainId: destination.parachainId,
+            relativeTo: origin
+        ).appendingAccountId(
+            destination.accountId,
+            in: destination.chain
+        )
     }
 
     func createMultilocation(
         origin: ChainModel,
         reserve: XcmTransferReserve
     ) -> Xcm.Multilocation {
-        let parents: UInt8
-
-        if !origin.isRelaychain, origin.chainId != reserve.chain.chainId {
-            parents = 1
-        } else {
-            parents = 0
-        }
-
-        let junctions: Xcm.JunctionsV2
-
-        if let parachainId = reserve.parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.JunctionsV2(items: [networkJunction])
-        } else {
-            junctions = Xcm.JunctionsV2(items: [])
-        }
-
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        Xcm.Multilocation.location(
+            for: reserve.chain,
+            parachainId: reserve.parachainId,
+            relativeTo: origin
+        )
     }
 }
 
@@ -171,38 +138,13 @@ private extension XcmPreV3ModelFactory {
         let multilocation = createMultilocation(origin: origin, reserve: reserve)
         return .versionedMultiLocation(for: version, multiLocation: multilocation)
     }
-}
-
-extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
-    func createMultilocationAsset(
-        for params: XcmMultilocationAssetParams,
-        version: XcmMultilocationAssetVersion
-    ) throws -> XcmMultilocationAsset {
-        let originChainAsset = params.origin
-
-        let multilocation = createVersionedMultilocation(
-            origin: originChainAsset.chain,
-            destination: params.destination,
-            version: version.multiLocation
-        )
-
-        let multiasset = try createVersionedMultiasset(
-            origin: originChainAsset.chain,
-            reserve: params.reserve,
-            assetLocation: params.metadata.reserve.path,
-            amount: params.amount,
-            version: version.multiAssets
-        )
-
-        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
-    }
 
     func createVersionedMultiasset(
         origin: ChainModel,
         reserve: ChainModel,
         assetLocation: XcmAsset.ReservePath,
         amount: BigUInt,
-        version: Xcm.Version?
+        version: Xcm.Version
     ) throws -> Xcm.VersionedMultiasset {
         let multiasset = try createMultiAsset(
             origin: origin,
@@ -212,5 +154,30 @@ extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
         )
 
         return .versionedMultiasset(for: version, multiAsset: multiasset)
+    }
+}
+
+extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
+    func createMultilocationAsset(
+        for params: XcmMultilocationAssetParams,
+        version: Xcm.Version
+    ) throws -> XcmMultilocationAsset {
+        let originChainAsset = params.origin
+
+        let multilocation = createVersionedMultilocation(
+            origin: originChainAsset.chain,
+            destination: params.destination,
+            version: version
+        )
+
+        let multiasset = try createVersionedMultiasset(
+            origin: originChainAsset.chain,
+            reserve: params.reserve,
+            assetLocation: params.metadata.reserve.path,
+            amount: params.amount,
+            version: version
+        )
+
+        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
     }
 }

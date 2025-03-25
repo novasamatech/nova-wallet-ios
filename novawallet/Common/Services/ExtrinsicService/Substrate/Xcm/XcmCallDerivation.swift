@@ -5,8 +5,7 @@ import BigInt
 
 protocol XcmCallDerivating {
     func createTransferCallDerivationWrapper(
-        for transferRequest: XcmUnweightedTransferRequest,
-        maxWeight: BigUInt
+        for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting>
 }
 
@@ -26,8 +25,7 @@ private extension XcmCallDerivator {
     func createPalletXcmTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         callPathFactory: @escaping (String) -> CallCodingPath,
-        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        maxWeight _: BigUInt // TODO: Decide whether to leave unlimited
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let mapOperation = ClosureOperation<RuntimeCallCollecting> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
@@ -55,7 +53,7 @@ private extension XcmCallDerivator {
     func createOrmlTransferMapping(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        maxWeight: BigUInt,
+        transferMetadata: XcmTransferMetadata,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -71,8 +69,8 @@ private extension XcmCallDerivator {
             return try XTokens.appendTransferCall(
                 asset: asset,
                 destination: location,
-                weight: maxWeight,
                 module: module,
+                weightOption: transferMetadata.fee,
                 codingFactory: codingFactory
             )
         }
@@ -85,31 +83,37 @@ private extension XcmCallDerivator {
         )
     }
 
-    func createMultilocationAssetWrapper(
-        request: XcmUnweightedTransferRequest,
+    func createTransferMappingWrapper(
+        dependingOn moduleResolutionOperation: BaseOperation<String>,
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
+        transferMetadata: XcmTransferMetadata,
         runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        switch request.metadata.callType {
+    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
+        switch transferMetadata.callType {
         case .xtokens:
-            // we make an assumption that xtokens pallet maintains the same versions as xcm pallet
-            let multiassetVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetVersionWrapper(
-                for: runtimeProvider
-            )
-
-            return createMultilocationAssetWrapper(
-                for: multiassetVersionWrapper,
-                request: request,
+            return createOrmlTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                destinationAssetOperation: destinationAssetOperation,
+                transferMetadata: transferMetadata,
                 runtimeProvider: runtimeProvider
             )
-        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
-            let multiassetsVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetsVersionWrapper(
-                for: runtimeProvider
+        case .xcmpallet:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.limitedReserveTransferAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation
             )
-
-            return createMultilocationAssetWrapper(
-                for: multiassetsVersionWrapper,
-                request: request,
-                runtimeProvider: runtimeProvider
+        case .teleport:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.limitedTeleportAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation
+            )
+        case .xcmpalletTransferAssets:
+            return createPalletXcmTransferMapping(
+                dependingOn: moduleResolutionOperation,
+                callPathFactory: { Xcm.transferAssetsPath(for: $0) },
+                destinationAssetOperation: destinationAssetOperation
             )
         case .unknown:
             return .createWithError(XcmTransferTypeError.unknownType)
@@ -130,94 +134,43 @@ private extension XcmCallDerivator {
         }
     }
 
-    func createTransferMappingWrapper(
-        dependingOn moduleResolutionOperation: BaseOperation<String>,
-        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
-        xcmTransferType: XcmTransferType,
-        maxWeight: BigUInt,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
-        switch xcmTransferType {
-        case .xtokens:
-            return createOrmlTransferMapping(
-                dependingOn: moduleResolutionOperation,
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight,
-                runtimeProvider: runtimeProvider
-            )
-        case .xcmpallet:
-            return createPalletXcmTransferMapping(
-                dependingOn: moduleResolutionOperation,
-                callPathFactory: { Xcm.limitedReserveTransferAssetsPath(for: $0) },
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight
-            )
-        case .teleport:
-            return createPalletXcmTransferMapping(
-                dependingOn: moduleResolutionOperation,
-                callPathFactory: { Xcm.limitedTeleportAssetsPath(for: $0) },
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight
-            )
-        case .xcmpalletTransferAssets:
-            return createPalletXcmTransferMapping(
-                dependingOn: moduleResolutionOperation,
-                callPathFactory: { Xcm.transferAssetsPath(for: $0) },
-                destinationAssetOperation: destinationAssetOperation,
-                maxWeight: maxWeight
-            )
-        case .unknown:
-            return .createWithError(XcmTransferTypeError.unknownType)
-        }
-    }
-
     func createMultilocationAssetWrapper(
-        for multiassetVersionWrapper: CompoundOperationWrapper<Xcm.Version?>,
-        request: XcmUnweightedTransferRequest,
+        for request: XcmUnweightedTransferRequest,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        let multilocationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
-            for: runtimeProvider
-        )
+        let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
 
-        let mappingOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
-            let multiassetVersion = try multiassetVersionWrapper.targetOperation.extractNoCancellableResultData()
-            let multilocationVersion = try multilocationVersionWrapper.targetOperation
-                .extractNoCancellableResultData()
-
+        let resultOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
+            let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
             return try xcmModelFactory.createMultilocationAsset(
                 for: .init(
-                    origin: request.origin,
+                    origin: request.origin.chainAsset,
                     reserve: request.reserve.chain,
                     destination: request.destination,
                     amount: request.amount,
                     metadata: request.metadata
                 ),
-                version: .init(multiLocation: multilocationVersion, multiAssets: multiassetVersion)
+                version: version
             )
         }
 
-        mappingOperation.addDependency(multiassetVersionWrapper.targetOperation)
-        mappingOperation.addDependency(multilocationVersionWrapper.targetOperation)
+        resultOperation.addDependency(versionWrapper.targetOperation)
 
-        let dependecies = multiassetVersionWrapper.allOperations + multilocationVersionWrapper.allOperations
-
-        return .init(targetOperation: mappingOperation, dependencies: dependecies)
+        return versionWrapper.insertingTail(operation: resultOperation)
     }
 }
 
 extension XcmCallDerivator: XcmCallDerivating {
     func createTransferCallDerivationWrapper(
-        for transferRequest: XcmUnweightedTransferRequest,
-        maxWeight: BigUInt
+        for transferRequest: XcmUnweightedTransferRequest
     ) -> CompoundOperationWrapper<RuntimeCallCollecting> {
         do {
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
-                for: transferRequest.origin.chain.chainId
+                for: transferRequest.originChain.chainId
             )
 
             let destinationAssetWrapper = createMultilocationAssetWrapper(
-                request: transferRequest,
+                for: transferRequest,
                 runtimeProvider: runtimeProvider
             )
 
@@ -229,8 +182,7 @@ extension XcmCallDerivator: XcmCallDerivating {
             let mapWrapper = createTransferMappingWrapper(
                 dependingOn: moduleResolutionWrapper.targetOperation,
                 destinationAssetOperation: destinationAssetWrapper.targetOperation,
-                xcmTransferType: transferRequest.metadata.callType,
-                maxWeight: maxWeight,
+                transferMetadata: transferRequest.metadata,
                 runtimeProvider: runtimeProvider
             )
 

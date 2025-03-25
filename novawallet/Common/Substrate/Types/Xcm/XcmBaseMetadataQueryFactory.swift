@@ -4,6 +4,8 @@ import SubstrateSdk
 
 enum XcmMetadataQueryError: Error {
     case noXcmPalletFound([String])
+    case noXcmTypeFound
+    case noXcmVersionFound
 }
 
 class XcmBaseMetadataQueryFactory {

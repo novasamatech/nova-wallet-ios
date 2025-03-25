@@ -20,7 +20,8 @@ final class XcmTransferService {
         userStorageFacade: StorageFacadeProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
-        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol? = nil
+        customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol? = nil,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
@@ -30,13 +31,14 @@ final class XcmTransferService {
         self.customFeeEstimatingFactory = customFeeEstimatingFactory
 
         callDerivator = XcmCallDerivator(chainRegistry: chainRegistry)
-        crosschainFeeCalculator = XcmLegacyCrosschainFeeCalculator(
+        crosschainFeeCalculator = XcmCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
             wallet: wallet,
             userStorageFacade: userStorageFacade,
             substrateStorageFacade: substrateStorageFacade,
-            customFeeEstimatingFactory: customFeeEstimatingFactory
+            customFeeEstimatingFactory: customFeeEstimatingFactory,
+            logger: logger
         )
     }
 
