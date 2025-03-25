@@ -189,4 +189,24 @@ extension Xcm.VersionedMultilocation {
             )
         }
     }
+
+    func appendingAccountId(
+        _ accountId: AccountId,
+        in chain: ChainModel
+    ) -> Xcm.VersionedMultilocation {
+        switch self {
+        case let .V1(location):
+            let newLocation = location.appendingAccountId(accountId, in: chain)
+            return .V1(newLocation)
+        case let .V2(location):
+            let newLocation = location.appendingAccountId(accountId, in: chain)
+            return .V2(newLocation)
+        case let .V3(location):
+            let newLocation = location.appendingAccountId(accountId, in: chain)
+            return .V3(newLocation)
+        case let .V4(location):
+            let newLocation = location.appendingAccountId(accountId, in: chain)
+            return .V4(newLocation)
+        }
+    }
 }

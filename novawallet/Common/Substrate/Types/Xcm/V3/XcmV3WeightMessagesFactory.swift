@@ -1,15 +1,15 @@
 import Foundation
 
-final class XcmPreV3WeightMessagesFactory {
-    let modelFactory = XcmPreV3ModelFactory()
+final class XcmV3WeightMessagesFactory {
+    let modelFactory = XcmV3ModelFactory()
 }
 
-private extension XcmPreV3WeightMessagesFactory {
+private extension XcmV3WeightMessagesFactory {
     func createDestinationWeightMessage(
         from chainAsset: ChainAsset,
         destination: XcmTransferDestination,
         feeParams: XcmTransferMetadata.LegacyFee,
-        multiasset: Xcm.Multiasset
+        multiasset: XcmV3.Multiasset
     ) throws -> Xcm.Message {
         let multilocation = modelFactory.createMultilocation(origin: chainAsset.chain, destination: destination)
 
@@ -24,7 +24,7 @@ private extension XcmPreV3WeightMessagesFactory {
         from chainAsset: ChainAsset,
         reserve: XcmTransferReserve,
         feeParams: XcmTransferMetadata.LegacyFee,
-        multiasset: Xcm.Multiasset
+        multiasset: XcmV3.Multiasset
     ) throws -> Xcm.Message? {
         guard let reserveInstructions = feeParams.reserveExecution?.instructions else {
             return nil
@@ -41,47 +41,46 @@ private extension XcmPreV3WeightMessagesFactory {
 
     func createWeightMessage(
         from instructions: [String],
-        destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset
+        destination: XcmV3.Multilocation,
+        asset: XcmV3.Multiasset
     ) throws -> Xcm.Message {
-        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
+        let xcmInstructions: [XcmV3.Instruction] = try instructions.map { rawInstruction in
             switch rawInstruction {
-            case Xcm.Instruction.fieldWithdrawAsset:
+            case XcmV3.Instruction.fieldWithdrawAsset:
                 return .withdrawAsset([asset])
-            case Xcm.Instruction.fieldClearOrigin:
+            case XcmV3.Instruction.fieldClearOrigin:
                 return .clearOrigin
-            case Xcm.Instruction.fieldReserveAssetDeposited:
+            case XcmV3.Instruction.fieldReserveAssetDeposited:
                 return .reserveAssetDeposited([asset])
-            case Xcm.Instruction.fieldBuyExecution:
-                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
+            case XcmV3.Instruction.fieldBuyExecution:
+                let value = XcmV3.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
                 return .buyExecution(value)
-            case Xcm.Instruction.fieldDepositAsset:
-                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
+            case XcmV3.Instruction.fieldDepositAsset:
+                let value = XcmV3.DepositAssetValue(assets: .wild(.all), beneficiary: destination)
                 return .depositAsset(value)
-            case Xcm.Instruction.fieldDepositReserveAsset:
-                let value = Xcm.DepositReserveAssetValue(
+            case XcmV3.Instruction.fieldDepositReserveAsset:
+                let value = XcmV3.DepositReserveAssetValue(
                     assets: .wild(.all),
-                    maxAssets: 1,
                     dest: destination,
                     xcm: []
                 )
 
                 return .depositReserveAsset(value)
-            case Xcm.Instruction.fieldReceiveTeleportedAsset:
+            case XcmV3.Instruction.fieldReceiveTeleportedAsset:
                 return .receiveTeleportedAsset([asset])
             default:
                 throw XcmWeightMessagesFactoryError.unsupportedInstruction(rawInstruction)
             }
         }
 
-        return .V2(xcmInstructions)
+        return .V3(xcmInstructions)
     }
 }
 
-extension XcmPreV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
+extension XcmV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
     func createWeightMessages(
         from params: XcmWeightMessagesParams,
-        version _: Xcm.Version?
+        version _: Xcm.Version
     ) throws -> XcmWeightMessages {
         let multiasset = try modelFactory.createMultiAsset(
             origin: params.chainAsset.chain,

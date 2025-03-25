@@ -83,51 +83,6 @@ private extension XcmCallDerivator {
         )
     }
 
-    func createMultilocationAssetWrapper(
-        request: XcmUnweightedTransferRequest,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        switch request.metadata.callType {
-        case .xtokens:
-            // we make an assumption that xtokens pallet maintains the same versions as xcm pallet
-            let multiassetVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetVersionWrapper(
-                for: runtimeProvider
-            )
-
-            return createMultilocationAssetWrapper(
-                for: multiassetVersionWrapper,
-                request: request,
-                runtimeProvider: runtimeProvider
-            )
-        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
-            let multiassetsVersionWrapper = xcmPalletQueryFactory.createLowestMultiassetsVersionWrapper(
-                for: runtimeProvider
-            )
-
-            return createMultilocationAssetWrapper(
-                for: multiassetsVersionWrapper,
-                request: request,
-                runtimeProvider: runtimeProvider
-            )
-        case .unknown:
-            return .createWithError(XcmTransferTypeError.unknownType)
-        }
-    }
-
-    func createModuleResolutionWrapper(
-        for transferType: XcmTransferType,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<String> {
-        switch transferType {
-        case .xtokens:
-            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
-            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
-        case .unknown:
-            return CompoundOperationWrapper.createWithError(XcmTransferTypeError.unknownType)
-        }
-    }
-
     func createTransferMappingWrapper(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
         destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
@@ -165,20 +120,28 @@ private extension XcmCallDerivator {
         }
     }
 
+    func createModuleResolutionWrapper(
+        for transferType: XcmTransferType,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<String> {
+        switch transferType {
+        case .xtokens:
+            return xTokensQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+        case .xcmpallet, .teleport, .xcmpalletTransferAssets:
+            return xcmPalletQueryFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
+        case .unknown:
+            return CompoundOperationWrapper.createWithError(XcmTransferTypeError.unknownType)
+        }
+    }
+
     func createMultilocationAssetWrapper(
-        for multiassetVersionWrapper: CompoundOperationWrapper<Xcm.Version?>,
-        request: XcmUnweightedTransferRequest,
+        for request: XcmUnweightedTransferRequest,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
-        let multilocationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
-            for: runtimeProvider
-        )
+        let versionWrapper = xcmPalletQueryFactory.createLowestXcmVersionWrapper(for: runtimeProvider)
 
-        let mappingOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
-            let multiassetVersion = try multiassetVersionWrapper.targetOperation.extractNoCancellableResultData()
-            let multilocationVersion = try multilocationVersionWrapper.targetOperation
-                .extractNoCancellableResultData()
-
+        let resultOperation = ClosureOperation<XcmMultilocationAsset> { [xcmModelFactory] in
+            let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
             return try xcmModelFactory.createMultilocationAsset(
                 for: .init(
                     origin: request.origin.chainAsset,
@@ -187,16 +150,13 @@ private extension XcmCallDerivator {
                     amount: request.amount,
                     metadata: request.metadata
                 ),
-                version: .init(multiLocation: multilocationVersion, multiAssets: multiassetVersion)
+                version: version
             )
         }
 
-        mappingOperation.addDependency(multiassetVersionWrapper.targetOperation)
-        mappingOperation.addDependency(multilocationVersionWrapper.targetOperation)
+        resultOperation.addDependency(versionWrapper.targetOperation)
 
-        let dependecies = multiassetVersionWrapper.allOperations + multilocationVersionWrapper.allOperations
-
-        return .init(targetOperation: mappingOperation, dependencies: dependecies)
+        return versionWrapper.insertingTail(operation: resultOperation)
     }
 }
 
@@ -210,7 +170,7 @@ extension XcmCallDerivator: XcmCallDerivating {
             )
 
             let destinationAssetWrapper = createMultilocationAssetWrapper(
-                request: transferRequest,
+                for: transferRequest,
                 runtimeProvider: runtimeProvider
             )
 

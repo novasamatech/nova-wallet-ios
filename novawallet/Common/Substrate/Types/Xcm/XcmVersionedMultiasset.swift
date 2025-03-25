@@ -6,6 +6,7 @@ extension Xcm {
         case V1(Xcm.Multiasset)
         case V2(Xcm.Multiasset)
         case V3(XcmV3.Multiasset)
+        case V4(XcmV4.Multiasset)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -20,6 +21,9 @@ extension Xcm {
             case let .V3(multiasset):
                 try container.encode("V3")
                 try container.encode(multiasset)
+            case let .V4(multiasset):
+                try container.encode("V4")
+                try container.encode(multiasset)
             }
         }
 
@@ -32,6 +36,7 @@ extension Xcm {
         case V1([Xcm.Multiasset])
         case V2([Xcm.Multiasset])
         case V3([XcmV3.Multiasset])
+        case V4([XcmV4.Multiasset])
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -45,6 +50,9 @@ extension Xcm {
                 try container.encode(multiassets)
             case let .V3(multiassets):
                 try container.encode("V3")
+                try container.encode(multiassets)
+            case let .V4(multiassets):
+                try container.encode("V4")
                 try container.encode(multiassets)
             }
         }
@@ -61,6 +69,8 @@ extension Xcm {
                 self = .V2([multiasset])
             case let .V3(multiasset):
                 self = .V3([multiasset])
+            case let .V4(multiasset):
+                self = .V4([multiasset])
             }
         }
     }
