@@ -82,9 +82,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             usesStateCallForFee: chain.feeViaRuntimeCall
         )
 
-        let feeWrapper = operationFactory.estimateFeeOperation { builder in
-            builder
-        }
+        let feeWrapper = operationFactory.estimateFeeOperation({ $0 }, payingIn: feeAsset?.chainAssetId)
 
         executeCancellable(
             wrapper: feeWrapper,

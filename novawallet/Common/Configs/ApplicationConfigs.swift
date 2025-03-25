@@ -39,6 +39,7 @@ protocol ApplicationConfigProtocol {
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
     var proxyWikiURL: URL { get }
+    var unifiedAddressWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
@@ -317,6 +318,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var proxyWikiURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
+    }
+
+    var unifiedAddressWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
     }
 
     var universalLinkURL: URL {

@@ -134,6 +134,7 @@ extension CustomNetworkSetupFinishStrategy {
             nodes: nodes,
             nodeSwitchStrategy: network.nodeSwitchStrategy,
             addressPrefix: network.addressPrefix,
+            legacyAddressPrefix: network.legacyAddressPrefix,
             types: network.types,
             icon: network.icon,
             options: options,

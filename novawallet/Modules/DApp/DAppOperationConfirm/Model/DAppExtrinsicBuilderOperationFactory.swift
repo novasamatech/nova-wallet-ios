@@ -29,6 +29,7 @@ final class DAppExtrinsicBuilderOperationFactory {
     let chain: ChainModel
     let runtimeProvider: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
+    let feeRegistry: ExtrinsicFeeEstimationRegistring
     let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
 
     init(
@@ -36,13 +37,88 @@ final class DAppExtrinsicBuilderOperationFactory {
         chain: ChainModel,
         runtimeProvider: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
+        feeRegistry: ExtrinsicFeeEstimationRegistring,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
     ) {
         self.chain = chain
         self.processedResult = processedResult
         self.runtimeProvider = runtimeProvider
         self.connection = connection
+        self.feeRegistry = feeRegistry
         self.metadataHashOperationFactory = metadataHashOperationFactory
+    }
+
+    private func createExtrinsicBuilderResultOperation(
+        from result: DAppOperationProcessedResult,
+        metadataHashOperation: BaseOperation<MetadataHashResult>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        feeInstallerOperation: BaseOperation<ExtrinsicFeeInstalling>?
+    ) -> BaseOperation<ExtrinsicSenderBuilderResult> {
+        ClosureOperation<ExtrinsicSenderBuilderResult> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let metadataHashResult = try metadataHashOperation.extractNoCancellableResultData()
+            let feeInstaller = try feeInstallerOperation?.extractNoCancellableResultData()
+
+            let extrinsic = result.extrinsic
+
+            // DApp signing currently doesn't allow to modify extrinsic
+            let sender = ExtrinsicSenderResolution.current(result.account)
+
+            let address = MultiAddress.accoundId(sender.account.accountId)
+
+            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(
+                for: result.account.chainId
+            )
+
+            let runtimeContext = codingFactory.createRuntimeJsonContext()
+
+            var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
+                specVersion: extrinsic.specVersion,
+                transactionVersion: extrinsic.transactionVersion,
+                genesisHash: extrinsic.genesisHash
+            )
+            .with(signaturePayloadFormat: sender.account.type.signaturePayloadFormat)
+            .with(runtimeJsonContext: runtimeContext)
+            .with(address: address)
+            .with(nonce: UInt32(extrinsic.nonce))
+            .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
+
+            if let metadataHash = metadataHashResult.metadataHash {
+                builder = builder.with(metadataHash: metadataHash)
+            }
+
+            for signedExtension in signedExtensionFactory.createExtensions() {
+                builder = builder.adding(extrinsicSignedExtension: signedExtension)
+            }
+
+            builder = try result.extrinsic.method.accept(builder: builder)
+
+            if extrinsic.tip > 0 {
+                builder = builder.with(tip: extrinsic.tip)
+            }
+
+            if let feeInstaller {
+                builder = try feeInstaller.installingFeeSettings(
+                    to: builder,
+                    coderFactory: codingFactory
+                )
+            } else if let rawFeeAssetId = result.extrinsic.assetId {
+                let txPayment = AssetConversionTxPayment(
+                    tip: extrinsic.tip,
+                    assetId: rawFeeAssetId
+                )
+
+                builder = builder.adding(extrinsicSignedExtension: txPayment)
+            }
+
+            let isModifiedExtrinsic = metadataHashResult.modifiedOriginal
+
+            return ExtrinsicSenderBuilderResult(
+                sender: sender,
+                builder: builder,
+                modifiedOriginalExtrinsic: isModifiedExtrinsic
+            )
+        }
     }
 
     private func createActualMetadataHashWrapper(
@@ -96,6 +172,7 @@ final class DAppExtrinsicBuilderOperationFactory {
 
     private func createBaseBuilderWrapper(
         for result: DAppOperationProcessedResult,
+        feeAssetId: ChainAssetId?,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<ExtrinsicSenderBuilderResult> {
         let metadataHashWrapper = createActualMetadataHashWrapper(
@@ -105,66 +182,40 @@ final class DAppExtrinsicBuilderOperationFactory {
             runtimeProvider: runtimeProvider
         )
 
-        let builderOperation = ClosureOperation<ExtrinsicSenderBuilderResult> {
-            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
-            let metadataHashResult = try metadataHashWrapper.targetOperation.extractNoCancellableResultData()
-
-            let extrinsic = result.extrinsic
-
-            // DApp signing currently doesn't allow to modify extrinsic
-            let sender = ExtrinsicSenderResolution.current(result.account)
-
-            let address = MultiAddress.accoundId(sender.account.accountId)
-
-            let signedExtensionFactory = ExtrinsicSignedExtensionFacade().createFactory(
-                for: result.account.chainId
-            )
-
-            var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
-                specVersion: extrinsic.specVersion,
-                transactionVersion: extrinsic.transactionVersion,
-                genesisHash: extrinsic.genesisHash
-            )
-            .with(signaturePayloadFormat: sender.account.type.signaturePayloadFormat)
-            .with(runtimeJsonContext: runtimeContext)
-            .with(address: address)
-            .with(nonce: UInt32(extrinsic.nonce))
-            .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
-
-            if let metadataHash = metadataHashResult.metadataHash {
-                builder = builder.with(metadataHash: metadataHash)
+        // don't install fee asset if no provided
+        let feeInstallerWrapper: CompoundOperationWrapper<ExtrinsicFeeInstalling>? = if let feeAssetId {
+            feeRegistry.createFeeInstallerWrapper(payingIn: feeAssetId) {
+                result.account
             }
-
-            for signedExtension in signedExtensionFactory.createExtensions() {
-                builder = builder.adding(extrinsicSignedExtension: signedExtension)
-            }
-
-            builder = try result.extrinsic.method.accept(builder: builder)
-
-            if extrinsic.tip > 0 {
-                builder = builder.with(tip: extrinsic.tip)
-            }
-
-            return ExtrinsicSenderBuilderResult(
-                sender: sender,
-                builder: builder,
-                modifiedOriginalExtrinsic: metadataHashResult.modifiedOriginal
-            )
+        } else {
+            nil
         }
 
-        builderOperation.addDependency(metadataHashWrapper.targetOperation)
+        let builderOperation = createExtrinsicBuilderResultOperation(
+            from: result,
+            metadataHashOperation: metadataHashWrapper.targetOperation,
+            codingFactoryOperation: codingFactoryOperation,
+            feeInstallerOperation: feeInstallerWrapper?.targetOperation
+        )
 
-        return metadataHashWrapper.insertingTail(operation: builderOperation)
+        builderOperation.addDependency(metadataHashWrapper.targetOperation)
+        builderOperation.addDependencyIfExists(feeInstallerWrapper?.targetOperation)
+
+        return metadataHashWrapper
+            .insertingHeadIfExists(operations: feeInstallerWrapper?.allOperations)
+            .insertingTail(operation: builderOperation)
     }
 
     private func createRawSignatureOperation(
         for result: DAppOperationProcessedResult,
+        feeAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<DAppExtrinsicRawExtrinsicResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let builderWrapper = createBaseBuilderWrapper(
             for: result,
+            feeAssetId: feeAssetId,
             codingFactoryOperation: codingFactoryOperation
         )
 
@@ -205,11 +256,12 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     func createWrapper(
         customClosure _: @escaping ExtrinsicBuilderIndexedClosure,
         indexes _: [Int],
-        payingFeeIn _: ChainAssetId?,
+        payingFeeIn feeAssetId: ChainAssetId?,
         signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<ExtrinsicsCreationResult> {
         let signatureWrapper = createRawSignatureOperation(
             for: processedResult,
+            feeAssetId: feeAssetId,
             signingClosure: signingClosure
         )
 
@@ -233,12 +285,14 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
     }
 
     func createRawSignatureWrapper(
-        for signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
+        payingFeeIn feeAssetId: ChainAssetId?,
+        signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data
     ) -> CompoundOperationWrapper<DAppExtrinsicRawSignatureResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let builderWrapper = createBaseBuilderWrapper(
             for: processedResult,
+            feeAssetId: feeAssetId,
             codingFactoryOperation: codingFactoryOperation
         )
 

@@ -83,14 +83,9 @@ enum TransactionHistoryMergeItem {
 }
 
 final class TransactionHistoryMergeManager {
-    let address: String
     let chainAsset: ChainAsset
 
-    init(
-        address: String,
-        chainAsset: ChainAsset
-    ) {
-        self.address = address
+    init(chainAsset: ChainAsset) {
         self.chainAsset = chainAsset
     }
 
