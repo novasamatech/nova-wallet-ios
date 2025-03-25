@@ -110,7 +110,7 @@ final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
         }
 
         if assetBalanceSubscriptions.isEmpty {
-            presenter?.didReceiveBalance(results: [:])
+            presenter?.didReceiveBalance(resultWithChanges: .success([:]))
         }
     }
 
@@ -142,52 +142,12 @@ extension ChainAssetSelectionInteractor: ChainAssetSelectionInteractorInputProto
 }
 
 extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
-        let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<AssetBalance?, Error>]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            accum[chainAssetId] = .failure(error)
-        }
-
-        presenter?.didReceiveBalance(results: results)
-    }
-
     private func handleAccountBalanceChanges(
         _ changes: [DataProviderChange<AssetBalance>],
         accountId: AccountId
     ) {
-        // prepopulate non existing balances with zeros
-        let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<AssetBalance?, Error>]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            let balance = AssetBalance.createZero(
-                for: chainAssetId,
-                accountId: accountId
-            )
-
-            accum[chainAssetId] = .success(balance)
-        }
-
-        let results = changes.reduce(
-            into: initialItems
+        let changes = changes.reduce(
+            into: [ChainAssetId: AssetBalance]()
         ) { accum, change in
             switch change {
             case let .insert(balance), let .update(balance):
@@ -202,9 +162,11 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(balance)
+                accum[chainAssetId] = balance
             case let .delete(deletedIdentifier):
-                guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
+                guard
+                    let assetBalanceId = assetBalanceIdMapping[deletedIdentifier],
+                    assetBalanceId.accountId == accountId else {
                     return
                 }
 
@@ -213,16 +175,14 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                     assetId: assetBalanceId.assetId
                 )
 
-                let balance = AssetBalance.createZero(
+                accum[chainAssetId] = AssetBalance.createZero(
                     for: chainAssetId,
                     accountId: accountId
                 )
-
-                accum[chainAssetId] = .success(balance)
             }
         }
 
-        presenter?.didReceiveBalance(results: results)
+        presenter?.didReceiveBalance(resultWithChanges: .success(changes))
     }
 
     func handleAccountBalance(
@@ -233,7 +193,7 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
         case let .success(changes):
             handleAccountBalanceChanges(changes, accountId: accountId)
         case let .failure(error):
-            handleAccountBalanceError(error, accountId: accountId)
+            presenter?.didReceiveBalance(resultWithChanges: .failure(error))
         }
     }
 }

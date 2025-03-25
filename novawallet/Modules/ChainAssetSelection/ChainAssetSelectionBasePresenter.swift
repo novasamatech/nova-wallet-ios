@@ -12,7 +12,7 @@ class ChainAssetSelectionBasePresenter {
 
     var assets: [ChainAsset]?
 
-    private var accountBalances: [ChainAssetId: Result<AssetBalance?, Error>]?
+    private var accountBalances: [ChainAssetId: AssetBalance]?
     private var assetPrices: [ChainAssetId: PriceData]?
 
     private var viewModels: [SelectableIconDetailsListViewModel] = []
@@ -36,26 +36,22 @@ class ChainAssetSelectionBasePresenter {
     func extractAvailableBalanceInPlank(
         for chainAsset: ChainAsset,
         balanceMapper: AvailableBalanceMapping
-    ) -> BigUInt? {
-        guard
-            let balanceResult = accountBalances?[chainAsset.chainAssetId],
-            case let .success(balance) = balanceResult else {
-            return nil
-        }
-
+    ) -> BigUInt {
+        let balance = accountBalances?[chainAsset.chainAssetId]
         return balanceMapper.availableBalanceElseZero(from: balance)
     }
 
     func extractFiatBalance(for chainAsset: ChainAsset, balanceMapper: AvailableBalanceMapping) -> Decimal? {
         guard
-            let availableBalance = extractAvailableBalanceInPlank(
-                for: chainAsset,
-                balanceMapper: balanceMapper
-            ),
             let priceString = assetPrices?[chainAsset.chainAssetId]?.price,
             let price = Decimal(string: priceString) else {
             return nil
         }
+
+        let availableBalance = extractAvailableBalanceInPlank(
+            for: chainAsset,
+            balanceMapper: balanceMapper
+        )
 
         let balanceDecimal = availableBalance.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
@@ -71,7 +67,7 @@ class ChainAssetSelectionBasePresenter {
         let balanceInPlank = extractAvailableBalanceInPlank(
             for: chainAsset,
             balanceMapper: balanceMapper
-        ) ?? 0
+        )
 
         let balanceDecimal = balanceInPlank.decimal(assetInfo: assetInfo)
 
@@ -89,12 +85,12 @@ class ChainAssetSelectionBasePresenter {
         let balance1 = extractAvailableBalanceInPlank(
             for: chainAsset1,
             balanceMapper: balanceMapper
-        ) ?? 0
+        )
 
         let balance2 = extractAvailableBalanceInPlank(
             for: chainAsset2,
             balanceMapper: balanceMapper
-        ) ?? 0
+        )
 
         let assetValue1 = extractFiatBalance(
             for: chainAsset1,
@@ -178,24 +174,22 @@ extension ChainAssetSelectionBasePresenter: ChainAssetSelectionInteractorOutputP
         }
     }
 
-    func didReceiveBalance(results: [ChainAssetId: Result<AssetBalance?, Error>]) {
-        if accountBalances == nil {
-            accountBalances = [:]
-        }
-
-        results.forEach { key, result in
-            switch result {
-            case let .success(maybeAmount):
-                if let amount = maybeAmount {
-                    accountBalances?[key] = .success(amount)
-                }
-            case let .failure(error):
-                accountBalances?[key] = .failure(error)
+    func didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>) {
+        switch resultWithChanges {
+        case let .success(changes):
+            if accountBalances == nil {
+                accountBalances = [:]
             }
-        }
 
-        updateAvailableOptions()
-        updateView()
+            changes.forEach { keyValue in
+                accountBalances?[keyValue.key] = keyValue.value
+            }
+
+            updateAvailableOptions()
+            updateView()
+        case let .failure(error):
+            _ = baseWireframe.present(error: error, from: view, locale: selectedLocale)
+        }
     }
 
     func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
