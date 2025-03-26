@@ -110,6 +110,21 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         }
     }
     
+    func testWNDWestendWestmint() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.westend,
+                originAssetSymbol: "WND",
+                destinationChainId: KnowChainId.westmint,
+                destinationAssetSymbol: "WND"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     private func calculateFee(
         for originChainId: ChainModel.Id,
         originAssetSymbol: String,

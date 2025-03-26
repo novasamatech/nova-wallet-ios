@@ -44,6 +44,7 @@ final class XcmDynamicCrosschainFeeCalculator {
 
     static let minimumSendAmount: Decimal = 100
     static let minimumFundAmount: Decimal = minimumSendAmount * 2
+    static let dryRunXcmVersion: Xcm.Version = .V4
 
     let chainRegistry: ChainRegistryProtocol
     let dryRunOperationFactory: DryRunOperationFactoryProtocol
@@ -278,6 +279,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunCallWrapper(
                 call,
                 origin: .system(.root),
+                xcmVersion: Self.dryRunXcmVersion,
                 chainId: request.originChain.chainId
             )
 
