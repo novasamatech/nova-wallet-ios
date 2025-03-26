@@ -75,6 +75,8 @@ private extension DAppListViewLayout {
                     fixedHeight: DAppCategoriesView.preferredHeight,
                     scrollingBehavior: .none
                 )
+                contentInsets.bottom = 4
+                contentInsets.top = 12
             case .banners:
                 section = bannersSectionLayout()
                 contentInsets.bottom = 16

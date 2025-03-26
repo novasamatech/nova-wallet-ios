@@ -4,6 +4,7 @@ platform :ios, '14.0'
 abstract_target 'novawalletAll' do
   use_frameworks!
 
+  pod 'DGCharts', '~> 5.1.0'
   pod 'DSF_QRCode', '~> 18.0.0'
   pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.5.0'
   pod 'SwiftLint'

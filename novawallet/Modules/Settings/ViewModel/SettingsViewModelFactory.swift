@@ -24,6 +24,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             )
 
         return SettingsAccountViewModel(
+            identifier: wallet.identifier,
             name: wallet.name,
             icon: icon,
             walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type),

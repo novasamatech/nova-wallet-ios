@@ -42,6 +42,41 @@ extension DAppOperationConfirmInteractor {
         }
     }
 
+    func createFeeAssetIdOperation(
+        dependingOn extrinsicOperation: BaseOperation<PolkadotExtensionExtrinsic>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        chain: ChainModel
+    ) -> BaseOperation<DAppParsedAsset?> {
+        ClosureOperation {
+            let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            guard let remoteAssetId = extrinsic.assetId else {
+                return nil
+            }
+
+            guard
+                let remoteAsset = try? ChargeAssetTxSerializer.decodeFeeAssetId(
+                    remoteAssetId,
+                    codingFactory: codingFactory
+                ) else {
+                return nil
+            }
+
+            let localAsset: ChainAsset? = if chain.hasAssetHubFees {
+                AssetHubTokensConverter.convertToLocalAsset(
+                    for: remoteAsset,
+                    on: chain,
+                    using: codingFactory
+                )
+            } else {
+                nil
+            }
+
+            return DAppParsedAsset(remoteAsset: remoteAsset, localAsset: localAsset)
+        }
+    }
+
     // swiftlint:disable:next function_body_length
     func createParsedExtrinsicOperation(
         wallet: MetaAccountModel,
@@ -56,9 +91,13 @@ extension DAppOperationConfirmInteractor {
 
         let eraOperation = createEraParsingOperation(dependingOn: extrinsicOperation)
 
-        let resultOperation = ClosureOperation<DAppOperationProcessedResult> {
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+        let feeAssetOperation = createFeeAssetIdOperation(
+            dependingOn: extrinsicOperation,
+            codingFactoryOperation: codingFactoryOperation,
+            chain: chain
+        )
 
+        let resultOperation = ClosureOperation<DAppOperationProcessedResult> {
             let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
 
             guard
@@ -97,15 +136,6 @@ extension DAppOperationConfirmInteractor {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "blockNumber")
             }
 
-            let expectedSignedExtensions = codingFactory.metadata.getSignedExtensions()
-
-            guard expectedSignedExtensions == extrinsic.signedExtensions else {
-                throw DAppOperationConfirmInteractorError.signedExtensionsMismatch(
-                    actual: extrinsic.signedExtensions,
-                    expected: expectedSignedExtensions
-                )
-            }
-
             guard let method = try? callOperation.extractNoCancellableResultData() else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "method")
             }
@@ -113,6 +143,8 @@ extension DAppOperationConfirmInteractor {
             guard let era = try? eraOperation.extractNoCancellableResultData() else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "era")
             }
+
+            let parsedAsset = try feeAssetOperation.extractNoCancellableResultData()
 
             let parsedExtrinsic = DAppParsedExtrinsic(
                 address: extrinsic.address,
@@ -126,15 +158,20 @@ extension DAppOperationConfirmInteractor {
                 tip: tip,
                 transactionVersion: UInt32(transactionVersion),
                 metadataHash: extrinsic.metadataHash,
+                assetId: parsedAsset?.remoteAsset,
                 withSignedTransaction: extrinsic.withSignedTransaction ?? false,
-                signedExtensions: expectedSignedExtensions,
+                signedExtensions: extrinsic.signedExtensions,
                 version: extrinsic.version
             )
 
-            return DAppOperationProcessedResult(account: accountResponse, extrinsic: parsedExtrinsic)
+            return DAppOperationProcessedResult(
+                account: accountResponse,
+                extrinsic: parsedExtrinsic,
+                feeAsset: parsedAsset?.localAsset
+            )
         }
 
-        let dependencies = [eraOperation, callOperation]
+        let dependencies = [eraOperation, callOperation, feeAssetOperation]
 
         dependencies.forEach { resultOperation.addDependency($0) }
 

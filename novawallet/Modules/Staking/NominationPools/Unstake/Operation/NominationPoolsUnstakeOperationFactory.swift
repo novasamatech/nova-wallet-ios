@@ -42,7 +42,7 @@ extension NPoolsUnstakeOperationFactory: NPoolsUnstakeOperationFactoryProtocol {
         }
 
         let unlockingOperation: PrimitiveConstantOperation<UInt32> = PrimitiveConstantOperation(
-            path: Staking.maxUnlockingChunksConstantPath
+            path: .lockUpPeriod
         )
 
         unlockingOperation.configurationBlock = {

@@ -36,3 +36,14 @@ extension IconDetailsView.Style {
         font: .regularSubheadline
     )
 }
+
+extension StackTitleValueIconView.Style {
+    static let balanceWidgetStaticPart = StackTitleValueIconView.Style(
+        title: .boldTitle2Primary,
+        value: .regularSubhedlineSecondary,
+        icon: R.image.iconSmallArrowDown()?
+            .tinted(with: R.color.colorIconChip()!)?
+            .withAlignmentRectInsets(.init(inset: -4)),
+        iconBorderStyle: .chips
+    )
+}

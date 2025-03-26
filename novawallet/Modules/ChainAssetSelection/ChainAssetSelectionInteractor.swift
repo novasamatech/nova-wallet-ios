@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 import BigInt
 
-final class ChainAssetSelectionInteractor {
+final class ChainAssetSelectionInteractor: AnyProviderAutoCleaning {
     weak var presenter: ChainAssetSelectionInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
@@ -11,7 +11,6 @@ final class ChainAssetSelectionInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let assetFilter: ChainAssetSelectionFilter
     let operationQueue: OperationQueue
-    let balanceSlice: KeyPath<AssetBalance, BigUInt>
 
     private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
     private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
@@ -20,7 +19,6 @@ final class ChainAssetSelectionInteractor {
 
     init(
         selectedMetaAccount: MetaAccountModel,
-        balanceSlice: KeyPath<AssetBalance, BigUInt>,
         repository: AnyDataProviderRepository<ChainModel>,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -29,7 +27,6 @@ final class ChainAssetSelectionInteractor {
         operationQueue: OperationQueue
     ) {
         self.selectedMetaAccount = selectedMetaAccount
-        self.balanceSlice = balanceSlice
         self.repository = repository
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -113,7 +110,7 @@ final class ChainAssetSelectionInteractor {
         }
 
         if assetBalanceSubscriptions.isEmpty {
-            presenter?.didReceiveBalance(results: [:])
+            presenter?.didReceiveBalance(resultWithChanges: .success([:]))
         }
     }
 
@@ -129,59 +126,12 @@ final class ChainAssetSelectionInteractor {
             }
         }
 
-        setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        setupPriceProvider(currency: selectedCurrency)
     }
 
-    private func setupPriceProvider(for priceIdSet: Set<AssetModel.PriceId>, currency: Currency) {
-        priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            presenter?.didReceivePrice(changes: [:])
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
-            for: priceIds,
-            currency: currency
-        )
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
-            guard let strongSelf = self else {
-                return
-            }
-
-            let mappedChanges = changes.reduce(
-                using: .init(),
-                availableTokenPrice: strongSelf.availableTokenPrice,
-                currency: currency
-            )
-
-            self?.presenter?.didReceivePrice(changes: mappedChanges)
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.presenter?.didReceivePrice(error: error)
-            return
-        }
-
-        let options = StreamableProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false,
-            initialSize: 0,
-            refreshWhenEmpty: false
-        )
-
-        priceSubscription?.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-
-        priceSubscription?.refresh()
+    private func setupPriceProvider(currency: Currency) {
+        clear(streamableProvider: &priceSubscription)
+        priceSubscription = subscribeAllPrices(currency: currency)
     }
 }
 
@@ -192,47 +142,12 @@ extension ChainAssetSelectionInteractor: ChainAssetSelectionInteractorInputProto
 }
 
 extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
-        let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            accum[chainAssetId] = .failure(error)
-        }
-
-        presenter?.didReceiveBalance(results: results)
-    }
-
     private func handleAccountBalanceChanges(
         _ changes: [DataProviderChange<AssetBalance>],
         accountId: AccountId
     ) {
-        // prepopulate non existing balances with zeros
-        let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            accum[chainAssetId] = .success(nil)
-        }
-
-        let results = changes.reduce(
-            into: initialItems
+        let changes = changes.reduce(
+            into: [ChainAssetId: AssetBalance]()
         ) { accum, change in
             switch change {
             case let .insert(balance), let .update(balance):
@@ -247,9 +162,11 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(balance[keyPath: balanceSlice])
+                accum[chainAssetId] = balance
             case let .delete(deletedIdentifier):
-                guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
+                guard
+                    let assetBalanceId = assetBalanceIdMapping[deletedIdentifier],
+                    assetBalanceId.accountId == accountId else {
                     return
                 }
 
@@ -258,11 +175,14 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(0)
+                accum[chainAssetId] = AssetBalance.createZero(
+                    for: chainAssetId,
+                    accountId: accountId
+                )
             }
         }
 
-        presenter?.didReceiveBalance(results: results)
+        presenter?.didReceiveBalance(resultWithChanges: .success(changes))
     }
 
     func handleAccountBalance(
@@ -273,7 +193,24 @@ extension ChainAssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLoc
         case let .success(changes):
             handleAccountBalanceChanges(changes, accountId: accountId)
         case let .failure(error):
-            handleAccountBalanceError(error, accountId: accountId)
+            presenter?.didReceiveBalance(resultWithChanges: .failure(error))
+        }
+    }
+}
+
+extension ChainAssetSelectionInteractor: PriceLocalSubscriptionHandler, PriceLocalStorageSubscriber {
+    func handleAllPrices(result: Result<[Operation_iOS.DataProviderChange<PriceData>], any Error>) {
+        switch result {
+        case let .success(changes):
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: availableTokenPrice,
+                currency: selectedCurrency
+            )
+
+            presenter?.didReceivePrice(changes: mappedChanges)
+        case let .failure(error):
+            presenter?.didReceivePrice(error: error)
         }
     }
 }
@@ -284,6 +221,6 @@ extension ChainAssetSelectionInteractor: SelectedCurrencyDepending {
             return
         }
 
-        setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+        setupPriceProvider(currency: selectedCurrency)
     }
 }

@@ -38,36 +38,51 @@ final class DAppBrowserStateDataSource {
     }
 
     func fetchAccountList() throws -> [PolkadotExtensionAccount] {
-        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
-            guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
-                return nil
-            }
-
-            let genesisHash = try Data(hexString: chain.chainId)
-            let name = wallet.name + " (\(chain.name))"
-
-            return try createExtensionAccount(
-                for: chainAccount.accountId,
-                genesisHash: genesisHash,
-                name: name,
-                chainFormat: chain.chainFormat,
-                rawCryptoType: chainAccount.cryptoType
-            )
-        }
+        var accounts: [PolkadotExtensionAccount] = []
 
         if let substrateAccountId = wallet.substrateAccountId, let cryptoType = wallet.substrateCryptoType {
             let substrateAccount = try createExtensionAccount(
                 for: substrateAccountId,
                 genesisHash: nil,
                 name: wallet.name,
-                chainFormat: .substrate(42),
+                chainFormat: .substrate(SubstrateConstants.genericAddressPrefix),
                 rawCryptoType: cryptoType
             )
 
-            return [substrateAccount] + chainAccounts
-        } else {
-            return chainAccounts
+            accounts.append(substrateAccount)
         }
+
+        if let ethereumAddress = wallet.ethereumAddress {
+            let ethereumAccount = try createExtensionAccount(
+                for: ethereumAddress,
+                genesisHash: nil,
+                name: wallet.name,
+                chainFormat: .ethereum,
+                rawCryptoType: MultiassetCryptoType.ethereumEcdsa.rawValue
+            )
+
+            accounts.append(ethereumAccount)
+        }
+
+        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
+            guard let chain = chainStore[chainAccount.chainId] else {
+                return nil
+            }
+
+            let name = wallet.name + " (\(chain.name))"
+
+            return try createExtensionAccount(
+                for: chainAccount.accountId,
+                genesisHash: chain.genesisHash,
+                name: name,
+                chainFormat: chain.chainFormat,
+                rawCryptoType: chainAccount.cryptoType
+            )
+        }
+
+        accounts.append(contentsOf: chainAccounts)
+
+        return accounts
     }
 
     func fetchChainByEthereumChainId(_ chainId: String) -> ChainModel? {

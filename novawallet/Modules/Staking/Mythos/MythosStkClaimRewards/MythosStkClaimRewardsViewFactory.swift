@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct MythosStkClaimRewardsViewFactory {
     static func createView(for state: MythosStakingSharedStateProtocol) -> StakingGenericRewardsViewProtocol? {
@@ -45,8 +46,8 @@ struct MythosStkClaimRewardsViewFactory {
             logger: Logger.shared
         )
 
-        let view = StakingBaseRewardsViewController(
-            basePresenter: presenter,
+        let view = MythosStkClaimRewardsViewController(
+            presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 
@@ -65,6 +66,7 @@ struct MythosStkClaimRewardsViewFactory {
     ) -> MythosStkClaimRewardsInteractor? {
         guard
             let rewardsSyncService = state.claimableRewardsService,
+            let detailsSyncService = state.detailsSyncService,
             let runtimeService = state.chainRegistry.getRuntimeProvider(
                 for: chainAsset.chain.chainId
             ),
@@ -108,7 +110,10 @@ struct MythosStkClaimRewardsViewFactory {
             signingWrapper: signingWrapper,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            stakingDetailsService: detailsSyncService,
             rewardsSyncService: rewardsSyncService,
+            settingsManager: SettingsManager.shared,
             operationQueue: operationQueue,
             currencyManager: currencyManager,
             logger: Logger.shared
