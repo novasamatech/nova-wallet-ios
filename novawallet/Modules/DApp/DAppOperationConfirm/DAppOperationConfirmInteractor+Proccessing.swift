@@ -63,11 +63,15 @@ extension DAppOperationConfirmInteractor {
                 return nil
             }
 
-            let localAsset = AssetHubTokensConverter.convertToLocalAsset(
-                for: remoteAsset,
-                on: chain,
-                using: codingFactory
-            )
+            let localAsset: ChainAsset? = if chain.hasAssetHubFees {
+                AssetHubTokensConverter.convertToLocalAsset(
+                    for: remoteAsset,
+                    on: chain,
+                    using: codingFactory
+                )
+            } else {
+                nil
+            }
 
             return DAppParsedAsset(remoteAsset: remoteAsset, localAsset: localAsset)
         }
