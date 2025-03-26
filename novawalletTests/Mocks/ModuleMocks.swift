@@ -3865,16 +3865,16 @@ import Operation_iOS
     
     
     
-     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])  {
+     func didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)  {
         
-    return cuckoo_manager.call("didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])",
-            parameters: (results),
-            escapingParameters: (results),
+    return cuckoo_manager.call("didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)",
+            parameters: (resultWithChanges),
+            escapingParameters: (resultWithChanges),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveBalance(results: results))
+            defaultCall: __defaultImplStub!.didReceiveBalance(resultWithChanges: resultWithChanges))
         
     }
     
@@ -3922,9 +3922,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveChainAssets(result: Result<[ChainAsset], Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveBalance<M1: Cuckoo.Matchable>(results: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: Result<BigUInt?, Error>])> where M1.MatchedType == [ChainAssetId: Result<BigUInt?, Error>] {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: Result<BigUInt?, Error>])>] = [wrap(matchable: results) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", parameterMatchers: matchers))
+	    func didReceiveBalance<M1: Cuckoo.Matchable>(resultWithChanges: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ChainAssetId: AssetBalance], Error>)> where M1.MatchedType == Result<[ChainAssetId: AssetBalance], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAssetId: AssetBalance], Error>)>] = [wrap(matchable: resultWithChanges) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePrice<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: DataProviderChange<PriceData>])> where M1.MatchedType == [ChainAssetId: DataProviderChange<PriceData>] {
@@ -3960,9 +3960,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceiveBalance<M1: Cuckoo.Matchable>(results: M1) -> Cuckoo.__DoNotUse<([ChainAssetId: Result<BigUInt?, Error>]), Void> where M1.MatchedType == [ChainAssetId: Result<BigUInt?, Error>] {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: Result<BigUInt?, Error>])>] = [wrap(matchable: results) { $0 }]
-	        return cuckoo_manager.verify("didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveBalance<M1: Cuckoo.Matchable>(resultWithChanges: M1) -> Cuckoo.__DoNotUse<(Result<[ChainAssetId: AssetBalance], Error>), Void> where M1.MatchedType == Result<[ChainAssetId: AssetBalance], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAssetId: AssetBalance], Error>)>] = [wrap(matchable: resultWithChanges) { $0 }]
+	        return cuckoo_manager.verify("didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3994,7 +3994,7 @@ import Operation_iOS
     
     
     
-     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])   {
+     func didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
