@@ -234,16 +234,11 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             )
         }
 
-        let currentPriceEntry = PriceHistoryItem(
-            startedAt: lastEntry.startedAt,
-            value: priceDecimal
-        )
-
         let chartViewModel = createChartViewModel(using: entries)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
             allEntries: entries,
-            lastEntry: currentPriceEntry,
+            lastEntry: lastEntry,
             selectedPeriod: params.selectedPeriod,
             locale: params.locale
         )
