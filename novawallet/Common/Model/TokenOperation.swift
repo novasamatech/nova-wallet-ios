@@ -43,13 +43,11 @@ extension TokenOperation {
         return switch rampType {
         case .onRamp:
             checkBuyOperationAvailable(
-                rampActions: filteredActions,
                 walletType: walletType,
                 chainAsset: chainAsset
             )
         case .offRamp:
             checkSellOperationAvailable(
-                rampActions: filteredActions,
                 walletType: walletType,
                 chainAsset: chainAsset
             )
@@ -57,7 +55,6 @@ extension TokenOperation {
     }
 
     private static func checkBuyOperationAvailable(
-        rampActions _: [RampAction],
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
     ) -> RampAvailableCheckResult {
@@ -76,7 +73,6 @@ extension TokenOperation {
     }
 
     private static func checkSellOperationAvailable(
-        rampActions _: [RampAction],
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
     ) -> RampAvailableCheckResult {
