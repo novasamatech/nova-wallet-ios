@@ -30,8 +30,12 @@ final class MercuryoProvider {
 
     private var callbackUrl: URL?
     private let displayURL = "mercuryo.io"
+}
 
-    private func buildURL(address: AccountAddress, token: String, callbackUrl: URL) -> URL? {
+// MARK: Private
+
+private extension MercuryoProvider {
+    func buildURL(address: AccountAddress, token: String, callbackUrl: URL) -> URL? {
         guard let signatureData = [address, configuration.secret].joined().data(using: .utf8) else {
             return nil
         }
@@ -50,15 +54,6 @@ final class MercuryoProvider {
         components?.queryItems = queryItems
 
         return components?.url
-    }
-}
-
-// MARK: RampProviderProtocol
-
-extension MercuryoProvider: RampProviderProtocol {
-    func with(callbackUrl: URL) -> Self {
-        self.callbackUrl = callbackUrl
-        return self
     }
 
     func buildOnRampActions(
@@ -80,15 +75,12 @@ extension MercuryoProvider: RampProviderProtocol {
             return []
         }
 
-        var paymentMethods = defaultPaymentMethods
-        paymentMethods.append(.others("+5"))
-
         let action = RampAction(
+            type: .onRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            fiatPaymentMethods: paymentMethods,
             url: url
         )
 
@@ -114,18 +106,32 @@ extension MercuryoProvider: RampProviderProtocol {
             return []
         }
 
-        var paymentMethods = defaultPaymentMethods
-        paymentMethods.append(.others("+5"))
-
         let action = RampAction(
+            type: .offRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            fiatPaymentMethods: paymentMethods,
             url: url
         )
 
         return [action]
+    }
+}
+
+// MARK: RampProviderProtocol
+
+extension MercuryoProvider: RampProviderProtocol {
+    func with(callbackUrl: URL) -> Self {
+        self.callbackUrl = callbackUrl
+        return self
+    }
+
+    func buildRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        buildOnRampActions(for: chainAsset, accountId: accountId)
+            + buildOffRampActions(for: chainAsset, accountId: accountId)
     }
 }

@@ -12,27 +12,23 @@ private enum ManageActions: Int {
 }
 
 protocol RampActionsPresentable: ActionsManagePresentable {
-    func presentBuySellSheet(
+    func presentRampActionsSheet(
         from view: ControllerBackedProtocol?,
         delegate: ModalPickerViewControllerDelegate?,
-        buyAction: @escaping () -> Void,
-        sellAction: @escaping () -> Void
+        onActionSelect: @escaping (RampActionType) -> Void
     )
 }
 
 extension RampActionsPresentable {
-    func presentBuySellSheet(
+    func presentRampActionsSheet(
         from view: ControllerBackedProtocol?,
         delegate: ModalPickerViewControllerDelegate?,
-        buyAction: @escaping () -> Void,
-        sellAction: @escaping () -> Void
+        onActionSelect: @escaping (RampActionType) -> Void
     ) {
         guard let view else { return }
 
-        let modalActionsContext = createModalActionsContext(
-            buyAction: buyAction,
-            sellAction: sellAction
-        )
+        let modalActionsContext = createModalActionsContext(onActionSelect: onActionSelect)
+
         presentActionsManage(
             from: view,
             actions: modalActionsContext.actions,
@@ -42,10 +38,7 @@ extension RampActionsPresentable {
         )
     }
 
-    private func createModalActionsContext(
-        buyAction: @escaping () -> Void,
-        sellAction: @escaping () -> Void
-    ) -> ModalActionsContext {
+    private func createModalActionsContext(onActionSelect: @escaping (RampActionType) -> Void) -> ModalActionsContext {
         let actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
             LocalizableResource { locale in
                 ActionManageViewModel(
@@ -67,10 +60,8 @@ extension RampActionsPresentable {
             }
 
             switch manageAction {
-            case .buy:
-                buyAction()
-            case .sell:
-                sellAction()
+            case .buy: onActionSelect(.onRamp)
+            case .sell: onActionSelect(.offRamp)
             }
         }
 

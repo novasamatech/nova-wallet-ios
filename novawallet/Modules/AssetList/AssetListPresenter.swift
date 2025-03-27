@@ -517,7 +517,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            self?.wireframe.showBuyTokens(from: self?.view)
+            self?.wireframe.showRamp(
+                from: self?.view,
+                action: .onRamp
+            )
         }
         wireframe.showSendTokens(
             from: view,
@@ -531,12 +534,15 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func buySell() {
-        wireframe.presentBuySellSheet(
+        wireframe.presentRampActionsSheet(
             from: view,
-            delegate: self,
-            buyAction: { [weak self] in self?.wireframe.showBuyTokens(from: self?.view) },
-            sellAction: { [weak self] in self?.wireframe.showSellTokens(from: self?.view) }
-        )
+            delegate: self
+        ) { [weak self] rampAction in
+            self?.wireframe.showRamp(
+                from: self?.view,
+                action: rampAction
+            )
+        }
     }
 
     func swap() {

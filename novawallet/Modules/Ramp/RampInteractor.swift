@@ -4,9 +4,14 @@ final class RampInteractor {
     weak var presenter: RampInteractorOutputProtocol!
 
     let eventCenter: EventCenterProtocol
+    let action: RampAction
 
-    init(eventCenter: EventCenterProtocol) {
+    init(
+        eventCenter: EventCenterProtocol,
+        action: RampAction
+    ) {
         self.eventCenter = eventCenter
+        self.action = action
     }
 }
 
@@ -18,6 +23,6 @@ extension RampInteractor: RampInteractorInputProtocol {
 
 extension RampInteractor: EventVisitorProtocol {
     func processPurchaseCompletion(event _: PurchaseCompleted) {
-        presenter.didCompleteOperation()
+        presenter.didCompleteOperation(action: action)
     }
 }

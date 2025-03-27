@@ -2,7 +2,7 @@ import Foundation
 
 protocol SelectRampProviderViewModelFactoryProtocol {
     func createViewModel(
-        for providerType: SelectRampProvider.ProviderType,
+        for providerType: RampActionType,
         assetSymbol: AssetModel.Symbol,
         actions: [RampAction],
         locale: Locale
@@ -11,7 +11,7 @@ protocol SelectRampProviderViewModelFactoryProtocol {
 
 class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProtocol {
     func createViewModel(
-        for providerType: SelectRampProvider.ProviderType,
+        for providerType: RampActionType,
         assetSymbol: AssetModel.Symbol,
         actions: [RampAction],
         locale: Locale
@@ -19,24 +19,31 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
         let languages = locale.rLanguages
 
         let title = switch providerType {
-        case .offramp:
+        case .offRamp:
             R.string.localizable.selectSellProviderTitle(
                 assetSymbol,
                 preferredLanguages: languages
             )
-        case .onramp:
+        case .onRamp:
             R.string.localizable.selectBuyProviderTitle(
                 assetSymbol,
                 preferredLanguages: languages
             )
         }
 
+        let defaultPaymentMethods: [FiatPaymentMethods] = [
+            .visa(R.image.visaLogo()!),
+            .mastercard(R.image.mastercardLogo()!),
+            .applePay(R.image.applePayLogo()!),
+            .sepa(R.image.sepaLogo()!)
+        ]
+
         let providers = actions.map { action in
             SelectRampProvider.ViewModel.ProviderViewModel(
                 id: action.url.absoluteString,
                 logo: action.logo,
                 descriptionText: action.descriptionText.value(for: locale),
-                fiatPaymentMethods: action.fiatPaymentMethods
+                fiatPaymentMethods: defaultPaymentMethods
             )
         }
 

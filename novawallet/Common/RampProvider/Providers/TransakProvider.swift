@@ -12,8 +12,12 @@ final class TransakProvider {
 
     private var callbackUrl: URL?
     private let displayURL = "transak.com"
+}
 
-    private func buildURLForToken(_ token: String, network: String, address: String) -> URL? {
+// MARK: Private
+
+private extension TransakProvider {
+    func buildURLForToken(_ token: String, network: String, address: String) -> URL? {
         var components = URLComponents(string: Self.baseUrlString)
 
         let queryItems = [
@@ -27,15 +31,6 @@ final class TransakProvider {
         components?.queryItems = queryItems
 
         return components?.url
-    }
-}
-
-// MARK: RampProviderProtocol
-
-extension TransakProvider: RampProviderProtocol {
-    func with(callbackUrl: URL) -> Self {
-        self.callbackUrl = callbackUrl
-        return self
     }
 
     func buildOffRampActions(
@@ -55,15 +50,12 @@ extension TransakProvider: RampProviderProtocol {
             return []
         }
 
-        var paymentMethods = defaultPaymentMethods
-        paymentMethods.append(.others("+12"))
-
         let action = RampAction(
+            type: .offRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            fiatPaymentMethods: paymentMethods,
             url: url
         )
 
@@ -87,18 +79,32 @@ extension TransakProvider: RampProviderProtocol {
             return []
         }
 
-        var paymentMethods = defaultPaymentMethods
-        paymentMethods.append(.others("+12"))
-
         let action = RampAction(
+            type: .onRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            fiatPaymentMethods: paymentMethods,
             url: url
         )
 
         return [action]
+    }
+}
+
+// MARK: RampProviderProtocol
+
+extension TransakProvider: RampProviderProtocol {
+    func with(callbackUrl: URL) -> Self {
+        self.callbackUrl = callbackUrl
+        return self
+    }
+
+    func buildRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        buildOnRampActions(for: chainAsset, accountId: accountId)
+            + buildOffRampActions(for: chainAsset, accountId: accountId)
     }
 }

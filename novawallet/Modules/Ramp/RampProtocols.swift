@@ -11,11 +11,14 @@ protocol RampInteractorInputProtocol: AnyObject {
 }
 
 protocol RampInteractorOutputProtocol: AnyObject {
-    func didCompleteOperation()
+    func didCompleteOperation(action: RampAction)
 }
 
 protocol RampWireframeProtocol: AnyObject {
-    func complete(from view: RampViewProtocol?)
+    func complete(
+        from view: RampViewProtocol?,
+        with action: RampActionType
+    )
 }
 
 protocol RampViewFactoryProtocol: AnyObject {

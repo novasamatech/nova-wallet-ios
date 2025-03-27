@@ -7,27 +7,17 @@ protocol RampPresentable {
         delegate: RampDelegate
     )
 
-    func showOnRampProviders(
+    func showRampProviders(
         from view: ControllerBackedProtocol?,
         actions: [RampAction],
+        rampType: RampActionType,
         assetSymbol: AssetModel.Symbol,
         delegate: RampDelegate
     )
 
-    func showOffRampProviders(
-        from view: ControllerBackedProtocol?,
-        actions: [RampAction],
-        assetSymbol: AssetModel.Symbol,
-        delegate: RampDelegate
-    )
-
-    func presentOnRampDidComplete(
+    func presentRampDidComplete(
         view: ControllerBackedProtocol?,
-        locale: Locale
-    )
-
-    func presentOffRampDidComplete(
-        view: ControllerBackedProtocol?,
+        action: RampActionType,
         locale: Locale
     )
 }
@@ -38,24 +28,25 @@ extension RampPresentable {
         action: RampAction,
         delegate: RampDelegate
     ) {
-        guard let purchaseView = RampViewFactory.createView(
+        guard let rampView = RampViewFactory.createView(
             for: action,
             delegate: delegate
         ) else {
             return
         }
-        purchaseView.controller.modalPresentationStyle = .fullScreen
-        view?.controller.present(purchaseView.controller, animated: true)
+        rampView.controller.modalPresentationStyle = .fullScreen
+        view?.controller.present(rampView.controller, animated: true)
     }
 
-    func showOnRampProviders(
+    func showRampProviders(
         from view: ControllerBackedProtocol?,
         actions: [RampAction],
+        rampType: RampActionType,
         assetSymbol: AssetModel.Symbol,
         delegate: RampDelegate
     ) {
-        guard let onRampProvidersView = SelectRampProviderViewFactory.createView(
-            providerType: .onramp,
+        guard let rampProvidersView = SelectRampProviderViewFactory.createView(
+            providerType: rampType,
             rampActions: actions,
             assetSymbol: assetSymbol,
             delegate: delegate
@@ -64,51 +55,24 @@ extension RampPresentable {
         }
 
         view?.controller.navigationController?.pushViewController(
-            onRampProvidersView.controller,
+            rampProvidersView.controller,
             animated: true
         )
     }
 
-    func showOffRampProviders(
-        from view: ControllerBackedProtocol?,
-        actions: [RampAction],
-        assetSymbol: AssetModel.Symbol,
-        delegate: RampDelegate
+    func presentRampDidComplete(
+        view: ControllerBackedProtocol?,
+        action: RampActionType,
+        locale: Locale
     ) {
-        guard let offRampProvidersView = SelectRampProviderViewFactory.createView(
-            providerType: .offramp,
-            rampActions: actions,
-            assetSymbol: assetSymbol,
-            delegate: delegate
-        ) else {
-            return
+        let languages = locale.rLanguages
+
+        let message = switch action {
+        case .onRamp:
+            R.string.localizable.buyCompleted(preferredLanguages: languages)
+        case .offRamp:
+            R.string.localizable.sellCompleted(preferredLanguages: languages)
         }
-
-        view?.controller.navigationController?.pushViewController(
-            offRampProvidersView.controller,
-            animated: true
-        )
-    }
-
-    func presentOnRampDidComplete(
-        view: ControllerBackedProtocol?,
-        locale: Locale
-    ) {
-        let languages = locale.rLanguages
-        let message = R.string.localizable
-            .buyCompleted(preferredLanguages: languages)
-
-        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
-        view?.controller.present(alertController, animated: true)
-    }
-
-    func presentOffRampDidComplete(
-        view: ControllerBackedProtocol?,
-        locale: Locale
-    ) {
-        let languages = locale.rLanguages
-        let message = R.string.localizable
-            .sellCompleted(preferredLanguages: languages)
 
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)

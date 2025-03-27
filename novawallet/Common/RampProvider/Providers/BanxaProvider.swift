@@ -13,8 +13,12 @@ final class BanxaProvider {
     private var callbackUrl: URL?
     private var colorCode: String?
     private let displayURL = "banxa.com"
+}
 
-    private func buildURL(
+// MARK: Private
+
+private extension BanxaProvider {
+    func buildURL(
         address: AccountAddress,
         token: String,
         network: String,
@@ -31,52 +35,6 @@ final class BanxaProvider {
         components?.queryItems = queryItems
 
         return components?.url
-    }
-}
-
-// MARK: RampProviderProtocol
-
-extension BanxaProvider: RampProviderProtocol {
-    func with(callbackUrl: URL) -> Self {
-        self.callbackUrl = callbackUrl
-        return self
-    }
-
-    func buildOffRampActions(
-        for chainAsset: ChainAsset,
-        accountId: AccountId
-    ) -> [RampAction] {
-        guard
-            let banxa = chainAsset.asset.buyProviders?.banxa,
-            let network = banxa.blockchain?.stringValue,
-            let token = banxa.coinType?.stringValue,
-            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
-            return []
-        }
-
-        guard let callbackUrl = self.callbackUrl,
-              let url = buildURL(
-                  address: address,
-                  token: token,
-                  network: network,
-                  callbackUrl: callbackUrl
-              ) else {
-            return []
-        }
-
-        var paymentMethods = defaultPaymentMethods
-        paymentMethods.append(.others("+5"))
-
-        let action = RampAction(
-            logo: R.image.banxaLogo()!,
-            descriptionText: LocalizableResource { locale in
-                R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
-            },
-            fiatPaymentMethods: paymentMethods,
-            url: url
-        )
-
-        return [action]
     }
 
     func buildOnRampActions(
@@ -101,18 +59,31 @@ extension BanxaProvider: RampProviderProtocol {
             return []
         }
 
-        var paymentMethods = defaultPaymentMethods
-        paymentMethods.append(.others("+5"))
-
         let action = RampAction(
+            type: .onRamp,
             logo: R.image.banxaLogo()!,
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            fiatPaymentMethods: paymentMethods,
             url: url
         )
 
         return [action]
+    }
+}
+
+// MARK: RampProviderProtocol
+
+extension BanxaProvider: RampProviderProtocol {
+    func with(callbackUrl: URL) -> Self {
+        self.callbackUrl = callbackUrl
+        return self
+    }
+
+    func buildRampActions(
+        for chainAsset: ChainAsset,
+        accountId: AccountId
+    ) -> [RampAction] {
+        buildOnRampActions(for: chainAsset, accountId: accountId)
     }
 }

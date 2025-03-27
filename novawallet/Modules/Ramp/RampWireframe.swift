@@ -9,15 +9,18 @@ final class RampWireframe: RampWireframeProtocol {
         self.delegate = delegate
     }
 
-    func complete(from view: RampViewProtocol?) {
+    func complete(
+        from view: RampViewProtocol?,
+        with action: RampActionType
+    ) {
         view?.controller.presentingViewController?.dismiss(animated: true) {
             DispatchQueue.main.async {
-                self.delegate?.rampDidComplete()
+                self.delegate?.rampDidComplete(action: action)
             }
         }
     }
 }
 
 protocol RampDelegate: AnyObject {
-    func rampDidComplete()
+    func rampDidComplete(action: RampActionType)
 }

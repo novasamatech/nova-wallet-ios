@@ -10,32 +10,20 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
 
     let selectedAccount: MetaAccountModel
     let rampProvider: RampProviderProtocol
-
-    private let checkResultClosure: RampOperationAvailabilityCheckClosure
-    private let rampActionsProviderClosure: RampActionProviderClosure
-    private let flowManagingClosure: RampFlowManagingClosure
-    private let rampCompletionClosure: RampCompletionClosure
-
-    private var rampActions: [RampAction] = []
+    let rampType: RampActionType
 
     init(
         interactor: AssetsSearchInteractorInputProtocol,
         viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         selectedAccount: MetaAccountModel,
         rampProvider: RampProviderProtocol,
+        rampType: RampActionType,
         wireframe: RampAssetOperationWireframeProtocol,
-        checkResultClosure: @escaping RampOperationAvailabilityCheckClosure,
-        rampActionsProviderClosure: @escaping RampActionProviderClosure,
-        flowManagingClosure: @escaping RampFlowManagingClosure,
-        rampCompletionClosure: @escaping RampCompletionClosure,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.rampProvider = rampProvider
-        self.checkResultClosure = checkResultClosure
-        self.rampActionsProviderClosure = rampActionsProviderClosure
-        self.flowManagingClosure = flowManagingClosure
-        self.rampCompletionClosure = rampCompletionClosure
+        self.rampType = rampType
 
         super.init(
             delegate: nil,
@@ -57,7 +45,8 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
                     from: view,
                     multichainToken: multichainToken,
                     selectedAccount: selectedAccount,
-                    rampProvider: rampProvider
+                    rampProvider: rampProvider,
+                    rampType: rampType
                 )
             }
         )
@@ -76,15 +65,16 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
             return
         }
 
-        rampActions = rampActionsProviderClosure(rampProvider)(
-            chainAsset,
-            accountId
+        let rampActions = rampProvider.buildRampActions(
+            for: chainAsset,
+            accountId: accountId
         )
 
-        let checkResult = checkResultClosure(
-            rampActions,
-            selectedAccount.type,
-            chainAsset
+        let checkResult = TokenOperation.checkRampOperationsAvailable(
+            for: rampActions,
+            rampType: rampType,
+            walletType: selectedAccount.type,
+            chainAsset: chainAsset
         )
 
         switch checkResult {
@@ -95,12 +85,13 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
                 successRouteClosure: { [weak self] in
                     guard let self else { return }
 
-                    flowManagingClosure(self)(
-                        view,
-                        rampActions,
-                        rampWireframe,
-                        chainAsset.asset.symbol,
-                        selectedLocale
+                    startRampFlow(
+                        from: view,
+                        actions: rampActions,
+                        rampType: rampType,
+                        wireframe: rampWireframe,
+                        assetSymbol: chainAsset.asset.symbol,
+                        locale: selectedLocale
                     )
                 }
             )
@@ -111,12 +102,11 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
 }
 
 extension RampAssetOperationPresenter: RampDelegate {
-    func rampDidComplete() {
-        guard let rampWireframe else { return }
-
-        rampCompletionClosure(rampWireframe)(
-            view,
-            selectedLocale
+    func rampDidComplete(action: RampActionType) {
+        rampWireframe?.presentRampDidComplete(
+            view: view,
+            action: action,
+            locale: selectedLocale
         )
     }
 }

@@ -3,8 +3,9 @@ import SoraFoundation
 import SoraKeystore
 
 enum AssetOperationViewFactory {
-    static func createBuyView(
-        for stateObservable: AssetListModelObservable
+    static func createRampView(
+        for stateObservable: AssetListModelObservable,
+        action: RampActionType
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -27,77 +28,23 @@ enum AssetOperationViewFactory {
         }
 
         let rampProvider = RampAggregator.defaultAggregator()
-        let wireframe = BuyAssetOperationWireframe(stateObservable: stateObservable)
+        let wireframe = RampAssetOperationWireframe(stateObservable: stateObservable)
 
-        let basePresenterDependencies = RampPresenterDependencies.Base(
+        let presenterDependenciess = RampPresenterDependencies(
             stateObservable: stateObservable,
             selectedAccount: selectedMetaAccount,
             rampProvider: rampProvider,
+            rampType: action,
             currencyManager: currencyManager,
             viewModelFactory: viewModelFactory,
             wireframe: wireframe
         )
-        let presenter = createRampPresenter(
-            dependencies: createOnRampPresenterDependencies(base: basePresenterDependencies)
-        )
 
-        let title: LocalizableResource<String> = .init {
-            R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages)
-        }
+        let presenter = createRampPresenter(dependencies: presenterDependenciess)
 
-        let view = AssetOperationViewController(
-            presenter: presenter,
-            keyboardAppearanceStrategy: ModalNavigationKeyboardStrategy(),
-            createViewClosure: { AssetsOperationViewLayout() },
-            localizableTitle: title,
-            localizationManager: LocalizationManager.shared
-        )
-
-        presenter.view = view
-
-        return view
-    }
-
-    static func createSellView(
-        for stateObservable: AssetListModelObservable
-    ) -> AssetsSearchViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
-
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let chainAssetViewModelFactory = ChainAssetViewModelFactory()
-
-        let viewModelFactory = AssetListAssetViewModelFactory(
-            chainAssetViewModelFactory: chainAssetViewModelFactory,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            assetFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: NumberFormatter.signedPercent.localizableResource(),
-            assetIconViewModelFactory: AssetIconViewModelFactory(),
-            currencyManager: currencyManager
-        )
-
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
-            return nil
-        }
-
-        let rampProvider = RampAggregator.defaultAggregator()
-        let wireframe = SellAssetOperationWireframe(stateObservable: stateObservable)
-
-        let basePresenterDependencies = RampPresenterDependencies.Base(
-            stateObservable: stateObservable,
-            selectedAccount: selectedMetaAccount,
-            rampProvider: rampProvider,
-            currencyManager: currencyManager,
-            viewModelFactory: viewModelFactory,
-            wireframe: wireframe
-        )
-        let presenter = createRampPresenter(
-            dependencies: createOffRampPresenterDependencies(base: basePresenterDependencies)
-        )
-
-        let title: LocalizableResource<String> = .init {
-            R.string.localizable.assetOperationSellTitle(preferredLanguages: $0.rLanguages)
+        let title: LocalizableResource<String> = switch action {
+        case .offRamp: .init { R.string.localizable.assetOperationSellTitle(preferredLanguages: $0.rLanguages) }
+        case .onRamp: .init { R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages) }
         }
 
         let view = AssetOperationViewController(
@@ -257,55 +204,27 @@ enum AssetOperationViewFactory {
         return presenter
     }
 
-    private static func createOnRampPresenterDependencies(
-        base: RampPresenterDependencies.Base
-    ) -> RampPresenterDependencies {
-        .init(
-            base: base,
-            closures: .init(
-                checkResultClosure: TokenOperation.checkBuyOperationAvailable,
-                rampActionsProviderClosure: { $0.buildOnRampActions },
-                flowManagingClosure: { $0.startOnRampFlow },
-                rampCompletionClosure: { $0.presentOnRampDidComplete }
-            )
-        )
-    }
-
-    private static func createOffRampPresenterDependencies(
-        base: RampPresenterDependencies.Base
-    ) -> RampPresenterDependencies {
-        .init(
-            base: base,
-            closures: .init(
-                checkResultClosure: TokenOperation.checkSellOperationAvailable,
-                rampActionsProviderClosure: { $0.buildOffRampActions },
-                flowManagingClosure: { $0.startOffRampFlow },
-                rampCompletionClosure: { $0.presentOffRampDidComplete }
-            )
-        )
-    }
-
     private static func createRampPresenter(
         dependencies: RampPresenterDependencies
     ) -> RampAssetOperationPresenter {
         let filter: ChainAssetsFilter = { chainAsset in
             guard
                 chainAsset.chain.syncMode.enabled(),
-                let accountId = dependencies.base.selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
+                let accountId = dependencies.selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
             else {
                 return false
             }
 
-            let rampActions = dependencies.closures.rampActionsProviderClosure(dependencies.base.rampProvider)(
-                chainAsset,
-                accountId
-            )
+            let rampActions = dependencies.rampProvider.buildRampActions(
+                for: chainAsset,
+                accountId: accountId
+            ).filter { $0.type == dependencies.rampType }
 
             return !rampActions.isEmpty
         }
 
         let interactor = AssetsSearchInteractor(
-            stateObservable: dependencies.base.stateObservable,
+            stateObservable: dependencies.stateObservable,
             filter: filter,
             settingsManager: SettingsManager.shared,
             logger: Logger.shared
@@ -313,14 +232,11 @@ enum AssetOperationViewFactory {
 
         let presenter = RampAssetOperationPresenter(
             interactor: interactor,
-            viewModelFactory: dependencies.base.viewModelFactory,
-            selectedAccount: dependencies.base.selectedAccount,
-            rampProvider: dependencies.base.rampProvider,
-            wireframe: dependencies.base.wireframe,
-            checkResultClosure: dependencies.closures.checkResultClosure,
-            rampActionsProviderClosure: dependencies.closures.rampActionsProviderClosure,
-            flowManagingClosure: dependencies.closures.flowManagingClosure,
-            rampCompletionClosure: dependencies.closures.rampCompletionClosure,
+            viewModelFactory: dependencies.viewModelFactory,
+            selectedAccount: dependencies.selectedAccount,
+            rampProvider: dependencies.rampProvider,
+            rampType: dependencies.rampType,
+            wireframe: dependencies.wireframe,
             localizationManager: LocalizationManager.shared
         )
 
@@ -332,23 +248,12 @@ enum AssetOperationViewFactory {
 
 private extension AssetOperationViewFactory {
     struct RampPresenterDependencies {
-        struct Closures {
-            let checkResultClosure: RampOperationAvailabilityCheckClosure
-            let rampActionsProviderClosure: RampActionProviderClosure
-            let flowManagingClosure: RampFlowManagingClosure
-            let rampCompletionClosure: RampCompletionClosure
-        }
-
-        struct Base {
-            let stateObservable: AssetListModelObservable
-            let selectedAccount: MetaAccountModel
-            let rampProvider: RampProviderProtocol
-            let currencyManager: CurrencyManager
-            let viewModelFactory: AssetListAssetViewModelFactoryProtocol
-            let wireframe: RampAssetOperationWireframeProtocol
-        }
-
-        let base: Base
-        let closures: Closures
+        let stateObservable: AssetListModelObservable
+        let selectedAccount: MetaAccountModel
+        let rampProvider: RampProviderProtocol
+        let rampType: RampActionType
+        let currencyManager: CurrencyManager
+        let viewModelFactory: AssetListAssetViewModelFactoryProtocol
+        let wireframe: RampAssetOperationWireframeProtocol
     }
 }

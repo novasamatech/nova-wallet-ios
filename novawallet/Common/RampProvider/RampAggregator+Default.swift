@@ -9,6 +9,7 @@ extension RampAggregator {
             TransakProvider(),
             BanxaProvider()
         ]
+
         return RampAggregator(providers: rampProviders)
             .with(appName: config.purchaseAppName)
             .with(logoUrl: config.logoURL)

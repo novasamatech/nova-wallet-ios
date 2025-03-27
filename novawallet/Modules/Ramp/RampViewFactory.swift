@@ -9,7 +9,12 @@ final class RampViewFactory: RampViewFactoryProtocol {
         let view = RampViewController(url: action.url)
 
         let presenter = RampPresenter()
-        let interactor = RampInteractor(eventCenter: EventCenter.shared)
+
+        let interactor = RampInteractor(
+            eventCenter: EventCenter.shared,
+            action: action
+        )
+
         let wireframe = RampWireframe(delegate: delegate)
 
         view.presenter = presenter

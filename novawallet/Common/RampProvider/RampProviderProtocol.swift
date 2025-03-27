@@ -3,10 +3,15 @@ import SoraFoundation
 import UIKit.UIImage
 
 struct RampAction {
+    let type: RampActionType
     let logo: UIImage
     let descriptionText: LocalizableResource<String>
-    let fiatPaymentMethods: [FiatPaymentMethods]
     let url: URL
+}
+
+enum RampActionType {
+    case offRamp
+    case onRamp
 }
 
 enum FiatPaymentMethods {
@@ -44,27 +49,13 @@ protocol RampProviderProtocol {
     func with(colorCode: String) -> Self
     func with(callbackUrl: URL) -> Self
 
-    func buildOffRampActions(
-        for chainAsset: ChainAsset,
-        accountId: AccountId
-    ) -> [RampAction]
-
-    func buildOnRampActions(
+    func buildRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction]
 }
 
 extension RampProviderProtocol {
-    var defaultPaymentMethods: [FiatPaymentMethods] {
-        [
-            .visa(R.image.visaLogo()!),
-            .mastercard(R.image.mastercardLogo()!),
-            .applePay(R.image.applePayLogo()!),
-            .sepa(R.image.sepaLogo()!)
-        ]
-    }
-
     func with(appName _: String) -> Self {
         self
     }

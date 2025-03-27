@@ -903,8 +903,12 @@ extension SwapSetupPresenter: Localizable {
     }
 }
 
-extension SwapSetupPresenter: OnRampFlowManaging, RampDelegate {
-    func rampDidComplete() {
-        wireframe.presentOnRampDidComplete(view: view, locale: selectedLocale)
+extension SwapSetupPresenter: RampFlowManaging, RampDelegate {
+    func rampDidComplete(action: RampActionType) {
+        wireframe.presentRampDidComplete(
+            view: view,
+            action: action,
+            locale: selectedLocale
+        )
     }
 }

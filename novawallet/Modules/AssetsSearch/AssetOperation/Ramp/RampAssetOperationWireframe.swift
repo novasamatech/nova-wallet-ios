@@ -9,55 +9,36 @@ protocol RampAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol,
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
         selectedAccount: MetaAccountModel,
-        rampProvider: RampProviderProtocol
+        rampProvider: RampProviderProtocol,
+        rampType: RampActionType
     )
 }
 
 extension RampAssetOperationWireframeProtocol {
     func close(view: ControllerBackedProtocol?, completion: (() -> Void)?) {
-        view?.controller.presentingViewController?.dismiss(animated: true, completion: completion)
-    }
-}
-
-final class BuyAssetOperationWireframe: AssetOperationWireframe, RampAssetOperationWireframeProtocol {}
-
-extension BuyAssetOperationWireframe: AssetsSearchWireframeProtocol {
-    func showSelectNetwork(
-        from view: ControllerBackedProtocol?,
-        multichainToken: MultichainToken,
-        selectedAccount: MetaAccountModel,
-        rampProvider: RampProviderProtocol
-    ) {
-        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createBuyView(
-            with: multichainToken,
-            stateObservable: stateObservable,
-            selectedAccount: selectedAccount,
-            rampProvider: rampProvider
-        ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            selectNetworkView.controller,
-            animated: true
+        view?.controller.presentingViewController?.dismiss(
+            animated: true,
+            completion: completion
         )
     }
 }
 
-final class SellAssetOperationWireframe: AssetOperationWireframe, RampAssetOperationWireframeProtocol {}
+final class RampAssetOperationWireframe: AssetOperationWireframe, RampAssetOperationWireframeProtocol {}
 
-extension SellAssetOperationWireframe: AssetsSearchWireframeProtocol {
+extension RampAssetOperationWireframe: AssetsSearchWireframeProtocol {
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,
         selectedAccount: MetaAccountModel,
-        rampProvider: RampProviderProtocol
+        rampProvider: RampProviderProtocol,
+        rampType: RampActionType
     ) {
-        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createSellView(
+        guard let selectNetworkView = AssetOperationNetworkListViewFactory.createRampView(
             with: multichainToken,
             stateObservable: stateObservable,
             selectedAccount: selectedAccount,
-            rampProvider: rampProvider
+            rampProvider: rampProvider,
+            rampType: rampType
         ) else {
             return
         }

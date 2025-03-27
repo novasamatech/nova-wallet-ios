@@ -131,19 +131,15 @@ private extension AssetDetailsInteractor {
             operations.insert(.send)
         }
 
-        let onRampActions: [RampAction] = rampProvider.buildOnRampActions(
-            for: chainAsset,
-            accountId: accountId
-        )
-        let offRampActions: [RampAction] = rampProvider.buildOffRampActions(
+        let rampActions: [RampAction] = rampProvider.buildRampActions(
             for: chainAsset,
             accountId: accountId
         )
 
-        if !onRampActions.isEmpty {
+        if rampActions.contains(where: { $0.type == .onRamp }) {
             operations.insert(.buy)
         }
-        if !offRampActions.isEmpty {
+        if rampActions.contains(where: { $0.type == .offRamp }) {
             operations.insert(.sell)
         }
 
@@ -153,10 +149,7 @@ private extension AssetDetailsInteractor {
             operations.insert(.swap)
         }
 
-        presenter?.didReceive(
-            onRampActions: onRampActions,
-            offRampActions: offRampActions
-        )
+        presenter?.didReceive(rampActions: rampActions)
         presenter?.didReceive(availableOperations: operations)
     }
 }

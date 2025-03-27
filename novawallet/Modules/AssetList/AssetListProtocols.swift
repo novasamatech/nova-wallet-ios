@@ -150,9 +150,10 @@ protocol AssetListWireframeProtocol: AnyObject,
         buyTokensClosure: @escaping BuyTokensClosure
     )
 
-    func showBuyTokens(from view: AssetListViewProtocol?)
-
-    func showSellTokens(from view: AssetListViewProtocol?)
+    func showRamp(
+        from view: (any AssetListViewProtocol)?,
+        action: RampActionType
+    )
 
     func showSwapTokens(from view: AssetListViewProtocol?)
 

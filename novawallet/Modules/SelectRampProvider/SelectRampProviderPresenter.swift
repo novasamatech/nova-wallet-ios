@@ -9,7 +9,7 @@ final class SelectRampProviderPresenter {
     let localizationManager: LocalizationManagerProtocol
 
     let assetSymbol: AssetModel.Symbol
-    let providerType: SelectRampProvider.ProviderType
+    let providerType: RampActionType
 
     var rampActions: [RampAction]?
 
@@ -19,7 +19,7 @@ final class SelectRampProviderPresenter {
         viewModelFactory: SelectRampProviderViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         assetSymbol: AssetModel.Symbol,
-        providerType: SelectRampProvider.ProviderType
+        providerType: RampActionType
     ) {
         self.interactor = interactor
         self.wireframe = wireframe

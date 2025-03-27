@@ -28,11 +28,7 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)
-
-    func didReceive(
-        onRampActions: [RampAction],
-        offRampActions: [RampAction]
-    )
+    func didReceive(rampActions: [RampAction])
 }
 
 protocol AssetDetailsWireframeProtocol:

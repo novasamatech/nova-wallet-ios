@@ -13,7 +13,7 @@ extension RampPresenter: RampPresenterProtocol {
 }
 
 extension RampPresenter: RampInteractorOutputProtocol {
-    func didCompleteOperation() {
-        wireframe.complete(from: view)
+    func didCompleteOperation(action: RampAction) {
+        wireframe.complete(from: view, with: action.type)
     }
 }

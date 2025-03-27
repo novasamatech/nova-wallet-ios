@@ -98,7 +98,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showGetTokenOptions(
         form view: ControllerBackedProtocol?,
-        purchaseHadler: OnRampFlowManaging & RampDelegate,
+        purchaseHadler: RampFlowManaging & RampDelegate,
         destinationChainAsset: ChainAsset,
         locale: Locale
     ) {
@@ -122,9 +122,10 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
                     metaChainAccountResponse: account
                 )
             case let .buy(actions):
-                purchaseHadler?.startOnRampFlow(
+                purchaseHadler?.startRampFlow(
                     from: view,
                     actions: actions,
+                    rampType: .onRamp,
                     wireframe: self,
                     assetSymbol: destinationChainAsset.asset.symbol,
                     locale: locale

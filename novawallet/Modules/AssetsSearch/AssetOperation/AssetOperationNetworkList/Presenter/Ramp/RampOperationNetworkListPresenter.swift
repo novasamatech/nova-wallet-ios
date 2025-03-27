@@ -6,34 +6,22 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
 
     private let wireframe: RampAssetOperationWireframeProtocol
     private let rampProvider: RampProviderProtocol
-
-    private let checkResultClosure: RampOperationAvailabilityCheckClosure
-    private let rampActionsProviderClosure: RampActionProviderClosure
-    private let flowManagingClosure: RampFlowManagingClosure
-    private let rampCompletionClosure: RampCompletionClosure
-
-    private var rampActions: [RampAction] = []
+    private let rampType: RampActionType
 
     init(
         interactor: AssetOperationNetworkListInteractorInputProtocol,
         wireframe: RampAssetOperationWireframeProtocol,
         rampProvider: RampProviderProtocol,
+        rampType: RampActionType,
         multichainToken: MultichainToken,
         viewModelFactory: AssetOperationNetworkListViewModelFactory,
         selectedAccount: MetaAccountModel,
-        checkResultClosure: @escaping RampOperationAvailabilityCheckClosure,
-        rampActionsProviderClosure: @escaping RampActionProviderClosure,
-        flowManagingClosure: @escaping RampFlowManagingClosure,
-        rampCompletionClosure: @escaping RampCompletionClosure,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
-        self.checkResultClosure = checkResultClosure
-        self.rampActionsProviderClosure = rampActionsProviderClosure
-        self.flowManagingClosure = flowManagingClosure
-        self.rampCompletionClosure = rampCompletionClosure
         self.wireframe = wireframe
         self.rampProvider = rampProvider
+        self.rampType = rampType
 
         super.init(
             interactor: interactor,
@@ -61,15 +49,16 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
             return
         }
 
-        rampActions = rampActionsProviderClosure(rampProvider)(
-            chainAsset,
-            accountId
+        let rampActions = rampProvider.buildRampActions(
+            for: chainAsset,
+            accountId: accountId
         )
 
-        let checkResult = checkResultClosure(
-            rampActions,
-            selectedAccount.type,
-            chainAsset
+        let checkResult = TokenOperation.checkRampOperationsAvailable(
+            for: rampActions,
+            rampType: rampType,
+            walletType: selectedAccount.type,
+            chainAsset: chainAsset
         )
 
         switch checkResult {
@@ -80,12 +69,13 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
                 successRouteClosure: { [weak self] in
                     guard let self else { return }
 
-                    flowManagingClosure(self)(
-                        view,
-                        rampActions,
-                        wireframe,
-                        chainAsset.asset.symbol,
-                        selectedLocale
+                    startRampFlow(
+                        from: view,
+                        actions: rampActions,
+                        rampType: rampType,
+                        wireframe: wireframe,
+                        assetSymbol: chainAsset.asset.symbol,
+                        locale: selectedLocale
                     )
                 }
             )
@@ -98,10 +88,11 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
 // MARK: RampDelegate
 
 extension RampOperationNetworkListPresenter: RampDelegate {
-    func rampDidComplete() {
-        rampCompletionClosure(wireframe)(
-            view,
-            selectedLocale
+    func rampDidComplete(action: RampActionType) {
+        wireframe.presentRampDidComplete(
+            view: view,
+            action: action,
+            locale: selectedLocale
         )
     }
 }

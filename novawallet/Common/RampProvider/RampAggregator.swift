@@ -30,17 +30,10 @@ extension RampAggregator: RampProviderProtocol {
         return self
     }
 
-    func buildOnRampActions(
+    func buildRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction] {
-        providers.flatMap { $0.buildOnRampActions(for: chainAsset, accountId: accountId) }
-    }
-
-    func buildOffRampActions(
-        for chainAsset: ChainAsset,
-        accountId: AccountId
-    ) -> [RampAction] {
-        providers.flatMap { $0.buildOffRampActions(for: chainAsset, accountId: accountId) }
+        providers.flatMap { $0.buildRampActions(for: chainAsset, accountId: accountId) }
     }
 }

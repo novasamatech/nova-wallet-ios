@@ -28,15 +28,39 @@ extension TokenOperation {
         }
     }
 
-    static func checkBuyOperationAvailable(
-        rampActions: [RampAction],
+    static func checkRampOperationsAvailable(
+        for rampActions: [RampAction],
+        rampType: RampActionType,
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
     ) -> RampAvailableCheckResult {
-        guard !rampActions.isEmpty else {
+        let filteredActions = rampActions.filter { $0.type == rampType }
+
+        guard !filteredActions.isEmpty else {
             return .noRampOptions
         }
 
+        return switch rampType {
+        case .onRamp:
+            checkBuyOperationAvailable(
+                rampActions: filteredActions,
+                walletType: walletType,
+                chainAsset: chainAsset
+            )
+        case .offRamp:
+            checkSellOperationAvailable(
+                rampActions: filteredActions,
+                walletType: walletType,
+                chainAsset: chainAsset
+            )
+        }
+    }
+
+    private static func checkBuyOperationAvailable(
+        rampActions _: [RampAction],
+        walletType: MetaAccountModelType,
+        chainAsset: ChainAsset
+    ) -> RampAvailableCheckResult {
         switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             return .common(.available)
@@ -51,15 +75,11 @@ extension TokenOperation {
         }
     }
 
-    static func checkSellOperationAvailable(
-        rampActions: [RampAction],
+    private static func checkSellOperationAvailable(
+        rampActions _: [RampAction],
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
     ) -> RampAvailableCheckResult {
-        guard !rampActions.isEmpty else {
-            return .noRampOptions
-        }
-
         switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             return .common(.available)

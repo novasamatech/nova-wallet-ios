@@ -19,8 +19,7 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
     private var locks: [AssetLock] = []
     private var holds: [AssetHold] = []
     private var externalAssetBalances: [ExternalAssetBalance] = []
-    private var buyActions: [RampAction] = []
-    private var sellActions: [RampAction] = []
+    private var rampActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
 
     init(
@@ -78,23 +77,13 @@ private extension AssetDetailsPresenter {
     func showRamp() {
         guard availableOperations.rampAvailable() else { return }
 
-        let showOnRampClosure: () -> Void = { [weak self] in
-            guard let self, !buyActions.isEmpty else { return }
+        let startFlow: (RampActionType) -> Void = { [weak self] rampType in
+            guard let self else { return }
 
-            startOnRampFlow(
+            startRampFlow(
                 from: view,
-                actions: buyActions,
-                wireframe: wireframe,
-                assetSymbol: chainAsset.asset.symbol,
-                locale: selectedLocale
-            )
-        }
-        let showOffRampClosure: () -> Void = { [weak self] in
-            guard let self, !sellActions.isEmpty else { return }
-
-            startOffRampFlow(
-                from: view,
-                actions: sellActions,
+                actions: rampActions,
+                rampType: rampType,
                 wireframe: wireframe,
                 assetSymbol: chainAsset.asset.symbol,
                 locale: selectedLocale
@@ -102,16 +91,16 @@ private extension AssetDetailsPresenter {
         }
 
         if availableOperations.buySellAvailable() {
-            wireframe.presentBuySellSheet(
+            wireframe.presentRampActionsSheet(
                 from: view,
-                delegate: self,
-                buyAction: showOnRampClosure,
-                sellAction: showOffRampClosure
-            )
+                delegate: self
+            ) { selectedAction in
+                startFlow(selectedAction)
+            }
         } else if availableOperations.buyAvailable() {
-            showOnRampClosure()
+            startFlow(.onRamp)
         } else {
-            showOffRampClosure()
+            startFlow(.offRamp)
         }
     }
 
@@ -215,12 +204,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
 // MARK: AssetDetailsInteractorOutputProtocol
 
 extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
-    func didReceive(
-        onRampActions: [RampAction],
-        offRampActions: [RampAction]
-    ) {
-        buyActions = onRampActions
-        sellActions = offRampActions
+    func didReceive(rampActions: [RampAction]) {
+        self.rampActions = rampActions
         updateView()
     }
 
@@ -284,8 +269,12 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 // MARK: RampDelegate
 
 extension AssetDetailsPresenter: RampDelegate {
-    func rampDidComplete() {
-        wireframe.presentOnRampDidComplete(view: view, locale: selectedLocale)
+    func rampDidComplete(action: RampActionType) {
+        wireframe.presentRampDidComplete(
+            view: view,
+            action: action,
+            locale: selectedLocale
+        )
     }
 }
 

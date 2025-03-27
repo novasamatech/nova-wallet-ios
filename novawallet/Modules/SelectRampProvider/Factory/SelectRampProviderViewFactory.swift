@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct SelectRampProviderViewFactory {
     static func createView(
-        providerType: SelectRampProvider.ProviderType,
+        providerType: RampActionType,
         rampActions: [RampAction],
         assetSymbol: AssetModel.Symbol,
         delegate: RampDelegate
