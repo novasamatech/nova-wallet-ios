@@ -2,11 +2,11 @@ import Foundation
 
 extension GovernanceDelegateSetupPresenter {
     func updateAvailableBalanceView() {
-        let freeInPlank = assetBalance?.freeInPlank ?? 0
+        let availableInPlank = govBalanceCalculator.availableBalanceElseZero(from: assetBalance)
 
         let precision = chain.utilityAsset()?.displayInfo.assetPrecision ?? 0
         let balanceDecimal = Decimal.fromSubstrateAmount(
-            freeInPlank,
+            availableInPlank,
             precision: precision
         ) ?? 0
 
