@@ -60,7 +60,6 @@ private extension AssetPriceChartPresenter {
 
     func notifyIfChartAvailable() {
         guard
-            let priceData,
             let prices,
             !prices.isEmpty
         else { return }

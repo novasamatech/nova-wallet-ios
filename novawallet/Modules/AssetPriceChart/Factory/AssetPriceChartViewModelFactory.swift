@@ -222,7 +222,8 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
 
         guard
             let lastEntry = entries.last,
-            let priceData = params.priceData
+            let priceData = params.priceData,
+            let priceDecimal = Decimal(string: priceData.price)
         else {
             return AssetPriceChartWidgetViewModel(
                 title: title,
@@ -233,18 +234,23 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
             )
         }
 
+        let currentPriceEntry = PriceHistoryItem(
+            startedAt: lastEntry.startedAt,
+            value: priceDecimal
+        )
+
         let chartViewModel = createChartViewModel(using: entries)
         let changeViewModel = createPeriodChangeViewModel(
             priceData: priceData,
             allEntries: entries,
-            lastEntry: lastEntry,
+            lastEntry: currentPriceEntry,
             selectedPeriod: params.selectedPeriod,
             locale: params.locale
         )
 
         let currentPrice = priceFormatter(priceId: priceData.currencyId)
             .value(for: params.locale)
-            .stringFromDecimal(lastEntry.value)
+            .stringFromDecimal(priceDecimal)
 
         return AssetPriceChartWidgetViewModel(
             title: title,
