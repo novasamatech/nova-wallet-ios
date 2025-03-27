@@ -16,7 +16,7 @@ final class ParitySignerTxQrWireframe: ParitySignerTxQrWireframeProtocol {
         from view: ParitySignerTxQrViewProtocol?,
         accountId: AccountId,
         type: ParitySignerType,
-        timer: CountdownTimerMediating,
+        timer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     ) {
         guard let scanView = ParitySignerTxScanViewFactory.createView(

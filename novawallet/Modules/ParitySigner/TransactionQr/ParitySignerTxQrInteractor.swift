@@ -17,6 +17,9 @@ final class ParitySignerTxQrInteractor {
     let mortalityPeriodMilliseconds: TimeInterval
     let operationQueue: OperationQueue
 
+    private var derivedAccount: ChainAccountResponse?
+    private var cancellableStore = CancellableCallStore()
+
     init(
         signingData: Data,
         params: ParitySignerConfirmationParams,
@@ -43,7 +46,116 @@ final class ParitySignerTxQrInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func createMetadataProofWrapper(
+    deinit {
+        cancellableStore.cancel()
+    }
+}
+
+// Transaction QR generation logic
+private extension ParitySignerTxQrInteractor {
+    func provideTransactionCode(
+        for account: ChainAccountResponse,
+        qrFormat: ParitySignerQRFormat,
+        qrSize: CGSize
+    ) {
+        cancellableStore.cancel()
+
+        let transactionWrapper = createTransactionWrapper(for: account, qrFormat: qrFormat, qrSize: qrSize)
+
+        executeCancellable(
+            wrapper: transactionWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: cancellableStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(model):
+                self?.presenter?.didReceive(transactionCode: model)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: error)
+            }
+        }
+    }
+
+    func createTransactionWrapper(
+        for account: ChainAccountResponse,
+        qrFormat: ParitySignerQRFormat,
+        qrSize: CGSize
+    ) -> CompoundOperationWrapper<TransactionDisplayCode> {
+        do {
+            switch qrFormat {
+            case .rawBytes:
+                try params.mode.ensureRawBytes()
+
+                return createTransactionWithRawBytesWrapper(for: account, qrSize: qrSize)
+            case .extrinsicWithoutProof, .extrinsicWithProof:
+                let params = try params.mode.ensureExtrinsic()
+
+                let includesProof = qrFormat == .extrinsicWithProof
+
+                return createTransactionWithExtrinsicWrapper(
+                    for: account,
+                    extrinsicParams: params,
+                    qrSize: qrSize,
+                    includesProof: includesProof
+                )
+            }
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func createTransactionWithExtrinsicWrapper(
+        for account: ChainAccountResponse,
+        extrinsicParams: ParitySignerSigningMode.Extrinsic,
+        qrSize: CGSize,
+        includesProof: Bool
+    ) -> CompoundOperationWrapper<TransactionDisplayCode> {
+        let transactionWrapper: CompoundOperationWrapper<Data>
+
+        if includesProof {
+            let metadataProofWrapper = createMetadataProofWrapper(from: extrinsicParams)
+
+            let messageWrapper = messageOperationFactory.createProofBasedTransaction(
+                for: signingData,
+                metadataProofClosure: {
+                    try metadataProofWrapper.targetOperation.extractNoCancellableResultData()
+                },
+                accountId: account.accountId,
+                cryptoType: account.cryptoType,
+                genesisHash: chainId
+            )
+
+            messageWrapper.addDependency(wrapper: metadataProofWrapper)
+
+            transactionWrapper = messageWrapper.insertingHead(operations: metadataProofWrapper.allOperations)
+        } else {
+            transactionWrapper = messageOperationFactory.createMetadataBasedTransaction(
+                for: signingData,
+                accountId: account.accountId,
+                cryptoType: account.cryptoType,
+                genesisHash: chainId
+            )
+        }
+
+        let qrCodesWrapper = createQrImagesWrapper(dependingOn: transactionWrapper.targetOperation, qrSize: qrSize)
+
+        qrCodesWrapper.addDependency(wrapper: transactionWrapper)
+
+        let mergeOperation = ClosureOperation<TransactionDisplayCode> {
+            let qrCodes = try qrCodesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return TransactionDisplayCode(images: qrCodes)
+        }
+
+        mergeOperation.addDependency(qrCodesWrapper.targetOperation)
+
+        return qrCodesWrapper
+            .insertingHead(operations: transactionWrapper.allOperations)
+            .insertingTail(operation: mergeOperation)
+    }
+
+    func createMetadataProofWrapper(
         from params: ParitySignerSigningMode.Extrinsic
     ) -> CompoundOperationWrapper<Data> {
         do {
@@ -76,64 +188,41 @@ final class ParitySignerTxQrInteractor {
         }
     }
 
-    private func createTransactionWithExtrinsicWrapper(
+    func createTransactionWithRawBytesWrapper(
         for account: ChainAccountResponse,
-        params: ParitySignerSigningMode.Extrinsic
-    ) -> CompoundOperationWrapper<Data> {
-        guard params.codingFactory.supportsMetadataHash() else {
-            return messageOperationFactory.createMetadataBasedTransaction(
-                for: signingData,
-                accountId: account.accountId,
-                cryptoType: account.cryptoType,
-                genesisHash: chainId
-            )
-        }
-
-        let metadataProofWrapper = createMetadataProofWrapper(from: params)
-
-        let transactionWrapper = messageOperationFactory.createProofBasedTransaction(
+        qrSize: CGSize
+    ) -> CompoundOperationWrapper<TransactionDisplayCode> {
+        let transactionWrapper = messageOperationFactory.createMessage(
             for: signingData,
-            metadataProofClosure: {
-                try metadataProofWrapper.targetOperation.extractNoCancellableResultData()
-            },
             accountId: account.accountId,
             cryptoType: account.cryptoType,
             genesisHash: chainId
         )
 
-        transactionWrapper.addDependency(wrapper: metadataProofWrapper)
+        let qrCodesWrapper = createQrImagesWrapper(dependingOn: transactionWrapper.targetOperation, qrSize: qrSize)
 
-        return transactionWrapper.insertingHead(operations: metadataProofWrapper.allOperations)
-    }
+        qrCodesWrapper.addDependency(wrapper: transactionWrapper)
 
-    private func createTransactionWrapper(for account: ChainAccountResponse) -> CompoundOperationWrapper<Data> {
-        switch params.mode {
-        case let .extrinsic(extrinsicParams):
-            createTransactionWithExtrinsicWrapper(
-                for: account,
-                params: extrinsicParams
-            )
-        case .rawBytes:
-            messageOperationFactory.createMessage(
-                for: signingData,
-                accountId: account.accountId,
-                cryptoType: account.cryptoType,
-                genesisHash: chainId
-            )
+        let mergeOperation = ClosureOperation<TransactionDisplayCode> {
+            let qrCodes = try qrCodesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return TransactionDisplayCode(images: qrCodes)
         }
+
+        mergeOperation.addDependency(qrCodesWrapper.targetOperation)
+
+        return qrCodesWrapper
+            .insertingHead(operations: transactionWrapper.allOperations)
+            .insertingTail(operation: mergeOperation)
     }
 
-    private func provideTransactionCode(
-        for size: CGSize,
-        account: ChainAccountResponse
-    ) {
-        let transactionWrapper = createTransactionWrapper(for: account)
-
+    func createQrImagesWrapper(
+        dependingOn dataOperation: BaseOperation<Data>,
+        qrSize: CGSize
+    ) -> CompoundOperationWrapper<[UIImage]> {
         let qrPayloadWrapper = multipartQrOperationFactory.createFromPayloadClosure {
-            try transactionWrapper.targetOperation.extractNoCancellableResultData()
+            try dataOperation.extractNoCancellableResultData()
         }
-
-        qrPayloadWrapper.addDependency(wrapper: transactionWrapper)
 
         let qrCreationOperation = OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -141,78 +230,108 @@ final class ParitySignerTxQrInteractor {
             let paylods = try qrPayloadWrapper.targetOperation.extractNoCancellableResultData()
 
             return paylods.map { payload in
-                let operation = QRCreationOperation(payload: payload, qrSize: size)
+                let operation = QRCreationOperation(payload: payload, qrSize: qrSize)
                 return CompoundOperationWrapper(targetOperation: operation)
             }
         }.longrunOperation()
 
         qrCreationOperation.addDependency(qrPayloadWrapper.targetOperation)
 
-        let expirationTime = mortalityPeriodMilliseconds.seconds
-
-        qrCreationOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let qrCodes = try qrCreationOperation.extractNoCancellableResultData()
-                    let txCode = TransactionDisplayCode(images: qrCodes, expirationTime: expirationTime)
-                    self?.presenter?.didReceive(transactionCode: txCode)
-                } catch {
-                    self?.presenter?.didReceive(error: error)
-                }
-            }
-        }
-
-        let operations = transactionWrapper.allOperations + qrPayloadWrapper.allOperations + [qrCreationOperation]
-
-        operationQueue.addOperations(operations, waitUntilFinished: false)
+        return qrPayloadWrapper.insertingTail(operation: qrCreationOperation)
     }
+}
 
-    private func subscribeChains(for chainId: ChainModel.Id, qrSize: CGSize) {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
-            if let chain = changes.mergeToDict([String: ChainModel]())[chainId] {
-                self?.provideDisplayWalletAndQr(for: chain, qrSize: qrSize)
-            }
-        }
-    }
-
-    private func provideDisplayWalletAndQr(for chain: ChainModel, qrSize: CGSize) {
+// Setup logic
+private extension ParitySignerTxQrInteractor {
+    func setupDisplayWallet(for chain: ChainModel) {
         let walletFetchOperation = walletRepository.fetchOperation(by: metaId, options: RepositoryFetchOptions())
 
-        walletFetchOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let wallet = try walletFetchOperation.extractNoCancellableResultData()
+        execute(
+            operation: walletFetchOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            do {
+                let wallet = try result.get()
 
-                    guard
-                        let accountResponse = wallet?.fetchMetaChainAccount(
-                            for: chain.accountRequest()
-                        ) else {
-                        self?.presenter?.didReceive(error: ChainAccountFetchingError.accountNotExists)
-                        return
-                    }
-
-                    let walletDisplayAddress = try accountResponse.toWalletDisplayAddress()
-
-                    let model = ChainWalletDisplayAddress(
-                        chain: chain,
-                        walletDisplayAddress: walletDisplayAddress
-                    )
-
-                    self?.presenter?.didReceive(chainWallet: model)
-
-                    self?.provideTransactionCode(for: qrSize, account: accountResponse.chainAccount)
-                } catch {
-                    self?.presenter?.didReceive(error: error)
+                guard
+                    let accountResponse = wallet?.fetchMetaChainAccount(
+                        for: chain.accountRequest()
+                    ) else {
+                    self?.presenter?.didReceive(error: ChainAccountFetchingError.accountNotExists)
+                    return
                 }
+
+                self?.completeSetup(for: chain, account: accountResponse)
+            } catch {
+                self?.presenter?.didReceive(error: error)
             }
         }
+    }
 
-        operationQueue.addOperation(walletFetchOperation)
+    func getPreferredFormats() -> ParitySignerPreferredQRFormats {
+        switch params.mode {
+        case .rawBytes:
+            return [.rawBytes]
+        case let .extrinsic(extrinsic):
+            if extrinsic.canIncludeProof {
+                return [.extrinsicWithProof, .extrinsicWithoutProof]
+            } else {
+                return [.extrinsicWithoutProof]
+            }
+        }
+    }
+
+    func completeSetup(for chain: ChainModel, account: MetaChainAccountResponse) {
+        do {
+            let walletDisplayAddress = try account.toWalletDisplayAddress()
+
+            let chainWalletModel = ChainWalletDisplayAddress(
+                chain: chain,
+                walletDisplayAddress: walletDisplayAddress
+            )
+
+            derivedAccount = account.chainAccount
+
+            let txExpirationTime: TimeInterval? = switch params.mode {
+            case .extrinsic:
+                mortalityPeriodMilliseconds
+            case .rawBytes:
+                nil
+            }
+
+            let model = ParitySignerTxQrSetupModel(
+                chainWallet: chainWalletModel,
+                preferredFormats: getPreferredFormats(),
+                txExpirationTime: txExpirationTime?.seconds
+            )
+
+            presenter?.didCompleteSetup(model: model)
+        } catch {
+            presenter?.didReceive(error: error)
+        }
     }
 }
 
 extension ParitySignerTxQrInteractor: ParitySignerTxQrInteractorInputProtocol {
-    func setup(qrSize: CGSize) {
-        subscribeChains(for: chainId, qrSize: qrSize)
+    func setup() {
+        do {
+            let chain = try chainRegistry.getChainOrError(for: chainId)
+            setupDisplayWallet(for: chain)
+        } catch {
+            presenter?.didReceive(error: error)
+        }
+    }
+
+    func generateQr(with format: ParitySignerQRFormat, qrSize: CGSize) {
+        guard let derivedAccount else {
+            return
+        }
+
+        provideTransactionCode(
+            for: derivedAccount,
+            qrFormat: format,
+            qrSize: qrSize
+        )
     }
 }

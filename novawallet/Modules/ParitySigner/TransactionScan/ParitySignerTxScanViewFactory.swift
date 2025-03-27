@@ -6,7 +6,7 @@ struct ParitySignerTxScanViewFactory {
         from signingData: Data,
         accountId: AccountId,
         type: ParitySignerType,
-        expirationTimer: CountdownTimerMediating,
+        expirationTimer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxScanViewProtocol? {
         let interactor = ParitySignerTxScanInteractor(signingData: signingData, accountId: accountId)
@@ -38,7 +38,7 @@ struct ParitySignerTxScanViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.paritySignerScanTitle(
+            R.string.localizable.paritySignerScanTitle_9_7_0(
                 type.getName(for: locale),
                 preferredLanguages: locale.rLanguages
             )
