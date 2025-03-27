@@ -8,7 +8,7 @@ typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewMode
 
 enum ModalPickerFactory {
     static func createActionsList(
-        title: LocalizableResource<String>,
+        title: LocalizableResource<String>?,
         actions: [LocalizableResource<ActionManageViewModel>],
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -222,49 +222,6 @@ enum ModalPickerFactory {
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(accounts.count) * viewController.cellHeight +
-            viewController.footerHeight
-        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
-
-        viewController.localizationManager = LocalizationManager.shared
-
-        return viewController
-    }
-
-    static func createPickerForList(
-        _ items: [PurchaseAction],
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) -> UIViewController? {
-        guard !items.isEmpty else {
-            return nil
-        }
-
-        let viewController: ModalPickerViewController<PurchaseProviderPickerTableViewCell, IconWithTitleViewModel>
-            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
-
-        viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.walletAssetBuyWith(preferredLanguages: locale.rLanguages)
-        }
-
-        viewController.cellNib = UINib(resource: R.nib.purchaseProviderPickerTableViewCell)
-        viewController.delegate = delegate
-        viewController.modalPresentationStyle = .custom
-        viewController.context = context
-        viewController.selectedIndex = NSNotFound
-
-        viewController.viewModels = items.map { type in
-            LocalizableResource { _ in
-                IconWithTitleViewModel(
-                    icon: type.icon,
-                    title: type.title
-                )
-            }
-        }
-
-        let factory = ModalSheetPresentationFactory(configuration: .nova)
-        viewController.modalTransitioningFactory = factory
-
-        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
             viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 

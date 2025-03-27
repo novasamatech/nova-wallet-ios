@@ -28,15 +28,54 @@ extension TokenOperation {
         }
     }
 
-    static func checkBuyOperationAvailable(
-        purchaseActions: [PurchaseAction],
+    static func checkRampOperationsAvailable(
+        for rampActions: [RampAction],
+        rampType: RampActionType,
         walletType: MetaAccountModelType,
         chainAsset: ChainAsset
-    ) -> BuyAvailableCheckResult {
-        guard !purchaseActions.isEmpty else {
-            return .noBuyOptions
+    ) -> RampAvailableCheckResult {
+        let filteredActions = rampActions.filter { $0.type == rampType }
+
+        guard !filteredActions.isEmpty else {
+            return .noRampOptions
         }
 
+        return switch rampType {
+        case .onRamp:
+            checkBuyOperationAvailable(
+                walletType: walletType,
+                chainAsset: chainAsset
+            )
+        case .offRamp:
+            checkSellOperationAvailable(
+                walletType: walletType,
+                chainAsset: chainAsset
+            )
+        }
+    }
+
+    private static func checkBuyOperationAvailable(
+        walletType: MetaAccountModelType,
+        chainAsset: ChainAsset
+    ) -> RampAvailableCheckResult {
+        switch walletType {
+        case .secrets, .paritySigner, .polkadotVault, .proxied:
+            return .common(.available)
+        case .ledger, .genericLedger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                return .common(.ledgerNotSupported)
+            } else {
+                return .common(.available)
+            }
+        case .watchOnly:
+            return .common(.noSigning)
+        }
+    }
+
+    private static func checkSellOperationAvailable(
+        walletType: MetaAccountModelType,
+        chainAsset: ChainAsset
+    ) -> RampAvailableCheckResult {
         switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             return .common(.available)
@@ -65,15 +104,15 @@ enum ReceiveAvailableCheckResult {
     }
 }
 
-enum BuyAvailableCheckResult {
+enum RampAvailableCheckResult {
     case common(OperationCheckCommonResult)
-    case noBuyOptions
+    case noRampOptions
 
     var available: Bool {
         switch self {
         case let .common(operationCheckCommonResult):
             return operationCheckCommonResult == .available
-        case .noBuyOptions:
+        case .noRampOptions:
             return false
         }
     }

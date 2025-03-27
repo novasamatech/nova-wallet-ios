@@ -3,8 +3,9 @@ import SoraFoundation
 import SoraKeystore
 
 enum AssetOperationViewFactory {
-    static func createBuyView(
-        for stateObservable: AssetListModelObservable
+    static func createRampView(
+        for stateObservable: AssetListModelObservable,
+        action: RampActionType
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -26,14 +27,24 @@ enum AssetOperationViewFactory {
             return nil
         }
 
-        let presenter = createBuyPresenter(
+        let rampProvider = RampAggregator.defaultAggregator()
+        let wireframe = RampAssetOperationWireframe(stateObservable: stateObservable)
+
+        let presenterDependenciess = RampPresenterDependencies(
             stateObservable: stateObservable,
+            selectedAccount: selectedMetaAccount,
+            rampProvider: rampProvider,
+            rampType: action,
+            currencyManager: currencyManager,
             viewModelFactory: viewModelFactory,
-            wallet: selectedMetaAccount
+            wireframe: wireframe
         )
 
-        let title: LocalizableResource<String> = .init {
-            R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages)
+        let presenter = createRampPresenter(dependencies: presenterDependenciess)
+
+        let title: LocalizableResource<String> = switch action {
+        case .offRamp: .init { R.string.localizable.assetOperationSellTitle(preferredLanguages: $0.rLanguages) }
+        case .onRamp: .init { R.string.localizable.assetOperationBuyTitle(preferredLanguages: $0.rLanguages) }
         }
 
         let view = AssetOperationViewController(
@@ -193,46 +204,56 @@ enum AssetOperationViewFactory {
         return presenter
     }
 
-    private static func createBuyPresenter(
-        stateObservable: AssetListModelObservable,
-        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
-        wallet: MetaAccountModel
-    ) -> BuyAssetOperationPresenter {
-        let purchaseProvider = PurchaseAggregator.defaultAggregator()
-
+    private static func createRampPresenter(
+        dependencies: RampPresenterDependencies
+    ) -> RampAssetOperationPresenter {
         let filter: ChainAssetsFilter = { chainAsset in
             guard
                 chainAsset.chain.syncMode.enabled(),
-                let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId
+                let accountId = dependencies.selectedAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
             else {
                 return false
             }
 
-            let purchaseActions = purchaseProvider.buildPurchaseActions(
+            let rampActions = dependencies.rampProvider.buildRampActions(
                 for: chainAsset,
                 accountId: accountId
-            )
-            return !purchaseActions.isEmpty
+            ).filter { $0.type == dependencies.rampType }
+
+            return !rampActions.isEmpty
         }
 
         let interactor = AssetsSearchInteractor(
-            stateObservable: stateObservable,
+            stateObservable: dependencies.stateObservable,
             filter: filter,
             settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
 
-        let presenter = BuyAssetOperationPresenter(
+        let presenter = RampAssetOperationPresenter(
             interactor: interactor,
-            viewModelFactory: viewModelFactory,
-            selectedAccount: wallet,
-            purchaseProvider: purchaseProvider,
-            wireframe: BuyAssetOperationWireframe(stateObservable: stateObservable),
+            viewModelFactory: dependencies.viewModelFactory,
+            selectedAccount: dependencies.selectedAccount,
+            rampProvider: dependencies.rampProvider,
+            rampType: dependencies.rampType,
+            wireframe: dependencies.wireframe,
             localizationManager: LocalizationManager.shared
         )
 
         interactor.presenter = presenter
 
         return presenter
+    }
+}
+
+private extension AssetOperationViewFactory {
+    struct RampPresenterDependencies {
+        let stateObservable: AssetListModelObservable
+        let selectedAccount: MetaAccountModel
+        let rampProvider: RampProviderProtocol
+        let rampType: RampActionType
+        let currencyManager: CurrencyManager
+        let viewModelFactory: AssetListAssetViewModelFactoryProtocol
+        let wireframe: RampAssetOperationWireframeProtocol
     }
 }

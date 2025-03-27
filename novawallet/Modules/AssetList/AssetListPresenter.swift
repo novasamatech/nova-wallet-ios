@@ -517,7 +517,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            self?.buy()
+            self?.wireframe.showRamp(
+                from: self?.view,
+                action: .onRamp
+            )
         }
         wireframe.showSendTokens(
             from: view,
@@ -530,8 +533,16 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showRecieveTokens(from: view)
     }
 
-    func buy() {
-        wireframe.showBuyTokens(from: view)
+    func buySell() {
+        wireframe.presentRampActionsSheet(
+            from: view,
+            delegate: self
+        ) { [weak self] rampAction in
+            self?.wireframe.showRamp(
+                from: self?.view,
+                action: rampAction
+            )
+        }
     }
 
     func swap() {
@@ -654,6 +665,18 @@ extension AssetListPresenter: BannersModuleOutputProtocol {
 
     func didUpdateContent(state: BannersState) {
         provideBanners(state: state)
+    }
+}
+
+// MARK:
+
+extension AssetListPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let modalPickerContext = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        modalPickerContext.process(selectedIndex: index)
     }
 }
 

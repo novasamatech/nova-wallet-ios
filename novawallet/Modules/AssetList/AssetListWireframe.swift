@@ -113,8 +113,14 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showBuyTokens(from view: AssetListViewProtocol?) {
-        guard let assetOperationView = AssetOperationViewFactory.createBuyView(for: assetListModelObservable) else {
+    func showRamp(
+        from view: (any AssetListViewProtocol)?,
+        action: RampActionType
+    ) {
+        guard let assetOperationView = AssetOperationViewFactory.createRampView(
+            for: assetListModelObservable,
+            action: action
+        ) else {
             return
         }
 

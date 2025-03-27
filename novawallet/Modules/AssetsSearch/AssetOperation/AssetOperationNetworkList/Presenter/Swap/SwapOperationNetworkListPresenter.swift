@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-class SwapOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
+final class SwapOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let wireframe: SwapAssetsOperationWireframeProtocol
 
     let selectClosure: (ChainAsset) -> Void
