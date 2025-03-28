@@ -123,10 +123,15 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
             wireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                deviceModel: deviceModel,
-                cancelClosure: {},
-                retryClosure: retryClosure
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: deviceModel,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: retryClosure
+                )
             )
         } else {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale, retryAction: retryClosure)

@@ -51,16 +51,21 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
             baseWireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                deviceModel: device.model,
-                cancelClosure: {},
-                retryClosure: { [weak self] in
-                    guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
-                        return
-                    }
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: device.model,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: { [weak self] in
+                        guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
+                            return
+                        }
 
-                    self?.selectDevice(at: deviceIndex)
-                }
+                        self?.selectDevice(at: deviceIndex)
+                    }
+                )
             )
         } else {
             _ = baseWireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)

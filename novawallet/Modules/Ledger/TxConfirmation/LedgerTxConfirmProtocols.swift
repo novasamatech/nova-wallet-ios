@@ -20,8 +20,7 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
-        deviceName: String,
-        deviceModel: LedgerDeviceModel,
+        deviceInfo: LedgerDeviceDisplayInfo,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping () -> Void
     )

@@ -123,19 +123,23 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             wireframe?.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                deviceModel: device.model,
-                migrationViewModel: createMigrationIfNeeded(for: ledgerError),
-                cancelClosure: { [weak self] in
-                    self?.performCancellation()
-                },
-                retryClosure: { [weak self] in
-                    guard let index = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
-                        return
-                    }
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: device.model,
+                    migrationViewModel: createMigrationIfNeeded(for: ledgerError)
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: { [weak self] in
+                        self?.performCancellation()
+                    },
+                    retryClosure: { [weak self] in
+                        guard let index = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
+                            return
+                        }
 
-                    self?.selectDevice(at: index)
-                }
+                        self?.selectDevice(at: index)
+                    }
+                )
             )
         } else if
             let signatureError = error as? LedgerTxConfirmInteractorError,
@@ -159,8 +163,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             wireframe?.transitToTransactionReview(
                 on: view,
                 timer: timer,
-                deviceName: device.name,
-                deviceModel: device.model,
+                deviceInfo: device.deviceInfo,
                 migrationViewModel: createMigrationWillBeUnavailableIfNeeded()
             ) { [weak self] in
                 self?.stopConnecting()

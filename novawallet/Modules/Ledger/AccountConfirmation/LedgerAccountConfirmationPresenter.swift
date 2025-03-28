@@ -82,10 +82,15 @@ final class LedgerAccountConfirmationPresenter {
             wireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: chain.name,
-                deviceModel: deviceModel,
-                cancelClosure: {},
-                retryClosure: retryClosure
+                context: LedgerErrorPresentableContext(
+                    networkName: chain.name,
+                    deviceModel: deviceModel,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: retryClosure
+                )
             )
         } else {
             wireframe.closeMessageSheet(on: view)

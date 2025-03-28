@@ -10,8 +10,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
-        deviceName: String,
-        deviceModel: LedgerDeviceModel,
+        deviceInfo: LedgerDeviceDisplayInfo,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping () -> Void
     ) {
@@ -22,8 +21,8 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         guard
             let transactionSignView = LedgerMessageSheetViewFactory.createReviewLedgerTransactionView(
                 for: timer,
-                deviceName: deviceName,
-                deviceModel: deviceModel,
+                deviceName: deviceInfo.deviceName,
+                deviceModel: deviceInfo.deviceModel,
                 cancelClosure: cancelClosure,
                 migrationViewModel: migrationViewModel
             ) else {

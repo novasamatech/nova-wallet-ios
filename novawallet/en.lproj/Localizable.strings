@@ -1800,6 +1800,8 @@
 "common.ledger.model.nano.x" = "Nano X";
 "common.ledger.model.flex" = "Flex";
 "common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Press confirm button on your %@ to approve the address";
+"ledger.flex.stax.sign.transaction.details" = "Hold confirm button on your %@ to approve the transaction";
 "common.manage.debit.card" = "Manage Debit Card";
 "common.estimated.timer" = "Estimated ~%@";
 "card.open.pending.sheet.title" = "Your card is being issued!";
