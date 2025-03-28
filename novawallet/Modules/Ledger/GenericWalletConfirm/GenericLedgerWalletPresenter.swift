@@ -41,19 +41,8 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
 
         view?.didReceive(descriptionViewModel: viewModel)
     }
-}
 
-extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol {
-    func setup() {
-        provideDescriptionViewModel()
-        interactor.setup()
-    }
-
-    func select(viewModel: ChainAccountViewModelItem) {
-        performSelection(of: viewModel, wireframe: wireframe, locale: selectedLocale)
-    }
-
-    func proceed() {
+    private func confirmAccount() {
         guard let address = account?.address else {
             return
         }
@@ -68,6 +57,21 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
         ) { [weak self] in
             self?.interactor.cancelRequest()
         }
+    }
+}
+
+extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol {
+    func setup() {
+        provideDescriptionViewModel()
+        interactor.setup()
+    }
+
+    func select(viewModel: ChainAccountViewModelItem) {
+        performSelection(of: viewModel, wireframe: wireframe, locale: selectedLocale)
+    }
+
+    func proceed() {
+        confirmAccount()
     }
 }
 
@@ -115,7 +119,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
             internalError = confirmError
 
             retryClosure = { [weak self] in
-                self?.interactor.confirmAccount()
+                self?.confirmAccount()
             }
         }
 
