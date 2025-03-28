@@ -9,7 +9,6 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
 
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
-    let browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
@@ -20,21 +19,17 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
 
-    private var dAppNavigationTask: DAppListNavigationTask?
-
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
-        browserNavigationTaskFactory: DAppListNavigationTaskFactoryProtocol,
         initialWallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.browserNavigationTaskFactory = browserNavigationTaskFactory
         wallet = initialWallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
@@ -103,34 +98,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskById(
-            id,
-            wallet: wallet,
-            favoritesProvider: { [weak self] in self?.favorites },
-            dAppResultProvider: { [weak self] in self?.dAppsResult }
-        )
-
-        dAppNavigationTask?(
-            cleaner: self,
-            view: view
-        )
-    }
-
-    func provideNavigation(for model: DAppNavigation) {
-        guard let wallet else {
-            return
-        }
-
-        dAppNavigationTask = browserNavigationTaskFactory.createDAppNavigationTaskByModel(
-            model,
-            wallet: wallet,
-            dAppResultProvider: { [weak self] in self?.dAppsResult }
-        )
-
-        dAppNavigationTask?(
-            cleaner: self,
-            view: view
-        )
+        wireframe.openBrowser(with: id)
     }
 
     func seeAllFavorites() {
@@ -169,11 +137,6 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         self.dAppsResult = dAppsResult
         randomizationSeed = Int.random(in: 1 ..< 100)
 
-        dAppNavigationTask?(
-            cleaner: self,
-            view: view
-        )
-
         provideSections()
     }
 
@@ -193,17 +156,7 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard let wallet else { return }
-
-        let navigationTask = browserNavigationTaskFactory.createSearchResultNavigationTask(
-            result,
-            wallet: wallet
-        )
-
-        navigationTask(
-            cleaner: self,
-            view: view
-        )
+        wireframe.openBrowser(with: result)
     }
 }
 
@@ -224,14 +177,6 @@ extension DAppListPresenter: BannersModuleOutputProtocol {
 
     func didUpdateContent(state _: BannersState) {
         provideSections()
-    }
-}
-
-// MARK: DAppListNavigationTaskCleaning
-
-extension DAppListPresenter: DAppListNavigationTaskCleaning {
-    func cleanCompletedTask() {
-        dAppNavigationTask = nil
     }
 }
 

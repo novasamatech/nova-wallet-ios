@@ -208,6 +208,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.swap()
     }
 
+    func actionCardOpen() {
+        presenter.presentCard()
+    }
+
     func actionChangeAssetListStyle() {
         presenter.toggleAssetListStyle()
     }

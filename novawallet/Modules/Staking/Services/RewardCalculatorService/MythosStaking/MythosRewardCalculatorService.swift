@@ -34,6 +34,7 @@ final class MythosRewardCalculatorService: CollatorStakingRewardService<MythosRe
         runtimeService: RuntimeProviderProtocol,
         collatorService: MythosCollatorServiceProtocol,
         operationQueue: OperationQueue,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -49,7 +50,7 @@ final class MythosRewardCalculatorService: CollatorStakingRewardService<MythosRe
             qos: .userInitiated
         )
 
-        super.init(logger: logger, syncQueue: syncQueue)
+        super.init(eventCenter: eventCenter, logger: logger, syncQueue: syncQueue)
     }
 
     override func start() {
@@ -167,7 +168,10 @@ private extension MythosRewardCalculatorService {
                 extraReward: extraReward
             )
 
-            updateSnapshotAndNotify(snapshot)
+            updateSnapshotAndNotify(
+                snapshot,
+                chainId: chainAsset.chainAssetId.chainId
+            )
         }
     }
 }

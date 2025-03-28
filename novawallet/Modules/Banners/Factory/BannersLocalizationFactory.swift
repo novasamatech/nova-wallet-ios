@@ -2,7 +2,10 @@ import Foundation
 import Operation_iOS
 
 protocol BannersLocalizationFactoryProtocol {
-    func createWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersLocalizedResources>
+    func createWrapper(
+        for locale: Locale,
+        availableWidth: CGFloat
+    ) -> CompoundOperationWrapper<BannersLocalizedResources>
 }
 
 class BannersLocalizationFactory {
@@ -52,14 +55,15 @@ private extension BannersLocalizationFactory {
 
     func createSingleBannerMapWrapper(
         bannerId: String,
-        resources: BannerLocalizedResourcesResponse
+        resources: BannerLocalizedResourcesResponse,
+        availableWidth: CGFloat
     ) -> CompoundOperationWrapper<BannersLocalizedResource> {
         let text = [
             resources.title,
             resources.details
         ]
         let estimationOperation = textHeightOperationFactory.createOperation(
-            for: .banner(text: text)
+            for: .banner(text: text, availableWidth: availableWidth)
         )
 
         let mappingOperation = ClosureOperation<BannersLocalizedResource> {
@@ -84,7 +88,8 @@ private extension BannersLocalizationFactory {
     }
 
     func createMapWrapper(
-        dependingOn fetchOperation: BaseOperation<BannersLocalizedResourcesResponse>
+        dependingOn fetchOperation: BaseOperation<BannersLocalizedResourcesResponse>,
+        availableWidth: CGFloat
     ) -> BaseOperation<[BannersLocalizedResource]> {
         OperationCombiningService(operationManager: operationManager) { [weak self] in
             guard let self else {
@@ -96,7 +101,8 @@ private extension BannersLocalizationFactory {
             return localizedResources.map {
                 self.createSingleBannerMapWrapper(
                     bannerId: $0.key,
-                    resources: $0.value
+                    resources: $0.value,
+                    availableWidth: availableWidth
                 )
             }
         }.longrunOperation()
@@ -106,7 +112,10 @@ private extension BannersLocalizationFactory {
 // MARK: BannersLocalizationFactoryProtocol
 
 extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
-    func createWrapper(for locale: Locale) -> CompoundOperationWrapper<BannersLocalizedResources> {
+    func createWrapper(
+        for locale: Locale,
+        availableWidth: CGFloat
+    ) -> CompoundOperationWrapper<BannersLocalizedResources> {
         guard let url = createLocalizationURL(for: locale) else {
             return .createWithError(BannersLocalizationFetchErrors.badURL)
         }
@@ -114,7 +123,10 @@ extension BannersLocalizationFactory: BannersLocalizationFactoryProtocol {
         let fetchOperation: BaseOperation<BannersLocalizedResourcesResponse>
         fetchOperation = fetchOperationFactory.createFetchOperation(from: url)
 
-        let mapOperation = createMapWrapper(dependingOn: fetchOperation)
+        let mapOperation = createMapWrapper(
+            dependingOn: fetchOperation,
+            availableWidth: availableWidth
+        )
 
         mapOperation.addDependency(fetchOperation)
 

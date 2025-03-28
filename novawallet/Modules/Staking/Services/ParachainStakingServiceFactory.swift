@@ -89,6 +89,7 @@ final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, Parac
                 repositoryFactory: repositoryFactory,
                 operationQueue: operationQueue,
                 assetPrecision: assetPrecision,
+                eventCenter: eventCenter,
                 logger: logger
             )
         case .turing:
@@ -125,6 +126,7 @@ final class ParachainStakingServiceFactory: CollatorStakingServiceFactory, Parac
                 repositoryFactory: repositoryFactory,
                 operationQueue: operationQueue,
                 assetPrecision: assetPrecision,
+                eventCenter: eventCenter,
                 logger: logger
             )
         default:

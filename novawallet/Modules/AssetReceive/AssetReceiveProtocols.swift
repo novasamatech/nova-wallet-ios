@@ -15,6 +15,7 @@ protocol AssetReceivePresenterProtocol: AnyObject {
     func set(qrCodeSize: CGSize)
     func share()
     func copyAddress()
+    func viewAddressFormats()
 }
 
 protocol AssetReceiveInteractorInputProtocol: AnyObject {
@@ -28,5 +29,11 @@ protocol AssetReceiveInteractorOutputProtocol: AnyObject {
     func didReceive(error: AssetReceiveInteractorError)
 }
 
-protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable,
-    ErrorPresentable, AlertPresentable, CommonRetryable, ModalAlertPresenting, CopyAddressPresentable {}
+protocol AssetReceiveWireframeProtocol: AnyObject,
+    SharingPresentable,
+    ErrorPresentable,
+    AlertPresentable,
+    CommonRetryable,
+    ModalAlertPresenting,
+    CopyAddressPresentable,
+    UnifiedAddressPopupPresentable {}
