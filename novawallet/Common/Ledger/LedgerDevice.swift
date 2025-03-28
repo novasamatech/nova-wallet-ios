@@ -37,10 +37,7 @@ final class BluetoothLedgerDevice: LedgerDeviceProtocol {
 
     let transport = LedgerTransport()
 
-    init(
-        peripheral: CBPeripheral,
-        model: LedgerDeviceModel
-    ) {
+    init(peripheral: CBPeripheral, model: LedgerDeviceModel) {
         self.peripheral = peripheral
         self.model = model
     }
@@ -53,6 +50,7 @@ struct SupportedBluetoothDevice {
     let model: LedgerDeviceModel
 }
 
+// swiftlint:disable:next line_length
 /* We can find these and new devices here: https://github.com/LedgerHQ/device-sdk-ts/blob/develop/packages/device-management-kit/src/api/device-model/data/StaticDeviceModelDataSource.ts */
 extension SupportedBluetoothDevice {
     static var ledgers: [CBUUID: SupportedBluetoothDevice] {

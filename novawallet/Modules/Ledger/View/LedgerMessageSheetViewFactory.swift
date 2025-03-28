@@ -21,19 +21,10 @@ enum LedgerMessageSheetViewFactory {
             R.string.localizable.ledgerAddressVerifyMessage(deviceName, preferredLanguages: locale.rLanguages)
         }
 
-        let graphicsViewModel = switch deviceModel {
-        case .flex:
-            R.image.imageLedgerApproveFlex()
-        case .stax:
-            R.image.imageLedgerApproveStax()
-        case .nanoX, .unknown:
-            R.image.imageLedgerApproveNanoX()
-        }
-
         let viewModel = MessageSheetViewModel<UIImage, String>(
             title: title,
             message: message,
-            graphics: graphicsViewModel,
+            graphics: deviceModel.approveViewModel,
             content: address.twoLineAddress,
             mainAction: nil,
             secondaryAction: nil
@@ -74,20 +65,11 @@ enum LedgerMessageSheetViewFactory {
             R.string.localizable.ledgerSignTransactionDetails(deviceName, preferredLanguages: locale.rLanguages)
         }
 
-        let graphicsViewModel = switch deviceModel {
-        case .flex:
-            R.image.imageLedgerApproveFlex()
-        case .stax:
-            R.image.imageLedgerApproveStax()
-        case .nanoX, .unknown:
-            R.image.imageLedgerApproveNanoX()
-        }
-
         if let migrationViewModel {
             let viewModel = MessageSheetViewModel<UIImage, MessageSheetTimerWithBannerView.ContentViewModel>(
                 title: title,
                 message: message,
-                graphics: graphicsViewModel,
+                graphics: deviceModel.approveViewModel,
                 content: .init(timerViewModel: timerMediator, bannerViewModel: migrationViewModel),
                 mainAction: nil,
                 secondaryAction: nil
@@ -111,7 +93,7 @@ enum LedgerMessageSheetViewFactory {
             let viewModel = MessageSheetViewModel<UIImage, CountdownTimerMediator>(
                 title: title,
                 message: message,
-                graphics: graphicsViewModel,
+                graphics: deviceModel.approveViewModel,
                 content: timerMediator,
                 mainAction: nil,
                 secondaryAction: nil
@@ -142,15 +124,6 @@ enum LedgerMessageSheetViewFactory {
         retryClosure: MessageSheetCallback? = nil,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?
     ) -> MessageSheetViewProtocol? {
-        let image = switch deviceModel {
-        case .flex:
-            R.image.imageLedgerWarningFlex()
-        case .stax:
-            R.image.imageLedgerWarningStax()
-        case .nanoX, .unknown:
-            R.image.imageLedgerWarningNanoX()
-        }
-
         let mainAction: MessageSheetAction
 
         if let retryClosure = retryClosure {
@@ -171,7 +144,7 @@ enum LedgerMessageSheetViewFactory {
             let viewModel = MessageSheetViewModel<UIImage, MessageSheetMigrationBannerView.ContentViewModel>(
                 title: title,
                 message: message,
-                graphics: image,
+                graphics: deviceModel.warningViewModel,
                 content: migrationViewModel,
                 mainAction: mainAction,
                 secondaryAction: secondaryAction
@@ -189,7 +162,7 @@ enum LedgerMessageSheetViewFactory {
             let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
                 title: title,
                 message: message,
-                graphics: image,
+                graphics: deviceModel.warningViewModel,
                 content: nil,
                 mainAction: mainAction,
                 secondaryAction: secondaryAction

@@ -64,10 +64,16 @@ final class LedgerConnectionManager: NSObject {
         device.transport.reset()
     }
 
-    private func didDiscoverDevice(_ peripheral: CBPeripheral) {
+    private func didDiscoverDevice(_ peripheral: CBPeripheral, advertisementData: [String: Any]) {
         if bluetoothDevice(id: peripheral.identifier) == nil {
-            let deviceModel: LedgerDeviceModel = peripheral.services?.compactMap {
-                supportedDevices[$0.uuid]?.model
+            // if peripheral is not connected but discovered
+            // the service id is unavailble and extracted from the advertisement list
+            let advertisedServiceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID]
+            let connectedServiceIds = peripheral.services?.compactMap(\.uuid) ?? []
+            let allServiceIds = connectedServiceIds + (advertisedServiceIds ?? [])
+
+            let deviceModel: LedgerDeviceModel = allServiceIds.compactMap {
+                supportedDevices[$0]?.model
             }.first ?? .unknown
 
             let device = BluetoothLedgerDevice(
@@ -142,7 +148,7 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
         switch central.state {
         case .poweredOn:
             centralManager?.retrieveConnectedPeripherals(withServices: supportedDeviceUUIDs).forEach { peripheral in
-                didDiscoverDevice(peripheral)
+                didDiscoverDevice(peripheral, advertisementData: [:])
             }
             centralManager?.scanForPeripherals(withServices: supportedDeviceUUIDs)
         case .unauthorized:
@@ -159,12 +165,12 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
     func centralManager(
         _: CBCentralManager,
         didDiscover peripheral: CBPeripheral,
-        advertisementData _: [String: Any],
+        advertisementData: [String: Any],
         rssi _: NSNumber
     ) {
         logger.debug("Did discover device: \(peripheral)")
 
-        didDiscoverDevice(peripheral)
+        didDiscoverDevice(peripheral, advertisementData: advertisementData)
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {

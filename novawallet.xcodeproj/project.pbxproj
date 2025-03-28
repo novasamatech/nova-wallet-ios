@@ -288,6 +288,7 @@
 		0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18AF2BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift */; };
 		0C2B18B22BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */; };
 		0C2B18B42BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */; };
+		0C2D1E3B2D96E1920030E43C /* LedgerDeviceModel+Graphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+Graphics.swift */; };
 		0C2DA89A2CC21419001F79C8 /* GraphQuotableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8992CC21419001F79C8 /* GraphQuotableEdge.swift */; };
 		0C2DA89C2CC215D0001F79C8 /* AssetExchangeGraphEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA89B2CC215D0001F79C8 /* AssetExchangeGraphEdge.swift */; };
 		0C2DA89E2CC21853001F79C8 /* CrosschainExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA89D2CC21853001F79C8 /* CrosschainExchangeEdge.swift */; };
@@ -5993,6 +5994,7 @@
 		0C2B3C9875FDA7EE8D168900 /* ParaStkYieldBoostSetupWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupWireframe.swift; sourceTree = "<group>"; };
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
 		0C2BD7CE1EF80FCD3569BD44 /* SwapRouteDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapRouteDetailsProtocols.swift; sourceTree = "<group>"; };
+		0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+Graphics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LedgerDeviceModel+Graphics.swift"; sourceTree = "<group>"; };
 		0C2DA8992CC21419001F79C8 /* GraphQuotableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQuotableEdge.swift; sourceTree = "<group>"; };
 		0C2DA89B2CC215D0001F79C8 /* AssetExchangeGraphEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphEdge.swift; sourceTree = "<group>"; };
 		0C2DA89D2CC21853001F79C8 /* CrosschainExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainExchangeEdge.swift; sourceTree = "<group>"; };
@@ -19569,6 +19571,7 @@
 				0C71047A2C2AFF6D00487E64 /* LedgerWalletType.swift */,
 				0C71049F2C2C6EED00487E64 /* LedgerSubstrateApp.swift */,
 				0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */,
+				0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+Graphics.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -27935,6 +27938,7 @@
 				0C38B50E2B7DC42500882A8B /* KodaDotNftOperationFactory.swift in Sources */,
 				84E8BA1F29FFB38600FD9F40 /* EthereumOperationFactory.swift in Sources */,
 				F4C201822728678400B0F3D0 /* ExtrinsicStatus.swift in Sources */,
+				0C2D1E3B2D96E1920030E43C /* LedgerDeviceModel+Graphics.swift in Sources */,
 				842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */,
 				88F33F1529CC1F92006125D5 /* Slip44CoinList.swift in Sources */,
 				0C363E982B6B63280065AFA6 /* HydraConstants.swift in Sources */,
