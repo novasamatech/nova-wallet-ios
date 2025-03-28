@@ -6,7 +6,7 @@ enum QRImageViewModel {
 }
 
 extension UIImageView {
-    func bindQr(viewModel: QRImageViewModel) {
+    func bindQr(viewModel: QRImageViewModel?) {
         stopAnimating()
 
         image = nil
@@ -21,6 +21,8 @@ extension UIImageView {
             animationRepeatCount = 0
 
             startAnimating()
+        case nil:
+            break
         }
     }
 }

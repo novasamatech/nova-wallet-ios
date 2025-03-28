@@ -858,8 +858,11 @@
 "parity.signer.tx.title" = "Sign with %@";
 "parity.signer.addresses.title" = "Here are your accounts";
 "parity.signer.addresses.subtitle" = "Following accounts have been successfully read from %@";
+"parity.signer.scan.title_9_7_0" = "Scan with %@";
 "parity.signer.scan.title" = "Scan the QR code from the %@";
 "parity.signer.tx.scan" = "Scan the QR code with the %@";
+"polkadot.vault.qr.type.v7" = "New (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "Legacy";
 "common.hardware.wallet" = "Hardware wallet";
 "welcome.hardware.wallet.subtitle" = "Use %@";
 "welcome.parity.signer.step2.details" = "Make sure to select top one";

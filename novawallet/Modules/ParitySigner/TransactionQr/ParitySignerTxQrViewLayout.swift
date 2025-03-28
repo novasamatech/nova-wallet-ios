@@ -32,14 +32,13 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
         return view
     }()
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .semiBoldBody
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    let qrTypeSwitch: RoundedSegmentedControl = .create { view in
+        view.backgroundView.fillColor = R.color.colorSegmentedBackgroundOnBlack()!
+        view.selectionColor = R.color.colorSegmentedTabActive()!
+        view.titleFont = .regularFootnote
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
+    }
 
     let qrView = QRDisplayView()
 
@@ -118,11 +117,14 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
             make.height.equalTo(52.0)
         }
 
-        containerView.stackView.setCustomSpacing(52.0 * topOffsetScaling, after: accountDetailsView)
+        containerView.stackView.setCustomSpacing(32.0 * topOffsetScaling, after: accountDetailsView)
 
-        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.addArrangedSubview(qrTypeSwitch)
+        qrTypeSwitch.snp.makeConstraints { make in
+            make.height.equalTo(40)
+        }
 
-        containerView.stackView.setCustomSpacing(35.0 * verticalScaling, after: titleLabel)
+        containerView.stackView.setCustomSpacing(24.0 * verticalScaling, after: qrTypeSwitch)
 
         let qrContainerView = UIView()
         qrContainerView.backgroundColor = .clear

@@ -1,6 +1,10 @@
 import Foundation
 import IrohaCrypto
 
+enum ParitySignerSigningWrapperError: Error {
+    case unsupportedContext
+}
+
 /**
  *  Implementation of the signing for Parity Signer makes
  *  an assumption that signing is called in one of the background threads.
@@ -25,10 +29,11 @@ final class ParitySignerSigningWrapper {
         self.chainId = chainId
         self.type = type
     }
-}
 
-extension ParitySignerSigningWrapper: SigningWrapperProtocol {
-    func sign(_ originalData: Data, context _: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
+    private func presentSigningFlow(
+        _ originalData: Data,
+        params: ParitySignerConfirmationParams
+    ) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
 
         var signingResult: TransactionSigningResult?
@@ -38,7 +43,7 @@ extension ParitySignerSigningWrapper: SigningWrapperProtocol {
                 for: originalData,
                 metaId: self.metaId,
                 chainId: self.chainId,
-                type: self.type
+                params: params
             ) { result in
                 signingResult = result
 
@@ -56,6 +61,34 @@ extension ParitySignerSigningWrapper: SigningWrapperProtocol {
             throw error
         case .none:
             throw CommonError.undefined
+        }
+    }
+}
+
+extension ParitySignerSigningWrapper: SigningWrapperProtocol {
+    func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
+        switch context {
+        case let .substrateExtrinsic(substrate):
+            let transactionMode = ParitySignerSigningMode.Extrinsic(
+                extrinsicMemo: substrate.extrinsicMemo,
+                codingFactory: substrate.codingFactory
+            )
+
+            let params = ParitySignerConfirmationParams(
+                type: type,
+                mode: .extrinsic(transactionMode)
+            )
+
+            return try presentSigningFlow(originalData, params: params)
+        case .rawBytes:
+            let params = ParitySignerConfirmationParams(
+                type: type,
+                mode: .rawBytes
+            )
+
+            return try presentSigningFlow(originalData, params: params)
+        case .evmTransaction:
+            throw ParitySignerSigningWrapperError.unsupportedContext
         }
     }
 }
