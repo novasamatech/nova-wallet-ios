@@ -29,6 +29,7 @@ protocol LedgerAccountConfirmationWireframeProtocol: AlertPresentable, ErrorPres
     func showAddressVerification(
         on view: LedgerAccountConfirmationViewProtocol?,
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         address: AccountAddress,
         cancelClosure: @escaping () -> Void
     )

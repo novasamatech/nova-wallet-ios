@@ -112,6 +112,7 @@ struct LedgerAccountConfirmationViewFactory {
             wireframe: wireframe,
             chain: chain,
             deviceName: device.name,
+            deviceModel: device.model,
             tokenFormatter: tokenFormatter,
             localizationManager: LocalizationManager.shared
         )
