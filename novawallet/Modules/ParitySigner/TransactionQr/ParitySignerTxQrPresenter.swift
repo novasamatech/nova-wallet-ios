@@ -203,7 +203,6 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         wireframe.proceed(
             from: view,
             accountId: accountId,
-            type: type,
             timer: timer,
             completion: completion
         )

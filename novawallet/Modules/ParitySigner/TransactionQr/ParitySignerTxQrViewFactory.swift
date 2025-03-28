@@ -18,7 +18,7 @@ struct ParitySignerTxQrViewFactory {
             return nil
         }
 
-        let wireframe = ParitySignerTxQrWireframe(sharedSigningPayload: signingData)
+        let wireframe = ParitySignerTxQrWireframe(params: params, sharedSigningPayload: signingData)
 
         let presenter = ParitySignerTxQrPresenter(
             type: params.type,
