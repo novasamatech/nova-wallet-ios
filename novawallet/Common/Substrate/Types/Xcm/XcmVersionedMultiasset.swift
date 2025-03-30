@@ -111,3 +111,18 @@ extension Xcm.VersionedMultiasset {
         }
     }
 }
+
+extension Xcm.VersionedMultiasset {
+    init(versionedLocation: Xcm.VersionedMultilocation, amount: Balance) {
+        switch versionedLocation {
+        case let .V1(location):
+            self = .V1(Xcm.Multiasset(multilocation: location, amount: amount))
+        case let .V2(location):
+            self = .V2(Xcm.Multiasset(multilocation: location, amount: amount))
+        case let .V3(location):
+            self = .V3(XcmV3.Multiasset(multilocation: location, amount: amount))
+        case let .V4(location):
+            self = .V4(XcmV4.Multiasset(assetId: location, amount: amount))
+        }
+    }
+}

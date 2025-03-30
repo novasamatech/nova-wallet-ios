@@ -10,8 +10,8 @@ protocol XcmModelFactoryProtocol {
 }
 
 struct XcmMultilocationAssetParams {
-    let origin: ChainAsset
-    let reserve: ChainModel
+    let origin: XcmTransferOrigin
+    let reserve: XcmTransferReserve
     let destination: XcmTransferDestination
     let amount: BigUInt
     let metadata: XcmTransferMetadata
@@ -23,8 +23,39 @@ enum XcmModelFactoryError: Error {
 
 final class XcmModelFactory {}
 
-extension XcmModelFactory: XcmModelFactoryProtocol {
-    func createMultilocationAsset(
+private extension XcmModelFactory {
+    func createDynamicMultilocationAsset(
+        for params: XcmMultilocationAssetParams,
+        version: Xcm.Version
+    ) throws -> XcmMultilocationAsset {
+        let originChainLocation = Xcm.VersionedAbsoluteLocation(
+            paraId: params.origin.parachainId,
+            version: version
+        )
+
+        let destinationLocation = Xcm.VersionedAbsoluteLocation(
+            paraId: params.destination.parachainId,
+            version: version
+        )
+
+        let assetReserveLocation = try Xcm.VersionedAbsoluteLocation.createWithRawPath(
+            params.metadata.reserve.path.path,
+            version: version
+        )
+
+        let benificiaryLocation = try destinationLocation.appendingAccountId(
+            params.destination.accountId,
+            isEthereumBase: params.destination.chain.isEthereumBased
+        ).fromPointOfView(location: originChainLocation)
+
+        let assetLocation = try assetReserveLocation.fromPointOfView(location: originChainLocation)
+
+        let asset = Xcm.VersionedMultiasset(versionedLocation: assetLocation, amount: params.amount)
+
+        return XcmMultilocationAsset(beneficiary: benificiaryLocation, asset: asset)
+    }
+
+    func createLegacyMultilocationAsset(
         for params: XcmMultilocationAssetParams,
         version: Xcm.Version
     ) throws -> XcmMultilocationAsset {
@@ -44,6 +75,20 @@ extension XcmModelFactory: XcmModelFactoryProtocol {
                 for: params,
                 version: version
             )
+        }
+    }
+}
+
+extension XcmModelFactory: XcmModelFactoryProtocol {
+    func createMultilocationAsset(
+        for params: XcmMultilocationAssetParams,
+        version: Xcm.Version
+    ) throws -> XcmMultilocationAsset {
+        switch params.metadata.fee {
+        case .dynamic:
+            return try createDynamicMultilocationAsset(for: params, version: version)
+        case .legacy:
+            return try createLegacyMultilocationAsset(for: params, version: version)
         }
     }
 }

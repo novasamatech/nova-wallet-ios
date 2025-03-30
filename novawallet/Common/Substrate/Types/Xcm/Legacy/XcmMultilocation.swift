@@ -7,39 +7,52 @@ extension Xcm {
         @StringCodable var parents: UInt8
         let interior: Xcm.JunctionsV2
     }
+
+    typealias AbsoluteLocation = Xcm.JunctionsV2
 }
 
-extension Xcm.Multilocation {
-    static func location(
-        for targetChain: ChainModel,
-        parachainId: ParaId?,
-        relativeTo origin: ChainModel
-    ) -> Xcm.Multilocation {
-        let parents: UInt8 = if !origin.isRelaychain, origin.chainId != targetChain.chainId {
-            1
+extension Xcm.AbsoluteLocation {
+    init(paraId: ParaId?) {
+        if let paraId {
+            items = [.parachain(paraId)]
         } else {
-            0
+            items = []
+        }
+    }
+
+    static func createWithRawPath(_ path: JSON) throws -> Xcm.AbsoluteLocation {
+        var junctions: [Xcm.Junction] = []
+
+        if let parachainId = path.parachainId?.unsignedIntValue {
+            let networkJunction = Xcm.Junction.parachain(ParaId(parachainId))
+            junctions.append(networkJunction)
         }
 
-        let junctions: Xcm.JunctionsV2
-
-        if let parachainId {
-            let networkJunction = Xcm.Junction.parachain(parachainId)
-            junctions = Xcm.JunctionsV2(items: [networkJunction])
-        } else {
-            junctions = Xcm.JunctionsV2(items: [])
+        if let palletInstance = path.palletInstance?.unsignedIntValue {
+            junctions.append(.palletInstance(UInt8(palletInstance)))
         }
 
-        return Xcm.Multilocation(parents: parents, interior: junctions)
+        if let generalKeyString = path.generalKey?.stringValue {
+            let generalKey = try Data(hexString: generalKeyString)
+            junctions.append(.generalKey(generalKey))
+        } else if let generalIndexString = path.generalIndex?.stringValue {
+            guard let generalIndex = BigUInt(generalIndexString) else {
+                throw CommonError.dataCorruption
+            }
+
+            junctions.append(.generalIndex(generalIndex))
+        }
+
+        return Xcm.AbsoluteLocation(items: junctions)
     }
 
     func appendingAccountId(
         _ accountId: AccountId,
-        in chain: ChainModel
-    ) -> Xcm.Multilocation {
+        isEthereumBase: Bool
+    ) -> Xcm.AbsoluteLocation {
         let accountIdJunction: Xcm.Junction
 
-        if chain.isEthereumBased {
+        if isEthereumBase {
             let accountIdValue = Xcm.AccountId20Value(network: .any, key: accountId)
             accountIdJunction = Xcm.Junction.accountKey20(accountIdValue)
         } else {
@@ -47,11 +60,18 @@ extension Xcm.Multilocation {
             accountIdJunction = Xcm.Junction.accountId32(accountIdValue)
         }
 
+        return appending(components: [accountIdJunction])
+    }
+
+    func fromPointOfView(location: Xcm.AbsoluteLocation) -> Xcm.Multilocation {
+        let commonPrefixLength = zip(items, location.items).prefix { $0 == $1 }.count
+
+        let parents = location.items.count - commonPrefixLength
+        let items = items.suffix(items.count - commonPrefixLength)
+
         return Xcm.Multilocation(
-            parents: parents,
-            interior: Xcm.JunctionsV2(
-                items: interior.items + [accountIdJunction]
-            )
+            parents: UInt8(parents),
+            interior: Xcm.JunctionsV2(items: Array(items))
         )
     }
 }

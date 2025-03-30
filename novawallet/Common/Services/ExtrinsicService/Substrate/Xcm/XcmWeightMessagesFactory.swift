@@ -9,7 +9,7 @@ protocol XcmWeightMessagesFactoryProtocol {
 }
 
 struct XcmWeightMessagesParams {
-    let chainAsset: ChainAsset
+    let origin: XcmTransferOrigin
     let reserve: XcmTransferReserve
     let destination: XcmTransferDestination
     let amount: BigUInt

@@ -4,27 +4,29 @@ import BigInt
 
 final class XcmV4ModelFactory {
     func createMultilocation(
-        origin: ChainModel,
+        origin: XcmTransferOrigin,
         destination: XcmTransferDestination
     ) -> XcmV4.Multilocation {
-        XcmV4.Multilocation.location(
-            for: destination.chain,
-            parachainId: destination.parachainId,
-            relativeTo: origin
+        XcmV4.AbsoluteLocation(
+            paraId: destination.parachainId
         ).appendingAccountId(
             destination.accountId,
-            in: destination.chain
+            isEthereumBase: destination.chain.isEthereumBased
+        ).fromPointOfView(
+            location: XcmV4.AbsoluteLocation(paraId: origin.parachainId)
         )
     }
 
     func createMultilocation(
-        origin: ChainModel,
+        origin: XcmTransferOrigin,
         reserve: XcmTransferReserve
     ) -> XcmV4.Multilocation {
-        XcmV4.Multilocation.location(
-            for: reserve.chain,
-            parachainId: reserve.parachainId,
-            relativeTo: origin
+        XcmV4.AbsoluteLocation(
+            paraId: reserve.parachainId
+        ).fromPointOfView(
+            location: XcmV4.AbsoluteLocation(
+                paraId: origin.parachainId
+            )
         )
     }
 
@@ -122,7 +124,7 @@ private extension XcmV4ModelFactory {
     }
 
     func createVersionedMultilocation(
-        origin: ChainModel,
+        origin: XcmTransferOrigin,
         destination: XcmTransferDestination
     ) -> Xcm.VersionedMultilocation {
         let multilocation = createMultilocation(origin: origin, destination: destination)
@@ -130,7 +132,7 @@ private extension XcmV4ModelFactory {
     }
 
     func createVersionedMultilocation(
-        origin: ChainModel,
+        origin: XcmTransferOrigin,
         reserve: XcmTransferReserve
     ) -> Xcm.VersionedMultilocation {
         let multilocation = createMultilocation(origin: origin, reserve: reserve)
@@ -159,20 +161,18 @@ extension XcmV4ModelFactory: XcmModelFactoryProtocol {
         for params: XcmMultilocationAssetParams,
         version _: Xcm.Version
     ) throws -> XcmMultilocationAsset {
-        let originChainAsset = params.origin
-
-        let multilocation = createVersionedMultilocation(
-            origin: originChainAsset.chain,
+        let benificiaryLocation = createVersionedMultilocation(
+            origin: params.origin,
             destination: params.destination
         )
 
-        let multiasset = try createVersionedMultiasset(
-            origin: originChainAsset.chain,
-            reserve: params.reserve,
+        let assetLocation = try createVersionedMultiasset(
+            origin: params.origin.chainAsset.chain,
+            reserve: params.reserve.chain,
             assetLocation: params.metadata.reserve.path,
             amount: params.amount
         )
 
-        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
+        return XcmMultilocationAsset(beneficiary: benificiaryLocation, asset: assetLocation)
     }
 }

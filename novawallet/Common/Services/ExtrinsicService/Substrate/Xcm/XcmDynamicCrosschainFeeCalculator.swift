@@ -241,18 +241,23 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
+        let nextChainLocation = try Xcm.VersionedAbsoluteLocation(
+            paraId: request.nextParaIdAfterOrigin,
+            version: xcmVersion
+        ).fromPointOfView(
+            location: Xcm.VersionedAbsoluteLocation(
+                paraId: request.origin.parachainId,
+                version: xcmVersion
+            )
+        )
+
         let forwardedMessage = try XcmForwardedMessageMatcher(
             palletName: palletName,
             logger: logger
         ).matchMessage(
             from: effects.emittedEvents,
             forwardedXcms: effects.forwardedXcms,
-            origin: .location(
-                for: request.nextChainAfterOrigin,
-                parachainId: request.nextParaIdAfterOrigin,
-                relativeTo: request.originChain,
-                version: xcmVersion
-            ),
+            origin: nextChainLocation,
             codingFactory: codingFactory
         )
 
@@ -320,18 +325,23 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
+        let location = try Xcm.VersionedAbsoluteLocation(
+            paraId: request.destination.parachainId,
+            version: xcmVersion
+        ).fromPointOfView(
+            location: Xcm.VersionedAbsoluteLocation(
+                paraId: request.reserve.parachainId,
+                version: xcmVersion
+            )
+        )
+
         let forwardedMessage = try XcmForwardedMessageMatcher(
             palletName: palletName,
             logger: logger
         ).matchMessage(
             from: effects.emittedEvents,
             forwardedXcms: effects.forwardedXcms,
-            origin: .location(
-                for: request.destinationChain,
-                parachainId: request.destination.parachainId,
-                relativeTo: request.reserveChain,
-                version: xcmVersion
-            ),
+            origin: location,
             codingFactory: codingFactory
         )
 
@@ -359,13 +369,19 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 for: runtimeProvider
             )
 
+            let xcmVersion = intermediateResult.forwardedXcm.version
+            let location = try Xcm.VersionedAbsoluteLocation(
+                paraId: request.origin.parachainId,
+                version: xcmVersion
+            ).fromPointOfView(
+                location: Xcm.VersionedAbsoluteLocation(
+                    paraId: request.reserve.parachainId,
+                    version: xcmVersion
+                )
+            )
+
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
-                from: .location(
-                    for: request.originChain,
-                    parachainId: request.origin.parachainId,
-                    relativeTo: request.reserveChain,
-                    version: intermediateResult.forwardedXcm.version
-                ),
+                from: location,
                 xcm: intermediateResult.forwardedXcm,
                 chainId: request.reserveChain.chainId
             )
@@ -410,13 +426,20 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
+            let xcmVersion = intermediateResult.forwardedXcm.version
+
+            let location = try Xcm.VersionedAbsoluteLocation(
+                paraId: request.paraIdBeforeDestination,
+                version: xcmVersion
+            ).fromPointOfView(
+                location: Xcm.VersionedAbsoluteLocation(
+                    paraId: request.destination.parachainId,
+                    version: xcmVersion
+                )
+            )
+
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
-                from: .location(
-                    for: request.chainBeforeDestination,
-                    parachainId: request.paraIdBeforeDestination,
-                    relativeTo: request.destinationChain,
-                    version: intermediateResult.forwardedXcm.version
-                ),
+                from: location,
                 xcm: intermediateResult.forwardedXcm,
                 chainId: request.destinationChain.chainId
             )

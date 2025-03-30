@@ -1067,6 +1067,7 @@
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
 		0CED3A0E2BD17AD400B1E994 /* CloudBackupDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */; };
+		0CED71A22D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
@@ -1118,12 +1119,12 @@
 		0CFF82332D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */; };
 		0CFF82352D8C305A00DB17A4 /* XcmTransferOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */; };
 		0CFF82372D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */; };
-		0CFF82452D904ADB00DB17A4 /* XcmV4ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */; };
-		0CFF82472D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */; };
-		0CFF82492D91242100DB17A4 /* ExtrinsicStatusValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82482D91242100DB17A4 /* ExtrinsicStatusValidator.swift */; };
 		0CFF82392D8E86C300DB17A4 /* DAppParsedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */; };
 		0CFF823B2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */; };
 		0CFF823C2D8E8E5700DB17A4 /* Operation+Dependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */; };
+		0CFF82452D904ADB00DB17A4 /* XcmV4ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */; };
+		0CFF82472D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */; };
+		0CFF82492D91242100DB17A4 /* ExtrinsicStatusValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82482D91242100DB17A4 /* ExtrinsicStatusValidator.swift */; };
 		0CFF824B2D91584500DB17A4 /* ChargeAssetTxSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF824A2D91584500DB17A4 /* ChargeAssetTxSerializer.swift */; };
 		0CFF824D2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */; };
 		0CFF82512D9275C900DB17A4 /* AvailableBalanceMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82502D9275C900DB17A4 /* AvailableBalanceMapping.swift */; };
@@ -6847,6 +6848,7 @@
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
 		0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupDiffing.swift; sourceTree = "<group>"; };
+		0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedAbsoluteLocation.swift; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
@@ -6898,11 +6900,11 @@
 		0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmForwardedMessageMatcher.swift; sourceTree = "<group>"; };
 		0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferOrigin.swift; sourceTree = "<group>"; };
 		0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCrosschainFeeCalculator.swift; sourceTree = "<group>"; };
+		0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppParsedAsset.swift; sourceTree = "<group>"; };
+		0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Operation+Dependency.swift"; sourceTree = "<group>"; };
 		0CFF82442D904ADB00DB17A4 /* XcmV4ModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4ModelFactory.swift; sourceTree = "<group>"; };
 		0CFF82462D904B3500DB17A4 /* XcmV4WeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV4WeightMessagesFactory.swift; sourceTree = "<group>"; };
 		0CFF82482D91242100DB17A4 /* ExtrinsicStatusValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicStatusValidator.swift; sourceTree = "<group>"; };
-		0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppParsedAsset.swift; sourceTree = "<group>"; };
-		0CFF823A2D8E8E5700DB17A4 /* Operation+Dependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Operation+Dependency.swift"; sourceTree = "<group>"; };
 		0CFF824A2D91584500DB17A4 /* ChargeAssetTxSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeAssetTxSerializer.swift; sourceTree = "<group>"; };
 		0CFF824C2D91B0F100DB17A4 /* GovernanceBalanceCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceBalanceCalculator.swift; sourceTree = "<group>"; };
 		0CFF82502D9275C900DB17A4 /* AvailableBalanceMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableBalanceMapping.swift; sourceTree = "<group>"; };
@@ -24110,6 +24112,7 @@
 				0CEB6B2E2CA4245F00609DC2 /* XcmVersionedLocatableAsset.swift */,
 				0CEB6B392CA4597600609DC2 /* Multilocation+AccountId.swift */,
 				0CFF821E2D8B580E00DB17A4 /* Xcm+Event.swift */,
+				0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -27846,6 +27849,7 @@
 				0C962F882AA85C7F00C0B551 /* TransactionHistoryAccountPrefixFilter.swift in Sources */,
 				77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */,
 				0C0F6E192D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift in Sources */,
+				0CED71A22D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift in Sources */,
 				840E59BD2A188B7B00BA6ADD /* UIImage+Filter.swift in Sources */,
 				0CB06E752A68139C00C7EC99 /* StakingDashboardNominationPoolMapper.swift in Sources */,
 				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,

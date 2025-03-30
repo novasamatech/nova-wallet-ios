@@ -31,14 +31,14 @@ private extension XcmCallDerivator {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
             let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
-            let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenificiary()
+            let (destination, beneficiaryAccount) = destinationAsset.beneficiary.separatingDestinationBenificiary()
             let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
 
             let callPath = callPathFactory(module)
 
             let call = Xcm.PalletTransferCall(
                 destination: destination,
-                beneficiary: beneficiary,
+                beneficiary: beneficiaryAccount,
                 assets: assets,
                 feeAssetItem: 0,
                 weightLimit: .unlimited
@@ -61,14 +61,11 @@ private extension XcmCallDerivator {
         let mapOperation = ClosureOperation<RuntimeCallCollecting> {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
             let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
-            let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
-
-            let asset = destinationAsset.asset
-            let location = destinationAsset.location
+            let destination = try destinationAssetOperation.extractNoCancellableResultData()
 
             return try XTokens.appendTransferCall(
-                asset: asset,
-                destination: location,
+                asset: destination.asset,
+                destination: destination.beneficiary,
                 module: module,
                 weightOption: transferMetadata.fee,
                 codingFactory: codingFactory
@@ -144,8 +141,8 @@ private extension XcmCallDerivator {
             let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
             return try xcmModelFactory.createMultilocationAsset(
                 for: .init(
-                    origin: request.origin.chainAsset,
-                    reserve: request.reserve.chain,
+                    origin: request.origin,
+                    reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
                     metadata: request.metadata

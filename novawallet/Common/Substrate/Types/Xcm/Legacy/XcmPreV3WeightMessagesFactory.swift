@@ -6,12 +6,12 @@ final class XcmPreV3WeightMessagesFactory {
 
 private extension XcmPreV3WeightMessagesFactory {
     func createDestinationWeightMessage(
-        from chainAsset: ChainAsset,
+        from origin: XcmTransferOrigin,
         destination: XcmTransferDestination,
         feeParams: XcmTransferMetadata.LegacyFee,
         multiasset: Xcm.Multiasset
     ) throws -> Xcm.Message {
-        let multilocation = modelFactory.createMultilocation(origin: chainAsset.chain, destination: destination)
+        let multilocation = modelFactory.createMultilocation(origin: origin, destination: destination)
 
         return try createWeightMessage(
             from: feeParams.destinationExecution.instructions,
@@ -21,7 +21,7 @@ private extension XcmPreV3WeightMessagesFactory {
     }
 
     func createReserveWeightMessage(
-        from chainAsset: ChainAsset,
+        from origin: XcmTransferOrigin,
         reserve: XcmTransferReserve,
         feeParams: XcmTransferMetadata.LegacyFee,
         multiasset: Xcm.Multiasset
@@ -30,7 +30,7 @@ private extension XcmPreV3WeightMessagesFactory {
             return nil
         }
 
-        let reserveMultilocation = modelFactory.createMultilocation(origin: chainAsset.chain, reserve: reserve)
+        let reserveMultilocation = modelFactory.createMultilocation(origin: origin, reserve: reserve)
 
         return try createWeightMessage(
             from: reserveInstructions,
@@ -84,21 +84,21 @@ extension XcmPreV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
         version _: Xcm.Version
     ) throws -> XcmWeightMessages {
         let multiasset = try modelFactory.createMultiAsset(
-            origin: params.chainAsset.chain,
+            origin: params.origin.chainAsset.chain,
             reserve: params.reserve.chain,
             assetLocation: params.reserveParams.path,
             amount: params.amount
         )
 
         let destinationMessage = try createDestinationWeightMessage(
-            from: params.chainAsset,
+            from: params.origin,
             destination: params.destination,
             feeParams: params.feeParams,
             multiasset: multiasset
         )
 
         let reserveMessage = try createReserveWeightMessage(
-            from: params.chainAsset,
+            from: params.origin,
             reserve: params.reserve,
             feeParams: params.feeParams,
             multiasset: multiasset
