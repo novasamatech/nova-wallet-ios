@@ -25,19 +25,11 @@ final class XcmForwardedMessageMatcher {
 
 extension XcmForwardedMessageMatcher: XcmForwardedMessageMatching {
     func matchMessage(
-        from events: [Event],
+        from _: [Event],
         forwardedXcms: [DryRun.ForwardedXcm],
         origin: Xcm.VersionedMultilocation,
-        codingFactory: RuntimeCoderFactoryProtocol
+        codingFactory _: RuntimeCoderFactoryProtocol
     ) throws -> Xcm.Message? {
-        if let rawInstructions = byEventMatcher.matchFromEventList(events, codingFactory: codingFactory) {
-            return try Xcm.Message(
-                rawInstructions: rawInstructions,
-                version: origin.version,
-                context: codingFactory.createRuntimeJsonContext()
-            )
-        }
-
-        return byLocationMatcher.matchFromForwardedXcms(forwardedXcms, from: origin)
+        byLocationMatcher.matchFromForwardedXcms(forwardedXcms, from: origin)
     }
 }

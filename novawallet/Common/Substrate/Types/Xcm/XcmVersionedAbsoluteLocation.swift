@@ -101,4 +101,13 @@ extension Xcm.VersionedAbsoluteLocation {
             throw Xcm.VersionedAbsoluteLocationError.versionMismatch
         }
     }
+
+    func fromChainPointOfView(_ parachainId: ParaId?) throws -> Xcm.VersionedMultilocation {
+        try fromPointOfView(
+            location: Xcm.VersionedAbsoluteLocation(
+                paraId: parachainId,
+                version: version
+            )
+        )
+    }
 }
