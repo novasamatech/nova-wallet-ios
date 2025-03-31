@@ -1123,9 +1123,7 @@
 		0CFF82242D8B68A300DB17A4 /* TokenBalanceMintingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82232D8B68A300DB17A4 /* TokenBalanceMintingFactory.swift */; };
 		0CFF822A2D8B73AF00DB17A4 /* PalletAssets+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82292D8B73AF00DB17A4 /* PalletAssets+Call.swift */; };
 		0CFF822D2D8B770A00DB17A4 /* OrmlTokensPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF822C2D8B770A00DB17A4 /* OrmlTokensPallet.swift */; };
-		0CFF822F2D8B8ADB00DB17A4 /* XcmForwardedMessageByEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF822E2D8B8ADB00DB17A4 /* XcmForwardedMessageByEventMatcher.swift */; };
 		0CFF82312D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82302D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift */; };
-		0CFF82332D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */; };
 		0CFF82352D8C305A00DB17A4 /* XcmTransferOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */; };
 		0CFF82372D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */; };
 		0CFF82392D8E86C300DB17A4 /* DAppParsedAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */; };
@@ -6913,9 +6911,7 @@
 		0CFF82232D8B68A300DB17A4 /* TokenBalanceMintingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenBalanceMintingFactory.swift; sourceTree = "<group>"; };
 		0CFF82292D8B73AF00DB17A4 /* PalletAssets+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+Call.swift"; sourceTree = "<group>"; };
 		0CFF822C2D8B770A00DB17A4 /* OrmlTokensPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlTokensPallet.swift; sourceTree = "<group>"; };
-		0CFF822E2D8B8ADB00DB17A4 /* XcmForwardedMessageByEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmForwardedMessageByEventMatcher.swift; sourceTree = "<group>"; };
 		0CFF82302D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmForwardedMessageByLocationMatcher.swift; sourceTree = "<group>"; };
-		0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmForwardedMessageMatcher.swift; sourceTree = "<group>"; };
 		0CFF82342D8C305A00DB17A4 /* XcmTransferOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferOrigin.swift; sourceTree = "<group>"; };
 		0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmCrosschainFeeCalculator.swift; sourceTree = "<group>"; };
 		0CFF82382D8E86C300DB17A4 /* DAppParsedAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppParsedAsset.swift; sourceTree = "<group>"; };
@@ -22926,9 +22922,7 @@
 				0C277D9D2D815297004FF053 /* XcmLegacyCrosschainFeeCalculator.swift */,
 				0CFF821A2D8AF98F00DB17A4 /* XcmDynamicCrosschainFeeCalculator.swift */,
 				0CFF821C2D8B150D00DB17A4 /* XcmDeliveryFeeMatcher.swift */,
-				0CFF822E2D8B8ADB00DB17A4 /* XcmForwardedMessageByEventMatcher.swift */,
 				0CFF82302D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift */,
-				0CFF82322D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift */,
 				0CFF82362D8CD7BD00DB17A4 /* XcmCrosschainFeeCalculator.swift */,
 				0C1666852D7FEF90005E6CD3 /* XcmModelFactory.swift */,
 				0C16668B2D80055A005E6CD3 /* XcmWeightMessagesFactory.swift */,
@@ -29854,7 +29848,6 @@
 				0CE862192D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift in Sources */,
 				0CA72A822D4A2AC900B3FD02 /* CollatorStkFullUnstakeSetupLayout.swift in Sources */,
 				84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */,
-				0CFF82332D8C198F00DB17A4 /* XcmForwardedMessageMatcher.swift in Sources */,
 				0C0F6DE22D41968000943A7C /* MythosRewardCalculatorEngine.swift in Sources */,
 				770898612BA23A7400FACD2B /* PushNotificationNamespace.swift in Sources */,
 				849DEC5925ED756F00C64C19 /* SubstrateCallFactory.swift in Sources */,
@@ -32884,7 +32877,6 @@
 				2D62875C2C979B4700060814 /* BaseSwipeGovSetupInteractor.swift in Sources */,
 				BD8241356329A3FF53234EE6 /* SwipeGovVotingListProtocols.swift in Sources */,
 				CE2F94C2BD61FC48E221D4A7 /* SwipeGovVotingListWireframe.swift in Sources */,
-				0CFF822F2D8B8ADB00DB17A4 /* XcmForwardedMessageByEventMatcher.swift in Sources */,
 				D6B9C9345141D9463AF62C65 /* SwipeGovVotingListPresenter.swift in Sources */,
 				BA70314B7C83ADD171FA0C64 /* SwipeGovVotingListInteractor.swift in Sources */,
 				F5DD5BD30644FCA2491B03F1 /* SwipeGovVotingListViewController.swift in Sources */,

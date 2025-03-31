@@ -241,22 +241,16 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let nextChainLocation = try Xcm.VersionedAbsoluteLocation(
+        let messageOrigin = try Xcm.VersionedAbsoluteLocation(
             paraId: request.nextParaIdAfterOrigin,
             version: xcmVersion
         ).fromChainPointOfView(request.origin.parachainId)
 
-        let forwardedMessage = try XcmForwardedMessageMatcher(
-            palletName: palletName,
-            logger: logger
-        ).matchMessage(
-            from: effects.emittedEvents,
-            forwardedXcms: effects.forwardedXcms,
-            origin: nextChainLocation,
-            codingFactory: codingFactory
-        )
-
-        guard let forwardedMessage else {
+        guard
+            let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
+                effects.forwardedXcms,
+                from: messageOrigin
+            ) else {
             throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
         }
 
@@ -310,9 +304,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
     func createReserveIntermediateResult(
         for request: XcmUnweightedTransferRequest,
         originResult: IntermediateResult,
-        dryRunResult: DryRun.XcmResult,
-        palletName: String,
-        codingFactory: RuntimeCoderFactoryProtocol
+        dryRunResult: DryRun.XcmResult
     ) throws -> IntermediateResult {
         let effects = try dryRunResult.ensureSuccessExecution()
 
@@ -320,22 +312,16 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let location = try Xcm.VersionedAbsoluteLocation(
+        let messageOrigin = try Xcm.VersionedAbsoluteLocation(
             paraId: request.destination.parachainId,
             version: xcmVersion
         ).fromChainPointOfView(request.reserve.parachainId)
 
-        let forwardedMessage = try XcmForwardedMessageMatcher(
-            palletName: palletName,
-            logger: logger
-        ).matchMessage(
-            from: effects.emittedEvents,
-            forwardedXcms: effects.forwardedXcms,
-            origin: location,
-            codingFactory: codingFactory
-        )
-
-        guard let forwardedMessage else {
+        guard
+            let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
+                effects.forwardedXcms,
+                from: messageOrigin
+            ) else {
             throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
         }
 
@@ -353,12 +339,6 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 return .createWithResult(intermediateResult)
             }
 
-            let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(for: request.reserveChain.chainId)
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-            let palletResolutionWrapper = self.palletMetadataQueryFactory.createModuleNameResolutionWrapper(
-                for: runtimeProvider
-            )
-
             let xcmVersion = intermediateResult.forwardedXcm.version
             let location = try Xcm.VersionedAbsoluteLocation(
                 paraId: request.origin.parachainId,
@@ -373,26 +353,17 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let resultOperation = ClosureOperation<IntermediateResult> {
                 let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let palletName = try palletResolutionWrapper.targetOperation.extractNoCancellableResultData()
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
                 return try self.createReserveIntermediateResult(
                     for: request,
                     originResult: intermediateResult,
-                    dryRunResult: dryRunResult,
-                    palletName: palletName,
-                    codingFactory: codingFactory
+                    dryRunResult: dryRunResult
                 )
             }
 
-            resultOperation.addDependency(codingFactoryOperation)
-            resultOperation.addDependency(palletResolutionWrapper.targetOperation)
             resultOperation.addDependency(dryRunWrapper.targetOperation)
 
-            return dryRunWrapper
-                .insertingHead(operations: palletResolutionWrapper.allOperations)
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: resultOperation)
+            return dryRunWrapper.insertingTail(operation: resultOperation)
         }
     }
 
