@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "Nyomd le mindkét gombot a %@ eszközön a cím jóváhagyásához";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Ez a tárca a Ledger-rel van párosítva. A Nova segít bármilyen művelet létrehozásában és azok aláírása a Ledger segítségével történik majd.";
-"ledger.instructions.title" = "A Ledger Nano X csatlakoztatása";
-"ledger.instructions.link" = "A Ledger hivatalos Bluetooth-kapcsolati útmutatója";
+"ledger.instructions.title" = "Csatlakozás Ledgerhez Bluetooth-on keresztül";
+"ledger.instructions.link" = "Ledger csatlakozási útmutató";
 "ledger.instructions.step1" = "Győzödj meg róla, hogy a %@ azon a Ledger eszközödön, amelyik a Ledger Live-ot használja";
 "ledger.instructions.step1.highlighted" = "Hálózati alkalmazás telepítve van";
 "ledger.instructions.step2" = "%@ azon a Ledger eszközödön";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 hex szimbólum";
 "common.status.backup.syncing" = "Biztonsági mentés szinkronizálás...";
 "common.status.backup.synced" = "Biztonsági mentés szinkronizálva";
-"common.ledger.nano.generic" = "Ledger Nano X (Általános Polkadot alkalmazás)";
+"common.ledger.nano.generic" = "Ledger (Általános Polkadot alkalmazás)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot alkalmazás telepítve van";
 "generic.ledger.instructions.step2.highlighted" = "Nyissa meg a Polkadot alkalmazást";
 "ledger.instructions.step4" = "%@, melyet hozzadnál a tárcádhoz";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "Örökölt formátum";
 "asset.receive.looking.for.address.message" = "Az örökölt címedet keresed egy cseréhez?";
 "asset.receive.view.address.format" = "Címformátumok megtekintése";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Nyomja meg a megerősítő gombot a %@ eszközön a cím jóváhagyásához";
+"ledger.flex.stax.sign.transaction.details" = "Tartsa lenyomva a megerősítő gombot a %@ eszközön a tranzakció jóváhagyásához";
