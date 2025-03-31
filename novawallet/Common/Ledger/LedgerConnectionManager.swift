@@ -116,12 +116,16 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
         }
 
         centralManager.connect(device.peripheral, options: nil)
-        device.writeCommand = { [weak device] in
+        device.writeCommand = { [weak device, weak self] in
             if let currentDevice = device, let characteristic = currentDevice.writeCharacteristic {
                 currentDevice.responseCompletion = completion
-                let chunks = currentDevice.transport.prepareRequest(from: message)
 
                 let type: CBCharacteristicWriteType = completion != nil ? .withResponse : .withoutResponse
+                let mtu = currentDevice.peripheral.maximumWriteValueLength(for: .withoutResponse)
+
+                let chunks = currentDevice.transport.prepareRequest(from: message, using: mtu)
+
+                self?.logger.debug("Writing \(chunks.count) chunks of data \(message.count) using mtu \(mtu)")
 
                 chunks.forEach { currentDevice.peripheral.writeValue($0, for: characteristic, type: type) }
             }
