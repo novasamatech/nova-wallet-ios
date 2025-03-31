@@ -242,7 +242,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
         }
 
         let messageOrigin = try Xcm.VersionedAbsoluteLocation(
-            paraId: request.nextParaIdAfterOrigin,
+            paraId: request.paraIdAfterOrigin,
             version: xcmVersion
         ).fromChainPointOfView(request.origin.parachainId)
 

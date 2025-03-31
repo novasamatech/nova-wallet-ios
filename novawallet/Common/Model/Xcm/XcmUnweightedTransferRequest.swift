@@ -20,20 +20,19 @@ struct XcmUnweightedTransferRequest {
         destination.chain
     }
 
+    var isNativeAssetTransferBetweenSystemChains: Bool {
+        origin.chainAsset.isUtilityAsset &&
+            origin.parachainId.isSystemParachain &&
+            destination.parachainId.isSystemParachain
+    }
+
     var isNonReserveTransfer: Bool {
-        reserveChain.chainId != originChain.chainId && reserveChain.chainId != destinationChain.chainId
+        !isNativeAssetTransferBetweenSystemChains &&
+            reserveChain.chainId != originChain.chainId && reserveChain.chainId != destinationChain.chainId
     }
 
-    var nextChainAfterOrigin: ChainModel {
-        isNonReserveTransfer ? reserveChain : destinationChain
-    }
-
-    var nextParaIdAfterOrigin: ParaId? {
+    var paraIdAfterOrigin: ParaId? {
         isNonReserveTransfer ? reserve.parachainId : destination.parachainId
-    }
-
-    var chainBeforeDestination: ChainModel {
-        isNonReserveTransfer ? reserveChain : originChain
     }
 
     var paraIdBeforeDestination: ParaId? {

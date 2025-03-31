@@ -155,6 +155,66 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         }
     }
     
+    func testDOTCollectivesPAH() throws {
+        do {
+            let fee = try calculateFee(
+                for: "46ee89aa2eedd13e988962630ec9fb7565964cf5023bb351f2b6b25c1b68b0b2",
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.polkadotAssetHub,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDOTCollectivesBridgeHub() throws {
+        do {
+            let fee = try calculateFee(
+                for: "46ee89aa2eedd13e988962630ec9fb7565964cf5023bb351f2b6b25c1b68b0b2",
+                originAssetSymbol: "DOT",
+                destinationChainId: "dcf691b5a3fbe24adc99ddc959c0561b973e329b1aef4c4b22e7bb2ddecb4464",
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDOTBridgeHubCollectives() throws {
+        do {
+            let fee = try calculateFee(
+                for: "dcf691b5a3fbe24adc99ddc959c0561b973e329b1aef4c4b22e7bb2ddecb4464",
+                originAssetSymbol: "DOT",
+                destinationChainId: "46ee89aa2eedd13e988962630ec9fb7565964cf5023bb351f2b6b25c1b68b0b2",
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDOTBridgeHubPAH() throws {
+        do {
+            let fee = try calculateFee(
+                for: "dcf691b5a3fbe24adc99ddc959c0561b973e329b1aef4c4b22e7bb2ddecb4464",
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.polkadotAssetHub,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     private func calculateFee(
         for originChainId: ChainModel.Id,
         originAssetSymbol: String,
