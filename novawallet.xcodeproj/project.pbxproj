@@ -1069,14 +1069,9 @@
 		0CED3A0E2BD17AD400B1E994 /* CloudBackupDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */; };
 		0CED71A22D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */; };
 		0CED71A52D99588500F79C02 /* XcmV5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71A42D99588400F79C02 /* XcmV5.swift */; };
-		0CED71A72D9958EE00F79C02 /* XcmV5Junction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71A62D9958EE00F79C02 /* XcmV5Junction.swift */; };
 		0CED71A92D99599500F79C02 /* XcmGenericJunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71A82D99599500F79C02 /* XcmGenericJunction.swift */; };
-		0CED71AB2D995A3600F79C02 /* XcmV5Multilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71AA2D995A3600F79C02 /* XcmV5Multilocation.swift */; };
-		0CED71AD2D995B6800F79C02 /* XcmV5Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71AC2D995B6800F79C02 /* XcmV5Asset.swift */; };
-		0CED71AF2D995C5700F79C02 /* XcmV5Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71AE2D995C5700F79C02 /* XcmV5Instruction.swift */; };
 		0CED71B12D995CED00F79C02 /* XcmV5ModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71B02D995CED00F79C02 /* XcmV5ModelFactory.swift */; };
 		0CED71B32D995D4300F79C02 /* XcmV5WeightMessagesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71B22D995D4300F79C02 /* XcmV5WeightMessagesFactory.swift */; };
-		0CED71B52D995E6A00F79C02 /* XcmV5LocatableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71B42D995E6A00F79C02 /* XcmV5LocatableAsset.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
@@ -6857,14 +6852,9 @@
 		0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupDiffing.swift; sourceTree = "<group>"; };
 		0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedAbsoluteLocation.swift; sourceTree = "<group>"; };
 		0CED71A42D99588400F79C02 /* XcmV5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5.swift; sourceTree = "<group>"; };
-		0CED71A62D9958EE00F79C02 /* XcmV5Junction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5Junction.swift; sourceTree = "<group>"; };
 		0CED71A82D99599500F79C02 /* XcmGenericJunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmGenericJunction.swift; sourceTree = "<group>"; };
-		0CED71AA2D995A3600F79C02 /* XcmV5Multilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5Multilocation.swift; sourceTree = "<group>"; };
-		0CED71AC2D995B6800F79C02 /* XcmV5Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5Asset.swift; sourceTree = "<group>"; };
-		0CED71AE2D995C5700F79C02 /* XcmV5Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5Instruction.swift; sourceTree = "<group>"; };
 		0CED71B02D995CED00F79C02 /* XcmV5ModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5ModelFactory.swift; sourceTree = "<group>"; };
 		0CED71B22D995D4300F79C02 /* XcmV5WeightMessagesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5WeightMessagesFactory.swift; sourceTree = "<group>"; };
-		0CED71B42D995E6A00F79C02 /* XcmV5LocatableAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmV5LocatableAsset.swift; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
@@ -14068,13 +14058,8 @@
 			isa = PBXGroup;
 			children = (
 				0CED71A42D99588400F79C02 /* XcmV5.swift */,
-				0CED71A62D9958EE00F79C02 /* XcmV5Junction.swift */,
-				0CED71AA2D995A3600F79C02 /* XcmV5Multilocation.swift */,
-				0CED71AC2D995B6800F79C02 /* XcmV5Asset.swift */,
-				0CED71AE2D995C5700F79C02 /* XcmV5Instruction.swift */,
 				0CED71B02D995CED00F79C02 /* XcmV5ModelFactory.swift */,
 				0CED71B22D995D4300F79C02 /* XcmV5WeightMessagesFactory.swift */,
-				0CED71B42D995E6A00F79C02 /* XcmV5LocatableAsset.swift */,
 			);
 			path = V5;
 			sourceTree = "<group>";
@@ -28355,7 +28340,6 @@
 				840DFDDB2770668200B62981 /* DAppOperationRequest.swift in Sources */,
 				842876AD24AE049B00D91AD8 /* SelectionSubtitleTableViewCell.swift in Sources */,
 				2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */,
-				0CED71A72D9958EE00F79C02 /* XcmV5Junction.swift in Sources */,
 				84AF08DD2941C4AC00D0572B /* TokenManageInstanceTableViewCell.swift in Sources */,
 				840DCBFB25E0703A00D45C6A /* RewardSelectionView.swift in Sources */,
 				849F144029434E4B00D9F9BA /* TextInputView+Empty.swift in Sources */,
@@ -29864,7 +29848,6 @@
 				8425D0E828FE8356003B782A /* ReferendumVoteInteractorError.swift in Sources */,
 				2AF8204F274FD2120092E3E7 /* BaseAccountCreatePresenter.swift in Sources */,
 				84282294289BB79300163031 /* ParitySignerSigningWrapper.swift in Sources */,
-				0CED71AB2D995A3600F79C02 /* XcmV5Multilocation.swift in Sources */,
 				0CEB6B2F2CA4245F00609DC2 /* XcmVersionedLocatableAsset.swift in Sources */,
 				848DE76226D62AFE0045CD29 /* PersistentStoreCoordinator+Extensions.swift in Sources */,
 				845FB6752A2274890003BCA6 /* MultistakingRepositoryFactory.swift in Sources */,
@@ -30405,7 +30388,6 @@
 				845B081529190056005785D3 /* Gov1UnlockReferendum.swift in Sources */,
 				0C846B8D2BE5EE7E000EBFC2 /* SubqueryMultistakingProxy.swift in Sources */,
 				77C3D7D72B5E824700997BA0 /* StakingRemoveProxyProtocols.swift in Sources */,
-				0CED71B52D995E6A00F79C02 /* XcmV5LocatableAsset.swift in Sources */,
 				84B24FB02A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift in Sources */,
 				77799ADD2A74219A00B7E564 /* ButtonState.swift in Sources */,
 				0CFF82312D8C177000DB17A4 /* XcmForwardedMessageByLocationMatcher.swift in Sources */,
@@ -31712,7 +31694,6 @@
 				C32B85D65D0290A577BFC85F /* ParaStkRebondViewFactory.swift in Sources */,
 				8490110F29E5A4F4005D688B /* URIQRMatcher.swift in Sources */,
 				912ECC319A48CAD09FB694AC /* AssetsSearchProtocols.swift in Sources */,
-				0CED71AD2D995B6800F79C02 /* XcmV5Asset.swift in Sources */,
 				77895CA12A8F7360006870FB /* NominationPoolSearchOperationFactory.swift in Sources */,
 				8456D2C12993EE9F00D159A7 /* GovernanceDelegateStackCell.swift in Sources */,
 				8582395FEF296771447439FF /* AssetsSearchWireframe.swift in Sources */,
@@ -32638,7 +32619,6 @@
 				2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */,
 				4DBCCC36F7CD1876D6E77ECC /* ProxySignValidationInteractor.swift in Sources */,
 				84272585149E6A422690779C /* ProxySignValidationViewFactory.swift in Sources */,
-				0CED71AF2D995C5700F79C02 /* XcmV5Instruction.swift in Sources */,
 				A63C2F992CDBB115E9495624 /* StakingConfirmProxyProtocols.swift in Sources */,
 				D82FA7D0E27C366741AFC1B1 /* StakingConfirmProxyWireframe.swift in Sources */,
 				A84E2721D839DA22BF907566 /* StakingConfirmProxyPresenter.swift in Sources */,
