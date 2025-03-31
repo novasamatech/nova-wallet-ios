@@ -140,6 +140,21 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         }
     }
     
+    func testMythPAHMythos() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.polkadotAssetHub,
+                originAssetSymbol: "MYTH",
+                destinationChainId: KnowChainId.mythos,
+                destinationAssetSymbol: "MYTH"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     private func calculateFee(
         for originChainId: ChainModel.Id,
         originAssetSymbol: String,

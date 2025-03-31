@@ -75,6 +75,11 @@ private extension XcmModelFactory {
                 for: params,
                 version: version
             )
+        case .V5:
+            try XcmV5ModelFactory().createMultilocationAsset(
+                for: params,
+                version: version
+            )
         }
     }
 }

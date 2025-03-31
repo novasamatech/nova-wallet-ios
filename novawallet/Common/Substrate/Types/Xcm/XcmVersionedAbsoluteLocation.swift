@@ -12,6 +12,7 @@ extension Xcm {
         case V2(Xcm.AbsoluteLocation)
         case V3(XcmV3.AbsoluteLocation)
         case V4(XcmV4.AbsoluteLocation)
+        case V5(XcmV5.AbsoluteLocation)
 
         var version: Xcm.Version {
             switch self {
@@ -23,6 +24,8 @@ extension Xcm {
                 return .V3
             case .V4:
                 return .V4
+            case .V5:
+                return .V5
             }
         }
     }
@@ -43,6 +46,9 @@ extension Xcm.VersionedAbsoluteLocation {
         case .V4:
             let model = XcmV4.AbsoluteLocation(paraId: paraId)
             self = .V4(model)
+        case .V5:
+            let model = XcmV5.AbsoluteLocation(paraId: paraId)
+            self = .V5(model)
         }
     }
 
@@ -60,6 +66,9 @@ extension Xcm.VersionedAbsoluteLocation {
         case .V4:
             let model = try XcmV4.AbsoluteLocation.createWithRawPath(path)
             return .V4(model)
+        case .V5:
+            let model = try XcmV5.AbsoluteLocation.createWithRawPath(path)
+            return .V5(model)
         }
     }
 
@@ -80,6 +89,9 @@ extension Xcm.VersionedAbsoluteLocation {
         case let .V4(absoluteLocation):
             let newLocation = absoluteLocation.appendingAccountId(accountId, isEthereumBase: isEthereumBase)
             return .V4(newLocation)
+        case let .V5(absoluteLocation):
+            let newLocation = absoluteLocation.appendingAccountId(accountId, isEthereumBase: isEthereumBase)
+            return .V5(newLocation)
         }
     }
 
@@ -97,6 +109,9 @@ extension Xcm.VersionedAbsoluteLocation {
         case let (.V4(current), .V4(target)):
             let newLocation = current.fromPointOfView(location: target)
             return .V4(newLocation)
+        case let (.V5(current), .V5(target)):
+            let newLocation = current.fromPointOfView(location: target)
+            return .V5(newLocation)
         default:
             throw Xcm.VersionedAbsoluteLocationError.versionMismatch
         }

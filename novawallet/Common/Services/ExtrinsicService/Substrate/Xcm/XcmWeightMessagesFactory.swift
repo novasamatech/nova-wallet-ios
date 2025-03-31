@@ -46,6 +46,11 @@ extension XcmWeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
                 from: params,
                 version: version
             )
+        case .V5:
+            try XcmV5WeightMessagesFactory().createWeightMessages(
+                from: params,
+                version: version
+            )
         }
     }
 }

@@ -7,6 +7,7 @@ extension Xcm {
         case V2([Xcm.Instruction])
         case V3([XcmV3.Instruction])
         case V4([XcmV4.Instruction])
+        case V5([XcmV5.Instruction])
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -20,6 +21,9 @@ extension Xcm {
                 try container.encode(instructions)
             case let .V4(instructions):
                 try container.encode("V4")
+                try container.encode(instructions)
+            case let .V5(instructions):
+                try container.encode("V5")
                 try container.encode(instructions)
             }
         }
@@ -39,6 +43,9 @@ extension Xcm {
             case "V4":
                 let instructions = try container.decode([XcmV4.Instruction].self)
                 self = .V4(instructions)
+            case "V5":
+                let instructions = try container.decode([XcmV5.Instruction].self)
+                self = .V5(instructions)
             default:
                 throw DecodingError.dataCorrupted(
                     DecodingError.Context(
@@ -57,6 +64,8 @@ extension Xcm {
                 return instructions.count
             case let .V4(instructions):
                 return instructions.count
+            case let .V5(instructions):
+                return instructions.count
             }
         }
     }
@@ -72,6 +81,8 @@ extension Xcm.Message {
             .V3
         case .V4:
             .V4
+        case .V5:
+            .V5
         }
     }
 
@@ -103,6 +114,13 @@ extension Xcm.Message {
             )
 
             self = .V4(instructions)
+        case .V5:
+            let instructions = try rawInstructions.map(
+                to: [XcmV5.Instruction].self,
+                with: context.toRawContext()
+            )
+
+            self = .V5(instructions)
         }
     }
 }
