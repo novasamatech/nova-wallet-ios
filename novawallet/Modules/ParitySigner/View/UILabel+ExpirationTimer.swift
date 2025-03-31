@@ -4,7 +4,7 @@ extension UILabel {
     func bindQr(viewModel: ExpirationTimeViewModel, locale: Locale) {
         switch viewModel {
         case let .normal(time):
-            textColor = R.color.colorTextPrimary()
+            textColor = R.color.colorTextSecondary()
             text = R.string.localizable.commonQrCodeValidFormat(
                 time,
                 preferredLanguages: locale.rLanguages

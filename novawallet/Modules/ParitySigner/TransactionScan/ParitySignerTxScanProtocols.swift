@@ -2,7 +2,7 @@ import Foundation
 import IrohaCrypto
 
 protocol ParitySignerTxScanViewProtocol: QRScannerViewProtocol {
-    func didReceiveExpiration(viewModel: ExpirationTimeViewModel)
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel?)
 }
 
 protocol ParitySignerTxScanPresenterProtocol: AnyObject {
