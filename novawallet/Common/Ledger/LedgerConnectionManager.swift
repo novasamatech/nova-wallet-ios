@@ -120,12 +120,14 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
             if let currentDevice = device, let characteristic = currentDevice.writeCharacteristic {
                 currentDevice.responseCompletion = completion
 
-                let type: CBCharacteristicWriteType = completion != nil ? .withResponse : .withoutResponse
+                // Force iOS to return negotiated mtu instead of the internal buffer size
                 let mtu = currentDevice.peripheral.maximumWriteValueLength(for: .withoutResponse)
 
                 let chunks = currentDevice.transport.prepareRequest(from: message, using: mtu)
 
                 self?.logger.debug("Writing \(chunks.count) chunks of data \(message.count) using mtu \(mtu)")
+
+                let type: CBCharacteristicWriteType = completion != nil ? .withResponse : .withoutResponse
 
                 chunks.forEach { currentDevice.peripheral.writeValue($0, for: characteristic, type: type) }
             }
@@ -279,9 +281,12 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
             if let message = characteristic.value {
                 do {
                     if let response = try device.transport.receive(partialResponseData: message) {
+                        logger.debug("Received response")
                         completeRequest(with: .success(response), device: device)
                     }
                 } catch {
+                    logger.debug("Can't handle response")
+
                     device.transport.reset()
                     completeRequest(with: .failure(LedgerError.internalTransport(error: error)), device: device)
                 }
