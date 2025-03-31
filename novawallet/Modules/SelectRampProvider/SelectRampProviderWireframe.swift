@@ -3,8 +3,14 @@ import Foundation
 final class SelectRampProviderWireframe {
     weak var delegate: RampDelegate?
 
-    init(delegate: RampDelegate) {
+    let chainAsset: ChainAsset
+
+    init(
+        delegate: RampDelegate,
+        chainAsset: ChainAsset
+    ) {
         self.delegate = delegate
+        self.chainAsset = chainAsset
     }
 }
 
@@ -15,6 +21,7 @@ extension SelectRampProviderWireframe: SelectRampProviderWireframeProtocol {
     ) {
         guard let rampView = RampViewFactory.createView(
             for: action,
+            chainAsset: chainAsset,
             delegate: delegate
         ) else { return }
 

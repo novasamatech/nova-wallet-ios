@@ -4,6 +4,7 @@ protocol RampPresentable {
     func showRampAction(
         from view: ControllerBackedProtocol?,
         action: RampAction,
+        chainAsset: ChainAsset,
         delegate: RampDelegate
     )
 
@@ -11,7 +12,7 @@ protocol RampPresentable {
         from view: ControllerBackedProtocol?,
         actions: [RampAction],
         rampType: RampActionType,
-        assetSymbol: AssetModel.Symbol,
+        chainAsset: ChainAsset,
         delegate: RampDelegate
     )
 
@@ -26,10 +27,12 @@ extension RampPresentable {
     func showRampAction(
         from view: ControllerBackedProtocol?,
         action: RampAction,
+        chainAsset: ChainAsset,
         delegate: RampDelegate
     ) {
         guard let rampView = RampViewFactory.createView(
             for: action,
+            chainAsset: chainAsset,
             delegate: delegate
         ) else {
             return
@@ -42,13 +45,13 @@ extension RampPresentable {
         from view: ControllerBackedProtocol?,
         actions: [RampAction],
         rampType: RampActionType,
-        assetSymbol: AssetModel.Symbol,
+        chainAsset: ChainAsset,
         delegate: RampDelegate
     ) {
         guard let rampProvidersView = SelectRampProviderViewFactory.createView(
             providerType: rampType,
             rampActions: actions,
-            assetSymbol: assetSymbol,
+            chainAsset: chainAsset,
             delegate: delegate
         ) else {
             return

@@ -6,7 +6,7 @@ protocol RampFlowManaging {
         actions: [RampAction],
         rampType: RampActionType,
         wireframe: (RampPresentable & AlertPresentable)?,
-        assetSymbol: AssetModel.Symbol,
+        chainAsset: ChainAsset,
         locale: Locale
     )
 }
@@ -17,7 +17,7 @@ extension RampFlowManaging where Self: RampDelegate {
         actions: [RampAction],
         rampType: RampActionType,
         wireframe: (RampPresentable & AlertPresentable)?,
-        assetSymbol: AssetModel.Symbol,
+        chainAsset: ChainAsset,
         locale: Locale
     ) {
         let rampActions = actions.filter { $0.type == rampType }
@@ -29,6 +29,7 @@ extension RampFlowManaging where Self: RampDelegate {
             startFlow(
                 from: view,
                 action: rampActions[0],
+                chainAsset: chainAsset,
                 wireframe: wireframe,
                 locale: locale
             )
@@ -37,7 +38,7 @@ extension RampFlowManaging where Self: RampDelegate {
                 from: view,
                 actions: rampActions,
                 rampType: rampType,
-                assetSymbol: assetSymbol,
+                chainAsset: chainAsset,
                 delegate: self
             )
         }
@@ -48,6 +49,7 @@ private extension RampFlowManaging where Self: RampDelegate {
     func startFlow(
         from view: ControllerBackedProtocol?,
         action: RampAction,
+        chainAsset: ChainAsset,
         wireframe: (RampPresentable & AlertPresentable)?,
         locale: Locale
     ) {
@@ -65,6 +67,7 @@ private extension RampFlowManaging where Self: RampDelegate {
             wireframe?.showRampAction(
                 from: view,
                 action: action,
+                chainAsset: chainAsset,
                 delegate: self
             )
         }

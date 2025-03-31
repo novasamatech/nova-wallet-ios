@@ -1,29 +1,34 @@
 import UIKit
 
-protocol RampViewProtocol: ControllerBackedProtocol {}
+protocol RampViewProtocol: ControllerBackedProtocol {
+    func didReceive(model: RampModel)
+}
 
 protocol RampPresenterProtocol: AnyObject {
     func setup()
+    func processMessage(body: Any, of name: String)
 }
 
 protocol RampInteractorInputProtocol: AnyObject {
     func setup()
+    func processMessage(body: Any, of name: String)
 }
 
 protocol RampInteractorOutputProtocol: AnyObject {
+    func didReceive(model: RampModel)
     func didCompleteOperation(action: RampAction)
+    func didRequestTransfer(for model: PayCardTopupModel)
 }
 
 protocol RampWireframeProtocol: AnyObject {
+    func showSend(
+        from view: ControllerBackedProtocol?,
+        with transferModel: PayCardTopupModel,
+        transferCompletion: @escaping TransferCompletionClosure
+    )
+
     func complete(
         from view: RampViewProtocol?,
         with action: RampActionType
     )
-}
-
-protocol RampViewFactoryProtocol: AnyObject {
-    static func createView(
-        for action: RampAction,
-        delegate: RampDelegate?
-    ) -> RampViewProtocol?
 }

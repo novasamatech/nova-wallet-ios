@@ -25,7 +25,7 @@ final class MercuryoProvider {
     #if F_RELEASE
         let configuration: Configuration = .production
     #else
-        let configuration: Configuration = .debug
+        let configuration: Configuration = .production
     #endif
 
     private var callbackUrl: URL?
@@ -35,21 +35,36 @@ final class MercuryoProvider {
 // MARK: Private
 
 private extension MercuryoProvider {
-    func buildURL(address: AccountAddress, token: String, callbackUrl: URL) -> URL? {
+    func buildURL(
+        address: AccountAddress,
+        token: String,
+        actionType: RampActionType,
+        callbackUrl: URL
+    ) -> URL? {
         guard let signatureData = [address, configuration.secret].joined().data(using: .utf8) else {
             return nil
         }
         let signature = Data(SHA512.hash(data: signatureData).makeIterator())
         var components = URLComponents(string: configuration.baseUrl)
 
-        let queryItems = [
+        let type = switch actionType {
+        case .onRamp: "buy"
+        case .offRamp: "sell"
+        }
+
+        var queryItems = [
             URLQueryItem(name: "currency", value: token),
-            URLQueryItem(name: "type", value: "buy"),
+            URLQueryItem(name: "type", value: type),
             URLQueryItem(name: "address", value: address),
             URLQueryItem(name: "return_url", value: callbackUrl.absoluteString),
             URLQueryItem(name: "widget_id", value: configuration.widgetId),
             URLQueryItem(name: "signature", value: signature.toHex())
         ]
+
+        if actionType == .offRamp {
+            queryItems.append(URLQueryItem(name: "hide_refund_address", value: "true"))
+            queryItems.append(URLQueryItem(name: "refund_address", value: address))
+        }
 
         components?.queryItems = queryItems
 
@@ -70,6 +85,7 @@ private extension MercuryoProvider {
               let url = buildURL(
                   address: address,
                   token: chainAsset.asset.symbol,
+                  actionType: .onRamp,
                   callbackUrl: callbackUrl
               ) else {
             return []
@@ -101,6 +117,7 @@ private extension MercuryoProvider {
               let url = buildURL(
                   address: address,
                   token: chainAsset.asset.symbol,
+                  actionType: .offRamp,
                   callbackUrl: callbackUrl
               ) else {
             return []
@@ -110,7 +127,7 @@ private extension MercuryoProvider {
             type: .offRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
+                R.string.localizable.mercuryoSellActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url
         )

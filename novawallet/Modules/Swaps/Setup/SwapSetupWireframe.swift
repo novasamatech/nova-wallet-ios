@@ -127,7 +127,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
                     actions: actions,
                     rampType: .onRamp,
                     wireframe: self,
-                    assetSymbol: destinationChainAsset.asset.symbol,
+                    chainAsset: destinationChainAsset,
                     locale: locale
                 )
             }

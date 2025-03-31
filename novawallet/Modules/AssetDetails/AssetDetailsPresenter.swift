@@ -85,7 +85,7 @@ private extension AssetDetailsPresenter {
                 actions: rampActions,
                 rampType: rampType,
                 wireframe: wireframe,
-                assetSymbol: chainAsset.asset.symbol,
+                chainAsset: chainAsset,
                 locale: selectedLocale
             )
         }
