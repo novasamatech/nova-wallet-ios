@@ -1,6 +1,6 @@
 import UIKit
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import Keystore_iOS
 
 final class StakingRewardDestConfirmInteractor: AccountFetching {

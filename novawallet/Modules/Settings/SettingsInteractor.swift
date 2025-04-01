@@ -1,6 +1,6 @@
 import Foundation
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 enum ProfileInteractorError: Error {

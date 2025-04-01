@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 import xxHash_Swift
 import Keystore_iOS

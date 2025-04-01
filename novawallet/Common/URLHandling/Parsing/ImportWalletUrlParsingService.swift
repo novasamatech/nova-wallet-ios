@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import Foundation_iOS
 
 enum CreateWalletError: Error, ErrorContentConvertible {

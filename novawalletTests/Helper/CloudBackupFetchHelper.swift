@@ -1,7 +1,7 @@
 import Foundation
 @testable import novawallet
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 enum CloudBackupFetchHelper {
     static func fetchBackup(

@@ -1,5 +1,5 @@
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 import Keystore_iOS
 

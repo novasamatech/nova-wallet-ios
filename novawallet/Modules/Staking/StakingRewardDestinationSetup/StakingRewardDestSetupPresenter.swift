@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class StakingRewardDestSetupPresenter {
     weak var view: StakingRewardDestSetupViewProtocol?

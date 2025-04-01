@@ -2,7 +2,7 @@ import Foundation
 import Keystore_iOS
 import Foundation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class StakingRewardPayoutsViewFactory {
     static func createViewForNominator(

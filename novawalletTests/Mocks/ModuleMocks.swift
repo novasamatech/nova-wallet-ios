@@ -11603,7 +11603,7 @@ import Foundation_iOS
 import Cuckoo
 @testable import novawallet
 
-import IrohaCrypto
+import NovaCrypto
 
 
  class MockExportMnemonicInteractorInputProtocol: ExportMnemonicInteractorInputProtocol, Cuckoo.ProtocolMock {
@@ -12112,7 +12112,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 
  class MockAccountImportViewProtocol: AccountImportViewProtocol, Cuckoo.ProtocolMock {
@@ -16865,7 +16865,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 
  class MockAccountCreateViewProtocol: AccountCreateViewProtocol, Cuckoo.ProtocolMock {

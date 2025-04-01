@@ -1,6 +1,6 @@
 import Foundation
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class ParitySignerTxScanPresenter: QRScannerPresenter {
     let interactor: ParitySignerTxScanInteractorInputProtocol

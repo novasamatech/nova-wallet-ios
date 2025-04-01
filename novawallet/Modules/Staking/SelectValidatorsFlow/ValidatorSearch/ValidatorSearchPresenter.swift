@@ -1,5 +1,5 @@
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class ValidatorSearchPresenter {
     weak var view: ValidatorSearchViewProtocol?

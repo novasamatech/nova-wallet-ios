@@ -3,7 +3,7 @@ import XCTest
 import SubstrateSdk
 import Operation_iOS
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 
 class CrowdloanTests: XCTestCase {
     func testFetchContributions() {

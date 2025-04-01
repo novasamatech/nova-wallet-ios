@@ -1,6 +1,6 @@
 import Foundation
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class ExportMnemonicPresenter: CheckboxListPresenterTrait {
     weak var view: AccountCreateViewProtocol?

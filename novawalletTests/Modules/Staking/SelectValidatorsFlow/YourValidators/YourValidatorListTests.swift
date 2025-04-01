@@ -3,7 +3,7 @@ import XCTest
 import Keystore_iOS
 import Operation_iOS
 import Cuckoo
-import IrohaCrypto
+import NovaCrypto
 import Foundation_iOS
 import BigInt
 

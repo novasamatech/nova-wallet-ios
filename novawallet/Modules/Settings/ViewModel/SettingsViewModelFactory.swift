@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating

@@ -1,6 +1,6 @@
 import Keystore_iOS
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class StakingRewardDestSetupInteractor: AccountFetching {
     weak var presenter: StakingRewardDestSetupInteractorOutputProtocol?

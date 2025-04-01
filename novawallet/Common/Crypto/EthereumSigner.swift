@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Keystore_iOS
 import SubstrateSdk
 

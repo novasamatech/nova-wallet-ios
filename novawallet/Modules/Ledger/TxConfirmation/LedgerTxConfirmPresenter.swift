@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Foundation_iOS
 
 final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {

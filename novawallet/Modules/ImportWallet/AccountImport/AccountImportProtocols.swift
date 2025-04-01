@@ -1,4 +1,4 @@
-import IrohaCrypto
+import NovaCrypto
 import Foundation_iOS
 
 protocol AccountImportViewProtocol: ControllerBackedProtocol {

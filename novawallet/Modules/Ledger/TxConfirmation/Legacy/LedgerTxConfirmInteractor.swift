@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 final class LedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {

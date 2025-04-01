@@ -2,7 +2,7 @@ import XCTest
 @testable import novawallet
 import Foundation_iOS
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 import Cuckoo
 import BigInt

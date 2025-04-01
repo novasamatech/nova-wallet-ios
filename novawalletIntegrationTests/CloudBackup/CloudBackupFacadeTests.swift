@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class CloudBackupFacadeTests: XCTestCase {
     func testSyncMetadataSaved() throws {

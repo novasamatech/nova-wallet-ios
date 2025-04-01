@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import IrohaCrypto
+import NovaCrypto
 import Foundation_iOS
 import Cuckoo
 

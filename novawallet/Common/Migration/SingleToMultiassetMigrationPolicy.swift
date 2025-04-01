@@ -2,7 +2,7 @@ import Foundation
 import CoreData
 import SubstrateSdk
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 
 class SingleToMultiassetMigrationPolicy: NSEntityMigrationPolicy {
     var isSelected: Bool = false

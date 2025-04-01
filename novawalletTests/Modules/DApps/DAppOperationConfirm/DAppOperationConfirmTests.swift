@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 import Keystore_iOS
 import Foundation_iOS

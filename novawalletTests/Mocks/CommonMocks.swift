@@ -1493,7 +1493,7 @@ import Cuckoo
 @testable import Keystore_iOS
 
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 

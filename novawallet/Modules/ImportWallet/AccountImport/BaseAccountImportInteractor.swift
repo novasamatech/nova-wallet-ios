@@ -1,5 +1,5 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 import Operation_iOS
 import Keystore_iOS

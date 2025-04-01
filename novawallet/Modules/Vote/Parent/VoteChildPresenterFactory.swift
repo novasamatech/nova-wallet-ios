@@ -113,6 +113,8 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
+        let localizationManager = LocalizationManager.shared
+
         let interactor = ReferendumsInteractor(
             eventCenter: EventCenter.shared,
             selectedMetaAccount: wallet,
@@ -123,10 +125,9 @@ final class VoteChildPresenterFactory {
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            localizationManager: localizationManager
         )
-
-        interactor.localizationManager = LocalizationManager.shared
 
         return interactor
     }

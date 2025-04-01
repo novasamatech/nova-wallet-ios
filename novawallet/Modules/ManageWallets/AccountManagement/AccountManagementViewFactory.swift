@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 import Keystore_iOS
 
 final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {

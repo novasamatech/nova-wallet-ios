@@ -1,6 +1,6 @@
 import Foundation
 import Foundation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 struct MnemonicTextNormalizer: TextProcessing {
     func process(text: String) -> String {

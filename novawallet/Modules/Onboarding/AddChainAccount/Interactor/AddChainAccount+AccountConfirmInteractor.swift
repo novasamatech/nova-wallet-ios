@@ -1,6 +1,6 @@
 import UIKit
 import Keystore_iOS
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 extension AddChainAccount {
