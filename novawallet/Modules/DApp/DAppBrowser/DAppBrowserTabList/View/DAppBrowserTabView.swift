@@ -28,13 +28,14 @@ class DAppBrowserTabView: UIView {
         view.clipsToBounds = true
     }
 
-    let closeButton: RoundedButton = .create { view in
-        view.roundedBackgroundView?.cornerRadius = Constants.closeButtonCornerRadius
+    let closeButton: TriangularedButton = .create { view in
         view.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         view.contentInsets = Constants.closeButtonContentInsets
-        view.imageWithTitleView?.iconImage = R.image.iconCloseDAppTab()
-        view.roundedBackgroundView?.fillColor = R.color.colorCloseDAppBackground()!
-        view.roundedBackgroundView?.shadowOpacity = 0.0
+        view.imageWithTitleView?.iconImage = R.image.iconCloseWithBgOpaque()
+        view.triangularedView?.fillColor = .clear
+        view.triangularedView?.shadowOpacity = 0.0
+        view.triangularedView?.highlightedFillColor = .clear
+        view.triangularedView?.highlightedStrokeColor = .clear
     }
 
     let iconName: IconDetailsView = .create { view in
@@ -80,7 +81,7 @@ private extension DAppBrowserTabView {
         addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.size.equalTo(Constants.closeButtonSize)
-            make.top.leading.equalToSuperview().inset(Constants.closeButtonEdgeInsets)
+            make.top.leading.equalToSuperview()
         }
     }
 
@@ -155,18 +156,17 @@ private extension DAppBrowserTabView {
     enum Constants {
         static let tabCornerRadius: CGFloat = 16.0
         static let closeButtonCornerRadius: CGFloat = closeButtonSize / 2
-        static let closeButtonSize: CGFloat = 20.0
+        static let closeButtonSize: CGFloat = 40.0
         static let iconNameSpacing: CGFloat = 4.0
         static let iconNameHeight: CGFloat = 16.0
         static let iconSize: CGFloat = 15
         static let iconNameTopOffset: CGFloat = -8
-        static let closeButtonEdgeInsets: CGFloat = 10.0
         static let strokeWidth: CGFloat = 2.0
         static let closeButtonContentInsets = UIEdgeInsets(
-            top: 5.6,
-            left: 5.6,
-            bottom: 5.6,
-            right: 5.6
+            top: 8.0,
+            left: 8.0,
+            bottom: 8.0,
+            right: 8.0
         )
     }
 }

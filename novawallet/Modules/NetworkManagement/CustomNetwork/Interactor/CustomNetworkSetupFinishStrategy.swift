@@ -61,40 +61,70 @@ protocol CustomNetworkSetupFinishStrategy {
     )
 }
 
+private extension CustomNetworkSetupFinishStrategy {
+    func deriveExplorers(
+        from preConfNetwork: ChainModel,
+        setUpNetwork: ChainModel
+    ) -> [ChainModel.Explorer]? {
+        if let newExplorers = setUpNetwork.explorers, !newExplorers.isEmpty {
+            newExplorers
+        } else {
+            preConfNetwork.explorers
+        }
+    }
+
+    func deriveAssets(
+        from preConfNetwork: ChainModel,
+        setUpNetwork: ChainModel
+    ) -> Set<AssetModel> {
+        // we can have only a single asset if it was setup by a user
+        if
+            let asset = setUpNetwork.assets.first,
+            !preConfNetwork.assets.contains(where: { $0.assetId == asset.assetId }) {
+            [asset]
+        } else {
+            preConfNetwork.assets
+        }
+    }
+
+    func deriveNodes(
+        from preConfNetwork: ChainModel,
+        setUpNetwork: ChainModel
+    ) -> Set<ChainNodeModel> {
+        // we can have only a single node if it was setup by a user
+        if let node = setUpNetwork.nodes.first, !preConfNetwork.nodes.contains(where: { $0.url == node.url }) {
+            Set([node]).union(preConfNetwork.nodes)
+        } else {
+            preConfNetwork.nodes
+        }
+    }
+
+    func deriveOptions(
+        from preConfNetwork: ChainModel,
+        setUpNetwork: ChainModel
+    ) -> [LocalChainOptions]? {
+        guard let preConfOptions = preConfNetwork.options else {
+            return setUpNetwork.options
+        }
+
+        let existingOptions = Set(preConfOptions)
+        let foundOptions = (setUpNetwork.options ?? []).filter { existingOptions.contains($0) }
+        return preConfOptions + foundOptions
+    }
+}
+
 extension CustomNetworkSetupFinishStrategy {
     func updatePreConfigured(
         network: ChainModel,
         using setUpNetwork: ChainModel
     ) -> ChainModel {
-        let explorers: [ChainModel.Explorer]? = {
-            if
-                let newExplorers = setUpNetwork.explorers,
-                !newExplorers.isEmpty {
-                newExplorers
-            } else {
-                network.explorers
-            }
-        }()
+        let explorers = deriveExplorers(from: network, setUpNetwork: setUpNetwork)
 
-        let assets: Set<AssetModel> = {
-            if
-                let asset = setUpNetwork.assets.first,
-                !network.assets.contains(where: { $0.assetId == asset.assetId }) {
-                [asset]
-            } else {
-                network.assets
-            }
-        }()
+        let assets = deriveAssets(from: network, setUpNetwork: setUpNetwork)
 
-        let nodes: Set<ChainNodeModel> = {
-            if
-                let node = setUpNetwork.nodes.first,
-                !network.nodes.contains(where: { $0.url == node.url }) {
-                setUpNetwork.nodes.union(network.nodes)
-            } else {
-                network.nodes
-            }
-        }()
+        let nodes = deriveNodes(from: network, setUpNetwork: setUpNetwork)
+
+        let options = deriveOptions(from: network, setUpNetwork: setUpNetwork)
 
         return ChainModel(
             chainId: network.chainId,
@@ -104,9 +134,10 @@ extension CustomNetworkSetupFinishStrategy {
             nodes: nodes,
             nodeSwitchStrategy: network.nodeSwitchStrategy,
             addressPrefix: network.addressPrefix,
+            legacyAddressPrefix: network.legacyAddressPrefix,
             types: network.types,
             icon: network.icon,
-            options: network.options,
+            options: options,
             externalApis: network.externalApis,
             explorers: explorers,
             order: network.order,
@@ -171,10 +202,11 @@ struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
                 network
             }
 
-            let saveOperation = repository.saveOperation(
-                { [networkToSave] },
-                { [] }
-            )
+            let saveOperation = repository.saveOperation({
+                [networkToSave]
+            }, {
+                []
+            })
 
             execute(
                 operation: saveOperation,
@@ -244,10 +276,11 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
                 ? [networkToEdit.chainId]
                 : []
 
-            let saveOperation = repository.saveOperation(
-                { [readyNetwork] },
-                { deleteIds }
-            )
+            let saveOperation = repository.saveOperation({
+                [readyNetwork]
+            }, {
+                deleteIds
+            })
 
             execute(
                 operation: saveOperation,
@@ -285,10 +318,11 @@ struct CustomNetworkModifyStrategy: CustomNetworkSetupFinishStrategy {
             using: network
         )
 
-        let saveOperation = repository.saveOperation(
-            { [networkToSave] },
-            { [] }
-        )
+        let saveOperation = repository.saveOperation({
+            [networkToSave]
+        }, {
+            []
+        })
 
         execute(
             operation: saveOperation,

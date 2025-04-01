@@ -3,7 +3,7 @@ import BigInt
 import Foundation_iOS
 
 final class ParaStkRedeemPresenter {
-    weak var view: ParaStkRedeemViewProtocol?
+    weak var view: CollatorStakingRedeemViewProtocol?
     let wireframe: ParaStkRedeemWireframeProtocol
     let interactor: ParaStkRedeemInteractorInputProtocol
 
@@ -165,7 +165,7 @@ final class ParaStkRedeemPresenter {
     }
 }
 
-extension ParaStkRedeemPresenter: ParaStkRedeemPresenterProtocol {
+extension ParaStkRedeemPresenter: CollatorStakingRedeemPresenterProtocol {
     func setup() {
         applyCurrentState()
 

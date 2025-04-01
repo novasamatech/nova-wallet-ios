@@ -15,7 +15,6 @@ enum SettingsKey: String {
     case skippedUpdateVersion
     case skippedAddDelegationTracksHint
     case pinConfirmationEnabled
-    case polkadotStakingPromoSeen
     case notificationsEnabled
     case notificationsSetupSeen
     case lastCloudBackupTimestamp
@@ -25,6 +24,10 @@ enum SettingsKey: String {
     case integrateNetworksBannerSeen
     case assetListGroupStyle
     case assetIconsAppearance
+    case novaCardOpenTimestamp
+    case closedBanners
+    case mythosRestakeEnabled
+    case hideUnifiedAddressPopup
 }
 
 extension SettingsManagerProtocol {
@@ -173,16 +176,6 @@ extension SettingsManagerProtocol {
         }
     }
 
-    var polkadotStakingPromoSeen: Bool {
-        get {
-            bool(for: SettingsKey.polkadotStakingPromoSeen.rawValue) ?? false
-        }
-
-        set {
-            set(value: newValue, for: SettingsKey.polkadotStakingPromoSeen.rawValue)
-        }
-    }
-
     var notificationsEnabled: Bool {
         get {
             bool(for: SettingsKey.notificationsEnabled.rawValue) ?? false
@@ -292,6 +285,55 @@ extension SettingsManagerProtocol {
                 value: newValue.rawValue,
                 for: SettingsKey.assetIconsAppearance.rawValue
             )
+        }
+    }
+
+    var novaCardOpenTimestamp: UInt64? {
+        get {
+            string(for: SettingsKey.novaCardOpenTimestamp.rawValue).flatMap { UInt64($0) }
+        }
+
+        set {
+            if let value = newValue {
+                set(value: String(value), for: SettingsKey.novaCardOpenTimestamp.rawValue)
+            } else {
+                removeValue(for: SettingsKey.novaCardOpenTimestamp.rawValue)
+            }
+        }
+    }
+
+    var closedBanners: ClosedBanners {
+        get {
+            value(
+                of: ClosedBanners.self,
+                for: SettingsKey.closedBanners.rawValue
+            ) ?? ClosedBanners()
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.closedBanners.rawValue
+            )
+        }
+    }
+
+    var isMythosRestakeEnabled: Bool {
+        get {
+            bool(for: SettingsKey.mythosRestakeEnabled.rawValue) ?? true
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.mythosRestakeEnabled.rawValue)
+        }
+    }
+
+    var hideUnifiedAddressPopup: Bool {
+        get {
+            bool(for: SettingsKey.hideUnifiedAddressPopup.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.hideUnifiedAddressPopup.rawValue)
         }
     }
 }

@@ -44,8 +44,16 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)
 }
 
-protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting,
-    ChainAddressDetailsPresentable, ActionsManagePresentable, CloudBackupRemindPresentable {
+protocol AccountManagementWireframeProtocol: AlertPresentable,
+    ErrorPresentable,
+    WebPresentable,
+    ModalAlertPresenting,
+    ChainAddressDetailsPresentable,
+    ActionsManagePresentable,
+    CloudBackupRemindPresentable,
+    CopyAddressPresentable,
+    UnifiedAddressPopupPresentable
+{
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,

@@ -3,7 +3,7 @@ import Foundation_iOS
 import SubstrateSdk
 
 struct ParaStkYourCollatorsViewFactory {
-    static func createView(for state: ParachainStakingSharedStateProtocol) -> ParaStkYourCollatorsViewProtocol? {
+    static func createView(for state: ParachainStakingSharedStateProtocol) -> CollatorStkYourCollatorsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -32,7 +32,7 @@ struct ParaStkYourCollatorsViewFactory {
             targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
-        let viewModelFactory = ParaStkYourCollatorsViewModelFactory(
+        let viewModelFactory = CollatorStkYourCollatorsViewModelFactory(
             balanceViewModeFactory: balanceViewModelFactory,
             assetPrecision: assetDisplayInfo.assetPrecision,
             chainFormat: chainAsset.chain.chainFormat
@@ -46,7 +46,7 @@ struct ParaStkYourCollatorsViewFactory {
             localizationManager: localizationManager
         )
 
-        let view = ParaStkYourCollatorsViewController(
+        let view = CollatorStkYourCollatorsViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

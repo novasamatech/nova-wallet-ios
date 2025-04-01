@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-typealias DAppBrowserTabsObservable = Observable<InMemoryCache<UUID, DAppBrowserTab>>
+private typealias DAppBrowserTabsObservable = Observable<ObservableInMemoryCache<UUID, DAppBrowserTab>>
 
 final class DAppBrowserTabManager {
     let tabsSubscriptionFactory: PersistentTabLocalSubscriptionFactoryProtocol
@@ -52,7 +52,7 @@ private extension DAppBrowserTabManager {
 
     func clearInMemory() {
         transportStates = .init()
-        observableTabs.state = .init()
+        observableTabs.state.removeAllValues()
     }
 
     func saveRenderWrapper(
@@ -74,26 +74,26 @@ private extension DAppBrowserTabManager {
             { [] }
         )
 
-        let resultOperation = ClosureOperation { [weak self] in
+        let resultOperation: BaseOperation<DAppBrowserTab> = ClosureOperation {
             _ = try saveTabOperation.extractNoCancellableResultData()
-
-            if let transportStates = tab.transportStates {
-                self?.transportStates.store(
-                    value: transportStates,
-                    for: tab.uuid
-                )
-            } else {
-                self?.transportStates.removeValue(for: tab.uuid)
-            }
 
             return tab
         }
+
         resultOperation.addDependency(saveTabOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
             dependencies: [saveTabOperation]
         )
+    }
+
+    func saveTransportsState(for tab: DAppBrowserTab) {
+        if let states = tab.transportStates {
+            transportStates.store(value: states, for: tab.uuid)
+        } else {
+            transportStates.removeValue(for: tab.uuid)
+        }
     }
 
     func retrieveWrapper(for tabId: UUID) -> CompoundOperationWrapper<DAppBrowserTab?> {
@@ -310,7 +310,11 @@ extension DAppBrowserTabManager: WalletListLocalStorageSubscriber, WalletListLoc
     ) {
         switch result {
         case let .success(managedMetaAccount):
-            observableTabs.state = .init()
+            guard metaAccount?.metaId != managedMetaAccount?.info.metaId else {
+                return
+            }
+
+            observableTabs.state.removeAllValues()
             metaAccount = managedMetaAccount?.info
 
             guard let metaAccount else { return }
@@ -329,18 +333,24 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         retrieveWrapper(for: id)
     }
 
-    func getAllTabs() -> CompoundOperationWrapper<[DAppBrowserTab]> {
-        let currentTabs = observableTabs.state.fetchAllValues()
+    func getAllTabs(for metaIds: Set<MetaAccountModel.Id>?) -> CompoundOperationWrapper<[DAppBrowserTab]> {
+        if let metaIds {
+            return tabsFetchWrapper(for: metaIds)
+        } else {
+            let currentTabs = observableTabs
+                .state
+                .fetchAllValues()
 
-        guard currentTabs.isEmpty else {
-            return .createWithResult(sorted(currentTabs))
+            guard currentTabs.isEmpty else {
+                return .createWithResult(sorted(currentTabs))
+            }
+
+            guard let metaAccount else {
+                return .createWithResult([])
+            }
+
+            return tabsFetchWrapper(for: [metaAccount.metaId])
         }
-
-        guard let metaAccount else {
-            return .createWithResult([])
-        }
-
-        return tabsFetchWrapper(for: [metaAccount.metaId])
     }
 
     func removeTab(with id: UUID) {
@@ -357,7 +367,9 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
     }
 
     func updateTab(_ tab: DAppBrowserTab) -> CompoundOperationWrapper<DAppBrowserTab> {
-        saveWrapper(for: tab)
+        saveTransportsState(for: tab)
+
+        return saveWrapper(for: tab)
     }
 
     func updateRenderForTab(
@@ -368,13 +380,15 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
             return .createWithResult(())
         }
 
+        let newTab = tab.updating(renderModifiedAt: Date())
+
         let updateRenderWrapper = updateRenderWrapper(
             render: render,
-            tab: tab
+            tab: newTab
         )
 
         var resultWrapper = saveWrapper(
-            for: tab.updating(renderModifiedAt: Date())
+            for: newTab
         )
 
         resultWrapper.addDependency(wrapper: updateRenderWrapper)
@@ -388,6 +402,12 @@ extension DAppBrowserTabManager: DAppBrowserTabManagerProtocol {
         resultWrapper.allOperations.forEach { voidResultOperation.addDependency($0) }
 
         return resultWrapper.insertingTail(operation: voidResultOperation)
+    }
+
+    func cleanTransport(for tabIds: Set<UUID>) -> BaseOperation<Void> {
+        ClosureOperation { [weak self] in
+            tabIds.forEach { self?.transportStates.removeValue(for: $0) }
+        }
     }
 
     func removeAll(for metaIds: Set<MetaAccountModel.Id>?) {

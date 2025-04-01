@@ -35,7 +35,8 @@ final class StakingDashboardPresenter {
         }
 
         let viewModel = walletViewModelFactory.createViewModel(
-            from: wallet.walletIdenticonData(),
+            from: wallet.identifier,
+            walletIdenticon: wallet.walletIdenticonData(),
             walletType: wallet.type,
             hasNotification: hasWalletsListUpdates
         )

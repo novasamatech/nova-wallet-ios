@@ -33,33 +33,32 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         screen: UrlHandlingScreen,
         locale: Locale
     ) {
-        guard
-            let controller = view?.controller as? UITabBarController,
-            canPresentScreenWithoutBreakingFlow(on: controller) else {
-            return
-        }
-
-        switch screen {
-        case let .error(error):
-            if let errorContent = error.content(for: locale) {
-                let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
-                present(
-                    message: errorContent.message,
-                    title: errorContent.title,
-                    closeAction: closeAction,
-                    from: view
-                )
+        if case let .dApp(model) = screen {
+            openBrowser(with: model)
+        } else {
+            guard
+                let controller = view?.controller as? UITabBarController,
+                canPresentScreenWithoutBreakingFlow(on: controller) else {
+                return
             }
-        case .staking:
-            controller.selectedIndex = MainTabBarIndex.staking
-        case let .gov(rederendumIndex):
-            openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
-        case let .dApp(dApp):
-            controller.selectedIndex = MainTabBarIndex.dapps
-            let dappViewController = controller.viewControllers?[MainTabBarIndex.dapps]
-            (dappViewController as? UINavigationController)?.popToRootViewController(animated: true)
-            if let dappView: DAppListViewProtocol = dappViewController?.contentViewController() {
-                dappView.didReceiveDApp(with: dApp.identifier)
+
+            switch screen {
+            case let .error(error):
+                if let errorContent = error.content(for: locale) {
+                    let closeAction = R.string.localizable.commonOk(preferredLanguages: locale.rLanguages)
+                    present(
+                        message: errorContent.message,
+                        title: errorContent.title,
+                        closeAction: closeAction,
+                        from: view
+                    )
+                }
+            case .staking:
+                controller.selectedIndex = MainTabBarIndex.staking
+            case let .gov(rederendumIndex):
+                openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
+            default:
+                break
             }
         }
     }

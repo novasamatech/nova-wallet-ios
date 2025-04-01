@@ -395,6 +395,35 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket?.write(string: string, completion: completion)
     }
 
+    private func handleEvent(_ event: WebSocketEvent) {
+        switch event {
+        case .connected:
+            markConnectedAndNotify()
+        case let .disconnected(message, code):
+            markDisconnectedAndNotify(
+                error: WSError(type: .protocolError, message: message, code: code)
+            )
+        case .cancelled:
+            markDisconnectedAndNotify(error: nil)
+        case let .reconnectSuggested(isBetter):
+            if isBetter {
+                protectedRestartIfDisconnected()
+            }
+        case let .viabilityChanged(isViable):
+            if isViable {
+                protectedRestartIfDisconnected()
+            }
+        case let .error(error):
+            markDisconnectedAndNotify(error: error)
+        case let .text(text):
+            onText?(text)
+        case .binary:
+            logger.warning("Binary received but not supported")
+        case .ping, .pong:
+            break
+        }
+    }
+
     private func startWebsocket() {
         let engine = engineFactory.createEngine()
         webSocket = WebSocket(request: request, engine: engine)
@@ -402,30 +431,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket?.onEvent = { [weak self] event in
             self?.logger.debug("Did receive event: \(event)")
 
-            switch event {
-            case .connected:
-                self?.markConnectedAndNotify()
-            case let .disconnected(message, code):
-                self?.markDisconnectedAndNotify(
-                    error: WSError(type: .protocolError, message: message, code: code)
-                )
-            case .cancelled:
-                self?.markDisconnectedAndNotify(error: nil)
-            case .reconnectSuggested:
-                self?.protectedRestart()
-            case let .viabilityChanged(isViable):
-                if !isViable {
-                    self?.markDisconnectedAndNotify(error: nil)
-                }
-            case let .error(error):
-                self?.markDisconnectedAndNotify(error: error)
-            case let .text(text):
-                self?.onText?(text)
-            case .binary:
-                self?.logger.warning("Binary received but not supported")
-            case .ping, .pong:
-                break
-            }
+            self?.handleEvent(event)
         }
 
         webSocket?.connect()
@@ -437,13 +443,20 @@ private final class DefaultWebSocket: WebSocketConnecting {
         webSocket = nil
     }
 
-    private func protectedRestart() {
+    private func protectedRestartIfDisconnected() {
         mutex.lock()
 
-        stopWebsocket()
-        startWebsocket()
+        defer {
+            mutex.unlock()
+        }
 
-        mutex.unlock()
+        guard connectionState == .notConnected else {
+            return
+        }
+
+        connectionState = .connecting
+
+        startWebsocket()
     }
 
     private func markConnectedAndNotify() {

@@ -51,14 +51,19 @@ struct DAppOperationConfirmViewFactory {
 
         let wireframe = DAppOperationEvmConfirmWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
+
+        let utilityBalanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let validationProviderFactory = EvmValidationProviderFactory(
             presentable: wireframe,
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFactory: utilityBalanceViewModelFactory,
             assetInfo: assetInfo
         )
 
@@ -77,7 +82,7 @@ struct DAppOperationConfirmViewFactory {
             wireframe: wireframe,
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -101,24 +106,20 @@ struct DAppOperationConfirmViewFactory {
     ) -> DAppOperationConfirmViewProtocol? {
         guard
             let interactor = interactor,
-            let assetInfo = chain.utilityAssetBalanceInfo,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = DAppOperationConfirmWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -169,9 +170,7 @@ struct DAppOperationConfirmViewFactory {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         let metadataHashFactory = MetadataHashOperationFactory(

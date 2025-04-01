@@ -43,11 +43,7 @@ struct GovernanceUnlockConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let dataValidatingFactory = GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
-        )
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = GovernanceUnlockConfirmPresenter(
             interactor: interactor,

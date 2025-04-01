@@ -1,12 +1,15 @@
 import UIKit
 import SnapKit
 
-final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
+final class NovaMainAppContainerViewController: UIViewController,
+    ViewHolder,
+    CollectionViewRotationHandling {
     typealias RootViewType = NovaMainAppContainerViewLayout
 
     let presenter: NovaMainAppContainerPresenterProtocol
     let logger: LoggerProtocol
 
+    var browserNavigation: BrowserNavigationProtocol?
     var tabBar: MainTabBarProtocol?
     var browserWidget: DAppBrowserWidgetProtocol?
     var topContainerBottomConstraint: NSLayoutConstraint?
@@ -38,6 +41,21 @@ final class NovaMainAppContainerViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         presenter.setup()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let oldIsLanscape = traitCollection.verticalSizeClass == .compact
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        let newIsLandscape = size.width > size.height
+
+        guard oldIsLanscape != newIsLandscape else { return }
+
+        // Force layout update after rotation animation completes as a workaround the bug with wrong cell size
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.updateCollectionViewLayoutIfNeeded()
+        }
     }
 }
 
@@ -73,7 +91,8 @@ private extension NovaMainAppContainerViewController {
             },
             animatableClosure: { [weak self] in
                 self?.tabBar?.view.layer.maskedCorners = []
-                self?.updateModalsLayoutIfNeeded()
+                self?.updateCardModalsLayoutIfNeeded()
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
@@ -100,6 +119,7 @@ private extension NovaMainAppContainerViewController {
                     .layerMinXMaxYCorner,
                     .layerMaxXMaxYCorner
                 ]
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
@@ -116,11 +136,38 @@ private extension NovaMainAppContainerViewController {
                 self?.topContainerBottomConstraint?.constant = -topContainerBottomOffset
 
                 return self?.rootView
+            },
+            animatableClosure: { [weak self] in
+                self?.updateDefaultModalsLayoutIfNeeded()
             }
         )
     }
 
-    func updateModalsLayoutIfNeeded() {
+    func updateDefaultModalsLayoutIfNeeded() {
+        guard let tabBar else { return }
+
+        var presentedViewController = tabBar.presentedController()
+
+        while presentedViewController != nil {
+            let presentationController = presentedViewController?.presentationController
+
+            guard !(presentationController is ModalCardPresentationController) else {
+                presentedViewController = presentedViewController?.presentedViewController
+                continue
+            }
+
+            presentationController?.presentedViewController.view.frame = CGRect(
+                x: tabBar.view.frame.origin.x,
+                y: tabBar.view.frame.origin.y,
+                width: tabBar.view.frame.width,
+                height: tabBar.view.frame.height
+            )
+
+            presentedViewController = presentedViewController?.presentedViewController
+        }
+    }
+
+    func updateCardModalsLayoutIfNeeded() {
         var presentedViewController = tabBar?.presentedController()
 
         while presentedViewController != nil {
@@ -186,8 +233,6 @@ extension NovaMainAppContainerViewController {
         topView.layer.masksToBounds = true
 
         rootView.addSubview(bottomView)
-
-        let minimizedWidgetHeight = Constants.minimizedWidgetHeight(for: view)
 
         bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()

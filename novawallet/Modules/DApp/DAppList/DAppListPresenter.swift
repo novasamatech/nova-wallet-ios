@@ -3,8 +3,10 @@ import SubstrateSdk
 import Foundation_iOS
 import Operation_iOS
 
-final class DAppListPresenter {
+final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     weak var view: DAppListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
@@ -14,6 +16,7 @@ final class DAppListPresenter {
     private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
+    private var randomizationSeed: Int = 1
     private var hasWalletsListUpdates: Bool = false
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -21,24 +24,29 @@ final class DAppListPresenter {
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        initialWallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        wallet = initialWallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 
     private func provideSections() {
-        guard let wallet else { return }
-
         do {
+            let params = DAppListViewModelFactory.ListSectionsParams(
+                randomizationSeed: randomizationSeed,
+                hasWalletsListUpdates: hasWalletsListUpdates
+            )
             let sections = viewModelFactory.createDAppSections(
                 from: try dAppsResult?.get(),
                 favorites: favorites ?? [:],
                 wallet: wallet,
-                hasWalletsListUpdates: hasWalletsListUpdates,
+                params: params,
+                bannersState: bannersModule?.bannersState ?? .unavailable,
                 locale: selectedLocale
             )
 
@@ -55,10 +63,15 @@ final class DAppListPresenter {
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
         interactor.setup()
+
+        if bannersModule?.locale != selectedLocale {
+            bannersModule?.updateLocale(selectedLocale)
+        }
     }
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func activateAccount() {
@@ -85,25 +98,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
-        guard
-            let wallet,
-            case let .success(dAppList) = dAppsResult
-        else { return }
-
-        let tab: DAppBrowserTab? = if let dApp = dAppList.dApps.first(where: { $0.identifier == id }) {
-            DAppBrowserTab(from: dApp, metaId: wallet.metaId)
-        } else if let dApp = favorites?[id] {
-            DAppBrowserTab(from: dApp.identifier, metaId: wallet.metaId)
-        } else {
-            nil
-        }
-
-        guard let tab else { return }
-
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
-        )
+        wireframe.openBrowser(with: id)
     }
 
     func seeAllFavorites() {
@@ -134,12 +129,13 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         if let currentResult = self.dAppsResult {
             // ignore error if we already loaded some dapps
-            guard case .success = currentResult, case .failure = dAppsResult else {
+            if case .success = currentResult, case .failure = dAppsResult {
                 return
             }
         }
 
         self.dAppsResult = dAppsResult
+        randomizationSeed = Int.random(in: 1 ..< 100)
 
         provideSections()
     }
@@ -160,16 +156,27 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard let wallet else { return }
+        wireframe.openBrowser(with: result)
+    }
+}
 
-        guard let tab = DAppBrowserTab(from: result, metaId: wallet.metaId) else {
-            return
-        }
+// MARK: BannersModuleOutputProtocol
 
-        wireframe.showNewBrowserStack(
-            tab,
-            from: view
+extension DAppListPresenter: BannersModuleOutputProtocol {
+    func didReceiveBanners(state _: BannersState) {
+        provideSections()
+    }
+
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
         )
+    }
+
+    func didUpdateContent(state _: BannersState) {
+        provideSections()
     }
 }
 
@@ -179,6 +186,7 @@ extension DAppListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideSections()
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

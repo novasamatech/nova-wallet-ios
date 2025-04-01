@@ -6,14 +6,13 @@ import BigInt
 // MARK: AssetListCollectionManager
 
 protocol AssetListCollectionManagerProtocol {
-    var ableToClosePromotion: Bool { get }
     var delegate: AssetListCollectionManagerDelegate? { get set }
 
     func setupCollectionView()
     func updateGroupsViewModel(with model: AssetListViewModel)
     func updateHeaderViewModel(with model: AssetListHeaderViewModel?)
     func updateNftViewModel(with model: AssetListNftsViewModel?)
-    func updatePromotionBannerViewModel(with model: PromotionBannerView.ViewModel?)
+    func updateBanners(available: Bool)
     func updateSelectedLocale(with locale: Locale)
 
     func updateTokensGroupLayout()
@@ -27,7 +26,7 @@ protocol AssetListCollectionManagerProtocol {
 typealias AssetListCollectionManagerDelegate = AssetListCollectionViewActionsDelegate
     & AssetListCollectionSelectionDelegate
 
-protocol AssetListCollectionViewActionsDelegate: AnyObject, PromotionBannerViewDelegate {
+protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionSelectAccount()
     func actionSearch()
     func actionRefresh()
@@ -39,12 +38,12 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject, PromotionBannerViewD
     func actionBuy()
     func actionSwap()
     func actionChangeAssetListStyle()
+    func actionCardOpen()
 }
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
     func selectNfts()
-    func selectPromotion()
 }
 
 protocol AssetListCollectionViewLayoutDelegate: AnyObject {
@@ -68,8 +67,7 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveNft(viewModel: AssetListNftsViewModel?)
-    func didReceivePromotion(viewModel: PromotionBannerView.ViewModel)
-    func didClosePromotion()
+    func didReceiveBanners(available: Bool)
     func didCompleteRefreshing()
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle)
 }
@@ -85,13 +83,12 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentSearch()
     func presentAssetsManage()
     func presentLocks()
+    func presentCard()
     func send()
     func receive()
     func buy()
     func swap()
     func presentWalletConnect()
-    func selectPromotion()
-    func closePromotion()
     func toggleAssetListStyle()
 }
 
@@ -103,7 +100,6 @@ protocol AssetListInteractorInputProtocol {
     func refresh()
     func connectWalletConnect(uri: String)
     func retryFetchWalletConnectSessionsCount()
-    func markPolkadotStakingPromotionSeen()
     func setAssetListGroupsStyle(_ style: AssetListGroupsStyle)
 }
 
@@ -121,7 +117,6 @@ protocol AssetListInteractorOutputProtocol {
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)
     func didCompleteRefreshing()
-    func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool)
     func didReceiveWalletsState(hasUpdates: Bool)
     func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle)
 }
@@ -154,6 +149,8 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
     func showSwapTokens(from view: AssetListViewProtocol?)
 
     func showStaking(from view: AssetListViewProtocol?)
+
+    func showCard(from view: AssetListViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

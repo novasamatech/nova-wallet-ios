@@ -19,12 +19,10 @@ protocol StakingMoreOptionsInteractorOutputProtocol: AnyObject {
     func didReceive(moreOptions: [StakingDashboardItemModel])
 }
 
-protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {
-    func showBrowser(
-        from view: ControllerBackedProtocol?,
-        with tab: DAppBrowserTab
-    )
-
+protocol StakingMoreOptionsWireframeProtocol: ErrorPresentable,
+    AlertPresentable,
+    CommonRetryable,
+    BrowserOpening {
     func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
         chainAsset: ChainAsset,

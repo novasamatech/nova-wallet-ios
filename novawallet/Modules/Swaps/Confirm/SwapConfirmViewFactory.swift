@@ -27,18 +27,22 @@ struct SwapConfirmViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let priceDiffModelFactory = SwapPriceDifferenceModelFactory(config: .defaultConfig)
+        let percentFormatter = NumberFormatter.percentSingle.localizableResource()
+
         let viewModelFactory = SwapDetailsViewModelFactory(
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
             priceAssetInfoFactory: priceAssetInfoFactory,
             networkViewModelFactory: NetworkViewModelFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
-            percentForamatter: NumberFormatter.percentSingle.localizableResource(),
-            priceDifferenceConfig: .defaultConfig
+            priceDifferenceModelFactory: priceDiffModelFactory,
+            percentFormatter: percentFormatter
         )
 
         let dataValidatingFactory = SwapDataValidatorFactory(
             presentable: wireframe,
-            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade,
+            percentFormatter: percentFormatter
         )
 
         let presenter = SwapConfirmPresenter(
@@ -47,6 +51,7 @@ struct SwapConfirmViewFactory {
             initState: initState,
             selectedWallet: wallet,
             viewModelFactory: viewModelFactory,
+            priceDifferenceFactory: priceDiffModelFactory,
             priceStore: flowState.priceStore,
             slippageBounds: .init(config: SlippageConfig.defaultConfig),
             dataValidatingFactory: dataValidatingFactory,

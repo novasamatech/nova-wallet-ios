@@ -23,6 +23,7 @@ protocol ReferendumDetailsPresenterProtocol: AnyObject, WalletNoAccountHandling 
     func openFullDetails()
     func vote()
     func openURL(_ url: URL)
+    func share()
 }
 
 protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
@@ -57,7 +58,8 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable,
     AddressOptionsPresentable,
     WebPresentable,
     NoAccountSupportPresentable,
-    DAppBrowserOpening {
+    BrowserOpening,
+    SharingPresentable {
     func showFullDetails(
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,

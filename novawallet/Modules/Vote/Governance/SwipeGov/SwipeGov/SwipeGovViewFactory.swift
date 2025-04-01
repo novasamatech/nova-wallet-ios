@@ -47,6 +47,7 @@ struct SwipeGovViewFactory {
             viewModelFactory: viewModelFactory,
             cardsViewModelFactory: cardsViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             utilityAssetInfo: assetInfo,
             localizationManager: localizationManager
         )

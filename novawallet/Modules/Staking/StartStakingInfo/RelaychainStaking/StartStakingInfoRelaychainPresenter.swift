@@ -136,7 +136,7 @@ extension StartStakingInfoRelaychainPresenter {
             }
         }
 
-        var nextEraStartTime: TimeInterval? {
+        var rewardDelay: TimeInterval? {
             guard let eraCountdown = eraCountdown else {
                 return nil
             }
@@ -144,7 +144,7 @@ extension StartStakingInfoRelaychainPresenter {
             return eraCountdown.timeIntervalTillStart(targetEra: eraCountdown.currentEra + 2)
         }
 
-        var eraDuration: TimeInterval? {
+        var rewardTime: TimeInterval? {
             guard let eraCountdown = eraCountdown else {
                 return nil
             }

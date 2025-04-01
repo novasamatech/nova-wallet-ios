@@ -1,6 +1,6 @@
 import Foundation
 
-extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
+extension ParaStkUnstakePresenter: CollatorStkPartialUnstakeSetupPresenterProtocol {
     func setup() {
         let optCollatorId = selectInitialCollator()
 
@@ -31,8 +31,8 @@ extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
 
         let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
 
-        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
-            from: delegations,
+        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModelsFromBonds(
+            delegations,
             identities: delegationIdentities,
             disabled: Set(disabledCollators)
         )
@@ -41,7 +41,7 @@ extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
 
         let selectedIndex = delegations.firstIndex { $0.owner == collatorId } ?? NSNotFound
 
-        wireframe.showUnstakingCollatorSelection(
+        wireframe.showUndelegationSelection(
             from: view,
             viewModels: accountDetailsViewModels,
             selectedIndex: selectedIndex,

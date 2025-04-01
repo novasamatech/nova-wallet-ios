@@ -151,9 +151,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         return ExtrinsicService(
@@ -196,9 +194,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: customFeeEstimatingFactory
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         return ExtrinsicService(
@@ -240,9 +236,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         return ExtrinsicOperationFactory(
@@ -286,9 +280,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: customFeeEstimatingFactory
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
 
         return ExtrinsicOperationFactory(

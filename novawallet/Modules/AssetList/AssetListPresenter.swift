@@ -4,13 +4,15 @@ import SubstrateSdk
 import Foundation_iOS
 import BigInt
 
-final class AssetListPresenter {
+final class AssetListPresenter: BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
 
     static let viewUpdatePeriod: TimeInterval = 1.0
 
     weak var view: AssetListViewProtocol?
+    weak var bannersModule: BannersModuleInputProtocol?
+
     let wireframe: AssetListWireframeProtocol
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
@@ -20,7 +22,6 @@ final class AssetListPresenter {
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
-    private var shouldShowPolkadotPromotion: Bool = true
     private var hasWalletsUpdates: Bool = false
 
     private(set) var walletConnectSessionsCount: Int = 0
@@ -47,18 +48,16 @@ final class AssetListPresenter {
 // MARK: Private
 
 private extension AssetListPresenter {
-    func providePolkadotStakingPromotion() {
-        guard shouldShowPolkadotPromotion else {
-            return
-        }
-
-        let viewModel = PromotionViewModelFactory.createPolkadotStakingPromotion(for: selectedLocale)
-
-        view?.didReceivePromotion(viewModel: viewModel)
+    func provideBanners(state: BannersState) {
+        let available = state == .available || state == .loading
+        view?.didReceiveBanners(available: available)
     }
 
     func provideHeaderViewModel() {
-        guard let walletType = walletType, let name = name else {
+        guard
+            let walletId = walletId,
+            let walletType = walletType,
+            let name = name else {
             return
         }
 
@@ -67,6 +66,7 @@ private extension AssetListPresenter {
                 params: .init(
                     title: name,
                     wallet: .init(
+                        identifier: walletId,
                         walletIdenticon: walletIdenticon,
                         walletType: walletType,
                         walletConnectSessionsCount: walletConnectSessionsCount,
@@ -84,7 +84,8 @@ private extension AssetListPresenter {
         }
 
         provideHeaderViewModel(
-            with: priceMapping,
+            with: walletId,
+            priceMapping: priceMapping,
             walletIdenticon: walletIdenticon,
             walletType: walletType,
             name: name
@@ -145,7 +146,8 @@ private extension AssetListPresenter {
     }
 
     func provideHeaderViewModel(
-        with priceMapping: [ChainAssetId: PriceData],
+        with walletId: String,
+        priceMapping: [ChainAssetId: PriceData],
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         name: String
@@ -158,6 +160,7 @@ private extension AssetListPresenter {
             params: .init(
                 title: name,
                 wallet: .init(
+                    identifier: walletId,
                     walletIdenticon: walletIdenticon,
                     walletType: walletType,
                     walletConnectSessionsCount: walletConnectSessionsCount,
@@ -446,6 +449,10 @@ private extension AssetListPresenter {
 
 extension AssetListPresenter: AssetListPresenterProtocol {
     func setup() {
+        if let bannersModule {
+            provideBanners(state: bannersModule.bannersState)
+        }
+
         interactor.setup()
     }
 
@@ -463,6 +470,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
+        bannersModule?.refresh()
     }
 
     func presentSearch() {
@@ -471,6 +479,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func presentAssetsManage() {
         wireframe.showTokensManage(from: view)
+    }
+
+    func presentCard() {
+        wireframe.showCard(from: view)
     }
 
     func presentLocks() {
@@ -532,22 +544,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         } else {
             wireframe.showScan(from: view, delegate: self)
         }
-    }
-
-    func selectPromotion() {
-        shouldShowPolkadotPromotion = false
-        interactor.markPolkadotStakingPromotionSeen()
-
-        wireframe.showStaking(from: view)
-
-        view?.didClosePromotion()
-    }
-
-    func closePromotion() {
-        shouldShowPolkadotPromotion = false
-        interactor.markPolkadotStakingPromotionSeen()
-
-        view?.didClosePromotion()
     }
 
     func toggleAssetListStyle() {
@@ -629,11 +625,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         view?.didCompleteRefreshing()
     }
 
-    func didReceivePromotionBanner(shouldShowPolkadotStaking: Bool) {
-        shouldShowPolkadotPromotion = shouldShowPolkadotStaking
-        providePolkadotStakingPromotion()
-    }
-
     func didReceiveWalletsState(hasUpdates: Bool) {
         hasWalletsUpdates = hasUpdates
         provideHeaderViewModel()
@@ -646,6 +637,26 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
     }
 }
 
+// MARK: BannersModuleOutputProtocol
+
+extension AssetListPresenter: BannersModuleOutputProtocol {
+    func didReceive(_ error: any Error) {
+        wireframe.present(
+            error: error,
+            from: view,
+            locale: selectedLocale
+        )
+    }
+
+    func didReceiveBanners(state: BannersState) {
+        provideBanners(state: state)
+    }
+
+    func didUpdateContent(state: BannersState) {
+        provideBanners(state: state)
+    }
+}
+
 // MARK: Localizable
 
 extension AssetListPresenter: Localizable {
@@ -653,7 +664,7 @@ extension AssetListPresenter: Localizable {
         if let view = view, view.isSetup {
             updateAssetsView()
             updateNftView()
-            providePolkadotStakingPromotion()
+            bannersModule?.updateLocale(selectedLocale)
         }
     }
 }

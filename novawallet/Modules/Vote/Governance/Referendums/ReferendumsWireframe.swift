@@ -127,7 +127,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         }
 
         searchView.controller.modalTransitionStyle = .crossDissolve
-        searchView.controller.modalPresentationStyle = .fullScreen
+        searchView.controller.modalPresentationStyle = .overCurrentContext
 
         view?.controller.present(searchView.controller, animated: true, completion: nil)
     }

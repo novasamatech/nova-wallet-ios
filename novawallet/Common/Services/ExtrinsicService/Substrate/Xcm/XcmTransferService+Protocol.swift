@@ -88,21 +88,15 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             feeWrapper.addDependency(wrapper: callBuilderWrapper)
 
-            feeWrapper.targetOperation.completionBlock = {
-                switch feeWrapper.targetOperation.result {
-                case let .success(fee):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(fee))
-                case let .failure(error):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
+            let totalWrapper = feeWrapper.insertingHead(operations: callBuilderWrapper.allOperations)
 
-            let operations = callBuilderWrapper.allOperations + feeWrapper.allOperations
+            execute(
+                wrapper: totalWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: queue,
+                callbackClosure: completionClosure
+            )
 
-            operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
         }
@@ -115,31 +109,44 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.destination.chain.chainId
             )
 
-            let wrapper = createDestinationFeeWrapper(
-                for: feeMessages.destination,
-                request: request,
-                xcmTransfers: xcmTransfers
-            )
+            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
 
-            wrapper.targetOperation.completionBlock = {
-                switch wrapper.targetOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
+            let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+            feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let feeMessages = try self.xcmFactory.createWeightMessages(
+                    from: request.origin,
+                    reserve: request.reserve,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers,
+                    version: version
+                )
+
+                return self.createDestinationFeeWrapper(
+                    for: feeMessages.destination,
+                    request: request,
+                    xcmTransfers: xcmTransfers
+                )
             }
 
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+            feeWrapper.addDependency(wrapper: versionWrapper)
+
+            let totalWrapper = feeWrapper.insertingHead(operations: versionWrapper.allOperations)
+
+            execute(
+                wrapper: totalWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: queue,
+                callbackClosure: completionClosure
+            )
 
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
@@ -153,39 +160,49 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.reserve.chain.chainId
             )
 
-            if let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
+            let versionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(for: runtimeProvider)
+
+            let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+            feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let version = try versionWrapper.targetOperation.extractNoCancellableResultData()
+
+                let feeMessages = try self.xcmFactory.createWeightMessages(
+                    from: request.origin,
+                    reserve: request.reserve,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers,
+                    version: version
+                )
+
+                guard let reserveMessage = feeMessages.reserve else {
+                    throw XcmTransferServiceError.reserveFeeNotAvailable
+                }
+
+                return self.createReserveFeeWrapper(
                     for: reserveMessage,
                     request: request,
                     xcmTransfers: xcmTransfers
                 )
-
-                wrapper.targetOperation.completionBlock = {
-                    switch wrapper.targetOperation.result {
-                    case let .some(result):
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                    case .none:
-                        let error = BaseOperationError.parentOperationCancelled
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
-                }
-
-                operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-            } else {
-                callbackClosureIfProvided(
-                    completionClosure,
-                    queue: queue,
-                    result: .failure(XcmTransferServiceError.reserveFeeNotAvailable)
-                )
             }
+
+            feeWrapper.addDependency(wrapper: versionWrapper)
+
+            let totalWrapper = feeWrapper.insertingHead(operations: versionWrapper.allOperations)
+
+            execute(
+                wrapper: totalWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: queue,
+                callbackClosure: completionClosure
+            )
+
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
         }
@@ -198,48 +215,82 @@ extension XcmTransferService: XcmTransferServiceProtocol {
         completion completionClosure: @escaping XcmTransferCrosschainFeeClosure
     ) {
         do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
+            let destinationRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.destination.chain.chainId
             )
 
-            let executionFeeWrapper = createExecutionFeeWrapper(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                feeMessages: feeMessages
+            let reserveRuntimeProvider = try chainRegistry.getRuntimeProviderOrError(
+                for: request.reserve.chain.chainId
             )
 
-            let deliveryFeeWrapper = createDeliveryFeeWrapper(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                feeMessages: feeMessages
+            let destinationVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+                for: destinationRuntimeProvider
             )
 
-            let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
-                let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
-                let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
+            let reserveVersionWrapper = xcmPalletQueryFactory.createLowestMultilocationVersionWrapper(
+                for: reserveRuntimeProvider
+            )
 
-                return XcmFeeModel.combine(executionFee, deliveryFee)
-            }
+            let feeWrapper: CompoundOperationWrapper<XcmFeeModelProtocol>
+            feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) {
+                let destinationVersion = try destinationVersionWrapper.targetOperation.extractNoCancellableResultData()
+                let reserveVersion = try reserveVersionWrapper.targetOperation.extractNoCancellableResultData()
 
-            let dependencies = executionFeeWrapper.allOperations + deliveryFeeWrapper.allOperations
+                let version = [destinationVersion, reserveVersion]
+                    .compactMap { $0 }
+                    .max()
 
-            dependencies.forEach { mergeOperation.addDependency($0) }
+                let feeMessages = try self.xcmFactory.createWeightMessages(
+                    from: request.origin,
+                    reserve: request.reserve,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers,
+                    version: version
+                )
 
-            mergeOperation.completionBlock = {
-                switch mergeOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
+                let executionFeeWrapper = self.createExecutionFeeWrapper(
+                    request: request,
+                    xcmTransfers: xcmTransfers,
+                    feeMessages: feeMessages
+                )
+
+                let deliveryFeeWrapper = self.createDeliveryFeeWrapper(
+                    request: request,
+                    xcmTransfers: xcmTransfers,
+                    feeMessages: feeMessages
+                )
+
+                let mergeOperation = ClosureOperation<XcmFeeModelProtocol> {
+                    let executionFee = try executionFeeWrapper.targetOperation.extractNoCancellableResultData()
+                    let deliveryFee = try deliveryFeeWrapper.targetOperation.extractNoCancellableResultData()
+
+                    return XcmFeeModel.combine(executionFee, deliveryFee)
                 }
+
+                mergeOperation.addDependency(deliveryFeeWrapper.targetOperation)
+                mergeOperation.addDependency(executionFeeWrapper.targetOperation)
+
+                return deliveryFeeWrapper
+                    .insertingHead(operations: executionFeeWrapper.allOperations)
+                    .insertingTail(operation: mergeOperation)
             }
 
-            operationQueue.addOperations(dependencies + [mergeOperation], waitUntilFinished: false)
+            feeWrapper.addDependency(wrapper: destinationVersionWrapper)
+            feeWrapper.addDependency(wrapper: reserveVersionWrapper)
+
+            let totalWrapper = feeWrapper
+                .insertingHead(operations: destinationVersionWrapper.allOperations)
+                .insertingHead(operations: reserveVersionWrapper.allOperations)
+
+            execute(
+                wrapper: totalWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: queue,
+                callbackClosure: completionClosure
+            )
 
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))

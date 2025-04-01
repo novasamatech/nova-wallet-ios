@@ -68,8 +68,16 @@ struct AssetListViewFactory {
             appearanceFacade: appearanceFacade
         )
 
+        guard let bannerModule = BannersViewFactory.createView(
+            domain: .assets,
+            output: presenter,
+            inputOwner: presenter,
+            locale: localizationManager.selectedLocale
+        ) else { return nil }
+
         let view = AssetListViewController(
             presenter: presenter,
+            bannersViewProvider: bannerModule,
             localizationManager: localizationManager
         )
 

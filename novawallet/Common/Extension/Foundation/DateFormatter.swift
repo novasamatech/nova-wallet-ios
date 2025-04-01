@@ -70,6 +70,34 @@ extension DateFormatter {
             .withThisYear(dateFormatter: dateFormatter.localizableResource())
             .build(defaultFormat: "dd MMMM yyyy")
     }
+
+    static var chartEntryDate: LocalizableResource<DateFormatter> {
+        LocalizableResource { locale in
+            let format = DateFormatter.dateFormat(
+                fromTemplate: "d MMM' at 'HH:mm",
+                options: 0,
+                locale: locale
+            )
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = format
+            dateFormatter.locale = locale
+            return dateFormatter
+        }
+    }
+
+    static var chartEntryWithYear: LocalizableResource<DateFormatter> {
+        LocalizableResource { locale in
+            let format = DateFormatter.dateFormat(
+                fromTemplate: "d MMM' at 'HH:mm, yyyy",
+                options: 0,
+                locale: locale
+            )
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = format
+            dateFormatter.locale = locale
+            return dateFormatter
+        }
+    }
 }
 
 extension DateComponentsFormatter {

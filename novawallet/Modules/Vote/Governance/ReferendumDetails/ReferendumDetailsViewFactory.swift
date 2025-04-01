@@ -96,6 +96,8 @@ struct ReferendumDetailsViewFactory {
             stringFactory: referendumDisplayStringFactory
         )
 
+        let linkFactory = UniversalLinkFactory(baseUrl: ApplicationConfig.shared.universalLinkURL)
+
         return ReferendumDetailsPresenter(
             chain: chain,
             governanceType: stateOption.type,
@@ -113,6 +115,7 @@ struct ReferendumDetailsViewFactory {
             endedReferendumProgressViewModelFactory: endedReferendumProgressViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            universalLinkFactory: linkFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

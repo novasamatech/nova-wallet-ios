@@ -4,7 +4,6 @@ import Operation_iOS
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didCompleteRefreshing()
     func didReceive(_ sections: [DAppListSectionViewModel])
-    func didReceiveDApp(with id: String)
 }
 
 protocol DAppListPresenterProtocol: AnyObject {
@@ -36,7 +35,7 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable,
     ErrorPresentable,
     WebPresentable,
     WalletSwitchPresentable,
-    DAppBrowserOpening {
+    BrowserOpening {
     func showSetting(from view: DAppListViewProtocol?)
     func showFavorites(from view: DAppListViewProtocol?)
 }

@@ -18,7 +18,7 @@ extension WalletStorageCleanerFactory {
             dAppSettingsCleaner
         ]
 
-        let mainCleaner = RemovedWalletStorageCleaner(cleanersCascade: cleaners)
+        let mainCleaner = WalletStorageCleaner(cleanersCascade: cleaners)
 
         return mainCleaner
     }
@@ -63,7 +63,7 @@ extension WalletStorageCleanerFactory {
             logger: logger
         )
         
-        let browserStateCleaner = WalletBrowserStateCleaner(
+        let browserStateCleaner = RemovedWalletBrowserStateCleaner(
             browserTabManager: tabManager,
             webViewPoolEraser: WebViewPool.shared,
             operationQueue: operationQueue
@@ -82,7 +82,9 @@ extension WalletStorageCleanerFactory {
         )
         let authorizedDAppRepository = AnyDataProviderRepository(repository)
         
-        let dappSettingsCleaner = DAppSettingsCleaner(authorizedDAppRepository: authorizedDAppRepository)
+        let dappSettingsCleaner = RemovedWalletDAppSettingsCleaner(
+            authorizedDAppRepository: authorizedDAppRepository
+        )
         
         return dappSettingsCleaner
     }

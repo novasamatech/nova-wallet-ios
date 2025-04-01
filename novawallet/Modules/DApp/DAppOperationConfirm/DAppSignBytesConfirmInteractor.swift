@@ -44,6 +44,7 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: accountResponse.accountId,
             chainAddress: chainAddress,
+            feeAsset: nil,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )

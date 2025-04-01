@@ -101,7 +101,7 @@ enum LedgerMessageSheetViewFactory {
                 secondaryAction: nil
             )
 
-            let view = MessageSheetViewController<MessageSheetImageView, MessageSheetTimerLabel>(
+            let view = MessageSheetViewController<MessageSheetImageView, TxExpirationMessageSheetTimerLabel>(
                 presenter: presenter,
                 viewModel: viewModel,
                 localizationManager: LocalizationManager.shared

@@ -40,7 +40,7 @@ final class GovernanceYourDelegationsViewController: UIViewController, ViewHolde
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        if !dataStore.isEmpty {
+        if dataStore.isEmpty {
             rootView.updateLoadingState()
         }
     }

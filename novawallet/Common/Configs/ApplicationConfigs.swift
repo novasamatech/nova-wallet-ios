@@ -38,6 +38,7 @@ protocol ApplicationConfigProtocol {
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
     var proxyWikiURL: URL { get }
+    var unifiedAddressWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
@@ -308,6 +309,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
+    var unifiedAddressWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
+    }
+
     var universalLinkURL: URL {
         #if F_RELEASE
             URL(string: "https://app.novawallet.io")!
@@ -322,6 +327,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var coloredAppearanceIconsPath: String {
         "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/icons/tokens/colored/"
+    }
+
+    var bannersContentPath: String {
+        "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/master/banners/v2/content/"
     }
 
     // swiftlint:enable line_length

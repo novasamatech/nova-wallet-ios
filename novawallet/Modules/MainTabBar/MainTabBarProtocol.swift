@@ -4,6 +4,7 @@ protocol MainTabBarProtocol {
     var view: UIView! { get set }
 
     func presentedController() -> UIViewController?
+    func topViewController() -> UIViewController?
 }
 
 protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {
@@ -34,7 +35,10 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didReceiveCloudSync(status: CloudBackupSyncMonitorStatus?)
 }
 
-protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible, ModalAlertPresenting {
+protocol MainTabBarWireframeProtocol: AlertPresentable,
+    AuthorizationAccessible,
+    ModalAlertPresenting,
+    BrowserOpening {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,

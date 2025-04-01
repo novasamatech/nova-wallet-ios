@@ -26,6 +26,8 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale
     ) -> DataValidating
 
+    func noHighPriceDifference(paramsClosure: @escaping () -> SwapDifferenceModel?, locale: Locale) -> DataValidating
+
     func passesRealtimeQuoteValidation(
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
@@ -47,13 +49,16 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
     let presentable: SwapErrorPresentable
     let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+    let percentFormatter: LocalizableResource<NumberFormatter>
 
     init(
         presentable: SwapErrorPresentable,
-        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
+        percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.presentable = presentable
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
+        self.percentFormatter = percentFormatter
     }
 
     // swiftlint:disable:next function_body_length
@@ -221,6 +226,41 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
         }, preservesCondition: {
             cantReceiveReason == nil
         })
+    }
+
+    func noHighPriceDifference(paramsClosure: @escaping () -> SwapDifferenceModel?, locale: Locale) -> DataValidating {
+        let params = paramsClosure()
+
+        return WarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                guard let self else {
+                    return
+                }
+
+                let difference = params.flatMap { self.percentFormatter.value(for: locale).stringFromDecimal($0.diff) }
+
+                presentable.presentHighPriceDifference(
+                    from: view,
+                    difference: difference ?? "",
+                    proceedAction: {
+                        delegate.didCompleteWarningHandling()
+                    },
+                    locale: locale
+                )
+            },
+            preservesCondition: {
+                guard let params else {
+                    return true
+                }
+
+                switch params.attention {
+                case .low:
+                    return true
+                case .medium, .high:
+                    return false
+                }
+            }
+        )
     }
 
     func noDustRemains(

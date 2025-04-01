@@ -97,7 +97,8 @@ private extension ModalCardPresentationController {
             dy: topOffset
         ).origin
 
-        let presentedByModalCardController = presentingViewController.presentationController is ModalCardPresentationController
+        let presentationController = presentingViewController.presentationController
+        let presentedByModalCardController = presentationController is ModalCardPresentationController
 
         let finalHeight: CGFloat = if presentedByModalCardController {
             presentingViewController.view.bounds.height
@@ -397,8 +398,12 @@ extension ModalCardPresentationController: UIGestureRecognizerDelegate {
         _: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith second: UIGestureRecognizer
     ) -> Bool {
-        guard let scrollView = second.view as? UIScrollView else {
+        guard var scrollView = second.view as? UIScrollView else {
             return false
+        }
+
+        if let parentScrollView = lookForParentScroll(for: scrollView) {
+            scrollView = parentScrollView
         }
 
         if observedScrollView !== scrollView {
@@ -406,6 +411,20 @@ extension ModalCardPresentationController: UIGestureRecognizerDelegate {
         }
 
         return true
+    }
+
+    func lookForParentScroll(for scrollView: UIScrollView) -> UIScrollView? {
+        var superView: UIView? = scrollView.superview
+
+        while superView != nil {
+            if let parentScrollView = superView as? UIScrollView {
+                return parentScrollView
+            } else {
+                superView = superView?.superview
+            }
+        }
+
+        return nil
     }
 }
 

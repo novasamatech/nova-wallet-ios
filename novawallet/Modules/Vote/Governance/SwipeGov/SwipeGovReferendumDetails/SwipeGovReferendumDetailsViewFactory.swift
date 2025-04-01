@@ -65,8 +65,11 @@ struct SwipeGovReferendumDetailsViewFactory {
         )
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
 
+        let universalLinkFactory = UniversalLinkFactory(baseUrl: ApplicationConfig.shared.universalLinkURL)
+
         return SwipeGovReferendumDetailsPresenter(
             chain: chain,
+            governanceType: stateOption.type,
             interactor: interactor,
             wireframe: wireframe,
             referendumFormatter: indexFormatter,
@@ -74,6 +77,7 @@ struct SwipeGovReferendumDetailsViewFactory {
             referendumMetadataViewModelFactory: metadataViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            universalLinkFactory: universalLinkFactory,
             initData: initData,
             logger: Logger.shared,
             localizationManager: LocalizationManager.shared

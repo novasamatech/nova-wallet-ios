@@ -14,6 +14,7 @@ extension ModalSheetPresentationStyle {
             indicatorColor: R.color.colorPullIndicator()!
         )
         let style = ModalSheetPresentationStyle(
+            sizing: .manual,
             backdropColor: R.color.colorDimBackground()!,
             headerStyle: headerStyle
         )

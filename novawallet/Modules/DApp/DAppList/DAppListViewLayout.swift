@@ -1,7 +1,13 @@
 import UIKit
 
+protocol DAppListViewLayoutDelegate: AnyObject {
+    func heightForBannerSection() -> CGFloat
+}
+
 final class DAppListViewLayout: UIView {
     private let backgroundView = MultigradientView.background
+
+    weak var delegate: DAppListViewLayoutDelegate?
 
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(
@@ -69,10 +75,11 @@ private extension DAppListViewLayout {
                     fixedHeight: DAppCategoriesView.preferredHeight,
                     scrollingBehavior: .none
                 )
-                contentInsets.bottom = 12
+                contentInsets.bottom = 4
+                contentInsets.top = 12
             case .banners:
                 section = bannersSectionLayout()
-                contentInsets.bottom = 24
+                contentInsets.bottom = 16
             case .favorites:
                 section = dAppFavoritesSectionLayout()
                 contentInsets.bottom = 24
@@ -107,6 +114,8 @@ private extension DAppListViewLayout {
     }
 
     func bannersSectionLayout() -> NSCollectionLayoutSection {
+        let height: CGFloat = delegate?.heightForBannerSection() ?? 0
+
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
@@ -116,7 +125,7 @@ private extension DAppListViewLayout {
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.915),
-                heightDimension: .absolute(120.0)
+                heightDimension: .absolute(height)
             ),
             subitem: item,
             count: 1

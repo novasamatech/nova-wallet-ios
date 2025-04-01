@@ -88,11 +88,13 @@ private extension DAppBrowserPresenter {
 // MARK: DAppBrowserPresenterProtocol
 
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
-    func actionFavorite(page: DAppBrowserPage) {
-        if let favorite = favorites?[page.identifier] {
+    func actionFavorite() {
+        guard let browserPage else { return }
+
+        if let favorite = favorites?[browserPage.identifier] {
             removeFromFavorites(dApp: favorite)
         } else {
-            addToFavorites(page: page)
+            addToFavorites(page: browserPage)
         }
     }
 
@@ -115,9 +117,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
     func process(
         message: Any,
-        host: String,
         transport name: String
     ) {
+        let host = browserPage?.url.host ?? ""
+
         interactor.process(
             message: message,
             host: host,
@@ -129,10 +132,12 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         interactor.process(stateRender: stateRender)
     }
 
-    func activateSearch(with query: String?) {
+    func activateSearch() {
+        guard let browserPage else { return }
+
         wireframe.presentSearch(
             from: view,
-            initialQuery: query,
+            initialQuery: browserPage.url.absoluteString,
             delegate: self
         )
     }
@@ -277,6 +282,7 @@ extension DAppBrowserPresenter: DAppAuthDelegate {
 extension DAppBrowserPresenter: DAppPhishingViewDelegate {
     func dappPhishingViewDidHide() {
         view?.didDecideClose()
+        interactor.close()
         wireframe.close(view: view)
     }
 }

@@ -7,88 +7,16 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static let crowdloanIndex: Int = 1
 
     static func createView() -> MainTabBarViewProtocol? {
-        guard
-            let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
-            .findService(),
-            let screenOpenService: ScreenOpenServiceProtocol = URLHandlingService.shared.findService(),
-            let pushScreenOpenService = PushNotificationHandlingService.shared.service
-        else {
-            Logger.shared.error("Can't find required keystore import service")
-            return nil
-        }
-
         let localizationManager = LocalizationManager.shared
-        let securedLayer = SecurityLayerService.shared
-
         let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingService.shared)
-        let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
 
-        let interactor = MainTabBarInteractor(
-            eventCenter: EventCenter.shared,
-            serviceCoordinator: serviceCoordinator,
-            keystoreImportService: keystoreImportService,
-            screenOpenService: screenOpenService,
-            pushScreenOpenService: pushScreenOpenService,
-            cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
-            securedLayer: securedLayer,
-            inAppUpdatesService: inAppUpdatesService,
-            settingsManager: SettingsManager.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
-        )
-
-        let walletNotificationService = serviceCoordinator.walletNotificationService
-        let proxySyncService = serviceCoordinator.proxySyncService
-
-        guard let walletController = createWalletController(
-            for: localizationManager,
-            dappMediator: serviceCoordinator.dappMediator,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        ) else {
-            return nil
-        }
-
-        guard let stakingController = createStakingController(
-            for: localizationManager,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        ) else {
-            return nil
-        }
-
-        guard let voteController = createVoteController(
-            for: localizationManager,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        ) else {
-            return nil
-        }
-
-        guard let dappsController = createDappsController(
-            for: localizationManager,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        ) else {
-            return nil
-        }
-
-        guard let settingsController = createProfileController(
-            for: localizationManager,
-            serviceCoordinator: serviceCoordinator
-        ) else {
-            return nil
-        }
-
-        let indexedControllers: [(Int, UIViewController)] = [
-            (MainTabBarIndex.wallet, walletController),
-            (MainTabBarIndex.vote, voteController),
-            (MainTabBarIndex.dapps, dappsController),
-            (MainTabBarIndex.staking, stakingController),
-            (MainTabBarIndex.settings, settingsController)
-        ].sorted { cont1, cont2 in
-            cont1.0 < cont2.0
-        }
+        guard
+            let interactor = createInteractor(serviceCoordinator: serviceCoordinator),
+            let indexedControllers = createIndexedControllers(
+                localizationManager: localizationManager,
+                serviceCoordinator: serviceCoordinator
+            )
+        else { return nil }
 
         let presenter = MainTabBarPresenter(localizationManager: LocalizationManager.shared)
 
@@ -107,6 +35,89 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         interactor.presenter = presenter
 
         return view
+    }
+}
+
+// MARK: Private
+
+private extension MainTabBarViewFactory {
+    static func createInteractor(serviceCoordinator: ServiceCoordinatorProtocol) -> MainTabBarInteractor? {
+        guard
+            let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
+            .findService(),
+            let screenOpenService: ScreenOpenServiceProtocol = URLHandlingService.shared.findService(),
+            let pushScreenOpenService = PushNotificationHandlingService.shared.service
+        else {
+            Logger.shared.error("Can't find required keystore import service")
+            return nil
+        }
+
+        let securedLayer = SecurityLayerService.shared
+        let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
+
+        let interactor = MainTabBarInteractor(
+            eventCenter: EventCenter.shared,
+            serviceCoordinator: serviceCoordinator,
+            keystoreImportService: keystoreImportService,
+            screenOpenService: screenOpenService,
+            pushScreenOpenService: pushScreenOpenService,
+            cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,
+            securedLayer: securedLayer,
+            inAppUpdatesService: inAppUpdatesService,
+            settingsManager: SettingsManager.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        return interactor
+    }
+
+    static func createIndexedControllers(
+        localizationManager: LocalizationManagerProtocol,
+        serviceCoordinator: ServiceCoordinatorProtocol
+    ) -> [(Int, UIViewController)]? {
+        let walletNotificationService = serviceCoordinator.walletNotificationService
+        let proxySyncService = serviceCoordinator.proxySyncService
+
+        guard
+            let walletController = createWalletController(
+                for: localizationManager,
+                dappMediator: serviceCoordinator.dappMediator,
+                walletNotificationService: walletNotificationService,
+                proxySyncService: proxySyncService
+            ),
+            let stakingController = createStakingController(
+                for: localizationManager,
+                walletNotificationService: walletNotificationService,
+                proxySyncService: proxySyncService
+            ),
+            let voteController = createVoteController(
+                for: localizationManager,
+                walletNotificationService: walletNotificationService,
+                proxySyncService: proxySyncService
+            ),
+            let dappsController = createDappsController(
+                for: localizationManager,
+                walletNotificationService: walletNotificationService,
+                proxySyncService: proxySyncService
+            ),
+            let settingsController = createProfileController(
+                for: localizationManager,
+                serviceCoordinator: serviceCoordinator
+            )
+        else {
+            return nil
+        }
+
+        return [
+            (MainTabBarIndex.wallet, walletController),
+            (MainTabBarIndex.vote, voteController),
+            (MainTabBarIndex.dapps, dappsController),
+            (MainTabBarIndex.staking, stakingController),
+            (MainTabBarIndex.settings, settingsController)
+        ].sorted { cont1, cont2 in
+            cont1.0 < cont2.0
+        }
     }
 
     static func createWalletController(

@@ -23,6 +23,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         initState: SwapConfirmInitState,
         selectedWallet: MetaAccountModel,
         viewModelFactory: SwapDetailsViewModelFactoryProtocol,
+        priceDifferenceFactory: SwapPriceDifferenceModelFactoryProtocol,
         priceStore: AssetExchangePriceStoring,
         slippageBounds: SlippageBounds,
         dataValidatingFactory: SwapDataValidatorFactoryProtocol,
@@ -39,6 +40,7 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         super.init(
             selectedWallet: selectedWallet,
             dataValidatingFactory: dataValidatingFactory,
+            priceDiffFactory: priceDifferenceFactory,
             priceStore: priceStore,
             logger: logger
         )

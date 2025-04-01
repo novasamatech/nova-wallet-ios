@@ -223,6 +223,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         if metadataProvider == nil {
             presenter?.didReceiveReferendumsMetadata([])
+        } else {
+            metadataProvider?.refresh()
         }
     }
 

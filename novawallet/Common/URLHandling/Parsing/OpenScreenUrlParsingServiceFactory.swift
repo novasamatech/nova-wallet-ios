@@ -7,7 +7,6 @@ protocol OpenScreenUrlParsingServiceFactoryProtocol {
 final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFactoryProtocol {
     private let chainRegistryClosure: ChainRegistryLazyClosure
     private let applicationConfig: ApplicationConfigProtocol
-    private let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
     private let settings: SettingsManagerProtocol
 
     enum Screen: String {
@@ -19,12 +18,10 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
     init(
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared,
-        jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
         settings: SettingsManagerProtocol = SettingsManager.shared
     ) {
         self.chainRegistryClosure = chainRegistryClosure
         self.applicationConfig = applicationConfig
-        self.jsonDataProviderFactory = jsonDataProviderFactory
         self.settings = settings
     }
 
@@ -36,9 +33,7 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
             let chainRegistry = chainRegistryClosure()
             return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry, settings: settings)
         case .dApp:
-            let dAppsProvider: AnySingleValueProvider<DAppList> = jsonDataProviderFactory.getJson(
-                for: applicationConfig.dAppsListURL)
-            return OpenDAppUrlParsingService(dAppsProvider: dAppsProvider)
+            return OpenDAppUrlParsingService()
         default:
             return nil
         }

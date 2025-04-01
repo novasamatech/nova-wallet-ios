@@ -7,9 +7,10 @@ extension UIViewController {
         animated: Bool,
         completion: (() -> Void)? = nil
     ) {
-        let contextRootViewController = viewController.tabBarController ?? UIApplication.shared.rootContainer
-
-        guard let contextRootViewController else { return }
+        let contextRootViewController = viewController.tabBarController
+            ?? UIApplication.shared.rootContainer
+            ?? viewController.navigationController
+            ?? viewController
 
         let appearanceAnimator = BlockViewAnimator(
             duration: 0.25,

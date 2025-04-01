@@ -38,7 +38,7 @@ struct ParaStkRebondViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let hintViewModelFactory = ParaStkHintsViewModelFactory()
+        let hintViewModelFactory = CollatorStakingHintsViewModelFactory()
 
         let presenter = ParaStkRebondPresenter(
             interactor: interactor,

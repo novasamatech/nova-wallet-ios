@@ -90,6 +90,8 @@ final class StakingActionsView: UIView {
             dropCells.forEach { $0.removeFromSuperview() }
 
             cells = Array(cells.prefix(actions.count))
+
+            tableView.updateLayout()
         }
 
         self.actions = actions

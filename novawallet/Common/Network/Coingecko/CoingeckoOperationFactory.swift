@@ -11,22 +11,19 @@ protocol CoingeckoOperationFactoryProtocol {
     func fetchPriceHistory(
         for tokenId: String,
         currency: Currency,
-        startDate: Date,
-        endDate: Date
+        period: PriceHistoryPeriod
     ) -> BaseOperation<PriceHistory>
 }
 
 extension CoingeckoOperationFactoryProtocol {
-    func fetchPriceOperation(for tokenIds: [String], currency: Currency) -> BaseOperation<[PriceData]> {
-        fetchPriceOperation(for: tokenIds, currency: currency, returnsZeroIfUnsupported: true)
-    }
-
-    func fetchPriceHistory(for tokenId: String, currency: Currency) -> BaseOperation<PriceHistory> {
-        fetchPriceHistory(
-            for: tokenId,
+    func fetchPriceOperation(
+        for tokenIds: [String],
+        currency: Currency
+    ) -> BaseOperation<[PriceData]> {
+        fetchPriceOperation(
+            for: tokenIds,
             currency: currency,
-            startDate: Date(timeIntervalSince1970: 0),
-            endDate: Date()
+            returnsZeroIfUnsupported: true
         )
     }
 }
@@ -38,7 +35,7 @@ final class CoingeckoOperationFactory {
         currencies: [String] = ["usd"]
     ) -> URL? {
         guard var components = URLComponents(
-            url: CoingeckoAPI.baseURL.appendingPathComponent(method),
+            url: PriceAPI.baseURL.appendingPathComponent(method),
             resolvingAgainstBaseURL: false
         ) else { return nil }
 
@@ -56,24 +53,34 @@ final class CoingeckoOperationFactory {
 
     private func buildURLForPriceHistory(
         tokenId: String,
-        currency: String,
-        startDate: Date,
-        endDate: Date
+        queryItems: [URLQueryItem]
     ) -> URL? {
-        let method = CoingeckoAPI.priceHistory(for: tokenId)
+        let method = PriceAPI.priceHistory(for: tokenId)
 
         guard var components = URLComponents(
-            url: CoingeckoAPI.baseURL.appendingPathComponent(method),
+            url: PriceAPI.proxyBaseURL.appendingPathComponent(method),
             resolvingAgainstBaseURL: false
         ) else { return nil }
 
-        components.queryItems = [
-            URLQueryItem(name: "vs_currency", value: currency),
-            URLQueryItem(name: "from", value: "\(UInt64(startDate.timeIntervalSince1970))"),
-            URLQueryItem(name: "to", value: "\(UInt64(endDate.timeIntervalSince1970))")
-        ]
+        components.queryItems = queryItems
 
         return components.url
+    }
+
+    private func buildURLForPriceHistoryPeriod(
+        tokenId: String,
+        currency: String,
+        period: PriceAPI.Period
+    ) -> URL? {
+        let queryItems = [
+            URLQueryItem(name: "vs_currency", value: currency),
+            URLQueryItem(name: "days", value: period.rawValue),
+        ]
+
+        return buildURLForPriceHistory(
+            tokenId: tokenId,
+            queryItems: queryItems
+        )
     }
 
     private func buildOperation<T>(for url: URL, processingBlock: @escaping (Data) throws -> T) -> BaseOperation<T> {
@@ -94,6 +101,19 @@ final class CoingeckoOperationFactory {
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
+
+    private func decodeToPriceHistory(
+        _ data: Data,
+        _ currency: Currency
+    ) throws -> PriceHistory {
+        let priceHistory = try JSONDecoder().decode(CoingeckPriceHistoryData.self, from: data)
+
+        let historyItems = priceHistory.prices.map { item in
+            PriceHistoryItem(startedAt: UInt64(item.time.timeInterval), value: item.value)
+        }
+
+        return PriceHistory(currencyId: currency.id, items: historyItems)
+    }
 }
 
 extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
@@ -104,7 +124,7 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
     ) -> BaseOperation<[PriceData]> {
         guard let url = buildURLForAssets(
             tokenIds,
-            method: CoingeckoAPI.price,
+            method: PriceAPI.price,
             currencies: [currency.coingeckoId]
         ) else {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
@@ -137,27 +157,21 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
     func fetchPriceHistory(
         for tokenId: String,
         currency: Currency,
-        startDate: Date,
-        endDate: Date
+        period: PriceHistoryPeriod
     ) -> BaseOperation<PriceHistory> {
         guard
-            let url = buildURLForPriceHistory(
+            let url = buildURLForPriceHistoryPeriod(
                 tokenId: tokenId,
                 currency: currency.coingeckoId,
-                startDate: startDate,
-                endDate: endDate
+                period: PriceAPI.Period(from: period)
             ) else {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
         }
 
-        return buildOperation(for: url) { data in
-            let priceHistory = try JSONDecoder().decode(CoingeckPriceHistoryData.self, from: data)
+        return buildOperation(for: url) { [weak self] data in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            let historyItems = priceHistory.prices.map { item in
-                PriceHistoryItem(startedAt: UInt64(item.time.timeInterval), value: item.value)
-            }
-
-            return PriceHistory(currencyId: currency.id, items: historyItems)
+            return try decodeToPriceHistory(data, currency)
         }
     }
 }

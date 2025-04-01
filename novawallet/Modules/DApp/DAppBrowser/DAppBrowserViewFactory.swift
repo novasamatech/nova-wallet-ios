@@ -37,6 +37,39 @@ struct DAppBrowserViewFactory {
         let localizationManager = LocalizationManager.shared
         let logger = Logger.shared
 
+        let interactor = createInteractor(
+            with: selectedTab,
+            wallet: wallet,
+            logger: logger
+        )
+
+        let presenter = DAppBrowserPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            logger: logger
+        )
+
+        let view = DAppBrowserViewController(
+            presenter: presenter,
+            localRouter: URLLocalRouter.createWithDeeplinks(),
+            webViewPool: WebViewPool.shared,
+            deviceOrientationManager: DeviceOrientationManager.shared,
+            localizationManager: localizationManager,
+            logger: logger
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createInteractor(
+        with selectedTab: DAppBrowserTab,
+        wallet: MetaAccountModel,
+        logger: LoggerProtocol
+    ) -> DAppBrowserInteractor {
         let storageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
 
@@ -74,25 +107,6 @@ struct DAppBrowserViewFactory {
             logger: logger
         )
 
-        let presenter = DAppBrowserPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
-            localizationManager: localizationManager,
-            logger: logger
-        )
-
-        let view = DAppBrowserViewController(
-            presenter: presenter,
-            localRouter: URLLocalRouter.createWithDeeplinks(),
-            webViewPool: WebViewPool.shared,
-            deviceOrientationManager: DeviceOrientationManager.shared,
-            localizationManager: localizationManager,
-            logger: logger
-        )
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return view
+        return interactor
     }
 }

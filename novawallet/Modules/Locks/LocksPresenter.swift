@@ -84,12 +84,15 @@ final class LocksPresenter {
     }
 
     private func createLocksCells() -> [LocksViewSectionModel.CellViewModel] {
-        let locksCells: [LocksViewSectionModel.CellViewModel] = input.locks.compactMap {
-            createCell(
-                amountInPlank: $0.amount,
-                chainAssetId: $0.chainAssetId,
-                title: $0.lockType.map { $0.displayType.value(for: selectedLocale) } ?? $0.displayId?.capitalized ?? "",
-                identifier: $0.identifier
+        let locksCells: [LocksViewSectionModel.CellViewModel] = input.locks.compactMap { lock in
+            let optTitle = lock.lockType.map { $0.displayType.value(for: selectedLocale) } ??
+                lock.displayModuleAndIdTitle
+
+            return createCell(
+                amountInPlank: lock.amount,
+                chainAssetId: lock.chainAssetId,
+                title: optTitle ?? "",
+                identifier: lock.identifier
             )
         }
 

@@ -35,6 +35,7 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: request.accountId,
             chainAddress: address,
+            feeAsset: nil,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon
         )

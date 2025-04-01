@@ -181,12 +181,14 @@ extension ServiceCoordinator {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(using: operationQueue)
+        let walletStorageCleaner = WalletStorageCleanerFactory.createWalletStorageCleaner(
+            using: operationQueue
+        )
 
         let walletUpdateMediator = WalletUpdateMediator(
             selectedWalletSettings: SelectedWalletSettings.shared,
             repository: metaAccountsRepository,
-            removedWalletsCleaner: walletStorageCleaner,
+            walletsCleaner: walletStorageCleaner,
             operationQueue: operationQueue
         )
 

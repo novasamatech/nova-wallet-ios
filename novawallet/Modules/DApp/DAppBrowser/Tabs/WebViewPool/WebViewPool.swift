@@ -20,10 +20,17 @@ extension WebViewPool: WebViewPoolProtocol {
 
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()
+        configuration.allowsInlineMediaPlayback = true
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.scrollView.contentInsetAdjustmentBehavior = .always
         view.scrollView.backgroundColor = R.color.colorSecondaryScreenBackground()
+
+        #if F_DEV
+            if #available(iOS 16.4, *) {
+                view.isInspectable = true
+            }
+        #endif
 
         webViewDict[id] = view
 

@@ -179,7 +179,11 @@ final class StakingStateViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: eraCountdown, items: viewModels)
+        return StakingUnbondingViewModel(
+            eraCountdown: eraCountdown,
+            items: viewModels,
+            canCancelUnbonding: true
+        )
     }
 }
 

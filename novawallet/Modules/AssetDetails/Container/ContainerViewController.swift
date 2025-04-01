@@ -4,8 +4,8 @@ import UIKit_iOS
 
 class ContainerViewController: UIViewController, AdaptiveDesignable {
     private enum Constants {
-        static let minimumBottonInset: CGFloat = 60.0
-        static let contentAnimationDuration: TimeInterval = 0.25
+        static let minimumBottonInset: CGFloat = 159.0
+        static let contentAnimationDuration: TimeInterval = 0.2
         static let draggableChangeDuration: TimeInterval = 0.25
         static let draggableCancellationThreshold: Double = 0.1
         static let draggableChangesAfterThreshold: Double = 0.5
@@ -15,8 +15,8 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
     private var shadowView: UIView?
 
-    private var containerSize = CGSize(width: 375.0, height: 667.0)
-    private var boundsHeight: CGFloat = 667.0
+    private lazy var containerSize = baseDesignSize
+    private lazy var boundsHeight = baseDesignSize.height
 
     var presentationNavigationItem: UINavigationItem? {
         nil
@@ -37,10 +37,6 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
         contentInsets.top = view.safeAreaInsets.top
         contentInsets.bottom = view.safeAreaInsets.bottom
-
-        if let view = viewIfLoaded {
-            contentInsets.bottom += containerSize.height - view.bounds.height
-        }
 
         return contentInsets
     }
@@ -64,6 +60,14 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
         return Double(remainedDistance / maxDistance)
     }
+
+    let contentChangeBlockAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: Constants.contentAnimationDuration,
+        options: [.curveEaseInOut]
+    )
+    let draggableBlockAnimator: BlockViewAnimatorProtocol = BlockViewAnimator(
+        duration: Constants.draggableChangeDuration
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,6 +96,7 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
         super.viewWillLayoutSubviews()
 
         if abs(boundsHeight - view.bounds.height) > CGFloat.leastNonzeroMagnitude {
+            containerSize = view.bounds.size
             boundsHeight = view.bounds.height
 
             updateContentInsets()
@@ -171,7 +176,9 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
 
     fileprivate func updateContentInsets(animated: Bool = false) {
         if let content = content {
-            let contentInsets = createPreferredContentInsets(for: content.preferredContentHeight)
+            var contentInsets = createPreferredContentInsets(for: content.preferredContentHeight)
+            contentInsets.bottom += UIScreen.main.bounds.height - view.bounds.height
+
             content.setContentInsets(contentInsets, animated: animated)
         }
     }
@@ -200,8 +207,8 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
     fileprivate func createPreferredContentInsets(for contentHeight: CGFloat) -> UIEdgeInsets {
         var contentInsets: UIEdgeInsets = inheritedInsets
 
-        contentInsets.bottom += max(
-            containerSize.height - contentInsets.top - contentInsets.bottom - contentHeight,
+        contentInsets.bottom = max(
+            containerSize.height - contentHeight - contentInsets.bottom,
             Constants.minimumBottonInset
         )
 
@@ -216,21 +223,34 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
             let preferredContentInsets = createPreferredContentInsets(for: preferredContentHeight)
 
             let compactOriginY = containerSize.height - preferredContentInsets.bottom
-            let compactHeight = preferredContentInsets.bottom
+
             return CGRect(
                 x: 0.0,
                 y: compactOriginY,
                 width: containerSize.width,
-                height: compactHeight
+                height: containerSize.height
             )
         case .full:
             return CGRect(origin: .zero, size: containerSize)
         }
     }
 
-    fileprivate func updateDraggableLayout(forceLayoutUpdate: Bool = false) {
+    fileprivate func updateDraggableLayout(
+        forceLayoutUpdate: Bool = false,
+        animated: Bool = false
+    ) {
         if let draggable = draggable {
-            draggable.draggableView.frame = createDraggableFrame(for: draggableState)
+            if animated {
+                contentChangeBlockAnimator.animate(
+                    block: { [weak self] in
+                        guard let self else { return }
+                        draggable.draggableView.frame = createDraggableFrame(for: draggableState)
+                    },
+                    completionBlock: nil
+                )
+            } else {
+                draggable.draggableView.frame = createDraggableFrame(for: draggableState)
+            }
 
             if forceLayoutUpdate {
                 draggable.draggableView.layoutIfNeeded()
@@ -305,31 +325,29 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
             return
         }
 
+        let animateClosure: () -> Void = {
+            self.animateDraggable(to: self.draggableState)
+            draggable.set(dragableState: self.draggableState, animated: true)
+        }
+
         let oppositPan = (velocity.y < 0.0 && draggableState == .full) ||
             (velocity.y > 0.0 && draggableState == .compact)
 
         if oppositPan || draggableProgress < Constants.draggableCancellationThreshold {
-            let duration = Constants.draggableChangeDuration
-            animateDraggable(to: draggableState, duration: duration)
-            draggable.set(dragableState: draggableState, animated: true)
+            animateClosure()
+
             return
         }
 
         if draggableProgress > Constants.draggableChangesAfterThreshold ||
             abs(velocity.y) > Constants.draggableVelocityThreshold {
-            let duration = Constants.draggableChangeDuration
-
             draggableState = draggableState.other
-            animateDraggable(to: draggableState, duration: duration)
-            draggable.set(dragableState: draggableState, animated: true)
-        } else {
-            let duration = Constants.draggableChangeDuration
-            animateDraggable(to: draggableState, duration: duration)
-            draggable.set(dragableState: draggableState, animated: true)
         }
+
+        animateClosure()
     }
 
-    private func animateDraggable(to state: DraggableState, duration: TimeInterval) {
+    private func animateDraggable(to state: DraggableState) {
         if let draggable = draggable {
             let frame = createDraggableFrame(for: state)
 
@@ -337,7 +355,7 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
                 setupShadowView()
             }
 
-            UIView.animate(withDuration: duration, animations: {
+            draggableBlockAnimator.animate {
                 draggable.draggableView.frame = frame
                 draggable.draggableView.layoutIfNeeded()
 
@@ -347,32 +365,23 @@ class ContainerViewController: UIViewController, AdaptiveDesignable {
                 case .full:
                     self.shadowView?.alpha = Constants.draggableMaxShadowAlpha
                 }
-
-            }, completion: { _ in
+            } completionBlock: { _ in
                 if state == .compact {
                     self.shadowView?.removeFromSuperview()
                     self.shadowView = nil
                 }
-            })
+            }
         }
     }
 }
 
 extension ContainerViewController: ContainableObserver {
-    func willChangePreferredContentHeight() {
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(Constants.contentAnimationDuration)
-
-        UIView.beginAnimations(nil, context: nil)
-        UIView.setAnimationDuration(Constants.contentAnimationDuration)
-    }
-
     func didChangePreferredContentHeight(to _: CGFloat) {
-        updateDraggableLayout(forceLayoutUpdate: true)
+        updateDraggableLayout(
+            forceLayoutUpdate: true,
+            animated: true
+        )
         updateContentInsets(animated: true)
-
-        UIView.commitAnimations()
-        CATransaction.commit()
     }
 }
 
@@ -382,7 +391,7 @@ extension ContainerViewController: DraggableDelegate {
             self.draggableState = draggableState
 
             if animating {
-                animateDraggable(to: draggableState, duration: Constants.draggableChangeDuration)
+                animateDraggable(to: draggableState)
                 draggable?.set(dragableState: draggableState, animated: true)
             } else {
                 updateDraggableLayout()

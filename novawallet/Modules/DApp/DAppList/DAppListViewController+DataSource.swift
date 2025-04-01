@@ -30,23 +30,24 @@ extension DAppListViewController {
                     categoriess: models,
                     indexPath: indexPath
                 )
-            case let .banner(model):
+            case .banner:
                 setupBannerView(
                     using: collectionView,
-                    banner: model,
                     indexPath: indexPath
                 )
             case let .favorites(model, _):
                 setupDAppView(
                     using: collectionView,
                     dApp: model,
-                    indexPath: indexPath
+                    indexPath: indexPath,
+                    layoutStyle: .vertical
                 )
             case let .category(model, _):
                 setupDAppView(
                     using: collectionView,
                     dApp: model,
-                    indexPath: indexPath
+                    indexPath: indexPath,
+                    layoutStyle: .horizontal
                 )
             case .notLoaded:
                 setupLoadingView(
@@ -127,15 +128,17 @@ private extension DAppListViewController {
 
     func setupBannerView(
         using collectionView: UICollectionView,
-        banner: DAppListBannerViewModel,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let cell: DAppListBannerView = collectionView.dequeueReusableCellWithType(
-            DAppListBannerView.self,
+        let cell: BannersContainerCollectionViewCell = collectionView.dequeueReusableCellWithType(
+            BannersContainerCollectionViewCell.self,
             for: indexPath
         )!
 
-        cell.bind(viewModel: banner)
+        bannersViewProvider.setupBanners(
+            on: self,
+            view: cell.view
+        )
 
         return cell
     }
@@ -143,19 +146,15 @@ private extension DAppListViewController {
     func setupDAppView(
         using collectionView: UICollectionView,
         dApp: DAppViewModel,
-        indexPath: IndexPath
+        indexPath: IndexPath,
+        layoutStyle: DAppItemView.LayoutStyle
     ) -> UICollectionViewCell {
         let cell: DAppItemCollectionViewCell = collectionView.dequeueReusableCellWithType(
             DAppItemCollectionViewCell.self,
             for: indexPath
         )!
 
-        if dApp.isFavorite {
-            cell.view.layoutStyle = .vertical
-        } else {
-            cell.view.layoutStyle = .horizontal
-        }
-
+        cell.view.layoutStyle = layoutStyle
         cell.view.bind(viewModel: dApp)
 
         return cell

@@ -10,6 +10,10 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         sharedState.localSubscriptionFactory
     }
 
+    var stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol {
+        sharedState.stakingRewardsLocalSubscriptionFactory
+    }
+
     var proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol {
         sharedState.proxyLocalSubscriptionFactory
     }

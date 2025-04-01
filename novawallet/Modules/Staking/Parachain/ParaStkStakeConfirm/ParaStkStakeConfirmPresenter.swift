@@ -3,7 +3,7 @@ import BigInt
 import Foundation_iOS
 
 final class ParaStkStakeConfirmPresenter {
-    weak var view: ParaStkStakeConfirmViewProtocol?
+    weak var view: CollatorStakingConfirmViewProtocol?
     let wireframe: ParaStkStakeConfirmWireframeProtocol
     let interactor: ParaStkStakeConfirmInteractorInputProtocol
 
@@ -199,7 +199,7 @@ final class ParaStkStakeConfirmPresenter {
     }
 }
 
-extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
+extension ParaStkStakeConfirmPresenter: CollatorStakingConfirmPresenterProtocol {
     func setup() {
         applyCurrentState()
 

@@ -3,7 +3,7 @@ import Operation_iOS
 import Foundation_iOS
 
 struct NPoolsClaimRewardsViewFactory {
-    static func createView(for state: NPoolsStakingSharedStateProtocol) -> NPoolsClaimRewardsViewProtocol? {
+    static func createView(for state: NPoolsStakingSharedStateProtocol) -> StakingClaimRewardsViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
             let wallet = SelectedWalletSettings.shared.value,
@@ -42,7 +42,7 @@ struct NPoolsClaimRewardsViewFactory {
             logger: Logger.shared
         )
 
-        let view = NPoolsClaimRewardsViewController(
+        let view = StakingClaimRewardsViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared
         )

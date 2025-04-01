@@ -8,7 +8,7 @@ protocol DAppAuthSettingsTableCellDelegate: AnyObject {
 final class DAppAuthSettingsTableCell: UITableViewCell {
     let iconView: DAppIconView = {
         let view = DAppIconView()
-        view.contentInsets = DAppIconCellConstants.insets
+        view.contentInsets = .zero
         return view
     }()
 
@@ -48,7 +48,10 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
     }
 
     func bind(viewModel: DAppAuthSettingsViewModel) {
-        iconView.bind(viewModel: viewModel.iconViewModel, size: DAppIconCellConstants.displaySize)
+        iconView.bind(
+            viewModel: viewModel.iconViewModel,
+            size: DAppIconCellConstants.size
+        )
 
         multiValueView.bind(topValue: viewModel.title, bottomValue: viewModel.subtitle)
     }

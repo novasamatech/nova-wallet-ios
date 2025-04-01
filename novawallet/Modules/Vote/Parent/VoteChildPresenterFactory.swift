@@ -218,6 +218,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             selectedMetaAccount: wallet,
             accountManagementFilter: AccountManagementFilter(),
             sorting: ReferendumsTimeSortingProvider(),
+            govBalanceCalculatorFactory: GovBalanceCalculatorFactory(),
             localizationManager: localizationManager,
             appearanceFacade: AppearanceFacade.shared,
             logger: logger

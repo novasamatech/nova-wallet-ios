@@ -78,7 +78,7 @@ struct GovernanceDelegateConfirmViewFactory {
 
         let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
-        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = GovernanceDelegateConfirmPresenter(
             interactor: interactor,

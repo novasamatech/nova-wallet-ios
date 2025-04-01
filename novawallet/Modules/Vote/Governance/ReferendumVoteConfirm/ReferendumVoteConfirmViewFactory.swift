@@ -51,7 +51,8 @@ struct ReferendumVoteConfirmViewFactory {
         let dataValidatingFactory = GovernanceValidatorFactory(
             presentable: wireframe,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type)
         )
 
         let presenter = ReferendumVoteConfirmPresenter(

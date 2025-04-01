@@ -3,3 +3,4 @@
 "NSPhotoLibraryUsageDescription" = "A fotókönyvtár-hozzáférés lehetővé teszi a címmel rendelkező QR-kód kiválasztását, a Polkadot Vault tranzakciókat vagy a WalletConnect-en keresztüli kapcsolódást";
 "NSPhotoLibraryAddUsageDescription" = "Átutalási kérelem mentése QR-kódként";
 "NSBluetoothAlwaysUsageDescription" = "A Bluetooth a Ledger Nano X eszközökkel való kommunikációra szolgál";
+"NSMicrophoneUsageDescription" = "A mikrofont a KYC médiaüléshez használjuk";

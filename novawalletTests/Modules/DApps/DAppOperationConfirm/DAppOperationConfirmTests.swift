@@ -20,6 +20,7 @@ class DAppOperationConfirmTests: XCTestCase {
         tip: "0x00000000000000000000000000000000",
         transactionVersion: "0x00000003",
         metadataHash: nil,
+        assetId: nil,
         withSignedTransaction: nil,
         signedExtensions: [
             "CheckNonZeroSender",
@@ -131,9 +132,7 @@ class DAppOperationConfirmTests: XCTestCase {
                 host: extrinsicFeeHost,
                 customFeeEstimatorFactory: AssetConversionFeeEstimatingFactory(host: extrinsicFeeHost)
             ),
-            feeInstallingWrapperFactory: ExtrinsicFeeInstallingWrapperFactory(
-                customFeeInstallerFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
-            )
+            feeInstallingWrapperFactory: AssetConversionFeeInstallingFactory(host: extrinsicFeeHost)
         )
         
         let metadataHashFactory = MetadataHashOperationFactory(
@@ -158,8 +157,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let delegate = MockDAppOperationConfirmDelegate()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chain.assets.first!.displayInfo,
+        let balanceViewModelFactory = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
@@ -168,7 +166,7 @@ class DAppOperationConfirmTests: XCTestCase {
             wireframe: wireframe,
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFactory,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )
@@ -281,8 +279,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let delegate = MockDAppOperationConfirmDelegate()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chain.assets.first!.displayInfo,
+        let balanceViewModelFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
@@ -291,7 +288,7 @@ class DAppOperationConfirmTests: XCTestCase {
             wireframe: wireframe,
             delegate: delegate,
             viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
-            balanceViewModelFactory: balanceViewModelFactory,
+            balanceViewModelFacade: balanceViewModelFacade,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
         )

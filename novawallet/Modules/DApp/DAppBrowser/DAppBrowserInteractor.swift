@@ -141,6 +141,7 @@ private extension DAppBrowserInteractor {
 
                 return DAppTransportModel(
                     name: transportName,
+                    handlerNames: [transportName],
                     scripts: [bridgeScript, subscriptionScript]
                 )
             }
@@ -263,7 +264,6 @@ private extension DAppBrowserInteractor {
             case let .success(isNotPhishing):
                 if !isNotPhishing {
                     bringPhishingDetectedStateAndNotify(for: host)
-                    tabManager.removeTab(with: currentTab.uuid)
                 }
 
                 completion?(isNotPhishing)
@@ -369,12 +369,18 @@ private extension DAppBrowserInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(tab):
+            case .success:
                 self?.provideTabs()
             case let .failure(error):
                 self?.presenter?.didReceive(error: error)
             }
         }
+    }
+
+    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
+        let transportStates = transports.compactMap { $0.makeOpaqueState() }
+
+        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
     }
 }
 
@@ -430,13 +436,19 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(stateRender: DAppBrowserTabRenderProtocol) {
+        let transportSaveWrapper = createTransportSaveWrapper()
+
         let renderUpdateWrapper = tabManager.updateRenderForTab(
             with: currentTab.uuid,
             render: stateRender
         )
 
+        renderUpdateWrapper.addDependency(wrapper: transportSaveWrapper)
+
+        let totalWrapper = renderUpdateWrapper.insertingHead(operations: transportSaveWrapper.allOperations)
+
         operationQueue.addOperations(
-            renderUpdateWrapper.allOperations,
+            totalWrapper.allOperations,
             waitUntilFinished: false
         )
     }
@@ -512,10 +524,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func createTransportSaveWrapper() -> CompoundOperationWrapper<DAppBrowserTab> {
-        let transportStates = transports.compactMap { $0.makeOpaqueState() }
-
-        return tabManager.updateTab(currentTab.updating(transportStates: transportStates))
+    func close() {
+        tabManager.removeTab(with: currentTab.uuid)
     }
 }
 

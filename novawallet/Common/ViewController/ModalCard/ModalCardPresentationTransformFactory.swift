@@ -20,7 +20,9 @@ private extension ModalCardPresentationTransformFactory {
     func createLastPresenterTransform(for presentingViewController: UIViewController) -> CGAffineTransform {
         guard let sourceView = presentingViewController.view else { return CGAffineTransform.identity }
 
-        let presenterIsModalCard = (presentingViewController.presentationController as? ModalCardPresentationController) != nil
+        let presentationController = presentingViewController.presentationController
+        let cardPresentationController = presentationController as? ModalCardPresentationController
+        let presenterIsModalCard = cardPresentationController != nil
 
         let widthDelta: CGFloat = UIConstants.horizontalInset * 2
         let scale = (sourceView.bounds.width - widthDelta) / sourceView.bounds.width

@@ -74,8 +74,7 @@ extension StakingMoreOptionsPresenter: StakingMoreOptionsPresenterProtocol {
             return
         }
 
-        let tab = DAppBrowserTab(from: dApp, metaId: metaId)
-        wireframe.showBrowser(from: view, with: tab)
+        wireframe.openBrowser(with: dApp.identifier)
     }
 }
 
