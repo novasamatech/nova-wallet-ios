@@ -62,7 +62,7 @@ enum GetTokenOptionsViewFactory {
         }
 
         let xcmTransfersSyncService = XcmTransfersSyncService(
-            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            config: ApplicationConfig.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

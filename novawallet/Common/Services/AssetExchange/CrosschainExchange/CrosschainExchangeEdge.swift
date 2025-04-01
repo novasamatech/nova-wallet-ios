@@ -13,24 +13,20 @@ final class CrosschainExchangeEdge {
     }
 
     private func deliveryFeeNotPaidOrFromHolding() -> Bool {
+        guard
+            let originChain = host.allChains[origin.chainId],
+            let originChainAsset = originChain.chainAsset(for: origin.assetId),
+            let destinationChain = host.allChains[destination.chainId] else {
+            return false
+        }
+
         do {
-            guard let deliveryFee = try host.xcmTransfers.deliveryFee(from: origin.chainId) else {
-                return true
-            }
+            let metadata = try host.xcmTransfers.getTransferMetadata(
+                for: originChainAsset,
+                destinationChain: destinationChain
+            )
 
-            guard
-                let originChain = host.allChains[origin.chainId],
-                let destinationChain = host.allChains[destination.chainId] else {
-                return false
-            }
-
-            if !destinationChain.isRelaychain {
-                return deliveryFee.toParachain?.alwaysHoldingPays ?? false
-            } else if !originChain.isRelaychain {
-                return deliveryFee.toParent?.alwaysHoldingPays ?? false
-            } else {
-                return false
-            }
+            return !metadata.paysDeliveryFee
         } catch {
             return false
         }

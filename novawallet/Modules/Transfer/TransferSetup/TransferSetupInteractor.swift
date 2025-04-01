@@ -86,17 +86,17 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     }
 
     private func provideAvailableDestinations(for xcmTransfers: XcmTransfers) {
-        let transfers = xcmTransfers.transfers(from: chainAsset.chainAssetId)
+        let transfers = xcmTransfers.getDestinations(for: chainAsset.chainAssetId)
 
         guard !transfers.isEmpty else {
             presenter?.didReceiveAvailableXcm(peerChainAssets: [], xcmTransfers: xcmTransfers)
             return
         }
 
-        let destinations: [ChainAsset] = transfers.compactMap { xcmTransfer in
+        let destinations: [ChainAsset] = transfers.compactMap { destination in
             guard
-                let chain = chainsStore.getChain(for: xcmTransfer.destination.chainId),
-                let asset = chain.asset(for: xcmTransfer.destination.assetId)
+                let chain = chainsStore.getChain(for: destination.chainId),
+                let asset = chain.asset(for: destination.assetId)
             else {
                 return nil
             }
@@ -108,7 +108,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     }
 
     private func provideAvailableOrigins(for xcmTransfers: XcmTransfers) {
-        let transfers = xcmTransfers.transferChainAssets(to: chainAsset.chainAssetId)
+        let transfers = xcmTransfers.getOrigins(for: chainAsset.chainAssetId)
 
         guard !transfers.isEmpty else {
             presenter?.didReceiveAvailableXcm(peerChainAssets: [], xcmTransfers: xcmTransfers)

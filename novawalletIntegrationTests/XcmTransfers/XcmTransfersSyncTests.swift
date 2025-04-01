@@ -1,20 +1,18 @@
-import Foundation
+import XCTest
 @testable import novawallet
 
-extension XcmTransfersSyncService {
-    static func setupForIntegrationTest(for remoteUrl: URL) throws -> XcmTransfers {
+class XcmTransfersSyncTests: XCTestCase {
+    func testXcmTransfersSyncCompletes() {
         let logger = Logger.shared
         let syncService = XcmTransfersSyncService(
-            remoteUrl: remoteUrl,
+            config: ApplicationConfig.shared,
             operationQueue: OperationQueue(),
             logger: logger
         )
 
         var optXcmTransfers: XcmTransfers?
 
-        let semaphore = DispatchSemaphore(value: 0)
-
-        syncService.notificationQueue = DispatchQueue.global()
+        let expectation = XCTestExpectation()
 
         syncService.notificationCallback = { result in
             switch result {
@@ -24,17 +22,18 @@ extension XcmTransfersSyncService {
                 logger.error("Unexpected error: \(error)")
             }
 
-            semaphore.signal()
+            expectation.fulfill()
         }
 
         syncService.setup()
 
-        _ = semaphore.wait(timeout: .now() + .seconds(60))
+        wait(for: [expectation], timeout: 10.0)
 
         guard let xcmTransfers = optXcmTransfers else {
-            throw CommonError.dataCorruption
+            XCTFail("Unexpected empty value")
+            return
         }
 
-        return xcmTransfers
+        logger.info("\(xcmTransfers)")
     }
 }

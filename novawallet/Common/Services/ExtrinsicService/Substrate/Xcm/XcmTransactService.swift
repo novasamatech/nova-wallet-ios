@@ -6,7 +6,6 @@ protocol XcmTransactServiceProtocol {
     func transferAndWaitArrivalWrapper(
         _ transferRequest: XcmTransferRequest,
         destinationChainAsset: ChainAsset,
-        xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Balance>
 }
@@ -37,7 +36,6 @@ extension XcmTransactService: XcmTransactServiceProtocol {
     func transferAndWaitArrivalWrapper(
         _ transferRequest: XcmTransferRequest,
         destinationChainAsset: ChainAsset,
-        xcmTransfers: XcmTransfers,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Balance> {
         do {
@@ -60,7 +58,6 @@ extension XcmTransactService: XcmTransactServiceProtocol {
             let submittionOperation = AsyncClosureOperation<XcmSubmitExtrinsic> { completion in
                 self.transferService.submit(
                     request: transferRequest,
-                    xcmTransfers: xcmTransfers,
                     signer: signer,
                     runningIn: self.workingQueue
                 ) { result in
