@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "Presione ambos botones en su %@ para aprobar la dirección";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Esta cartera está emparejada con Ledger. Nova te ayudará a formar cualquier operación que desees, y se te solicitará firmarlas usando un dispositivo Ledger";
-"ledger.instructions.title" = "Conecta Ledger Nano X";
-"ledger.instructions.link" = "Guía Oficial de Conexión Bluetooth de Ledger";
+"ledger.instructions.title" = "Conectar Ledger vía Bluetooth";
+"ledger.instructions.link" = "Guía de Conexión de Ledger";
 "ledger.instructions.step1" = "Asegúrate de que %@ en tu dispositivo Ledger usando la aplicación Ledger Live";
 "ledger.instructions.step1.highlighted" = "La aplicación de la Red está instalada";
 "ledger.instructions.step2" = "%@ en su dispositivo Ledger";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 símbolos hexadecimales";
 "common.status.backup.syncing" = "Sincronizando Respaldo...";
 "common.status.backup.synced" = "Respaldo Sincronizado";
-"common.ledger.nano.generic" = "Ledger Nano X (aplicación Generic Polkadot)";
+"common.ledger.nano.generic" = "Ledger (Aplicación Genérica de Polkadot)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot app esté instalada";
 "generic.ledger.instructions.step2.highlighted" = "Abre la aplicación Polkadot";
 "ledger.instructions.step4" = "%@ para agregarla a la billetera";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "Formato legacy";
 "asset.receive.looking.for.address.message" = "¿Buscas tu dirección legacy para un intercambio?";
 "asset.receive.view.address.format" = "Ver formatos de dirección";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Presiona el botón de confirmar en tu %@ para aprobar la dirección";
+"ledger.flex.stax.sign.transaction.details" = "Mantén presionado el botón de confirmar en tu %@ para aprobar la transacción";

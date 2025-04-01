@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "Tekan kedua tombol pada %@ Anda untuk menyetujui alamat";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Dompet ini dipasangkan dengan Ledger. Nova akan membantu Anda melakukan operasi apa pun yang Anda inginkan, dan Anda akan diminta untuk menandatanganinya menggunakan Ledger";
-"ledger.instructions.title" = "Hubungkan Ledger Nano X";
-"ledger.instructions.link" = "Panduan Koneksi Bluetooth Resmi Ledger";
+"ledger.instructions.title" = "Hubungkan Ledger melalui Bluetooth";
+"ledger.instructions.link" = "Panduan Koneksi Ledger";
 "ledger.instructions.step1" = "Pastikan %@ ke perangkat Ledger Anda menggunakan aplikasi Ledger Live";
 "ledger.instructions.step1.highlighted" = "Aplikasi jaringan terpasang";
 "ledger.instructions.step2" = "%@ pada perangkat Ledger Anda";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 simbol heksadesimal";
 "common.status.backup.syncing" = "Sinkronisasi Backup...";
 "common.status.backup.synced" = "Backup Disinkronkan";
-"common.ledger.nano.generic" = "Ledger Nano X (aplikasi Generic Polkadot)";
+"common.ledger.nano.generic" = "Ledger (Aplikasi Polkadot Umum)";
 "generic.ledger.instructions.step1.highlighted" = "Aplikasi Polkadot sudah terinstal";
 "generic.ledger.instructions.step2.highlighted" = "Buka aplikasi Polkadot";
 "ledger.instructions.step4" = "%@ untuk ditambahkan ke dompet";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "Format warisan";
 "asset.receive.looking.for.address.message" = "Mencari alamat warisan Anda untuk pertukaran?";
 "asset.receive.view.address.format" = "Lihat Format Alamat";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Tekan tombol konfirmasi pada %@ Anda untuk menyetujui alamat tersebut";
+"ledger.flex.stax.sign.transaction.details" = "Tahan tombol konfirmasi pada %@ Anda untuk menyetujui transaksi";

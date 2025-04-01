@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "アドレスを承認するには、%@の両方のボタンを押してください";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "このウォレットはLedgerとペアリングされています。Novaは望む操作を形成する手助けをし、Ledgerを使用してそれらを署名するよう求められます";
-"ledger.instructions.title" = "Ledger Nano Xを接続";
-"ledger.instructions.link" = "Ledgerの公式Bluetooth接続ガイド";
+"ledger.instructions.title" = "LedgerをBluetoothで接続";
+"ledger.instructions.link" = "Ledger接続ガイド";
 "ledger.instructions.step1" = "Ledger Liveアプリを使ってLedgerデバイスに〜を確実にしてください";
 "ledger.instructions.step1.highlighted" = "ネットワークアプリがインストールされている";
 "ledger.instructions.step2" = "Ledgerデバイスに〜してください";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64桁の16進数記号";
 "common.status.backup.syncing" = "バックアップを同期中...";
 "common.status.backup.synced" = "バックアップが同期されました";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot 専用水玉アプリ)";
+"common.ledger.nano.generic" = "Ledger (ジェネリックPolkadotアプリ)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadotアプリがインストールされています";
 "generic.ledger.instructions.step2.highlighted" = "ポルカドットアプリを開く";
 "ledger.instructions.step4" = "%@ウォレットに追加するために〜する";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "従来の形式";
 "asset.receive.looking.for.address.message" = "取引のための従来のアドレスをお探しですか？";
 "asset.receive.view.address.format" = "アドレス形式を表示";
+"common.ledger.model.nano.x" = "ナノ X";
+"common.ledger.model.flex" = "フレックス";
+"common.ledger.model.Stax" = "スタックス";
+"ledger.flex.stax.address.verify.message" = "住所を承認するために %@ の確認ボタンを押してください";
+"ledger.flex.stax.sign.transaction.details" = "取引を承認するために %@ の確認ボタンを長押ししてください";
