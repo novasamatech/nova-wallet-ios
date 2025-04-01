@@ -7,6 +7,7 @@ extension Xcm {
         case V2(Xcm.Multiasset)
         case V3(XcmV3.Multiasset)
         case V4(XcmV4.Multiasset)
+        case V5(XcmV5.Multiasset)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -24,6 +25,9 @@ extension Xcm {
             case let .V4(multiasset):
                 try container.encode("V4")
                 try container.encode(multiasset)
+            case let .V5(multiasset):
+                try container.encode("V5")
+                try container.encode(multiasset)
             }
         }
 
@@ -37,6 +41,7 @@ extension Xcm {
         case V2([Xcm.Multiasset])
         case V3([XcmV3.Multiasset])
         case V4([XcmV4.Multiasset])
+        case V5([XcmV5.Multiasset])
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -53,6 +58,9 @@ extension Xcm {
                 try container.encode(multiassets)
             case let .V4(multiassets):
                 try container.encode("V4")
+                try container.encode(multiassets)
+            case let .V5(multiassets):
+                try container.encode("V5")
                 try container.encode(multiassets)
             }
         }
@@ -71,6 +79,8 @@ extension Xcm {
                 self = .V3([multiasset])
             case let .V4(multiasset):
                 self = .V4([multiasset])
+            case let .V5(multiasset):
+                self = .V5([multiasset])
             }
         }
     }
@@ -108,6 +118,23 @@ extension Xcm.VersionedMultiasset {
             return .V1(multiAsset)
         } else {
             return .V2(multiAsset)
+        }
+    }
+}
+
+extension Xcm.VersionedMultiasset {
+    init(versionedLocation: Xcm.VersionedMultilocation, amount: Balance) {
+        switch versionedLocation {
+        case let .V1(location):
+            self = .V1(Xcm.Multiasset(multilocation: location, amount: amount))
+        case let .V2(location):
+            self = .V2(Xcm.Multiasset(multilocation: location, amount: amount))
+        case let .V3(location):
+            self = .V3(XcmV3.Multiasset(multilocation: location, amount: amount))
+        case let .V4(location):
+            self = .V4(XcmV4.Multiasset(assetId: location, amount: amount))
+        case let .V5(location):
+            self = .V5(XcmV5.Multiasset(assetId: location, amount: amount))
         }
     }
 }

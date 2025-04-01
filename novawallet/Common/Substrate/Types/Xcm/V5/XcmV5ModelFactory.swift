@@ -2,29 +2,29 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-final class XcmV4ModelFactory {
+final class XcmV5ModelFactory {
     func createMultilocation(
         origin: XcmTransferOrigin,
         destination: XcmTransferDestination
-    ) -> XcmV4.Multilocation {
-        XcmV4.AbsoluteLocation(
+    ) -> XcmV5.Multilocation {
+        XcmV5.AbsoluteLocation(
             paraId: destination.parachainId
         ).appendingAccountId(
             destination.accountId,
             isEthereumBase: destination.chain.isEthereumBased
         ).fromPointOfView(
-            location: XcmV4.AbsoluteLocation(paraId: origin.parachainId)
+            location: XcmV5.AbsoluteLocation(paraId: origin.parachainId)
         )
     }
 
     func createMultilocation(
         origin: XcmTransferOrigin,
         reserve: XcmTransferReserve
-    ) -> XcmV4.Multilocation {
-        XcmV4.AbsoluteLocation(
+    ) -> XcmV5.Multilocation {
+        XcmV5.AbsoluteLocation(
             paraId: reserve.parachainId
         ).fromPointOfView(
-            location: XcmV4.AbsoluteLocation(
+            location: XcmV5.AbsoluteLocation(
                 paraId: origin.parachainId
             )
         )
@@ -35,7 +35,7 @@ final class XcmV4ModelFactory {
         reserve: ChainModel,
         assetLocation: XcmAsset.ReservePath,
         amount: BigUInt
-    ) throws -> XcmV4.Multiasset {
+    ) throws -> XcmV5.Multiasset {
         let multilocation = try createAssetMultilocation(
             from: assetLocation.path,
             type: assetLocation.type,
@@ -43,13 +43,13 @@ final class XcmV4ModelFactory {
             reserve: reserve
         )
 
-        return XcmV4.Multiasset(assetId: multilocation, amount: amount)
+        return XcmV5.Multiasset(assetId: multilocation, amount: amount)
     }
 }
 
-private extension XcmV4ModelFactory {
-    func extractRelativeJunctions(from path: JSON) throws -> XcmV4.Junctions {
-        var junctions: [XcmV4.Junction] = []
+private extension XcmV5ModelFactory {
+    func extractRelativeJunctions(from path: JSON) throws -> XcmV5.Junctions {
+        var junctions: [XcmV5.Junction] = []
 
         if let palletInstance = path.palletInstance?.unsignedIntValue {
             junctions.append(.palletInstance(UInt8(palletInstance)))
@@ -66,10 +66,10 @@ private extension XcmV4ModelFactory {
             junctions.append(.generalIndex(generalIndex))
         }
 
-        return XcmV4.Junctions(items: junctions)
+        return XcmV5.Junctions(items: junctions)
     }
 
-    func extractAbsoluteJunctions(from path: JSON) throws -> XcmV4.Junctions {
+    func extractAbsoluteJunctions(from path: JSON) throws -> XcmV5.Junctions {
         let commonJunctions = try extractRelativeJunctions(from: path)
 
         if let parachainId = path.parachainId?.unsignedIntValue {
@@ -105,9 +105,9 @@ private extension XcmV4ModelFactory {
         type: XcmAsset.LocationType,
         origin: ChainModel,
         reserve: ChainModel
-    ) throws -> XcmV4.Multilocation {
+    ) throws -> XcmV5.Multilocation {
         let parents = extractParents(from: path, type: type, origin: origin, reserve: reserve)
-        let junctions: XcmV4.Junctions
+        let junctions: XcmV5.Junctions
 
         switch type {
         case .absolute, .concrete:
@@ -120,7 +120,7 @@ private extension XcmV4ModelFactory {
             }
         }
 
-        return XcmV4.Multilocation(parents: parents, interior: junctions)
+        return XcmV5.Multilocation(parents: parents, interior: junctions)
     }
 
     func createVersionedMultilocation(
@@ -128,7 +128,7 @@ private extension XcmV4ModelFactory {
         destination: XcmTransferDestination
     ) -> Xcm.VersionedMultilocation {
         let multilocation = createMultilocation(origin: origin, destination: destination)
-        return .V4(multilocation)
+        return .V5(multilocation)
     }
 
     func createVersionedMultilocation(
@@ -136,7 +136,7 @@ private extension XcmV4ModelFactory {
         reserve: XcmTransferReserve
     ) -> Xcm.VersionedMultilocation {
         let multilocation = createMultilocation(origin: origin, reserve: reserve)
-        return .V4(multilocation)
+        return .V5(multilocation)
     }
 
     func createVersionedMultiasset(
@@ -152,11 +152,11 @@ private extension XcmV4ModelFactory {
             amount: amount
         )
 
-        return .V4(multiasset)
+        return .V5(multiasset)
     }
 }
 
-extension XcmV4ModelFactory: XcmModelFactoryProtocol {
+extension XcmV5ModelFactory: XcmModelFactoryProtocol {
     func createMultilocationAsset(
         for params: XcmMultilocationAssetParams,
         version _: Xcm.Version

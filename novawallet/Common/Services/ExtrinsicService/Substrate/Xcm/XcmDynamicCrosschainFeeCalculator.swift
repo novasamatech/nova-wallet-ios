@@ -241,22 +241,16 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let forwardedMessage = try XcmForwardedMessageMatcher(
-            palletName: palletName,
-            logger: logger
-        ).matchMessage(
-            from: effects.emittedEvents,
-            forwardedXcms: effects.forwardedXcms,
-            origin: .location(
-                for: request.nextChainAfterOrigin,
-                parachainId: request.nextParaIdAfterOrigin,
-                relativeTo: request.originChain,
-                version: xcmVersion
-            ),
-            codingFactory: codingFactory
-        )
+        let messageOrigin = try Xcm.VersionedAbsoluteLocation(
+            paraId: request.paraIdAfterOrigin,
+            version: xcmVersion
+        ).fromChainPointOfView(request.origin.parachainId)
 
-        guard let forwardedMessage else {
+        guard
+            let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
+                effects.forwardedXcms,
+                from: messageOrigin
+            ) else {
             throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
         }
 
@@ -310,9 +304,7 @@ private extension XcmDynamicCrosschainFeeCalculator {
     func createReserveIntermediateResult(
         for request: XcmUnweightedTransferRequest,
         originResult: IntermediateResult,
-        dryRunResult: DryRun.XcmResult,
-        palletName: String,
-        codingFactory: RuntimeCoderFactoryProtocol
+        dryRunResult: DryRun.XcmResult
     ) throws -> IntermediateResult {
         let effects = try dryRunResult.ensureSuccessExecution()
 
@@ -320,22 +312,16 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let forwardedMessage = try XcmForwardedMessageMatcher(
-            palletName: palletName,
-            logger: logger
-        ).matchMessage(
-            from: effects.emittedEvents,
-            forwardedXcms: effects.forwardedXcms,
-            origin: .location(
-                for: request.destinationChain,
-                parachainId: request.destination.parachainId,
-                relativeTo: request.reserveChain,
-                version: xcmVersion
-            ),
-            codingFactory: codingFactory
-        )
+        let messageOrigin = try Xcm.VersionedAbsoluteLocation(
+            paraId: request.destination.parachainId,
+            version: xcmVersion
+        ).fromChainPointOfView(request.reserve.parachainId)
 
-        guard let forwardedMessage else {
+        guard
+            let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
+                effects.forwardedXcms,
+                from: messageOrigin
+            ) else {
             throw XcmDynamicCrosschainFeeCalculatorError.noForwardedMessage
         }
 
@@ -353,46 +339,64 @@ private extension XcmDynamicCrosschainFeeCalculator {
                 return .createWithResult(intermediateResult)
             }
 
-            let runtimeProvider = try self.chainRegistry.getRuntimeProviderOrError(for: request.reserveChain.chainId)
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-            let palletResolutionWrapper = self.palletMetadataQueryFactory.createModuleNameResolutionWrapper(
-                for: runtimeProvider
-            )
+            let xcmVersion = intermediateResult.forwardedXcm.version
+            let location = try Xcm.VersionedAbsoluteLocation(
+                paraId: request.origin.parachainId,
+                version: xcmVersion
+            ).fromChainPointOfView(request.reserve.parachainId)
 
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
-                from: .location(
-                    for: request.originChain,
-                    parachainId: request.origin.parachainId,
-                    relativeTo: request.reserveChain,
-                    version: intermediateResult.forwardedXcm.version
-                ),
+                from: location,
                 xcm: intermediateResult.forwardedXcm,
                 chainId: request.reserveChain.chainId
             )
 
             let resultOperation = ClosureOperation<IntermediateResult> {
                 let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let palletName = try palletResolutionWrapper.targetOperation.extractNoCancellableResultData()
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
                 return try self.createReserveIntermediateResult(
                     for: request,
                     originResult: intermediateResult,
-                    dryRunResult: dryRunResult,
-                    palletName: palletName,
-                    codingFactory: codingFactory
+                    dryRunResult: dryRunResult
                 )
             }
 
-            resultOperation.addDependency(codingFactoryOperation)
-            resultOperation.addDependency(palletResolutionWrapper.targetOperation)
             resultOperation.addDependency(dryRunWrapper.targetOperation)
 
-            return dryRunWrapper
-                .insertingHead(operations: palletResolutionWrapper.allOperations)
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: resultOperation)
+            return dryRunWrapper.insertingTail(operation: resultOperation)
         }
+    }
+
+    func createDestinationResult(
+        for request: XcmUnweightedTransferRequest,
+        initialModel: InitialModel,
+        reserveResult: IntermediateResult,
+        dryRunResult: DryRun.XcmResult,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> XcmFeeModelProtocol {
+        let effects = try dryRunResult.ensureSuccessExecution()
+
+        let depositEven = XcmTokensArrivalDetector(
+            chainAsset: request.destination.chainAsset,
+            logger: logger
+        )?.searchDepositInEvents(
+            effects.emittedEvents,
+            accountId: request.destination.accountId,
+            codingFactory: codingFactory
+        )
+
+        guard let depositEven else {
+            throw XcmDynamicCrosschainFeeCalculatorError.noDepositFound
+        }
+
+        let totalFee = initialModel.amountToSend.subtractOrZero(depositEven.amount)
+
+        let feeModel = XcmFeeModel(
+            senderPart: reserveResult.deliveryFee,
+            holdingPart: totalFee
+        )
+
+        return feeModel
     }
 
     func dryRunDestinationWrapper(
@@ -410,43 +414,30 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
+            let xcmVersion = intermediateResult.forwardedXcm.version
+
+            let location = try Xcm.VersionedAbsoluteLocation(
+                paraId: request.paraIdBeforeDestination,
+                version: xcmVersion
+            ).fromChainPointOfView(request.destination.parachainId)
+
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
-                from: .location(
-                    for: request.chainBeforeDestination,
-                    parachainId: request.paraIdBeforeDestination,
-                    relativeTo: request.destinationChain,
-                    version: intermediateResult.forwardedXcm.version
-                ),
+                from: location,
                 xcm: intermediateResult.forwardedXcm,
                 chainId: request.destinationChain.chainId
             )
 
             let resultOperation = ClosureOperation<XcmFeeModelProtocol> {
                 let dryRunResult = try dryRunWrapper.targetOperation.extractNoCancellableResultData()
-                let effects = try dryRunResult.ensureSuccessExecution()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                let depositEven = XcmTokensArrivalDetector(
-                    chainAsset: request.destination.chainAsset,
-                    logger: self.logger
-                )?.searchDepositInEvents(
-                    effects.emittedEvents,
-                    accountId: request.destination.accountId,
+                return try self.createDestinationResult(
+                    for: request,
+                    initialModel: initialModel,
+                    reserveResult: intermediateResult,
+                    dryRunResult: dryRunResult,
                     codingFactory: codingFactory
                 )
-
-                guard let depositEven else {
-                    throw XcmDynamicCrosschainFeeCalculatorError.noDepositFound
-                }
-
-                let totalFee = initialModel.amountToSend.subtractOrZero(depositEven.amount)
-
-                let feeModel = XcmFeeModel(
-                    senderPart: intermediateResult.deliveryFee,
-                    holdingPart: totalFee
-                )
-
-                return feeModel
             }
 
             resultOperation.addDependency(codingFactoryOperation)

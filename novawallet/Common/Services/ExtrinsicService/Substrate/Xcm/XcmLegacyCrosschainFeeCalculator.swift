@@ -61,7 +61,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin.chainAsset,
+                    origin: request.origin,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
@@ -111,7 +111,7 @@ final class XcmLegacyCrosschainFeeCalculator {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin.chainAsset,
+                    origin: request.origin,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,
@@ -580,7 +580,7 @@ extension XcmLegacyCrosschainFeeCalculator: XcmCrosschainFeeCalculating {
                 }
 
                 let params = XcmWeightMessagesParams(
-                    chainAsset: request.origin.chainAsset,
+                    origin: request.origin,
                     reserve: request.reserve,
                     destination: request.destination,
                     amount: request.amount,

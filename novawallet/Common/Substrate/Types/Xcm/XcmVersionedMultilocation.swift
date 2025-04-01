@@ -7,6 +7,7 @@ extension Xcm {
         case V2(Xcm.Multilocation)
         case V3(XcmV3.Multilocation)
         case V4(XcmV4.Multilocation)
+        case V5(XcmV5.Multilocation)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -23,6 +24,9 @@ extension Xcm {
                 try container.encode(multilocation)
             case let .V4(multilocation):
                 try container.encode("V4")
+                try container.encode(multilocation)
+            case let .V5(multilocation):
+                try container.encode("V5")
                 try container.encode(multilocation)
             }
         }
@@ -45,6 +49,9 @@ extension Xcm {
             case "V4":
                 let multilocation = try container.decode(XcmV4.Multilocation.self)
                 self = .V4(multilocation)
+            case "V5":
+                let multilocation = try container.decode(XcmV5.Multilocation.self)
+                self = .V5(multilocation)
             default:
                 throw DecodingError.dataCorrupted(
                     .init(
@@ -106,6 +113,23 @@ extension Xcm {
             return (destination, benefiary)
         }
 
+        private func getV5DestinationAndBeneficiary(
+            from fullMultilocation: XcmV5.Multilocation
+        ) -> (XcmV5.Multilocation, XcmV5.Multilocation) {
+            let (destinationInterior, beneficiaryInterior) = fullMultilocation.interior.lastComponent()
+            let destination = XcmV5.Multilocation(
+                parents: fullMultilocation.parents,
+                interior: destinationInterior
+            )
+
+            let benefiary = XcmV5.Multilocation(
+                parents: 0,
+                interior: beneficiaryInterior
+            )
+
+            return (destination, benefiary)
+        }
+
         func separatingDestinationBenificiary() -> (VersionedMultilocation, VersionedMultilocation) {
             switch self {
             case let .V1(fullMultilocation):
@@ -120,6 +144,9 @@ extension Xcm {
             case let .V4(fullMultilocation):
                 let (destination, beneficiary) = getV4DestinationAndBeneficiary(from: fullMultilocation)
                 return (.V4(destination), .V4(beneficiary))
+            case let .V5(fullMultilocation):
+                let (destination, beneficiary) = getV5DestinationAndBeneficiary(from: fullMultilocation)
+                return (.V5(destination), .V5(beneficiary))
             }
         }
     }
@@ -152,61 +179,8 @@ extension Xcm.VersionedMultilocation {
             return .V3
         case .V4:
             return .V4
-        }
-    }
-
-    static func location(
-        for targetChain: ChainModel,
-        parachainId: ParaId?,
-        relativeTo origin: ChainModel,
-        version: Xcm.Version
-    ) -> Xcm.VersionedMultilocation {
-        switch version {
-        case .V0, .V1, .V2:
-            versionedMultiLocation(
-                for: version,
-                multiLocation: Xcm.Multilocation.location(
-                    for: targetChain,
-                    parachainId: parachainId,
-                    relativeTo: origin
-                )
-            )
-        case .V3:
-            .V3(
-                XcmV3.Multilocation.location(
-                    for: targetChain,
-                    parachainId: parachainId,
-                    relativeTo: origin
-                )
-            )
-        case .V4:
-            .V4(
-                XcmV4.Multilocation.location(
-                    for: targetChain,
-                    parachainId: parachainId,
-                    relativeTo: origin
-                )
-            )
-        }
-    }
-
-    func appendingAccountId(
-        _ accountId: AccountId,
-        in chain: ChainModel
-    ) -> Xcm.VersionedMultilocation {
-        switch self {
-        case let .V1(location):
-            let newLocation = location.appendingAccountId(accountId, in: chain)
-            return .V1(newLocation)
-        case let .V2(location):
-            let newLocation = location.appendingAccountId(accountId, in: chain)
-            return .V2(newLocation)
-        case let .V3(location):
-            let newLocation = location.appendingAccountId(accountId, in: chain)
-            return .V3(newLocation)
-        case let .V4(location):
-            let newLocation = location.appendingAccountId(accountId, in: chain)
-            return .V4(newLocation)
+        case .V5:
+            return .V5
         }
     }
 }

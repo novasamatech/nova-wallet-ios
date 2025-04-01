@@ -34,9 +34,7 @@ struct XcmDynamicTransfers: Decodable {
             return nil
         }
 
-        let locationType: XcmAsset.LocationType = overridenLocation != nil ? .absolute : .relative
-
-        return XcmAsset.ReservePath(type: locationType, path: path)
+        return XcmAsset.ReservePath(type: .relative, path: path)
     }
 
     func getReserveChainId(for chainAsset: ChainAsset) -> ChainModel.Id? {

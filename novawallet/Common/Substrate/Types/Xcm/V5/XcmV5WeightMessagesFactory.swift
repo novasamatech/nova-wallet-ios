@@ -1,15 +1,15 @@
 import Foundation
 
-final class XcmPreV3WeightMessagesFactory {
-    let modelFactory = XcmPreV3ModelFactory()
+final class XcmV5WeightMessagesFactory {
+    let modelFactory = XcmV5ModelFactory()
 }
 
-private extension XcmPreV3WeightMessagesFactory {
+private extension XcmV5WeightMessagesFactory {
     func createDestinationWeightMessage(
         from origin: XcmTransferOrigin,
         destination: XcmTransferDestination,
         feeParams: XcmTransferMetadata.LegacyFee,
-        multiasset: Xcm.Multiasset
+        multiasset: XcmV5.Multiasset
     ) throws -> Xcm.Message {
         let multilocation = modelFactory.createMultilocation(origin: origin, destination: destination)
 
@@ -24,7 +24,7 @@ private extension XcmPreV3WeightMessagesFactory {
         from origin: XcmTransferOrigin,
         reserve: XcmTransferReserve,
         feeParams: XcmTransferMetadata.LegacyFee,
-        multiasset: Xcm.Multiasset
+        multiasset: XcmV5.Multiasset
     ) throws -> Xcm.Message? {
         guard let reserveInstructions = feeParams.reserveExecution?.instructions else {
             return nil
@@ -41,44 +41,43 @@ private extension XcmPreV3WeightMessagesFactory {
 
     func createWeightMessage(
         from instructions: [String],
-        destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset
+        destination: XcmV5.Multilocation,
+        asset: XcmV5.Multiasset
     ) throws -> Xcm.Message {
-        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
+        let xcmInstructions: [XcmV5.Instruction] = try instructions.map { rawInstruction in
             switch rawInstruction {
-            case Xcm.Instruction.fieldWithdrawAsset:
+            case XcmV5.Instruction.fieldWithdrawAsset:
                 return .withdrawAsset([asset])
-            case Xcm.Instruction.fieldClearOrigin:
+            case XcmV5.Instruction.fieldClearOrigin:
                 return .clearOrigin
-            case Xcm.Instruction.fieldReserveAssetDeposited:
+            case XcmV5.Instruction.fieldReserveAssetDeposited:
                 return .reserveAssetDeposited([asset])
-            case Xcm.Instruction.fieldBuyExecution:
-                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
+            case XcmV5.Instruction.fieldBuyExecution:
+                let value = XcmV5.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
                 return .buyExecution(value)
-            case Xcm.Instruction.fieldDepositAsset:
-                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
+            case XcmV5.Instruction.fieldDepositAsset:
+                let value = XcmV5.DepositAssetValue(assets: .wild(.all), beneficiary: destination)
                 return .depositAsset(value)
-            case Xcm.Instruction.fieldDepositReserveAsset:
-                let value = Xcm.DepositReserveAssetValue(
+            case XcmV5.Instruction.fieldDepositReserveAsset:
+                let value = XcmV5.DepositReserveAssetValue(
                     assets: .wild(.all),
-                    maxAssets: 1,
                     dest: destination,
                     xcm: []
                 )
 
                 return .depositReserveAsset(value)
-            case Xcm.Instruction.fieldReceiveTeleportedAsset:
+            case XcmV5.Instruction.fieldReceiveTeleportedAsset:
                 return .receiveTeleportedAsset([asset])
             default:
                 throw XcmWeightMessagesFactoryError.unsupportedInstruction(rawInstruction)
             }
         }
 
-        return .V2(xcmInstructions)
+        return .V5(xcmInstructions)
     }
 }
 
-extension XcmPreV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
+extension XcmV5WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
     func createWeightMessages(
         from params: XcmWeightMessagesParams,
         version _: Xcm.Version

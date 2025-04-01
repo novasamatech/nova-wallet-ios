@@ -29,8 +29,6 @@ extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
         let resolutionOperation = ClosureOperation<Xcm.Version> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let argName = Xcm.PalletTransferCall.CodingKeys.destination.rawValue
-
             guard
                 let xcmType = try xcmMessageTypeWrapper.targetOperation.extractNoCancellableResultData(),
                 let node = codingFactory.getTypeNode(for: xcmType),
