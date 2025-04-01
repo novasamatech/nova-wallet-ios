@@ -1905,7 +1905,6 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import Keystore_iOS
 
 
  class MockStakingRemoteSubscriptionServiceProtocol: StakingRemoteSubscriptionServiceProtocol, Cuckoo.ProtocolMock {
@@ -2161,6 +2160,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Keystore_iOS
 import Operation_iOS
 
 
