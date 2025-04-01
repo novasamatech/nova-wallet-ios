@@ -7,19 +7,6 @@ extension XcmV3 {
         case concrete(XcmV3.Multilocation)
         case abstract(Data)
 
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            switch self {
-            case let .concrete(multilocation):
-                try container.encode("Concrete")
-                try container.encode(multilocation)
-            case let .abstract(data):
-                try container.encode("Abstract")
-                try container.encode(BytesCodable(wrappedValue: data))
-            }
-        }
-
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
 
@@ -41,11 +28,41 @@ extension XcmV3 {
                 )
             }
         }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+
+            switch self {
+            case let .concrete(multilocation):
+                try container.encode("Concrete")
+                try container.encode(multilocation)
+            case let .abstract(data):
+                try container.encode("Abstract")
+                try container.encode(BytesCodable(wrappedValue: data))
+            }
+        }
     }
 
-    enum WildFungibility: Int, Encodable {
+    enum WildFungibility: Int, Codable {
         case fungible
         case nonFungible
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let rawValue = try container.decode(Int.self)
+
+            guard let fung = WildFungibility(rawValue: rawValue) else {
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unsuppored wild fungibility \(rawValue)"
+                    )
+                )
+            }
+
+            self = fung
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -53,8 +70,8 @@ extension XcmV3 {
         }
     }
 
-    enum WildMultiasset: Encodable {
-        struct AllOfValue: Encodable {
+    enum WildMultiasset: Codable {
+        struct AllOfValue: Codable {
             enum CodingKeys: String, CodingKey {
                 case assetId = "id"
                 case fun
@@ -66,6 +83,24 @@ extension XcmV3 {
 
         case all
         case allOf(AllOfValue)
+        case other(String, JSON)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "All":
+                self = .all
+            case "AllOf":
+                let value = try container.decode(AllOfValue.self)
+                self = .allOf(value)
+            default:
+                let value = try container.decode(JSON.self)
+                self = .other(type, value)
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -77,13 +112,16 @@ extension XcmV3 {
             case let .allOf(value):
                 try container.encode("AllOf")
                 try container.encode(value)
+            case let .other(type, value):
+                try container.encode(type)
+                try container.encode(value)
             }
         }
     }
 
     typealias Fungibility = Xcm.Fungibility
 
-    struct Multiasset: Encodable {
+    struct Multiasset: Codable {
         enum CodingKeys: String, CodingKey {
             case assetId = "id"
             case fun
@@ -100,9 +138,31 @@ extension XcmV3 {
         }
     }
 
-    enum MultiassetFilter: Encodable {
+    enum MultiassetFilter: Codable {
         case definite([Multiasset])
         case wild(WildMultiasset)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Definite":
+                let value = try container.decode([Multiasset].self)
+                self = .definite(value)
+            case "Wild":
+                let value = try container.decode(WildMultiasset.self)
+                self = .wild(value)
+            default:
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unsupported filter \(type)"
+                    )
+                )
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()

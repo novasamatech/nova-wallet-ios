@@ -101,3 +101,20 @@ extension Percent {
         Decimal.fromSubstratePercent(value: self)
     }
 }
+
+extension Optional where Wrapped == ParaId {
+    var isSystemParachain: Bool {
+        switch self {
+        case .none:
+            return false
+        case let .some(paraId):
+            return paraId.isSystemParachain
+        }
+    }
+}
+
+extension ParaId {
+    var isSystemParachain: Bool {
+        self >= 1000 && self < 2000
+    }
+}

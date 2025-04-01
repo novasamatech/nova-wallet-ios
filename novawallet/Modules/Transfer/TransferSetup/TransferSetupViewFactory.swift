@@ -237,9 +237,10 @@ enum TransferSetupViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let syncService = XcmTransfersSyncService(
-            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            config: ApplicationConfig.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
         let chainsStore = ChainsStore(chainRegistry: chainRegistry)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(

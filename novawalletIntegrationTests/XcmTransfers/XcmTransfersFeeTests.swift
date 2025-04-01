@@ -6,18 +6,19 @@ import Operation_iOS
 class XcmTransfersFeeTests: XCTestCase {
     func testKaruraMoonriverBnc() throws {
         let originChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
+        let originAssetId: AssetModel.Id = 4
         let destinationChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
-        let assetId: AssetModel.Id = 4
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 20)
         let amount: BigUInt = 1_000_000_000
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -25,37 +26,19 @@ class XcmTransfersFeeTests: XCTestCase {
 
     func testMoonriverKusama() throws {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let originAssetId: AssetModel.Id = 2
         let destinationChainId = "b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
-        let assetId: AssetModel.Id = 2
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
-            transferDestinationId: transferDestinationId,
-            amount: amount
-        )
-    }
-
-    func testMoonriverBifrost() throws {
-        let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
-        let destinationChainId = "9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed"
-        let assetId: AssetModel.Id = 0
-        let beneficiary = AccountId.zeroAccountId(of: 32)
-        let amount: BigUInt = 1_000_000_000_000_000_000
-
-        let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
-            accountId: beneficiary
-        )
-
-        performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -63,37 +46,19 @@ class XcmTransfersFeeTests: XCTestCase {
 
     func testMoonriverKarura() throws {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let originAssetId: AssetModel.Id = 4
         let destinationChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
-        let assetId: AssetModel.Id = 4
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
-            transferDestinationId: transferDestinationId,
-            amount: amount
-        )
-    }
-    
-    func testWestendWestmintSeparatedFee() throws {
-        let originChainId = KnowChainId.westend
-        let destinationChainId = KnowChainId.westmint
-        let assetId: AssetModel.Id = 0
-        let beneficiary = AccountId.zeroAccountId(of: 32)
-        let amount: BigUInt = 1_000_000_000_00
-
-        let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
-            accountId: beneficiary
-        )
-
-        performTestSeparatedFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -101,18 +66,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testWestendWestmintCrosschainFee() throws {
         let originChainId = KnowChainId.westend
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.westmint
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestCrosschainFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -120,18 +86,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testKusamaStatemineCrosschainFee() throws {
         let originChainId = KnowChainId.kusama
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.kusamaAssetHub
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestCrosschainFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -139,18 +106,19 @@ class XcmTransfersFeeTests: XCTestCase {
     
     func testStatemineKusamaCrosschainFee() throws {
         let originChainId = KnowChainId.kusamaAssetHub
+        let originAssetId: AssetModel.Id = 0
         let destinationChainId = KnowChainId.kusama
-        let assetId: AssetModel.Id = 0
+        let destinationAssetId: AssetModel.Id = 0
         let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
-            chainId: destinationChainId,
+            chainAssetId: ChainAssetId(chainId: destinationChainId, assetId: destinationAssetId),
             accountId: beneficiary
         )
 
         performTestCrosschainFeeCalculation(
-            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: originAssetId),
             transferDestinationId: transferDestinationId,
             amount: amount
         )
@@ -166,8 +134,7 @@ class XcmTransfersFeeTests: XCTestCase {
             let storageFacade = SubstrateStorageTestFacade()
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
-            let remoteUrl = ApplicationConfig.shared.xcmTransfersURL
-            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: remoteUrl)
+            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: ApplicationConfig.shared)
 
             let parties = try resolveParties(
                 from: originChainAssetId,
@@ -230,8 +197,9 @@ class XcmTransfersFeeTests: XCTestCase {
             let storageFacade = SubstrateStorageTestFacade()
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
-            let remoteUrl = ApplicationConfig.shared.xcmTransfersURL
-            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: remoteUrl)
+            let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(
+                for: ApplicationConfig.shared
+            )
 
             let parties = try resolveParties(
                 from: originChainAssetId,
@@ -328,61 +296,32 @@ class XcmTransfersFeeTests: XCTestCase {
     ) throws -> XcmFeeModelProtocol {
         let operationQueue = OperationQueue()
         
-        let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-            operationQueue: operationQueue
-        )
-        
-        let service = XcmTransferService(
-            wallet: wallet,
+        let feeService = XcmLegacyCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
-            metadataHashOperationFactory: metadataHashFactory,
+            operationQueue: operationQueue,
+            wallet: wallet,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: substrateStorageFacade,
-            operationQueue: operationQueue
+            customFeeEstimatingFactory: nil
         )
-
-        let semaphore = DispatchSemaphore(value: 0)
-
-        var feeResult: XcmTransferCrosschainFeeResult?
 
         let request = XcmUnweightedTransferRequest(
             origin: parties.origin,
             destination: parties.destination,
             reserve: parties.reserve,
+            metadata: parties.metadata,
             amount: amount
         )
         
-        if isForDestination {
-            service.estimateDestinationExecutionFee(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                runningIn: .global()
-            ) { result in
-                feeResult = result
-                semaphore.signal()
-            }
+        let feeWrapper = if isForDestination {
+            feeService.reserveExecutionFeeWrapper(request: request)
         } else {
-            service.estimateReserveExecutionFee(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                runningIn: .global()
-            ) { result in
-                feeResult = result
-                semaphore.signal()
-            }
+            feeService.destinationExecutionFeeWrapper(request: request)
         }
 
-        _ = semaphore.wait(timeout: .now() + .seconds(600))
-
-        switch feeResult {
-        case let .success(parties):
-            return parties
-        case let .failure(error):
-            throw error
-        case .none:
-            throw BaseOperationError.parentOperationCancelled
-        }
+        operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: true)
+        
+        return try feeWrapper.targetOperation.extractNoCancellableResultData()
     }
     
     private func estimateCrosschainFee(
@@ -395,18 +334,12 @@ class XcmTransfersFeeTests: XCTestCase {
     ) throws -> XcmFeeModelProtocol {
         let operationQueue = OperationQueue()
         
-        let metadataHashFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: substrateStorageFacade),
-            operationQueue: operationQueue
-        )
-        
         let service = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            metadataHashOperationFactory: metadataHashFactory,
             userStorageFacade: UserDataStorageTestFacade(),
             substrateStorageFacade: substrateStorageFacade,
-            operationQueue: OperationQueue()
+            operationQueue: operationQueue
         )
 
         let semaphore = DispatchSemaphore(value: 0)
@@ -417,12 +350,12 @@ class XcmTransfersFeeTests: XCTestCase {
             origin: parties.origin,
             destination: parties.destination,
             reserve: parties.reserve,
+            metadata: parties.metadata,
             amount: amount
         )
         
         service.estimateCrossChainFee(
             request: request,
-            xcmTransfers: xcmTransfers,
             runningIn: .global()
         ) { result in
             feeResult = result

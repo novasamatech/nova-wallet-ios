@@ -234,7 +234,7 @@ final class AssetsExchangeTests: XCTestCase {
                 CrosschainAssetsExchangeProvider(
                     wallet: params.wallet,
                     syncService: XcmTransfersSyncService(
-                        remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+                        config: ApplicationConfig.shared,
                         operationQueue: params.operationQueue
                     ),
                     chainRegistry: params.chainRegistry,

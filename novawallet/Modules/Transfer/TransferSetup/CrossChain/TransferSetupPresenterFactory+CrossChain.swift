@@ -112,17 +112,9 @@ extension TransferSetupPresenterFactory {
             remoteSubscriptionService: walletRemoteSubscriptionService
         )
 
-        let metadataHashOperationFactory = MetadataHashOperationFactory(
-            metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(
-                storageFacade: SubstrateDataStorageFacade.shared
-            ),
-            operationQueue: operationQueue
-        )
-
         let extrinsicService = XcmTransferService(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            metadataHashOperationFactory: metadataHashOperationFactory,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
