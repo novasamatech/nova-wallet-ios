@@ -7,9 +7,7 @@ protocol StakingRewardDateCellDelegate: AnyObject {
 
 final class StakingRewardDateCell: UITableViewCell, Identifiable {
     let datePicker: UIDatePicker = .create {
-        if #available(iOS 14, *) {
-            $0.preferredDatePickerStyle = .inline
-        }
+        $0.preferredDatePickerStyle = .inline
         $0.backgroundColor = R.color.colorSecondaryScreenBackground()
         $0.datePickerMode = .date
     }

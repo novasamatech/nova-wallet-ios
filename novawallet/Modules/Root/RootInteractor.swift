@@ -92,9 +92,7 @@ final class RootInteractor {
     }
 
     private func setupTableViewsAppearance() {
-        if #available(iOS 15, *) {
-            UITableView.appearance().sectionHeaderTopPadding = 0
-        }
+        UITableView.appearance().sectionHeaderTopPadding = 0
     }
 
     private func setupSecurityLayer() {
