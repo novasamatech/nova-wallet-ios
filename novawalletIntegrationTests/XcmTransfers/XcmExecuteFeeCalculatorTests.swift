@@ -110,6 +110,21 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
         }
     }
     
+    func testDOTBifrostHydra() throws {
+        do {
+            let fee = try calculateFee(
+                for: "262e1b2ad728475fd6fe88e62d34c200abe6fd693931ddad144059b1eb884e5b",
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.hydra,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     func testUSDTAssetHubHydra() throws {
         do {
             let fee = try calculateFee(

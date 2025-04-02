@@ -1076,6 +1076,7 @@
 		0CED71BA2D9D253B00F79C02 /* XcmPaymentOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71B92D9D253B00F79C02 /* XcmPaymentOperationFactory.swift */; };
 		0CED71BC2D9D25A200F79C02 /* XcmPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71BB2D9D25A200F79C02 /* XcmPayment.swift */; };
 		0CED71BE2D9D2DE600F79C02 /* XcmExecuteFeeCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71BD2D9D2DE600F79C02 /* XcmExecuteFeeCalculatorTests.swift */; };
+		0CED71C02D9D8B0600F79C02 /* SubstrateRuntimeApiOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71BF2D9D8B0600F79C02 /* SubstrateRuntimeApiOperationFactory.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
@@ -6863,6 +6864,7 @@
 		0CED71B92D9D253B00F79C02 /* XcmPaymentOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPaymentOperationFactory.swift; sourceTree = "<group>"; };
 		0CED71BB2D9D25A200F79C02 /* XcmPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPayment.swift; sourceTree = "<group>"; };
 		0CED71BD2D9D2DE600F79C02 /* XcmExecuteFeeCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExecuteFeeCalculatorTests.swift; sourceTree = "<group>"; };
+		0CED71BF2D9D8B0600F79C02 /* SubstrateRuntimeApiOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateRuntimeApiOperationFactory.swift; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
@@ -13961,6 +13963,7 @@
 				0C37AFC22B5796DD00009ECA /* StateCallRequestFactory.swift */,
 				0CE862242D659AB700245992 /* StateCallPath.swift */,
 				0CE862282D659B4100245992 /* StateCallRequestFactory+Additional.swift */,
+				0CED71BF2D9D8B0600F79C02 /* SubstrateRuntimeApiOperationFactory.swift */,
 			);
 			path = StateCall;
 			sourceTree = "<group>";
@@ -29476,6 +29479,7 @@
 				88C5F080297F06F0001CCADE /* Array+safe.swift in Sources */,
 				840302E0292CE4030013F356 /* CodingFactory+TypeCheck.swift in Sources */,
 				845B891E2959611C00EE25B0 /* SecurityLayerInteractor.swift in Sources */,
+				0CED71C02D9D8B0600F79C02 /* SubstrateRuntimeApiOperationFactory.swift in Sources */,
 				0C17BD972A42F162004AF9E7 /* WalletViewModelObserverContainer.swift in Sources */,
 				AEE5FB1626457AA9002B8FDC /* StakingRewardDestSetupPresenter.swift in Sources */,
 				88D42CF42977AA9600DDE01E /* ReferendumsDelegationViewModel.swift in Sources */,
