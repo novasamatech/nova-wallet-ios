@@ -30,6 +30,15 @@ final class XcmExecuteDerivator {
 }
 
 extension XcmExecuteDerivator {
+    func half(asset: XcmV4.Multiasset) -> XcmV4.Multiasset {
+        switch asset.fun {
+        case let .fungible(amount):
+            return XcmV4.Multiasset(assetId: asset.assetId, amount: amount / 2)
+        case .nonFungible:
+            return asset
+        }
+    }
+
     func isTeleport(request: XcmUnweightedTransferRequest) -> Bool {
         request.origin.parachainId.isRelayOrSystemParachain &&
             request.destination.parachainId.isRelayOrSystemParachain &&
@@ -82,24 +91,24 @@ extension XcmExecuteDerivator {
             ]),
             XcmV4.Instruction.buyExecution(
                 XcmV4.BuyExecutionValue(
-                    fees: originAsset,
-                    weightLimit: .limited(weight: .init(refTime: 0, proofSize: 0))
+                    fees: half(asset: originAsset),
+                    weightLimit: .limited(weight: .zero)
                 )
             ),
             XcmV4.Instruction.depositReserveAsset(
                 XcmV4.DepositReserveAssetValue(
-                    assets: XcmV4.AssetFilter.wild(.all),
+                    assets: .wild(.allCounted(1)),
                     dest: destinationLocation,
                     xcm: [
                         XcmV4.Instruction.buyExecution(
                             XcmV4.BuyExecutionValue(
-                                fees: destAsset,
+                                fees: half(asset: destAsset),
                                 weightLimit: .unlimited
                             )
                         ),
                         XcmV4.Instruction.depositAsset(
                             XcmV4.DepositAssetValue(
-                                assets: .wild(.all),
+                                assets: .wild(.allCounted(1)),
                                 beneficiary: beneficiary
                             )
                         )
@@ -138,24 +147,24 @@ extension XcmExecuteDerivator {
             XcmV4.Instruction.withdrawAsset([originAsset]),
             XcmV4.Instruction.buyExecution(
                 XcmV4.BuyExecutionValue(
-                    fees: originAsset,
-                    weightLimit: .limited(weight: .init(refTime: 0, proofSize: 0))
+                    fees: half(asset: originAsset),
+                    weightLimit: .limited(weight: .zero)
                 )
             ),
             XcmV4.Instruction.initiateReserveWithdraw(
                 XcmV4.InitiateReserveWithdrawValue(
-                    assets: .wild(.all),
+                    assets: .wild(.allCounted(1)),
                     reserve: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
                         XcmV4.Instruction.buyExecution(
                             XcmV4.BuyExecutionValue(
-                                fees: destAsset,
+                                fees: half(asset: destAsset),
                                 weightLimit: .unlimited
                             )
                         ),
                         XcmV4.Instruction.depositAsset(
                             XcmV4.DepositAssetValue(
-                                assets: .wild(.all),
+                                assets: .wild(.allCounted(1)),
                                 beneficiary: beneficiary
                             )
                         )
@@ -170,7 +179,7 @@ extension XcmExecuteDerivator {
     ) throws -> [XcmV4.Instruction] {
         let originAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
         let destAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
-        let reserveAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
+        let reserveAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.reserve.parachainId)
 
         let assetLocation = try XcmV4.AbsoluteLocation.createWithRawPath(
             transferRequest.metadata.reserve.path.path
@@ -200,35 +209,35 @@ extension XcmExecuteDerivator {
             XcmV4.Instruction.withdrawAsset([originAsset]),
             XcmV4.Instruction.buyExecution(
                 XcmV4.BuyExecutionValue(
-                    fees: originAsset,
-                    weightLimit: .limited(weight: .init(refTime: 0, proofSize: 0))
+                    fees: half(asset: originAsset),
+                    weightLimit: .limited(weight: .zero)
                 )
             ),
             XcmV4.Instruction.initiateReserveWithdraw(
                 XcmV4.InitiateReserveWithdrawValue(
-                    assets: .wild(.all),
+                    assets: .wild(.allCounted(1)),
                     reserve: reserveAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
                         XcmV4.Instruction.buyExecution(
                             XcmV4.BuyExecutionValue(
-                                fees: reserveAsset,
+                                fees: half(asset: reserveAsset),
                                 weightLimit: .unlimited
                             )
                         ),
                         XcmV4.Instruction.depositReserveAsset(
                             XcmV4.DepositReserveAssetValue(
-                                assets: XcmV4.AssetFilter.wild(.all),
+                                assets: .wild(.allCounted(1)),
                                 dest: destAbsoluteLocation.fromPointOfView(location: reserveAbsoluteLocation),
                                 xcm: [
                                     XcmV4.Instruction.buyExecution(
                                         XcmV4.BuyExecutionValue(
-                                            fees: destAsset,
+                                            fees: half(asset: destAsset),
                                             weightLimit: .unlimited
                                         )
                                     ),
                                     XcmV4.Instruction.depositAsset(
                                         XcmV4.DepositAssetValue(
-                                            assets: .wild(.all),
+                                            assets: .wild(.allCounted(1)),
                                             beneficiary: beneficiary
                                         )
                                     )
@@ -270,7 +279,7 @@ extension XcmExecuteDerivator {
             XcmV4.Instruction.withdrawAsset([originAsset]),
             XcmV4.Instruction.buyExecution(
                 XcmV4.BuyExecutionValue(
-                    fees: originAsset,
+                    fees: half(asset: originAsset),
                     weightLimit: .limited(weight: .init(refTime: 0, proofSize: 0))
                 )
             ),
@@ -281,7 +290,7 @@ extension XcmExecuteDerivator {
                     xcm: [
                         XcmV4.Instruction.buyExecution(
                             XcmV4.BuyExecutionValue(
-                                fees: destAsset,
+                                fees: half(asset: destAsset),
                                 weightLimit: .unlimited
                             )
                         ),
