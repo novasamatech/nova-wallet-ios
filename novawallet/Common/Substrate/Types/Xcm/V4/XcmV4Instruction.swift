@@ -18,6 +18,18 @@ extension XcmV4 {
         let xcm: [Instruction]
     }
 
+    struct InitiateReserveWithdrawValue: Codable {
+        let assets: XcmV4.AssetFilter
+        let reserve: XcmV4.Multilocation
+        let xcm: [Instruction]
+    }
+
+    struct InitiateTeleportValue: Codable {
+        let assets: XcmV4.AssetFilter
+        let dest: XcmV4.Multilocation
+        let xcm: [Instruction]
+    }
+
     enum Instruction: Codable {
         static let fieldWithdrawAsset = "WithdrawAsset"
         static let fieldClearOrigin = "ClearOrigin"
@@ -26,6 +38,9 @@ extension XcmV4 {
         static let fieldDepositAsset = "DepositAsset"
         static let fieldDepositReserveAsset = "DepositReserveAsset"
         static let fieldReceiveTeleportedAsset = "ReceiveTeleportedAsset"
+        static let fieldBurnAsset = "BurnAsset"
+        static let fieldInitiateReserveWithdraw = "InitiateReserveWithdraw"
+        static let fieldInitiateTeleport = "InitiateTeleport"
 
         case withdrawAsset([XcmV4.Multiasset])
         case depositAsset(DepositAssetValue)
@@ -34,6 +49,9 @@ extension XcmV4 {
         case buyExecution(BuyExecutionValue)
         case depositReserveAsset(DepositReserveAssetValue)
         case receiveTeleportedAsset([XcmV4.Multiasset])
+        case burnAsset([XcmV4.Multiasset])
+        case initiateReserveWithdraw(InitiateReserveWithdrawValue)
+        case initiateTeleport(InitiateTeleportValue)
         case other(String, JSON)
 
         init(from decoder: any Decoder) throws {
@@ -62,6 +80,15 @@ extension XcmV4 {
             case Self.fieldReceiveTeleportedAsset:
                 let value = try container.decode([XcmV4.Multiasset].self)
                 self = .receiveTeleportedAsset(value)
+            case Self.fieldBurnAsset:
+                let value = try container.decode([XcmV4.Multiasset].self)
+                self = .burnAsset(value)
+            case Self.fieldInitiateReserveWithdraw:
+                let value = try container.decode(InitiateReserveWithdrawValue.self)
+                self = .initiateReserveWithdraw(value)
+            case Self.fieldInitiateTeleport:
+                let value = try container.decode(InitiateTeleportValue.self)
+                self = .initiateTeleport(value)
             default:
                 let value = try container.decode(JSON.self)
                 self = .other(type, value)
@@ -93,6 +120,15 @@ extension XcmV4 {
             case let .receiveTeleportedAsset(assets):
                 try container.encode(Self.fieldReceiveTeleportedAsset)
                 try container.encode(assets)
+            case let .burnAsset(assets):
+                try container.encode(Self.fieldBurnAsset)
+                try container.encode(assets)
+            case let .initiateReserveWithdraw(value):
+                try container.encode(Self.fieldInitiateReserveWithdraw)
+                try container.encode(value)
+            case let .initiateTeleport(value):
+                try container.encode(Self.fieldInitiateTeleport)
+                try container.encode(value)
             case let .other(type, value):
                 try container.encode(type)
                 try container.encode(value)
