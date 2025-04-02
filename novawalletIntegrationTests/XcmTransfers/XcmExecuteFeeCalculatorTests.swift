@@ -20,6 +20,21 @@ final class XcmExecuteFeeCalculatorTests: XCTestCase {
         }
     }
     
+    func testDOTHydrationPolkadot() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.hydra,
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.polkadot,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     func testDOTPolkadotPolkadotAssetHub() throws {
         do {
             let fee = try calculateFee(

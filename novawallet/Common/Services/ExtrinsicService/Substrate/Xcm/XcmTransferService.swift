@@ -30,7 +30,15 @@ final class XcmTransferService {
         self.operationQueue = operationQueue
         self.customFeeEstimatingFactory = customFeeEstimatingFactory
 
-        callDerivator = XcmCallDerivator(chainRegistry: chainRegistry)
+        callDerivator = XcmExecuteDerivator(
+            chainRegistry: chainRegistry,
+            xcmPaymentFactory: XcmPaymentOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            ),
+            metadataFactory: XcmPalletMetadataQueryFactory()
+        )
+
         crosschainFeeCalculator = XcmCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
             callDerivator: callDerivator,

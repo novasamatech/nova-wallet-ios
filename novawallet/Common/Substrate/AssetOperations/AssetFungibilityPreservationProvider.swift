@@ -23,16 +23,8 @@ extension AssetFungibilityPreservationProvider: AssetFungibilityPreservationProv
 extension AssetFungibilityPreservationProvider {
     static func createFromKnownChains() -> AssetFungibilityPreservationProvider {
         AssetFungibilityPreservationProvider(
-            allAssets: [
-                KnowChainId.polkadotAssetHub,
-                KnowChainId.kusamaAssetHub
-            ],
-            concreteAssets: [
-                ChainAssetId(
-                    chainId: KnowChainId.astar,
-                    assetId: AssetModel.utilityAssetId
-                )
-            ]
+            allAssets: [],
+            concreteAssets: []
         )
     }
 }
