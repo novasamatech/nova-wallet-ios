@@ -1,5 +1,10 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
+
+enum XcmExecuteDerivatorError: Error {
+    case messageWeightFailed(JSON)
+}
 
 final class XcmExecuteDerivator {
     enum TransferType {
@@ -10,9 +15,17 @@ final class XcmExecuteDerivator {
     }
 
     let chainRegistry: ChainRegistryProtocol
+    let xcmPaymentFactory: XcmPaymentOperationFactoryProtocol
+    let metadataFactory: XcmPalletMetadataQueryFactoryProtocol
 
-    init(chainRegistry: ChainRegistryProtocol) {
+    init(
+        chainRegistry: ChainRegistryProtocol,
+        xcmPaymentFactory: XcmPaymentOperationFactoryProtocol,
+        metadataFactory: XcmPalletMetadataQueryFactoryProtocol
+    ) {
         self.chainRegistry = chainRegistry
+        self.xcmPaymentFactory = xcmPaymentFactory
+        self.metadataFactory = metadataFactory
     }
 }
 
@@ -305,16 +318,34 @@ extension XcmExecuteDerivator: XcmCallDerivating {
 
             let message = Xcm.Message.V4(program)
 
-            let call = Xcm.ExecuteCall<BlockchainWeight.WeightV2>(
-                message: message,
-                maxWeight: .init(refTime: 0, proofSize: 0)
+            let originChainId = transferRequest.originChain.chainId
+            let messageWeightWrapper = xcmPaymentFactory.queryMessageWeight(
+                for: message,
+                chainId: originChainId
             )
 
-            let collector = RuntimeCallCollector(
-                call: call.runtimeCall(for: "PalletXcm")
-            )
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: originChainId)
+            let palletNameWrapper = metadataFactory.createModuleNameResolutionWrapper(for: runtimeProvider)
 
-            return .createWithResult(collector)
+            let mapOperation = ClosureOperation<RuntimeCallCollecting> {
+                let palletName = try palletNameWrapper.targetOperation.extractNoCancellableResultData()
+                let weightResult = try messageWeightWrapper.targetOperation.extractNoCancellableResultData()
+                let weight = try weightResult.ensureOkOrError { XcmExecuteDerivatorError.messageWeightFailed($0) }
+
+                let call = Xcm.ExecuteCall<BlockchainWeight.WeightV2>(
+                    message: message,
+                    maxWeight: weight
+                )
+
+                return RuntimeCallCollector(call: call.runtimeCall(for: palletName))
+            }
+
+            mapOperation.addDependency(messageWeightWrapper.targetOperation)
+            mapOperation.addDependency(palletNameWrapper.targetOperation)
+
+            return messageWeightWrapper
+                .insertingHead(operations: palletNameWrapper.allOperations)
+                .insertingTail(operation: mapOperation)
         } catch {
             return .createWithError(error)
         }
