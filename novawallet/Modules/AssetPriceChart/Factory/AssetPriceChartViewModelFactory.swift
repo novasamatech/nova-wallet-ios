@@ -222,7 +222,8 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
 
         guard
             let lastEntry = entries.last,
-            let priceData = params.priceData
+            let priceData = params.priceData,
+            let priceDecimal = Decimal(string: priceData.price)
         else {
             return AssetPriceChartWidgetViewModel(
                 title: title,
@@ -244,7 +245,7 @@ extension AssetPriceChartViewModelFactory: AssetPriceChartViewModelFactoryProtoc
 
         let currentPrice = priceFormatter(priceId: priceData.currencyId)
             .value(for: params.locale)
-            .stringFromDecimal(lastEntry.value)
+            .stringFromDecimal(priceDecimal)
 
         return AssetPriceChartWidgetViewModel(
             title: title,

@@ -72,7 +72,7 @@ private extension AssetPriceChartInteractor {
             switch result {
             case let .success(prices):
                 self?.presenter?.didReceive(prices: prices)
-            case let .failure(error):
+            case .failure:
                 self?.presenter?.didReceive(.chartDataNotAvailable)
             }
         }
@@ -103,7 +103,7 @@ extension AssetPriceChartInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
         switch result {
         case let .success(priceData):
             presenter?.didReceive(price: priceData)
-        case let .failure(error):
+        case .failure:
             presenter?.didReceive(.priceDataNotAvailable)
         }
     }

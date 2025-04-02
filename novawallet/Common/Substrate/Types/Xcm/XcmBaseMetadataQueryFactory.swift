@@ -2,6 +2,12 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+enum XcmMetadataQueryError: Error {
+    case noXcmPalletFound([String])
+    case noXcmTypeFound
+    case noXcmVersionFound
+}
+
 class XcmBaseMetadataQueryFactory {
     func createXcmTypeVersionWrapper(
         for runtimeProvider: RuntimeProviderProtocol,
@@ -42,7 +48,7 @@ class XcmBaseMetadataQueryFactory {
             guard let moduleName = possibleNames.first(
                 where: { metadata.getModuleIndex($0) != nil }
             ) else {
-                throw XcmTransferServiceError.noXcmPalletFound(possibleNames)
+                throw XcmMetadataQueryError.noXcmPalletFound(possibleNames)
             }
 
             return moduleName
