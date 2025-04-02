@@ -56,17 +56,17 @@ final class XcmDynamicCrosschainFeeCalculator {
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        callDerivator: XcmCallDerivating,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
+        self.callDerivator = callDerivator
 
         dryRunOperationFactory = DryRunOperationFactory(
             chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
-
-        callDerivator = XcmCallDerivator(chainRegistry: chainRegistry)
 
         palletMetadataQueryFactory = XcmPalletMetadataQueryFactory()
         tokenMintingFactory = TokenBalanceMintingFactory(

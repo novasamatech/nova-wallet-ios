@@ -4,7 +4,7 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class XcmDynamicFeeCalculatorTests: XCTestCase {
+final class XcmExecuteFeeCalculatorTests: XCTestCase {
     func testDOTPolkadotHydration() throws {
         do {
             let fee = try calculateFee(
@@ -227,7 +227,14 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         let operationQueue = OperationQueue()
         let feeService = XcmDynamicCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
-            callDerivator: XcmCallDerivator(chainRegistry: chainRegistry),
+            callDerivator: XcmExecuteDerivator(
+                chainRegistry: chainRegistry,
+                xcmPaymentFactory: XcmPaymentOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                ),
+                metadataFactory: XcmPalletMetadataQueryFactory()
+            ),
             operationQueue: operationQueue,
             logger: Logger.shared
         )

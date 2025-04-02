@@ -33,6 +33,7 @@ final class XcmTransferService {
         callDerivator = XcmCallDerivator(chainRegistry: chainRegistry)
         crosschainFeeCalculator = XcmCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
+            callDerivator: callDerivator,
             operationQueue: operationQueue,
             wallet: wallet,
             userStorageFacade: userStorageFacade,
