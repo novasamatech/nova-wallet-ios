@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "Pressione ambos os botões no seu %@ para aprovar o endereço";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Esta carteira está pareada com o Ledger. Nova ajudará você a formar quaisquer operações que desejar, e você será solicitado a assiná-las usando o Ledger";
-"ledger.instructions.title" = "Conecte o Ledger Nano X";
-"ledger.instructions.link" = "Guia Oficial de Conexão Bluetooth da Ledger";
+"ledger.instructions.title" = "Conecte Ledger via Bluetooth";
+"ledger.instructions.link" = "Guia de Conexão Ledger";
 "ledger.instructions.step1" = "Certifique-se de que o %@ no seu dispositivo Ledger usando o aplicativo Ledger Live";
 "ledger.instructions.step1.highlighted" = "Aplicativo da rede está instalado";
 "ledger.instructions.step2" = "%@ no seu dispositivo Ledger";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 símbolos hexadecimais";
 "common.status.backup.syncing" = "Sincronizando Backup...";
 "common.status.backup.synced" = "Backup Sincronizado";
-"common.ledger.nano.generic" = "Ledger Nano X (aplicativo Generic Polkadot)";
+"common.ledger.nano.generic" = "Ledger (Aplicativo Genérico Polkadot)";
 "generic.ledger.instructions.step1.highlighted" = "o aplicativo Polkadot está instalado";
 "generic.ledger.instructions.step2.highlighted" = "Abra o aplicativo Polkadot";
 "ledger.instructions.step4" = "%@ para adicionar à carteira";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "Formato legado";
 "asset.receive.looking.for.address.message" = "Procurando seu endereço legado para uma troca?";
 "asset.receive.view.address.format" = "Ver Formatos de Endereço";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Pressione o botão de confirmar no seu %@ para aprovar o endereço";
+"ledger.flex.stax.sign.transaction.details" = "Segure o botão de confirmar no seu %@ para aprovar a transação";
