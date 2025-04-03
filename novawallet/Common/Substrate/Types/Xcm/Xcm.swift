@@ -29,6 +29,10 @@ enum Xcm {
             }
         }
 
+        var rawName: String {
+            "V\(rawValue)"
+        }
+
         static func < (lhs: Xcm.Version, rhs: Xcm.Version) -> Bool {
             lhs.rawValue < rhs.rawValue
         }
