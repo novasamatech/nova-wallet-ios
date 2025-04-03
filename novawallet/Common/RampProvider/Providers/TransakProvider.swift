@@ -6,10 +6,8 @@ final class TransakProvider {
         static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
         static let baseUrlString = "https://global.transak.com"
     #else
-        static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
-        static let baseUrlString = "https://global.transak.com"
-//        static let pubToken = "ed6a6887-57fd-493a-8075-4718b463913b"
-//        static let baseUrlString = "https://staging-global.transak.com"
+        static let pubToken = "ed6a6887-57fd-493a-8075-4718b463913b"
+        static let baseUrlString = "https://staging-global.transak.com"
     #endif
 
     private var callbackUrl: URL?
@@ -30,14 +28,17 @@ private extension TransakProvider {
         var queryItems = [
             URLQueryItem(name: "apiKey", value: Self.pubToken),
             URLQueryItem(name: "network", value: network),
-            URLQueryItem(name: "cryptoCurrencyCode", value: token),
-            URLQueryItem(name: "walletAddress", value: address),
-            URLQueryItem(name: "disableWalletAddressForm", value: "true")
+            URLQueryItem(name: "cryptoCurrencyCode", value: token)
         ]
 
         let productsAvailed = switch type {
         case .offRamp: "SELL"
         case .onRamp: "BUY"
+        }
+
+        if type == .onRamp {
+            queryItems.append(URLQueryItem(name: "walletAddress", value: address))
+            queryItems.append(URLQueryItem(name: "disableWalletAddressForm", value: "true"))
         }
 
         queryItems.append(URLQueryItem(name: "productsAvailed", value: productsAvailed))

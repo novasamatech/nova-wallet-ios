@@ -83,6 +83,16 @@ extension RampViewController: WKNavigationDelegate, WKUIDelegate {
 
         return nil
     }
+
+    func webView(
+        _: WKWebView,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping @MainActor(URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        if let serverTrust = challenge.protectionSpace.serverTrust {
+            completionHandler(.useCredential, URLCredential(trust: serverTrust))
+        }
+    }
 }
 
 // MARK: RampViewProtocol

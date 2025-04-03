@@ -1,6 +1,6 @@
 import Foundation
 
-final class RampWireframe: RampWireframeProtocol {
+final class RampWireframe {
     private weak var delegate: RampDelegate?
 
     init(delegate: RampDelegate?) {

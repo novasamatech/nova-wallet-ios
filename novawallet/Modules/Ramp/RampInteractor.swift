@@ -56,7 +56,7 @@ private extension RampInteractor {
             return []
         }
 
-        let params = OffRampParams(
+        let params = OffRampHookParams(
             chainAsset: chainAsset,
             refundAddress: address
         )
@@ -100,7 +100,7 @@ extension RampInteractor: RampInteractorInputProtocol {
 // MARK: OffRampHookDelegate
 
 extension RampInteractor: OffRampHookDelegate {
-    func didRequestTransfer(from model: PayCardTopupModel) {
+    func didRequestTransfer(from model: OffRampTransferModel) {
         presenter?.didRequestTransfer(for: model)
     }
 }

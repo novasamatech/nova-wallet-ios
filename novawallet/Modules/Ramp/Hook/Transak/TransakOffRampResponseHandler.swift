@@ -19,7 +19,7 @@ final class TransakOffRampResponseHandler {
 
 extension TransakOffRampResponseHandler: OffRampMessageHandling {
     func canHandleMessageOf(name: String) -> Bool {
-        name == MercuryoMessageName.onCardTopup.rawValue
+        name == TransakRampEventNames.walletRedirection.rawValue
     }
 
     func handle(message: Any, of _: String) {
@@ -30,27 +30,17 @@ extension TransakOffRampResponseHandler: OffRampMessageHandling {
             }
 
             let sellStatusResponse = try JSONDecoder().decode(
-                MercuryoGenericResponse<MercuryoSellResponseData>.self,
+                TransakTransferEventData.self,
                 from: message
             )
 
-            guard let data = sellStatusResponse.data else {
-                logger.error("Unexpected message: \(message)")
-                return
-            }
+            let model = PayCardTopupModel(
+                chainAsset: chainAsset,
+                amount: sellStatusResponse.cryptoAmount.decimalValue,
+                recipientAddress: sellStatusResponse.walletAddress
+            )
 
-            switch data.status {
-            case .new:
-                let model = PayCardTopupModel(
-                    chainAsset: chainAsset,
-                    amount: data.amounts.request.amount.decimalValue,
-                    recipientAddress: data.address
-                )
-
-                delegate?.didRequestTransfer(from: model)
-            default:
-                break
-            }
+            delegate?.didRequestTransfer(from: model)
         } catch {
             logger.error("Unexpected error: \(error)")
         }

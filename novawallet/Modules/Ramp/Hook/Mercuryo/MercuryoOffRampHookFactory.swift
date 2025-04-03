@@ -10,7 +10,7 @@ final class MercuryoOffRampHookFactory {
 
 extension MercuryoOffRampHookFactory: OffRampHookFactoryProtocol {
     func createHooks(
-        using params: OffRampParams,
+        using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> [RampHook] {
         let responseHook = createResponseInterceptingHook(
@@ -24,10 +24,10 @@ extension MercuryoOffRampHookFactory: OffRampHookFactoryProtocol {
 
 extension MercuryoOffRampHookFactory {
     func createResponseInterceptingHook(
-        using params: OffRampParams,
+        using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> RampHook {
-        let offRampAction = MercuryoMessageName.onCardTopup.rawValue
+        let offRampAction = MercuryoRampEventNames.onSell.rawValue
 
         let scriptSource = """
         let originalXhrOpen = XMLHttpRequest.prototype.open;

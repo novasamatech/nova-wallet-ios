@@ -7,55 +7,50 @@ final class TransakOffRampHookFactory {
         self.logger = logger
     }
 
-    private func createResponseInterceptingHook(
-        using params: OffRampParams,
+    private func createEventListeningHook(
+        using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> RampHook {
-        let offRampAction = MercuryoMessageName.onCardTopup.rawValue
+        let eventName = TransakRampEventNames.walletRedirection.rawValue
 
         let scriptSource = """
-        let originalXhrOpen = XMLHttpRequest.prototype.open;
-
-        XMLHttpRequest.prototype.open = function(method, url) {
-            if (url.includes('\(MercuryoCardApi.topUpEndpoint)')) {
-                this.addEventListener('load', function() {
-                    window.webkit.messageHandlers.\(offRampAction).postMessage(this.responseText);
-                });
-            }
-
-            originalXhrOpen.apply(this, arguments);
-        };
+            window.addEventListener("message", ({ data }) => {
+                if (event.detail && event.detail.eventName === \(eventName)) {
+                    window.webkit.messageHandlers.\(eventName).postMessage(JSON.stringify(data));
+                }
+            });
         """
 
-        let handlers: [PayCardMessageHandling] = [
-            MercuryoOffRampResponseHandler(
+        let handlers = [
+            TransakOffRampResponseHandler(
                 delegate: delegate,
                 chainAsset: params.chainAsset,
                 logger: logger
             )
         ]
-
-        return .init(
+        let hook = RampHook(
             script: .init(
                 content: scriptSource,
                 insertionPoint: .atDocEnd
             ),
-            messageNames: [offRampAction],
+            messageNames: [eventName],
             handlers: handlers
         )
+
+        return hook
     }
 }
 
 extension TransakOffRampHookFactory: OffRampHookFactoryProtocol {
     func createHooks(
-        using params: OffRampParams,
+        using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> [RampHook] {
-        let responseHook = createResponseInterceptingHook(
+        let hook = createEventListeningHook(
             using: params,
             for: delegate
         )
 
-        return [responseHook]
+        return [hook]
     }
 }
