@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 public class ModalCardPresentationFactory: NSObject {
     let configuration: ModalCardPresentationConfiguration

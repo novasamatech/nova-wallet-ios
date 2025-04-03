@@ -1,5 +1,4 @@
 import Foundation
-import SoraFoundation
 
 final class RampViewFactory: RampViewFactoryProtocol {
     static func createView(

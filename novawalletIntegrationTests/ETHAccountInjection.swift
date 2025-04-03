@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 class ETHAccountInjectionTest: XCTestCase {
     func testInjectETHAccount() throws {

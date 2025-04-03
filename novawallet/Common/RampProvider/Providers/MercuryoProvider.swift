@@ -1,7 +1,7 @@
 import Foundation
 import CryptoKit
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class MercuryoProvider {
     struct Configuration {

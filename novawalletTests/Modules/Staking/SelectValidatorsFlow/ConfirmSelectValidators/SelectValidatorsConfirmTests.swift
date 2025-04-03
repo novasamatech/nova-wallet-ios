@@ -1,11 +1,11 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 import Operation_iOS
 import BigInt
 import Cuckoo
-import SoraFoundation
+import Foundation_iOS
 
 class SelectValidatorsConfirmTests: XCTestCase {
     let initiatedBoding: PreparedNomination<InitiatedBonding> = {

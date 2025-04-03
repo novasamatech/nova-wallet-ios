@@ -1,6 +1,6 @@
 import UIKit
 import DGCharts
-import SoraUI
+import UIKit_iOS
 
 final class AssetPriceChartViewLayout: UIView {
     var loadingState: LoadingState = .none {

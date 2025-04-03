@@ -2,10 +2,16 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+typealias StateCallWithApiParamsClosure = (
+    RuntimeApiQueryResult,
+    DynamicScaleEncoding,
+    RuntimeJsonContext
+) throws -> Void
+
 extension StateCallRequestFactoryProtocol {
     func createWrapper<V: Decodable>(
         path: StateCallPath,
-        paramsClosure: StateCallRequestParamsClosure?,
+        paramsClosure: StateCallWithApiParamsClosure?,
         runtimeProvider: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
         operationQueue: OperationQueue,
@@ -25,7 +31,9 @@ extension StateCallRequestFactoryProtocol {
 
             return self.createWrapper(
                 for: runtimeApi.callName,
-                paramsClosure: paramsClosure,
+                paramsClosure: { encoder, context in
+                    try paramsClosure?(runtimeApi, encoder, context)
+                },
                 codingFactoryClosure: { codingFactory },
                 connection: connection,
                 queryType: runtimeApi.method.output.asTypeId(),

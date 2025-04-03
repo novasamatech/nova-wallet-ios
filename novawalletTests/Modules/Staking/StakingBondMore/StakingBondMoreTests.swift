@@ -1,9 +1,9 @@
 import XCTest
 import Cuckoo
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
-import IrohaCrypto
+import NovaCrypto
 @testable import novawallet
 
 class StakingBondMoreTests: XCTestCase {

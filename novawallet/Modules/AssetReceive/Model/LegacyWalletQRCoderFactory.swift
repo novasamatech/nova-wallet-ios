@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 final class WalletQREncoder: NovaWalletQREncoderProtocol {

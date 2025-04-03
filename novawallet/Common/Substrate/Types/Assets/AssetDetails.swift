@@ -34,6 +34,7 @@ extension PalletAssets {
         @StringCodable var minBalance: BigUInt
         let status: Status
         let isSufficient: Bool
+        @BytesCodable var issuer: AccountId
     }
 
     struct Details: Decodable {

@@ -78,7 +78,7 @@ final class GetTokenOptionsInteractor {
         let chains = assetModelObservable.state.value.allChains
 
         let availableOrigins = xcmTransfers
-            .transferChainAssets(to: destinationChainAsset.chainAssetId)
+            .getOrigins(for: destinationChainAsset.chainAssetId)
             .compactMap { chainAssetId in
                 if
                     case let .success(balance) = balances[chainAssetId],

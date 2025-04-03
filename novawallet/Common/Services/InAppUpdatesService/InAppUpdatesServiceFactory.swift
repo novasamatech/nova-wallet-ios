@@ -1,4 +1,4 @@
-import SoraKeystore
+import Keystore_iOS
 
 protocol InAppUpdatesServiceFactoryProtocol {
     func createService() -> SyncServiceProtocol

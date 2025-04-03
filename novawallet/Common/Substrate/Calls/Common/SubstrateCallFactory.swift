@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 
 protocol SubstrateCallFactoryProtocol {
@@ -16,20 +16,20 @@ protocol SubstrateCallFactoryProtocol {
         to receiver: AccountId,
         info: AssetsPalletStorageInfo,
         amount: BigUInt
-    ) -> RuntimeCall<AssetsTransfer>
+    ) -> RuntimeCall<PalletAssets.TransferCall>
 
     func ormlTransfer(
         in moduleName: String,
         currencyId: JSON,
         receiverId: AccountId,
         amount: BigUInt
-    ) -> RuntimeCall<OrmlTokenTransfer>
+    ) -> RuntimeCall<OrmlTokensPallet.TransferCall>
 
     func ormlTransferAll(
         in moduleName: String,
         currencyId: JSON,
         receiverId: AccountId
-    ) -> RuntimeCall<OrmlTokenTransferAll>
+    ) -> RuntimeCall<OrmlTokensPallet.TransferAllCall>
 
     func bondExtra(amount: BigUInt) -> RuntimeCall<BondExtraCall>
 
@@ -99,8 +99,8 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         to receiver: AccountId,
         info: AssetsPalletStorageInfo,
         amount: BigUInt
-    ) -> RuntimeCall<AssetsTransfer> {
-        let args = AssetsTransfer(assetId: info.assetId, target: .accoundId(receiver), amount: amount)
+    ) -> RuntimeCall<PalletAssets.TransferCall> {
+        let args = PalletAssets.TransferCall(assetId: info.assetId, target: .accoundId(receiver), amount: amount)
         let callCodingPath = PalletAssets.assetsTransfer(for: info.palletName)
 
         return RuntimeCall(
@@ -149,8 +149,8 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         currencyId: JSON,
         receiverId: AccountId,
         amount: BigUInt
-    ) -> RuntimeCall<OrmlTokenTransfer> {
-        let args = OrmlTokenTransfer(
+    ) -> RuntimeCall<OrmlTokensPallet.TransferCall> {
+        let args = OrmlTokensPallet.TransferCall(
             dest: .accoundId(receiverId),
             currencyId: currencyId,
             amount: amount
@@ -163,8 +163,8 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         in moduleName: String,
         currencyId: JSON,
         receiverId: AccountId
-    ) -> RuntimeCall<OrmlTokenTransferAll> {
-        let args = OrmlTokenTransferAll(
+    ) -> RuntimeCall<OrmlTokensPallet.TransferAllCall> {
+        let args = OrmlTokensPallet.TransferAllCall(
             dest: .accoundId(receiverId),
             currencyId: currencyId,
             keepAlive: false

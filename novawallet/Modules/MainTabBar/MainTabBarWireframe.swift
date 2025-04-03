@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {

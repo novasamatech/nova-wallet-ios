@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 enum WalletRemoteHistorySourceLabel: Int, CaseIterable {

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class ProxyTableViewCell: PlainBaseTableViewCell<WalletView> {
     override func prepareForReuse() {

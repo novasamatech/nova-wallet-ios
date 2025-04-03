@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 enum NoSigningSupportType {
     case paritySigner

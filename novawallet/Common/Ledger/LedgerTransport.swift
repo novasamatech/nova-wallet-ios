@@ -2,7 +2,7 @@ import Foundation
 
 protocol LedgerTransportProtocol {
     func reset()
-    func prepareRequest(from message: Data) -> [Data]
+    func prepareRequest(from message: Data, using mtu: Int) -> [Data]
     func receive(partialResponseData: Data) throws -> Data?
 }
 
@@ -38,12 +38,6 @@ final class LedgerTransport {
     }
 
     private var partialResponse: Response?
-
-    let mtu: Int
-
-    init(mtu: Int = 23) {
-        self.mtu = mtu
-    }
 }
 
 extension LedgerTransport: LedgerTransportProtocol {
@@ -51,7 +45,7 @@ extension LedgerTransport: LedgerTransportProtocol {
         partialResponse = nil
     }
 
-    func prepareRequest(from message: Data) -> [Data] {
+    func prepareRequest(from message: Data, using mtu: Int) -> [Data] {
         let totalLength = message.count
         var offest: Int = 0
         var chunks: [Data] = []

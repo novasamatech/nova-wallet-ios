@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 protocol Web3NameViewModelFactoryProtocol {
     func recipientListViewModel(
         recipients: [Web3TransferRecipient],

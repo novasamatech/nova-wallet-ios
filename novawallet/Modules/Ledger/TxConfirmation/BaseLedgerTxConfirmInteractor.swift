@@ -1,8 +1,8 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 class BaseLedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
     var presenter: LedgerTxConfirmInteractorOutputProtocol? {

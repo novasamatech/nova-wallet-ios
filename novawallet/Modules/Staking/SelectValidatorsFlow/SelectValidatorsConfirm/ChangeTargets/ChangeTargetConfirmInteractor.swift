@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBase, AccountFetching {
     let nomination: PreparedNomination<ExistingBonding>

@@ -1,5 +1,5 @@
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct ValidatorListFilterViewFactory {
     static func createView(

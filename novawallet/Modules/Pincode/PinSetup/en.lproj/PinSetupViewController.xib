@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -60,7 +60,7 @@
                     <color key="textColor" name="colorTextPrimary"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="260" placeholderIntrinsicHeight="424.5" translatesAutoresizingMaskIntoConstraints="NO" id="im2-a2-44W" customClass="PinView" customModule="SoraUI">
+                <view contentMode="scaleToFill" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="260" placeholderIntrinsicHeight="424.5" translatesAutoresizingMaskIntoConstraints="NO" id="im2-a2-44W" customClass="PinView" customModule="UIKit_iOS">
                     <rect key="frame" x="57.5" y="169.5" width="260" height="424.5"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <userDefinedRuntimeAttributes>
@@ -153,11 +153,6 @@
             <point key="canvasLocation" x="138" y="154"/>
         </view>
     </objects>
-    <designables>
-        <designable name="im2-a2-44W">
-            <size key="intrinsicContentSize" width="260" height="424.5"/>
-        </designable>
-    </designables>
     <resources>
         <image name="pinBackspace" width="23" height="21"/>
         <namedColor name="colorButtonBackgroundSecondary">

@@ -1,7 +1,7 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 private struct NavigationItemState {
     var title: String?

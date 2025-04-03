@@ -1,6 +1,6 @@
 import Foundation
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 
 enum SettingsKey: String {
     case selectedLocalization

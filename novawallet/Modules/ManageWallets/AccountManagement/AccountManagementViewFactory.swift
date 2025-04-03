@@ -1,9 +1,9 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 import SubstrateSdk
-import IrohaCrypto
-import SoraKeystore
+import NovaCrypto
+import Keystore_iOS
 
 final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
     static func createView(for walletId: String) -> AccountManagementViewProtocol? {

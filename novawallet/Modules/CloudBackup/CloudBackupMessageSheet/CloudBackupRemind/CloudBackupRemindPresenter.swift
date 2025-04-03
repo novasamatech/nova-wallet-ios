@@ -1,5 +1,5 @@
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 final class CloudBackupRemindPresenter: MessageSheetPresenter, CloudBackupRemindPresenterProtocol {
     let interactor: CloudBackupRemindInteractorInputProtocol

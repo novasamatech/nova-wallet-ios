@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class PayoutValidatorsForValidatorFactory: PayoutValidatorsFactoryProtocol {
     func createResolutionOperation(

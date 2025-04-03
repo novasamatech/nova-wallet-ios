@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 
 protocol CrowdloanOperationFactoryProtocol {

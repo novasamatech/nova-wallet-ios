@@ -1,4 +1,4 @@
-import SoraKeystore
+import Keystore_iOS
 
 enum SharedSettingsKey: String, CaseIterable {
     case selectedLocalization

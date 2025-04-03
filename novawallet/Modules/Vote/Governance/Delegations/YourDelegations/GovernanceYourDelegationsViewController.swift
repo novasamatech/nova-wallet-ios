@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class GovernanceYourDelegationsViewController: UIViewController, ViewHolder {
     typealias RootViewType = GovernanceYourDelegationsViewLayout
@@ -40,7 +40,7 @@ final class GovernanceYourDelegationsViewController: UIViewController, ViewHolde
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        if !dataStore.isEmpty {
+        if dataStore.isEmpty {
             rootView.updateLoadingState()
         }
     }

@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 extension ImportChainAccount {
     final class AccountImportWireframe: BaseAccountImportWireframe, AccountImportWireframeProtocol {

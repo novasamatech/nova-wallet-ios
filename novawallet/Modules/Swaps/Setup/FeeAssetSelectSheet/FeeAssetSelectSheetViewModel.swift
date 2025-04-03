@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 struct FeeAssetSelectSheetViewModel {
     let title: LocalizableResource<String>

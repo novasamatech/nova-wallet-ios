@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 import SnapKit
 
 typealias SwipeGovBannerTableViewCell = PlainBaseTableViewCell<SwipeGovBannerView>

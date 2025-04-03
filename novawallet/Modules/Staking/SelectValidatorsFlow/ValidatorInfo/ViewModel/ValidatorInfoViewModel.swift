@@ -1,6 +1,6 @@
 import UIKit
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 enum ValidatorInfoState {
     case empty

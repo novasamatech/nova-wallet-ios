@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 struct UIConstants {
     static let accessoryBarHeight: CGFloat = 44.0

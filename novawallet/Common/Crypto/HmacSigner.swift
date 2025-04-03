@@ -1,6 +1,6 @@
 import Foundation
 import CommonCrypto
-import IrohaCrypto
+import NovaCrypto
 
 protocol HmacSignerProtocol {
     func sign(_ originalData: Data) throws -> Data

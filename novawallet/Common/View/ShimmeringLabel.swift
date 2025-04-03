@@ -173,7 +173,6 @@ class ShimmerLabel: UILabel {
         }
     }
 
-    @available(iOS 9.0, *)
     override var allowsDefaultTighteningForTruncation: Bool {
         get {
             super.allowsDefaultTighteningForTruncation
