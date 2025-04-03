@@ -53,7 +53,7 @@ extension XcmUni.AbsoluteLocation {
         let accountIdJunction: XcmUni.Junction
 
         if isEthereumBase {
-            let accountIdValue = XcmUni.AccountId20(network: .any, key: accountId)
+            let accountIdValue = XcmUni.AccountId20(network: .any, accountId: accountId)
             accountIdJunction = XcmUni.Junction.accountKey20(accountIdValue)
         } else {
             let accountIdValue = XcmUni.AccountId32(network: .any, accountId: accountId)
@@ -82,7 +82,7 @@ extension XcmUni.RelativeLocation {
         case let .accountId32(account):
             return account.accountId
         case let .accountKey20(account):
-            return account.key
+            return account.accountId
         default:
             return nil
         }

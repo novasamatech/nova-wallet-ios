@@ -1,47 +1,57 @@
 import XCTest
 @testable import novawallet
+import SubstrateSdk
 
 final class XcmUniCodingTests: XCTestCase {
 
-    func testVersionedEncoding() throws {
-        // given
-        
-        let versioned = XcmUni.Versioned(entity: 1, version: .V5)
-        
-        // then
-        
-        let encoded = try JSONEncoder().encode(versioned)
-        let encodedString = String(data: encoded, encoding: .utf8)!
-        
-        // then
-        
-        XCTAssertEqual("[\"V5\",1]", encodedString)
+    func testEncodeDecodeV2AccountId32() throws {
+        try performEncodeDecodeTest(
+            for: XcmUni.Versioned(
+                entity: XcmUni.AccountId32(
+                    network: .any,
+                    accountId: Data.randomBytes(length: 32)!
+                ),
+                version: .V2
+            )
+        )
     }
     
-    func testVersionedDecodingArray() throws {
-        // given
-        
-        let encodedString = "[\"V5\", [[1, 2], [3, 4], [5, 6, 7]]]"
-        let encoded = encodedString.data(using: .utf8)!
-        
-        let expected = XcmUni.Versioned<[[Int]]>(entity: [[1, 2], [3, 4], [5, 6, 7]], version: .V5)
-        
-        // then
-        
-        let versioned = try JSONDecoder().decode(XcmUni.Versioned<[[Int]]>.self, from: encoded)
-        
-        // then
-        
-        XCTAssertEqual(expected, versioned)
-    }
-}
-
-extension Int: XcmUniCodable {
-    public init(from decoder: Decoder, version: Xcm.Version) throws {
-        try self.init(from: decoder)
+    func testEncodeDecodeV5AccountId20() throws {
+        try performEncodeDecodeTest(
+            for: XcmUni.Versioned(
+                entity: XcmUni.Junction.accountKey20(
+                    XcmUni.AccountId20(
+                        network: .any,
+                        accountId: Data.randomBytes(length: 20)!
+                    )
+                ),
+                version: .V5
+            )
+        )
     }
     
-    public func encode(to encoder: Encoder, version: Xcm.Version) throws {
-        try encode(to: encoder)
+    func testEncodeDecodeV5AccountId20ByGenesis() throws {
+        let networkId = "91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+        
+        try performEncodeDecodeTest(
+            for: XcmUni.Versioned(
+                entity: XcmUni.Junction.accountKey20(
+                    XcmUni.AccountId20(
+                        network: .other("ByGenesis", JSON.stringValue(networkId)),
+                        accountId: Data.randomBytes(length: 20)!
+                    )
+                ),
+                version: .V5
+            )
+        )
+    }
+    
+    private func performEncodeDecodeTest<T: Equatable & XcmUniCodable>(
+        for versionedEntity: XcmUni.Versioned<T>
+    ) throws {
+        let encoded = try JSONEncoder().encode(versionedEntity)
+        let decoded = try JSONDecoder().decode(XcmUni.Versioned<T>.self, from: encoded)
+        
+        XCTAssertEqual(versionedEntity, decoded)
     }
 }
