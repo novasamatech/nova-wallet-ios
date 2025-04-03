@@ -12,6 +12,10 @@ enum BlockchainWeight {
     struct WeightV2: Codable {
         @StringCodable var refTime: BigUInt
         @StringCodable var proofSize: UInt64
+
+        static var zero: Self {
+            .init(refTime: 0, proofSize: 0)
+        }
     }
 
     @propertyWrapper

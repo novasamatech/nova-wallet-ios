@@ -4,13 +4,28 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-final class XcmDynamicFeeCalculatorTests: XCTestCase {
+final class XcmExecuteFeeCalculatorTests: XCTestCase {
     func testDOTPolkadotHydration() throws {
         do {
             let fee = try calculateFee(
                 for: KnowChainId.polkadot,
                 originAssetSymbol: "DOT",
                 destinationChainId: KnowChainId.hydra,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDOTHydrationPolkadot() throws {
+        do {
+            let fee = try calculateFee(
+                for: KnowChainId.hydra,
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.polkadot,
                 destinationAssetSymbol: "DOT"
             )
             
@@ -84,6 +99,21 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         do {
             let fee = try calculateFee(
                 for: KnowChainId.astar,
+                originAssetSymbol: "DOT",
+                destinationChainId: KnowChainId.hydra,
+                destinationAssetSymbol: "DOT"
+            )
+            
+            Logger.shared.debug("Fee: \(fee)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDOTBifrostHydra() throws {
+        do {
+            let fee = try calculateFee(
+                for: "262e1b2ad728475fd6fe88e62d34c200abe6fd693931ddad144059b1eb884e5b",
                 originAssetSymbol: "DOT",
                 destinationChainId: KnowChainId.hydra,
                 destinationAssetSymbol: "DOT"
@@ -227,7 +257,14 @@ final class XcmDynamicFeeCalculatorTests: XCTestCase {
         let operationQueue = OperationQueue()
         let feeService = XcmDynamicCrosschainFeeCalculator(
             chainRegistry: chainRegistry,
-            callDerivator: XcmCallDerivator(chainRegistry: chainRegistry),
+            callDerivator: XcmExecuteDerivator(
+                chainRegistry: chainRegistry,
+                xcmPaymentFactory: XcmPaymentOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                ),
+                metadataFactory: XcmPalletMetadataQueryFactory()
+            ),
             operationQueue: operationQueue,
             logger: Logger.shared
         )

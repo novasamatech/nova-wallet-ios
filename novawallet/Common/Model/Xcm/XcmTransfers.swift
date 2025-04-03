@@ -225,7 +225,7 @@ private extension XcmTransfers {
                 path: reservePath
             ),
             fee: .dynamic,
-            paysDeliveryFee: transfer.hasDeliveryFee ?? false
+            paysDeliveryFee: false
         )
     }
 }

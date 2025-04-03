@@ -45,6 +45,7 @@ extension XcmV4 {
 
         case all
         case allOf(AllOfValue)
+        case allCounted(UInt32)
         case other(String, JSON)
 
         init(from decoder: any Decoder) throws {
@@ -58,6 +59,9 @@ extension XcmV4 {
             case "AllOf":
                 let value = try container.decode(AllOfValue.self)
                 self = .allOf(value)
+            case "AllCounted":
+                let value = try container.decode(StringScaleMapper<UInt32>.self).value
+                self = .allCounted(value)
             default:
                 let value = try container.decode(JSON.self)
                 self = .other(type, value)
@@ -74,6 +78,9 @@ extension XcmV4 {
             case let .allOf(value):
                 try container.encode("AllOf")
                 try container.encode(value)
+            case let .allCounted(value):
+                try container.encode("AllCounted")
+                try container.encode(StringScaleMapper(value: value))
             case let .other(type, value):
                 try container.encode(type)
                 try container.encode(value)

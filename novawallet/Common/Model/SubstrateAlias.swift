@@ -111,6 +111,15 @@ extension Optional where Wrapped == ParaId {
             return paraId.isSystemParachain
         }
     }
+
+    var isRelayOrSystemParachain: Bool {
+        switch self {
+        case .none:
+            return true
+        case let .some(paraId):
+            return paraId.isSystemParachain
+        }
+    }
 }
 
 extension ParaId {
