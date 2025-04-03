@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 protocol NftListViewModelFactoryProtocol {
     func createViewModel(from model: NftChainModel, for locale: Locale) -> NftListViewModel

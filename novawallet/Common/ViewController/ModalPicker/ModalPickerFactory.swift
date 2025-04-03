@@ -1,7 +1,7 @@
 import Foundation
-import SoraUI
-import SoraFoundation
-import IrohaCrypto
+import UIKit_iOS
+import Foundation_iOS
+import NovaCrypto
 import SubstrateSdk
 
 typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>

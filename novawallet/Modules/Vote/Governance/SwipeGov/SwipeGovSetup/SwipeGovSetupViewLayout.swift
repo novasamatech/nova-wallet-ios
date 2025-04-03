@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class SwipeGovSetupViewLayout: BaseReferendumVoteSetupViewLayout {
     let detailsLabel: UILabel = .create { view in

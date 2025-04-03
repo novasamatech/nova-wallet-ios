@@ -1,8 +1,8 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 extension AddAccount {
     final class AccountImportInteractor: BaseAccountImportInteractor {

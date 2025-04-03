@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class NftListItemCell: UICollectionViewCell {
     private enum Constants {

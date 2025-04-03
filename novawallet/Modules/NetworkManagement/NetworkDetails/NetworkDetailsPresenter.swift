@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 private typealias ModalActionsContext = (
     actions: [LocalizableResource<ActionManageViewModel>],

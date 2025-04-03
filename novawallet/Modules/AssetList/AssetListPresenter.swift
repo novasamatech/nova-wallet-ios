@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class AssetListPresenter: BannersModuleInputOwnerProtocol {

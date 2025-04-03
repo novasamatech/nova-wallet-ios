@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {

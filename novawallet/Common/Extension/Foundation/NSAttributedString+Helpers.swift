@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 extension NSAttributedString {
     func truncate(maxLength: Int) -> NSAttributedString {

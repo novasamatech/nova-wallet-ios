@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     weak var view: LedgerPerformOperationViewProtocol?
@@ -42,23 +42,30 @@ class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     }
 
     func handleAppConnection(error: Error, deviceId: UUID) {
-        guard let view = view else {
-            return
-        }
+        guard
+            let view = view,
+            let device = devices.first(where: { $0.identifier == deviceId })
+        else { return }
 
         if let ledgerError = error as? LedgerError {
             baseWireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                cancelClosure: {},
-                retryClosure: { [weak self] in
-                    guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
-                        return
-                    }
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: device.model,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: { [weak self] in
+                        guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
+                            return
+                        }
 
-                    self?.selectDevice(at: deviceIndex)
-                }
+                        self?.selectDevice(at: deviceIndex)
+                    }
+                )
             )
         } else {
             _ = baseWireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)

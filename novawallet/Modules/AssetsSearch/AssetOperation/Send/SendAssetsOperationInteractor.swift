@@ -1,5 +1,5 @@
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 final class SendAssetsOperationInteractor {
     weak var presenter: AssetsSearchInteractorOutputProtocol?

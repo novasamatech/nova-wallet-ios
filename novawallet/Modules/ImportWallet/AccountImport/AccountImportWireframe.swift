@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 final class AccountImportWireframe: BaseAccountImportWireframe, AccountImportWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()

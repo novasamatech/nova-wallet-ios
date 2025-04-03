@@ -1,5 +1,5 @@
 import UIKit
-import IrohaCrypto
+import NovaCrypto
 
 final class ExportMnemonicConfirmInteractor {
     weak var presenter: AccountConfirmInteractorOutputProtocol!

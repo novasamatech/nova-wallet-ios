@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol GetTokenOptionsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [LocalizableResource<TokenOperationTableViewCell.Model>])

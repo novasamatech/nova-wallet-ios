@@ -1,9 +1,9 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import Cuckoo
-import IrohaCrypto
+import NovaCrypto
 import Operation_iOS
 
 class AccountConfirmTests: XCTestCase {

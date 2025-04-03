@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingProxyManagementViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingProxyManagementViewLayout

@@ -264,7 +264,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var ledgerGuideURL: URL {
-        URL(string: "https://support.ledger.com/hc/en-us/articles/360019138694-Set-up-Bluetooth-connection")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/ledger-devices")!
     }
 
     var ledgerMigrationURL: URL {

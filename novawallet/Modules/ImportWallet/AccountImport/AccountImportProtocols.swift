@@ -1,5 +1,5 @@
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 
 protocol AccountImportViewProtocol: ControllerBackedProtocol {
     func setSource(type: SecretSource)

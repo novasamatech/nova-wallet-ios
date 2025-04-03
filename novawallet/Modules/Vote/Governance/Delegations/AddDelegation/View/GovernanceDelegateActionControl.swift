@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class GovernanceDelegateActionControl: UIView {
     let label = UILabel(style: .footnoteSecondary)

@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol RecommendedValidatorListViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceive(viewModel: RecommendedValidatorListViewModelProtocol)

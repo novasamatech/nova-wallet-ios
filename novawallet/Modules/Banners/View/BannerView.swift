@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 class BannerCollectionViewCell: CollectionViewContainerCell<BannerView> {
     override init(frame: CGRect) {

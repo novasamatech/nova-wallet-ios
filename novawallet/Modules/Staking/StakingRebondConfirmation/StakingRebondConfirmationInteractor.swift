@@ -1,9 +1,9 @@
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
 import BigInt
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingRebondConfirmationInteractorOutputProtocol!

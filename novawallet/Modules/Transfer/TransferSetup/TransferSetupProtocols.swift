@@ -1,5 +1,5 @@
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveTransferableBalance(viewModel: String)

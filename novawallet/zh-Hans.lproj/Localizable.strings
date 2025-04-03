@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "按下您%@上的两个按钮以批准地址";
 "common.ledger" = "账本";
 "ledger.details.hint" = "这个钱包与Ledger配对。Nova将帮助您形成任何您想要的操作，并且您将被要求使用Ledger签名";
-"ledger.instructions.title" = "连接Ledger Nano X";
-"ledger.instructions.link" = "Ledger官方蓝牙连接指南";
+"ledger.instructions.title" = "通过蓝牙连接 Ledger";
+"ledger.instructions.link" = "Ledger 连接指南";
 "ledger.instructions.step1" = "确保%@到您的Ledger设备中，使用Ledger Live应用";
 "ledger.instructions.step1.highlighted" = "已安装网络应用";
 "ledger.instructions.step2" = "在您的Ledger设备上%@";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64个十六进制符号";
 "common.status.backup.syncing" = "正在同步备份...";
 "common.status.backup.synced" = "备份已同步";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot 应用程序)";
+"common.ledger.nano.generic" = "Ledger （通用 Polkadot 应用）";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot 应用程序";
 "generic.ledger.instructions.step2.highlighted" = "打开 Polkadot 应用程序";
 "ledger.instructions.step4" = "%@添加到钱包";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "传统格式";
 "asset.receive.looking.for.address.message" = "正在寻找用于交换的传统地址？";
 "asset.receive.view.address.format" = "查看地址格式";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "按下 %@ 上的确认按钮以批准地址";
+"ledger.flex.stax.sign.transaction.details" = "长按 %@ 上的确认按钮以批准交易";
