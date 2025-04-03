@@ -25,7 +25,7 @@ final class MercuryoProvider {
     #if F_RELEASE
         let configuration: Configuration = .production
     #else
-    let configuration: Configuration = .debug
+        let configuration: Configuration = .debug
     #endif
 
     private var callbackUrl: URL?

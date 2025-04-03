@@ -11,13 +11,11 @@ final class TransakOffRampHookFactory {
         using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> RampHook {
-        let eventName = TransakRampEventNames.walletRedirection.rawValue
+        let eventName = TransakRampEventNames.orderCreated.rawValue
 
         let scriptSource = """
             window.addEventListener("message", ({ data }) => {
-                if (event.detail && event.detail.eventName === \(eventName)) {
-                    window.webkit.messageHandlers.\(eventName).postMessage(JSON.stringify(data));
-                }
+                window.webkit.messageHandlers.\(eventName).postMessage(JSON.stringify(data));
             });
         """
 
