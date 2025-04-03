@@ -12,6 +12,11 @@ extension XcmUni {
     }
 
     struct AccountId32: Equatable {
+        enum CodingKeys: String, CodingKey {
+            case network
+            case accountId = "id"
+        }
+        
         let network: NetworkId
         let accountId: AccountId
     }

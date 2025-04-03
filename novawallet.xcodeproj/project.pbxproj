@@ -1086,6 +1086,7 @@
 		0CED71CF2D9EC40200F79C02 /* XcmUni+Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71CE2D9EC40200F79C02 /* XcmUni+Instruction.swift */; };
 		0CED71D12D9EDB7800F79C02 /* XcmUni+Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */; };
 		0CED71D32D9EE07000F79C02 /* XcmUni+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */; };
+		0CED71D72D9EF78600F79C02 /* XcmUniCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
@@ -6883,6 +6884,7 @@
 		0CED71CE2D9EC40200F79C02 /* XcmUni+Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Instruction.swift"; sourceTree = "<group>"; };
 		0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Version.swift"; sourceTree = "<group>"; };
 		0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Coding.swift"; sourceTree = "<group>"; };
+		0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmUniCodingTests.swift; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
@@ -14118,6 +14120,14 @@
 			path = Universal;
 			sourceTree = "<group>";
 		};
+		0CED71D52D9EF76700F79C02 /* Xcm */ = {
+			isa = PBXGroup;
+			children = (
+				0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */,
+			);
+			path = Xcm;
+			sourceTree = "<group>";
+		};
 		0CF3A6C72CE9422400F93C49 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -18160,6 +18170,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				0CED71D52D9EF76700F79C02 /* Xcm */,
 				771056042B717DF300EE2C20 /* Parsing */,
 				77A6F5D32A31E033004AFD1A /* JsonCanonicalizer */,
 				8846F73629D6F4FB00B8B776 /* Multibase */,
@@ -33218,6 +33229,7 @@
 				0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */,
 				845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */,
 				0C7104692C2966C000487E64 /* LedgerConversionTests.swift in Sources */,
+				0CED71D72D9EF78600F79C02 /* XcmUniCodingTests.swift in Sources */,
 				84B66A1426FDF29A0038B963 /* WalletLocalSubscriptionFactoryStub.swift in Sources */,
 				887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */,
 				8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */,
