@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 public struct NovaWalletViewModelObserverWrapper<Observer> where Observer: AnyObject {
     weak var observer: Observer?

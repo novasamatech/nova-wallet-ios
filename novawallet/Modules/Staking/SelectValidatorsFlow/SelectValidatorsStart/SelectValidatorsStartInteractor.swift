@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 
 final class SelectValidatorsStartInteractor: RuntimeConstantFetching {

@@ -1,8 +1,8 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 class StakingInfoTests: XCTestCase {
     func testRewardsPolkadot() throws {

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol CollatorStakingValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     var assetDisplayInfo: AssetBalanceDisplayInfo { get }

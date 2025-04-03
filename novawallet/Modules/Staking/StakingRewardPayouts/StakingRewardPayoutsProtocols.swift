@@ -1,5 +1,5 @@
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 protocol StakingRewardPayoutsViewProtocol: ControllerBackedProtocol, Localizable {
     func reload(with state: StakingRewardPayoutsViewState)

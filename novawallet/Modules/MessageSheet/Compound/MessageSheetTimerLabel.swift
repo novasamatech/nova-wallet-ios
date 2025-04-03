@@ -1,5 +1,5 @@
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 protocol EstimatedCountdownViewModelFactoryProtocol {
     func createViewModel(

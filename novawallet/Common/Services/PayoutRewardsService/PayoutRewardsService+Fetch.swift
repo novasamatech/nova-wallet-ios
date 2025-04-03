@@ -1,7 +1,7 @@
 import Operation_iOS
 import SubstrateSdk
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 
 extension PayoutRewardsService {
     func createChainHistoryRangeOperationWrapper(

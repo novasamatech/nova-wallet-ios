@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class ExtendedPageControl: UIControl {
     private var dots: [UIView] = []

@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class ProxyInfoTableViewCell: PlainBaseTableViewCell<ProxyInfoView> {
     var actionButton: RoundedButton { contentDisplayView.linkView.actionButton }

@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol ControllerAccountConfirmationViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func reload(with viewModel: ControllerAccountConfirmationVM)

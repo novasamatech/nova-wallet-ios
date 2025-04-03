@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 /**
  *  Implementation of the signing for Parity Signer makes

@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol StakingPayoutConfirmationViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>)

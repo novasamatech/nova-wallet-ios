@@ -1,5 +1,5 @@
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 protocol ShortTextInfoPresentable {
     func showInfo(

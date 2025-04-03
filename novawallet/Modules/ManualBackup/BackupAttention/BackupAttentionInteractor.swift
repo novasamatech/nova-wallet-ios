@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 class BackupAttentionInteractor: BackupAttentionInteractorInputProtocol {
     private let keystore: KeystoreProtocol

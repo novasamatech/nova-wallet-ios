@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 protocol ParitySignerTxScanViewProtocol: QRScannerViewProtocol {
     func didReceiveExpiration(viewModel: ExpirationTimeViewModel)

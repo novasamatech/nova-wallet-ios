@@ -2,8 +2,8 @@ import XCTest
 @testable import novawallet
 import Cuckoo
 import SubstrateSdk
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 class CustomValidatorListTests: XCTestCase {
     func testSetup() {

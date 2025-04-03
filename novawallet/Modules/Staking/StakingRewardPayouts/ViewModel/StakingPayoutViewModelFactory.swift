@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import IrohaCrypto
+import Foundation_iOS
+import NovaCrypto
 import UIKit
 
 final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol {

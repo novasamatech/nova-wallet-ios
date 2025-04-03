@@ -1,4 +1,4 @@
-import SoraKeystore
+import Keystore_iOS
 
 protocol SessionStorageProtocol: AnyObject {
     var inAppUpdatesWasShown: Bool { get set }

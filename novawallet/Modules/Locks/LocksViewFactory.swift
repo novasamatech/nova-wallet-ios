@@ -1,6 +1,6 @@
 import Foundation
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 struct LocksViewFactory {
     static func createView(input: LocksViewInput) -> LocksViewProtocol? {

@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 final class AssetDetailsPresenter: PurchaseFlowManaging, AssetPriceChartInputOwnerProtocol {

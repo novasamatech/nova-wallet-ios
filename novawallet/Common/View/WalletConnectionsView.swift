@@ -1,5 +1,5 @@
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 final class WalletConnectionsView: UIView {
     let iconView: UIImageView = .create {

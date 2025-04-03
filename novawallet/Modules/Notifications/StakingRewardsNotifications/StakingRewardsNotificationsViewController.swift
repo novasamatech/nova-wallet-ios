@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 // swiftlint:disable:next type_name
 final class StakingRewardsNotificationsViewController: ChainNotificationSettingsViewController {

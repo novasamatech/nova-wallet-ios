@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class GovernanceUnlockConfirmViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = GovernanceUnlockConfirmViewLayout
