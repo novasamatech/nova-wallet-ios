@@ -29,13 +29,13 @@ final class XcmExecuteDerivator {
     }
 }
 
-extension XcmExecuteDerivator {
+private extension XcmExecuteDerivator {
     func half(asset: XcmV4.Multiasset) -> XcmV4.Multiasset {
         switch asset.fun {
         case let .fungible(amount):
-            return XcmV4.Multiasset(assetId: asset.assetId, amount: amount / 2)
+            XcmV4.Multiasset(assetId: asset.assetId, amount: amount / 2)
         case .nonFungible:
-            return asset
+            asset
         }
     }
 
@@ -49,13 +49,13 @@ extension XcmExecuteDerivator {
         for request: XcmUnweightedTransferRequest
     ) -> TransferType {
         if isTeleport(request: request) {
-            return .teleport
+            .teleport
         } else if request.origin.chainAsset.chainAssetId.chainId == request.reserve.chain.chainId {
-            return .localReserve
+            .localReserve
         } else if request.destination.chain.chainId == request.reserve.chain.chainId {
-            return .destinationReserve
+            .destinationReserve
         } else {
-            return .remoteReserve(XcmV4.AbsoluteLocation(paraId: request.reserve.parachainId))
+            .remoteReserve(XcmV4.AbsoluteLocation(paraId: request.reserve.parachainId))
         }
     }
 
