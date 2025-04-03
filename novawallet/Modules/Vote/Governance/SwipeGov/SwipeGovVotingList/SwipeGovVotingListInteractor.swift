@@ -7,6 +7,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
     let votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
+    let govBalanceCalculator: AvailableBalanceMapping
 
     private let observableState: ReferendumsObservableState
 
@@ -37,6 +38,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
         votingBasketSubscriptionFactory: VotingBasketLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
+        govBalanceCalculator: AvailableBalanceMapping,
         operationQueue: OperationQueue
     ) {
         self.observableState = observableState
@@ -47,6 +49,7 @@ final class SwipeGovVotingListInteractor: AnyProviderAutoCleaning {
         self.votingBasketSubscriptionFactory = votingBasketSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
+        self.govBalanceCalculator = govBalanceCalculator
         self.operationQueue = operationQueue
     }
 }
@@ -246,6 +249,6 @@ private extension SwipeGovVotingListInteractor {
             return false
         }
 
-        return votingItem.amount <= balance.availableForOpenGov
+        return votingItem.amount <= govBalanceCalculator.availableBalance(from: balance)
     }
 }

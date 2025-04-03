@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 @objc protocol DelegateGroupVotesHeaderDelegate: DelegateInfoDelegate {
     func didTapOnActionControl(sender: DelegateGroupVotesHeader)

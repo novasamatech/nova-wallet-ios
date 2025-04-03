@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     private func continueSetup() {

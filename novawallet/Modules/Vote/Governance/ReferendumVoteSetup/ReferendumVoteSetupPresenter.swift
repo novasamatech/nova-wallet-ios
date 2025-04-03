@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class ReferendumVoteSetupPresenter {
     weak var view: ReferendumVoteSetupViewProtocol?
@@ -16,6 +16,7 @@ final class ReferendumVoteSetupPresenter {
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
+    let govBalanceCalculator: AvailableBalanceMapping
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
@@ -41,6 +42,7 @@ final class ReferendumVoteSetupPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
+        govBalanceCalculator: AvailableBalanceMapping,
         interactor: ReferendumVoteSetupInteractorInputProtocol,
         wireframe: ReferendumVoteSetupWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -60,6 +62,7 @@ final class ReferendumVoteSetupPresenter {
         self.referendumFormatter = referendumFormatter
         self.referendumStringsViewModelFactory = referendumStringsViewModelFactory
         self.lockChangeViewModelFactory = lockChangeViewModelFactory
+        self.govBalanceCalculator = govBalanceCalculator
         self.interactor = interactor
         self.wireframe = wireframe
         self.logger = logger
@@ -72,7 +75,7 @@ final class ReferendumVoteSetupPresenter {
 
 extension ReferendumVoteSetupPresenter {
     private func balanceMinusFee() -> Decimal {
-        let balanceValue = assetBalance?.freeInPlank ?? 0
+        let balanceValue = govBalanceCalculator.availableBalanceElseZero(from: assetBalance)
         let feeValue = fee?.amountForCurrentAccount ?? 0
 
         guard
@@ -86,11 +89,11 @@ extension ReferendumVoteSetupPresenter {
     }
 
     private func updateAvailableBalanceView() {
-        let freeInPlank = assetBalance?.freeInPlank ?? 0
+        let availableInPlank = govBalanceCalculator.mapAvailableBalance(from: assetBalance) ?? 0
 
         let precision = chain.utilityAsset()?.displayInfo.assetPrecision ?? 0
         let balanceDecimal = Decimal.fromSubstrateAmount(
-            freeInPlank,
+            availableInPlank,
             precision: precision
         ) ?? 0
 

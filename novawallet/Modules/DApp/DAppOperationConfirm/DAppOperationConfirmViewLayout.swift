@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackView> {
     static let listImageSize = CGSize(width: 24, height: 24)
@@ -43,7 +43,7 @@ final class DAppOperationConfirmViewLayout: SCGenericActionLayoutView<UIStackVie
 
     let transactionDetailsCell: StackActionCell = .create { view in
         view.rowContentView.iconSize = 0
-        view.rowContentView.titleLabel.apply(style: .footnoteSecondary)
+        view.titleLabel.apply(style: .footnoteSecondary)
     }
 
     let rejectButton: TriangularedButton = .create { button in

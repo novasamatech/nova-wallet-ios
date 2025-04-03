@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct GovernanceDelegateConfirmViewFactory {
@@ -78,7 +78,7 @@ struct GovernanceDelegateConfirmViewFactory {
 
         let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
-        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = GovernanceDelegateConfirmPresenter(
             interactor: interactor,

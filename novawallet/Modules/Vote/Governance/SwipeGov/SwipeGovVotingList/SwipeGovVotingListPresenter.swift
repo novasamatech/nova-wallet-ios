@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 final class SwipeGovVotingListPresenter {
@@ -14,6 +14,7 @@ final class SwipeGovVotingListPresenter {
 
     private let votingListViewModelFactory: SwipeGovVotingListViewModelFactory
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    private let govBalanceCalculator: AvailableBalanceMapping
 
     private var votingListItems: [VotingBasketItemLocal] = []
     private var referendumsMetadata: [ReferendumMetadataLocal] = []
@@ -27,6 +28,7 @@ final class SwipeGovVotingListPresenter {
         observableState: ReferendumsObservableState,
         votingListViewModelFactory: SwipeGovVotingListViewModelFactory,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        govBalanceCalculator: AvailableBalanceMapping,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -35,6 +37,7 @@ final class SwipeGovVotingListPresenter {
         self.observableState = observableState
         self.votingListViewModelFactory = votingListViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.govBalanceCalculator = govBalanceCalculator
         self.localizationManager = localizationManager
     }
 }
@@ -198,7 +201,7 @@ private extension SwipeGovVotingListPresenter {
             return
         }
 
-        let availableBalance = balance?.availableForOpenGov ?? 0
+        let availableBalance = govBalanceCalculator.availableBalanceElseZero(from: balance)
 
         let availableBalanceString = balanceViewModelFactory.amountFromValue(
             availableBalance.decimal(assetInfo: assetInfo)

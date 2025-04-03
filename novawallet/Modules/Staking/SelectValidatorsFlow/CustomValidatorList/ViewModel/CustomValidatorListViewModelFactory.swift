@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class CustomValidatorListViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol

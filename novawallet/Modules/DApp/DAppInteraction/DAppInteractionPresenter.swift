@@ -1,6 +1,6 @@
 import UIKit
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 final class DAppInteractionPresenter: AlertPresentable, ErrorPresentable {
     var window: UIWindow? { UIApplication.shared.keyWindow }

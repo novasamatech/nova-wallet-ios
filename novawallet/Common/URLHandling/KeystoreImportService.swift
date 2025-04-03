@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 
 enum SecretImportDefinition {
     case keystore(KeystoreDefinition)

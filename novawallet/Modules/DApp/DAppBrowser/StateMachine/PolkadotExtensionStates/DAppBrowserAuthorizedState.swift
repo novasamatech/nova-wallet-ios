@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
     private func provideAccountListResponse(from dataSource: DAppBrowserStateDataSource) throws {

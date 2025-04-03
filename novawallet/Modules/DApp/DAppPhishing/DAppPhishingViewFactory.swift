@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct DAppPhishingViewFactory {
     static func createView(with delegate: DAppPhishingViewDelegate) -> DAppPhishingViewProtocol? {

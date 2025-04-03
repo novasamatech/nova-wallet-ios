@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, LoadableViewProtocol {
     var presenter: CrowdloanListPresenterProtocol? { get set }

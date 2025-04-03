@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "Adresi onaylamak için %@ üzerindeki her iki düğmeye basın";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Bu cüzdan Ledger ile eşleştirildi. Nova istediğiniz herhangi bir işlemi oluşturmanıza yardımcı olacak ve bunları Ledger kullanarak imzalamanız istenecektir.";
-"ledger.instructions.title" = "Ledger Nano X’i bağlayın";
-"ledger.instructions.link" = "Ledger’ın resmi Bluetooth Bağlantı Kılavuzu";
+"ledger.instructions.title" = "Ledger'ı Bluetooth ile Bağla";
+"ledger.instructions.link" = "Ledger Bağlantı Kılavuzu";
 "ledger.instructions.step1" = "Ledger Live uygulamasını kullanarak Ledger cihazınızda %@ olduğundan emin olun";
 "ledger.instructions.step1.highlighted" = "Ağ uygulaması yüklendi";
 "ledger.instructions.step2" = "Ledger cihazınızda %@";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 hex semboller";
 "common.status.backup.syncing" = "Yedekleme Senkronize Ediliyor...";
 "common.status.backup.synced" = "Yedekleme Senkronize Edildi";
-"common.ledger.nano.generic" = "Ledger Nano X (Generic Polkadot uygulaması)";
+"common.ledger.nano.generic" = "Ledger (Genel Polkadot uygulaması)";
 "generic.ledger.instructions.step1.highlighted" = "Polkadot uygulamanın yüklü";
 "generic.ledger.instructions.step2.highlighted" = "Polkadot uygulamasını açın";
 "ledger.instructions.step4" = "Cüzdana eklenecek %@";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "Eski format";
 "asset.receive.looking.for.address.message" = "Bir borsa için eski adresinizi mi arıyorsunuz?";
 "asset.receive.view.address.format" = "Adres Formatlarını Görüntüle";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Adres onayı için %@ cihazınızda onay düğmesine basın";
+"ledger.flex.stax.sign.transaction.details" = "İşlemi onaylamak için %@ cihazınızda onay düğmesine basılı tutun";

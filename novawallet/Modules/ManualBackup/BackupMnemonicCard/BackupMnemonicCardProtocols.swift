@@ -1,4 +1,4 @@
-import IrohaCrypto
+import NovaCrypto
 
 protocol BackupMnemonicCardViewProtocol: ControllerBackedProtocol {
     func update(with viewModel: BackupMnemonicCardViewController.ViewModel)

@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 struct IdentityChainParams {
     let connection: JSONRPCEngine

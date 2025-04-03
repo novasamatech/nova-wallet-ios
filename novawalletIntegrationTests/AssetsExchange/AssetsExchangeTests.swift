@@ -1,6 +1,6 @@
 import XCTest
 @testable import novawallet
-import SoraKeystore
+import Keystore_iOS
 
 final class AssetsExchangeTests: XCTestCase {
     func testFindPath() {
@@ -234,7 +234,7 @@ final class AssetsExchangeTests: XCTestCase {
                 CrosschainAssetsExchangeProvider(
                     wallet: params.wallet,
                     syncService: XcmTransfersSyncService(
-                        remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+                        config: ApplicationConfig.shared,
                         operationQueue: params.operationQueue
                     ),
                     chainRegistry: params.chainRegistry,

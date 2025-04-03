@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func enoughTokensForVoting(
@@ -69,15 +69,18 @@ final class GovernanceValidatorFactory {
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
     let presentable: GovernanceErrorPresentable
+    let govBalanceCalculator: AvailableBalanceMapping
 
     init(
         presentable: GovernanceErrorPresentable,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        quantityFormatter: LocalizableResource<NumberFormatter>
+        quantityFormatter: LocalizableResource<NumberFormatter>,
+        govBalanceCalculator: AvailableBalanceMapping
     ) {
         self.presentable = presentable
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.quantityFormatter = quantityFormatter
+        self.govBalanceCalculator = govBalanceCalculator
     }
 }
 
@@ -90,20 +93,20 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
         locale: Locale?
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
+            guard let self, let view else {
                 return
             }
 
-            let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(for: assetInfo)
-            let availableForOpenGov = assetBalance?.availableForOpenGov ?? 0
+            let amountFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: assetInfo)
+            let availableForOpenGov = govBalanceCalculator.availableBalanceElseZero(from: assetBalance)
 
             let amountDecimal = availableForOpenGov.decimal(assetInfo: assetInfo)
-            let amountString = amountFormatter?.value(for: locale ?? Locale.current).stringFromDecimal(
+            let amountString = amountFormatter.value(for: locale ?? Locale.current).stringFromDecimal(
                 amountDecimal
             ) ?? ""
 
             if let maxAmountErrorClosure, availableForOpenGov > 0 {
-                self?.presentable.presentNotEnoughTokensToVote(
+                presentable.presentNotEnoughTokensToVote(
                     from: view,
                     available: amountString,
                     maxAction: {
@@ -112,21 +115,23 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
                     locale: locale
                 )
             } else {
-                self?.presentable.presentNotEnoughTokensToVote(
+                presentable.presentNotEnoughTokensToVote(
                     from: view,
                     available: amountString,
                     maxAction: nil,
                     locale: locale
                 )
             }
-        }, preservesCondition: {
+        }, preservesCondition: { [weak self] in
             guard
-                let assetBalance = assetBalance,
+                let availableBalance = self?.govBalanceCalculator.mapAvailableBalance(
+                    from: assetBalance
+                ),
                 let votingAmount = votingAmount else {
                 return false
             }
 
-            return assetBalance.availableForOpenGov >= votingAmount
+            return availableBalance >= votingAmount
         })
     }
 
@@ -136,36 +141,37 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
         locale: Locale?
     ) -> DataValidating {
         let availableForFee: BigUInt = if
-            let assetBalance = params.assetBalance,
+            let availableAmount = govBalanceCalculator.mapAvailableBalance(from: params.assetBalance),
+            let transferrableAmont = params.assetBalance?.transferable,
             let votingAmount = params.votingAmount {
-            min(assetBalance.availableForOpenGov.subtractOrZero(votingAmount), assetBalance.transferable)
+            min(availableAmount.subtractOrZero(votingAmount), transferrableAmont)
         } else {
             0
         }
 
         return ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
+            guard let self, let view else {
                 return
             }
 
-            let amountFormatter = self?.assetBalanceFormatterFactory.createTokenFormatter(
+            let amountFormatter = assetBalanceFormatterFactory.createTokenFormatter(
                 for: params.assetInfo
             ).value(for: locale ?? Locale.current)
 
             let feeInPlank = params.fee?.amountForCurrentAccount ?? 0
             let transferableInPlank = params.assetBalance?.transferable ?? 0
-            let availableForOpenGov = params.assetBalance?.availableForOpenGov ?? 0
+            let availableForGov = govBalanceCalculator.availableBalanceElseZero(from: params.assetBalance)
             let availableAfterFee = transferableInPlank >= feeInPlank ?
-                availableForOpenGov.subtractOrZero(feeInPlank) : 0
+                availableForGov.subtractOrZero(feeInPlank) : 0
 
             let amountDecimal = availableAfterFee.decimal(assetInfo: params.assetInfo)
-            let amountString = amountFormatter?.stringFromDecimal(amountDecimal) ?? ""
+            let amountString = amountFormatter.stringFromDecimal(amountDecimal) ?? ""
 
             let feeDecimal = feeInPlank.decimal(assetInfo: params.assetInfo)
-            let feeString = amountFormatter?.stringFromDecimal(feeDecimal) ?? ""
+            let feeString = amountFormatter.stringFromDecimal(feeDecimal) ?? ""
 
             if let maxAmountErrorClosure, availableAfterFee > 0 {
-                self?.presentable.presentUpToForFee(
+                presentable.presentUpToForFee(
                     from: view,
                     available: amountString,
                     fee: feeString,
@@ -175,7 +181,7 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
                     locale: locale
                 )
             } else {
-                self?.presentable.presentUpToForFee(
+                presentable.presentUpToForFee(
                     from: view,
                     available: amountString,
                     fee: feeString,
@@ -359,11 +365,15 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
 }
 
 extension GovernanceValidatorFactory {
-    static func createFromPresentable(_ presentable: GovernanceErrorPresentable) -> GovernanceValidatorFactory {
+    static func createFromPresentable(
+        _ presentable: GovernanceErrorPresentable,
+        govType: GovernanceType
+    ) -> GovernanceValidatorFactory {
         GovernanceValidatorFactory(
             presentable: presentable,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: govType)
         )
     }
 }

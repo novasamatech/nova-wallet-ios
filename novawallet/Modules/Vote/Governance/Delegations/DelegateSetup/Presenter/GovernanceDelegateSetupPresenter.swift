@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class GovernanceDelegateSetupPresenter {
@@ -17,6 +17,7 @@ final class GovernanceDelegateSetupPresenter {
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
+    let govBalanceCalculator: AvailableBalanceMapping
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -38,6 +39,7 @@ final class GovernanceDelegateSetupPresenter {
         tracks: [GovernanceTrackInfoLocal],
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        govBalanceCalculator: AvailableBalanceMapping,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
@@ -51,6 +53,7 @@ final class GovernanceDelegateSetupPresenter {
         self.delegateId = delegateId
         self.tracks = tracks
         self.dataValidatingFactory = dataValidatingFactory
+        self.govBalanceCalculator = govBalanceCalculator
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.referendumStringsViewModelFactory = referendumStringsViewModelFactory
@@ -60,7 +63,7 @@ final class GovernanceDelegateSetupPresenter {
     }
 
     func balanceMinusFee() -> Decimal {
-        let balanceValue = assetBalance?.freeInPlank ?? 0
+        let balanceValue = govBalanceCalculator.availableBalanceElseZero(from: assetBalance)
         let feeValue = fee?.amountForCurrentAccount ?? 0
 
         guard

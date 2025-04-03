@@ -1,13 +1,12 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct SwipeGovVotingListViewFactory {
     static func createView(with sharedState: GovernanceSharedState) -> SwipeGovVotingListViewProtocol? {
-        let chain = sharedState.settings.value.chain
-
         guard
-            let assetInfo = chain.utilityAssetDisplayInfo(),
+            let option = sharedState.settings.value,
+            let assetInfo = option.chain.utilityAssetDisplayInfo(),
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(for: sharedState) else {
             return nil
@@ -30,10 +29,11 @@ struct SwipeGovVotingListViewFactory {
         let presenter = SwipeGovVotingListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chain: chain,
+            chain: option.chain,
             observableState: sharedState.observableState,
             votingListViewModelFactory: votingListViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             localizationManager: localizationManager
         )
 
@@ -50,11 +50,12 @@ struct SwipeGovVotingListViewFactory {
 
     private static func createInteractor(for state: GovernanceSharedState) -> SwipeGovVotingListInteractor? {
         guard
-            let metaAccount = SelectedWalletSettings.shared.value else {
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let option = state.settings.value else {
             return nil
         }
 
-        let chain = state.settings.value.chain
+        let chain = option.chain
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -83,6 +84,7 @@ struct SwipeGovVotingListViewFactory {
             votingBasketSubscriptionFactory: votingBasketSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             govMetadataLocalSubscriptionFactory: govMetadataLocalSubscriptionFactory,
+            govBalanceCalculator: GovernanceBalanceCalculator(governanceType: option.type),
             operationQueue: operationQueue
         )
     }

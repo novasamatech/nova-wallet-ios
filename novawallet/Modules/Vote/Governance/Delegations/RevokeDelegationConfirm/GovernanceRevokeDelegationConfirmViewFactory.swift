@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 struct GovRevokeDelegationConfirmViewFactory {
     static func createView(
@@ -39,11 +39,9 @@ struct GovRevokeDelegationConfirmViewFactory {
             votingLockId: votingLockId
         )
 
-        let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
-
         let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
 
-        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe, govType: option.type)
 
         let presenter = GovRevokeDelegationConfirmPresenter(
             interactor: interactor,

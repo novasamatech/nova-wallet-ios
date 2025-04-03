@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 typealias CloudBackupRemindViewModel = MessageSheetViewModel<
     MessageSheetImageView.GraphicsViewModel,

@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class StakingSetupAmountViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = StakingSetupAmountViewLayout

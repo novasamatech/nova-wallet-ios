@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 struct MnemonicImportSecrets {
     let entropy: Data

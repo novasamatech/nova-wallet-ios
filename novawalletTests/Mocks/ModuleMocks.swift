@@ -243,7 +243,7 @@ import Operation_iOS
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockAccountSelectionPresentable: AccountSelectionPresentable, Cuckoo.ProtocolMock {
@@ -795,8 +795,8 @@ import UIKit
 import Cuckoo
 @testable import novawallet
 
-import SoraUI
 import UIKit
+import UIKit_iOS
 
 
  class MockLoadableViewProtocol: LoadableViewProtocol, Cuckoo.ProtocolMock {
@@ -2160,8 +2160,8 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Keystore_iOS
 import Operation_iOS
-import SoraKeystore
 
 
  class MockPushNotificationsServiceFacadeProtocol: PushNotificationsServiceFacadeProtocol, Cuckoo.ProtocolMock {
@@ -3865,16 +3865,16 @@ import Operation_iOS
     
     
     
-     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])  {
+     func didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)  {
         
-    return cuckoo_manager.call("didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])",
-            parameters: (results),
-            escapingParameters: (results),
+    return cuckoo_manager.call("didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)",
+            parameters: (resultWithChanges),
+            escapingParameters: (resultWithChanges),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveBalance(results: results))
+            defaultCall: __defaultImplStub!.didReceiveBalance(resultWithChanges: resultWithChanges))
         
     }
     
@@ -3922,9 +3922,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveChainAssets(result: Result<[ChainAsset], Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveBalance<M1: Cuckoo.Matchable>(results: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: Result<BigUInt?, Error>])> where M1.MatchedType == [ChainAssetId: Result<BigUInt?, Error>] {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: Result<BigUInt?, Error>])>] = [wrap(matchable: results) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", parameterMatchers: matchers))
+	    func didReceiveBalance<M1: Cuckoo.Matchable>(resultWithChanges: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ChainAssetId: AssetBalance], Error>)> where M1.MatchedType == Result<[ChainAssetId: AssetBalance], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAssetId: AssetBalance], Error>)>] = [wrap(matchable: resultWithChanges) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePrice<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: DataProviderChange<PriceData>])> where M1.MatchedType == [ChainAssetId: DataProviderChange<PriceData>] {
@@ -3960,9 +3960,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceiveBalance<M1: Cuckoo.Matchable>(results: M1) -> Cuckoo.__DoNotUse<([ChainAssetId: Result<BigUInt?, Error>]), Void> where M1.MatchedType == [ChainAssetId: Result<BigUInt?, Error>] {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: Result<BigUInt?, Error>])>] = [wrap(matchable: results) { $0 }]
-	        return cuckoo_manager.verify("didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveBalance<M1: Cuckoo.Matchable>(resultWithChanges: M1) -> Cuckoo.__DoNotUse<(Result<[ChainAssetId: AssetBalance], Error>), Void> where M1.MatchedType == Result<[ChainAssetId: AssetBalance], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAssetId: AssetBalance], Error>)>] = [wrap(matchable: resultWithChanges) { $0 }]
+	        return cuckoo_manager.verify("didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3994,7 +3994,7 @@ import Operation_iOS
     
     
     
-     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])   {
+     func didReceiveBalance(resultWithChanges: Result<[ChainAssetId: AssetBalance], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -10268,7 +10268,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockAccountExportPasswordViewProtocol: AccountExportPasswordViewProtocol, Cuckoo.ProtocolMock {
@@ -11029,7 +11029,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockExportGenericViewProtocol: ExportGenericViewProtocol, Cuckoo.ProtocolMock {
@@ -11603,7 +11603,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import IrohaCrypto
+import NovaCrypto
 
 
  class MockExportMnemonicInteractorInputProtocol: ExportMnemonicInteractorInputProtocol, Cuckoo.ProtocolMock {
@@ -12111,8 +12111,8 @@ import IrohaCrypto
 import Cuckoo
 @testable import novawallet
 
-import IrohaCrypto
-import SoraFoundation
+import Foundation_iOS
+import NovaCrypto
 
 
  class MockAccountImportViewProtocol: AccountImportViewProtocol, Cuckoo.ProtocolMock {
@@ -13478,7 +13478,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockAdvancedWalletViewProtocol: AdvancedWalletViewProtocol, Cuckoo.ProtocolMock {
@@ -14242,8 +14242,8 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Foundation_iOS
 import Operation_iOS
-import SoraFoundation
 
 
  class MockAccountManagementViewProtocol: AccountManagementViewProtocol, Cuckoo.ProtocolMock {
@@ -15740,7 +15740,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockCheckboxListViewProtocol: CheckboxListViewProtocol, Cuckoo.ProtocolMock {
@@ -16864,8 +16864,8 @@ import Cuckoo
 import Cuckoo
 @testable import novawallet
 
-import IrohaCrypto
-import SoraFoundation
+import Foundation_iOS
+import NovaCrypto
 
 
  class MockAccountCreateViewProtocol: AccountCreateViewProtocol, Cuckoo.ProtocolMock {
@@ -18641,7 +18641,7 @@ import Foundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockUsernameSetupViewProtocol: UsernameSetupViewProtocol, Cuckoo.ProtocolMock {
@@ -23627,7 +23627,7 @@ import UIKit.UIImage
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockControllerAccountViewProtocol: ControllerAccountViewProtocol, Cuckoo.ProtocolMock {
@@ -25364,7 +25364,7 @@ import Operation_iOS
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockCustomValidatorListViewProtocol: CustomValidatorListViewProtocol, Cuckoo.ProtocolMock {
@@ -26550,7 +26550,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockRecommendedValidatorListViewProtocol: RecommendedValidatorListViewProtocol, Cuckoo.ProtocolMock {
@@ -27075,7 +27075,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockSelectValidatorsConfirmViewProtocol: SelectValidatorsConfirmViewProtocol, Cuckoo.ProtocolMock {
@@ -28491,7 +28491,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockSelectValidatorsStartViewProtocol: SelectValidatorsStartViewProtocol, Cuckoo.ProtocolMock {
@@ -29392,7 +29392,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockSelectedValidatorListViewProtocol: SelectedValidatorListViewProtocol, Cuckoo.ProtocolMock {
@@ -30294,7 +30294,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockValidatorStakeInfoProtocol: ValidatorStakeInfoProtocol, Cuckoo.ProtocolMock {
@@ -31683,7 +31683,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockValidatorListFilterWireframeProtocol: ValidatorListFilterWireframeProtocol, Cuckoo.ProtocolMock {
@@ -32453,7 +32453,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockValidatorSearchWireframeProtocol: ValidatorSearchWireframeProtocol, Cuckoo.ProtocolMock {
@@ -33649,7 +33649,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockYourValidatorListViewProtocol: YourValidatorListViewProtocol, Cuckoo.ProtocolMock {
@@ -34615,7 +34615,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingBondMoreViewProtocol: StakingBondMoreViewProtocol, Cuckoo.ProtocolMock {
@@ -35677,7 +35677,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingBondMoreConfirmationViewProtocol: StakingBondMoreConfirmationViewProtocol, Cuckoo.ProtocolMock {
@@ -38723,7 +38723,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingMainViewProtocol: StakingMainViewProtocol, Cuckoo.ProtocolMock {
@@ -40229,7 +40229,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingPayoutConfirmationViewProtocol: StakingPayoutConfirmationViewProtocol, Cuckoo.ProtocolMock {
@@ -41422,7 +41422,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingRebondConfirmationViewProtocol: StakingRebondConfirmationViewProtocol, Cuckoo.ProtocolMock {
@@ -42614,7 +42614,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingRebondSetupViewProtocol: StakingRebondSetupViewProtocol, Cuckoo.ProtocolMock {
@@ -43741,7 +43741,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingRedeemViewProtocol: StakingRedeemViewProtocol, Cuckoo.ProtocolMock {
@@ -44996,7 +44996,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingRewardDestConfirmViewProtocol: StakingRewardDestConfirmViewProtocol, Cuckoo.ProtocolMock {
@@ -46156,7 +46156,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingRewardDestSetupViewProtocol: StakingRewardDestSetupViewProtocol, Cuckoo.ProtocolMock {
@@ -47537,7 +47537,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingRewardDetailsViewProtocol: StakingRewardDetailsViewProtocol, Cuckoo.ProtocolMock {
@@ -48233,8 +48233,8 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 
  class MockStakingRewardPayoutsViewProtocol: StakingRewardPayoutsViewProtocol, Cuckoo.ProtocolMock {
@@ -49230,7 +49230,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingUnbondConfirmViewProtocol: StakingUnbondConfirmViewProtocol, Cuckoo.ProtocolMock {
@@ -50647,7 +50647,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockStakingUnbondSetupViewProtocol: StakingUnbondSetupViewProtocol, Cuckoo.ProtocolMock {
@@ -53777,7 +53777,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockCrowdloanContributionConfirmViewProtocol: CrowdloanContributionConfirmViewProtocol, Cuckoo.ProtocolMock {
@@ -55354,7 +55354,7 @@ import Cuckoo
 
 import BigInt
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockCrowdloanContributionSetupViewProtocol: CrowdloanContributionSetupViewProtocol, Cuckoo.ProtocolMock {
@@ -56961,7 +56961,7 @@ import SoraFoundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockCrowdloansViewProtocol: CrowdloansViewProtocol, Cuckoo.ProtocolMock {
@@ -58473,7 +58473,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockCrowdloanYourContributionsViewProtocol: CrowdloanYourContributionsViewProtocol, Cuckoo.ProtocolMock {
@@ -59424,7 +59424,7 @@ import Foundation
 import Cuckoo
 @testable import novawallet
 
-import SoraFoundation
+import Foundation_iOS
 
 
  class MockReferralCrowdloanViewProtocol: ReferralCrowdloanViewProtocol, Cuckoo.ProtocolMock {

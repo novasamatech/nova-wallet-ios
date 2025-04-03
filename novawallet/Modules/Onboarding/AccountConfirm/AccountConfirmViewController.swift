@@ -1,6 +1,6 @@
 import UIKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 import AudioToolbox
 
 final class AccountConfirmViewController: UIViewController, ViewHolder {

@@ -1,7 +1,7 @@
 import Foundation
-import SoraUI
-import SoraFoundation
-import SoraKeystore
+import UIKit_iOS
+import Foundation_iOS
+import Keystore_iOS
 
 struct UnifiedAddressPopupViewFactory {
     static func createView(

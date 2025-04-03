@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol ControllerAccountViewProtocol: ControllerBackedProtocol, Localizable {
     func reload(with viewModel: ControllerAccountViewModel)

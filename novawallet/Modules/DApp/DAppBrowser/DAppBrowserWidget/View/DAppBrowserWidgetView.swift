@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class DAppBrowserWidgetView: UIView {
     let backgroundView: BlurBackgroundView = .create { view in

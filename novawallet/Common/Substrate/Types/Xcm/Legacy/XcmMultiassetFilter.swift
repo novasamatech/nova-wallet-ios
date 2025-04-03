@@ -2,9 +2,31 @@ import Foundation
 import SubstrateSdk
 
 extension Xcm {
-    enum AssetId: Encodable {
+    enum AssetId: Codable {
         case concrete(Multilocation)
         case abstract(Data)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Concrete":
+                let multilocation = try container.decode(Multilocation.self)
+                self = .concrete(multilocation)
+            case "Abstract":
+                let data = try container.decode(BytesCodable.self).wrappedValue
+                self = .abstract(data)
+            default:
+                throw DecodingError.dataCorrupted(
+                    DecodingError.Context(
+                        codingPath: decoder.codingPath,
+                        debugDescription: "Unsupported asset id type \(type)"
+                    )
+                )
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -20,9 +42,26 @@ extension Xcm {
         }
     }
 
-    enum WildFungibility: Int, Encodable {
+    enum WildFungibility: Int, Codable {
         case fungible
         case nonFungible
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let rawValue = try container.decode(Int.self)
+
+            guard let fung = WildFungibility(rawValue: rawValue) else {
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unsuppored wild fungibility \(rawValue)"
+                    )
+                )
+            }
+
+            self = fung
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -30,8 +69,8 @@ extension Xcm {
         }
     }
 
-    enum WildMultiasset: Encodable {
-        struct AllOfValue: Encodable {
+    enum WildMultiasset: Codable {
+        struct AllOfValue: Codable {
             enum CodingKeys: String, CodingKey {
                 case assetId = "id"
                 case fun
@@ -43,6 +82,27 @@ extension Xcm {
 
         case all
         case allOf(AllOfValue)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "All":
+                self = .all
+            case "AllOf":
+                let value = try container.decode(AllOfValue.self)
+                self = .allOf(value)
+            default:
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unsuppored wild multiasset \(type)"
+                    )
+                )
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -60,9 +120,31 @@ extension Xcm {
 
     // swiftlint:enable nesting
 
-    enum MultiassetFilter: Encodable {
+    enum MultiassetFilter: Codable {
         case definite([Multiasset])
         case wild(WildMultiasset)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Definite":
+                let value = try container.decode([Multiasset].self)
+                self = .definite(value)
+            case "Wild":
+                let value = try container.decode(WildMultiasset.self)
+                self = .wild(value)
+            default:
+                throw DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unsupported filter \(type)"
+                    )
+                )
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()

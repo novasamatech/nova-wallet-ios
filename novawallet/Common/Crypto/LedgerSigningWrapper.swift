@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 enum LedgerSigningWrapperError: Error {
     case unsupportedContext

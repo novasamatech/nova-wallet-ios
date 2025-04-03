@@ -1,8 +1,6 @@
 import Foundation
 
-import SoraFoundation
-
-final class RampWireframe {
+final class RampWireframe: RampWireframeProtocol {
     private weak var delegate: RampDelegate?
 
     init(delegate: RampDelegate?) {

@@ -2,8 +2,8 @@ import XCTest
 @testable import novawallet
 import BigInt
 import Cuckoo
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 class AssetSelectionTests: XCTestCase {
     func testSuccessfullSelection() {
@@ -48,7 +48,6 @@ class AssetSelectionTests: XCTestCase {
 
         let interactor = ChainAssetSelectionInteractor(
             selectedMetaAccount: selectedAccount,
-            balanceSlice: \.transferable,
             repository: repository,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
@@ -68,6 +67,7 @@ class AssetSelectionTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             selectedChainAssetId: selectedChainAssetId,
+            balanceMapper: AvailableBalanceSliceMapper(balanceSlice: \.transferable),
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
             assetIconViewModelFactory: AssetIconViewModelFactory(),
             localizationManager: LocalizationManager.shared

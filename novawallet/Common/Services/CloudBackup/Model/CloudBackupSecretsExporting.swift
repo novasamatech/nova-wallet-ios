@@ -1,7 +1,7 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 protocol CloudBackupSecretsExporting {
     func backup(

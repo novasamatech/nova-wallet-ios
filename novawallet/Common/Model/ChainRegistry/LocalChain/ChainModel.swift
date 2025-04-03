@@ -274,6 +274,14 @@ struct ChainModel: Equatable, Hashable {
         return .init(chain: self, asset: asset)
     }
 
+    func chainAssetForSymbolOrError(_ symbol: String) throws -> ChainAsset {
+        guard let asset = chainAssetForSymbol(symbol) else {
+            throw ChainModelFetchError.noAssetForSymbol(symbol)
+        }
+
+        return asset
+    }
+
     func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {
         utilityAsset()?.displayInfo(with: icon)
     }

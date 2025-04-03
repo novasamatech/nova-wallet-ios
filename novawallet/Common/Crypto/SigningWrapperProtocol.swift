@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 import SubstrateSdk
 
 protocol SignatureCreatorProtocol: AnyObject {

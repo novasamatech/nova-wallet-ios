@@ -1,7 +1,7 @@
 import UIKit
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 final class AddDelegationInteractor {
     weak var presenter: AddDelegationInteractorOutputProtocol?
