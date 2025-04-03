@@ -5,6 +5,7 @@ import UIKit
 enum LedgerMessageSheetViewFactory {
     static func createVerifyLedgerView(
         for deviceName: String,
+        deviceModel: LedgerDeviceModel,
         address: String,
         cancelClosure: @escaping () -> Void
     ) -> MessageSheetViewProtocol? {
@@ -17,15 +18,13 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerAddressVerifyMessage(deviceName, preferredLanguages: locale.rLanguages)
+            deviceModel.approveAddressText(for: deviceName, locale: locale)
         }
-
-        let graphicsViewModel = R.image.imageLedgerApprove()
 
         let viewModel = MessageSheetViewModel<UIImage, String>(
             title: title,
             message: message,
-            graphics: graphicsViewModel,
+            graphics: deviceModel.approveAddressImage,
             content: address.twoLineAddress,
             mainAction: nil,
             secondaryAction: nil
@@ -50,6 +49,7 @@ enum LedgerMessageSheetViewFactory {
     static func createReviewLedgerTransactionView(
         for timerMediator: CountdownTimerMediator,
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         cancelClosure: @escaping () -> Void,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
@@ -62,16 +62,14 @@ enum LedgerMessageSheetViewFactory {
         }
 
         let message = LocalizableResource { locale in
-            R.string.localizable.ledgerSignTransactionDetails(deviceName, preferredLanguages: locale.rLanguages)
+            deviceModel.approveTxText(for: deviceName, locale: locale)
         }
-
-        let graphicsViewModel = R.image.imageLedgerApprove()
 
         if let migrationViewModel {
             let viewModel = MessageSheetViewModel<UIImage, MessageSheetTimerWithBannerView.ContentViewModel>(
                 title: title,
                 message: message,
-                graphics: graphicsViewModel,
+                graphics: deviceModel.approveTxImage,
                 content: .init(timerViewModel: timerMediator, bannerViewModel: migrationViewModel),
                 mainAction: nil,
                 secondaryAction: nil
@@ -95,7 +93,7 @@ enum LedgerMessageSheetViewFactory {
             let viewModel = MessageSheetViewModel<UIImage, CountdownTimerMediator>(
                 title: title,
                 message: message,
-                graphics: graphicsViewModel,
+                graphics: deviceModel.approveTxImage,
                 content: timerMediator,
                 mainAction: nil,
                 secondaryAction: nil
@@ -110,7 +108,7 @@ enum LedgerMessageSheetViewFactory {
             view.allowsSwipeDown = true
             view.closeOnSwipeDownClosure = cancelClosure
 
-            view.controller.preferredContentSize = CGSize(width: 0.0, height: 360.0)
+            view.controller.preferredContentSize = CGSize(width: 0.0, height: 396.0)
 
             presenter.view = view
 
@@ -121,12 +119,11 @@ enum LedgerMessageSheetViewFactory {
     static func createLedgerWarningView(
         for title: LocalizableResource<String>,
         message: LocalizableResource<String>,
+        deviceModel: LedgerDeviceModel,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: MessageSheetCallback? = nil,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?
     ) -> MessageSheetViewProtocol? {
-        let image = R.image.imageLedgerWarning()
-
         let mainAction: MessageSheetAction
 
         if let retryClosure = retryClosure {
@@ -147,7 +144,7 @@ enum LedgerMessageSheetViewFactory {
             let viewModel = MessageSheetViewModel<UIImage, MessageSheetMigrationBannerView.ContentViewModel>(
                 title: title,
                 message: message,
-                graphics: image,
+                graphics: deviceModel.warningImage,
                 content: migrationViewModel,
                 mainAction: mainAction,
                 secondaryAction: secondaryAction
@@ -165,7 +162,7 @@ enum LedgerMessageSheetViewFactory {
             let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
                 title: title,
                 message: message,
-                graphics: image,
+                graphics: deviceModel.warningImage,
                 content: nil,
                 mainAction: mainAction,
                 secondaryAction: secondaryAction
@@ -181,6 +178,7 @@ enum LedgerMessageSheetViewFactory {
 
     static func createTransactionExpiredView(
         for expirationTimeInterval: TimeInterval,
+        deviceModel: LedgerDeviceModel,
         completionClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
@@ -203,12 +201,14 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: completionClosure,
             migrationViewModel: migrationViewModel
         )
     }
 
     static func createTransactionNotSupportedView(
+        deviceModel: LedgerDeviceModel,
         completionClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
@@ -225,12 +225,14 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: completionClosure,
             migrationViewModel: migrationViewModel
         )
     }
 
     static func createSignatureInvalidView(
+        deviceModel: LedgerDeviceModel,
         completionClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
@@ -247,6 +249,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: completionClosure,
             migrationViewModel: migrationViewModel
         )
@@ -254,6 +257,7 @@ enum LedgerMessageSheetViewFactory {
 
     static func createMetadataOutdatedView(
         chainName: String,
+        deviceModel: LedgerDeviceModel,
         completionClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
     ) -> MessageSheetViewProtocol? {
@@ -271,6 +275,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: completionClosure,
             migrationViewModel: migrationViewModel
         )
@@ -292,6 +297,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: .unknown,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure,
             migrationViewModel: migrationViewModel
@@ -299,6 +305,7 @@ enum LedgerMessageSheetViewFactory {
     }
 
     static func createOperationCancelledView(
+        deviceModel: LedgerDeviceModel,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
@@ -314,6 +321,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure,
             migrationViewModel: migrationViewModel
@@ -322,6 +330,7 @@ enum LedgerMessageSheetViewFactory {
 
     static func createNetworkAppNotLaunchedView(
         chainName: String,
+        deviceModel: LedgerDeviceModel,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
@@ -337,6 +346,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: deviceModel,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure,
             migrationViewModel: migrationViewModel
@@ -345,6 +355,7 @@ enum LedgerMessageSheetViewFactory {
 
     static func createMessageErrorView(
         message: String,
+        deviceModel: LedgerDeviceModel,
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel? = nil
@@ -356,6 +367,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: LocalizableResource { _ in message },
+            deviceModel: deviceModel,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure,
             migrationViewModel: migrationViewModel
@@ -378,6 +390,7 @@ enum LedgerMessageSheetViewFactory {
         return createLedgerWarningView(
             for: title,
             message: message,
+            deviceModel: .unknown,
             cancelClosure: cancelClosure,
             retryClosure: retryClosure,
             migrationViewModel: migrationViewModel

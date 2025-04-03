@@ -31,8 +31,8 @@ extension EstimatedCountdownViewModelFactory: EstimatedCountdownViewModelFactory
 class MessageSheetTimerLabel: UILabel, MessageSheetContentProtocol {
     typealias ContentViewModel = CountdownTimerMediator
 
-    var viewModel: ContentViewModel?
-    private var locale: Locale?
+    private(set) var viewModel: ContentViewModel?
+    private(set) var locale: Locale?
 
     private lazy var viewModelFactory: EstimatedCountdownViewModelFactoryProtocol = {
         EstimatedCountdownViewModelFactory(timeFormatter: MinuteSecondFormatter())

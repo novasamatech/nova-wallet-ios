@@ -3,12 +3,11 @@ import Foundation_iOS
 
 final class TxExpirationMessageSheetTimerLabel: MessageSheetTimerLabel {
     private lazy var viewModelFactory = TxExpirationViewModelFactory()
-    private var locale: Locale?
 
     override func updateView() {
         if
             let remainedInterval = viewModel?.remainedInterval,
-            let locale = locale,
+            let locale,
             let viewModel = try? viewModelFactory.createViewModel(from: remainedInterval) {
             bindTransaction(viewModel: viewModel, locale: locale)
         } else {

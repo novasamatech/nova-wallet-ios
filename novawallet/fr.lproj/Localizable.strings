@@ -906,8 +906,8 @@
 "ledger.address.verify.message" = "Appuyez sur les deux boutons de votre %@ pour approuver l'adresse";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Ce portefeuille est associé à Ledger. Nova vous aidera à former toutes les opérations que vous souhaitez, et il vous sera demandé de les signer en utilisant Ledger";
-"ledger.instructions.title" = "Connecter Ledger Nano X";
-"ledger.instructions.link" = "Guide officiel de connexion Bluetooth de Ledger";
+"ledger.instructions.title" = "Connecter Ledger via Bluetooth";
+"ledger.instructions.link" = "Guide de connexion Ledger";
 "ledger.instructions.step1" = "Assurez-vous que %@ sur votre appareil Ledger à l'aide de l'application Ledger Live";
 "ledger.instructions.step1.highlighted" = "L'application réseau est installée";
 "ledger.instructions.step2" = "%@ sur votre appareil Ledger";
@@ -1652,7 +1652,7 @@
 "account.export.ethereum.private.key.placeholder" = "64 symboles hexadécimaux";
 "common.status.backup.syncing" = "Synchronisation de la sauvegarde...";
 "common.status.backup.synced" = "Sauvegarde synchronisée";
-"common.ledger.nano.generic" = "Ledger Nano X (Application Generic Polkadot)";
+"common.ledger.nano.generic" = "Ledger (application Polkadot générique)";
 "generic.ledger.instructions.step1.highlighted" = "L'application Polkadot est installée";
 "generic.ledger.instructions.step2.highlighted" = "Ouvrez l'application Polkadot";
 "ledger.instructions.step4" = "%@ à ajouter au portefeuille";
@@ -1816,3 +1816,8 @@
 "unified.address.legacy.format" = "Format legacy";
 "asset.receive.looking.for.address.message" = "Vous cherchez votre adresse legacy pour un échange ?";
 "asset.receive.view.address.format" = "Voir les formats d'adresse";
+"common.ledger.model.nano.x" = "Nano X";
+"common.ledger.model.flex" = "Flex";
+"common.ledger.model.Stax" = "Stax";
+"ledger.flex.stax.address.verify.message" = "Appuyez sur le bouton de confirmation sur votre %@ pour approuver l'adresse";
+"ledger.flex.stax.sign.transaction.details" = "Maintenez le bouton de confirmation sur votre %@ pour approuver la transaction";
