@@ -1087,6 +1087,7 @@
 		0CED71D12D9EDB7800F79C02 /* XcmUni+Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */; };
 		0CED71D32D9EE07000F79C02 /* XcmUni+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */; };
 		0CED71D72D9EF78600F79C02 /* XcmUniCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */; };
+		0CED71D92D9FF58600F79C02 /* XcmUni+WeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71D82D9FF58600F79C02 /* XcmUni+WeightLimit.swift */; };
 		0CF193D12A843DA9003F12F6 /* StakingTypeBalanceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */; };
 		0CF193D32A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */; };
 		0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */; };
@@ -6885,6 +6886,7 @@
 		0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Version.swift"; sourceTree = "<group>"; };
 		0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+Coding.swift"; sourceTree = "<group>"; };
 		0CED71D62D9EF78600F79C02 /* XcmUniCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmUniCodingTests.swift; sourceTree = "<group>"; };
+		0CED71D82D9FF58600F79C02 /* XcmUni+WeightLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmUni+WeightLimit.swift"; sourceTree = "<group>"; };
 		0CF193D02A843DA9003F12F6 /* StakingTypeBalanceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingTypeBalanceFactory.swift; sourceTree = "<group>"; };
 		0CF193D22A84FC7C003F12F6 /* SelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		0CF193D42A861925003F12F6 /* PredefinedTimeShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedTimeShortcut.swift; sourceTree = "<group>"; };
@@ -14116,6 +14118,7 @@
 				0CED71CE2D9EC40200F79C02 /* XcmUni+Instruction.swift */,
 				0CED71D02D9EDB7800F79C02 /* XcmUni+Version.swift */,
 				0CED71D22D9EE07000F79C02 /* XcmUni+Coding.swift */,
+				0CED71D82D9FF58600F79C02 /* XcmUni+WeightLimit.swift */,
 			);
 			path = Universal;
 			sourceTree = "<group>";
@@ -32889,6 +32892,7 @@
 				3E0AEF1F86EE2FFF961B45D8 /* NetworkNodeAddInteractor.swift in Sources */,
 				26FFA7D4465596728AA9C55F /* NetworkNodeViewController.swift in Sources */,
 				0625D171A289807B621F7214 /* NetworkNodeViewLayout.swift in Sources */,
+				0CED71D92D9FF58600F79C02 /* XcmUni+WeightLimit.swift in Sources */,
 				6A2B815B3AA8B31CF77023A7 /* NetworkNodeViewFactory.swift in Sources */,
 				68A888C7BAC1710AC564F777 /* NetworkManageNodeProtocols.swift in Sources */,
 				F9540A5C434F7E3CE6ED4EB4 /* NetworkManageNodePresenter.swift in Sources */,
