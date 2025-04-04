@@ -3,7 +3,7 @@ import Operation_iOS
 
 protocol CrosschainAssetConversionFactoryProtocol {
     func createConversionWrapper(
-        from locatableAsset: XcmVersionedLocatableAsset
+        from locatableAsset: XcmUni.VersionedLocatableAsset
     ) -> CompoundOperationWrapper<ChainAsset?>
 }
 
@@ -78,7 +78,7 @@ final class CrosschainAssetConversionFactory {
             }
 
             return AssetHubTokensConverter.convertFromMultilocationToLocal(
-                assetId,
+                assetId.location,
                 chain: chain,
                 conversionClosure: AssetHubTokensConverter.createPoolAssetToLocalClosure(
                     for: chain,
@@ -97,16 +97,17 @@ final class CrosschainAssetConversionFactory {
 
 extension CrosschainAssetConversionFactory: CrosschainAssetConversionFactoryProtocol {
     func createConversionWrapper(
-        from locatableAsset: XcmVersionedLocatableAsset
+        from locatableAsset: XcmUni.VersionedLocatableAsset
     ) -> CompoundOperationWrapper<ChainAsset?> {
+        let assetId = locatableAsset.entity.assetId
+        let location = locatableAsset.entity.location
+
         // only relaychain relative resolution supported
-        guard
-            locatableAsset.location.parents == 0,
-            let assetId = locatableAsset.assetId else {
+        guard location.parents == 0 else {
             return .createWithResult(nil)
         }
 
-        switch locatableAsset.location.interior.items.first {
+        switch location.interior.items.first {
         case let .parachain(paraId):
             return createAssetsPalletWrapper(
                 for: paraId,

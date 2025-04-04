@@ -31,14 +31,15 @@ private extension XcmLegacyMessagesFactory {
         destination: XcmTransferDestination,
         feeParams: XcmTransferMetadata.LegacyFee,
         asset: XcmUni.Asset,
-        version _: Xcm.Version
+        version: Xcm.Version
     ) throws -> XcmUni.VersionedMessage {
         let location = modelFactory.createMultilocation(origin: origin, destination: destination)
 
         return try createWeightMessage(
             from: feeParams.destinationExecution.instructions,
             destination: location,
-            asset: asset
+            asset: asset,
+            version: version
         )
     }
 
@@ -84,7 +85,7 @@ private extension XcmLegacyMessagesFactory {
                 let value = XcmUni.DepositAssetValue(assets: .wild(.all), beneficiary: destination)
                 return .depositAsset(value)
             case XcmUni.Instruction.fieldDepositReserveAsset:
-                let value = XcmUni.NextChainTransferValue(
+                let value = XcmUni.DepositReserveAssetValue(
                     assets: .wild(.all),
                     dest: destination,
                     xcm: []

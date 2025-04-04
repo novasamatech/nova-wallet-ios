@@ -5,21 +5,7 @@ import BigInt
 enum AssetConversionPallet {
     static let name = "AssetConversion"
 
-    struct AssetId: Codable {
-        let location: XcmUni.RelativeLocation
-
-        init(from decoder: any Decoder) throws {
-            location = try XcmUni.RelativeLocation(from: decoder, configuration: .V4)
-        }
-
-        func encode(to encoder: any Encoder) throws {
-            try location.encode(to: encoder, configuration: .V4)
-        }
-
-        init(parents: UInt8, interior: XcmUni.Junctions) {
-            location = XcmUni.RelativeLocation(parents: parents, interior: interior)
-        }
-    }
+    typealias AssetId = Xcm.Version4<XcmUni.AssetId>
 
     enum PoolAsset {
         case native
@@ -54,6 +40,21 @@ enum AssetConversionPallet {
             asset1 = try poolId[0].map(to: AssetId.self, with: context)
             asset2 = try poolId[1].map(to: AssetId.self, with: context)
         }
+    }
+}
+
+extension AssetConversionPallet.AssetId {
+    var location: XcmUni.RelativeLocation {
+        wrapped.location
+    }
+
+    init(parents: UInt8, interior: XcmUni.Junctions) {
+        wrapped = XcmUni.AssetId(
+            location: XcmUni.RelativeLocation(
+                parents: parents,
+                interior: interior
+            )
+        )
     }
 }
 

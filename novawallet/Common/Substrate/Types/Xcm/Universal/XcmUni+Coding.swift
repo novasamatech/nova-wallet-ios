@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 protocol XcmUniEncodable: EncodableWithConfiguration where EncodingConfiguration == Xcm.Version {}
 
@@ -33,3 +34,5 @@ extension XcmUni.Versioned: Decodable where Entity: XcmUniDecodable {
         entity = try container.decode(Entity.self, configuration: decodedVersion)
     }
 }
+
+extension Array: XcmUniCodable where Element: XcmUniCodable {}

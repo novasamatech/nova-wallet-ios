@@ -983,6 +983,7 @@
 		0CE632A12B9035B2002E4D20 /* Web3Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A02B9035B2002E4D20 /* Web3Alert.swift */; };
 		0CE632A32B904449002E4D20 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A22B904449002E4D20 /* PushNotification.swift */; };
 		0CE6F4E02DA02788002A57C5 /* Xcm+LocatableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4DF2DA02788002A57C5 /* Xcm+LocatableAsset.swift */; };
+		0CE6F4E22DA08782002A57C5 /* Xcm+V4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6F4E12DA08782002A57C5 /* Xcm+V4.swift */; };
 		0CE840E22BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */; };
 		0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */; };
 		0CE862152D64B61C00245992 /* ObservableSubscriptionStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */; };
@@ -1031,7 +1032,6 @@
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
 		0CEB4ED92AF371EF0048FD84 /* AssetConversionTxPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED82AF371EF0048FD84 /* AssetConversionTxPayment.swift */; };
 		0CEB6B2D2CA4121300609DC2 /* GovTreasurySpentRemoteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B2C2CA4121300609DC2 /* GovTreasurySpentRemoteHandler.swift */; };
-		0CEB6B3A2CA4597600609DC2 /* Multilocation+AccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B392CA4597600609DC2 /* Multilocation+AccountId.swift */; };
 		0CEB6B3E2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */; };
 		0CEB6B432CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */; };
 		0CEB6B492CA561AC00609DC2 /* ParachainResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */; };
@@ -1054,7 +1054,6 @@
 		0CED3A0A2BD1677B00B1E994 /* CloudBackupSecretsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */; };
 		0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */; };
 		0CED3A0E2BD17AD400B1E994 /* CloudBackupDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */; };
-		0CED71A22D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */; };
 		0CED71B72D9C105200F79C02 /* XcmExecuteDerivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71B62D9C105200F79C02 /* XcmExecuteDerivator.swift */; };
 		0CED71BA2D9D253B00F79C02 /* XcmPaymentOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71B92D9D253B00F79C02 /* XcmPaymentOperationFactory.swift */; };
 		0CED71BC2D9D25A200F79C02 /* XcmPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CED71BB2D9D25A200F79C02 /* XcmPayment.swift */; };
@@ -6753,6 +6752,7 @@
 		0CE632A02B9035B2002E4D20 /* Web3Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3Alert.swift; sourceTree = "<group>"; };
 		0CE632A22B904449002E4D20 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		0CE6F4DF2DA02788002A57C5 /* Xcm+LocatableAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Xcm+LocatableAsset.swift"; sourceTree = "<group>"; };
+		0CE6F4E12DA08782002A57C5 /* Xcm+V4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Xcm+V4.swift"; sourceTree = "<group>"; };
 		0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactory.swift; sourceTree = "<group>"; };
 		0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
 		0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionStateStore.swift; sourceTree = "<group>"; };
@@ -6800,7 +6800,6 @@
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
 		0CEB4ED82AF371EF0048FD84 /* AssetConversionTxPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionTxPayment.swift; sourceTree = "<group>"; };
 		0CEB6B2C2CA4121300609DC2 /* GovTreasurySpentRemoteHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovTreasurySpentRemoteHandler.swift; sourceTree = "<group>"; };
-		0CEB6B392CA4597600609DC2 /* Multilocation+AccountId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multilocation+AccountId.swift"; sourceTree = "<group>"; };
 		0CEB6B3D2CA50C9400609DC2 /* CrosschainAssetConversionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosschainAssetConversionFactory.swift; sourceTree = "<group>"; };
 		0CEB6B422CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainRegistry+AsyncWait.swift"; sourceTree = "<group>"; };
 		0CEB6B482CA561AC00609DC2 /* ParachainResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainResolver.swift; sourceTree = "<group>"; };
@@ -6822,7 +6821,6 @@
 		0CED3A092BD1677B00B1E994 /* CloudBackupSecretsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSecretsConstants.swift; sourceTree = "<group>"; };
 		0CED3A0B2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupServiceFacadeProtocol.swift; sourceTree = "<group>"; };
 		0CED3A0D2BD17AD400B1E994 /* CloudBackupDiffing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupDiffing.swift; sourceTree = "<group>"; };
-		0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedAbsoluteLocation.swift; sourceTree = "<group>"; };
 		0CED71B62D9C105200F79C02 /* XcmExecuteDerivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExecuteDerivator.swift; sourceTree = "<group>"; };
 		0CED71B92D9D253B00F79C02 /* XcmPaymentOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPaymentOperationFactory.swift; sourceTree = "<group>"; };
 		0CED71BB2D9D25A200F79C02 /* XcmPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPayment.swift; sourceTree = "<group>"; };
@@ -24051,10 +24049,9 @@
 				844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */,
 				84E8BA292A00EF4C00FD9F40 /* XcmBaseMetadataQueryFactory.swift */,
 				0C1CCC442B60CAE800A6EA17 /* XcmMessageSerializer.swift */,
-				0CEB6B392CA4597600609DC2 /* Multilocation+AccountId.swift */,
 				0CFF821E2D8B580E00DB17A4 /* Xcm+Event.swift */,
-				0CED71A12D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift */,
 				84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */,
+				0CE6F4E12DA08782002A57C5 /* Xcm+V4.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -27804,7 +27801,6 @@
 				0C962F882AA85C7F00C0B551 /* TransactionHistoryAccountPrefixFilter.swift in Sources */,
 				77C35CE92B5A890500308F16 /* Web3NameServiceFactory.swift in Sources */,
 				0C0F6E192D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift in Sources */,
-				0CED71A22D99353A00F79C02 /* XcmVersionedAbsoluteLocation.swift in Sources */,
 				840E59BD2A188B7B00BA6ADD /* UIImage+Filter.swift in Sources */,
 				0CB06E752A68139C00C7EC99 /* StakingDashboardNominationPoolMapper.swift in Sources */,
 				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,
@@ -28063,6 +28059,7 @@
 				84F523FD298AA5F10026AD08 /* ReferendumsModelFactory+Protocol.swift in Sources */,
 				849F144D29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift in Sources */,
 				841221A628F13BA100715C82 /* GovernanceServiceFactory.swift in Sources */,
+				0CE6F4E22DA08782002A57C5 /* Xcm+V4.swift in Sources */,
 				F4F3C3CB265BB12200C58400 /* CustomValidatorListViewModelFactory.swift in Sources */,
 				0C37AFB72B555F1400009ECA /* StakingValidatorExposureFacade.swift in Sources */,
 				0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */,
@@ -30792,7 +30789,6 @@
 				8401AEC22642A71D000B03E3 /* StakingRebondConfirmationInteractor.swift in Sources */,
 				84DC5A1328BAA8020014E081 /* LedgerInvaliDataPolkadotReason.swift in Sources */,
 				1550A6E8789263C0D734091A /* StakingUnbondSetupWireframe.swift in Sources */,
-				0CEB6B3A2CA4597600609DC2 /* Multilocation+AccountId.swift in Sources */,
 				0C0F6E102D43D32700943A7C /* CollatorStakingSelectSearchWireframe.swift in Sources */,
 				84468A0F2867ADA400BCBE00 /* XcmTransferRequest.swift in Sources */,
 				848DAF022822AA1100D56F55 /* ParachainStakingCollatorService.swift in Sources */,

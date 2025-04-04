@@ -241,10 +241,11 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let messageOrigin = try Xcm.VersionedAbsoluteLocation(
-            paraId: request.paraIdAfterOrigin,
-            version: xcmVersion
-        ).fromChainPointOfView(request.origin.parachainId)
+        let messageOrigin = try XcmUni.AbsoluteLocation(
+            paraId: request.paraIdAfterOrigin
+        )
+        .fromChainPointOfView(request.origin.parachainId)
+        .versioned(xcmVersion)
 
         guard
             let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
@@ -312,10 +313,11 @@ private extension XcmDynamicCrosschainFeeCalculator {
             throw XcmDynamicCrosschainFeeCalculatorError.emptyForwardedMessages
         }
 
-        let messageOrigin = try Xcm.VersionedAbsoluteLocation(
-            paraId: request.destination.parachainId,
-            version: xcmVersion
-        ).fromChainPointOfView(request.reserve.parachainId)
+        let messageOrigin = try XcmUni.AbsoluteLocation(
+            paraId: request.destination.parachainId
+        )
+        .fromChainPointOfView(request.reserve.parachainId)
+        .versioned(xcmVersion)
 
         guard
             let forwardedMessage = XcmForwardedMessageByLocationMatcher().matchFromForwardedXcms(
@@ -340,10 +342,11 @@ private extension XcmDynamicCrosschainFeeCalculator {
             }
 
             let xcmVersion = intermediateResult.forwardedXcm.version
-            let location = try Xcm.VersionedAbsoluteLocation(
-                paraId: request.origin.parachainId,
-                version: xcmVersion
-            ).fromChainPointOfView(request.reserve.parachainId)
+            let location = try XcmUni.AbsoluteLocation(
+                paraId: request.origin.parachainId
+            )
+            .fromChainPointOfView(request.reserve.parachainId)
+            .versioned(xcmVersion)
 
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
                 from: location,
@@ -416,10 +419,11 @@ private extension XcmDynamicCrosschainFeeCalculator {
 
             let xcmVersion = intermediateResult.forwardedXcm.version
 
-            let location = try Xcm.VersionedAbsoluteLocation(
-                paraId: request.paraIdBeforeDestination,
-                version: xcmVersion
-            ).fromChainPointOfView(request.destination.parachainId)
+            let location = try XcmUni.AbsoluteLocation(
+                paraId: request.paraIdBeforeDestination
+            )
+            .fromChainPointOfView(request.destination.parachainId)
+            .versioned(xcmVersion)
 
             let dryRunWrapper = self.dryRunOperationFactory.createDryRunXcmWrapper(
                 from: location,

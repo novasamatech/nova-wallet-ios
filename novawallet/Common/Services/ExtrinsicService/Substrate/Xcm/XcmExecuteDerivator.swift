@@ -61,7 +61,7 @@ private extension XcmExecuteDerivator {
 
     func localReserveTransferProgram(
         for transferRequest: XcmUnweightedTransferRequest
-    ) throws -> [XcmV4.Instruction] {
+    ) throws -> XcmUni.Instructions {
         let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
         let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
 
@@ -90,13 +90,13 @@ private extension XcmExecuteDerivator {
                 originAsset
             ]),
             XcmUni.Instruction.buyExecution(
-                XcmV4.BuyExecutionValue(
+                XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
                     weightLimit: .limited(weight: .zero)
                 )
             ),
             XcmUni.Instruction.depositReserveAsset(
-                XcmUni.NextChainTransferValue(
+                XcmUni.DepositReserveAssetValue(
                     assets: .wild(.allCounted(1)),
                     dest: destinationLocation,
                     xcm: [
@@ -152,7 +152,7 @@ private extension XcmExecuteDerivator {
                 )
             ),
             XcmUni.Instruction.initiateReserveWithdraw(
-                XcmUni.NextChainTransferValue(
+                XcmUni.InitiateReserveWithdrawValue(
                     assets: .wild(.allCounted(1)),
                     reserve: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
@@ -214,7 +214,7 @@ private extension XcmExecuteDerivator {
                 )
             ),
             XcmUni.Instruction.initiateReserveWithdraw(
-                XcmUni.NextChainTransferValue(
+                XcmUni.InitiateReserveWithdrawValue(
                     assets: .wild(.allCounted(1)),
                     reserve: reserveAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
@@ -261,12 +261,12 @@ private extension XcmExecuteDerivator {
         )
 
         let originAsset = XcmUni.Asset(
-            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation),
+            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
         let destAsset = XcmUni.Asset(
-            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation),
+            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
@@ -284,7 +284,7 @@ private extension XcmExecuteDerivator {
                 )
             ),
             XcmUni.Instruction.initiateTeleport(
-                XcmUni.NextChainTransferValue(
+                XcmUni.InitiateTeleportValue(
                     assets: .wild(.all),
                     dest: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [

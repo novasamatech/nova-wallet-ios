@@ -80,6 +80,12 @@ extension XcmUni.AbsoluteLocation {
             interior: XcmUni.Junctions(items: Array(items))
         )
     }
+
+    func fromChainPointOfView(_ paraId: ParaId?) -> XcmUni.RelativeLocation {
+        let location = XcmUni.AbsoluteLocation(paraId: paraId)
+
+        return fromPointOfView(location: location)
+    }
 }
 
 extension XcmUni.RelativeLocation {
@@ -92,6 +98,18 @@ extension XcmUni.RelativeLocation {
         default:
             return nil
         }
+    }
+
+    func lastItemLocation() -> XcmUni.RelativeLocation {
+        let (_, lastComponent) = interior.lastComponent()
+
+        return XcmUni.RelativeLocation(parents: 0, interior: lastComponent)
+    }
+
+    func dropingLastItem() -> XcmUni.RelativeLocation {
+        let (prefixed, _) = interior.lastComponent()
+
+        return XcmUni.RelativeLocation(parents: parents, interior: prefixed)
     }
 }
 

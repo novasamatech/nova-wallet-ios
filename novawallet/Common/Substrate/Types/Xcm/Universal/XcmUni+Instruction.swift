@@ -23,7 +23,7 @@ extension XcmUni {
         let weightLimit: WeightLimit
     }
 
-    struct NextChainTransferValue: Equatable {
+    struct DepositReserveAssetValue: Equatable {
         let assets: AssetFilter
         let dest: RelativeLocation
         let maxAssets: UInt32
@@ -42,17 +42,29 @@ extension XcmUni {
         }
     }
 
+    struct InitiateReserveWithdrawValue: Equatable {
+        let assets: AssetFilter
+        let reserve: RelativeLocation
+        let xcm: Instructions
+    }
+
+    struct InitiateTeleportValue: Equatable {
+        let assets: AssetFilter
+        let dest: RelativeLocation
+        let xcm: Instructions
+    }
+
     enum Instruction: Equatable {
         case withdrawAsset(Assets)
         case depositAsset(DepositAssetValue)
         case clearOrigin
         case reserveAssetDeposited(Assets)
         case buyExecution(BuyExecutionValue)
-        case depositReserveAsset(NextChainTransferValue)
+        case depositReserveAsset(DepositReserveAssetValue)
         case receiveTeleportedAsset(Assets)
         case burnAsset(Assets)
-        case initiateReserveWithdraw(NextChainTransferValue)
-        case initiateTeleport(NextChainTransferValue)
+        case initiateReserveWithdraw(InitiateReserveWithdrawValue)
+        case initiateTeleport(InitiateTeleportValue)
         case other(RawName, RawValue)
     }
 
@@ -138,7 +150,7 @@ extension XcmUni.BuyExecutionValue: XcmUniCodable {
     }
 }
 
-extension XcmUni.NextChainTransferValue: XcmUniCodable {
+extension XcmUni.DepositReserveAssetValue: XcmUniCodable {
     enum CodingKeys: String, CodingKey {
         case assets
         case dest
@@ -195,6 +207,82 @@ extension XcmUni.NextChainTransferValue: XcmUniCodable {
     }
 }
 
+extension XcmUni.InitiateReserveWithdrawValue: XcmUniCodable {
+    enum CodingKeys: String, CodingKey {
+        case assets
+        case reserve
+        case xcm
+    }
+
+    init(from decoder: any Decoder, configuration: Xcm.Version) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        assets = try container.decode(
+            XcmUni.AssetFilter.self,
+            forKey: .assets,
+            configuration: configuration
+        )
+
+        reserve = try container.decode(
+            XcmUni.RelativeLocation.self,
+            forKey: .reserve,
+            configuration: configuration
+        )
+
+        xcm = try container.decode(
+            XcmUni.Instructions.self,
+            forKey: .xcm,
+            configuration: configuration
+        )
+    }
+
+    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(assets, forKey: .assets, configuration: configuration)
+        try container.encode(reserve, forKey: .reserve, configuration: configuration)
+        try container.encode(xcm, forKey: .xcm, configuration: configuration)
+    }
+}
+
+extension XcmUni.InitiateTeleportValue: XcmUniCodable {
+    enum CodingKeys: String, CodingKey {
+        case assets
+        case dest
+        case xcm
+    }
+
+    init(from decoder: any Decoder, configuration: Xcm.Version) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        assets = try container.decode(
+            XcmUni.AssetFilter.self,
+            forKey: .assets,
+            configuration: configuration
+        )
+
+        dest = try container.decode(
+            XcmUni.RelativeLocation.self,
+            forKey: .dest,
+            configuration: configuration
+        )
+
+        xcm = try container.decode(
+            XcmUni.Instructions.self,
+            forKey: .xcm,
+            configuration: configuration
+        )
+    }
+
+    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(assets, forKey: .assets, configuration: configuration)
+        try container.encode(dest, forKey: .dest, configuration: configuration)
+        try container.encode(xcm, forKey: .xcm, configuration: configuration)
+    }
+}
+
 extension XcmUni.Instruction: XcmUniCodable {
     static let fieldWithdrawAsset = "WithdrawAsset"
     static let fieldClearOrigin = "ClearOrigin"
@@ -229,7 +317,7 @@ extension XcmUni.Instruction: XcmUniCodable {
             let value = try container.decode(XcmUni.BuyExecutionValue.self, configuration: configuration)
             self = .buyExecution(value)
         case Self.fieldDepositReserveAsset:
-            let value = try container.decode(XcmUni.NextChainTransferValue.self, configuration: configuration)
+            let value = try container.decode(XcmUni.DepositReserveAssetValue.self, configuration: configuration)
             self = .depositReserveAsset(value)
         case Self.fieldReceiveTeleportedAsset:
             let value = try container.decode(XcmUni.Assets.self, configuration: configuration)
@@ -238,10 +326,10 @@ extension XcmUni.Instruction: XcmUniCodable {
             let value = try container.decode(XcmUni.Assets.self, configuration: configuration)
             self = .burnAsset(value)
         case Self.fieldInitiateReserveWithdraw:
-            let value = try container.decode(XcmUni.NextChainTransferValue.self, configuration: configuration)
+            let value = try container.decode(XcmUni.InitiateReserveWithdrawValue.self, configuration: configuration)
             self = .initiateReserveWithdraw(value)
         case Self.fieldInitiateTeleport:
-            let value = try container.decode(XcmUni.NextChainTransferValue.self, configuration: configuration)
+            let value = try container.decode(XcmUni.InitiateTeleportValue.self, configuration: configuration)
             self = .initiateTeleport(value)
         default:
             let value = try container.decode(JSON.self)

@@ -242,7 +242,7 @@ private extension XcmLegacyCrosschainFeeCalculator {
         info: XcmAssetTransferFee,
         baseWeight: BigUInt
     ) -> CompoundOperationWrapper<XcmFeeModelProtocol> {
-        let maxWeight = baseWeight * BigUInt(message.instructionsCount)
+        let maxWeight = baseWeight * BigUInt(message.entity.count)
 
         switch info.mode.type {
         case .proportional:

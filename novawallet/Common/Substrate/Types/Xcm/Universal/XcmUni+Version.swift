@@ -27,6 +27,19 @@ extension XcmUniVersioned {
 
 extension XcmUni.RelativeLocation: XcmUniVersioned {}
 extension XcmUni.Asset: XcmUniVersioned {}
-extension XcmUni.Assets: XcmUniVersioned {}
-extension XcmUni.Instructions: XcmUniVersioned {}
 extension XcmUni.LocatableAsset: XcmUniVersioned {}
+
+extension Array: XcmUniVersioned {}
+
+extension XcmUni.VersionedAsset {
+    func toVersionedAssets() -> XcmUni.VersionedAssets {
+        [entity].versioned(version)
+    }
+}
+
+extension XcmUni.Versioned {
+    func map<U>(_ transformation: (Entity) throws -> U) rethrows -> XcmUni.Versioned<U> {
+        let newEntity = try transformation(entity)
+        return XcmUni.Versioned(entity: newEntity, version: version)
+    }
+}

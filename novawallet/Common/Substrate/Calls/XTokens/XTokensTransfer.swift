@@ -57,7 +57,7 @@ extension XTokens {
     }
 
     static func appendTransferCall(
-        asset: XcmUni.Asset,
+        asset: XcmUni.VersionedAsset,
         destination: XcmUni.VersionedLocation,
         module: String,
         weightOption: XcmTransferMetadata.Fee,
