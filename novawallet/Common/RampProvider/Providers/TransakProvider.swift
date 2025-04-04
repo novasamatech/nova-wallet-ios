@@ -17,16 +17,31 @@ final class TransakProvider {
 // MARK: Private
 
 private extension TransakProvider {
-    func buildURLForToken(_ token: String, network: String, address: String) -> URL? {
+    func buildURLForToken(
+        _ token: String,
+        network: String,
+        address: String,
+        type: RampActionType
+    ) -> URL? {
         var components = URLComponents(string: Self.baseUrlString)
 
-        let queryItems = [
+        var queryItems = [
             URLQueryItem(name: "apiKey", value: Self.pubToken),
             URLQueryItem(name: "network", value: network),
-            URLQueryItem(name: "cryptoCurrencyCode", value: token),
-            URLQueryItem(name: "walletAddress", value: address),
-            URLQueryItem(name: "disableWalletAddressForm", value: "true")
+            URLQueryItem(name: "cryptoCurrencyCode", value: token)
         ]
+
+        let productsAvailed = switch type {
+        case .offRamp: "SELL"
+        case .onRamp: "BUY"
+        }
+
+        if type == .onRamp {
+            queryItems.append(URLQueryItem(name: "walletAddress", value: address))
+            queryItems.append(URLQueryItem(name: "disableWalletAddressForm", value: "true"))
+        }
+
+        queryItems.append(URLQueryItem(name: "productsAvailed", value: productsAvailed))
 
         components?.queryItems = queryItems
 
@@ -46,7 +61,12 @@ private extension TransakProvider {
         let token = chainAsset.asset.symbol
         let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
-        guard let url = buildURLForToken(token, network: network, address: address) else {
+        guard let url = buildURLForToken(
+            token,
+            network: network,
+            address: address,
+            type: .offRamp
+        ) else {
             return []
         }
 
@@ -54,7 +74,7 @@ private extension TransakProvider {
             type: .offRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
-                R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
+                R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url
         )
@@ -75,7 +95,12 @@ private extension TransakProvider {
         let token = chainAsset.asset.symbol
         let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
-        guard let url = buildURLForToken(token, network: network, address: address) else {
+        guard let url = buildURLForToken(
+            token,
+            network: network,
+            address: address,
+            type: .onRamp
+        ) else {
             return []
         }
 

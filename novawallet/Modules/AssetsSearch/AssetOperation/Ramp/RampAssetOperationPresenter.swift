@@ -90,7 +90,7 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
                         actions: rampActions,
                         rampType: rampType,
                         wireframe: rampWireframe,
-                        assetSymbol: chainAsset.asset.symbol,
+                        chainAsset: chainAsset,
                         locale: selectedLocale
                     )
                 }

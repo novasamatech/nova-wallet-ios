@@ -1368,6 +1368,14 @@
 		2D2B6AF22D6DCD77002F8C77 /* BrowserNavigationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF12D6DCD77002F8C77 /* BrowserNavigationPresenter.swift */; };
 		2D2B6AF42D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */; };
 		2D2B6AF62D6DCFB6002F8C77 /* BrowserNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */; };
+		2D2EA8462D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA8432D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift */; };
+		2D2EA84B2D9A51860034C792 /* OffRampHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA84A2D9A51860034C792 /* OffRampHook.swift */; };
+		2D2EA84E2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA84D2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift */; };
+		2D2EA8532D9A79210034C792 /* RampModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA8522D9A79210034C792 /* RampModel.swift */; };
+		2D2EA8562D9A856B0034C792 /* TransakOffRampHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA8552D9A856B0034C792 /* TransakOffRampHookFactory.swift */; };
+		2D2EA8582D9A85EE0034C792 /* TransakOffRampResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA8572D9A85EE0034C792 /* TransakOffRampResponseHandler.swift */; };
+		2D2EA85A2D9A96590034C792 /* TransakRampEventNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA8592D9A96590034C792 /* TransakRampEventNames.swift */; };
+		2D2EA85C2D9A98300034C792 /* TransakTransferEventData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EA85B2D9A98300034C792 /* TransakTransferEventData.swift */; };
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
@@ -1665,6 +1673,7 @@
 		2DF95D342D786097001D8785 /* CustomHapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */; };
 		2DF95D372D786156001D8785 /* SequentialHapticPlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */; };
 		2DF95D3B2D786631001D8785 /* HapticPlayerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */; };
+		2DFF604F2D9E954400DB70DD /* MercuryoRampEventNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF604E2D9E954400DB70DD /* MercuryoRampEventNames.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -5236,7 +5245,6 @@
 		B51AD1836313CE26F369ED3F /* CustomValidatorListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D540DFC00C25D8F73CFDC3 /* CustomValidatorListWireframe.swift */; };
 		B5998094F5FFAC894512CD12 /* StakingSetupAmountViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD38E012F7837AC692CA2C41 /* StakingSetupAmountViewLayout.swift */; };
 		B5D368E24ABA900C10E21819 /* SelectRampProviderPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4485B355F0C825BE382DCA2 /* SelectRampProviderPresenter.swift */; };
-		B5F185A2E6D21665F79D252E /* Pods_novawalletAll_novawalletIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64B2DD658A0D031FBE83CCE7 /* Pods_novawalletAll_novawalletIntegrationTests.framework */; };
 		B61457C5248F3B0E88A7990E /* ParaStkRebondPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F49B3B261FBA0B568A5320 /* ParaStkRebondPresenter.swift */; };
 		B65F3304C17AF5D15F0EA150 /* TransactionHistoryPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C67AB2EC2E4E8CB4358CA13 /* TransactionHistoryPresenter.swift */; };
 		B6D4C073B3F984FE0348B7D4 /* ParaStkYieldBoostStartInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0988D8EC0768B03BA7C55612 /* ParaStkYieldBoostStartInteractor.swift */; };
@@ -7177,6 +7185,14 @@
 		2D2B6AF12D6DCD77002F8C77 /* BrowserNavigationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationPresenter.swift; sourceTree = "<group>"; };
 		2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationInteractor.swift; sourceTree = "<group>"; };
 		2D2B6AF52D6DCFB6002F8C77 /* BrowserNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationFactory.swift; sourceTree = "<group>"; };
+		2D2EA8432D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoOffRampResponseHandler.swift; sourceTree = "<group>"; };
+		2D2EA84A2D9A51860034C792 /* OffRampHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffRampHook.swift; sourceTree = "<group>"; };
+		2D2EA84D2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoOffRampHookFactory.swift; sourceTree = "<group>"; };
+		2D2EA8522D9A79210034C792 /* RampModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampModel.swift; sourceTree = "<group>"; };
+		2D2EA8552D9A856B0034C792 /* TransakOffRampHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakOffRampHookFactory.swift; sourceTree = "<group>"; };
+		2D2EA8572D9A85EE0034C792 /* TransakOffRampResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakOffRampResponseHandler.swift; sourceTree = "<group>"; };
+		2D2EA8592D9A96590034C792 /* TransakRampEventNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakRampEventNames.swift; sourceTree = "<group>"; };
+		2D2EA85B2D9A98300034C792 /* TransakTransferEventData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakTransferEventData.swift; sourceTree = "<group>"; };
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
@@ -7475,6 +7491,7 @@
 		2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHapticPatternConfig.swift; sourceTree = "<group>"; };
 		2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentialHapticPlayerConfig.swift; sourceTree = "<group>"; };
 		2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlayerFactory.swift; sourceTree = "<group>"; };
+		2DFF604E2D9E954400DB70DD /* MercuryoRampEventNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoRampEventNames.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
 		2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewLayout.swift; sourceTree = "<group>"; };
@@ -7701,7 +7718,6 @@
 		599FEDBD7E8B665F1A93BA70 /* AccountConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountConfirmWireframe.swift; sourceTree = "<group>"; };
 		59BED0E6DBC4C21D9625740C /* GovernanceUnavailableTracksProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnavailableTracksProtocols.swift; sourceTree = "<group>"; };
 		5A05EB4FAF2FDE7DECEA93E4 /* StakingMainViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMainViewController.swift; sourceTree = "<group>"; };
-		5A7FA6394D0B712E71D727F2 /* Pods-NovaPushNotificationServiceExtension.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaPushNotificationServiceExtension.dev.xcconfig"; path = "Target Support Files/Pods-NovaPushNotificationServiceExtension/Pods-NovaPushNotificationServiceExtension.dev.xcconfig"; sourceTree = "<group>"; };
 		5AA3BF0C9C1E0E2C67D962F5 /* RampViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RampViewFactory.swift; sourceTree = "<group>"; };
 		5AD16D5FA4115F2A525BDE4F /* CollatorStakingRedeemViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollatorStakingRedeemViewController.swift; sourceTree = "<group>"; };
 		5AFA57BC935878DEBBE32EEA /* GovernanceRevokeDelegationConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationConfirmInteractor.swift; sourceTree = "<group>"; };
@@ -11111,7 +11127,6 @@
 		C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumDetailsProtocols.swift; sourceTree = "<group>"; };
 		C3E1250905B8D8E175316B0A /* SwapExecutionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapExecutionViewFactory.swift; sourceTree = "<group>"; };
 		C3E8ACEB2D157E376D53C6DE /* NominationPoolBondMoreConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreConfirmViewFactory.swift; sourceTree = "<group>"; };
-		C40FDB168848871965178B3D /* Pods-novawalletAll-novawallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletAll-novawallet.debug.xcconfig"; path = "Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.debug.xcconfig"; sourceTree = "<group>"; };
 		C4485B355F0C825BE382DCA2 /* SelectRampProviderPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectRampProviderPresenter.swift; sourceTree = "<group>"; };
 		C4CCA7057D4BAE6FF9EEC02D /* SelectRampProviderViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectRampProviderViewFactory.swift; sourceTree = "<group>"; };
 		C4E807E9E12A130C50E8FFDF /* StakingDashboardViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingDashboardViewFactory.swift; sourceTree = "<group>"; };
@@ -11523,7 +11538,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D422A7FC3B50FBED2715222 /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14843,6 +14857,45 @@
 				2D2B6AF32D6DCD9F002F8C77 /* BrowserNavigationInteractor.swift */,
 			);
 			path = BrowserNavigation;
+			sourceTree = "<group>";
+		};
+		2D2EA8422D969BD40034C792 /* Mercuryo */ = {
+			isa = PBXGroup;
+			children = (
+				2D2EA8432D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift */,
+				2D2EA84D2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift */,
+				2DFF604E2D9E954400DB70DD /* MercuryoRampEventNames.swift */,
+			);
+			path = Mercuryo;
+			sourceTree = "<group>";
+		};
+		2D2EA84C2D9A6FC70034C792 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D2EA8522D9A79210034C792 /* RampModel.swift */,
+				2D2EA85B2D9A98300034C792 /* TransakTransferEventData.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2D2EA84F2D9A72FB0034C792 /* Hook */ = {
+			isa = PBXGroup;
+			children = (
+				2D2EA8542D9A85560034C792 /* Transak */,
+				2D2EA8422D969BD40034C792 /* Mercuryo */,
+				2D2EA84A2D9A51860034C792 /* OffRampHook.swift */,
+			);
+			path = Hook;
+			sourceTree = "<group>";
+		};
+		2D2EA8542D9A85560034C792 /* Transak */ = {
+			isa = PBXGroup;
+			children = (
+				2D2EA8552D9A856B0034C792 /* TransakOffRampHookFactory.swift */,
+				2D2EA8592D9A96590034C792 /* TransakRampEventNames.swift */,
+				2D2EA8572D9A85EE0034C792 /* TransakOffRampResponseHandler.swift */,
+			);
+			path = Transak;
 			sourceTree = "<group>";
 		};
 		2D32BE112C6A49900047F520 /* FeeManaging */ = {
@@ -26546,6 +26599,8 @@
 		F1A9198B13888515D787A6C1 /* Ramp */ = {
 			isa = PBXGroup;
 			children = (
+				2D2EA84C2D9A6FC70034C792 /* Model */,
+				2D2EA84F2D9A72FB0034C792 /* Hook */,
 				8488ECE9258CE456004591CC /* RampViewController.swift */,
 				782CC21A2F9EEF5DBA3AB1AA /* RampProtocols.swift */,
 				1C52C6CD7112BF0E1E3A98CE /* RampWireframe.swift */,
@@ -29826,6 +29881,7 @@
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
 				8846F74029D757FE00B8B776 /* Data+base64.swift in Sources */,
 				773BA07A2B15F9DA00929BD4 /* Proxy+CodingPath.swift in Sources */,
+				2D2EA84B2D9A51860034C792 /* OffRampHook.swift in Sources */,
 				84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */,
 				F43A596A26D520E0005E973D /* EmptyStateViewCell.swift in Sources */,
 				0CA50CAF2AFE6094005668CD /* GetTokenOptionsViewController.swift in Sources */,
@@ -30127,6 +30183,7 @@
 				9DFB37659A6B911A4D54623E /* AccountConfirmInteractor.swift in Sources */,
 				0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */,
 				84BAFCD626AF64CB00871E86 /* SelectValidatorsViewLayout.swift in Sources */,
+				2D2EA8562D9A856B0034C792 /* TransakOffRampHookFactory.swift in Sources */,
 				84C5ADD52812745F006D7388 /* WalletAccountViewModel.swift in Sources */,
 				0CFF821F2D8B580E00DB17A4 /* Xcm+Event.swift in Sources */,
 				8863C7AC29D499D30068AD54 /* Web3NameService.swift in Sources */,
@@ -30498,6 +30555,7 @@
 				0C85FF2A2B6D230100FC0014 /* AssetHubReQuoteService.swift in Sources */,
 				AE528E4D26852C380058935A /* ValidatorSearchViewModel.swift in Sources */,
 				842BDB30278C57EB00AB4B5A /* DAppBrowserSigningState.swift in Sources */,
+				2D2EA85A2D9A96590034C792 /* TransakRampEventNames.swift in Sources */,
 				843910C9253F591D00E3C217 /* ScaleDecoderOperation.swift in Sources */,
 				0CB313792C0F499B00353724 /* CloudBackupSetupPasswordFlow.swift in Sources */,
 				84FBDBDD28C87DA800CC1037 /* ParaStkYieldBoostTasksSource.swift in Sources */,
@@ -30583,6 +30641,7 @@
 				0C0F6E4A2D47E80B00943A7C /* MythosStakingCommonData.swift in Sources */,
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
 				0CF4AE0B2CECDCF1009C51FA /* PolkadotRewardEngine.swift in Sources */,
+				2D2EA8462D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift in Sources */,
 				0C9C64302A8D6779004DC078 /* StakingNPoolsPresenter.swift in Sources */,
 				8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */,
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,
@@ -31445,6 +31504,7 @@
 				841E5561282E9CC700C8438F /* ParaStkStateMachineProtocols.swift in Sources */,
 				0CF606D12D7B311E0041B7AE /* XcmV3ModelFactory.swift in Sources */,
 				84EDF67729C7AC29002173E6 /* HexCodingWrapper.swift in Sources */,
+				2D2EA8532D9A79210034C792 /* RampModel.swift in Sources */,
 				84002A972990491A00A80672 /* GovernanceRemoveVotesInteractorError.swift in Sources */,
 				84720732277C370600F593DD /* DAppCategoriesView.swift in Sources */,
 				2D15850F2D3AA5FC00E86DA8 /* UpdatedWalletBrowserStateCleaner.swift in Sources */,
@@ -31745,6 +31805,7 @@
 				84002A9C299188F700A80672 /* GovernanceTracksViewModel.swift in Sources */,
 				0C23529E2BCCDFC2004D2548 /* CloudBackupFileModel.swift in Sources */,
 				8442002728E6FFBA00C49C4A /* VoteViewController.swift in Sources */,
+				2DFF604F2D9E954400DB70DD /* MercuryoRampEventNames.swift in Sources */,
 				0C0F6DDD2D415DEE00943A7C /* CollatorStakingDelegationSelectable.swift in Sources */,
 				777BD86A29FA3D5E004969A2 /* ReferendumsFilter+match.swift in Sources */,
 				790129F3CB6AEA611639E886 /* ParaStkUnstakeViewFactory.swift in Sources */,
@@ -31942,6 +32003,7 @@
 				887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */,
 				0C0F6D7D2D3A6CC200943A7C /* MythosStakingRemoteSubscriptionService.swift in Sources */,
 				042799797DF7E6FD02D1D1E6 /* ParitySignerTxScanPresenter.swift in Sources */,
+				2D2EA84E2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift in Sources */,
 				2D32BE192C6A49900047F520 /* ExtrinsicFeeProxy.swift in Sources */,
 				779A8F9B2A050C4400BE31B3 /* StakingRewardDateCell.swift in Sources */,
 				7580D432F22904C8F71441FE /* ParitySignerTxScanInteractor.swift in Sources */,
@@ -32400,6 +32462,7 @@
 				0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */,
 				FF985AA0ABA33118AC02A761 /* GovernanceEditDelegationTracksViewFactory.swift in Sources */,
 				33431341505ABC30172D34E3 /* GovernanceRevokeDelegationTracksWireframe.swift in Sources */,
+				2D2EA85C2D9A98300034C792 /* TransakTransferEventData.swift in Sources */,
 				C7E96E4185084C3E8F226E97 /* GovernanceRevokeDelegationTracksPresenter.swift in Sources */,
 				0C2A3C9A2CDCEB8A00A0E2B3 /* SwapAssetSelectionClosure.swift in Sources */,
 				0CD54E4D2BCE3B89007B58E7 /* CloudBackupSecretsImporting.swift in Sources */,
@@ -32920,6 +32983,7 @@
 				433CA9D0C219954508DCBCCD /* KnownNetworksListInteractor.swift in Sources */,
 				88C2FB78D93E5EF2E88A013B /* KnownNetworksListViewController.swift in Sources */,
 				24EBA5B44D126CF5F20CF75A /* KnownNetworksListViewLayout.swift in Sources */,
+				2D2EA8582D9A85EE0034C792 /* TransakOffRampResponseHandler.swift in Sources */,
 				7A1E94D172008E4CB94E9797 /* KnownNetworksListViewFactory.swift in Sources */,
 				20ED63C70434AAC0DEB73659 /* GenericLedgerAccountSelectionProtocols.swift in Sources */,
 				ADF749E5429ABA76FBF99D52 /* GenericLedgerAccountSelectionWireframe.swift in Sources */,
