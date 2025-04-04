@@ -11,6 +11,12 @@ extension XcmUni {
     typealias AbsoluteLocation = XcmUni.Junctions
 }
 
+extension XcmUni.RelativeLocation {
+    func toAssetId() -> XcmUni.AssetId {
+        .init(location: self)
+    }
+}
+
 extension XcmUni.AbsoluteLocation {
     init(paraId: ParaId?) {
         if let paraId {

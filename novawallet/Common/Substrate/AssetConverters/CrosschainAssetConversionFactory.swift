@@ -9,7 +9,7 @@ protocol CrosschainAssetConversionFactoryProtocol {
 
 enum CrosschainAssetConversionError: Error {
     case unexpectedError(String)
-    case unsupportedAssetId(XcmV3.Multilocation)
+    case unsupportedAssetId(XcmUni.AssetId)
 }
 
 final class CrosschainAssetConversionFactory {
@@ -32,7 +32,7 @@ final class CrosschainAssetConversionFactory {
 
     private func createAssetsPalletWrapper(
         for paraId: ParaId,
-        assetId: XcmV3.Multilocation,
+        assetId: XcmUni.AssetId,
         chainRegistry: ChainRegistryProtocol
     ) -> CompoundOperationWrapper<ChainAsset?> {
         let paraResolutionWrapper = parachainResolver.resolveChainId(

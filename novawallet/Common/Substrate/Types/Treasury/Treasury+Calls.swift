@@ -37,6 +37,6 @@ extension Treasury {
 
         let assetKind: XcmVersionedLocatableAsset
         @StringCodable var amount: BigUInt
-        let beneficiary: Xcm.VersionedMultilocation
+        let beneficiary: XcmUni.VersionedLocation
     }
 }

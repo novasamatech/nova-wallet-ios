@@ -4,7 +4,18 @@ import SubstrateSdk
 extension XcmUni {
     struct DepositAssetValue: Equatable {
         let assets: AssetFilter
+        let maxAssets: UInt32
         let beneficiary: RelativeLocation
+
+        init(
+            assets: AssetFilter,
+            beneficiary: RelativeLocation,
+            maxAssets: UInt32 = 1
+        ) {
+            self.assets = assets
+            self.maxAssets = maxAssets
+            self.beneficiary = beneficiary
+        }
     }
 
     struct BuyExecutionValue: Equatable {
@@ -15,7 +26,20 @@ extension XcmUni {
     struct NextChainTransferValue: Equatable {
         let assets: AssetFilter
         let dest: RelativeLocation
+        let maxAssets: UInt32
         let xcm: Instructions
+
+        init(
+            assets: AssetFilter,
+            dest: RelativeLocation,
+            xcm: Instructions,
+            maxAssets: UInt32 = 1
+        ) {
+            self.assets = assets
+            self.dest = dest
+            self.maxAssets = maxAssets
+            self.xcm = xcm
+        }
     }
 
     enum Instruction: Equatable {
@@ -38,14 +62,8 @@ extension XcmUni {
 extension XcmUni.DepositAssetValue: XcmUniCodable {
     enum CodingKeys: String, CodingKey {
         case assets
+        case maxAssets
         case beneficiary
-    }
-
-    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try container.encode(assets, forKey: .assets, configuration: configuration)
-        try container.encode(beneficiary, forKey: .beneficiary, configuration: configuration)
     }
 
     init(from decoder: any Decoder, configuration: Xcm.Version) throws {
@@ -57,11 +75,36 @@ extension XcmUni.DepositAssetValue: XcmUniCodable {
             configuration: configuration
         )
 
+        maxAssets = switch configuration {
+        case .V0, .V1, .V2:
+            try container.decode(
+                StringScaleMapper<UInt32>.self,
+                forKey: .maxAssets
+            ).value
+        case .V3, .V4, .V5:
+            1
+        }
+
         beneficiary = try container.decode(
             XcmUni.RelativeLocation.self,
             forKey: .beneficiary,
             configuration: configuration
         )
+    }
+
+    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(assets, forKey: .assets, configuration: configuration)
+
+        switch configuration {
+        case .V0, .V1, .V2:
+            try container.encode(StringScaleMapper(value: maxAssets), forKey: .maxAssets)
+        case .V3, .V4, .V5:
+            break
+        }
+
+        try container.encode(beneficiary, forKey: .beneficiary, configuration: configuration)
     }
 }
 
@@ -99,6 +142,7 @@ extension XcmUni.NextChainTransferValue: XcmUniCodable {
     enum CodingKeys: String, CodingKey {
         case assets
         case dest
+        case maxAssets
         case xcm
     }
 
@@ -117,6 +161,16 @@ extension XcmUni.NextChainTransferValue: XcmUniCodable {
             configuration: configuration
         )
 
+        maxAssets = switch configuration {
+        case .V0, .V1, .V2:
+            try container.decode(
+                StringScaleMapper<UInt32>.self,
+                forKey: .maxAssets
+            ).value
+        case .V3, .V4, .V5:
+            1
+        }
+
         xcm = try container.decode(
             XcmUni.Instructions.self,
             forKey: .xcm,
@@ -129,6 +183,14 @@ extension XcmUni.NextChainTransferValue: XcmUniCodable {
 
         try container.encode(assets, forKey: .assets, configuration: configuration)
         try container.encode(dest, forKey: .dest, configuration: configuration)
+
+        switch configuration {
+        case .V0, .V1, .V2:
+            try container.encode(StringScaleMapper(value: maxAssets), forKey: .maxAssets)
+        case .V3, .V4, .V5:
+            break
+        }
+
         try container.encode(xcm, forKey: .xcm, configuration: configuration)
     }
 }

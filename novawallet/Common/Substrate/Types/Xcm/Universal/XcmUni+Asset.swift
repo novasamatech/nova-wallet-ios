@@ -8,6 +8,7 @@ extension XcmUni {
     }
 
     enum WildAsset: Equatable {
+        case all
         case allCounted(UInt32)
         case other(RawName, RawValue)
     }
@@ -22,6 +23,13 @@ extension XcmUni {
     struct Asset: Equatable {
         let assetId: AssetId
         let fun: Fungibility
+
+        init(location: RelativeLocation, amount: BigUInt) {
+            assetId = AssetId(location: location)
+
+            // starting from xcmV3 zero amount is prohibited
+            fun = .fungible(max(amount, 1))
+        }
 
         init(assetId: AssetId, amount: BigUInt) {
             self.assetId = assetId
@@ -171,6 +179,8 @@ extension XcmUni.WildAsset: Codable {
         let type = try container.decode(String.self)
 
         switch type {
+        case "All":
+            self = .all
         case "AllCounted":
             let value = try container.decode(StringScaleMapper<UInt32>.self).value
             self = .allCounted(value)
@@ -184,6 +194,8 @@ extension XcmUni.WildAsset: Codable {
         var container = encoder.unkeyedContainer()
 
         switch self {
+        case .all:
+            try container.encode("All")
         case let .allCounted(value):
             try container.encode("AllCounted")
             try container.encode(StringScaleMapper(value: value))

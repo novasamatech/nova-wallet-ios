@@ -11,7 +11,7 @@ final class XcmExecuteDerivator {
         case teleport
         case localReserve
         case destinationReserve
-        case remoteReserve(XcmV4.AbsoluteLocation)
+        case remoteReserve(XcmUni.AbsoluteLocation)
     }
 
     let chainRegistry: ChainRegistryProtocol
@@ -30,10 +30,10 @@ final class XcmExecuteDerivator {
 }
 
 private extension XcmExecuteDerivator {
-    func half(asset: XcmV4.Multiasset) -> XcmV4.Multiasset {
+    func half(asset: XcmUni.Asset) -> XcmUni.Asset {
         switch asset.fun {
         case let .fungible(amount):
-            XcmV4.Multiasset(assetId: asset.assetId, amount: amount / 2)
+            XcmUni.Asset(assetId: asset.assetId, amount: amount / 2)
         case .nonFungible:
             asset
         }
@@ -55,27 +55,27 @@ private extension XcmExecuteDerivator {
         } else if request.destination.chain.chainId == request.reserve.chain.chainId {
             .destinationReserve
         } else {
-            .remoteReserve(XcmV4.AbsoluteLocation(paraId: request.reserve.parachainId))
+            .remoteReserve(XcmUni.AbsoluteLocation(paraId: request.reserve.parachainId))
         }
     }
 
     func localReserveTransferProgram(
         for transferRequest: XcmUnweightedTransferRequest
     ) throws -> [XcmV4.Instruction] {
-        let originAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
-        let destAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
+        let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
+        let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
 
-        let assetLocation = try XcmV4.AbsoluteLocation.createWithRawPath(
+        let assetLocation = try XcmUni.AbsoluteLocation.createWithRawPath(
             transferRequest.metadata.reserve.path.path
         )
 
-        let originAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation),
+        let originAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
-        let destAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation),
+        let destAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
@@ -86,28 +86,28 @@ private extension XcmExecuteDerivator {
         ).fromPointOfView(location: destAbsoluteLocation)
 
         return [
-            XcmV4.Instruction.withdrawAsset([
+            XcmUni.Instruction.withdrawAsset([
                 originAsset
             ]),
-            XcmV4.Instruction.buyExecution(
+            XcmUni.Instruction.buyExecution(
                 XcmV4.BuyExecutionValue(
                     fees: half(asset: originAsset),
                     weightLimit: .limited(weight: .zero)
                 )
             ),
-            XcmV4.Instruction.depositReserveAsset(
-                XcmV4.DepositReserveAssetValue(
+            XcmUni.Instruction.depositReserveAsset(
+                XcmUni.NextChainTransferValue(
                     assets: .wild(.allCounted(1)),
                     dest: destinationLocation,
                     xcm: [
-                        XcmV4.Instruction.buyExecution(
-                            XcmV4.BuyExecutionValue(
+                        XcmUni.Instruction.buyExecution(
+                            XcmUni.BuyExecutionValue(
                                 fees: half(asset: destAsset),
                                 weightLimit: .unlimited
                             )
                         ),
-                        XcmV4.Instruction.depositAsset(
-                            XcmV4.DepositAssetValue(
+                        XcmUni.Instruction.depositAsset(
+                            XcmUni.DepositAssetValue(
                                 assets: .wild(.allCounted(1)),
                                 beneficiary: beneficiary
                             )
@@ -120,21 +120,21 @@ private extension XcmExecuteDerivator {
 
     func destinationReserveTransferProgram(
         for transferRequest: XcmUnweightedTransferRequest
-    ) throws -> [XcmV4.Instruction] {
-        let originAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
-        let destAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
+    ) throws -> [XcmUni.Instruction] {
+        let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
+        let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
 
-        let assetLocation = try XcmV4.AbsoluteLocation.createWithRawPath(
+        let assetLocation = try XcmUni.AbsoluteLocation.createWithRawPath(
             transferRequest.metadata.reserve.path.path
         )
 
-        let originAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation),
+        let originAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
-        let destAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation),
+        let destAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
@@ -144,26 +144,26 @@ private extension XcmExecuteDerivator {
         ).fromPointOfView(location: destAbsoluteLocation)
 
         return [
-            XcmV4.Instruction.withdrawAsset([originAsset]),
-            XcmV4.Instruction.buyExecution(
-                XcmV4.BuyExecutionValue(
+            XcmUni.Instruction.withdrawAsset([originAsset]),
+            XcmUni.Instruction.buyExecution(
+                XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
                     weightLimit: .limited(weight: .zero)
                 )
             ),
-            XcmV4.Instruction.initiateReserveWithdraw(
-                XcmV4.InitiateReserveWithdrawValue(
+            XcmUni.Instruction.initiateReserveWithdraw(
+                XcmUni.NextChainTransferValue(
                     assets: .wild(.allCounted(1)),
                     reserve: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
-                        XcmV4.Instruction.buyExecution(
-                            XcmV4.BuyExecutionValue(
+                        XcmUni.Instruction.buyExecution(
+                            XcmUni.BuyExecutionValue(
                                 fees: half(asset: destAsset),
                                 weightLimit: .unlimited
                             )
                         ),
-                        XcmV4.Instruction.depositAsset(
-                            XcmV4.DepositAssetValue(
+                        XcmUni.Instruction.depositAsset(
+                            XcmUni.DepositAssetValue(
                                 assets: .wild(.allCounted(1)),
                                 beneficiary: beneficiary
                             )
@@ -176,27 +176,27 @@ private extension XcmExecuteDerivator {
 
     func remoteReserveTransferProgram(
         for transferRequest: XcmUnweightedTransferRequest
-    ) throws -> [XcmV4.Instruction] {
-        let originAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
-        let destAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
-        let reserveAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.reserve.parachainId)
+    ) throws -> [XcmUni.Instruction] {
+        let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
+        let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
+        let reserveAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.reserve.parachainId)
 
-        let assetLocation = try XcmV4.AbsoluteLocation.createWithRawPath(
+        let assetLocation = try XcmUni.AbsoluteLocation.createWithRawPath(
             transferRequest.metadata.reserve.path.path
         )
 
-        let originAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation),
+        let originAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
-        let reserveAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: reserveAbsoluteLocation),
+        let reserveAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: reserveAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
-        let destAsset = XcmV4.Multiasset(
-            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation),
+        let destAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
             amount: transferRequest.amount
         )
 
@@ -206,37 +206,37 @@ private extension XcmExecuteDerivator {
         ).fromPointOfView(location: destAbsoluteLocation)
 
         return [
-            XcmV4.Instruction.withdrawAsset([originAsset]),
-            XcmV4.Instruction.buyExecution(
-                XcmV4.BuyExecutionValue(
+            XcmUni.Instruction.withdrawAsset([originAsset]),
+            XcmUni.Instruction.buyExecution(
+                XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
                     weightLimit: .limited(weight: .zero)
                 )
             ),
-            XcmV4.Instruction.initiateReserveWithdraw(
-                XcmV4.InitiateReserveWithdrawValue(
+            XcmUni.Instruction.initiateReserveWithdraw(
+                XcmUni.NextChainTransferValue(
                     assets: .wild(.allCounted(1)),
                     reserve: reserveAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
-                        XcmV4.Instruction.buyExecution(
-                            XcmV4.BuyExecutionValue(
+                        XcmUni.Instruction.buyExecution(
+                            XcmUni.BuyExecutionValue(
                                 fees: half(asset: reserveAsset),
                                 weightLimit: .unlimited
                             )
                         ),
-                        XcmV4.Instruction.depositReserveAsset(
-                            XcmV4.DepositReserveAssetValue(
+                        XcmUni.Instruction.depositReserveAsset(
+                            XcmUni.DepositReserveAssetValue(
                                 assets: .wild(.allCounted(1)),
                                 dest: destAbsoluteLocation.fromPointOfView(location: reserveAbsoluteLocation),
                                 xcm: [
-                                    XcmV4.Instruction.buyExecution(
-                                        XcmV4.BuyExecutionValue(
+                                    XcmUni.Instruction.buyExecution(
+                                        XcmUni.BuyExecutionValue(
                                             fees: half(asset: destAsset),
                                             weightLimit: .unlimited
                                         )
                                     ),
-                                    XcmV4.Instruction.depositAsset(
-                                        XcmV4.DepositAssetValue(
+                                    XcmUni.Instruction.depositAsset(
+                                        XcmUni.DepositAssetValue(
                                             assets: .wild(.allCounted(1)),
                                             beneficiary: beneficiary
                                         )
@@ -252,20 +252,20 @@ private extension XcmExecuteDerivator {
 
     func teleportTransferProgram(
         for transferRequest: XcmUnweightedTransferRequest
-    ) throws -> [XcmV4.Instruction] {
-        let originAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
-        let destAbsoluteLocation = XcmV4.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
+    ) throws -> [XcmUni.Instruction] {
+        let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.origin.parachainId)
+        let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: transferRequest.destination.parachainId)
 
-        let assetLocation = try XcmV4.AbsoluteLocation.createWithRawPath(
+        let assetLocation = try XcmUni.AbsoluteLocation.createWithRawPath(
             transferRequest.metadata.reserve.path.path
         )
 
-        let originAsset = XcmV4.Multiasset(
+        let originAsset = XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation),
             amount: transferRequest.amount
         )
 
-        let destAsset = XcmV4.Multiasset(
+        let destAsset = XcmUni.Asset(
             assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation),
             amount: transferRequest.amount
         )
@@ -276,26 +276,26 @@ private extension XcmExecuteDerivator {
         ).fromPointOfView(location: destAbsoluteLocation)
 
         return [
-            XcmV4.Instruction.withdrawAsset([originAsset]),
-            XcmV4.Instruction.buyExecution(
-                XcmV4.BuyExecutionValue(
+            XcmUni.Instruction.withdrawAsset([originAsset]),
+            XcmUni.Instruction.buyExecution(
+                XcmUni.BuyExecutionValue(
                     fees: half(asset: originAsset),
                     weightLimit: .limited(weight: .init(refTime: 0, proofSize: 0))
                 )
             ),
-            XcmV4.Instruction.initiateTeleport(
-                XcmV4.InitiateTeleportValue(
+            XcmUni.Instruction.initiateTeleport(
+                XcmUni.NextChainTransferValue(
                     assets: .wild(.all),
                     dest: destAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
                     xcm: [
-                        XcmV4.Instruction.buyExecution(
-                            XcmV4.BuyExecutionValue(
+                        XcmUni.Instruction.buyExecution(
+                            XcmUni.BuyExecutionValue(
                                 fees: half(asset: destAsset),
                                 weightLimit: .unlimited
                             )
                         ),
-                        XcmV4.Instruction.depositAsset(
-                            XcmV4.DepositAssetValue(
+                        XcmUni.Instruction.depositAsset(
+                            XcmUni.DepositAssetValue(
                                 assets: .wild(.all),
                                 beneficiary: beneficiary
                             )
@@ -314,7 +314,7 @@ extension XcmExecuteDerivator: XcmCallDerivating {
         do {
             let transferType = determineTransferType(for: transferRequest)
 
-            let program: [XcmV4.Instruction] = switch transferType {
+            let program: XcmUni.Instructions = switch transferType {
             case .localReserve:
                 try localReserveTransferProgram(for: transferRequest)
             case .destinationReserve:
@@ -325,7 +325,7 @@ extension XcmExecuteDerivator: XcmCallDerivating {
                 try teleportTransferProgram(for: transferRequest)
             }
 
-            let message = Xcm.Message.V4(program)
+            let message = program.versioned(.V4)
 
             let originChainId = transferRequest.originChain.chainId
             let messageWeightWrapper = xcmPaymentFactory.queryMessageWeight(

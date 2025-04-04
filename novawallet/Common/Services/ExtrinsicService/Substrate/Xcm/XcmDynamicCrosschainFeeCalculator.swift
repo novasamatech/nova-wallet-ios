@@ -38,7 +38,7 @@ final class XcmDynamicCrosschainFeeCalculator {
     }
 
     struct IntermediateResult {
-        let forwardedXcm: Xcm.Message
+        let forwardedXcm: XcmUni.VersionedMessage
         let deliveryFee: BigUInt
     }
 

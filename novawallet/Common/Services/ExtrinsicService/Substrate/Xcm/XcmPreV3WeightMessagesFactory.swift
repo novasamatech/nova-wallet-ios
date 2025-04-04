@@ -1,22 +1,44 @@
 import Foundation
+import BigInt
 
-final class XcmPreV3WeightMessagesFactory {
+protocol XcmWeightMessagesFactoryProtocol {
+    func createWeightMessages(
+        from params: XcmWeightMessagesParams,
+        version: Xcm.Version
+    ) throws -> XcmWeightMessages
+}
+
+struct XcmWeightMessagesParams {
+    let origin: XcmTransferOrigin
+    let reserve: XcmTransferReserve
+    let destination: XcmTransferDestination
+    let amount: BigUInt
+    let feeParams: XcmTransferMetadata.LegacyFee
+    let reserveParams: XcmTransferMetadata.Reserve
+}
+
+enum XcmWeightMessagesFactoryError: Error {
+    case unsupportedInstruction(String)
+}
+
+final class XcmLegacyMessagesFactory {
     let modelFactory = XcmPreV3ModelFactory()
 }
 
-private extension XcmPreV3WeightMessagesFactory {
+private extension XcmLegacyMessagesFactory {
     func createDestinationWeightMessage(
         from origin: XcmTransferOrigin,
         destination: XcmTransferDestination,
         feeParams: XcmTransferMetadata.LegacyFee,
-        multiasset: Xcm.Multiasset
-    ) throws -> Xcm.Message {
-        let multilocation = modelFactory.createMultilocation(origin: origin, destination: destination)
+        asset: XcmUni.Asset,
+        version _: Xcm.Version
+    ) throws -> XcmUni.VersionedMessage {
+        let location = modelFactory.createMultilocation(origin: origin, destination: destination)
 
         return try createWeightMessage(
             from: feeParams.destinationExecution.instructions,
-            destination: multilocation,
-            asset: multiasset
+            destination: location,
+            asset: asset
         )
     }
 
@@ -24,8 +46,9 @@ private extension XcmPreV3WeightMessagesFactory {
         from origin: XcmTransferOrigin,
         reserve: XcmTransferReserve,
         feeParams: XcmTransferMetadata.LegacyFee,
-        multiasset: Xcm.Multiasset
-    ) throws -> Xcm.Message? {
+        asset: XcmUni.Asset,
+        version: Xcm.Version
+    ) throws -> XcmUni.VersionedMessage? {
         guard let reserveInstructions = feeParams.reserveExecution?.instructions else {
             return nil
         }
@@ -35,55 +58,56 @@ private extension XcmPreV3WeightMessagesFactory {
         return try createWeightMessage(
             from: reserveInstructions,
             destination: reserveMultilocation,
-            asset: multiasset
+            asset: asset,
+            version: version
         )
     }
 
     func createWeightMessage(
         from instructions: [String],
-        destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset
-    ) throws -> Xcm.Message {
-        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
+        destination: XcmUni.RelativeLocation,
+        asset: XcmUni.Asset,
+        version: Xcm.Version
+    ) throws -> XcmUni.VersionedMessage {
+        let xcmInstructions: XcmUni.Instructions = try instructions.map { rawInstruction in
             switch rawInstruction {
-            case Xcm.Instruction.fieldWithdrawAsset:
+            case XcmUni.Instruction.fieldWithdrawAsset:
                 return .withdrawAsset([asset])
-            case Xcm.Instruction.fieldClearOrigin:
+            case XcmUni.Instruction.fieldClearOrigin:
                 return .clearOrigin
-            case Xcm.Instruction.fieldReserveAssetDeposited:
+            case XcmUni.Instruction.fieldReserveAssetDeposited:
                 return .reserveAssetDeposited([asset])
-            case Xcm.Instruction.fieldBuyExecution:
-                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
+            case XcmUni.Instruction.fieldBuyExecution:
+                let value = XcmUni.BuyExecutionValue(fees: asset, weightLimit: .unlimited)
                 return .buyExecution(value)
-            case Xcm.Instruction.fieldDepositAsset:
-                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
+            case XcmUni.Instruction.fieldDepositAsset:
+                let value = XcmUni.DepositAssetValue(assets: .wild(.all), beneficiary: destination)
                 return .depositAsset(value)
-            case Xcm.Instruction.fieldDepositReserveAsset:
-                let value = Xcm.DepositReserveAssetValue(
+            case XcmUni.Instruction.fieldDepositReserveAsset:
+                let value = XcmUni.NextChainTransferValue(
                     assets: .wild(.all),
-                    maxAssets: 1,
                     dest: destination,
                     xcm: []
                 )
 
                 return .depositReserveAsset(value)
-            case Xcm.Instruction.fieldReceiveTeleportedAsset:
+            case XcmUni.Instruction.fieldReceiveTeleportedAsset:
                 return .receiveTeleportedAsset([asset])
             default:
                 throw XcmWeightMessagesFactoryError.unsupportedInstruction(rawInstruction)
             }
         }
 
-        return .V2(xcmInstructions)
+        return .init(entity: xcmInstructions, version: version)
     }
 }
 
-extension XcmPreV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
+extension XcmLegacyMessagesFactory: XcmWeightMessagesFactoryProtocol {
     func createWeightMessages(
         from params: XcmWeightMessagesParams,
-        version _: Xcm.Version
+        version: Xcm.Version
     ) throws -> XcmWeightMessages {
-        let multiasset = try modelFactory.createMultiAsset(
+        let asset = try modelFactory.createMultiAsset(
             origin: params.origin.chainAsset.chain,
             reserve: params.reserve.chain,
             assetLocation: params.reserveParams.path,
@@ -94,14 +118,16 @@ extension XcmPreV3WeightMessagesFactory: XcmWeightMessagesFactoryProtocol {
             from: params.origin,
             destination: params.destination,
             feeParams: params.feeParams,
-            multiasset: multiasset
+            asset: asset,
+            version: version
         )
 
         let reserveMessage = try createReserveWeightMessage(
             from: params.origin,
             reserve: params.reserve,
             feeParams: params.feeParams,
-            multiasset: multiasset
+            asset: asset,
+            version: version
         )
 
         return XcmWeightMessages(destination: destinationMessage, reserve: reserveMessage)
