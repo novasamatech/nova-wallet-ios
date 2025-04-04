@@ -88,3 +88,24 @@ extension XcmUni.RelativeLocation {
         }
     }
 }
+
+extension XcmUni.RelativeLocation: XcmUniCodable {
+    enum CodingKeys: String, CodingKey {
+        case parents
+        case interior
+    }
+
+    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(StringScaleMapper(value: parents), forKey: .parents)
+        try container.encode(interior, forKey: .interior, configuration: configuration)
+    }
+
+    init(from decoder: any Decoder, configuration: Xcm.Version) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        parents = try container.decode(StringScaleMapper<UInt8>.self, forKey: .parents).value
+        interior = try container.decode(XcmUni.Junctions.self, forKey: .interior, configuration: configuration)
+    }
+}
