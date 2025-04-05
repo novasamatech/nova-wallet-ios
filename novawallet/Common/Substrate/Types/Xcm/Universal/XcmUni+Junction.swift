@@ -212,23 +212,125 @@ extension XcmUni.Junction: XcmUniCodable {
     }
 }
 
+private extension XcmUni.Junctions {
+    init(fromPreV4 decoder: any Decoder, configuration: Xcm.Version) throws {
+        var container = try decoder.unkeyedContainer()
+
+        let type = try container.decode(String.self)
+
+        if type == Self.hereField {
+            items = []
+        } else if
+            type.count == 2,
+            type.starts(with: Self.junctionPrefix),
+            let itemsCount = Int(type.suffix(1)) {
+            if itemsCount == 1 {
+                let item = try container.decode(XcmUni.Junction.self, configuration: configuration)
+                items = [item]
+            } else {
+                let dict = try container.decode([String: XcmUni.Junction].self, configuration: configuration)
+
+                items = try (0 ..< itemsCount).map { index in
+                    guard let junction = dict[String(index)] else {
+                        throw DecodingError.dataCorrupted(
+                            .init(
+                                codingPath: container.codingPath,
+                                debugDescription: "Unsupported junctions: \(dict)"
+                            )
+                        )
+                    }
+
+                    return junction
+                }
+            }
+        } else {
+            throw DecodingError.dataCorrupted(
+                .init(
+                    codingPath: container.codingPath,
+                    debugDescription: "Unsupported junctions format"
+                )
+            )
+        }
+    }
+
+    init(fromPostV4 decoder: any Decoder, configuration: Xcm.Version) throws {
+        var container = try decoder.unkeyedContainer()
+
+        let type = try container.decode(String.self)
+
+        if type == Self.hereField {
+            items = []
+        } else {
+            items = try container.decode([XcmUni.Junction].self, configuration: configuration)
+        }
+    }
+
+    func encodePreV4(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        var container = encoder.unkeyedContainer()
+
+        if items.isEmpty {
+            try container.encode(Self.hereField)
+        } else {
+            let xLocation = "\(Self.junctionPrefix)\(items.count)"
+            try container.encode(xLocation)
+        }
+
+        if items.isEmpty {
+            try container.encode(JSON.null)
+        } else if items.count == 1 {
+            try container.encode(items[0], configuration: configuration)
+        } else {
+            var jsonDict: [String: XcmUni.Junction] = [:]
+            for (index, item) in items.enumerated() {
+                let key = String(index)
+                jsonDict[key] = item
+            }
+
+            try container.encode(jsonDict, configuration: configuration)
+        }
+    }
+
+    func encodePostV4(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        var container = encoder.unkeyedContainer()
+
+        if items.isEmpty {
+            try container.encode(Self.hereField)
+        } else {
+            let xLocation = "\(Self.junctionPrefix)\(items.count)"
+            try container.encode(xLocation)
+        }
+
+        if items.isEmpty {
+            try container.encode(JSON.null)
+        } else {
+            try container.encode(items, configuration: configuration)
+        }
+    }
+}
+
 extension XcmUni.Junctions: XcmUniCodable {
+    static let hereField = "Here"
+    static let junctionPrefix = "X"
+
     enum CodingKeys: String, CodingKey {
         case items
     }
 
-    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(items, forKey: .items, configuration: configuration)
+    init(from decoder: any Decoder, configuration: Xcm.Version) throws {
+        switch configuration {
+        case .V0, .V1, .V2, .V3:
+            try self.init(fromPreV4: decoder, configuration: configuration)
+        case .V4, .V5:
+            try self.init(fromPostV4: decoder, configuration: configuration)
+        }
     }
 
-    init(from decoder: any Decoder, configuration: Xcm.Version) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        items = try container.decode(
-            [XcmUni.Junction].self,
-            forKey: .items,
-            configuration: configuration
-        )
+    func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
+        switch configuration {
+        case .V0, .V1, .V2, .V3:
+            try encodePreV4(to: encoder, configuration: configuration)
+        case .V4, .V5:
+            try encodePostV4(to: encoder, configuration: configuration)
+        }
     }
 }

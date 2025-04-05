@@ -36,3 +36,54 @@ extension XcmUni.Versioned: Decodable where Entity: XcmUniDecodable {
 }
 
 extension Array: XcmUniCodable where Element: XcmUniCodable {}
+
+// A helper CodingKey type that works with dynamic (string) keys.
+struct DynamicCodingKey: CodingKey {
+    var stringValue: String
+    init?(stringValue: String) { self.stringValue = stringValue }
+
+    var intValue: Int? { nil }
+    init?(intValue _: Int) { nil }
+}
+
+extension Dictionary: EncodableWithConfiguration where Key == String,
+    Value: EncodableWithConfiguration {
+    public typealias EncodingConfiguration = Value.EncodingConfiguration
+
+    public func encode(to encoder: any Encoder, configuration: Self.EncodingConfiguration) throws {
+        var container = encoder.container(keyedBy: DynamicCodingKey.self)
+
+        for (key, value) in self {
+            guard let codingKey = DynamicCodingKey(stringValue: key) else {
+                throw EncodingError.invalidValue(
+                    key,
+                    EncodingError.Context(
+                        codingPath: container.codingPath,
+                        debugDescription: "Unable to create coding key for \(key)"
+                    )
+                )
+            }
+
+            try container.encode(value, forKey: codingKey, configuration: configuration)
+        }
+    }
+}
+
+extension Dictionary: DecodableWithConfiguration where Key == String,
+    Value: DecodableWithConfiguration {
+    public typealias DecodingConfiguration = Value.DecodingConfiguration
+
+    public init(from decoder: any Decoder, configuration: Value.DecodingConfiguration) throws {
+        let container = try decoder.container(keyedBy: DynamicCodingKey.self)
+        self.init()
+
+        // Iterate over all keys in the container.
+        for codingKey in container.allKeys {
+            let decodedKey = codingKey.stringValue
+
+            // Decode the value using Value's configuration-aware decoder.
+            let decodedValue = try container.decode(Value.self, forKey: codingKey, configuration: configuration)
+            self[decodedKey] = decodedValue
+        }
+    }
+}

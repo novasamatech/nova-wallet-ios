@@ -93,9 +93,9 @@ extension XcmUni.AssetId: XcmUniCodable {
 
     func encode(to encoder: any Encoder, configuration: Xcm.Version) throws {
         switch configuration {
-        case .V0, .V1, .V2:
+        case .V0, .V1, .V2, .V3:
             try encodePreV4(to: encoder, configuration: configuration)
-        case .V3, .V4, .V5:
+        case .V4, .V5:
             try location.encode(to: encoder, configuration: configuration)
         }
     }
