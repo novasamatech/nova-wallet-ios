@@ -4,46 +4,220 @@ import SubstrateSdk
 
 final class XcmUniCodingTests: XCTestCase {
 
-    func testEncodeDecodeV2AccountId32() throws {
-        try performEncodeDecodeTest(
-            for: XcmUni.Versioned(
-                entity: XcmUni.AccountId32(
-                    network: .any,
-                    accountId: Data.randomBytes(length: 32)!
-                ),
-                version: .V2
+    func testEncodeDecodeParachainAccountId32Location() throws {
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.RelativeLocation(
+                        parents: 1,
+                        items: [
+                            .parachain(2000),
+                            .accountId32(
+                                XcmUni.AccountId32(
+                                    network: .any,
+                                    accountId: Data.randomBytes(length: 32)!
+                                )
+                            )
+                        ]
+                    ),
+                    version: version
+                )
             )
-        )
+        }
     }
     
-    func testEncodeDecodeV5AccountId20() throws {
-        try performEncodeDecodeTest(
-            for: XcmUni.Versioned(
-                entity: XcmUni.Junction.accountKey20(
-                    XcmUni.AccountId20(
-                        network: .any,
-                        accountId: Data.randomBytes(length: 20)!
-                    )
-                ),
-                version: .V5
+    func testEncodeDecodeParachainAccountId20Location() throws {
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.RelativeLocation(
+                        parents: 1,
+                        items: [
+                            .parachain(2001),
+                            .accountKey20(
+                                XcmUni.AccountId20(
+                                    network: .any,
+                                    accountId: Data.randomBytes(length: 20)!
+                                )
+                            )
+                        ]
+                    ),
+                    version: version
+                )
             )
-        )
+        }
     }
     
-    func testEncodeDecodeV5AccountId20ByGenesis() throws {
-        let networkId = "91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+    func testEncodeDecodeRelaychainAccountId32Location() throws {
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.RelativeLocation(
+                        parents: 0,
+                        items: [
+                            .accountId32(
+                                XcmUni.AccountId32(
+                                    network: .any,
+                                    accountId: Data.randomBytes(length: 32)!
+                                )
+                            )
+                        ]
+                    ),
+                    version: version
+                )
+            )
+        }
+    }
+    
+    func testEncodeDecodeRelaychainAccountId20Location() throws {
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.RelativeLocation(
+                        parents: 0,
+                        items: [
+                            .accountKey20(
+                                XcmUni.AccountId20(
+                                    network: .any,
+                                    accountId: Data.randomBytes(length: 20)!
+                                )
+                            )
+                        ]
+                    ),
+                    version: version
+                )
+            )
+        }
+    }
+    
+    func testEncodeDecodeAssetFromAssets() throws {
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.Asset(
+                        location: XcmUni.RelativeLocation(
+                            parents: 1,
+                            items: [
+                                .parachain(1000),
+                                .palletInstance(50),
+                                .generalIndex(1984)
+                            ]
+                        ),
+                        amount: Decimal(1).toSubstrateAmount(precision: 12)!
+                    ),
+                    version: version
+                )
+            )
+        }
+    }
+    
+    func testEncodeDecodeAssetFromOrml() throws {
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.Versioned(
+                    entity: XcmUni.Asset(
+                        location: XcmUni.RelativeLocation(
+                            parents: 1,
+                            items: [
+                                .parachain(2000),
+                                .generalKey(try! Data(hexString: "0x0080"))
+                            ]
+                        ),
+                        amount: Decimal(1).toSubstrateAmount(precision: 12)!
+                    ),
+                    version: version
+                )
+            )
+        }
+    }
+    
+    func testEncodeDecodeMessage() throws {
+        let originAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: 2000)
+        let destAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: 2002)
+        let reserveAbsoluteLocation = XcmUni.AbsoluteLocation(paraId: 1000)
+        let amount = Decimal(1).toSubstrateAmount(precision: 6)!
+        let destinationAccount: AccountId = Data.randomBytes(length: 32)!
+
+        let assetLocation = XcmUni.AbsoluteLocation(
+            items: [
+                .parachain(1000),
+                .palletInstance(50),
+                .generalIndex(1984)
+            ]
+        )
+
+        let originAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: originAbsoluteLocation).toAssetId(),
+            amount: amount
+        )
+
+        let reserveAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: reserveAbsoluteLocation).toAssetId(),
+            amount: amount
+        )
+
+        let destAsset = XcmUni.Asset(
+            assetId: assetLocation.fromPointOfView(location: destAbsoluteLocation).toAssetId(),
+            amount: amount
+        )
+
+        let beneficiary = destAbsoluteLocation.appendingAccountId(
+            destinationAccount,
+            isEthereumBase: false
+        ).fromPointOfView(location: destAbsoluteLocation)
+
+        let instructions: [XcmUni.Instruction] = [
+            XcmUni.Instruction.withdrawAsset([originAsset]),
+            XcmUni.Instruction.buyExecution(
+                XcmUni.BuyExecutionValue(
+                    fees: originAsset,
+                    weightLimit: .limited(weight: .zero)
+                )
+            ),
+            XcmUni.Instruction.initiateReserveWithdraw(
+                XcmUni.InitiateReserveWithdrawValue(
+                    assets: .wild(.allCounted(1)),
+                    reserve: reserveAbsoluteLocation.fromPointOfView(location: originAbsoluteLocation),
+                    xcm: [
+                        XcmUni.Instruction.buyExecution(
+                            XcmUni.BuyExecutionValue(
+                                fees: reserveAsset,
+                                weightLimit: .unlimited
+                            )
+                        ),
+                        XcmUni.Instruction.depositReserveAsset(
+                            XcmUni.DepositReserveAssetValue(
+                                assets: .wild(.allCounted(1)),
+                                dest: destAbsoluteLocation.fromPointOfView(location: reserveAbsoluteLocation),
+                                xcm: [
+                                    XcmUni.Instruction.buyExecution(
+                                        XcmUni.BuyExecutionValue(
+                                            fees: destAsset,
+                                            weightLimit: .unlimited
+                                        )
+                                    ),
+                                    XcmUni.Instruction.depositAsset(
+                                        XcmUni.DepositAssetValue(
+                                            assets: .wild(.allCounted(1)),
+                                            beneficiary: beneficiary
+                                        )
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            )
+        ]
         
-        try performEncodeDecodeTest(
-            for: XcmUni.Versioned(
-                entity: XcmUni.Junction.accountKey20(
-                    XcmUni.AccountId20(
-                        network: .other("ByGenesis", JSON.stringValue(networkId)),
-                        accountId: Data.randomBytes(length: 20)!
-                    )
-                ),
-                version: .V5
+        for version in Xcm.Version.allCases {
+            try performEncodeDecodeTest(
+                for: XcmUni.VersionedMessage(
+                    entity: instructions,
+                    version: version
+                )
             )
-        )
+        }
     }
     
     private func performEncodeDecodeTest<T: Equatable & XcmUniCodable>(

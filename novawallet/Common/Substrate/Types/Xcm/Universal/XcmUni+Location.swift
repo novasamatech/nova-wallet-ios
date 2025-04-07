@@ -6,6 +6,16 @@ extension XcmUni {
     struct RelativeLocation: Equatable {
         let parents: UInt8
         let interior: XcmUni.Junctions
+
+        init(parents: UInt8, interior: XcmUni.Junctions) {
+            self.parents = parents
+            self.interior = interior
+        }
+
+        init(parents: UInt8, items: [XcmUni.Junction]) {
+            self.parents = parents
+            interior = .init(items: items)
+        }
     }
 
     typealias AbsoluteLocation = XcmUni.Junctions

@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-final class XcmPreV3ModelFactory {
+final class XcmLegacyModelFactory {
     func createMultiAsset(
         origin: ChainModel,
         reserve: ChainModel,
@@ -47,7 +47,7 @@ final class XcmPreV3ModelFactory {
     }
 }
 
-private extension XcmPreV3ModelFactory {
+private extension XcmLegacyModelFactory {
     func extractRelativeJunctions(from path: JSON) throws -> XcmUni.Junctions {
         var junctions: [XcmUni.Junction] = []
 
@@ -159,7 +159,7 @@ private extension XcmPreV3ModelFactory {
     }
 }
 
-extension XcmPreV3ModelFactory: XcmModelFactoryProtocol {
+extension XcmLegacyModelFactory: XcmModelFactoryProtocol {
     func createMultilocationAsset(
         for params: XcmMultilocationAssetParams,
         version: Xcm.Version

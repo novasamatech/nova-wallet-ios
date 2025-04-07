@@ -22,7 +22,7 @@ enum XcmWeightMessagesFactoryError: Error {
 }
 
 final class XcmLegacyMessagesFactory {
-    let modelFactory = XcmPreV3ModelFactory()
+    let modelFactory = XcmLegacyModelFactory()
 }
 
 private extension XcmLegacyMessagesFactory {

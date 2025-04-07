@@ -2,7 +2,7 @@ import Foundation
 
 enum Xcm {
     // swiftlint:disable identifier_name
-    enum Version: UInt8, Comparable {
+    enum Version: UInt8, Comparable, CaseIterable {
         case V0
         case V1
         case V2
