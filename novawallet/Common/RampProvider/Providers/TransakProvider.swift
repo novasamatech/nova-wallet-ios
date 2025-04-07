@@ -19,7 +19,7 @@ final class TransakProvider: BaseURLStringProvider, OffRampHookFactoryProvider {
         Self.baseUrlString
     }
 
-    init(offRampHookFactory: OffRampHookFactoryProtocol) {
+    init(offRampHookFactory: OffRampHookFactoryProtocol = TransakOffRampHookFactory()) {
         self.offRampHookFactory = offRampHookFactory
     }
 }

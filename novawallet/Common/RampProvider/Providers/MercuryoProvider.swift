@@ -37,7 +37,7 @@ final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider 
         configuration.baseUrl
     }
 
-    init(offRampHookFactory: OffRampHookFactoryProtocol) {
+    init(offRampHookFactory: OffRampHookFactoryProtocol = MercuryoOffRampHookFactory()) {
         self.offRampHookFactory = offRampHookFactory
     }
 }
