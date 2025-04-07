@@ -3,7 +3,7 @@ import Foundation
 final class MercuryoOffRampHookFactory {
     let logger: LoggerProtocol
 
-    init(logger: LoggerProtocol) {
+    init(logger: LoggerProtocol = Logger.shared) {
         self.logger = logger
     }
 }

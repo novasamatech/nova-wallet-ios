@@ -3,7 +3,7 @@ import Foundation
 final class TransakOffRampHookFactory {
     let logger: LoggerProtocol
 
-    init(logger: LoggerProtocol) {
+    init(logger: LoggerProtocol = Logger.shared) {
         self.logger = logger
     }
 
@@ -11,13 +11,7 @@ final class TransakOffRampHookFactory {
         using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> RampHook {
-        let eventName = TransakRampEventNames.orderCreated.rawValue
-
-        let scriptSource = """
-            window.addEventListener("message", ({ data }) => {
-                window.webkit.messageHandlers.\(eventName).postMessage(JSON.stringify(data));
-            });
-        """
+        let eventName = TransakRampEventNames.webViewEventsName.rawValue
 
         let handlers = [
             TransakOffRampResponseHandler(
@@ -27,10 +21,7 @@ final class TransakOffRampHookFactory {
             )
         ]
         let hook = RampHook(
-            script: .init(
-                content: scriptSource,
-                insertionPoint: .atDocEnd
-            ),
+            script: nil,
             messageNames: [eventName],
             handlers: handlers
         )

@@ -6,7 +6,7 @@ final class RampInteractor {
     let wallet: MetaAccountModel
     let chainAsset: ChainAsset
 
-    let hookFactories: [OffRampHookFactoryProtocol]
+    let rampProvider: RampProviderProtocol
     let logger: LoggerProtocol
 
     let eventCenter: EventCenterProtocol
@@ -17,14 +17,14 @@ final class RampInteractor {
     init(
         wallet: MetaAccountModel,
         chainAsset: ChainAsset,
-        hookFactories: [OffRampHookFactoryProtocol],
+        rampProvider: RampProviderProtocol,
         eventCenter: EventCenterProtocol,
         action: RampAction,
         logger: LoggerProtocol
     ) {
         self.wallet = wallet
         self.chainAsset = chainAsset
-        self.hookFactories = hookFactories
+        self.rampProvider = rampProvider
         self.eventCenter = eventCenter
         self.action = action
         self.logger = logger
@@ -41,7 +41,7 @@ private extension RampInteractor {
         let model = RampModel(
             resource: .init(url: action.url),
             messageNames: messageNames,
-            scripts: scripts
+            scripts: scripts.compactMap { $0 }
         )
 
         presenter?.didReceive(model: model)
@@ -61,12 +61,11 @@ private extension RampInteractor {
             refundAddress: address
         )
 
-        return hookFactories.flatMap {
-            $0.createHooks(
-                using: params,
-                for: self
-            )
-        }
+        return rampProvider.buildOffRampHooks(
+            for: action,
+            using: params,
+            for: self
+        )
     }
 }
 

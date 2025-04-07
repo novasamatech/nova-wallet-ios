@@ -53,6 +53,12 @@ protocol RampProviderProtocol {
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [RampAction]
+
+    func buildOffRampHooks(
+        for action: RampAction,
+        using params: OffRampHookParams,
+        for delegate: OffRampHookDelegate
+    ) -> [RampHook]
 }
 
 extension RampProviderProtocol {
@@ -70,5 +76,31 @@ extension RampProviderProtocol {
 
     func with(callbackUrl _: URL) -> Self {
         self
+    }
+}
+
+protocol BaseURLStringProvider {
+    var baseUrlString: String { get }
+}
+
+protocol OffRampHookFactoryProvider {
+    var offRampHookFactory: OffRampHookFactoryProtocol { get }
+}
+
+extension RampProviderProtocol where Self: BaseURLStringProvider, Self: OffRampHookFactoryProvider {
+    func buildOffRampHooks(
+        for action: RampAction,
+        using params: OffRampHookParams,
+        for delegate: OffRampHookDelegate
+    ) -> [RampHook] {
+        guard
+            let host = action.url.host(),
+            baseUrlString.contains(substring: host)
+        else { return [] }
+
+        return offRampHookFactory.createHooks(
+            using: params,
+            for: delegate
+        )
     }
 }

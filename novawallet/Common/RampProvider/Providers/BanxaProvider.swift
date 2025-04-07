@@ -86,4 +86,12 @@ extension BanxaProvider: RampProviderProtocol {
     ) -> [RampAction] {
         buildOnRampActions(for: chainAsset, accountId: accountId)
     }
+
+    func buildOffRampHooks(
+        for _: RampAction,
+        using _: OffRampHookParams,
+        for _: any OffRampHookDelegate
+    ) -> [RampHook] {
+        []
+    }
 }

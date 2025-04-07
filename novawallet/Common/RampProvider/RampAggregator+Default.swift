@@ -5,8 +5,8 @@ extension RampAggregator {
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
         let rampProviders: [RampProviderProtocol] = [
-            MercuryoProvider(),
-            TransakProvider(),
+            MercuryoProvider(offRampHookFactory: MercuryoOffRampHookFactory()),
+            TransakProvider(offRampHookFactory: TransakOffRampHookFactory()),
             BanxaProvider()
         ]
 

@@ -19,7 +19,7 @@ final class TransakOffRampResponseHandler {
 
 extension TransakOffRampResponseHandler: OffRampMessageHandling {
     func canHandleMessageOf(name: String) -> Bool {
-        name == TransakRampEventNames.orderCreated.rawValue
+        name == TransakRampEventNames.webViewEventsName.rawValue
     }
 
     func handle(message: Any, of _: String) {
