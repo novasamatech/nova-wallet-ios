@@ -13,7 +13,7 @@ extension RampWireframe: RampWireframeProtocol {
         from view: RampViewProtocol?,
         with action: RampActionType
     ) {
-        view?.controller.presentingViewController?.dismiss(animated: true) {
+        view?.controller.dismiss(animated: true) {
             DispatchQueue.main.async {
                 self.delegate?.rampDidComplete(action: action)
             }
