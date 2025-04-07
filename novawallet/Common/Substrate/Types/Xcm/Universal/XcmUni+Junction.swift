@@ -228,7 +228,10 @@ private extension XcmUni.Junctions {
                 let item = try container.decode(XcmUni.Junction.self, configuration: configuration)
                 items = [item]
             } else {
-                let dict = try container.decode([String: XcmUni.Junction].self, configuration: configuration)
+                let dict = try container.decode(
+                    XcmUniDictionary<XcmUni.Junction>.self,
+                    configuration: configuration
+                ).dict
 
                 items = try (0 ..< itemsCount).map { index in
                     guard let junction = dict[String(index)] else {
@@ -286,7 +289,7 @@ private extension XcmUni.Junctions {
                 jsonDict[key] = item
             }
 
-            try container.encode(jsonDict, configuration: configuration)
+            try container.encode(XcmUniDictionary(dict: jsonDict), configuration: configuration)
         }
     }
 

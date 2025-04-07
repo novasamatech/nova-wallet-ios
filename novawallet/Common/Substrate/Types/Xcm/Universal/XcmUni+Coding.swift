@@ -37,23 +37,27 @@ extension XcmUni.Versioned: Decodable where Entity: XcmUniDecodable {
 
 extension Array: XcmUniCodable where Element: XcmUniCodable {}
 
-// A helper CodingKey type that works with dynamic (string) keys.
-struct DynamicCodingKey: CodingKey {
-    var stringValue: String
-    init?(stringValue: String) { self.stringValue = stringValue }
+// Native Dictionary doesn't support CodableWithConfiguration.
+// The solution is to wrap the native dictionary and implement the coding
+struct XcmUniDictionary<Value> {
+    struct DynamicCodingKey: CodingKey {
+        var stringValue: String
+        init?(stringValue: String) { self.stringValue = stringValue }
 
-    var intValue: Int? { nil }
-    init?(intValue _: Int) { nil }
+        var intValue: Int? { nil }
+        init?(intValue _: Int) { nil }
+    }
+
+    let dict: [String: Value]
 }
 
-extension Dictionary: EncodableWithConfiguration where Key == String,
-    Value: EncodableWithConfiguration {
-    public typealias EncodingConfiguration = Value.EncodingConfiguration
+extension XcmUniDictionary: EncodableWithConfiguration where Value: EncodableWithConfiguration {
+    typealias EncodingConfiguration = Value.EncodingConfiguration
 
-    public func encode(to encoder: any Encoder, configuration: Self.EncodingConfiguration) throws {
+    func encode(to encoder: any Encoder, configuration: Self.EncodingConfiguration) throws {
         var container = encoder.container(keyedBy: DynamicCodingKey.self)
 
-        for (key, value) in self {
+        for (key, value) in dict {
             guard let codingKey = DynamicCodingKey(stringValue: key) else {
                 throw EncodingError.invalidValue(
                     key,
@@ -69,21 +73,19 @@ extension Dictionary: EncodableWithConfiguration where Key == String,
     }
 }
 
-extension Dictionary: DecodableWithConfiguration where Key == String,
-    Value: DecodableWithConfiguration {
-    public typealias DecodingConfiguration = Value.DecodingConfiguration
+extension XcmUniDictionary: DecodableWithConfiguration where Value: DecodableWithConfiguration {
+    typealias DecodingConfiguration = Value.DecodingConfiguration
 
-    public init(from decoder: any Decoder, configuration: Value.DecodingConfiguration) throws {
+    init(from decoder: any Decoder, configuration: Value.DecodingConfiguration) throws {
         let container = try decoder.container(keyedBy: DynamicCodingKey.self)
-        self.init()
 
-        // Iterate over all keys in the container.
+        var result: [String: Value] = [:]
+
         for codingKey in container.allKeys {
-            let decodedKey = codingKey.stringValue
-
-            // Decode the value using Value's configuration-aware decoder.
             let decodedValue = try container.decode(Value.self, forKey: codingKey, configuration: configuration)
-            self[decodedKey] = decodedValue
+            result[codingKey.stringValue] = decodedValue
         }
+
+        dict = result
     }
 }
