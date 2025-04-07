@@ -49,7 +49,7 @@ private extension MercuryoProvider {
         address: AccountAddress,
         token: String,
         actionType: RampActionType,
-        callbackUrl: URL
+        callbackUrl: URL?
     ) -> URL? {
         guard let signatureData = [address, configuration.secret].joined().data(using: .utf8) else {
             return nil
@@ -66,10 +66,13 @@ private extension MercuryoProvider {
             URLQueryItem(name: "currency", value: token),
             URLQueryItem(name: "type", value: type),
             URLQueryItem(name: "address", value: address),
-            URLQueryItem(name: "return_url", value: callbackUrl.absoluteString),
             URLQueryItem(name: "widget_id", value: configuration.widgetId),
             URLQueryItem(name: "signature", value: signature.toHex())
         ]
+
+        if let callbackUrl {
+            queryItems.append(URLQueryItem(name: "return_url", value: callbackUrl.absoluteString))
+        }
 
         if actionType == .offRamp {
             queryItems.append(URLQueryItem(name: "hide_refund_address", value: "true"))
@@ -123,13 +126,13 @@ private extension MercuryoProvider {
             return []
         }
 
-        guard let callbackUrl = self.callbackUrl,
-              let url = buildURL(
-                  address: address,
-                  token: chainAsset.asset.symbol,
-                  actionType: .offRamp,
-                  callbackUrl: callbackUrl
-              ) else {
+        guard let url = buildURL(
+            address: address,
+            token: chainAsset.asset.symbol,
+            actionType: .offRamp,
+            callbackUrl: nil
+        )
+        else {
             return []
         }
 

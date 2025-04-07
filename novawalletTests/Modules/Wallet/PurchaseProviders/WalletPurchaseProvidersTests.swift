@@ -34,8 +34,6 @@ class WalletRampProvidersTests: XCTestCase {
         
         let accountId = try address.toAccountId()
 
-        let config: ApplicationConfigProtocol = ApplicationConfig.shared
-
         let apiKey = TransakProvider.pubToken
         let host = TransakProvider.baseUrlString
         let network = chain.name.lowercased()
@@ -53,7 +51,7 @@ class WalletRampProvidersTests: XCTestCase {
         case .offRamp:
             TransakProvider()
         case .onRamp:
-            TransakProvider().with(callbackUrl: config.purchaseRedirect)
+            TransakProvider()
         }
         
         // when
@@ -94,16 +92,16 @@ class WalletRampProvidersTests: XCTestCase {
         // swiftlint:disable next long_string
         let expectedURL = switch rampActionType {
         case .offRamp:
-            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&return_url=\(redirectUrl)&widget_id=\(widgetId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
+            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&return_url=\(redirectUrl)&hide_refund_address=true&refund_address=\(address)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         case .onRamp:
-            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&return_url=\(redirectUrl)&widget_id=\(widgetId)&signature=\(signature)"
+            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&signature=\(signature)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         }
 
         let provider = switch rampActionType {
         case .offRamp:
-            MercuryoProvider().with(callbackUrl: redirectUrl)
+            MercuryoProvider()
         case .onRamp:
             MercuryoProvider().with(callbackUrl: redirectUrl)
         }
