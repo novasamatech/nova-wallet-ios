@@ -92,10 +92,10 @@ class WalletRampProvidersTests: XCTestCase {
         // swiftlint:disable next long_string
         let expectedURL = switch rampActionType {
         case .offRamp:
-            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&return_url=\(redirectUrl)&hide_refund_address=true&refund_address=\(address)"
+            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         case .onRamp:
-            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&signature=\(signature)"
+            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&return_url=\(redirectUrl)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         }
 
