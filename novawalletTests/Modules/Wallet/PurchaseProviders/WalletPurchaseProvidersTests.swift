@@ -3,26 +3,35 @@ import XCTest
 import UIKit.UIColor
 import SubstrateSdk
 
-class WalletPurchaseProvidersTests: XCTestCase {
+class WalletRampProvidersTests: XCTestCase {
     let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
 
     func testPurchaseProviders() throws {
         do {
-            try performTransakTest()
-            try performMercuryoTest()
+            try performTransakRampTest(rampActionType: .onRamp)
+            try performTransakRampTest(rampActionType: .offRamp)
+            try performMercuryoRampTest(rampActionType: .onRamp)
+            try performMercuryoRampTest(rampActionType: .offRamp)
         }
         catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
-
-    func performTransakTest() throws {
+    
+    func performTransakRampTest(rampActionType: RampActionType) throws {
         // given
-        let buyProviders = JSON.dictionaryValue(["transak": JSON.dictionaryValue([:])])
-        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT", buyProviders: buyProviders)
+        let providers = JSON.dictionaryValue(["transak": JSON.dictionaryValue([:])])
+        
+        let asset = ChainModelGenerator.generateAssetWithId(
+            0,
+            symbol: "DOT",
+            buyProviders: providers,
+            sellProviders: providers
+        )
+        
         let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
         let chainAsset = ChainAsset(chain: chain, asset: asset)
-
+        
         let accountId = try address.toAccountId()
 
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
@@ -30,30 +39,47 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let apiKey = TransakProvider.pubToken
         let host = TransakProvider.baseUrlString
         let network = chain.name.lowercased()
-
-        // swiftlint:disable next long_string
-        let expectedUrl = "\(host)?apiKey=\(apiKey)&network=\(network)&cryptoCurrencyCode=\(asset.symbol)&walletAddress=\(address)&disableWalletAddressForm=true"
-            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-
-        let provider = TransakProvider().with(callbackUrl: config.purchaseRedirect)
-
+        
+        let expectedURL = switch rampActionType {
+        case .offRamp:
+            "\(host)?apiKey=\(apiKey)&network=\(network)&cryptoCurrencyCode=\(asset.symbol)&productsAvailed=SELL"
+                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        case .onRamp:
+            "\(host)?apiKey=\(apiKey)&network=\(network)&cryptoCurrencyCode=\(asset.symbol)&walletAddress=\(address)&disableWalletAddressForm=true&productsAvailed=BUY"
+                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        }
+        
+        let provider = switch rampActionType {
+        case .offRamp:
+            TransakProvider()
+        case .onRamp:
+            TransakProvider().with(callbackUrl: config.purchaseRedirect)
+        }
+        
         // when
         let expectation = XCTestExpectation()
 
         let actions = provider.buildRampActions(for: chainAsset, accountId: accountId)
-            .filter { $0.type == .onRamp }
+            .filter { $0.type == rampActionType }
         
-        XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
+        XCTAssertEqual(actions[0].url.absoluteString, expectedURL)
         expectation.fulfill()
 
         // then
         wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
     }
     
-    func performMercuryoTest() throws {
+    func performMercuryoRampTest(rampActionType: RampActionType) throws {
         // given
-        let buyProviders = JSON.dictionaryValue(["mercuryo": JSON.dictionaryValue([:])])
-        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT", buyProviders: buyProviders)
+        let providers = JSON.dictionaryValue(["mercuryo": JSON.dictionaryValue([:])])
+        
+        let asset = ChainModelGenerator.generateAssetWithId(
+            0,
+            symbol: "DOT",
+            buyProviders: providers,
+            sellProviders: providers
+        )
+        
         let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
         let chainAsset = ChainAsset(chain: chain, asset: asset)
 
@@ -66,18 +92,29 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let signature = "9435d34696f6a8cc508b8cb79b871fd24f3acf033e3ca13af147a5b65cdfcc6ab249fc0ee29ad6a00d09d315cb9bd674a353750e4c77443788637b91128c1d23"
 
         // swiftlint:disable next long_string
-        let expectedUrl = "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&return_url=\(redirectUrl)&widget_id=\(widgetId)&signature=\(signature)"
-            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        let expectedURL = switch rampActionType {
+        case .offRamp:
+            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&return_url=\(redirectUrl)&widget_id=\(widgetId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
+                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        case .onRamp:
+            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&return_url=\(redirectUrl)&widget_id=\(widgetId)&signature=\(signature)"
+                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        }
 
-        let provider = MercuryoProvider().with(callbackUrl: redirectUrl)
+        let provider = switch rampActionType {
+        case .offRamp:
+            MercuryoProvider().with(callbackUrl: redirectUrl)
+        case .onRamp:
+            MercuryoProvider().with(callbackUrl: redirectUrl)
+        }
 
         // when
         let expectation = XCTestExpectation()
 
         let actions = provider.buildRampActions(for: chainAsset, accountId: accountId)
-            .filter { $0.type == .onRamp }
+            .filter { $0.type == rampActionType }
         
-        XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
+        XCTAssertEqual(actions[0].url.absoluteString, expectedURL)
         expectation.fulfill()
 
         // then
