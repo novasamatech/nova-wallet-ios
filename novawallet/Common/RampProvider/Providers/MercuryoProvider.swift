@@ -118,7 +118,7 @@ private extension MercuryoProvider {
         accountId: AccountId
     ) -> [RampAction] {
         guard
-            chainAsset.asset.buyProviders?.mercuryo != nil,
+            chainAsset.asset.sellProviders?.mercuryo != nil,
             let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return []
         }

@@ -63,7 +63,7 @@ private extension TransakProvider {
         accountId: AccountId
     ) -> [RampAction] {
         guard
-            let transak = chainAsset.asset.buyProviders?.transak,
+            let transak = chainAsset.asset.sellProviders?.transak,
             let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return []
         }
