@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-final class TransakProvider {
+final class TransakProvider: BaseURLStringProvider, OffRampHookFactoryProvider {
     #if F_RELEASE
         static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
         static let baseUrlString = "https://global.transak.com"
@@ -12,6 +12,16 @@ final class TransakProvider {
 
     private var callbackUrl: URL?
     private let displayURL = "transak.com"
+
+    let offRampHookFactory: OffRampHookFactoryProtocol
+
+    var baseUrlString: String {
+        Self.baseUrlString
+    }
+
+    init(offRampHookFactory: OffRampHookFactoryProtocol = TransakOffRampHookFactory()) {
+        self.offRampHookFactory = offRampHookFactory
+    }
 }
 
 // MARK: Private

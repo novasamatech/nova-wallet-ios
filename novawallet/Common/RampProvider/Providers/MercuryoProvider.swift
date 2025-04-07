@@ -3,7 +3,7 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class MercuryoProvider {
+final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider {
     struct Configuration {
         let baseUrl: String
         let widgetId: String
@@ -30,6 +30,16 @@ final class MercuryoProvider {
 
     private var callbackUrl: URL?
     private let displayURL = "mercuryo.io"
+
+    let offRampHookFactory: OffRampHookFactoryProtocol
+
+    var baseUrlString: String {
+        configuration.baseUrl
+    }
+
+    init(offRampHookFactory: OffRampHookFactoryProtocol = MercuryoOffRampHookFactory()) {
+        self.offRampHookFactory = offRampHookFactory
+    }
 }
 
 // MARK: Private

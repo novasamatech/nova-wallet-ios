@@ -13,15 +13,12 @@ final class RampViewFactory {
         let view = RampViewController()
         let wireframe = RampWireframe(delegate: delegate)
 
-        let hookFactories: [OffRampHookFactoryProtocol] = [
-            MercuryoOffRampHookFactory(logger: logger),
-            TransakOffRampHookFactory(logger: logger)
-        ]
+        let rampProvider = RampAggregator.defaultAggregator()
 
         let interactor = RampInteractor(
             wallet: wallet,
             chainAsset: chainAsset,
-            hookFactories: hookFactories,
+            rampProvider: rampProvider,
             eventCenter: EventCenter.shared,
             action: action,
             logger: logger
