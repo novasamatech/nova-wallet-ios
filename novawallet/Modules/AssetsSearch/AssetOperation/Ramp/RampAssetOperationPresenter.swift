@@ -5,7 +5,7 @@ import Foundation_iOS
 
 final class RampAssetOperationPresenter: AssetsSearchPresenter {
     weak var rampFlowStartingDelegate: RampFlowStartingDelegate?
-    
+
     var rampWireframe: RampAssetOperationWireframeProtocol? {
         wireframe as? RampAssetOperationWireframeProtocol
     }

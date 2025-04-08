@@ -153,7 +153,8 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        action: RampActionType
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
     )
 
     func showSwapTokens(from view: AssetListViewProtocol?)
@@ -163,6 +164,11 @@ protocol AssetListWireframeProtocol: AnyObject,
     func showCard(from view: AssetListViewProtocol?)
 
     func dropAssetFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    )
+
+    func dropCurrentFlow(
         from view: AssetListViewProtocol?,
         completion: @escaping () -> Void
     )

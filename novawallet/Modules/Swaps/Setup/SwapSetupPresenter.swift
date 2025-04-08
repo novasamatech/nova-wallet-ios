@@ -906,7 +906,7 @@ extension SwapSetupPresenter: Localizable {
 extension SwapSetupPresenter: RampFlowManaging, RampDelegate {
     func rampDidComplete(
         action: RampActionType,
-        chainAsset: ChainAsset
+        chainAsset _: ChainAsset
     ) {
         wireframe.presentRampDidComplete(
             view: view,

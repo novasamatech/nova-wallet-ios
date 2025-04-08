@@ -115,11 +115,13 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        action: RampActionType
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
     ) {
         guard let assetOperationView = AssetOperationViewFactory.createRampView(
             for: assetListModelObservable,
-            action: action
+            action: action,
+            delegate: delegate
         ) else {
             return
         }
@@ -241,7 +243,26 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func dropAssetFlow(
-        from _: AssetListViewProtocol?,
-        completion _: @escaping () -> Void
-    ) {}
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
+        )
+    }
+
+    func dropCurrentFlow(
+        from view: (any AssetListViewProtocol)?,
+        completion: @escaping () -> Void
+    ) {
+        guard let controller = view?.controller else { return }
+
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { completion() }
+
+        controller.navigationController?.popToRootViewController(animated: true)
+
+        CATransaction.commit()
+    }
 }

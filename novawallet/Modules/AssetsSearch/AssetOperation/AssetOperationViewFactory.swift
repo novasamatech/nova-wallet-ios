@@ -5,7 +5,8 @@ import Keystore_iOS
 enum AssetOperationViewFactory {
     static func createRampView(
         for stateObservable: AssetListModelObservable,
-        action: RampActionType
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
     ) -> AssetsSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -28,7 +29,10 @@ enum AssetOperationViewFactory {
         }
 
         let rampProvider = RampAggregator.defaultAggregator()
-        let wireframe = RampAssetOperationWireframe(stateObservable: stateObservable)
+        let wireframe = RampAssetOperationWireframe(
+            delegate: delegate,
+            stateObservable: stateObservable
+        )
 
         let presenterDependenciess = RampPresenterDependencies(
             stateObservable: stateObservable,
@@ -40,7 +44,10 @@ enum AssetOperationViewFactory {
             wireframe: wireframe
         )
 
-        let presenter = createRampPresenter(dependencies: presenterDependenciess)
+        let presenter = createRampPresenter(
+            dependencies: presenterDependenciess,
+            flowStartingDelegate: delegate
+        )
 
         let title: LocalizableResource<String> = switch action {
         case .offRamp: .init { R.string.localizable.assetOperationSellTitle(preferredLanguages: $0.rLanguages) }
@@ -205,7 +212,8 @@ enum AssetOperationViewFactory {
     }
 
     private static func createRampPresenter(
-        dependencies: RampPresenterDependencies
+        dependencies: RampPresenterDependencies,
+        flowStartingDelegate: RampFlowStartingDelegate?
     ) -> RampAssetOperationPresenter {
         let filter: ChainAssetsFilter = { chainAsset in
             guard
@@ -240,6 +248,7 @@ enum AssetOperationViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        presenter.rampFlowStartingDelegate = flowStartingDelegate
         interactor.presenter = presenter
 
         return presenter

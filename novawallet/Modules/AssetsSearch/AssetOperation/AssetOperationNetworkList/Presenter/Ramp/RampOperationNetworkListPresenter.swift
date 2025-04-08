@@ -3,7 +3,7 @@ import Foundation_iOS
 
 final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let selectedAccount: MetaAccountModel
-    
+
     weak var delegate: RampFlowStartingDelegate?
 
     private let wireframe: RampAssetOperationWireframeProtocol
