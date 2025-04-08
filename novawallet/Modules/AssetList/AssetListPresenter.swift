@@ -4,7 +4,15 @@ import SubstrateSdk
 import Foundation_iOS
 import BigInt
 
-final class AssetListPresenter: BannersModuleInputOwnerProtocol {
+protocol RampFlowStartingDelegate: AnyObject {
+    func didPickRampParams(
+        actions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset
+    )
+}
+
+final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
 
@@ -668,7 +676,7 @@ extension AssetListPresenter: BannersModuleOutputProtocol {
     }
 }
 
-// MARK:
+// MARK: ModalPickerViewControllerDelegate
 
 extension AssetListPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
@@ -677,6 +685,50 @@ extension AssetListPresenter: ModalPickerViewControllerDelegate {
         }
 
         modalPickerContext.process(selectedIndex: index)
+    }
+}
+
+// MARK: RampFlowStartingDelegate
+
+extension AssetListPresenter: RampFlowStartingDelegate {
+    func didPickRampParams(
+        actions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset
+    ) {
+        startRampFlow(
+            from: view,
+            actions: actions,
+            rampType: rampType,
+            wireframe: wireframe,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
+    }
+}
+
+// MARK: RampDelegate
+
+extension AssetListPresenter: RampDelegate {
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset: ChainAsset
+    ) {
+        wireframe.dropAssetFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+
+            wireframe.showAssetDetails(
+                from: view,
+                chain: chainAsset.chain,
+                asset: chainAsset.asset
+            )
+        }
     }
 }
 

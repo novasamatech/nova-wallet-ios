@@ -46,6 +46,10 @@ protocol AssetDetailsWireframeProtocol:
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
     func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel)
     func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
+    func dropCurrentFlow(
+        from view: AssetDetailsViewProtocol?,
+        completion: @escaping () -> Void
+    )
 }
 
 enum AssetDetailsError: Error {

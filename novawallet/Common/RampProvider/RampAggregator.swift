@@ -37,11 +37,11 @@ extension RampAggregator: RampProviderProtocol {
         providers.flatMap { $0.buildRampActions(for: chainAsset, accountId: accountId) }
     }
 
-    func buildOffRampHooks(
+    func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate
+        for delegate: OffRampHookDelegate & OnRampHookDelegate
     ) -> [RampHook] {
-        providers.flatMap { $0.buildOffRampHooks(for: action, using: params, for: delegate) }
+        providers.flatMap { $0.buildRampHooks(for: action, using: params, for: delegate) }
     }
 }

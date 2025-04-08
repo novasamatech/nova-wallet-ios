@@ -239,4 +239,9 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         payCardView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
     }
+
+    func dropAssetFlow(
+        from _: AssetListViewProtocol?,
+        completion _: @escaping () -> Void
+    ) {}
 }

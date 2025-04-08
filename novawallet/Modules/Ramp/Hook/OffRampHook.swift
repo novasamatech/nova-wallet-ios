@@ -8,6 +8,7 @@ typealias OffRampTransferModel = PayCardTopupModel
 
 protocol OffRampHookDelegate: AnyObject {
     func didRequestTransfer(from model: OffRampTransferModel)
+    func didFinishOperation()
 }
 
 protocol OffRampHookFactoryProtocol {

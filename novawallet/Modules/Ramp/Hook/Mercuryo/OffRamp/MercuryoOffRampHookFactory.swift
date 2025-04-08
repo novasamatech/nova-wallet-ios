@@ -6,24 +6,8 @@ final class MercuryoOffRampHookFactory {
     init(logger: LoggerProtocol = Logger.shared) {
         self.logger = logger
     }
-}
 
-extension MercuryoOffRampHookFactory: OffRampHookFactoryProtocol {
-    func createHooks(
-        using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate
-    ) -> [RampHook] {
-        let responseHook = createResponseInterceptingHook(
-            using: params,
-            for: delegate
-        )
-
-        return [responseHook]
-    }
-}
-
-extension MercuryoOffRampHookFactory {
-    func createResponseInterceptingHook(
+    private func createResponseInterceptingHook(
         using params: OffRampHookParams,
         for delegate: OffRampHookDelegate
     ) -> RampHook {
@@ -33,7 +17,7 @@ extension MercuryoOffRampHookFactory {
         let originalXhrOpen = XMLHttpRequest.prototype.open;
 
         XMLHttpRequest.prototype.open = function(method, url) {
-            if (url.includes('\(MercuryoCardApi.topUpEndpoint)')) {
+            if (url.includes('\(MercuryoApi.topUpEndpoint)')) {
                 this.addEventListener('load', function() {
                     window.webkit.messageHandlers.\(offRampAction).postMessage(this.responseText);
                 });
@@ -59,5 +43,19 @@ extension MercuryoOffRampHookFactory {
             messageNames: [offRampAction],
             handlers: handlers
         )
+    }
+}
+
+extension MercuryoOffRampHookFactory: OffRampHookFactoryProtocol {
+    func createHooks(
+        using params: OffRampHookParams,
+        for delegate: OffRampHookDelegate
+    ) -> [RampHook] {
+        let responseHook = createResponseInterceptingHook(
+            using: params,
+            for: delegate
+        )
+
+        return [responseHook]
     }
 }

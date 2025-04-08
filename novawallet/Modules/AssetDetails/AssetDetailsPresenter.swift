@@ -269,12 +269,19 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 // MARK: RampDelegate
 
 extension AssetDetailsPresenter: RampDelegate {
-    func rampDidComplete(action: RampActionType) {
-        wireframe.presentRampDidComplete(
-            view: view,
-            action: action,
-            locale: selectedLocale
-        )
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset _: ChainAsset
+    ) {
+        wireframe.dropCurrentFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+        }
     }
 }
 

@@ -117,4 +117,18 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)
     }
+
+    func dropCurrentFlow(
+        from view: AssetDetailsViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        guard let controller = view?.controller else { return }
+
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { completion() }
+
+        controller.navigationController?.popToViewController(controller, animated: true)
+
+        CATransaction.commit()
+    }
 }

@@ -49,7 +49,6 @@ private extension RampInteractor {
 
     func createHooks() -> [RampHook] {
         guard
-            action.type == .offRamp,
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let address = try? account.accountId.toAddress(using: chainAsset.chain.chainFormat)
         else {
@@ -61,7 +60,7 @@ private extension RampInteractor {
             refundAddress: address
         )
 
-        return rampProvider.buildOffRampHooks(
+        return rampProvider.buildRampHooks(
             for: action,
             using: params,
             for: self
@@ -96,11 +95,15 @@ extension RampInteractor: RampInteractorInputProtocol {
     }
 }
 
-// MARK: OffRampHookDelegate
+// MARK: OffRampHookDelegate & OnRampHookDelegate
 
-extension RampInteractor: OffRampHookDelegate {
+extension RampInteractor: OffRampHookDelegate, OnRampHookDelegate {
     func didRequestTransfer(from model: OffRampTransferModel) {
         presenter?.didRequestTransfer(for: model)
+    }
+
+    func didFinishOperation() {
+        presenter.didCompleteOperation(action: action)
     }
 }
 

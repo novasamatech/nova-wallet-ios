@@ -2,7 +2,7 @@ import Foundation
 
 struct TransakEvent<EventData: Decodable>: Decodable {
     let eventId: TransakEventId
-    let data: EventData
+    let data: EventData?
 
     enum CodingKeys: String, CodingKey {
         case eventId = "event_id"
@@ -18,6 +18,7 @@ struct TransakTransferEventData: Decodable {
 
 enum TransakEventId: String, Decodable {
     case orderCreated = "TRANSAK_ORDER_CREATED"
+    case widgetClose = "TRANSAK_WIDGET_CLOSE"
 }
 
 enum TransakEventStatus: String, Decodable {
