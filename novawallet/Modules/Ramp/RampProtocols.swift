@@ -32,3 +32,11 @@ protocol RampWireframeProtocol: AnyObject {
         for chainAsset: ChainAsset
     )
 }
+
+protocol RampFlowStartingDelegate: AnyObject {
+    func didPickRampParams(
+        actions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset
+    )
+}
