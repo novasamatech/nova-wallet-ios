@@ -73,7 +73,7 @@ private extension AssetDetailsViewController {
     }
 
     func configureBuySellAction(for availableOperations: AssetDetailsOperation) {
-        let buySellTitle = if availableOperations.buySellAvailable() || !availableOperations.rampAvailable() {
+        let title = if availableOperations.buySellAvailable() || !availableOperations.rampAvailable() {
             R.string.localizable.walletAssetBuySell(
                 preferredLanguages: selectedLocale.rLanguages
             )
@@ -87,8 +87,25 @@ private extension AssetDetailsViewController {
             )
         }
 
-        rootView.buySellButton.imageWithTitleView?.title = buySellTitle
-        rootView.buySellButton.isEnabled = availableOperations.rampAvailable()
+        let image = R.image.iconBuy()
+
+        let imageColor: UIColor
+        let textColor: UIColor
+
+        if !availableOperations.rampAvailable() {
+            imageColor = R.color.colorIconInactive()!
+            textColor = R.color.colorButtonTextInactive()!
+        } else {
+            imageColor = R.color.colorIconPrimary()!
+            textColor = R.color.colorTextPrimary()!
+        }
+
+        rootView.buySellButton.imageWithTitleView?.title = title
+        rootView.buySellButton.imageWithTitleView?.titleColor = textColor
+        rootView.buySellButton.imageWithTitleView?.iconImage = image?
+            .withRenderingMode(.alwaysTemplate)
+            .tinted(with: imageColor)
+
         rootView.buySellButton.invalidateLayout()
     }
 

@@ -75,8 +75,6 @@ private extension AssetDetailsPresenter {
     }
 
     func showRamp() {
-        guard availableOperations.rampAvailable() else { return }
-
         let startFlow: (RampActionType) -> Void = { [weak self] rampType in
             guard let self else { return }
 
@@ -152,6 +150,15 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 
     func handleBuySell() {
+        guard availableOperations.rampAvailable() else {
+            wireframe.showRampNotSupported(
+                from: view,
+                locale: selectedLocale
+            )
+
+            return
+        }
+
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showRamp()
