@@ -14,6 +14,6 @@ extension SelectRampProvider.ViewModel {
         let id: String
         let logo: UIImage
         let descriptionText: String
-        let fiatPaymentMethods: [FiatPaymentMethods]
+        let fiatPaymentMethods: [FiatPaymentMethodViewModel]
     }
 }

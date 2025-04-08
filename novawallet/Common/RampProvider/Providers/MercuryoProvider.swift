@@ -3,7 +3,10 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider, OnRampHookFactoryProvider {
+final class MercuryoProvider: BaseURLStringProvider,
+    OffRampHookFactoryProvider,
+    OnRampHookFactoryProvider,
+    FiatPaymentPethodsProviding {
     struct Configuration {
         let baseUrl: String
         let widgetId: String
@@ -50,6 +53,13 @@ final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider,
 // MARK: Private
 
 private extension MercuryoProvider {
+    func createFiatPaymentMethods() -> [FiatPaymentMethods] {
+        var fiatPaymentsMethods = defaultFiatPaymentMethods
+        fiatPaymentsMethods.append(.others(count: 5))
+
+        return fiatPaymentsMethods
+    }
+
     func buildURL(
         address: AccountAddress,
         token: String,
@@ -116,7 +126,8 @@ private extension MercuryoProvider {
                 R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url,
-            displayURLString: displayURL
+            displayURLString: displayURL,
+            paymentMethods: createFiatPaymentMethods()
         )
 
         return [action]
@@ -149,7 +160,8 @@ private extension MercuryoProvider {
                 R.string.localizable.mercuryoSellActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url,
-            displayURLString: displayURL
+            displayURLString: displayURL,
+            paymentMethods: createFiatPaymentMethods()
         )
 
         return [action]

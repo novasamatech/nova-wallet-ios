@@ -31,19 +31,22 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
             )
         }
 
-        let defaultPaymentMethods: [FiatPaymentMethods] = [
-            .visa(R.image.visaLogo()!),
-            .mastercard(R.image.mastercardLogo()!),
-            .applePay(R.image.applePayLogo()!),
-            .sepa(R.image.sepaLogo()!)
-        ]
-
         let providers = actions.map { action in
-            SelectRampProvider.ViewModel.ProviderViewModel(
+            let paymentMethods: [FiatPaymentMethodViewModel] = action.paymentMethods.map { paymentMethod in
+                switch paymentMethod {
+                case .visa: .icon(R.image.visaLogo()!)
+                case .mastercard: .icon(R.image.mastercardLogo()!)
+                case .applePay: .icon(R.image.applePayLogo()!)
+                case .sepa: .icon(R.image.sepaLogo()!)
+                case let .others(count): .text("+\(count)")
+                }
+            }
+
+            return SelectRampProvider.ViewModel.ProviderViewModel(
                 id: action.url.absoluteString,
                 logo: action.logo,
                 descriptionText: action.descriptionText.value(for: locale),
-                fiatPaymentMethods: defaultPaymentMethods
+                fiatPaymentMethods: paymentMethods
             )
         }
 

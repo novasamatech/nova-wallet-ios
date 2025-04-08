@@ -52,6 +52,34 @@ private extension RampProviderView {
             make.bottom.equalToSuperview()
         }
     }
+
+    func createCounterView(with text: String) -> UIView {
+        let view = BorderedLabelView()
+
+        view.snp.makeConstraints { make in
+            make.size.equalTo(Constants.otherPaymentMethodsViewSize)
+        }
+
+        view.contentInsets = Constants.otherPaymentsMethodViewContentInsets
+
+        view.titleLabel.apply(style: .semiboldCaps2Chip)
+        view.titleLabel.textAlignment = .center
+        view.backgroundView.apply(
+            style: .roundedChips(radius: Constants.otherPaymentMethodsCornerRadius)
+        )
+
+        view.titleLabel.text = text
+
+        return view
+    }
+
+    func createPaymentMethodView(with icon: UIImage) -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = icon
+
+        return imageView
+    }
 }
 
 // MARK: Internal
@@ -66,14 +94,14 @@ extension RampProviderView {
         paymentMethodsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         model.fiatPaymentMethods.forEach { paymentMethod in
-            if let logoIcon = paymentMethod.icon {
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFit
-                imageView.image = logoIcon
-                paymentMethodsStack.addArrangedSubview(imageView)
-            } else if let text = paymentMethod.text {
-                print(text)
+            let view: UIView = switch paymentMethod {
+            case let .icon(image):
+                createPaymentMethodView(with: image)
+            case let .text(text):
+                createCounterView(with: text)
             }
+
+            paymentMethodsStack.addArrangedSubview(view)
         }
     }
 }
@@ -92,5 +120,16 @@ private extension RampProviderView {
         )
         static let stackSpacing: CGFloat = 6.0
         static let descriptionTopInset: CGFloat = 12.0
+        static let otherPaymentsMethodViewContentInsets = UIEdgeInsets(
+            top: 1.5,
+            left: 2.0,
+            bottom: 1.5,
+            right: 2.0
+        )
+        static let otherPaymentMethodsViewSize = CGSize(
+            width: 24.0,
+            height: 16.0
+        )
+        static let otherPaymentMethodsCornerRadius: CGFloat = 2.0
     }
 }
