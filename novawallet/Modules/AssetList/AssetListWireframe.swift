@@ -242,7 +242,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
     }
 
-    func dropAssetFlow(
+    func dropModalFlow(
         from view: AssetListViewProtocol?,
         completion: @escaping () -> Void
     ) {
@@ -250,19 +250,5 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             animated: true,
             completion: completion
         )
-    }
-
-    func dropCurrentFlow(
-        from view: (any AssetListViewProtocol)?,
-        completion: @escaping () -> Void
-    ) {
-        guard let controller = view?.controller else { return }
-
-        CATransaction.begin()
-        CATransaction.setCompletionBlock { completion() }
-
-        controller.navigationController?.popToRootViewController(animated: true)
-
-        CATransaction.commit()
     }
 }

@@ -37,8 +37,18 @@ extension RampPresentable {
         ) else {
             return
         }
-        rampView.controller.modalPresentationStyle = .fullScreen
-        view?.controller.present(rampView.controller, animated: true)
+
+        if view?.controller.isBeingPresented == true {
+            view?.controller.navigationController?.pushViewController(
+                rampView.controller,
+                animated: true
+            )
+        } else {
+            view?.controller.presentWithCardLayout(
+                rampView.controller,
+                animated: true
+            )
+        }
     }
 
     func showRampProviders(
@@ -57,8 +67,10 @@ extension RampPresentable {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            rampProvidersView.controller,
+        let navigationController = NovaNavigationController(rootViewController: rampProvidersView.controller)
+
+        view?.controller.presentWithCardLayout(
+            navigationController,
             animated: true
         )
     }

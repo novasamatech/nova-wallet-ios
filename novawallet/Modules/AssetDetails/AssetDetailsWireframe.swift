@@ -137,17 +137,13 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         )
     }
 
-    func dropCurrentFlow(
+    func dropModalFlow(
         from view: AssetDetailsViewProtocol?,
         completion: @escaping () -> Void
     ) {
-        guard let controller = view?.controller else { return }
-
-        CATransaction.begin()
-        CATransaction.setCompletionBlock { completion() }
-
-        controller.navigationController?.popToViewController(controller, animated: true)
-
-        CATransaction.commit()
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
+        )
     }
 }
