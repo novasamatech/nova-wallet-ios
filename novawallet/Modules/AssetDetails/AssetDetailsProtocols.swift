@@ -50,7 +50,7 @@ protocol AssetDetailsWireframeProtocol:
         from view: AssetDetailsViewProtocol?,
         locale: Locale
     )
-    func dropCurrentFlow(
+    func dropModalFlow(
         from view: AssetDetailsViewProtocol?,
         completion: @escaping () -> Void
     )

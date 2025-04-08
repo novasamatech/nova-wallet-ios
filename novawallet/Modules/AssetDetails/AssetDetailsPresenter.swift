@@ -280,7 +280,7 @@ extension AssetDetailsPresenter: RampDelegate {
         action: RampActionType,
         chainAsset _: ChainAsset
     ) {
-        wireframe.dropCurrentFlow(from: view) { [weak self] in
+        wireframe.dropModalFlow(from: view) { [weak self] in
             guard let self else { return }
 
             wireframe.presentRampDidComplete(

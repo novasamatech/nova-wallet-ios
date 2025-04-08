@@ -163,12 +163,7 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showCard(from view: AssetListViewProtocol?)
 
-    func dropAssetFlow(
-        from view: AssetListViewProtocol?,
-        completion: @escaping () -> Void
-    )
-
-    func dropCurrentFlow(
+    func dropModalFlow(
         from view: AssetListViewProtocol?,
         completion: @escaping () -> Void
     )

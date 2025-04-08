@@ -689,7 +689,7 @@ extension AssetListPresenter: RampFlowStartingDelegate {
         rampType: RampActionType,
         chainAsset: ChainAsset
     ) {
-        wireframe.dropAssetFlow(from: view) { [weak self] in
+        wireframe.dropModalFlow(from: view) { [weak self] in
             guard let self else { return }
 
             startRampFlow(
@@ -711,7 +711,7 @@ extension AssetListPresenter: RampDelegate {
         action: RampActionType,
         chainAsset: ChainAsset
     ) {
-        wireframe.dropCurrentFlow(from: view) { [weak self] in
+        wireframe.dropModalFlow(from: view) { [weak self] in
             guard let self else { return }
 
             wireframe.presentRampDidComplete(
