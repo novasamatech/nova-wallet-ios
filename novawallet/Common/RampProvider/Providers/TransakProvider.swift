@@ -91,7 +91,8 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]
@@ -125,7 +126,8 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]

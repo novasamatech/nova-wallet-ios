@@ -55,7 +55,7 @@ private extension RampFlowManaging where Self: RampDelegate {
     ) {
         let title = R.string.localizable.commonAlertExternalLinkDisclaimerTitle(preferredLanguages: locale.rLanguages)
         let message = R.string.localizable.commonAlertExternalLinkDisclaimerMessage(
-            action.url.absoluteString,
+            action.displayURLString,
             preferredLanguages: locale.rLanguages
         )
 

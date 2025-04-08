@@ -7,6 +7,7 @@ struct RampAction {
     let logo: UIImage
     let descriptionText: LocalizableResource<String>
     let url: URL
+    let displayURLString: String
 }
 
 enum RampActionType {

@@ -115,7 +115,8 @@ private extension MercuryoProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]
@@ -147,7 +148,8 @@ private extension MercuryoProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]
