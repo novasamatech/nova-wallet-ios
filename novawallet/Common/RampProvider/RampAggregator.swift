@@ -40,7 +40,7 @@ extension RampAggregator: RampProviderProtocol {
     func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate & OnRampHookDelegate
+        for delegate: RampHookDelegate
     ) -> [RampHook] {
         providers.flatMap { $0.buildRampHooks(for: action, using: params, for: delegate) }
     }

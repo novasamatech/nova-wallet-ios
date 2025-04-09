@@ -95,9 +95,9 @@ extension RampInteractor: RampInteractorInputProtocol {
     }
 }
 
-// MARK: OffRampHookDelegate & OnRampHookDelegate
+// MARK: RampHookDelegate
 
-extension RampInteractor: OffRampHookDelegate, OnRampHookDelegate {
+extension RampInteractor: RampHookDelegate {
     func didRequestTransfer(from model: OffRampTransferModel) {
         presenter?.didRequestTransfer(for: model)
     }

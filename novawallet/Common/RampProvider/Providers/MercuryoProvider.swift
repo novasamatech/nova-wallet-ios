@@ -3,7 +3,7 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider, OnRampHookFactoryProvider {
+final class MercuryoProvider: BaseURLStringProviding, RampFactoriesProviding {
     struct Configuration {
         let baseUrl: String
         let widgetId: String

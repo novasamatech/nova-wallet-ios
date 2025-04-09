@@ -58,7 +58,7 @@ protocol RampProviderProtocol {
     func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate & OnRampHookDelegate
+        for delegate: RampHookDelegate
     ) -> [RampHook]
 }
 
@@ -80,25 +80,25 @@ extension RampProviderProtocol {
     }
 }
 
-protocol BaseURLStringProvider {
+protocol BaseURLStringProviding {
     var baseUrlString: String { get }
 }
 
-protocol OffRampHookFactoryProvider {
+protocol OffRampHookFactoryProviding {
     var offRampHookFactory: OffRampHookFactoryProtocol { get }
 }
 
-protocol OnRampHookFactoryProvider {
+protocol OnRampHookFactoryProviding {
     var onRampHookFactory: OnRampHookFactoryProtocol { get }
 }
 
-extension RampProviderProtocol where Self: BaseURLStringProvider,
-    Self: OffRampHookFactoryProvider,
-    Self: OnRampHookFactoryProvider {
+typealias RampFactoriesProviding = OffRampHookFactoryProviding & OnRampHookFactoryProviding
+
+extension RampProviderProtocol where Self: BaseURLStringProviding, Self: RampFactoriesProviding {
     func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate & OnRampHookDelegate
+        for delegate: RampHookDelegate
     ) -> [RampHook] {
         guard
             let host = action.url.host(),
