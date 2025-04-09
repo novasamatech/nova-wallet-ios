@@ -54,19 +54,20 @@ final class DAppBrowserWaitingAuthState: DAppBrowserBaseState {
 
         let nextState = DAppBrowserAuthorizingState(
             stateMachine: stateMachine,
-            dAppIdentifier: dAppIdentifier
+            dAppId: dAppIdentifier,
+            requestId: message.identifier
         )
 
         stateMachine?.emit(authRequest: request, nextState: nextState)
     }
 
     private func completeByAllowingAccess(
-        for _: PolkadotExtensionMessage,
+        for message: PolkadotExtensionMessage,
         dataSource _: DAppBrowserStateDataSource
     ) {
         do {
             let nextState = DAppBrowserAuthorizedState(stateMachine: stateMachine)
-            try provideResponse(for: .authorize, result: true, nextState: nextState)
+            try provideResponse(for: message.identifier, result: true, nextState: nextState)
         } catch {
             stateMachine?.emit(error: error, nextState: self)
         }
