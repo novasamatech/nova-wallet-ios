@@ -1,7 +1,24 @@
 import Foundation
 import Foundation_iOS
 
-final class TransakProvider: BaseURLStringProviding, RampFactoriesProviding {
+protocol FiatPaymentPethodsProviding {
+    var defaultFiatPaymentMethods: [FiatPaymentMethods] { get }
+}
+
+extension FiatPaymentPethodsProviding {
+    var defaultFiatPaymentMethods: [FiatPaymentMethods] {
+        [
+            .visa,
+            .mastercard,
+            .applePay,
+            .sepa
+        ]
+    }
+}
+
+final class TransakProvider: BaseURLStringProviding,
+    RampHookFactoriesProviding,
+    FiatPaymentPethodsProviding {
     #if F_RELEASE
         static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
         static let baseUrlString = "https://global.transak.com"
@@ -32,6 +49,13 @@ final class TransakProvider: BaseURLStringProviding, RampFactoriesProviding {
 // MARK: Private
 
 private extension TransakProvider {
+    func createFiatPaymentMethods() -> [FiatPaymentMethods] {
+        var fiatPaymentsMethods = defaultFiatPaymentMethods
+        fiatPaymentsMethods.append(.others(count: 12))
+
+        return fiatPaymentsMethods
+    }
+
     func buildURLForToken(
         _ token: String,
         network: String,
@@ -92,7 +116,8 @@ private extension TransakProvider {
                 R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url,
-            displayURLString: displayURL
+            displayURLString: displayURL,
+            paymentMethods: createFiatPaymentMethods()
         )
 
         return [action]
@@ -127,7 +152,8 @@ private extension TransakProvider {
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url,
-            displayURLString: displayURL
+            displayURLString: displayURL,
+            paymentMethods: createFiatPaymentMethods()
         )
 
         return [action]

@@ -3,28 +3,38 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class BanxaProvider {
-    #if F_RELEASE
-        let host = "https://novawallet.banxa.com"
-    #else
-        let host = "https://novawallet.banxa-sandbox.com"
-    #endif
-
+final class BanxaProvider: BaseURLStringProvider,
+    FiatPaymentPethodsProviding {
     private var callbackUrl: URL?
     private var colorCode: String?
     private let displayURL = "banxa.com"
+
+    var baseUrlString: String {
+        #if F_RELEASE
+            "https://novawallet.banxa.com"
+        #else
+            "https://novawallet.banxa-sandbox.com"
+        #endif
+    }
 }
 
 // MARK: Private
 
 private extension BanxaProvider {
+    func createFiatPaymentMethods() -> [FiatPaymentMethods] {
+        var fiatPaymentsMethods = defaultFiatPaymentMethods
+        fiatPaymentsMethods.append(.others(count: 5))
+
+        return fiatPaymentsMethods
+    }
+
     func buildURL(
         address: AccountAddress,
         token: String,
         network: String,
         callbackUrl _: URL
     ) -> URL? {
-        var components = URLComponents(string: host)
+        var components = URLComponents(string: baseUrlString)
 
         let queryItems = [
             URLQueryItem(name: "coinType", value: token),
@@ -66,7 +76,8 @@ private extension BanxaProvider {
                 R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
             url: url,
-            displayURLString: displayURL
+            displayURLString: displayURL,
+            paymentMethods: createFiatPaymentMethods()
         )
 
         return [action]

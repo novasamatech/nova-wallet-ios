@@ -8,6 +8,7 @@ struct RampAction {
     let descriptionText: LocalizableResource<String>
     let url: URL
     let displayURLString: String
+    let paymentMethods: [FiatPaymentMethods]
 }
 
 enum RampActionType {
@@ -16,32 +17,11 @@ enum RampActionType {
 }
 
 enum FiatPaymentMethods {
-    case visa(UIImage)
-    case mastercard(UIImage)
-    case applePay(UIImage)
-    case sepa(UIImage)
-    case others(String)
-
-    var icon: UIImage? {
-        switch self {
-        case let .visa(value),
-             let .mastercard(value),
-             let .applePay(value),
-             let .sepa(value):
-            value
-        case .others:
-            nil
-        }
-    }
-
-    var text: String? {
-        switch self {
-        case let .others(string):
-            string
-        default:
-            nil
-        }
-    }
+    case visa
+    case mastercard
+    case applePay
+    case sepa
+    case others(count: Int)
 }
 
 protocol RampProviderProtocol {

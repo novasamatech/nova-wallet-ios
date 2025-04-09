@@ -1611,6 +1611,7 @@
 		2DB303CB2DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303C82DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift */; };
 		2DB303D02DA522300054A264 /* TransakOnRampResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303CF2DA522300054A264 /* TransakOnRampResponseHandler.swift */; };
 		2DB303D12DA522300054A264 /* TransakOnRampHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303CE2DA522300054A264 /* TransakOnRampHookFactory.swift */; };
+		2DB303D32DA57C600054A264 /* FiatPaymentMethodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303D22DA57C600054A264 /* FiatPaymentMethodViewModel.swift */; };
 		2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
@@ -7432,6 +7433,7 @@
 		2DB303C92DA51A6F0054A264 /* MercuryoOnRampHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoOnRampHookFactory.swift; sourceTree = "<group>"; };
 		2DB303CE2DA522300054A264 /* TransakOnRampHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakOnRampHookFactory.swift; sourceTree = "<group>"; };
 		2DB303CF2DA522300054A264 /* TransakOnRampResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakOnRampResponseHandler.swift; sourceTree = "<group>"; };
+		2DB303D22DA57C600054A264 /* FiatPaymentMethodViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiatPaymentMethodViewModel.swift; sourceTree = "<group>"; };
 		2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersCollectionViewLayout.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
@@ -14971,6 +14973,7 @@
 				2D397C392D8183CC0026CA01 /* SelectRampProvider.swift */,
 				2D397C352D8183870026CA01 /* SelectRampProviderViewModel.swift */,
 				2D397C372D8183B50026CA01 /* SelectRampProviderType.swift */,
+				2DB303D22DA57C600054A264 /* FiatPaymentMethodViewModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -29510,6 +29513,7 @@
 				84DED410266659EC00A153BB /* CustomCrowdloanDelegate.swift in Sources */,
 				8418E7202617602000DCF6C8 /* WalletRemoteHistoryProtocols.swift in Sources */,
 				849ECD3926DF792800F542A3 /* SkeletonRow+View.swift in Sources */,
+				2DB303D32DA57C600054A264 /* FiatPaymentMethodViewModel.swift in Sources */,
 				84C2063E28D1E8CE006D0D52 /* AssetBalanceChanged.swift in Sources */,
 				848F8B1B28635A6D00204BC4 /* TransferSetupInteractor.swift in Sources */,
 				AE1000F426679946004753B7 /* InitiatedBondingRecommendationWireframe.swift in Sources */,
