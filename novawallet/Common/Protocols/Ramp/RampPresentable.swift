@@ -38,7 +38,7 @@ extension RampPresentable {
             return
         }
 
-        if view?.controller.isBeingPresented == true {
+        if view?.controller.presentingViewController != nil {
             view?.controller.navigationController?.pushViewController(
                 rampView.controller,
                 animated: true

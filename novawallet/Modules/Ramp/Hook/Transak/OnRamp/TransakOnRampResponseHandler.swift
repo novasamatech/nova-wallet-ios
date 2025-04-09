@@ -27,15 +27,19 @@ extension TransakOnRampResponseHandler: OffRampMessageHandling {
             return
         }
 
-        guard
-            let transferEvent = try? JSONDecoder().decode(
-                TransakEvent<Bool>.self, // for unsuccessful order data is JSONObject
+        do {
+            let transferEvent = try JSONDecoder().decode(
+                TransakEvent.self,
                 from: messageData
-            ),
-            transferEvent.eventId == .widgetClose,
-            transferEvent.data == true
-        else { return }
+            )
 
-        delegate?.didFinishOperation()
+            guard case let .widgetClose(data) = transferEvent, data == true else {
+                return
+            }
+
+            delegate?.didFinishOperation()
+        } catch {
+            logger.error("Unexpected error: \(error)")
+        }
     }
 }

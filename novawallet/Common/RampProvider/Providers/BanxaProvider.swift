@@ -102,7 +102,7 @@ extension BanxaProvider: RampProviderProtocol {
     func buildRampHooks(
         for _: RampAction,
         using _: OffRampHookParams,
-        for _: any OffRampHookDelegate & OnRampHookDelegate
+        for _: RampHookDelegate
     ) -> [RampHook] {
         []
     }

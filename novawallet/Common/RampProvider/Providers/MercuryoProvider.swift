@@ -3,9 +3,8 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class MercuryoProvider: BaseURLStringProvider,
-    OffRampHookFactoryProvider,
-    OnRampHookFactoryProvider,
+final class MercuryoProvider: BaseURLStringProviding,
+    RampHookFactoriesProviding,
     FiatPaymentPethodsProviding {
     struct Configuration {
         let baseUrl: String

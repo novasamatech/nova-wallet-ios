@@ -2,6 +2,7 @@ import Foundation
 import Operation_iOS
 
 typealias RampHook = PayCardHook
+typealias RampHookDelegate = OffRampHookDelegate & OnRampHookDelegate
 typealias OffRampHookParams = MercuryoCardParams
 typealias OffRampMessageHandling = PayCardMessageHandling
 typealias OffRampTransferModel = PayCardTopupModel

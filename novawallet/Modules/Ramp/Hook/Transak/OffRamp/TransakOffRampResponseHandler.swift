@@ -30,31 +30,28 @@ extension TransakOffRampResponseHandler: OffRampMessageHandling {
             return
         }
 
-        if
-            let transferEvent = try? JSONDecoder().decode(
-                TransakEvent<TransakTransferEventData>.self,
+        do {
+            let transferEvent = try JSONDecoder().decode(
+                TransakEvent.self,
                 from: messageData
-            ),
-            let transferData = transferEvent.data,
-            transferEvent.eventId == .orderCreated {
-            switch transferData.status {
-            case .awaitingPayment:
+            )
+
+            switch transferEvent {
+            case let .orderCreated(data) where data.status == .awaitingPayment:
                 let model = PayCardTopupModel(
                     chainAsset: chainAsset,
-                    amount: transferData.cryptoAmount,
-                    recipientAddress: transferData.cryptoPaymentData.paymentAddress
+                    amount: data.cryptoAmount,
+                    recipientAddress: data.cryptoPaymentData.paymentAddress
                 )
 
                 delegate?.didRequestTransfer(from: model)
+            case let .widgetClose(data) where data == true:
+                delegate?.didFinishOperation()
+            default:
+                break
             }
-        } else if
-            let transferEvent = try? JSONDecoder().decode(
-                TransakEvent<Bool>.self, // for unsuccessful order data is JSONObject
-                from: messageData
-            ),
-            transferEvent.eventId == .widgetClose,
-            transferEvent.data == true {
-            delegate?.didFinishOperation()
+        } catch {
+            logger.error("Unexpected error: \(error)")
         }
     }
 }

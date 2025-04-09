@@ -714,16 +714,15 @@ extension AssetListPresenter: RampDelegate {
         wireframe.dropModalFlow(from: view) { [weak self] in
             guard let self else { return }
 
-            wireframe.presentRampDidComplete(
-                view: view,
-                action: action,
-                locale: selectedLocale
-            )
-
             wireframe.showAssetDetails(
                 from: view,
                 chain: chainAsset.chain,
                 asset: chainAsset.asset
+            )
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
             )
         }
     }

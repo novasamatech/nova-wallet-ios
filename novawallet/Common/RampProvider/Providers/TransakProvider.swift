@@ -16,9 +16,8 @@ extension FiatPaymentPethodsProviding {
     }
 }
 
-final class TransakProvider: BaseURLStringProvider,
-    OffRampHookFactoryProvider,
-    OnRampHookFactoryProvider,
+final class TransakProvider: BaseURLStringProviding,
+    RampHookFactoriesProviding,
     FiatPaymentPethodsProviding {
     #if F_RELEASE
         static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
