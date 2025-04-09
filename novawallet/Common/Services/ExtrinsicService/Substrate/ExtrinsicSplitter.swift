@@ -58,7 +58,7 @@ final class ExtrinsicSplitter {
     private func createBlockLimitWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<UInt64> {
-        let blockWeightsOperation = StorageConstantOperation<BlockWeights>(
+        let blockWeightsOperation = StorageConstantOperation<Substrate.BlockWeights>(
             path: .blockWeights
         )
 
@@ -74,9 +74,9 @@ final class ExtrinsicSplitter {
             let blockWeights = try blockWeightsOperation.extractNoCancellableResultData()
 
             if let maxExtrinsicWeight = blockWeights.normalExtrinsicMaxWeight {
-                return UInt64(CGFloat(maxExtrinsicWeight) * Self.maxExtrinsicSizePercent)
+                return UInt64(CGFloat(maxExtrinsicWeight.refTime) * Self.maxExtrinsicSizePercent)
             } else {
-                return UInt64(CGFloat(blockWeights.maxBlock) * Self.blockSizeMultiplier)
+                return UInt64(CGFloat(blockWeights.maxBlock.refTime) * Self.blockSizeMultiplier)
             }
         }
 

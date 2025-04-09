@@ -287,6 +287,7 @@
 		0C277DB72D83F310004FF053 /* MythosStkClaimRewardsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */; };
 		0C277DB92D83F360004FF053 /* MythosStkClaimRewardsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */; };
 		0C277DBC2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */; };
+		0C27F37D2DA6B3B000191FFF /* BlockLimitOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
@@ -6036,6 +6037,7 @@
 		0C277DB62D83F310004FF053 /* MythosStkClaimRewardsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsState.swift; sourceTree = "<group>"; };
 		0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsModel.swift; sourceTree = "<group>"; };
 		0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosClaimRewardsStateTests.swift; sourceTree = "<group>"; };
+		0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockLimitOperationFactory.swift; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
 		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
@@ -12415,6 +12417,7 @@
 		0C277DAE2D82E873004FF053 /* Primitives */ = {
 			isa = PBXGroup;
 			children = (
+				AEDD7C0E269C81F500A8405F /* BlockWeights.swift */,
 				0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */,
 			);
 			path = Primitives;
@@ -12435,6 +12438,14 @@
 				0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */,
 			);
 			path = MythosStaking;
+			sourceTree = "<group>";
+		};
+		0C27F37B2DA6B39400191FFF /* BlockLimit */ = {
+			isa = PBXGroup;
+			children = (
+				0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */,
+			);
+			path = BlockLimit;
 			sourceTree = "<group>";
 		};
 		0C2A3C962CDCCEB200A0E2B3 /* Model */ = {
@@ -13789,6 +13800,7 @@
 		0CCE3AAD2BF5BBBF00D55F03 /* Operations */ = {
 			isa = PBXGroup;
 			children = (
+				0C27F37B2DA6B39400191FFF /* BlockLimit */,
 				0C277DA92D82E61D004FF053 /* DryRun */,
 				0CE862272D659AF000245992 /* Identity */,
 				0CE862262D659AE400245992 /* StateCall */,
@@ -20678,7 +20690,6 @@
 				844DB61E262D9C070025A8F0 /* ChainHistoryRange.swift */,
 				844DB623262D9C710025A8F0 /* ErasRewardDistribution.swift */,
 				84DBEA46265E98C300FDF73C /* AmountInputResult.swift */,
-				AEDD7C0E269C81F500A8405F /* BlockWeights.swift */,
 				84CEAAF226D6ED870021B881 /* KeystoreTag.swift */,
 				84F13F0926F14122006725FF /* ChainAsset.swift */,
 				841AAC2826F6A59C00F0A25E /* MultiassetCryptoType.swift */,
@@ -27221,9 +27232,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27277,9 +27292,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27316,9 +27335,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -32411,6 +32434,7 @@
 				0CA50CB12AFE6F15005668CD /* GetTokenOptionsProtocols.swift in Sources */,
 				0C59E8D52AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift in Sources */,
 				0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */,
+				0C27F37D2DA6B3B000191FFF /* BlockLimitOperationFactory.swift in Sources */,
 				842E9EA42A2DC71000759972 /* StakingDashboardModel.swift in Sources */,
 				AB5EA0348C8E8C40FCA9DC86 /* WalletConnectSessionsWireframe.swift in Sources */,
 				B1F2C2241D9020687D469A27 /* WalletConnectSessionsPresenter.swift in Sources */,

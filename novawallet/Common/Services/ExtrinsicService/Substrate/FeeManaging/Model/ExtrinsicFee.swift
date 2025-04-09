@@ -49,7 +49,7 @@ struct ExtrinsicFee: ExtrinsicFeeProtocol {
 
         self.amount = amount
         self.payer = payer
-        weight = BigUInt(dispatchInfo.weight)
+        weight = dispatchInfo.weight.refTime
     }
 
     init(amount: BigUInt, payer: ExtrinsicFeePayer?, weight: BigUInt) {
