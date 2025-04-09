@@ -3,7 +3,7 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class BanxaProvider: BaseURLStringProvider,
+final class BanxaProvider: BaseURLStringProviding,
     FiatPaymentPethodsProviding {
     private var callbackUrl: URL?
     private var colorCode: String?

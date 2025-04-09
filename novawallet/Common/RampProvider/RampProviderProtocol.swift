@@ -72,9 +72,9 @@ protocol OnRampHookFactoryProviding {
     var onRampHookFactory: OnRampHookFactoryProtocol { get }
 }
 
-typealias RampFactoriesProviding = OffRampHookFactoryProviding & OnRampHookFactoryProviding
+typealias RampHookFactoriesProviding = OffRampHookFactoryProviding & OnRampHookFactoryProviding
 
-extension RampProviderProtocol where Self: BaseURLStringProviding, Self: RampFactoriesProviding {
+extension RampProviderProtocol where Self: BaseURLStringProviding, Self: RampHookFactoriesProviding {
     func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
