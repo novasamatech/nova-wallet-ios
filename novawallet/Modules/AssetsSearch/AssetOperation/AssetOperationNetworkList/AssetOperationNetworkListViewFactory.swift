@@ -85,7 +85,8 @@ extension AssetOperationNetworkListViewFactory {
         stateObservable: AssetListModelObservable,
         selectedAccount: MetaAccountModel,
         rampProvider: RampProviderProtocol,
-        rampType: RampActionType
+        rampType: RampActionType,
+        delegate: RampFlowStartingDelegate?
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -108,7 +109,10 @@ extension AssetOperationNetworkListViewFactory {
             rampType: rampType,
             currencyManager: currencyManager
         )
-        let presenter = createRampPresenter(dependencies: presenterDependencies)
+        let presenter = createRampPresenter(
+            dependencies: presenterDependencies,
+            flowStartingDelegate: delegate
+        )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
 
@@ -119,13 +123,17 @@ extension AssetOperationNetworkListViewFactory {
     }
 
     private static func createRampPresenter(
-        dependencies: RampPresenterDependencies
+        dependencies: RampPresenterDependencies,
+        flowStartingDelegate: RampFlowStartingDelegate?
     ) -> RampOperationNetworkListPresenter {
         let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
 
-        let wireframe = RampAssetOperationWireframe(stateObservable: dependencies.stateObservable)
+        let wireframe = RampAssetOperationWireframe(
+            delegate: flowStartingDelegate,
+            stateObservable: dependencies.stateObservable
+        )
 
-        return RampOperationNetworkListPresenter(
+        let presenter = RampOperationNetworkListPresenter(
             interactor: dependencies.interactor,
             wireframe: wireframe,
             rampProvider: dependencies.rampProvider,
@@ -135,6 +143,10 @@ extension AssetOperationNetworkListViewFactory {
             selectedAccount: dependencies.selectedAccount,
             localizationManager: LocalizationManager.shared
         )
+
+        presenter.delegate = flowStartingDelegate
+
+        return presenter
     }
 }
 

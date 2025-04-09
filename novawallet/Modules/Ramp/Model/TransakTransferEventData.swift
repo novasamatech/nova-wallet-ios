@@ -1,23 +1,38 @@
 import Foundation
 
-struct TransakEvent<EventData: Decodable>: Decodable {
-    let eventId: TransakEventId
-    let data: EventData
+enum TransakEvent: Decodable {
+    case orderCreated(data: TransakTransferEventData)
+    case widgetClose(data: Bool)
 
-    enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case eventId = "event_id"
         case data
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let eventIdString = try container.decode(TransakEventId.self, forKey: .eventId)
+
+        switch eventIdString {
+        case .orderCreated:
+            let eventData = try container.decode(TransakTransferEventData.self, forKey: .data)
+            self = .orderCreated(data: eventData)
+        case .widgetClose:
+            let eventData = try container.decode(Bool.self, forKey: .data)
+            self = .widgetClose(data: eventData)
+        }
+    }
+}
+
+enum TransakEventId: String, Decodable {
+    case orderCreated = "TRANSAK_ORDER_CREATED"
+    case widgetClose = "TRANSAK_WIDGET_CLOSE"
 }
 
 struct TransakTransferEventData: Decodable {
     let status: TransakEventStatus
     let cryptoAmount: Decimal
     let cryptoPaymentData: TransakPaymentAddress
-}
-
-enum TransakEventId: String, Decodable {
-    case orderCreated = "TRANSAK_ORDER_CREATED"
 }
 
 enum TransakEventStatus: String, Decodable {

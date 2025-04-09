@@ -75,8 +75,6 @@ private extension AssetDetailsPresenter {
     }
 
     func showRamp() {
-        guard availableOperations.rampAvailable() else { return }
-
         let startFlow: (RampActionType) -> Void = { [weak self] rampType in
             guard let self else { return }
 
@@ -152,6 +150,15 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 
     func handleBuySell() {
+        guard availableOperations.rampAvailable() else {
+            wireframe.showRampNotSupported(
+                from: view,
+                locale: selectedLocale
+            )
+
+            return
+        }
+
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showRamp()
@@ -269,12 +276,19 @@ extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
 // MARK: RampDelegate
 
 extension AssetDetailsPresenter: RampDelegate {
-    func rampDidComplete(action: RampActionType) {
-        wireframe.presentRampDidComplete(
-            view: view,
-            action: action,
-            locale: selectedLocale
-        )
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset _: ChainAsset
+    ) {
+        wireframe.dropModalFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+        }
     }
 }
 

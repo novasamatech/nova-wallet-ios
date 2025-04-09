@@ -1837,3 +1837,5 @@
 "sell.completed" = "Sale initiated! Please wait up to 60 minutes. You can track status on the email.";
 "sell.operation.network.list.title" = "Select network for selling %@";
 "asset.operation.sell.title" = "Sell";
+"ramp.not.supported.alert.title" = "This token is not supported by the buy/sell feature";
+"ramp.not.supported.alert.message" = "None of our providers currently support the buying or selling of this token. Please choose a different token, a different network, or check back later.";

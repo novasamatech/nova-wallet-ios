@@ -3,7 +3,7 @@ import CryptoKit
 import SubstrateSdk
 import Foundation_iOS
 
-final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider {
+final class MercuryoProvider: BaseURLStringProviding, RampFactoriesProviding {
     struct Configuration {
         let baseUrl: String
         let widgetId: String
@@ -32,13 +32,18 @@ final class MercuryoProvider: BaseURLStringProvider, OffRampHookFactoryProvider 
     private let displayURL = "mercuryo.io"
 
     let offRampHookFactory: OffRampHookFactoryProtocol
+    let onRampHookFactory: OnRampHookFactoryProtocol
 
     var baseUrlString: String {
         configuration.baseUrl
     }
 
-    init(offRampHookFactory: OffRampHookFactoryProtocol = MercuryoOffRampHookFactory()) {
+    init(
+        offRampHookFactory: OffRampHookFactoryProtocol = MercuryoOffRampHookFactory(),
+        onRampHookFactory: OnRampHookFactoryProtocol = MercuryoOnRampHookFactory()
+    ) {
         self.offRampHookFactory = offRampHookFactory
+        self.onRampHookFactory = onRampHookFactory
     }
 }
 
@@ -110,7 +115,8 @@ private extension MercuryoProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]
@@ -142,7 +148,8 @@ private extension MercuryoProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]

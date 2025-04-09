@@ -1,8 +1,10 @@
 import Foundation
 import Foundation_iOS
 
-final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresenter, RampFlowManaging {
+final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let selectedAccount: MetaAccountModel
+
+    weak var delegate: RampFlowStartingDelegate?
 
     private let wireframe: RampAssetOperationWireframeProtocol
     private let rampProvider: RampProviderProtocol
@@ -69,30 +71,15 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
                 successRouteClosure: { [weak self] in
                     guard let self else { return }
 
-                    startRampFlow(
-                        from: view,
+                    delegate?.didPickRampParams(
                         actions: rampActions,
                         rampType: rampType,
-                        wireframe: wireframe,
-                        chainAsset: chainAsset,
-                        locale: selectedLocale
+                        chainAsset: chainAsset
                     )
                 }
             )
         case .noRampOptions:
             break
         }
-    }
-}
-
-// MARK: RampDelegate
-
-extension RampOperationNetworkListPresenter: RampDelegate {
-    func rampDidComplete(action: RampActionType) {
-        wireframe.presentRampDidComplete(
-            view: view,
-            action: action,
-            locale: selectedLocale
-        )
     }
 }

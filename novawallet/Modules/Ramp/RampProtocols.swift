@@ -23,12 +23,20 @@ protocol RampInteractorOutputProtocol: AnyObject {
 protocol RampWireframeProtocol: AnyObject {
     func showSend(
         from view: ControllerBackedProtocol?,
-        with transferModel: PayCardTopupModel,
-        transferCompletion: @escaping TransferCompletionClosure
+        with transferModel: PayCardTopupModel
     )
 
     func complete(
         from view: RampViewProtocol?,
-        with action: RampActionType
+        with action: RampActionType,
+        for chainAsset: ChainAsset
+    )
+}
+
+protocol RampFlowStartingDelegate: AnyObject {
+    func didPickRampParams(
+        actions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset
     )
 }

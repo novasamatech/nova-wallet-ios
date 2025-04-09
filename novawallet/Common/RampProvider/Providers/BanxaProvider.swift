@@ -65,7 +65,8 @@ private extension BanxaProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]
@@ -87,10 +88,10 @@ extension BanxaProvider: RampProviderProtocol {
         buildOnRampActions(for: chainAsset, accountId: accountId)
     }
 
-    func buildOffRampHooks(
+    func buildRampHooks(
         for _: RampAction,
         using _: OffRampHookParams,
-        for _: any OffRampHookDelegate
+        for _: RampHookDelegate
     ) -> [RampHook] {
         []
     }

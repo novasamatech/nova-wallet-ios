@@ -117,4 +117,33 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)
     }
+
+    func showRampNotSupported(
+        from view: AssetDetailsViewProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+        let localizable = R.string.localizable.self
+
+        let title = localizable.rampNotSupportedAlertTitle(preferredLanguages: languages)
+        let message = localizable.rampNotSupportedAlertMessage(preferredLanguages: languages)
+        let actionTitle = localizable.commonGotIt(preferredLanguages: languages)
+
+        present(
+            message: message,
+            title: title,
+            closeAction: actionTitle,
+            from: view
+        )
+    }
+
+    func dropModalFlow(
+        from view: AssetDetailsViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
+        )
+    }
 }

@@ -40,53 +40,17 @@ extension TokenOperation {
             return .noRampOptions
         }
 
-        return switch rampType {
-        case .onRamp:
-            checkBuyOperationAvailable(
-                walletType: walletType,
-                chainAsset: chainAsset
-            )
-        case .offRamp:
-            checkSellOperationAvailable(
-                walletType: walletType,
-                chainAsset: chainAsset
-            )
-        }
-    }
-
-    private static func checkBuyOperationAvailable(
-        walletType: MetaAccountModelType,
-        chainAsset: ChainAsset
-    ) -> RampAvailableCheckResult {
-        switch walletType {
+        return switch walletType {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
-            return .common(.available)
+            .common(.available)
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .common(.ledgerNotSupported)
+                .common(.ledgerNotSupported)
             } else {
-                return .common(.available)
+                .common(.available)
             }
         case .watchOnly:
-            return .common(.noSigning)
-        }
-    }
-
-    private static func checkSellOperationAvailable(
-        walletType: MetaAccountModelType,
-        chainAsset: ChainAsset
-    ) -> RampAvailableCheckResult {
-        switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
-            return .common(.available)
-        case .ledger, .genericLedger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .common(.ledgerNotSupported)
-            } else {
-                return .common(.available)
-            }
-        case .watchOnly:
-            return .common(.noSigning)
+            .common(.noSigning)
         }
     }
 }

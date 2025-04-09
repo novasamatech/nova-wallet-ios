@@ -115,11 +115,13 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        action: RampActionType
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
     ) {
         guard let assetOperationView = AssetOperationViewFactory.createRampView(
             for: assetListModelObservable,
-            action: action
+            action: action,
+            delegate: delegate
         ) else {
             return
         }
@@ -238,5 +240,15 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         payCardView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+    }
+
+    func dropModalFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
+        )
     }
 }

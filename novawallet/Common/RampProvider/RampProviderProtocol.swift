@@ -7,6 +7,7 @@ struct RampAction {
     let logo: UIImage
     let descriptionText: LocalizableResource<String>
     let url: URL
+    let displayURLString: String
 }
 
 enum RampActionType {
@@ -54,10 +55,10 @@ protocol RampProviderProtocol {
         accountId: AccountId
     ) -> [RampAction]
 
-    func buildOffRampHooks(
+    func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate
+        for delegate: RampHookDelegate
     ) -> [RampHook]
 }
 
@@ -79,28 +80,39 @@ extension RampProviderProtocol {
     }
 }
 
-protocol BaseURLStringProvider {
+protocol BaseURLStringProviding {
     var baseUrlString: String { get }
 }
 
-protocol OffRampHookFactoryProvider {
+protocol OffRampHookFactoryProviding {
     var offRampHookFactory: OffRampHookFactoryProtocol { get }
 }
 
-extension RampProviderProtocol where Self: BaseURLStringProvider, Self: OffRampHookFactoryProvider {
-    func buildOffRampHooks(
+protocol OnRampHookFactoryProviding {
+    var onRampHookFactory: OnRampHookFactoryProtocol { get }
+}
+
+typealias RampFactoriesProviding = OffRampHookFactoryProviding & OnRampHookFactoryProviding
+
+extension RampProviderProtocol where Self: BaseURLStringProviding, Self: RampFactoriesProviding {
+    func buildRampHooks(
         for action: RampAction,
         using params: OffRampHookParams,
-        for delegate: OffRampHookDelegate
+        for delegate: RampHookDelegate
     ) -> [RampHook] {
         guard
             let host = action.url.host(),
             baseUrlString.contains(substring: host)
         else { return [] }
 
-        return offRampHookFactory.createHooks(
-            using: params,
-            for: delegate
-        )
+        return switch action.type {
+        case .onRamp:
+            onRampHookFactory.createHooks(for: delegate)
+        case .offRamp:
+            offRampHookFactory.createHooks(
+                using: params,
+                for: delegate
+            )
+        }
     }
 }

@@ -130,7 +130,8 @@ protocol AssetListWireframeProtocol: AnyObject,
     CommonRetryable,
     WalletConnectScanPresentable,
     WalletConnectErrorPresentable,
-    RampActionsPresentable {
+    RampActionsPresentable,
+    RampPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showTokensManage(from view: AssetListViewProtocol?)
 
@@ -152,7 +153,8 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        action: RampActionType
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
     )
 
     func showSwapTokens(from view: AssetListViewProtocol?)
@@ -160,6 +162,11 @@ protocol AssetListWireframeProtocol: AnyObject,
     func showStaking(from view: AssetListViewProtocol?)
 
     func showCard(from view: AssetListViewProtocol?)
+
+    func dropModalFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    )
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

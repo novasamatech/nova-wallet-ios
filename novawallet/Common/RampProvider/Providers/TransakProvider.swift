@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-final class TransakProvider: BaseURLStringProvider, OffRampHookFactoryProvider {
+final class TransakProvider: BaseURLStringProviding, RampFactoriesProviding {
     #if F_RELEASE
         static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
         static let baseUrlString = "https://global.transak.com"
@@ -14,13 +14,18 @@ final class TransakProvider: BaseURLStringProvider, OffRampHookFactoryProvider {
     private let displayURL = "transak.com"
 
     let offRampHookFactory: OffRampHookFactoryProtocol
+    let onRampHookFactory: OnRampHookFactoryProtocol
 
     var baseUrlString: String {
         Self.baseUrlString
     }
 
-    init(offRampHookFactory: OffRampHookFactoryProtocol = TransakOffRampHookFactory()) {
+    init(
+        offRampHookFactory: OffRampHookFactoryProtocol = TransakOffRampHookFactory(),
+        onRampHookFactory: OnRampHookFactoryProtocol = TransakOnRampHookFactory()
+    ) {
         self.offRampHookFactory = offRampHookFactory
+        self.onRampHookFactory = onRampHookFactory
     }
 }
 
@@ -86,7 +91,8 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]
@@ -120,7 +126,8 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url
+            url: url,
+            displayURLString: displayURL
         )
 
         return [action]

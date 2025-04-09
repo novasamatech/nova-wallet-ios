@@ -1,7 +1,7 @@
 import Foundation
 
-final class MercuryoSellRequestResponseHandler {
-    weak var delegate: PayCardHookDelegate?
+final class MercuryoOffRampResponseHandler {
+    weak var delegate: OffRampHookDelegate?
 
     var lastTransactionStatus: MercuryoStatus?
 
@@ -9,7 +9,7 @@ final class MercuryoSellRequestResponseHandler {
     let chainAsset: ChainAsset
 
     init(
-        delegate: PayCardHookDelegate,
+        delegate: OffRampHookDelegate,
         chainAsset: ChainAsset,
         logger: LoggerProtocol
     ) {
@@ -19,9 +19,9 @@ final class MercuryoSellRequestResponseHandler {
     }
 }
 
-extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
+extension MercuryoOffRampResponseHandler: OffRampMessageHandling {
     func canHandleMessageOf(name: String) -> Bool {
-        name == MercuryoMessageName.onCardTopup.rawValue
+        name == MercuryoRampEventNames.onSell.rawValue
     }
 
     func handle(message: Any, of _: String) {
@@ -55,14 +55,10 @@ extension MercuryoSellRequestResponseHandler: PayCardMessageHandling {
                     recipientAddress: data.address
                 )
 
-                delegate?.didRequestTopup(from: model)
-            case .pending:
-                delegate?.didReceivePendingCardOpen()
-            case .completed, .succeeded:
-                delegate?.didOpenCard()
-            case .failed:
-                delegate?.didFailToOpenCard()
-            case .paid:
+                delegate?.didRequestTransfer(from: model)
+            case .completed:
+                delegate?.didFinishOperation()
+            default:
                 break
             }
         } catch {

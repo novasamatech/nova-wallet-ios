@@ -1606,6 +1606,11 @@
 		2DAF6AC12CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF6AC02CF4D52C00A8D132 /* DAppBrowserTabManager+Singleton.swift */; };
 		2DB18C8F2C36AB1C00A93C75 /* LightChainsFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */; };
 		2DB18C922C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */; };
+		2DB303C52DA519080054A264 /* OnRampHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303C42DA519080054A264 /* OnRampHook.swift */; };
+		2DB303CA2DA51A6F0054A264 /* MercuryoOnRampHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303C92DA51A6F0054A264 /* MercuryoOnRampHookFactory.swift */; };
+		2DB303CB2DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303C82DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift */; };
+		2DB303D02DA522300054A264 /* TransakOnRampResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303CF2DA522300054A264 /* TransakOnRampResponseHandler.swift */; };
+		2DB303D12DA522300054A264 /* TransakOnRampHookFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB303CE2DA522300054A264 /* TransakOnRampHookFactory.swift */; };
 		2DB538612D55FBCF0044BF6F /* BannersCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */; };
 		2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */; };
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
@@ -7422,6 +7427,11 @@
 		2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightChainsFetchFactory.swift; sourceTree = "<group>"; };
 		2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreConfiguredChainFetchFactory.swift; sourceTree = "<group>"; };
 		2DB303C32DA3C8150054A264 /* SubstrateDataModel37.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel37.xcdatamodel; sourceTree = "<group>"; };
+		2DB303C42DA519080054A264 /* OnRampHook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnRampHook.swift; sourceTree = "<group>"; };
+		2DB303C82DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoOnRampResponseHandler.swift; sourceTree = "<group>"; };
+		2DB303C92DA51A6F0054A264 /* MercuryoOnRampHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoOnRampHookFactory.swift; sourceTree = "<group>"; };
+		2DB303CE2DA522300054A264 /* TransakOnRampHookFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakOnRampHookFactory.swift; sourceTree = "<group>"; };
+		2DB303CF2DA522300054A264 /* TransakOnRampResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakOnRampResponseHandler.swift; sourceTree = "<group>"; };
 		2DB538602D55FBCF0044BF6F /* BannersCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannersCollectionViewLayout.swift; sourceTree = "<group>"; };
 		2DB5B10F2D3EE75B0075EB3F /* DAppIconImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconImageViewModel.swift; sourceTree = "<group>"; };
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
@@ -14863,8 +14873,8 @@
 		2D2EA8422D969BD40034C792 /* Mercuryo */ = {
 			isa = PBXGroup;
 			children = (
-				2D2EA8432D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift */,
-				2D2EA84D2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift */,
+				2DB303C62DA51A520054A264 /* OffRamp */,
+				2DB303C72DA51A600054A264 /* OnRamp */,
 				2DFF604E2D9E954400DB70DD /* MercuryoRampEventNames.swift */,
 			);
 			path = Mercuryo;
@@ -14885,6 +14895,7 @@
 				2D2EA8542D9A85560034C792 /* Transak */,
 				2D2EA8422D969BD40034C792 /* Mercuryo */,
 				2D2EA84A2D9A51860034C792 /* OffRampHook.swift */,
+				2DB303C42DA519080054A264 /* OnRampHook.swift */,
 			);
 			path = Hook;
 			sourceTree = "<group>";
@@ -14892,9 +14903,9 @@
 		2D2EA8542D9A85560034C792 /* Transak */ = {
 			isa = PBXGroup;
 			children = (
-				2D2EA8552D9A856B0034C792 /* TransakOffRampHookFactory.swift */,
+				2DB303CC2DA522100054A264 /* OffRamp */,
+				2DB303CD2DA5221A0054A264 /* OnRamp */,
 				2D2EA8592D9A96590034C792 /* TransakRampEventNames.swift */,
-				2D2EA8572D9A85EE0034C792 /* TransakOffRampResponseHandler.swift */,
 			);
 			path = Transak;
 			sourceTree = "<group>";
@@ -15658,6 +15669,42 @@
 				2DAF6ABE2CF49AA400A8D132 /* WebViewRenderImageViewModelFactory.swift */,
 			);
 			path = Image;
+			sourceTree = "<group>";
+		};
+		2DB303C62DA51A520054A264 /* OffRamp */ = {
+			isa = PBXGroup;
+			children = (
+				2D2EA8432D96B2DC0034C792 /* MercuryoOffRampResponseHandler.swift */,
+				2D2EA84D2D9A71F40034C792 /* MercuryoOffRampHookFactory.swift */,
+			);
+			path = OffRamp;
+			sourceTree = "<group>";
+		};
+		2DB303C72DA51A600054A264 /* OnRamp */ = {
+			isa = PBXGroup;
+			children = (
+				2DB303C82DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift */,
+				2DB303C92DA51A6F0054A264 /* MercuryoOnRampHookFactory.swift */,
+			);
+			path = OnRamp;
+			sourceTree = "<group>";
+		};
+		2DB303CC2DA522100054A264 /* OffRamp */ = {
+			isa = PBXGroup;
+			children = (
+				2D2EA8552D9A856B0034C792 /* TransakOffRampHookFactory.swift */,
+				2D2EA8572D9A85EE0034C792 /* TransakOffRampResponseHandler.swift */,
+			);
+			path = OffRamp;
+			sourceTree = "<group>";
+		};
+		2DB303CD2DA5221A0054A264 /* OnRamp */ = {
+			isa = PBXGroup;
+			children = (
+				2DB303CE2DA522300054A264 /* TransakOnRampHookFactory.swift */,
+				2DB303CF2DA522300054A264 /* TransakOnRampResponseHandler.swift */,
+			);
+			path = OnRamp;
 			sourceTree = "<group>";
 		};
 		2DB538622D561B050044BF6F /* View */ = {
@@ -30657,6 +30704,7 @@
 				2D5D0CCB2D50CBE4000E32F6 /* Banner.swift in Sources */,
 				88F34FD428FFE64400712BDE /* ReferendumDAppCellView.swift in Sources */,
 				0CA7821C2B03D0A9003F562A /* ExtrinsicProcessor+AssetHubSwapMatching.swift in Sources */,
+				2DB303C52DA519080054A264 /* OnRampHook.swift in Sources */,
 				8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */,
 				0C8FDBB62CB0FC8A00775D7F /* PayCardMessageHandler.swift in Sources */,
 				0C38B5102B7DCADF00882A8B /* KodaDotNftSyncService.swift in Sources */,
@@ -31654,6 +31702,8 @@
 				84EF8D3E288FDA2100265346 /* WalletListLocalStorageSubscriber.swift in Sources */,
 				0CF606CB2D7B0E290041B7AE /* AssetListCardCell.swift in Sources */,
 				0C9525E72A7AFA2C00BD724D /* ValueResolver.swift in Sources */,
+				2DB303D02DA522300054A264 /* TransakOnRampResponseHandler.swift in Sources */,
+				2DB303D12DA522300054A264 /* TransakOnRampHookFactory.swift in Sources */,
 				84DD261429ACA9030032A598 /* VotersInfoOperationFactory.swift in Sources */,
 				0C63909B2BF23E3A0015D467 /* NSPredicate+CloudBackup.swift in Sources */,
 				0C11D8542CC9F82C003EC46D /* HydraStableswapExchangeEdge.swift in Sources */,
@@ -32629,6 +32679,8 @@
 				B5998094F5FFAC894512CD12 /* StakingSetupAmountViewLayout.swift in Sources */,
 				5E6F7AC179BE7C1FA1759270 /* StakingSetupAmountViewFactory.swift in Sources */,
 				71BA10F56250CF7F7418CDAB /* StakingTypeProtocols.swift in Sources */,
+				2DB303CA2DA51A6F0054A264 /* MercuryoOnRampHookFactory.swift in Sources */,
+				2DB303CB2DA51A6F0054A264 /* MercuryoOnRampResponseHandler.swift in Sources */,
 				AD3D8EA1D79D3E5E5B625CF7 /* StakingTypeWireframe.swift in Sources */,
 				3201805BF8FA78BDF9DA6328 /* StakingTypePresenter.swift in Sources */,
 				5D71EC71B3ED00D130C5985F /* StakingTypeInteractor.swift in Sources */,

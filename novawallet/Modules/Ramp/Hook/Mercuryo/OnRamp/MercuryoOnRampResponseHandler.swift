@@ -1,27 +1,24 @@
 import Foundation
 
-final class MercuryoOffRampResponseHandler {
-    weak var delegate: OffRampHookDelegate?
+final class MercuryoOnRampResponseHandler {
+    weak var delegate: OnRampHookDelegate?
 
     var lastTransactionStatus: MercuryoStatus?
 
     let logger: LoggerProtocol
-    let chainAsset: ChainAsset
 
     init(
-        delegate: OffRampHookDelegate,
-        chainAsset: ChainAsset,
+        delegate: OnRampHookDelegate,
         logger: LoggerProtocol
     ) {
         self.delegate = delegate
-        self.chainAsset = chainAsset
         self.logger = logger
     }
 }
 
-extension MercuryoOffRampResponseHandler: OffRampMessageHandling {
+extension MercuryoOnRampResponseHandler: OffRampMessageHandling {
     func canHandleMessageOf(name: String) -> Bool {
-        name == MercuryoMessageName.onCardTopup.rawValue
+        name == MercuryoRampEventNames.onBuy.rawValue
     }
 
     func handle(message: Any, of _: String) {
@@ -31,12 +28,12 @@ extension MercuryoOffRampResponseHandler: OffRampMessageHandling {
                 return
             }
 
-            let sellStatusResponse = try JSONDecoder().decode(
-                MercuryoGenericResponse<MercuryoSellResponseData>.self,
+            let buyStatusResponse = try JSONDecoder().decode(
+                MercuryoGenericResponse<MercuryoRampResponseData>.self,
                 from: message
             )
 
-            guard let data = sellStatusResponse.data else {
+            guard let data = buyStatusResponse.data else {
                 logger.error("Unexpected message: \(message)")
                 return
             }
@@ -48,14 +45,8 @@ extension MercuryoOffRampResponseHandler: OffRampMessageHandling {
             lastTransactionStatus = data.status
 
             switch data.status {
-            case .new:
-                let model = PayCardTopupModel(
-                    chainAsset: chainAsset,
-                    amount: data.amounts.request.amount.decimalValue,
-                    recipientAddress: data.address
-                )
-
-                delegate?.didRequestTransfer(from: model)
+            case .paid:
+                delegate?.didFinishOperation()
             default:
                 break
             }

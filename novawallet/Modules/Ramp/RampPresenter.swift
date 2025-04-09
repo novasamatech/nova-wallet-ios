@@ -5,15 +5,18 @@ final class RampPresenter {
     var wireframe: RampWireframeProtocol!
     var interactor: RampInteractorInputProtocol!
 
+    let chainAsset: ChainAsset
     let action: RampAction
 
     init(
         wireframe: RampWireframeProtocol!,
         interactor: RampInteractorInputProtocol!,
+        chainAsset: ChainAsset,
         action: RampAction
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
+        self.chainAsset = chainAsset
         self.action = action
     }
 }
@@ -47,20 +50,14 @@ extension RampPresenter: RampInteractorOutputProtocol {
         wireframe.showSend(
             from: view,
             with: model
-        ) { [weak self] _ in
-            guard let self else { return }
-
-            wireframe.complete(
-                from: view,
-                with: action.type
-            )
-        }
+        )
     }
 
     func didCompleteOperation(action: RampAction) {
         wireframe.complete(
             from: view,
-            with: action.type
+            with: action.type,
+            for: chainAsset
         )
     }
 }

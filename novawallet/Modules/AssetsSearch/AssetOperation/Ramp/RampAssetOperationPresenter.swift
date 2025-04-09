@@ -3,7 +3,9 @@ import BigInt
 import Operation_iOS
 import Foundation_iOS
 
-final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging {
+final class RampAssetOperationPresenter: AssetsSearchPresenter {
+    weak var rampFlowStartingDelegate: RampFlowStartingDelegate?
+
     var rampWireframe: RampAssetOperationWireframeProtocol? {
         wireframe as? RampAssetOperationWireframeProtocol
     }
@@ -85,28 +87,15 @@ final class RampAssetOperationPresenter: AssetsSearchPresenter, RampFlowManaging
                 successRouteClosure: { [weak self] in
                     guard let self else { return }
 
-                    startRampFlow(
-                        from: view,
+                    rampFlowStartingDelegate?.didPickRampParams(
                         actions: rampActions,
                         rampType: rampType,
-                        wireframe: rampWireframe,
-                        chainAsset: chainAsset,
-                        locale: selectedLocale
+                        chainAsset: chainAsset
                     )
                 }
             )
         case .noRampOptions:
             break
         }
-    }
-}
-
-extension RampAssetOperationPresenter: RampDelegate {
-    func rampDidComplete(action: RampActionType) {
-        rampWireframe?.presentRampDidComplete(
-            view: view,
-            action: action,
-            locale: selectedLocale
-        )
     }
 }

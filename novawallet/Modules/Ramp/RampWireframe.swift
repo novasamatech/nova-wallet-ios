@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 final class RampWireframe {
     private weak var delegate: RampDelegate?
@@ -10,26 +11,24 @@ final class RampWireframe {
 
 extension RampWireframe: RampWireframeProtocol {
     func complete(
-        from view: RampViewProtocol?,
-        with action: RampActionType
+        from _: RampViewProtocol?,
+        with action: RampActionType,
+        for chainAsset: ChainAsset
     ) {
-        view?.controller.dismiss(animated: true) {
-            DispatchQueue.main.async {
-                self.delegate?.rampDidComplete(action: action)
-            }
-        }
+        delegate?.rampDidComplete(
+            action: action,
+            chainAsset: chainAsset
+        )
     }
 
     func showSend(
         from view: (any ControllerBackedProtocol)?,
-        with transferModel: PayCardTopupModel,
-        transferCompletion: @escaping TransferCompletionClosure
+        with transferModel: PayCardTopupModel
     ) {
         guard let sendTransferView = TransferSetupViewFactory.createCardTopUpView(
             from: transferModel.chainAsset,
             recepient: DisplayAddress(address: transferModel.recipientAddress, username: ""),
-            amount: transferModel.amount,
-            transferCompletion: transferCompletion
+            amount: transferModel.amount
         ) else {
             return
         }
@@ -44,5 +43,8 @@ extension RampWireframe: RampWireframeProtocol {
 }
 
 protocol RampDelegate: AnyObject {
-    func rampDidComplete(action: RampActionType)
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset: ChainAsset
+    )
 }

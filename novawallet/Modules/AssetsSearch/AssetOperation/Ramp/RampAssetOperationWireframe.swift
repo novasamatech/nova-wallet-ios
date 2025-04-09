@@ -23,7 +23,17 @@ extension RampAssetOperationWireframeProtocol {
     }
 }
 
-final class RampAssetOperationWireframe: AssetOperationWireframe, RampAssetOperationWireframeProtocol {}
+final class RampAssetOperationWireframe: AssetOperationWireframe, RampAssetOperationWireframeProtocol {
+    private weak var delegate: RampFlowStartingDelegate?
+
+    init(
+        delegate: RampFlowStartingDelegate?,
+        stateObservable: AssetListModelObservable
+    ) {
+        super.init(stateObservable: stateObservable)
+        self.delegate = delegate
+    }
+}
 
 extension RampAssetOperationWireframe: AssetsSearchWireframeProtocol {
     func showSelectNetwork(
@@ -38,7 +48,8 @@ extension RampAssetOperationWireframe: AssetsSearchWireframeProtocol {
             stateObservable: stateObservable,
             selectedAccount: selectedAccount,
             rampProvider: rampProvider,
-            rampType: rampType
+            rampType: rampType,
+            delegate: delegate
         ) else {
             return
         }

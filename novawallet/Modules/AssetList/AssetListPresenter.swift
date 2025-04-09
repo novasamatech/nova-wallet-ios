@@ -4,7 +4,7 @@ import SubstrateSdk
 import Foundation_iOS
 import BigInt
 
-final class AssetListPresenter: BannersModuleInputOwnerProtocol {
+final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
 
@@ -254,7 +254,6 @@ private extension AssetListPresenter {
             return
         }
 
-        let maybePrices = try? model.priceResult?.get()
         let viewModels = createGroupViewModels()
 
         let isFilterOn = hidesZeroBalances == true
@@ -519,7 +518,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
             self?.wireframe.showRamp(
                 from: self?.view,
-                action: .onRamp
+                action: .onRamp,
+                delegate: self
             )
         }
         wireframe.showSendTokens(
@@ -540,7 +540,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         ) { [weak self] rampAction in
             self?.wireframe.showRamp(
                 from: self?.view,
-                action: rampAction
+                action: rampAction,
+                delegate: self
             )
         }
     }
@@ -668,7 +669,7 @@ extension AssetListPresenter: BannersModuleOutputProtocol {
     }
 }
 
-// MARK:
+// MARK: ModalPickerViewControllerDelegate
 
 extension AssetListPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
@@ -677,6 +678,53 @@ extension AssetListPresenter: ModalPickerViewControllerDelegate {
         }
 
         modalPickerContext.process(selectedIndex: index)
+    }
+}
+
+// MARK: RampFlowStartingDelegate
+
+extension AssetListPresenter: RampFlowStartingDelegate {
+    func didPickRampParams(
+        actions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset
+    ) {
+        wireframe.dropModalFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            startRampFlow(
+                from: view,
+                actions: actions,
+                rampType: rampType,
+                wireframe: wireframe,
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            )
+        }
+    }
+}
+
+// MARK: RampDelegate
+
+extension AssetListPresenter: RampDelegate {
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset: ChainAsset
+    ) {
+        wireframe.dropModalFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.showAssetDetails(
+                from: view,
+                chain: chainAsset.chain,
+                asset: chainAsset.asset
+            )
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+        }
     }
 }
 
