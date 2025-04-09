@@ -23,8 +23,8 @@ enum ExtrinsicSplitterError: Error {
 }
 
 final class ExtrinsicSplitter {
-    static let maxExtrinsicSizePercent: CGFloat = 0.5
-    static let blockSizeMultiplier: CGFloat = 0.64
+    static let maxExtrinsicSizePercent: BigRational = .percent(of: 80)
+    static let blockSizeMultiplier: BigRational = .percent(of: 80)
 
     typealias CallConverter = (RuntimeJsonContext?) throws -> JSON
 
@@ -43,46 +43,47 @@ final class ExtrinsicSplitter {
     let chainRegistry: ChainRegistryProtocol
     let maxCallsPerExtrinsic: Int?
 
+    private let blockLimitOperationFactory: BlockLimitOperationFactoryProtocol
+    
     private var internalCalls: [InternalCall] = []
 
     init(
         chain: ChainModel,
         maxCallsPerExtrinsic: Int?,
-        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.maxCallsPerExtrinsic = maxCallsPerExtrinsic
         self.chainRegistry = chainRegistry
+        
+        blockLimitOperationFactory = BlockLimitOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 
-    private func createBlockLimitWrapper(
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<UInt64> {
-        let blockWeightsOperation = StorageConstantOperation<Substrate.BlockWeights>(
-            path: .blockWeights
-        )
+    private func createBlockLimitWrapper() -> CompoundOperationWrapper<Substrate.WeightV2> {
+        let blockWeightsWrapper = blockLimitOperationFactory.fetchBlockWeights(for: chain.chainId)
+        let lastWeightWrapper = blockLimitOperationFactory.fetchLastBlockWeight(for: chain.chainId)
 
-        blockWeightsOperation.configurationBlock = {
-            do {
-                blockWeightsOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                blockWeightsOperation.result = .failure(error)
-            }
-        }
-
-        let mappingOperation = ClosureOperation<UInt64> {
-            let blockWeights = try blockWeightsOperation.extractNoCancellableResultData()
+        let mappingOperation = ClosureOperation<Substrate.WeightV2> {
+            let blockWeights = try blockWeightsWrapper.targetOperation.extractNoCancellableResultData()
+            let lastBlockWeight = try lastWeightWrapper.targetOperation.extractNoCancellableResultData()
 
             if let maxExtrinsicWeight = blockWeights.normalExtrinsicMaxWeight {
-                return UInt64(CGFloat(maxExtrinsicWeight.refTime) * Self.maxExtrinsicSizePercent)
+                return (maxExtrinsicWeight - lastBlockWeight.normal) * Self.maxExtrinsicSizePercent)
             } else {
-                return UInt64(CGFloat(blockWeights.maxBlock.refTime) * Self.blockSizeMultiplier)
+                return blockWeights.maxBlock * Self.blockSizeMultiplier)
             }
         }
 
-        mappingOperation.addDependency(blockWeightsOperation)
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [blockWeightsOperation])
+        mappingOperation.addDependency(blockWeightsWrapper.targetOperation)
+        mappingOperation.addDependency(lastWeightWrapper.targetOperation)
+        
+        return lastWeightWrapper
+                .insertingHead(operations: blockWeightsWrapper.allOperations)
+                .insertingTail(operation: mappingOperation)
     }
 
     func estimateWeightForCallTypesWrapper(

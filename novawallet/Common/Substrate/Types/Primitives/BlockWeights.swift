@@ -11,7 +11,7 @@ extension Substrate {
 
     struct WeightV2: Codable {
         @StringCodable var refTime: BigUInt
-        @StringCodable var proofSize: UInt64
+        @StringCodable var proofSize: BigUInt
     }
 
     @propertyWrapper
@@ -76,20 +76,22 @@ extension Substrate {
 
     struct BlockWeights: Decodable {
         @Substrate.WeightDecodable var maxBlock: WeightV2
-        let perClass: PerDispatchClass
+        let perClass: PerDispatchClass<WeightsPerClass>
 
         var normalExtrinsicMaxWeight: WeightV2? {
             perClass.normal.maxExtrinsic
         }
     }
 
-    struct PerDispatchClass: Decodable {
-        let normal: WeightsPerClass
-        let operational: WeightsPerClass
-        let mandatory: WeightsPerClass
+    struct PerDispatchClass<T: Decodable>: Decodable {
+        let normal: T
+        let operational: T
+        let mandatory: T
     }
 
     struct WeightsPerClass: Decodable {
         @OptionalWeightDecodable var maxExtrinsic: WeightV2?
     }
+
+    typealias PerDispatchClassWithWeight = PerDispatchClassWithWeight<WeightV2>
 }
