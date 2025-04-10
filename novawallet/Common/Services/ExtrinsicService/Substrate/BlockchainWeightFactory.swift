@@ -105,7 +105,7 @@ enum BlockchainWeightFactory {
             let isV1P5 = codingFactory.isStructHasFieldsCount(type, count: 1)
 
             if isV1P5 {
-                return try handlers.v1P5Handler(builder, .init(refTime: weight))
+                return try handlers.v1P5Handler(builder, .init(refTime: BigUInt(weight)))
             } else {
                 return try handlers.v2Handler(builder, .init(refTime: BigUInt(weight), proofSize: 0))
             }
