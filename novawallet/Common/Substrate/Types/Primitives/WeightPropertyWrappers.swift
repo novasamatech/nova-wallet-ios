@@ -45,16 +45,7 @@ extension Substrate {
                     wrappedValue = Weight(refTime: refTime, proofSize: 0)
                 }
 
-            } else if let singleValue = json.stringValue {
-                guard let weight = BigUInt(singleValue) else {
-                    throw DecodingError.dataCorrupted(
-                        DecodingError.Context(
-                            codingPath: decoder.codingPath,
-                            debugDescription: "Could not decode weight from \(singleValue)"
-                        )
-                    )
-                }
-
+            } else if let weight = json.toBigUInt() {
                 wrappedValue = Weight(refTime: weight, proofSize: 0)
             } else {
                 throw DecodingError.dataCorrupted(
