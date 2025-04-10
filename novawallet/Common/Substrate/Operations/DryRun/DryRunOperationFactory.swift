@@ -11,8 +11,8 @@ protocol DryRunOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<DryRun.CallResult>
 
     func createDryRunXcmWrapper(
-        from origin: Xcm.VersionedMultilocation,
-        xcm: Xcm.Message,
+        from origin: XcmUni.VersionedLocation,
+        xcm: XcmUni.VersionedMessage,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<DryRun.XcmResult>
 }
@@ -65,8 +65,8 @@ extension DryRunOperationFactory: DryRunOperationFactoryProtocol {
     }
 
     func createDryRunXcmWrapper(
-        from origin: Xcm.VersionedMultilocation,
-        xcm: Xcm.Message,
+        from origin: XcmUni.VersionedLocation,
+        xcm: XcmUni.VersionedMessage,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<DryRun.XcmResult> {
         createRuntimeCallWrapper(

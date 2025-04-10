@@ -44,3 +44,16 @@ extension Xcm {
         }
     }
 }
+
+extension Xcm.WeightLimit: Equatable where T: Equatable {}
+
+extension Xcm.WeightLimit {
+    func map<U: Codable>(_ transform: (T) throws -> U) rethrows -> Xcm.WeightLimit<U> {
+        switch self {
+        case let .limited(weight):
+            return .limited(weight: try transform(weight))
+        case .unlimited:
+            return .unlimited
+        }
+    }
+}

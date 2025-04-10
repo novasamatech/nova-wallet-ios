@@ -9,7 +9,7 @@ enum BlockchainWeight {
         @StringCodable var refTime: UInt64
     }
 
-    struct WeightV2: Codable {
+    struct WeightV2: Codable, Equatable {
         @StringCodable var refTime: BigUInt
         @StringCodable var proofSize: UInt64
 

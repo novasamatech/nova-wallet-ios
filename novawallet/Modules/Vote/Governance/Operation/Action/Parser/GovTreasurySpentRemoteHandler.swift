@@ -40,7 +40,7 @@ extension GovSpentAmount.TreasurySpendRemoteHandler: GovSpentAmountHandling {
                     with: runtimeContext.toRawContext()
                 )
 
-                guard let beneficiary = spendCall.beneficiary.accountId else {
+                guard let beneficiary = spendCall.beneficiary.entity.accountId else {
                     return CompoundOperationWrapper.createWithResult(nil)
                 }
 

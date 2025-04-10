@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol XcmPaymentOperationFactoryProtocol {
     func queryMessageWeight(
-        for message: Xcm.Message,
+        for message: XcmUni.VersionedMessage,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<XcmPayment.WeightResult>
 }
@@ -13,7 +13,7 @@ class XcmPaymentOperationFactory: SubstrateRuntimeApiOperationFactory {}
 
 extension XcmPaymentOperationFactory: XcmPaymentOperationFactoryProtocol {
     func queryMessageWeight(
-        for message: Xcm.Message,
+        for message: XcmUni.VersionedMessage,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<XcmPayment.WeightResult> {
         createRuntimeCallWrapper(

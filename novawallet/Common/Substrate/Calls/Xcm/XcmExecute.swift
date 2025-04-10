@@ -12,7 +12,7 @@ extension Xcm {
             case maxWeight = "max_weight"
         }
 
-        let message: Xcm.Message
+        let message: XcmUni.VersionedMessage
         let maxWeight: M
 
         func runtimeCall(for moduleName: String) -> RuntimeCall<Self> {
@@ -21,7 +21,7 @@ extension Xcm {
     }
 
     static func appendExecuteCall(
-        for message: Xcm.Message,
+        for message: XcmUni.VersionedMessage,
         maxWeight: BigUInt,
         module: String,
         codingFactory: RuntimeCoderFactoryProtocol,

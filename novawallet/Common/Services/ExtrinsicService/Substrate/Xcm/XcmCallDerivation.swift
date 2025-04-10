@@ -31,15 +31,15 @@ private extension XcmCallDerivator {
             let module = try moduleResolutionOperation.extractNoCancellableResultData()
             let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
-            let (destination, beneficiaryAccount) = destinationAsset.beneficiary.separatingDestinationBenificiary()
-            let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+            let beneficiaryAccount = destinationAsset.beneficiary.map { $0.lastItemLocation() }
+            let destination = destinationAsset.beneficiary.map { $0.dropingLastItem() }
 
             let callPath = callPathFactory(module)
 
             let call = Xcm.PalletTransferCall(
                 destination: destination,
                 beneficiary: beneficiaryAccount,
-                assets: assets,
+                assets: destinationAsset.asset.toVersionedAssets(),
                 feeAssetItem: 0,
                 weightLimit: .unlimited
             ).runtimeCall(for: callPath)
