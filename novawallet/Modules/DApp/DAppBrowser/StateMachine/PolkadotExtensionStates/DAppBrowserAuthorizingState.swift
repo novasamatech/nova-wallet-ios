@@ -2,15 +2,25 @@ import Foundation
 import Operation_iOS
 
 final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
-    let dAppIdentifier: String?
+    let dAppId: String?
+    let requestId: String
 
-    init(stateMachine: DAppBrowserStateMachineProtocol?, dAppIdentifier: String?) {
-        self.dAppIdentifier = dAppIdentifier
+    init(
+        stateMachine: DAppBrowserStateMachineProtocol?,
+        dAppId: String?,
+        requestId: String
+    ) {
+        self.dAppId = dAppId
+        self.requestId = requestId
 
         super.init(stateMachine: stateMachine)
     }
 
-    func saveAuthAndComplete(_ approved: Bool, identifier: String, dataSource: DAppBrowserStateDataSource) {
+    func saveAuthAndComplete(
+        _ approved: Bool,
+        dappId: String,
+        dataSource: DAppBrowserStateDataSource
+    ) {
         guard approved else {
             complete(false)
             return
@@ -18,7 +28,7 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
 
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
             let newSettings = DAppSettings(
-                identifier: identifier,
+                identifier: dappId,
                 metaId: dataSource.wallet.metaId,
                 source: nil
             )
@@ -39,11 +49,11 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
         do {
             if approved {
                 let nextState = DAppBrowserAuthorizedState(stateMachine: stateMachine)
-                try provideResponse(for: .authorize, result: true, nextState: nextState)
+                try provideResponse(for: requestId, result: true, nextState: nextState)
             } else {
                 let nextState = DAppBrowserWaitingAuthState(stateMachine: stateMachine)
                 provideError(
-                    for: .authorize,
+                    for: requestId,
                     errorMessage: PolkadotExtensionError.rejected.rawValue,
                     nextState: nextState
                 )
@@ -81,8 +91,8 @@ extension DAppBrowserAuthorizingState: DAppBrowserStateProtocol {
     }
 
     func handleAuth(response: DAppAuthResponse, dataSource: DAppBrowserStateDataSource) {
-        if let dAppIdentifier = dAppIdentifier {
-            saveAuthAndComplete(response.approved, identifier: dAppIdentifier, dataSource: dataSource)
+        if let dAppId {
+            saveAuthAndComplete(response.approved, dappId: dAppId, dataSource: dataSource)
         } else {
             complete(response.approved)
         }

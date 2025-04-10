@@ -2,9 +2,15 @@ import Foundation
 
 final class DAppBrowserSigningState: DAppBrowserBaseState {
     let signingType: DAppSigningType
+    let requestId: String
 
-    init(stateMachine: DAppBrowserStateMachineProtocol?, signingType: DAppSigningType) {
+    init(
+        stateMachine: DAppBrowserStateMachineProtocol?,
+        signingType: DAppSigningType,
+        requestId: String
+    ) {
         self.signingType = signingType
+        self.requestId = requestId
 
         super.init(stateMachine: stateMachine)
     }
@@ -25,7 +31,7 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
             signedTransaction: modifiedTransaction?.toHex(includePrefix: true)
         )
 
-        try provideResponse(for: msgType, result: result, nextState: nextState)
+        try provideResponse(for: requestId, result: result, nextState: nextState)
     }
 
     private func providerOperationError(
@@ -36,7 +42,7 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
             return
         }
 
-        provideError(for: msgType, errorMessage: error.rawValue, nextState: nextState)
+        provideError(for: requestId, errorMessage: error.rawValue, nextState: nextState)
     }
 }
 
