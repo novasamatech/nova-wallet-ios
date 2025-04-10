@@ -290,6 +290,7 @@
 		0C27F37D2DA6B3B000191FFF /* BlockLimitOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */; };
 		0C27F3822DA6C74100191FFF /* SystePallet+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */; };
 		0C27F3842DA6CF2C00191FFF /* BlockWeight+Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */; };
+		0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */; };
 		0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */; };
 		0C28DF1C2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */; };
 		0C28DF272D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */; };
@@ -6042,6 +6043,7 @@
 		0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockLimitOperationFactory.swift; sourceTree = "<group>"; };
 		0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystePallet+ConstantPath.swift"; sourceTree = "<group>"; };
 		0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockWeight+Operation.swift"; sourceTree = "<group>"; };
+		0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateWeightTest.swift; sourceTree = "<group>"; };
 		0C28DF1B2D2008670016DB8E /* AssetFungibilityPreservationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetFungibilityPreservationProvider.swift; sourceTree = "<group>"; };
 		0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeTokenDepositedEventMatcher.swift; sourceTree = "<group>"; };
 		0C28DF282D2D38CF0016DB8E /* DAppMessageSignFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMessageSignFactory.swift; sourceTree = "<group>"; };
@@ -12453,6 +12455,14 @@
 			path = BlockLimit;
 			sourceTree = "<group>";
 		};
+		0C27F3862DA8024800191FFF /* Substrate */ = {
+			isa = PBXGroup;
+			children = (
+				0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */,
+			);
+			path = Substrate;
+			sourceTree = "<group>";
+		};
 		0C2A3C962CDCCEB200A0E2B3 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -18128,6 +18138,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				0C27F3862DA8024800191FFF /* Substrate */,
 				771056042B717DF300EE2C20 /* Parsing */,
 				77A6F5D32A31E033004AFD1A /* JsonCanonicalizer */,
 				8846F73629D6F4FB00B8B776 /* Multibase */,
@@ -27238,9 +27249,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27280,7 +27295,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift",
+				$PROJECT_DIR/NovaPushNotificationServiceExtension/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27294,9 +27309,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27333,9 +27352,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27428,7 +27451,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/R.generated.swift",
+				$PROJECT_DIR/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27493,7 +27516,7 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CIKeys.generated.swift",
-				"$PROJECT_DIR/CIKeys.generated.swift",
+				$PROJECT_DIR/CIKeys.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -33043,6 +33066,7 @@
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
+				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
 				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
 				0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */,
 				8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */,
