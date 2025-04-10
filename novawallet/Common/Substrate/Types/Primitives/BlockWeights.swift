@@ -5,14 +5,16 @@ import BigInt
 extension Substrate {
     typealias WeightV1 = StringScaleMapper<UInt64>
 
-    struct WeightV1P5: Codable {
+    struct WeightV1P5: Codable, Equatable {
         @StringCodable var refTime: UInt64
     }
 
-    struct WeightV2: Codable {
+    struct WeightV2: Codable, Equatable {
         @StringCodable var refTime: BigUInt
         @StringCodable var proofSize: BigUInt
     }
+
+    typealias Weight = WeightV2
 
     @propertyWrapper
     struct WrappedRefTime: Decodable {
@@ -35,9 +37,9 @@ extension Substrate {
 
     @propertyWrapper
     struct WeightDecodable: Decodable {
-        let wrappedValue: WeightV2
+        let wrappedValue: Weight
 
-        init(wrappedValue: WeightV2) {
+        init(wrappedValue: Weight) {
             self.wrappedValue = wrappedValue
         }
 
@@ -57,9 +59,9 @@ extension Substrate {
 
     @propertyWrapper
     struct OptionalWeightDecodable: Decodable {
-        let wrappedValue: WeightV2?
+        let wrappedValue: Weight?
 
-        init(wrappedValue: WeightV2?) {
+        init(wrappedValue: Weight?) {
             self.wrappedValue = wrappedValue
         }
 
@@ -75,12 +77,8 @@ extension Substrate {
     }
 
     struct BlockWeights: Decodable {
-        @Substrate.WeightDecodable var maxBlock: WeightV2
+        @Substrate.WeightDecodable var maxBlock: Weight
         let perClass: PerDispatchClass<WeightsPerClass>
-
-        var normalExtrinsicMaxWeight: WeightV2? {
-            perClass.normal.maxExtrinsic
-        }
     }
 
     struct PerDispatchClass<T: Decodable>: Decodable {
@@ -90,8 +88,15 @@ extension Substrate {
     }
 
     struct WeightsPerClass: Decodable {
-        @OptionalWeightDecodable var maxExtrinsic: WeightV2?
+        @OptionalWeightDecodable var maxExtrinsic: Weight?
+        @OptionalWeightDecodable var maxTotal: Weight?
     }
 
-    typealias PerDispatchClassWithWeight = PerDispatchClassWithWeight<WeightV2>
+    typealias PerDispatchClassWithWeight = PerDispatchClass<Weight>
+}
+
+extension Substrate.PerDispatchClassWithWeight {
+    var totalWeight: Substrate.Weight {
+        normal + operational + mandatory
+    }
 }

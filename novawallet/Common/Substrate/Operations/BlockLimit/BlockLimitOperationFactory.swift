@@ -4,7 +4,10 @@ import SubstrateSdk
 
 protocol BlockLimitOperationFactoryProtocol {
     func fetchBlockWeights(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Substrate.BlockWeights>
-    func fetchLastBlockWeight(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Substrate.PerDispatchClassWithWeight>
+
+    func fetchLastBlockWeight(
+        for chainId: ChainModel.Id
+    ) -> CompoundOperationWrapper<Substrate.PerDispatchClassWithWeight>
 }
 
 final class BlockLimitOperationFactory {
@@ -38,13 +41,18 @@ extension BlockLimitOperationFactory: BlockLimitOperationFactoryProtocol {
 
             blockWeightsOperation.addDependency(codingFactoryOperation)
 
-            return CompoundOperationWrapper(targetOperation: blockWeightsOperation, dependencies: [codingFactoryOperation])
+            return CompoundOperationWrapper(
+                targetOperation: blockWeightsOperation,
+                dependencies: [codingFactoryOperation]
+            )
         } catch {
             return .createWithError(error)
         }
     }
 
-    func fetchLastBlockWeight(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Substrate.WeightV2> {
+    func fetchLastBlockWeight(
+        for chainId: ChainModel.Id
+    ) -> CompoundOperationWrapper<Substrate.PerDispatchClassWithWeight> {
         do {
             let requestFactory = StorageRequestFactory(
                 remoteFactory: StorageKeyFactory(),
@@ -56,7 +64,7 @@ extension BlockLimitOperationFactory: BlockLimitOperationFactoryProtocol {
 
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-            let queryWrapper: CompoundOperationWrapper<StorageResponse<Substrate.PerDispatchClass>>
+            let queryWrapper: CompoundOperationWrapper<StorageResponse<Substrate.PerDispatchClassWithWeight>>
             queryWrapper = requestFactory.queryItem(
                 engine: connection,
                 factory: {
@@ -67,7 +75,7 @@ extension BlockLimitOperationFactory: BlockLimitOperationFactoryProtocol {
 
             queryWrapper.addDependency(operations: [codingFactoryOperation])
 
-            let mappingOperation = ClosureOperation<Substrate.PerDispatchClass> {
+            let mappingOperation = ClosureOperation<Substrate.PerDispatchClassWithWeight> {
                 guard let response = try queryWrapper.targetOperation.extractNoCancellableResultData().value else {
                     throw CommonError.noDataRetrieved
                 }

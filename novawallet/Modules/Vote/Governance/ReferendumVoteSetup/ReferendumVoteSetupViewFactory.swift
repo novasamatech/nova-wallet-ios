@@ -163,6 +163,7 @@ struct ReferendumVoteSetupViewFactory {
             extrinsicService: extrinsicService,
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
+            chainRegistry: state.chainRegistry,
             operationQueue: operationQueue
         )
     }

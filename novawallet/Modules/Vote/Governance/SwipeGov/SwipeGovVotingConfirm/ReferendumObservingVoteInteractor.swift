@@ -26,6 +26,7 @@ class ReferendumObservingVoteInteractor: ReferendumVoteInteractor {
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.observableState = observableState
@@ -45,6 +46,7 @@ class ReferendumObservingVoteInteractor: ReferendumVoteInteractor {
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
             lockStateFactory: lockStateFactory,
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
     }
