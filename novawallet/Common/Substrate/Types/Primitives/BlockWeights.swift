@@ -5,35 +5,16 @@ import BigInt
 extension Substrate {
     typealias WeightV1 = StringScaleMapper<UInt64>
 
-    struct WeightV1P5: Codable, Equatable {
+    struct WeightV1P5: Decodable, Equatable {
         @StringCodable var refTime: UInt64
     }
 
-    struct WeightV2: Codable, Equatable {
+    struct WeightV2: Decodable, Equatable {
         @StringCodable var refTime: BigUInt
         @StringCodable var proofSize: BigUInt
     }
 
     typealias Weight = WeightV2
-
-    @propertyWrapper
-    struct WrappedRefTime: Decodable {
-        let wrappedValue: UInt64
-
-        init(wrappedValue: UInt64) {
-            self.wrappedValue = wrappedValue
-        }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-
-            if let weight = try? container.decode(WeightV1P5.self) {
-                wrappedValue = weight.refTime
-            } else {
-                wrappedValue = try container.decode(WeightV1.self).value
-            }
-        }
-    }
 
     @propertyWrapper
     struct WeightDecodable: Decodable {
