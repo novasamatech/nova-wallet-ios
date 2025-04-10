@@ -96,7 +96,8 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         let splitter = ExtrinsicSplitter(
             chain: chain,
             maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
-            chainRegistry: chainRegistry
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         return try extrinsicFactory.unlock(

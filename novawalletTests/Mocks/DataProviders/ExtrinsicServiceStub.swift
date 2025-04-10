@@ -124,7 +124,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 
 extension ExtrinsicServiceStub {
     static func dummy() -> ExtrinsicServiceStub {
-        let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: 10005000)
+        let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: .init(refTime: 10005000, proofSize: 0))
 
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
         return ExtrinsicServiceStub(feeResult: .success(fee), txHash: .success(txHash))

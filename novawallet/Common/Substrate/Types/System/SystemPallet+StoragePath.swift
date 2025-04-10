@@ -12,4 +12,8 @@ extension SystemPallet {
     static var eventsPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "Events")
     }
+
+    static var blockWeightPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "BlockWeight")
+    }
 }

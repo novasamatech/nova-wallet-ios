@@ -120,7 +120,7 @@ class ControllerAccountTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(stashBalance), address: stashAddress)
 
-        let fee = ExtrinsicFee(amount: 12600002654, payer: nil, weight: 331759000)
+        let fee = ExtrinsicFee(amount: 12600002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
         presenter.didReceiveFee(result: .success(fee))
 
         // when
@@ -153,7 +153,7 @@ class ControllerAccountTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(assetSmallBalance), address: stashAddress)
 
-        let extraFee = ExtrinsicFee(amount: 126000002654, payer: nil, weight: 331759000)
+        let extraFee = ExtrinsicFee(amount: 126000002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
         presenter.didReceiveFee(result: .success(extraFee))
 
         // when

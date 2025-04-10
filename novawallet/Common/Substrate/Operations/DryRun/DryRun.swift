@@ -34,7 +34,7 @@ enum DryRun {
 
     typealias CallDryRunError = DryRunError<JSON>
 
-    typealias XcmExecutionResult = Xcm.Outcome<BlockchainWeight.WeightV2, JSON>
+    typealias XcmExecutionResult = Xcm.Outcome<Substrate.WeightV2, JSON>
 
     struct XcmDryRunEffects: Decodable {
         let executionResult: XcmExecutionResult

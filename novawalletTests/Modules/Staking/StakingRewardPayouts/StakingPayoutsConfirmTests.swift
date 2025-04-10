@@ -77,7 +77,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
             feeProxy: MultiExtrinsicFeeProxy(),
             chainRegistry: chainRegistry,
             signer: signer,
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             payouts: [PayoutInfo(validator: validatorAccountId, era: 1000, pages: [0], reward: 1, identity: nil)],
             currencyManager: CurrencyManagerStub()
         )

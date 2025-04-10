@@ -10,7 +10,7 @@ extension Xcm {
 
     struct BuyExecutionValue: Codable {
         let fees: Multiasset
-        let weightLimit: Xcm.WeightLimit<BlockchainWeight.WeightV1>
+        let weightLimit: Xcm.WeightLimit<Substrate.WeightV1>
     }
 
     struct DepositReserveAssetValue: Codable {

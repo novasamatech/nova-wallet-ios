@@ -146,6 +146,7 @@ struct ReferendumVoteConfirmViewFactory {
             signer: signer,
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
+            chainRegistry: state.chainRegistry,
             operationQueue: operationQueue
         )
     }

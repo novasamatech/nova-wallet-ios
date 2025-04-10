@@ -40,7 +40,7 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
         indexes: IndexSet,
         payingIn chainAssetId: ChainAssetId?
     ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
-        let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: 10005000)
+        let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: .init(refTime: 10005000, proofSize: 0))
 
         let results = indexes.map { index in
             FeeIndexedExtrinsicResult.IndexedResult(

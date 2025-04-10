@@ -29,6 +29,7 @@ final class ReferendumVoteConfirmInteractor: ReferendumObservingVoteInteractor {
         signer: SigningWrapperProtocol,
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.signer = signer
@@ -49,6 +50,7 @@ final class ReferendumVoteConfirmInteractor: ReferendumObservingVoteInteractor {
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
             lockStateFactory: lockStateFactory,
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
     }

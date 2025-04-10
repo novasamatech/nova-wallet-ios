@@ -48,7 +48,7 @@ final class Scheduler: NSObject, SchedulerProtocol {
         }
 
         clearTimer()
-        
+
         let milliseconds = Int(min(Double(Int.max), 1000.0 * seconds))
 
         timer = DispatchSource.makeTimerSource()

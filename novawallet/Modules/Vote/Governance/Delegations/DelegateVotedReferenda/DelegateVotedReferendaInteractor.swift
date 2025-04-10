@@ -214,7 +214,7 @@ extension DelegateVotedReferendaInteractor: GeneralLocalStorageSubscriber, Gener
                 fetchBlockTime(forceVotingFetch: forceVotingFetch)
                 presenter?.didReceiveBlockNumber(blockNumber)
             }
-        case let .failure(error): break
+        case let .failure(error):
             presenter?.didReceiveError(.blockNumberSubscriptionFailed(error))
         }
     }
