@@ -75,30 +75,32 @@ private extension AssetDetailsPresenter {
     }
 
     func showRamp() {
-        let startFlow: (RampActionType) -> Void = { [weak self] rampType in
+        let availableTypes: [RampActionAvailability] = if availableOperations.buySellAvailable() {
+            [.available(.onRamp), .available(.offRamp)]
+        } else if availableOperations.buyAvailable() {
+            [.available(.onRamp), .unavailable(.offRamp)]
+        } else if availableOperations.sellAvailable() {
+            [.unavailable(.onRamp), .available(.offRamp)]
+        } else {
+            [.unavailable(.onRamp), .unavailable(.offRamp)]
+        }
+
+        wireframe.presentRampActionsSheet(
+            from: view,
+            availableTypes: availableTypes,
+            delegate: self,
+            locale: selectedLocale
+        ) { [weak self] selectedAction in
             guard let self else { return }
 
             startRampFlow(
                 from: view,
                 actions: rampActions,
-                rampType: rampType,
+                rampType: selectedAction,
                 wireframe: wireframe,
                 chainAsset: chainAsset,
                 locale: selectedLocale
             )
-        }
-
-        if availableOperations.buySellAvailable() {
-            wireframe.presentRampActionsSheet(
-                from: view,
-                delegate: self
-            ) { selectedAction in
-                startFlow(selectedAction)
-            }
-        } else if availableOperations.buyAvailable() {
-            startFlow(.onRamp)
-        } else {
-            startFlow(.offRamp)
         }
     }
 
@@ -150,15 +152,6 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     }
 
     func handleBuySell() {
-        guard availableOperations.rampAvailable() else {
-            wireframe.showRampNotSupported(
-                from: view,
-                locale: selectedLocale
-            )
-
-            return
-        }
-
         switch selectedAccount.type {
         case .secrets, .paritySigner, .polkadotVault, .proxied:
             showRamp()

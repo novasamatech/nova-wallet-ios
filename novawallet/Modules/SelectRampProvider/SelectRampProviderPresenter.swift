@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-final class SelectRampProviderPresenter {
+final class SelectRampProviderPresenter: RampFlowManaging {
     weak var view: SelectRampProviderViewProtocol?
     let wireframe: SelectRampProviderWireframeProtocol
     let interactor: SelectRampProviderInteractorInputProtocol
@@ -61,7 +61,8 @@ extension SelectRampProviderPresenter: SelectRampProviderPresenterProtocol {
 
         wireframe.openRampProvider(
             from: view,
-            for: action
+            for: action,
+            locale: localizationManager.selectedLocale
         )
     }
 }

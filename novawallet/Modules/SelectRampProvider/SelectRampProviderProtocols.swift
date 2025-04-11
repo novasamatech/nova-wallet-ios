@@ -1,3 +1,5 @@
+import Foundation
+
 protocol SelectRampProviderViewProtocol: ControllerBackedProtocol {
     func didReceive(_ viewModel: SelectRampProvider.ViewModel)
 }
@@ -15,9 +17,13 @@ protocol SelectRampProviderInteractorOutputProtocol: AnyObject {
     func didReceive(_ rampActions: [RampAction])
 }
 
-protocol SelectRampProviderWireframeProtocol: AnyObject {
+protocol SelectRampProviderWireframeProtocol: AnyObject,
+    AlertPresentable,
+    RampPresentable,
+    RampFlowManaging {
     func openRampProvider(
-        from view: ControllerBackedProtocol?,
-        for action: RampAction
+        from view: (any ControllerBackedProtocol)?,
+        for action: RampAction,
+        locale: Locale
     )
 }
