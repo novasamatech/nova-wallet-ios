@@ -7,8 +7,45 @@ protocol RampFlowManaging {
         rampType: RampActionType,
         wireframe: (RampPresentable & AlertPresentable)?,
         chainAsset: ChainAsset,
+        delegate: RampDelegate,
         locale: Locale
     )
+}
+
+extension RampFlowManaging {
+    func startRampFlow(
+        from view: ControllerBackedProtocol?,
+        actions: [RampAction],
+        rampType: RampActionType,
+        wireframe: (RampPresentable & AlertPresentable)?,
+        chainAsset: ChainAsset,
+        delegate: RampDelegate,
+        locale: Locale
+    ) {
+        let rampActions = actions.filter { $0.type == rampType }
+
+        guard !rampActions.isEmpty else {
+            return
+        }
+        if rampActions.count == 1 {
+            startFlow(
+                view: view,
+                action: rampActions[0],
+                chainAsset: chainAsset,
+                wireframe: wireframe,
+                locale: locale,
+                delegate: delegate
+            )
+        } else {
+            wireframe?.showRampProviders(
+                from: view,
+                actions: rampActions,
+                rampType: rampType,
+                chainAsset: chainAsset,
+                delegate: delegate
+            )
+        }
+    }
 }
 
 extension RampFlowManaging where Self: RampDelegate {
@@ -20,38 +57,26 @@ extension RampFlowManaging where Self: RampDelegate {
         chainAsset: ChainAsset,
         locale: Locale
     ) {
-        let rampActions = actions.filter { $0.type == rampType }
-
-        guard !rampActions.isEmpty else {
-            return
-        }
-        if rampActions.count == 1 {
-            startFlow(
-                from: view,
-                action: rampActions[0],
-                chainAsset: chainAsset,
-                wireframe: wireframe,
-                locale: locale
-            )
-        } else {
-            wireframe?.showRampProviders(
-                from: view,
-                actions: rampActions,
-                rampType: rampType,
-                chainAsset: chainAsset,
-                delegate: self
-            )
-        }
+        startRampFlow(
+            from: view,
+            actions: actions,
+            rampType: rampType,
+            wireframe: wireframe,
+            chainAsset: chainAsset,
+            delegate: self,
+            locale: locale
+        )
     }
 }
 
-private extension RampFlowManaging where Self: RampDelegate {
+private extension RampFlowManaging {
     func startFlow(
-        from view: ControllerBackedProtocol?,
+        view: ControllerBackedProtocol?,
         action: RampAction,
         chainAsset: ChainAsset,
         wireframe: (RampPresentable & AlertPresentable)?,
-        locale: Locale
+        locale: Locale,
+        delegate: RampDelegate
     ) {
         let title = R.string.localizable.commonAlertExternalLinkDisclaimerTitle(preferredLanguages: locale.rLanguages)
         let message = R.string.localizable.commonAlertExternalLinkDisclaimerMessage(
@@ -68,7 +93,7 @@ private extension RampFlowManaging where Self: RampDelegate {
                 from: view,
                 action: action,
                 chainAsset: chainAsset,
-                delegate: self
+                delegate: delegate
             )
         }
 

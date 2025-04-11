@@ -31,8 +31,9 @@ enum ModalPickerFactory {
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.modalTransitioningFactory = factory
 
-        let height = viewController.headerHeight + CGFloat(actions.count) * viewController.cellHeight +
-            viewController.footerHeight
+        let height = title != nil ? viewController.headerHeight : .zero
+            + CGFloat(actions.count) * viewController.cellHeight
+            + viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 
         viewController.localizationManager = LocalizationManager.shared

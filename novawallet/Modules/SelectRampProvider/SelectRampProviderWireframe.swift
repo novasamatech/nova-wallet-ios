@@ -17,17 +17,19 @@ final class SelectRampProviderWireframe {
 extension SelectRampProviderWireframe: SelectRampProviderWireframeProtocol {
     func openRampProvider(
         from view: (any ControllerBackedProtocol)?,
-        for action: RampAction
+        for action: RampAction,
+        locale: Locale
     ) {
-        guard let rampView = RampViewFactory.createView(
-            for: action,
-            chainAsset: chainAsset,
-            delegate: delegate
-        ) else { return }
+        guard let delegate else { return }
 
-        view?.controller.navigationController?.pushViewController(
-            rampView.controller,
-            animated: true
+        startRampFlow(
+            from: view,
+            actions: [action],
+            rampType: action.type,
+            wireframe: self,
+            chainAsset: chainAsset,
+            delegate: delegate,
+            locale: locale
         )
     }
 }

@@ -142,6 +142,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
             headerHeightConstraint.constant = headerHeight
         } else {
             headerHeightConstraint.constant = .zero
+            headerHeight = 0
         }
 
         headerBackgroundView.borderType = headerBorderType

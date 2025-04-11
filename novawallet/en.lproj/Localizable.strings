@@ -1839,3 +1839,7 @@
 "asset.operation.sell.title" = "Sell";
 "ramp.not.supported.alert.title" = "This token is not supported by the buy/sell feature";
 "ramp.not.supported.alert.message" = "None of our providers currently support the buying or selling of this token. Please choose a different token, a different network, or check back later.";
+"onRamp.not.supported.alert.title" = "This token is not supported by the buy feature";
+"onRamp.not.supported.alert.message" = "None of our providers currently support the buying of this token. Please choose a different token, a different network, or check back later.";
+"offRamp.not.supported.alert.title" = "This token is not supported by the sell feature";
+"offRamp.not.supported.alert.message" = "None of our providers currently support the selling of this token. Please choose a different token, a different network, or check back later.";
