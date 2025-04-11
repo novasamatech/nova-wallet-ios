@@ -151,6 +151,11 @@ extension UILabel.Style {
         font: .semiBoldCaps2
     )
 
+    static let semiboldCaps2Chip = UILabel.Style(
+        textColor: R.color.colorChipText(),
+        font: .semiBoldCaps2
+    )
+
     static let semiboldCaps2Positive = UILabel.Style(
         textColor: R.color.colorTextPositive(),
         font: .semiBoldCaps2

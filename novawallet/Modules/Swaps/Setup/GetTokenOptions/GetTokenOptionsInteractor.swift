@@ -7,7 +7,8 @@ final class GetTokenOptionsInteractor {
     let assetModelObservable: AssetListModelObservable
     let destinationChainAsset: ChainAsset
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
-    let purchaseProvider: PurchaseProviderProtocol
+    let rampProvider: RampProviderProtocol
+    let rampType: RampActionType = .onRamp
     let logger: LoggerProtocol
 
     private var xcmTransfers: XcmTransfers?
@@ -17,14 +18,14 @@ final class GetTokenOptionsInteractor {
         destinationChainAsset: ChainAsset,
         assetModelObservable: AssetListModelObservable,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
-        purchaseProvider: PurchaseProviderProtocol,
+        rampProvider: RampProviderProtocol,
         logger: LoggerProtocol
     ) {
         self.selectedWallet = selectedWallet
         self.destinationChainAsset = destinationChainAsset
         self.assetModelObservable = assetModelObservable
         self.xcmTransfersSyncService = xcmTransfersSyncService
-        self.purchaseProvider = purchaseProvider
+        self.rampProvider = rampProvider
         self.logger = logger
     }
 
@@ -41,18 +42,19 @@ final class GetTokenOptionsInteractor {
         }
 
         let availableXcmOrigins = determineAvailableXcmOrigins()
-        let purchaseActions = purchaseProvider.buildPurchaseActions(
+        let onRampActions = rampProvider.buildRampActions(
             for: destinationChainAsset,
             accountId: selectedAccount.chainAccount.accountId
-        )
+        ).filter { $0.type == rampType }
 
         let receiveAvailable = TokenOperation.checkReceiveOperationAvailable(
             walletType: selectedWallet.type,
             chainAsset: destinationChainAsset
         ).available
 
-        let buyAvailable = TokenOperation.checkBuyOperationAvailable(
-            purchaseActions: purchaseActions,
+        let buyAvailable = TokenOperation.checkRampOperationsAvailable(
+            for: onRampActions,
+            rampType: rampType,
             walletType: selectedWallet.type,
             chainAsset: destinationChainAsset
         ).available
@@ -61,7 +63,7 @@ final class GetTokenOptionsInteractor {
             availableXcmOrigins: availableXcmOrigins,
             xcmTransfers: xcmTransfers,
             receiveAccount: receiveAvailable ? selectedAccount : nil,
-            buyOptions: buyAvailable ? purchaseActions : []
+            buyOptions: buyAvailable ? onRampActions : []
         )
 
         presenter?.didReceive(model: model)

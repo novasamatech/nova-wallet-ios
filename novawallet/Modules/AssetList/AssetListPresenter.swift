@@ -4,7 +4,7 @@ import SubstrateSdk
 import Foundation_iOS
 import BigInt
 
-final class AssetListPresenter: BannersModuleInputOwnerProtocol {
+final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtocol {
     typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
     typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
 
@@ -254,7 +254,6 @@ private extension AssetListPresenter {
             return
         }
 
-        let maybePrices = try? model.priceResult?.get()
         let viewModels = createGroupViewModels()
 
         let isFilterOn = hidesZeroBalances == true
@@ -517,7 +516,11 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            self?.buy()
+            self?.wireframe.showRamp(
+                from: self?.view,
+                action: .onRamp,
+                delegate: self
+            )
         }
         wireframe.showSendTokens(
             from: view,
@@ -530,8 +533,19 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showRecieveTokens(from: view)
     }
 
-    func buy() {
-        wireframe.showBuyTokens(from: view)
+    func buySell() {
+        wireframe.presentRampActionsSheet(
+            from: view,
+            availableOptions: .init([.onRamp, .offRamp]),
+            delegate: self,
+            locale: selectedLocale
+        ) { [weak self] rampAction in
+            self?.wireframe.showRamp(
+                from: self?.view,
+                action: rampAction,
+                delegate: self
+            )
+        }
     }
 
     func swap() {
@@ -654,6 +668,65 @@ extension AssetListPresenter: BannersModuleOutputProtocol {
 
     func didUpdateContent(state: BannersState) {
         provideBanners(state: state)
+    }
+}
+
+// MARK: ModalPickerViewControllerDelegate
+
+extension AssetListPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let modalPickerContext = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        modalPickerContext.process(selectedIndex: index)
+    }
+}
+
+// MARK: RampFlowStartingDelegate
+
+extension AssetListPresenter: RampFlowStartingDelegate {
+    func didPickRampParams(
+        actions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset
+    ) {
+        wireframe.dropModalFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            startRampFlow(
+                from: view,
+                actions: actions,
+                rampType: rampType,
+                wireframe: wireframe,
+                chainAsset: chainAsset,
+                locale: selectedLocale
+            )
+        }
+    }
+}
+
+// MARK: RampDelegate
+
+extension AssetListPresenter: RampDelegate {
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset: ChainAsset
+    ) {
+        wireframe.dropModalFlow(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.showAssetDetails(
+                from: view,
+                chain: chainAsset.chain,
+                asset: chainAsset.asset
+            )
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+        }
     }
 }
 

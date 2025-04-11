@@ -294,6 +294,7 @@ private extension CustomNetworkSetupFactory {
                     type: AssetType.evmNative.rawValue,
                     typeExtras: nil,
                     buyProviders: nil,
+                    sellProviders: nil,
                     enabled: true,
                     source: .user
                 )
@@ -341,6 +342,7 @@ private extension CustomNetworkSetupFactory {
                 type: nil,
                 typeExtras: nil,
                 buyProviders: nil,
+                sellProviders: nil,
                 enabled: true,
                 source: .user
             )
