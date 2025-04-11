@@ -534,14 +534,9 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func buySell() {
-        let availableTypes: [RampActionAvailability] = [
-            .available(.onRamp),
-            .available(.offRamp)
-        ]
-
         wireframe.presentRampActionsSheet(
             from: view,
-            availableTypes: availableTypes,
+            availableOptions: .init([.onRamp, .offRamp]),
             delegate: self,
             locale: selectedLocale
         ) { [weak self] rampAction in

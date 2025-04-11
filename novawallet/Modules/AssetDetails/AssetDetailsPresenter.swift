@@ -75,19 +75,19 @@ private extension AssetDetailsPresenter {
     }
 
     func showRamp() {
-        let availableTypes: [RampActionAvailability] = if availableOperations.buySellAvailable() {
-            [.available(.onRamp), .available(.offRamp)]
+        let availableOptions: RampActionAvailabilityOptions = if availableOperations.buySellAvailable() {
+            .init([.onRamp, .offRamp])
         } else if availableOperations.buyAvailable() {
-            [.available(.onRamp), .unavailable(.offRamp)]
+            .init([.onRamp])
         } else if availableOperations.sellAvailable() {
-            [.unavailable(.onRamp), .available(.offRamp)]
+            .init([.offRamp])
         } else {
-            [.unavailable(.onRamp), .unavailable(.offRamp)]
+            .init([])
         }
 
         wireframe.presentRampActionsSheet(
             from: view,
-            availableTypes: availableTypes,
+            availableOptions: availableOptions,
             delegate: self,
             locale: selectedLocale
         ) { [weak self] selectedAction in

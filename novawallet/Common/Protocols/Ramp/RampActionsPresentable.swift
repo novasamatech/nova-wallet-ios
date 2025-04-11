@@ -11,32 +11,6 @@ private enum ManageActions: Int {
     case sell
 }
 
-enum RampActionAvailability {
-    case available(RampActionType)
-    case unavailable(RampActionType)
-
-    var type: RampActionType {
-        switch self {
-        case let .available(rampType), let .unavailable(rampType):
-            return rampType
-        }
-    }
-
-    var available: Bool {
-        switch self {
-        case .available: true
-        case .unavailable: false
-        }
-    }
-
-    func available(_ type: RampActionType) -> Bool {
-        switch self {
-        case let .available(rampType): rampType == type
-        case .unavailable: false
-        }
-    }
-}
-
 struct RampActionAvailabilityOptions: OptionSet {
     typealias RawValue = UInt8
 
@@ -63,25 +37,10 @@ struct RampActionAvailabilityOptions: OptionSet {
     }
 }
 
-extension Array where Element == RampActionAvailability {
-    var options: RampActionAvailabilityOptions {
-        reduce(into: .init(rawValue: 0)) { result, availability in
-            switch availability.type {
-            case .onRamp where availability.available:
-                result.insert(.onRamp)
-            case .offRamp where availability.available:
-                result.insert(.offRamp)
-            default:
-                break
-            }
-        }
-    }
-}
-
 protocol RampActionsPresentable: ActionsManagePresentable {
     func presentRampActionsSheet(
         from view: ControllerBackedProtocol?,
-        availableTypes: [RampActionAvailability],
+        availableOptions: RampActionAvailabilityOptions,
         delegate: ModalPickerViewControllerDelegate?,
         locale: Locale,
         onActionSelect: @escaping (RampActionType) -> Void
@@ -91,16 +50,16 @@ protocol RampActionsPresentable: ActionsManagePresentable {
 extension RampActionsPresentable where Self: AlertPresentable {
     func presentRampActionsSheet(
         from view: ControllerBackedProtocol?,
-        availableTypes: [RampActionAvailability],
+        availableOptions: RampActionAvailabilityOptions,
         delegate: ModalPickerViewControllerDelegate?,
         locale: Locale,
         onActionSelect: @escaping (RampActionType) -> Void
     ) {
         guard let view else { return }
 
-        guard availableTypes.options.notEmpty else {
+        guard availableOptions.notEmpty else {
             showRampNotSupported(
-                availableTypes: availableTypes,
+                availableOptions: availableOptions,
                 from: view,
                 locale: locale
             )
@@ -109,11 +68,11 @@ extension RampActionsPresentable where Self: AlertPresentable {
         }
 
         let modalActionsContext = createModalActionsContext(
-            availableTypes: availableTypes,
+            availableOptions: availableOptions,
             onActionAvailable: onActionSelect,
             onActionUnavailable: { [weak self] in
                 self?.showRampNotSupported(
-                    availableTypes: availableTypes,
+                    availableOptions: availableOptions,
                     from: view,
                     locale: locale
                 )
@@ -132,34 +91,26 @@ extension RampActionsPresentable where Self: AlertPresentable {
 
 private extension RampActionsPresentable where Self: AlertPresentable {
     func createModalActionsContext(
-        availableTypes: [RampActionAvailability],
+        availableOptions: RampActionAvailabilityOptions,
         onActionAvailable: @escaping (RampActionType) -> Void,
         onActionUnavailable: @escaping () -> Void
     ) -> ModalActionsContext {
-        let actionViewModels: [LocalizableResource<ActionManageViewModel>] = availableTypes.map { rampAvailability in
-            let style: ActionManageStyle = rampAvailability.available == true
-                ? .available
-                : .unavailable
-
-            return switch rampAvailability.type {
-            case .onRamp:
-                LocalizableResource { locale in
-                    ActionManageViewModel(
-                        icon: R.image.iconAddStroke(),
-                        title: R.string.localizable.tokenActionsPickerBuy(preferredLanguages: locale.rLanguages),
-                        style: style
-                    )
-                }
-            case .offRamp:
-                LocalizableResource { locale in
-                    ActionManageViewModel(
-                        icon: R.image.iconSellStroke(),
-                        title: R.string.localizable.tokenActionsPickerSell(preferredLanguages: locale.rLanguages),
-                        style: style
-                    )
-                }
+        var actionViewModels: [LocalizableResource<ActionManageViewModel>] = [
+            LocalizableResource { locale in
+                ActionManageViewModel(
+                    icon: R.image.iconAddStroke(),
+                    title: R.string.localizable.tokenActionsPickerBuy(preferredLanguages: locale.rLanguages),
+                    style: availableOptions.contains(.onRamp) ? .available : .unavailable
+                )
+            },
+            LocalizableResource { locale in
+                ActionManageViewModel(
+                    icon: R.image.iconSellStroke(),
+                    title: R.string.localizable.tokenActionsPickerSell(preferredLanguages: locale.rLanguages),
+                    style: availableOptions.contains(.offRamp) ? .available : .unavailable
+                )
             }
-        }
+        ]
 
         let context = ModalPickerClosureContext { index in
             guard let manageAction = ManageActions(rawValue: index) else {
@@ -171,7 +122,7 @@ private extension RampActionsPresentable where Self: AlertPresentable {
             case .sell: .offRamp
             }
 
-            if availableTypes.options.contains(.init(from: actionType)) {
+            if availableOptions.contains(.init(from: actionType)) {
                 onActionAvailable(actionType)
             } else {
                 onActionUnavailable()
@@ -182,7 +133,7 @@ private extension RampActionsPresentable where Self: AlertPresentable {
     }
 
     func showRampNotSupported(
-        availableTypes: [RampActionAvailability],
+        availableOptions: RampActionAvailabilityOptions,
         from view: ControllerBackedProtocol?,
         locale: Locale
     ) {
@@ -191,13 +142,13 @@ private extension RampActionsPresentable where Self: AlertPresentable {
 
         let (title, message): (String, String)
 
-        if !availableTypes.options.notEmpty {
+        if !availableOptions.notEmpty {
             title = localizable.rampNotSupportedAlertTitle(preferredLanguages: languages)
             message = localizable.rampNotSupportedAlertMessage(preferredLanguages: languages)
-        } else if !availableTypes.options.contains(.onRamp) {
+        } else if !availableOptions.contains(.onRamp) {
             title = localizable.onRampNotSupportedAlertTitle(preferredLanguages: languages)
             message = localizable.onRampNotSupportedAlertMessage(preferredLanguages: languages)
-        } else if !availableTypes.options.contains(.offRamp) {
+        } else if !availableOptions.contains(.offRamp) {
             title = localizable.offRampNotSupportedAlertTitle(preferredLanguages: languages)
             message = localizable.offRampNotSupportedAlertMessage(preferredLanguages: languages)
         } else {
