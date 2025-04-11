@@ -140,7 +140,8 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
         let customFeeEstimatingFactory = AssetExchangeFeeEstimatingFactory(
             graphProxy: graphProxy,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            feeBufferInPercentage: AssetExchangeFeeConstants.feeBufferInPercentage
         )
 
         let extrinsicOperationFactory = serviceFactory.createOperationFactory(

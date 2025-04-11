@@ -3,13 +3,16 @@ import Foundation
 final class AssetExchangeFeeEstimatingFactory {
     let graphProxy: AssetQuoteFactoryProtocol
     let operationQueue: OperationQueue
+    let feeBufferInPercentage: BigRational
 
-    // we 10% buffer for fee since swaps to native asset especially volatile
-    let feeBuffer = BigRational.percent(of: 10)
-
-    init(graphProxy: AssetQuoteFactoryProtocol, operationQueue: OperationQueue) {
+    init(
+        graphProxy: AssetQuoteFactoryProtocol,
+        operationQueue: OperationQueue,
+        feeBufferInPercentage: BigRational
+    ) {
         self.graphProxy = graphProxy
         self.operationQueue = operationQueue
+        self.feeBufferInPercentage = feeBufferInPercentage
     }
 }
 
@@ -19,7 +22,7 @@ extension AssetExchangeFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactory
             chainAsset: chainAsset,
             operationQueue: operationQueue,
             quoteFactory: graphProxy,
-            feeBufferInPercentage: feeBuffer
+            feeBufferInPercentage: feeBufferInPercentage
         )
     }
 }
