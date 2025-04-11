@@ -99,6 +99,11 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee
     )
+
+    func popTopControllers(
+        from view: ControllerBackedProtocol?,
+        completion: @escaping () -> Void
+    )
 }
 
 enum SwapSetupViewIssue: Equatable {

@@ -908,10 +908,14 @@ extension SwapSetupPresenter: RampFlowManaging, RampDelegate {
         action: RampActionType,
         chainAsset _: ChainAsset
     ) {
-        wireframe.presentRampDidComplete(
-            view: view,
-            action: action,
-            locale: selectedLocale
-        )
+        wireframe.popTopControllers(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
+        }
     }
 }
