@@ -34,7 +34,7 @@ struct AssetExchangeOperationFee: Equatable {
         // nil means selected account pays fee
         let payer: ExtrinsicFeePayer?
 
-        let weight: BigUInt
+        let weight: Substrate.Weight
 
         func totalAmountEnsuring(
             asset: ChainAssetId,

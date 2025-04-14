@@ -166,7 +166,7 @@ final class GovernanceUnlockConfirmPresenter {
         let actions = unlockSchedule.availableUnlock(at: blockNumber).actions
 
         guard !actions.isEmpty else {
-            fee = ExtrinsicFee(amount: 0, payer: nil, weight: 0)
+            fee = ExtrinsicFee(amount: 0, payer: nil, weight: .zero)
 
             provideFeeViewModel()
 

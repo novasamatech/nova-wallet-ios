@@ -14,6 +14,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
     let extrinsicService: ExtrinsicServiceProtocol
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let signer: SigningWrapperProtocol
+    let operationQueue: OperationQueue
 
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
@@ -28,6 +29,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
         extrinsicService: ExtrinsicServiceProtocol,
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         signer: SigningWrapperProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -39,6 +41,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
         self.extrinsicService = extrinsicService
         self.extrinsicFactory = extrinsicFactory
         self.signer = signer
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -106,7 +109,8 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
         let splitter = ExtrinsicSplitter(
             chain: chain,
             maxCallsPerExtrinsic: selectedAccount.type.maxCallsPerExtrinsic,
-            chainRegistry: chainRegistry
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         return try extrinsicFactory.unlock(
