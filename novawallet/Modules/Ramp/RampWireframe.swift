@@ -25,7 +25,7 @@ extension RampWireframe: RampWireframeProtocol {
         from view: (any ControllerBackedProtocol)?,
         with transferModel: PayCardTopupModel
     ) {
-        guard let sendTransferView = TransferSetupViewFactory.createCardTopUpView(
+        guard let sendTransferView = TransferSetupViewFactory.createOffRampView(
             from: transferModel.chainAsset,
             recepient: DisplayAddress(address: transferModel.recipientAddress, username: ""),
             amount: transferModel.amount

@@ -1844,3 +1844,4 @@
 "ramp.not.supported.alert.message" = "Egyik szolgáltatónk sem támogatja jelenleg ennek a tokennek a vásárlását vagy eladását. Kérjük, válasszon másik tokent, másik hálózatot, vagy térjen vissza később.";
 "onRamp.not.supported.alert.message" = "Egyik szolgáltatónk sem támogatja jelenleg ennek a tokennek a vásárlását. Kérjük, válasszon másik tokent, másik hálózatot, vagy térjen vissza később.";
 "offRamp.not.supported.alert.message" = "Egyik szolgáltatónk sem támogatja jelenleg ennek a tokennek az eladását. Kérjük, válasszon másik tokent, másik hálózatot, vagy térjen vissza később.";
+"sell.named.token" = "%@ token eladása";
