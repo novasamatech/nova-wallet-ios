@@ -33638,7 +33638,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.notificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-extension-appstore-levan";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-extension-adhoc-ruslan";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -33888,7 +33888,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 9.8.0;
+				MARKETING_VERSION = 7.5.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -33922,12 +33922,12 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 9.8.0;
+				MARKETING_VERSION = 7.5.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-appstore";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-appstore-levan";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-adhoc-ruslan";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -34071,7 +34071,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 9.8.0;
+				MARKETING_VERSION = 7.5.0;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -34185,7 +34185,7 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				MARKETING_VERSION = 9.8.0;
+				MARKETING_VERSION = 7.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-staging";
