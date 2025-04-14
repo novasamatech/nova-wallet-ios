@@ -66,21 +66,13 @@ enum TransferSetupViewFactory {
         amount: Decimal? = nil,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        let view = createRampTranserSetupView(
+        createRampTransferSetupView(
             from: chainAsset,
             recepient: recepient,
             amount: amount,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            flowType: .offRamp
         )
-
-        view?.titleResource = LocalizableResource { locale in
-            R.string.localizable.sellNamedToken(
-                chainAsset.asset.symbol,
-                preferredLanguages: locale.rLanguages
-            )
-        }
-
-        return view
     }
 
     static func createCardTopUpView(
@@ -89,20 +81,13 @@ enum TransferSetupViewFactory {
         amount: Decimal? = nil,
         transferCompletion: TransferCompletionClosure? = nil
     ) -> TransferSetupViewProtocol? {
-        let view = createRampTranserSetupView(
+        createRampTransferSetupView(
             from: chainAsset,
             recepient: recepient,
             amount: amount,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            flowType: .cardTopUp
         )
-
-        view?.titleResource = LocalizableResource { locale in
-            R.string.localizable.cardTopUpDotSetupTitle(
-                preferredLanguages: locale.rLanguages
-            )
-        }
-
-        return view
     }
 
     static func createView(
@@ -191,8 +176,10 @@ enum TransferSetupViewFactory {
 
         return view
     }
+}
 
-    private static func createPresenterFactory(
+private extension TransferSetupViewFactory {
+    static func createPresenterFactory(
         for wallet: MetaAccountModel,
         transferCompletion: TransferCompletionClosure?
     ) -> TransferSetupPresenterFactory {
@@ -206,11 +193,12 @@ enum TransferSetupViewFactory {
         )
     }
 
-    private static func createRampTranserSetupView(
+    static func createRampTransferSetupView(
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
         amount: Decimal? = nil,
-        transferCompletion: TransferCompletionClosure? = nil
+        transferCompletion: TransferCompletionClosure? = nil,
+        flowType: RampFlowTransferType
     ) -> CardTopUpTransferSetupViewController? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -261,9 +249,26 @@ enum TransferSetupViewFactory {
             logger: Logger.shared
         )
 
+        let title = switch flowType {
+        case .offRamp:
+            LocalizableResource { locale in
+                R.string.localizable.sellNamedToken(
+                    chainAsset.asset.symbol,
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        case .cardTopUp:
+            LocalizableResource { locale in
+                R.string.localizable.cardTopUpDotSetupTitle(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        }
+
         let view = CardTopUpTransferSetupViewController(
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            titleResource: title
         )
 
         presenter.childPresenter = presenterFactory.createOnChainPresenter(
@@ -278,7 +283,7 @@ enum TransferSetupViewFactory {
         return view
     }
 
-    private static func createInteractor(for params: TransferSetupViewParams) -> TransferSetupInteractor? {
+    static func createInteractor(for params: TransferSetupViewParams) -> TransferSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let syncService = XcmTransfersSyncService(
@@ -306,5 +311,12 @@ enum TransferSetupViewFactory {
             web3NamesService: web3NameService,
             operationManager: OperationManager()
         )
+    }
+}
+
+private extension TransferSetupViewFactory {
+    enum RampFlowTransferType {
+        case offRamp
+        case cardTopUp
     }
 }
