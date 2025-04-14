@@ -12,7 +12,7 @@ final class ExtrinsicAssetConversionFeeEstimator {
         chainAsset: ChainAsset,
         operationQueue: OperationQueue,
         quoteFactory: AssetQuoteFactoryProtocol,
-        feeBufferInPercentage: BigRational = BigRational.percent(of: 0) // no overestimation by default
+        feeBufferInPercentage: BigRational
     ) {
         self.chainAsset = chainAsset
         self.operationQueue = operationQueue
