@@ -1844,3 +1844,4 @@
 "ramp.not.supported.alert.message" = "Aucun de nos fournisseurs ne supporte actuellement l'achat ou la vente de ce jeton. Veuillez choisir un jeton différent, un réseau différent, ou revenir plus tard.";
 "onRamp.not.supported.alert.message" = "Aucun de nos fournisseurs ne supporte actuellement l'achat de ce jeton. Veuillez choisir un jeton différent, un réseau différent, ou revenir plus tard.";
 "offRamp.not.supported.alert.message" = "Aucun de nos fournisseurs ne supporte actuellement la vente de ce jeton. Veuillez choisir un jeton différent, un réseau différent, ou revenir plus tard.";
+"sell.named.token" = "Vendre le jeton %@";

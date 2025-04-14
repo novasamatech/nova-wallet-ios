@@ -1844,3 +1844,4 @@
 "ramp.not.supported.alert.message" = "Tidak ada penyedia kami yang saat ini mendukung pembelian atau penjualan token ini. Silakan pilih token lain, jaringan lain, atau periksa kembali nanti.";
 "onRamp.not.supported.alert.message" = "Tidak ada penyedia kami yang saat ini mendukung pembelian token ini. Silakan pilih token lain, jaringan lain, atau periksa kembali nanti.";
 "offRamp.not.supported.alert.message" = "Tidak ada penyedia kami yang saat ini mendukung penjualan token ini. Silakan pilih token lain, jaringan lain, atau periksa kembali nanti.";
+"sell.named.token" = "Jual token %@";

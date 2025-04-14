@@ -6,6 +6,8 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
 
     let presenter: TransferSetupPresenterProtocol
 
+    var titleResource: LocalizableResource<String>?
+
     init(
         presenter: TransferSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -55,9 +57,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.title.text = R.string.localizable.cardTopUpDotSetupTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.title.text = titleResource?.value(for: selectedLocale)
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages

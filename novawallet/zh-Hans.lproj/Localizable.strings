@@ -1844,3 +1844,4 @@
 "ramp.not.supported.alert.message" = "当前没有供应商支持购买或出售此代币。请选择其他代币、其他网络或稍后再试。";
 "onRamp.not.supported.alert.message" = "当前没有供应商支持购买此代币。请选择其他代币、其他网络或稍后再试。";
 "offRamp.not.supported.alert.message" = "当前没有供应商支持出售此代币。请选择其他代币、其他网络或稍后再试。";
+"sell.named.token" = "出售%@代币";

@@ -1844,3 +1844,4 @@
 "ramp.not.supported.alert.message" = "Nenhum de nossos provedores atualmente suporta a compra ou venda deste token. Por favor, escolha um token diferente, uma rede diferente ou volte mais tarde.";
 "onRamp.not.supported.alert.message" = "Nenhum de nossos provedores atualmente suporta a compra deste token. Por favor, escolha um token diferente, uma rede diferente ou volte mais tarde.";
 "offRamp.not.supported.alert.message" = "Nenhum de nossos provedores atualmente suporta a venda deste token. Por favor, escolha um token diferente, uma rede diferente ou volte mais tarde.";
+"sell.named.token" = "Vender token %@";
