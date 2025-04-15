@@ -12,10 +12,14 @@ protocol AssetBalanceFormatterFactoryProtocol {
 
     func createTokenFormatter(
         for info: AssetBalanceDisplayInfo,
-        roundingMode: NumberFormatter.RoundingMode
+        roundingMode: NumberFormatter.RoundingMode,
+        useSuffixForBigNumbers: Bool
     ) -> LocalizableResource<TokenFormatter>
 
-    func createAssetPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
+    func createAssetPriceFormatter(
+        for info: AssetBalanceDisplayInfo,
+        useSuffixForBigNumbers: Bool
+    ) -> LocalizableResource<TokenFormatter>
 
     func createTotalPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
 
@@ -26,15 +30,37 @@ protocol AssetBalanceFormatterFactoryProtocol {
 
 extension AssetBalanceFormatterFactoryProtocol {
     func createTokenFormatter(
-        for info: AssetBalanceDisplayInfo
+        for info: AssetBalanceDisplayInfo,
+        roundingMode: NumberFormatter.RoundingMode = .down,
+        usesSuffixForBigNumbers: Bool = true
     ) -> LocalizableResource<TokenFormatter> {
-        createTokenFormatter(for: info, roundingMode: .down)
+        createTokenFormatter(
+            for: info,
+            roundingMode: roundingMode,
+            useSuffixForBigNumbers: usesSuffixForBigNumbers
+        )
     }
 
     func createFeeTokenFormatter(
-        for info: AssetBalanceDisplayInfo
+        for info: AssetBalanceDisplayInfo,
+        roundingMode: NumberFormatter.RoundingMode = .up,
+        usesSuffixForBigNumbers: Bool = true
     ) -> LocalizableResource<TokenFormatter> {
-        createTokenFormatter(for: info, roundingMode: .up)
+        createTokenFormatter(
+            for: info,
+            roundingMode: roundingMode,
+            useSuffixForBigNumbers: usesSuffixForBigNumbers
+        )
+    }
+
+    func createAssetPriceFormatter(
+        for info: AssetBalanceDisplayInfo,
+        useSuffixForBigNumbers: Bool = true
+    ) -> LocalizableResource<TokenFormatter> {
+        createAssetPriceFormatter(
+            for: info,
+            useSuffixForBigNumbers: useSuffixForBigNumbers
+        )
     }
 }
 
@@ -155,9 +181,14 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
 
     func createTokenFormatter(
         for info: AssetBalanceDisplayInfo,
-        roundingMode: NumberFormatter.RoundingMode
+        roundingMode: NumberFormatter.RoundingMode,
+        useSuffixForBigNumbers: Bool
     ) -> LocalizableResource<TokenFormatter> {
-        createTokenFormatterCommon(for: info, roundingMode: roundingMode)
+        createTokenFormatterCommon(
+            for: info,
+            roundingMode: roundingMode,
+            usesSuffixForBigNumbers: useSuffixForBigNumbers
+        )
     }
 
     func createAssetPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {

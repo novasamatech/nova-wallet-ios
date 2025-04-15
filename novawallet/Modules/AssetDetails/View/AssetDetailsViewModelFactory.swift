@@ -13,8 +13,15 @@ struct AssetDetailsBalanceModelParams {
 }
 
 protocol AssetDetailsViewModelFactoryProtocol {
-    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
-    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter>
+    func amountFormatter(
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        shrinkBigNumbers: Bool
+    ) -> LocalizableResource<TokenFormatter>
+
+    func priceFormatter(
+        priceId: Int?,
+        shrinkBigNumbers: Bool
+    ) -> LocalizableResource<TokenFormatter>
 
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel
 
@@ -48,9 +55,14 @@ private extension AssetDetailsViewModelFactory {
         for value: BigUInt,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
+        shrinkBigNumbers: Bool,
         locale: Locale
     ) -> BalanceViewModel {
-        let formatter = amountFormatter(assetDisplayInfo: assetDisplayInfo).value(for: locale)
+        let formatter = amountFormatter(
+            assetDisplayInfo: assetDisplayInfo,
+            shrinkBigNumbers: shrinkBigNumbers
+        ).value(for: locale)
+
         let amount = value.decimal(precision: UInt16(assetDisplayInfo.assetPrecision))
         let amountString = formatter.stringFromDecimal(amount) ?? ""
 
@@ -64,9 +76,12 @@ private extension AssetDetailsViewModelFactory {
             )
         }
 
-        let priceString = priceFormatter(priceId: priceData.currencyId)
-            .value(for: locale)
-            .stringFromDecimal(price * amount) ?? ""
+        let priceString = priceFormatter(
+            priceId: priceData.currencyId,
+            shrinkBigNumbers: shrinkBigNumbers
+        )
+        .value(for: locale)
+        .stringFromDecimal(price * amount) ?? ""
 
         return BalanceViewModel(
             amount: amountString,
@@ -78,14 +93,15 @@ private extension AssetDetailsViewModelFactory {
 extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel {
         let models = [
-            params.total,
-            params.locked,
-            params.transferrable
-        ].map { value in
+            (value: params.total, shrinkBigNumbers: false),
+            (value: params.locked, shrinkBigNumbers: false),
+            (value: params.transferrable, shrinkBigNumbers: false)
+        ].map { pair in
             createBalanceModel(
-                for: value,
+                for: pair.value,
                 assetDisplayInfo: params.assetDisplayInfo,
                 priceData: params.priceData,
+                shrinkBigNumbers: pair.shrinkBigNumbers,
                 locale: params.locale
             )
         }
@@ -117,12 +133,25 @@ extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         )
     }
 
-    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
+    func priceFormatter(
+        priceId: Int?,
+        shrinkBigNumbers: Bool
+    ) -> LocalizableResource<TokenFormatter> {
         let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
-        return assetBalanceFormatterFactory.createAssetPriceFormatter(for: assetBalanceDisplayInfo)
+
+        return assetBalanceFormatterFactory.createAssetPriceFormatter(
+            for: assetBalanceDisplayInfo,
+            useSuffixForBigNumbers: shrinkBigNumbers
+        )
     }
 
-    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
-        assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+    func amountFormatter(
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        shrinkBigNumbers: Bool
+    ) -> LocalizableResource<TokenFormatter> {
+        assetBalanceFormatterFactory.createTokenFormatter(
+            for: assetDisplayInfo,
+            usesSuffixForBigNumbers: shrinkBigNumbers
+        )
     }
 }
