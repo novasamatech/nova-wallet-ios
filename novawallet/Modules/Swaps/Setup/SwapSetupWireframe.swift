@@ -98,7 +98,7 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
 
     func showGetTokenOptions(
         form view: ControllerBackedProtocol?,
-        purchaseHadler: PurchaseFlowManaging,
+        purchaseHadler: RampFlowManaging & RampDelegate,
         destinationChainAsset: ChainAsset,
         locale: Locale
     ) {
@@ -122,10 +122,12 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
                     metaChainAccountResponse: account
                 )
             case let .buy(actions):
-                purchaseHadler?.startPuchaseFlow(
+                purchaseHadler?.startRampFlow(
                     from: view,
-                    purchaseActions: actions,
+                    actions: actions,
+                    rampType: .onRamp,
                     wireframe: self,
+                    chainAsset: destinationChainAsset,
                     locale: locale
                 )
             }
@@ -216,5 +218,31 @@ final class SwapSetupWireframe: SwapSetupWireframeProtocol {
         let navigationController = NovaNavigationController(rootViewController: routeDetailsView.controller)
 
         view?.controller.present(navigationController, animated: true)
+    }
+
+    func popTopControllers(
+        from view: ControllerBackedProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        guard let controller = view?.controller else { return }
+
+        if let presentedViewController = controller.presentedViewController {
+            // In case we have many providers, selection screen is presented modally
+            presentedViewController.dismiss(
+                animated: true,
+                completion: completion
+            )
+        } else {
+            // In case we have single provider, ramp screen is pushed on navigation stack
+            CATransaction.begin()
+            CATransaction.setCompletionBlock { completion() }
+
+            controller.navigationController?.popToViewController(
+                controller,
+                animated: true
+            )
+
+            CATransaction.commit()
+        }
     }
 }

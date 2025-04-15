@@ -18,6 +18,7 @@ extension AssetModel {
             type: AssetType.evmAsset.rawValue,
             typeExtras: JSON.stringValue(request.contractAddress),
             buyProviders: nil,
+            sellProviders: nil,
             enabled: true,
             source: .user
         )

@@ -54,14 +54,14 @@ final class AssetDetailsViewLayout: UIView {
 
     let sendButton: RoundedButton = createOperationButton(icon: R.image.iconSend())
     let receiveButton: RoundedButton = createOperationButton(icon: R.image.iconReceive())
-    let buyButton: RoundedButton = createOperationButton(icon: R.image.iconBuy())
+    let buySellButton: RoundedButton = createOperationButton(icon: R.image.iconBuy(), enabled: true)
     let swapButton = createOperationButton(icon: R.image.iconActionChange())
 
     private var currentBalanceHeight = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
-        views: [sendButton, receiveButton, swapButton, buyButton]
+        views: [sendButton, receiveButton, swapButton, buySellButton]
     )
 
     private var chartViewHeight: CGFloat = .zero
@@ -77,14 +77,17 @@ final class AssetDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private static func createOperationButton(icon: UIImage?) -> RoundedButton {
+    private static func createOperationButton(
+        icon: UIImage?,
+        enabled: Bool = false
+    ) -> RoundedButton {
         let button = RoundedButton()
         button.apply(style: .operation)
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
         button.contentOpacityWhenDisabled = 0.2
         button.changesContentOpacityWhenHighlighted = true
         button.imageWithTitleView?.layoutType = .verticalImageFirst
-        button.isEnabled = false
+        button.isEnabled = enabled
         button.imageWithTitleView?.iconImage = icon
         return button
     }
@@ -158,11 +161,6 @@ final class AssetDetailsViewLayout: UIView {
             preferredLanguages: languages
         )
         swapButton.invalidateLayout()
-
-        buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
-            preferredLanguages: languages
-        )
-        buyButton.invalidateLayout()
     }
 
     func set(assetDetailsModel: AssetDetailsModel) {

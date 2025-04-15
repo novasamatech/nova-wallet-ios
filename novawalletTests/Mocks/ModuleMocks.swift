@@ -23125,6 +23125,21 @@ import UIKit.UIImage
     
     
     
+     func authorize(animated: Bool, cancellable: Bool, with completionBlock: @escaping AuthorizationCompletionBlock)  {
+        
+    return cuckoo_manager.call("authorize(animated: Bool, cancellable: Bool, with: @escaping AuthorizationCompletionBlock)",
+            parameters: (animated, cancellable, completionBlock),
+            escapingParameters: (animated, cancellable, completionBlock),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.authorize(animated: animated, cancellable: cancellable, with: completionBlock))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -23292,6 +23307,11 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showAppearance(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func authorize<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(animated: M1, cancellable: M2, with completionBlock: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool, Bool, AuthorizationCompletionBlock)> where M1.MatchedType == Bool, M2.MatchedType == Bool, M3.MatchedType == AuthorizationCompletionBlock {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool, Bool, AuthorizationCompletionBlock)>] = [wrap(matchable: animated) { $0.0 }, wrap(matchable: cancellable) { $0.1 }, wrap(matchable: completionBlock) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "authorize(animated: Bool, cancellable: Bool, with: @escaping AuthorizationCompletionBlock)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -23419,6 +23439,12 @@ import UIKit.UIImage
 	    func showAppearance<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("showAppearance(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func authorize<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(animated: M1, cancellable: M2, with completionBlock: M3) -> Cuckoo.__DoNotUse<(Bool, Bool, AuthorizationCompletionBlock), Void> where M1.MatchedType == Bool, M2.MatchedType == Bool, M3.MatchedType == AuthorizationCompletionBlock {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool, Bool, AuthorizationCompletionBlock)>] = [wrap(matchable: animated) { $0.0 }, wrap(matchable: cancellable) { $0.1 }, wrap(matchable: completionBlock) { $0.2 }]
+	        return cuckoo_manager.verify("authorize(animated: Bool, cancellable: Bool, with: @escaping AuthorizationCompletionBlock)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -23550,6 +23576,12 @@ import UIKit.UIImage
     
     
      func showAppearance(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func authorize(animated: Bool, cancellable: Bool, with completionBlock: @escaping AuthorizationCompletionBlock)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

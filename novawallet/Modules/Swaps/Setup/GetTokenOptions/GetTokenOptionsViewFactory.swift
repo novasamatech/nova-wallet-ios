@@ -71,7 +71,7 @@ enum GetTokenOptionsViewFactory {
             destinationChainAsset: destinationChainAsset,
             assetModelObservable: assetModelObservable,
             xcmTransfersSyncService: xcmTransfersSyncService,
-            purchaseProvider: PurchaseAggregator.defaultAggregator(),
+            rampProvider: RampAggregator.defaultAggregator(),
             logger: Logger.shared
         )
     }
