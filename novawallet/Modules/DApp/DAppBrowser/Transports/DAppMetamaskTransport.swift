@@ -1,6 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import Keystore_iOS
 
 struct MetamaskTransportState {
     let name: String
@@ -35,16 +36,19 @@ final class DAppMetamaskTransport {
     private(set) var dataSource: DAppBrowserStateDataSource?
     private(set) var state: DAppMetamaskStateProtocol?
 
+    private let settingsManager: SettingsManagerProtocol
     private let logger: LoggerProtocol
 
     let isDebug: Bool
 
     init(
         isDebug: Bool,
-        logger: LoggerProtocol = Logger.shared
+        logger: LoggerProtocol = Logger.shared,
+        settingsManager: SettingsManagerProtocol = SettingsManager.shared
     ) {
         self.isDebug = isDebug
         self.logger = logger
+        self.settingsManager = settingsManager
     }
 
     private func createConfirmationRequest(
@@ -260,7 +264,11 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
             return false
         }
 
-        self.state = DAppMetamaskPhishingDetectedState(stateMachine: self, chain: state.chain)
+        self.state = DAppMetamaskPhishingDetectedState(
+            stateMachine: self,
+            chain: state.chain,
+            settingsManager: settingsManager
+        )
 
         return true
     }
@@ -268,7 +276,13 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
     func start(with dataSource: DAppBrowserStateDataSource) {
         self.dataSource = dataSource
 
-        state = DAppMetamaskWaitingAuthState(stateMachine: self, chain: .etheremChain)
+        let chain = settingsManager.defaultMetamaskChain
+
+        state = DAppMetamaskWaitingAuthState(
+            stateMachine: self,
+            chain: chain,
+            settingsManager: settingsManager
+        )
     }
 
     func process(message: Any, host: String) {

@@ -28,6 +28,7 @@ enum SettingsKey: String {
     case closedBanners
     case mythosRestakeEnabled
     case hideUnifiedAddressPopup
+    case defaultMetamaskChain
 }
 
 extension SettingsManagerProtocol {
@@ -334,6 +335,21 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.hideUnifiedAddressPopup.rawValue)
+        }
+    }
+
+    var defaultMetamaskChain: MetamaskChain {
+        get {
+            value(
+                of: MetamaskChain.self,
+                for: SettingsKey.defaultMetamaskChain.rawValue
+            ) ?? MetamaskChain.ethereumChain
+        }
+        set {
+            set(
+                value: newValue,
+                for: SettingsKey.defaultMetamaskChain.rawValue
+            )
         }
     }
 }

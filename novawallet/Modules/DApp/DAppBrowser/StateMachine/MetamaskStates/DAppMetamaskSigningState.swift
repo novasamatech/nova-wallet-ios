@@ -1,12 +1,22 @@
 import Foundation
+import Keystore_iOS
 
 final class DAppMetamaskSigningState: DAppMetamaskBaseState {
     let requestId: MetamaskMessage.Id
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain, requestId: MetamaskMessage.Id) {
+    init(
+        stateMachine: DAppMetamaskStateMachineProtocol?,
+        chain: MetamaskChain,
+        settingsManager: SettingsManagerProtocol,
+        requestId: MetamaskMessage.Id
+    ) {
         self.requestId = requestId
 
-        super.init(stateMachine: stateMachine, chain: chain)
+        super.init(
+            stateMachine: stateMachine,
+            chain: chain,
+            settingsManager: settingsManager
+        )
     }
 }
 
@@ -30,7 +40,11 @@ extension DAppMetamaskSigningState: DAppMetamaskStateProtocol {
     }
 
     func handleOperation(response: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
-        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+        let nextState = DAppMetamaskAuthorizedState(
+            stateMachine: stateMachine,
+            chain: chain,
+            settingsManager: settingsManager
+        )
 
         if let signature = response.signature {
             do {

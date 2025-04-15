@@ -25,6 +25,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         let nextState = DAppMetamaskSigningState(
             stateMachine: stateMachine,
             chain: chain,
+            settingsManager: settingsManager,
             requestId: requestId
         )
 
@@ -69,6 +70,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         let nextState = DAppMetamaskSigningState(
             stateMachine: stateMachine,
             chain: chain,
+            settingsManager: settingsManager,
             requestId: requestId
         )
 
@@ -106,9 +108,17 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
                     from: message,
                     dataSource: dataSource,
                     nextStateSuccessClosure: { newChain in
-                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: newChain)
+                        DAppMetamaskAuthorizedState(
+                            stateMachine: stateMachine,
+                            chain: newChain,
+                            settingsManager: settingsManager
+                        )
                     }, nextStateFailureClosure: { _ in
-                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+                        DAppMetamaskAuthorizedState(
+                            stateMachine: stateMachine,
+                            chain: chain,
+                            settingsManager: settingsManager
+                        )
                     }
                 )
             case .switchEthereumChain:
@@ -116,9 +126,17 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
                     from: message,
                     dataSource: dataSource,
                     nextStateSuccessClosure: { newChain in
-                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: newChain)
+                        DAppMetamaskAuthorizedState(
+                            stateMachine: stateMachine,
+                            chain: newChain,
+                            settingsManager: settingsManager
+                        )
                     }, nextStateFailureClosure: { _ in
-                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+                        DAppMetamaskAuthorizedState(
+                            stateMachine: stateMachine,
+                            chain: chain,
+                            settingsManager: settingsManager
+                        )
                     }
                 )
             case .signTransaction:

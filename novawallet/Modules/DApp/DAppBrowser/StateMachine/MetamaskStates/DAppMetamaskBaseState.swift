@@ -1,12 +1,19 @@
 import Foundation
+import Keystore_iOS
 
 class DAppMetamaskBaseState {
     weak var stateMachine: DAppMetamaskStateMachineProtocol?
     let chain: MetamaskChain
+    let settingsManager: SettingsManagerProtocol
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain) {
+    init(
+        stateMachine: DAppMetamaskStateMachineProtocol?,
+        chain: MetamaskChain,
+        settingsManager: SettingsManagerProtocol
+    ) {
         self.stateMachine = stateMachine
         self.chain = chain
+        self.settingsManager = settingsManager
     }
 
     func extendingMetamaskChainWithSubstrate(
@@ -39,7 +46,11 @@ class DAppMetamaskBaseState {
             $0.toEthereumAddressWithChecksum()
         }
 
-        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+        let nextState = DAppMetamaskAuthorizedState(
+            stateMachine: stateMachine,
+            chain: chain,
+            settingsManager: settingsManager
+        )
 
         guard let selectedAddress = addresses.first else {
             provideResponse(for: messageId, results: [], nextState: nextState)
@@ -75,11 +86,13 @@ class DAppMetamaskBaseState {
         }
 
         let ethereumChain = extendingMetamaskChainWithSubstrate(
-            MetamaskChain.etheremChain,
+            MetamaskChain.ethereumChain,
             dataSource: dataSource
         )
 
         if request.chainId == ethereumChain.chainId {
+            settingsManager.defaultMetamaskChain = ethereumChain
+
             let changeChainCommands = createChangeChainCommands(
                 for: ethereumChain.chainId,
                 rpcUrl: ethereumChain.rpcUrls.first
@@ -118,6 +131,8 @@ class DAppMetamaskBaseState {
         }
 
         if newChain.chainId != chain.chainId {
+            settingsManager.defaultMetamaskChain = newChain
+
             let changeChainCommands = createChangeChainCommands(
                 for: newChain.chainId,
                 rpcUrl: newChain.rpcUrls.first

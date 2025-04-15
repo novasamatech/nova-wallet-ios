@@ -59,6 +59,7 @@ final class DAppMetamaskWaitingAuthState: DAppMetamaskBaseState {
         let nextState = DAppMetamaskAuthorizingState(
             stateMachine: stateMachine,
             chain: chain,
+            settingsManager: settingsManager,
             requestId: message.identifier,
             host: host
         )
@@ -88,10 +89,18 @@ extension DAppMetamaskWaitingAuthState: DAppMetamaskStateProtocol {
                 from: message,
                 dataSource: dataSource,
                 nextStateSuccessClosure: { newChain in
-                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: newChain)
+                    DAppMetamaskWaitingAuthState(
+                        stateMachine: stateMachine,
+                        chain: newChain,
+                        settingsManager: settingsManager
+                    )
                 },
                 nextStateFailureClosure: { _ in
-                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: chain)
+                    DAppMetamaskWaitingAuthState(
+                        stateMachine: stateMachine,
+                        chain: chain,
+                        settingsManager: settingsManager
+                    )
                 }
             )
         case .addEthereumChain:
@@ -99,9 +108,17 @@ extension DAppMetamaskWaitingAuthState: DAppMetamaskStateProtocol {
                 from: message,
                 dataSource: dataSource,
                 nextStateSuccessClosure: { newChain in
-                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: newChain)
+                    DAppMetamaskWaitingAuthState(
+                        stateMachine: stateMachine,
+                        chain: newChain,
+                        settingsManager: settingsManager
+                    )
                 }, nextStateFailureClosure: { _ in
-                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: chain)
+                    DAppMetamaskWaitingAuthState(
+                        stateMachine: stateMachine,
+                        chain: chain,
+                        settingsManager: settingsManager
+                    )
                 }
             )
         default:
