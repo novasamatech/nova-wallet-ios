@@ -93,15 +93,15 @@ private extension AssetDetailsViewModelFactory {
 extension AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
     func createBalanceViewModel(params: AssetDetailsBalanceModelParams) -> AssetDetailsBalanceModel {
         let models = [
-            (value: params.total, shrinkBigNumbers: false),
-            (value: params.locked, shrinkBigNumbers: false),
-            (value: params.transferrable, shrinkBigNumbers: false)
-        ].map { pair in
+            params.total,
+            params.locked,
+            params.transferrable
+        ].map { value in
             createBalanceModel(
-                for: pair.value,
+                for: value,
                 assetDisplayInfo: params.assetDisplayInfo,
                 priceData: params.priceData,
-                shrinkBigNumbers: pair.shrinkBigNumbers,
+                shrinkBigNumbers: false,
                 locale: params.locale
             )
         }
