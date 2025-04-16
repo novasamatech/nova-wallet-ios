@@ -309,6 +309,8 @@ private extension TransferSetupViewFactory {
             chainsStore: chainsStore,
             accountRepository: accountRepository,
             web3NamesService: web3NameService,
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
+            operationQueue: operationQueue,
             operationManager: OperationManager()
         )
     }

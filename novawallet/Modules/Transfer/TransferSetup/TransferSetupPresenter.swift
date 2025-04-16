@@ -81,7 +81,6 @@ final class TransferSetupPresenter {
         self.wallet = wallet
         self.chainAsset = chainAsset
         self.whoChainAssetPeer = whoChainAssetPeer
-        peerChainAsset = chainAssetPeers?.first
         availablePeers = chainAssetPeers
         self.childPresenterFactory = childPresenterFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
@@ -295,7 +294,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideChainsViewModel()
         childPresenter?.setup()
 
-        interactor.setup(peerChainAsset: peerChainAsset ?? chainAsset)
+        interactor.setup(availablePeers: availablePeers ?? [chainAsset])
     }
 
     func updateRecepient(partialAddress: String) {
@@ -430,6 +429,10 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         }
 
         provideChainsViewModel()
+    }
+
+    func didReceive(peerChainAsset: ChainAsset?) {
+        handleNewChainAssetSelection(peerChainAsset)
     }
 
     func didReceive(error: Error) {
