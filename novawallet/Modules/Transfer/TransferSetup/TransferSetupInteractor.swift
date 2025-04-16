@@ -10,10 +10,8 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
-    let operationQueue: OperationQueue
     let operationManager: OperationManagerProtocol
     let web3NamesService: Web3NameServiceProtocol?
-    let repositoryFactory: SubstrateRepositoryFactoryProtocol
 
     private var xcmTransfers: XcmTransfers?
     private var peerChainAsset: ChainAsset?
@@ -36,8 +34,6 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         web3NamesService: Web3NameServiceProtocol?,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        operationQueue: OperationQueue,
         operationManager: OperationManagerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -48,20 +44,14 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
         self.web3NamesService = web3NamesService
-        self.repositoryFactory = repositoryFactory
-        self.operationQueue = operationQueue
         self.operationManager = operationManager
     }
 
     deinit {
         xcmTransfersSyncService.throttle()
     }
-}
 
-// MARK: Private
-
-private extension TransferSetupInteractor {
-    func setupXcmTransfersSyncService() {
+    private func setupXcmTransfersSyncService() {
         xcmTransfersSyncService.notificationCallback = { [weak self] result in
             switch result {
             case let .success(xcmTransfers):
@@ -75,13 +65,13 @@ private extension TransferSetupInteractor {
         xcmTransfersSyncService.setup()
     }
 
-    func setupChainsStore() {
+    private func setupChainsStore() {
         chainsStore.delegate = self
 
         chainsStore.setup(with: { $0.syncMode.enabled() })
     }
 
-    func provideAvailableTransfers() {
+    private func provideAvailableTransfers() {
         guard let xcmTransfers = xcmTransfers else {
             presenter?.didReceiveAvailableXcm(peerChainAssets: [], xcmTransfers: nil)
             return
@@ -95,7 +85,7 @@ private extension TransferSetupInteractor {
         }
     }
 
-    func provideAvailableDestinations(for xcmTransfers: XcmTransfers) {
+    private func provideAvailableDestinations(for xcmTransfers: XcmTransfers) {
         let transfers = xcmTransfers.getDestinations(for: chainAsset.chainAssetId)
 
         guard !transfers.isEmpty else {
@@ -117,7 +107,7 @@ private extension TransferSetupInteractor {
         providePeerChainAssets(for: destinations, xcmTransfers: xcmTransfers)
     }
 
-    func provideAvailableOrigins(for xcmTransfers: XcmTransfers) {
+    private func provideAvailableOrigins(for xcmTransfers: XcmTransfers) {
         let transfers = xcmTransfers.getOrigins(for: chainAsset.chainAssetId)
 
         guard !transfers.isEmpty else {
@@ -139,7 +129,7 @@ private extension TransferSetupInteractor {
         providePeerChainAssets(for: origins, xcmTransfers: xcmTransfers)
     }
 
-    func providePeerChainAssets(for foundChainAssets: [ChainAsset], xcmTransfers: XcmTransfers) {
+    private func providePeerChainAssets(for foundChainAssets: [ChainAsset], xcmTransfers: XcmTransfers) {
         guard let restrictedChainAssetPeers = restrictedChainAssetPeers else {
             presenter?.didReceiveAvailableXcm(peerChainAssets: foundChainAssets, xcmTransfers: xcmTransfers)
             return
@@ -152,7 +142,7 @@ private extension TransferSetupInteractor {
         presenter?.didReceiveAvailableXcm(peerChainAssets: availableChainAssets, xcmTransfers: xcmTransfers)
     }
 
-    func fetchAccounts(for peerChain: ChainModel) {
+    private func fetchAccounts(for peerChain: ChainModel) {
         let chain: ChainModel
 
         switch whoChainAssetPeer {
@@ -173,7 +163,7 @@ private extension TransferSetupInteractor {
         }
     }
 
-    func handleFetchAccountsResult(_ result: Result<[MetaAccountChainResponse], Error>) {
+    private func handleFetchAccountsResult(_ result: Result<[MetaAccountChainResponse], Error>) {
         switch result {
         case let .failure(error):
             presenter?.didReceive(error: error)
@@ -183,77 +173,15 @@ private extension TransferSetupInteractor {
             presenter?.didReceive(metaChainAccountResponses: notWatchOnlyAccounts)
         }
     }
-
-    func createHighestAmountChainAssetWrapper(
-        from chainAssets: [ChainAsset]
-    ) -> CompoundOperationWrapper<ChainAsset?> {
-        let chainAssetIds = chainAssets.map(\.chainAssetId)
-        let repository = repositoryFactory.createAssetBalanceRepository(for: Set(chainAssetIds))
-
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let resultOperation = ClosureOperation<ChainAsset?> {
-            let balances = try fetchOperation.extractNoCancellableResultData()
-            let highestAmountBalance = balances
-                .sorted { $0.transferable > $1.transferable }
-                .first
-
-            guard
-                let highestAmountBalance,
-                let chainAsset = chainAssets.first(where: { $0.chainAssetId == highestAmountBalance.chainAssetId })
-            else { return nil }
-
-            return chainAsset
-        }
-
-        resultOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: [fetchOperation]
-        )
-    }
 }
 
-// MARK: TransferSetupInteractorIntputProtocol
-
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup(availablePeers: [ChainAsset]) {
-        guard !availablePeers.isEmpty else {
-            return
-        }
-
-        let setupClosure: (ChainAsset) -> Void = { [weak self] peerChainAsset in
-            self?.presenter?.didReceive(peerChainAsset: peerChainAsset)
-            self?.setupChainsStore()
-            self?.setupXcmTransfersSyncService()
-            self?.fetchAccounts(for: peerChainAsset.chain)
-            self?.web3NamesService?.setup()
-            self?.peerChainAsset = peerChainAsset
-        }
-
-        if availablePeers.count == 1 {
-            setupClosure(availablePeers[0])
-        } else {
-            let wrapper = createHighestAmountChainAssetWrapper(from: availablePeers)
-
-            execute(
-                wrapper: wrapper,
-                inOperationQueue: operationQueue,
-                runningCallbackIn: .main
-            ) { result in
-                switch result {
-                case let .success(chainAsset):
-                    if let chainAsset {
-                        setupClosure(chainAsset)
-                    } else {
-                        setupClosure(availablePeers[0])
-                    }
-                case let .failure(error):
-                    setupClosure(availablePeers[0])
-                }
-            }
-        }
+    func setup(peerChainAsset: ChainAsset) {
+        setupChainsStore()
+        setupXcmTransfersSyncService()
+        fetchAccounts(for: peerChainAsset.chain)
+        web3NamesService?.setup()
+        self.peerChainAsset = peerChainAsset
     }
 
     func peerChainAssetDidChanged(_ chainAsset: ChainAsset) {
@@ -288,8 +216,6 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
         }
     }
 }
-
-// MARK: ChainsStoreDelegate
 
 extension TransferSetupInteractor: ChainsStoreDelegate {
     func didUpdateChainsStore(_: ChainsStoreProtocol) {

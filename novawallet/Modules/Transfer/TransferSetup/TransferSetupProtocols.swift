@@ -55,7 +55,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
-    func setup(availablePeers: [ChainAsset])
+    func setup(peerChainAsset: ChainAsset)
     func peerChainAssetDidChanged(_ chainAsset: ChainAsset)
     func search(web3Name: String)
 }
@@ -65,7 +65,6 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
     func didReceive(recipients: [Web3TransferRecipient], for name: String)
-    func didReceive(peerChainAsset: ChainAsset?)
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable,
