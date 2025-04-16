@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 protocol ChangeWatchOnlyViewProtocol: ControllerBackedProtocol {
     func didReceiveAddressState(viewModel: AccountFieldStateViewModel)

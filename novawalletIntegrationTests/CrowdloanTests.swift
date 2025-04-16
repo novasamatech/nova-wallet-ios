@@ -2,8 +2,8 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Operation_iOS
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 
 class CrowdloanTests: XCTestCase {
     func testFetchContributions() {

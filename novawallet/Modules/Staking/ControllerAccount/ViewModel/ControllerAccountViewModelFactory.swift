@@ -1,5 +1,5 @@
-import IrohaCrypto
-import SoraFoundation
+import NovaCrypto
+import Foundation_iOS
 import SubstrateSdk
 
 final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactoryProtocol {

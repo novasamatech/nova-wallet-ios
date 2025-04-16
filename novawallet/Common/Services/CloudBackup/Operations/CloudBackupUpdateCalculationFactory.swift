@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 
 enum CloudBackupSyncResult: Equatable {
     struct UpdateLocal: Equatable {

@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 class WalletsListViewController<
     Layout: WalletsListViewLayout, Cell: WalletsListTableViewCellProtocol & UITableViewCell

@@ -1,7 +1,7 @@
 import XCTest
 @testable import novawallet
-import IrohaCrypto
-import SoraKeystore
+import NovaCrypto
+import Keystore_iOS
 
 class SigningWrapperTests: XCTestCase {
     static let name: String = "myname"

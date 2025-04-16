@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 import Kingfisher
 
 final class NetworkFeeInfoView: GenericTitleValueView<RoundedButton, GenericPairValueView<RoundedButton, UILabel>>,

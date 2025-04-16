@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class AssetsSearchViewLayout: BaseAssetsSearchViewLayout {
     let backgroundView = MultigradientView.background

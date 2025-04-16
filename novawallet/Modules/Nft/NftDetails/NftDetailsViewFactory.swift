@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 struct NftDetailsViewFactory {
     static func createView(from model: NftChainModel) -> NftDetailsViewProtocol? {

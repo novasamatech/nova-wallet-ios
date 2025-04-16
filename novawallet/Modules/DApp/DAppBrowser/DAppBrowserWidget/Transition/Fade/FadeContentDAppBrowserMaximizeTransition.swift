@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 struct FadeContentDAppBrowserMaximizeTransition {
     private let dependencies: FadeContentDAppBrowserTransitionDependencies

@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 
 class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
     weak var baseView: StakingSetupProxyBaseViewProtocol?

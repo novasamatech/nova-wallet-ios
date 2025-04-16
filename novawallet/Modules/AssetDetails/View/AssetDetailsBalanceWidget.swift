@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol AssetDetailsBalanceWidgetDelegate: AnyObject {
     func didChangeState(to state: AssetDetailsBalanceWidget.State)

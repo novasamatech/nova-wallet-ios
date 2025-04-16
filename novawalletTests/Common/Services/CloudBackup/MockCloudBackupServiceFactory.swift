@@ -1,7 +1,7 @@
 import Foundation
 @testable import novawallet
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 
 final class MockCloudBackupServiceFactory {
     let availablityService: CloudBackupAvailabilityServiceProtocol

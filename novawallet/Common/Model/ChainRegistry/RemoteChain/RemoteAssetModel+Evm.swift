@@ -17,7 +17,8 @@ extension RemoteAssetModel {
             staking: nil,
             type: AssetType.evmAsset.rawValue,
             typeExtras: JSON.stringValue(evmInstance.contractAddress),
-            buyProviders: evmInstance.buyProviders
+            buyProviders: evmInstance.buyProviders,
+            sellProviders: evmInstance.sellProviders
         )
     }
 }

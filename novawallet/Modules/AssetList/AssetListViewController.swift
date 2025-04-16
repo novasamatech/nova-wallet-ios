@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class AssetListViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetListViewLayout
@@ -200,8 +200,8 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.receive()
     }
 
-    func actionBuy() {
-        presenter.buy()
+    func actionBuySell() {
+        presenter.buySell()
     }
 
     func actionSwap() {

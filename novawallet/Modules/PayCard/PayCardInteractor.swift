@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 final class PayCardInteractor {
     weak var presenter: PayCardInteractorOutputProtocol?
@@ -42,7 +42,7 @@ final class PayCardInteractor {
         let model = PayCardModel(
             resource: resource,
             messageNames: messageNames,
-            scripts: scripts
+            scripts: scripts.compactMap { $0 }
         )
 
         presenter?.didReceive(model: model)

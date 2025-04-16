@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class CloudBackupSettingsPresenter {
     enum BackupAction {
@@ -63,7 +63,7 @@ final class CloudBackupSettingsPresenter {
                     ActionManageViewModel(
                         icon: R.image.iconDelete(),
                         title: R.string.localizable.commonDeleteBackup(preferredLanguages: locale.rLanguages),
-                        isDestructive: true
+                        style: .destructive
                     )
                 }
             }

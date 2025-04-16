@@ -1,5 +1,5 @@
 import XCTest
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 import Operation_iOS
 import SubstrateSdk

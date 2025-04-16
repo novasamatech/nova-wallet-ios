@@ -1,7 +1,7 @@
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
-import SoraKeystore
+import Keystore_iOS
 
 final class StakingBondMoreConfirmationInteractor: AccountFetching {
     weak var presenter: StakingBondMoreConfirmationOutputProtocol?

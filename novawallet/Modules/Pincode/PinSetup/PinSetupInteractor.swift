@@ -1,6 +1,6 @@
 import Foundation
 import LocalAuthentication
-import SoraKeystore
+import Keystore_iOS
 
 class PinSetupInteractor {
     enum PinSetupState {

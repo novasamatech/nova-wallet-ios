@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct AssetOperationNetworkListViewFactory {
     static func createSendView(
@@ -77,14 +77,16 @@ struct AssetOperationNetworkListViewFactory {
     }
 }
 
-// MARK: BUY
+// MARK: RAMP
 
 extension AssetOperationNetworkListViewFactory {
-    static func createBuyView(
+    static func createRampView(
         with multichainToken: MultichainToken,
         stateObservable: AssetListModelObservable,
         selectedAccount: MetaAccountModel,
-        purchaseProvider: PurchaseProviderProtocol
+        rampProvider: RampProviderProtocol,
+        rampType: RampActionType,
+        delegate: RampFlowStartingDelegate?
     ) -> AssetOperationNetworkListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -98,15 +100,18 @@ extension AssetOperationNetworkListViewFactory {
             logger: logger
         )
 
-        let presenter = createBuyPresenter(
-            dependencies: BuyPresenterDependencies(
-                interactor: interactor,
-                multichainToken: multichainToken,
-                stateObservable: stateObservable,
-                selectedAccount: selectedAccount,
-                purchaseProvider: purchaseProvider,
-                currencyManager: currencyManager
-            )
+        let presenterDependencies = RampPresenterDependencies(
+            interactor: interactor,
+            multichainToken: multichainToken,
+            stateObservable: stateObservable,
+            selectedAccount: selectedAccount,
+            rampProvider: rampProvider,
+            rampType: rampType,
+            currencyManager: currencyManager
+        )
+        let presenter = createRampPresenter(
+            dependencies: presenterDependencies,
+            flowStartingDelegate: delegate
         )
 
         let view = AssetOperationNetworkListViewController(presenter: presenter)
@@ -117,22 +122,31 @@ extension AssetOperationNetworkListViewFactory {
         return view
     }
 
-    private static func createBuyPresenter(
-        dependencies: BuyPresenterDependencies
-    ) -> BuyOperationNetworkListPresenter {
+    private static func createRampPresenter(
+        dependencies: RampPresenterDependencies,
+        flowStartingDelegate: RampFlowStartingDelegate?
+    ) -> RampOperationNetworkListPresenter {
         let viewModelFactory = createViewModelFactory(with: dependencies.currencyManager)
 
-        let wireframe = BuyAssetOperationWireframe(stateObservable: dependencies.stateObservable)
+        let wireframe = RampAssetOperationWireframe(
+            delegate: flowStartingDelegate,
+            stateObservable: dependencies.stateObservable
+        )
 
-        return BuyOperationNetworkListPresenter(
+        let presenter = RampOperationNetworkListPresenter(
             interactor: dependencies.interactor,
             wireframe: wireframe,
+            rampProvider: dependencies.rampProvider,
+            rampType: dependencies.rampType,
             multichainToken: dependencies.multichainToken,
             viewModelFactory: viewModelFactory,
             selectedAccount: dependencies.selectedAccount,
-            purchaseProvider: dependencies.purchaseProvider,
             localizationManager: LocalizationManager.shared
         )
+
+        presenter.delegate = flowStartingDelegate
+
+        return presenter
     }
 }
 
@@ -269,12 +283,13 @@ private extension AssetOperationNetworkListViewFactory {
         let currencyManager: CurrencyManager
     }
 
-    struct BuyPresenterDependencies {
+    struct RampPresenterDependencies {
         let interactor: AssetOperationNetworkListInteractor
         let multichainToken: MultichainToken
         let stateObservable: AssetListModelObservable
         let selectedAccount: MetaAccountModel
-        let purchaseProvider: PurchaseProviderProtocol
+        let rampProvider: RampProviderProtocol
+        let rampType: RampActionType
         let currencyManager: CurrencyManager
     }
 

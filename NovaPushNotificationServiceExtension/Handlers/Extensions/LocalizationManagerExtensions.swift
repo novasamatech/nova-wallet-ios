@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 extension LocalizationManager {
     func refreshLocale() {

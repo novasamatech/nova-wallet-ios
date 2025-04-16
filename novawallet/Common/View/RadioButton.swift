@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class RadioButton<Model>: RoundedButton {
     let model: Model

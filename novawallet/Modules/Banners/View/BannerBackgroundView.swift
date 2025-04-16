@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class BannerBackgroundView: UIView {
     private let backgroundImageView: UIImageView = .create { view in

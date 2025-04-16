@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class SwapSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwapSetupViewLayout

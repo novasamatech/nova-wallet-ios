@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class StakingRewardActionControl: UITableViewHeaderFooterView {
     let titleLabel = UILabel(style: .footnoteSecondary)

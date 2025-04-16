@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol DAppAddFavoriteViewProtocol: ControllerBackedProtocol {
     func didReceive(iconViewModel: ImageViewModelProtocol)

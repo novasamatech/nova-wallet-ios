@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class NetworkManageNodeViewLayout: UIView {
     let containerView: ScrollableContainerView = {

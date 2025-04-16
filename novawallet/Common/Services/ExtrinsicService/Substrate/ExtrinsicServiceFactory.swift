@@ -1,5 +1,5 @@
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 import SubstrateSdk
 
 protocol ExtrinsicServiceFactoryProtocol {

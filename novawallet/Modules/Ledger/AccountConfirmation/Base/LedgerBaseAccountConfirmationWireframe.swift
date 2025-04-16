@@ -1,10 +1,11 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 class LedgerBaseAccountConfirmationWireframe: MessageSheetPresentable {
     func showAddressVerification(
         on view: LedgerAccountConfirmationViewProtocol?,
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         address: AccountAddress,
         cancelClosure: @escaping () -> Void
     ) {
@@ -12,6 +13,7 @@ class LedgerBaseAccountConfirmationWireframe: MessageSheetPresentable {
             let view = view,
             let confirmationView = LedgerMessageSheetViewFactory.createVerifyLedgerView(
                 for: deviceName,
+                deviceModel: deviceModel,
                 address: address,
                 cancelClosure: cancelClosure
             ) else {

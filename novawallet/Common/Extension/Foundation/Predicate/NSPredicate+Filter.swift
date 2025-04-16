@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 extension NSPredicate {
     static func filterContactsByTarget(address: String) -> NSPredicate {
