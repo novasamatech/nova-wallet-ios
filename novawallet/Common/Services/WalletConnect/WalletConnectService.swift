@@ -407,7 +407,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
             markDisconnectedAndNotify(error: nil)
         case let .reconnectSuggested(isBetter):
             if isBetter {
-                restart()
+                protectedForceRestart()
             }
         case let .viabilityChanged(isViable):
             if isViable {
@@ -459,7 +459,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
         startWebsocket()
     }
 
-    private func restart() {
+    private func protectedForceRestart() {
         mutex.lock()
 
         defer {
@@ -468,6 +468,7 @@ private final class DefaultWebSocket: WebSocketConnecting {
 
         connectionState = .connecting
 
+        stopWebsocket()
         startWebsocket()
     }
 
