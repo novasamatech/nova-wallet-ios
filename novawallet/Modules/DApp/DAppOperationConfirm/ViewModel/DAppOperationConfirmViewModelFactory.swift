@@ -6,13 +6,30 @@ protocol DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel
 }
 
-final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
+class DAppOperationConfirmViewModelFactory {
     let chain: DAppEitherChain
 
     init(chain: DAppEitherChain) {
         self.chain = chain
     }
 
+    func createNetworkViewModel() -> DAppOperationConfirmViewModel.Network? {
+        let networkIcon: ImageViewModelProtocol?
+
+        if let networkIconUrl = chain.networkIcon {
+            networkIcon = RemoteImageViewModel(url: networkIconUrl)
+        } else {
+            networkIcon = nil
+        }
+
+        return .init(
+            name: chain.networkName,
+            iconViewModel: networkIcon
+        )
+    }
+}
+
+extension DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel {
         let iconViewModel: ImageViewModelProtocol
 
@@ -26,13 +43,7 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
 
         let addressIcon = try? PolkadotIconGenerator().generateFromAccountId(model.chainAccountId)
 
-        let networkIcon: ImageViewModelProtocol?
-
-        if let networkIconUrl = chain.networkIcon {
-            networkIcon = RemoteImageViewModel(url: networkIconUrl)
-        } else {
-            networkIcon = nil
-        }
+        let networkModel = createNetworkViewModel()
 
         return DAppOperationConfirmViewModel(
             iconImageViewModel: iconViewModel,
@@ -41,8 +52,7 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
             walletIcon: walletIcon,
             address: model.chainAddress.truncated,
             addressIcon: addressIcon,
-            networkName: chain.networkName,
-            networkIconViewModel: networkIcon
+            network: networkModel
         )
     }
 }

@@ -13,10 +13,19 @@ struct DAppOperationConfirmViewFactory {
         switch type {
         case let .extrinsic(chain):
             let interactor = createExtrinsicInteractor(for: request, chain: chain)
-            return createGenericView(for: interactor, chain: .left(chain), delegate: delegate)
+            return createGenericView(
+                for: interactor,
+                chain: .left(chain),
+                delegate: delegate
+            )
         case let .bytes(chain):
             let interactor = createSignBytesInteractor(for: request, chain: chain)
-            return createGenericView(for: interactor, chain: .left(chain), delegate: delegate)
+            return createGenericView(
+                for: interactor,
+                chain: .left(chain),
+                delegate: delegate,
+                showsNetwork: false
+            )
         case let .ethereumSendTransaction(chain):
             return createEvmTransactionView(
                 for: chain,
@@ -102,7 +111,8 @@ struct DAppOperationConfirmViewFactory {
     private static func createGenericView(
         for interactor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?,
         chain: DAppEitherChain,
-        delegate: DAppOperationConfirmDelegate
+        delegate: DAppOperationConfirmDelegate,
+        showsNetwork: Bool = true
     ) -> DAppOperationConfirmViewProtocol? {
         guard
             let interactor = interactor,
@@ -114,11 +124,17 @@ struct DAppOperationConfirmViewFactory {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
 
+        let viewModelFactory = if showsNetwork {
+            DAppOperationConfirmViewModelFactory(chain: chain)
+        } else {
+            DAppOperationBytesConfirmViewModelFactory(chain: chain)
+        }
+
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
+            viewModelFactory: viewModelFactory,
             balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             localizationManager: LocalizationManager.shared,
