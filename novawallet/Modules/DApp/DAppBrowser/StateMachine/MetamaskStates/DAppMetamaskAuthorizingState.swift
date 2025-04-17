@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import Keystore_iOS
 
 final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
     let requestId: MetamaskMessage.Id
@@ -8,13 +9,18 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
     init(
         stateMachine: DAppMetamaskStateMachineProtocol?,
         chain: MetamaskChain,
+        settingsManager: SettingsManagerProtocol,
         requestId: MetamaskMessage.Id,
         host: String
     ) {
         self.requestId = requestId
         self.host = host
 
-        super.init(stateMachine: stateMachine, chain: chain)
+        super.init(
+            stateMachine: stateMachine,
+            chain: chain,
+            settingsManager: settingsManager
+        )
     }
 
     func saveAuthAndComplete(
@@ -50,7 +56,11 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
         if approved {
             approveAccountAccess(for: requestId, dataSource: dataSource)
         } else {
-            let nextState = DAppMetamaskDeniedState(stateMachine: stateMachine, chain: chain)
+            let nextState = DAppMetamaskDeniedState(
+                stateMachine: stateMachine,
+                chain: chain,
+                settingsManager: settingsManager
+            )
 
             let error = MetamaskError.rejected
             provideError(for: requestId, error: error, nextState: nextState)

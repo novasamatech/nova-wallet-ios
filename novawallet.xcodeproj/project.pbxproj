@@ -1582,6 +1582,7 @@
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */; };
 		2D966B432D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */; };
+		2DA549962DAE3E8600FB03BF /* MetamaskChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976D127B3AC3000B14A6C /* MetamaskChain.swift */; };
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
 		2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A6A2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift */; };
@@ -27719,6 +27720,7 @@
 			files = (
 				778215B92B91223D006C7D13 /* NotificationService.swift in Sources */,
 				77AE4F902B9058D300426519 /* Web3AlertLocalModel.swift in Sources */,
+				2DA549962DAE3E8600FB03BF /* MetamaskChain.swift in Sources */,
 				7778FE5E2B910B8A0023E801 /* OperationManagerFacade.swift in Sources */,
 				77AE4F932B90592E00426519 /* UserStorageVersion.swift in Sources */,
 				0CCD18A72BA160C10068D73A /* R.generated.swift in Sources */,

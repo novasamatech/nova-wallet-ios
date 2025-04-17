@@ -1,12 +1,19 @@
 import Foundation
+import Keystore_iOS
 
 class DAppMetamaskBaseState {
     weak var stateMachine: DAppMetamaskStateMachineProtocol?
     let chain: MetamaskChain
+    let settingsManager: SettingsManagerProtocol
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain) {
+    init(
+        stateMachine: DAppMetamaskStateMachineProtocol?,
+        chain: MetamaskChain,
+        settingsManager: SettingsManagerProtocol
+    ) {
         self.stateMachine = stateMachine
         self.chain = chain
+        self.settingsManager = settingsManager
     }
 
     func extendingMetamaskChainWithSubstrate(
@@ -20,17 +27,6 @@ class DAppMetamaskBaseState {
         }
     }
 
-    private func createChain(
-        from message: MetamaskMessage,
-        dataSource: DAppBrowserStateDataSource
-    ) -> MetamaskChain? {
-        guard let newChain = try? message.object?.map(to: MetamaskChain.self) else {
-            return nil
-        }
-
-        return extendingMetamaskChainWithSubstrate(newChain, dataSource: dataSource)
-    }
-
     func approveAccountAccess(
         for messageId: MetamaskMessage.Id,
         dataSource: DAppBrowserStateDataSource
@@ -39,7 +35,11 @@ class DAppMetamaskBaseState {
             $0.toEthereumAddressWithChecksum()
         }
 
-        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+        let nextState = DAppMetamaskAuthorizedState(
+            stateMachine: stateMachine,
+            chain: chain,
+            settingsManager: settingsManager
+        )
 
         guard let selectedAddress = addresses.first else {
             provideResponse(for: messageId, results: [], nextState: nextState)
@@ -74,33 +74,35 @@ class DAppMetamaskBaseState {
             return
         }
 
-        let ethereumChain = extendingMetamaskChainWithSubstrate(
-            MetamaskChain.etheremChain,
-            dataSource: dataSource
-        )
-
-        if request.chainId == ethereumChain.chainId {
-            let changeChainCommands = createChangeChainCommands(
-                for: ethereumChain.chainId,
-                rpcUrl: ethereumChain.rpcUrls.first
-            )
-
-            let responseCommand = createNullResponseCommand(for: message.identifier)
-            let reloadCommand = createReloadCommand()
-            let commands = changeChainCommands + [responseCommand, reloadCommand]
-
-            let content = createContentWithCommands(commands)
-
-            let response = DAppScriptResponse(content: content)
-
-            let nextState = nextStateSuccessClosure(ethereumChain)
-            stateMachine?.emitReload(with: response, nextState: nextState)
-        } else {
+        guard let knownChain = getMetamaskChain(
+            with: request.chainId,
+            from: dataSource
+        ) else {
             let error = MetamaskError.noChainSwitch
 
             let nextState = nextStateFailureClosure(error)
             provideError(for: message.identifier, error: error, nextState: nextState)
+
+            return
         }
+
+        settingsManager.defaultMetamaskChain = knownChain
+
+        let changeChainCommands = createChangeChainCommands(
+            for: knownChain.chainId,
+            rpcUrl: knownChain.rpcUrls.first
+        )
+
+        let responseCommand = createNullResponseCommand(for: message.identifier)
+        let reloadCommand = createReloadCommand()
+        let commands = changeChainCommands + [responseCommand, reloadCommand]
+
+        let content = createContentWithCommands(commands)
+
+        let response = DAppScriptResponse(content: content)
+
+        let nextState = nextStateSuccessClosure(knownChain)
+        stateMachine?.emitReload(with: response, nextState: nextState)
     }
 
     func addChain(
@@ -118,6 +120,8 @@ class DAppMetamaskBaseState {
         }
 
         if newChain.chainId != chain.chainId {
+            settingsManager.defaultMetamaskChain = newChain
+
             let changeChainCommands = createChangeChainCommands(
                 for: newChain.chainId,
                 rpcUrl: newChain.rpcUrls.first
@@ -269,5 +273,47 @@ class DAppMetamaskBaseState {
                 format: "window.ethereum.emit(\"connect\", {chainId: \"%@\"});", chainId
             )
         }
+    }
+}
+
+private extension DAppMetamaskBaseState {
+    func getMetamaskChain(
+        with chainId: String,
+        from dataSource: DAppBrowserStateDataSource
+    ) -> MetamaskChain? {
+        guard
+            let chain = dataSource.fetchChainByEthereumChainId(chainId),
+            let utilityAsset = chain.assets.first(where: { $0.isUtility })
+        else {
+            return nil
+        }
+
+        let nativeAsset = MetamaskChain.NativeCurrency(
+            name: utilityAsset.name ?? utilityAsset.symbol,
+            symbol: utilityAsset.symbol,
+            decimals: utilityAsset.decimalPrecision
+        )
+
+        let metamaskChain = MetamaskChain(
+            chainId: chainId,
+            chainName: chain.name,
+            nativeCurrency: nativeAsset,
+            rpcUrls: chain.nodes.map(\.url),
+            blockExplorerUrls: chain.explorers?.map(\.name),
+            iconUrls: [chain.icon?.absoluteString].compactMap { $0 }
+        )
+
+        return metamaskChain
+    }
+
+    func createChain(
+        from message: MetamaskMessage,
+        dataSource: DAppBrowserStateDataSource
+    ) -> MetamaskChain? {
+        guard let newChain = try? message.object?.map(to: MetamaskChain.self) else {
+            return nil
+        }
+
+        return extendingMetamaskChainWithSubstrate(newChain, dataSource: dataSource)
     }
 }
