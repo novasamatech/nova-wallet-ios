@@ -189,8 +189,14 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         )
         let model = AssetDetailsLocksViewModel(
             balanceContext: balanceContext,
-            amountFormatter: viewModelFactory.amountFormatter(assetDisplayInfo: chainAsset.assetDisplayInfo),
-            priceFormatter: viewModelFactory.priceFormatter(priceId: priceData?.currencyId),
+            amountFormatter: viewModelFactory.amountFormatter(
+                assetDisplayInfo: chainAsset.assetDisplayInfo,
+                shouldDisplayFullInteger: false
+            ),
+            priceFormatter: viewModelFactory.priceFormatter(
+                priceId: priceData?.currencyId,
+                shouldDisplayFullInteger: false
+            ),
             precision: Int16(precision)
         )
         wireframe.showLocks(from: view, model: model)
