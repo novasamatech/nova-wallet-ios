@@ -305,6 +305,7 @@ private extension TransferSetupViewFactory {
             chainAsset: params.chainAsset,
             whoChainAssetPeer: params.whoChainAssetPeer,
             restrictedChainAssetPeers: params.chainAssetPeers,
+            xcmTransfers: params.xcmTransfers,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,
