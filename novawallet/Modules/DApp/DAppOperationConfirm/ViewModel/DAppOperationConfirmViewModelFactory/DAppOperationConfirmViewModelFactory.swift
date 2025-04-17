@@ -6,7 +6,7 @@ protocol DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel
 }
 
-class DAppOperationConfirmViewModelFactory {
+class DAppOperationBaseConfirmViewModelFactory {
     let chain: DAppEitherChain
 
     init(chain: DAppEitherChain) {
@@ -14,22 +14,11 @@ class DAppOperationConfirmViewModelFactory {
     }
 
     func createNetworkViewModel() -> DAppOperationConfirmViewModel.Network? {
-        let networkIcon: ImageViewModelProtocol?
-
-        if let networkIconUrl = chain.networkIcon {
-            networkIcon = RemoteImageViewModel(url: networkIconUrl)
-        } else {
-            networkIcon = nil
-        }
-
-        return .init(
-            name: chain.networkName,
-            iconViewModel: networkIcon
-        )
+        fatalError("Must be overriden by subsclass")
     }
 }
 
-extension DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
+extension DAppOperationBaseConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel {
         let iconViewModel: ImageViewModelProtocol
 

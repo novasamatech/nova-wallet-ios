@@ -1515,6 +1515,7 @@
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
 		2D6AED5F2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */; };
+		2D6C2A912DB10DFC003D3E43 /* DAppOperationGenericConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6C2A902DB10DFC003D3E43 /* DAppOperationGenericConfirmViewModelFactory.swift */; };
 		2D6C5FA32CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */; };
 		2D6F51A22CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */; };
 		2D6F51A52CDBCFAC00564C00 /* AssetListStyleSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */; };
@@ -7337,6 +7338,7 @@
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
 		2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D6C2A902DB10DFC003D3E43 /* DAppOperationGenericConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationGenericConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentTabLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceChainSelectionViewFactory.swift; sourceTree = "<group>"; };
 		2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcher.swift; sourceTree = "<group>"; };
@@ -15391,6 +15393,16 @@
 				2D6AED5E2C05EB47001A0A15 /* CheckboxListViewModelFactory.swift */,
 			);
 			path = CheckboxListPresenter;
+			sourceTree = "<group>";
+		};
+		2D6C2A932DB10E2E003D3E43 /* DAppOperationConfirmViewModelFactory */ = {
+			isa = PBXGroup;
+			children = (
+				84D2F1A127730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift */,
+				2D6C2A902DB10DFC003D3E43 /* DAppOperationGenericConfirmViewModelFactory.swift */,
+				2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */,
+			);
+			path = DAppOperationConfirmViewModelFactory;
 			sourceTree = "<group>";
 		};
 		2D6F51A32CDBCF9B00564C00 /* AssetListStyleSwitcher */ = {
@@ -23459,8 +23471,7 @@
 			isa = PBXGroup;
 			children = (
 				84D2F19F27730E6D0040C680 /* DAppOperationConfirmViewModel.swift */,
-				84D2F1A127730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift */,
-				2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */,
+				2D6C2A932DB10E2E003D3E43 /* DAppOperationConfirmViewModelFactory */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -29045,6 +29056,7 @@
 				8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */,
 				84981EE829D42BF800948306 /* TransactionHistoryLocalFetcher.swift in Sources */,
 				0CE862362D65F3C100245992 /* AssetLock+Display.swift in Sources */,
+				2D6C2A912DB10DFC003D3E43 /* DAppOperationGenericConfirmViewModelFactory.swift in Sources */,
 				88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */,
 				AEA2C1BA2681E9C50069492E /* ValidatorSearchInteractor.swift in Sources */,
 				8824D42629032B410022D778 /* BlurredView.swift in Sources */,

@@ -95,7 +95,7 @@ private extension DAppOperationConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: chain),
+            viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: chain),
             balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
             localizationManager: LocalizationManager.shared,
@@ -130,7 +130,7 @@ private extension DAppOperationConfirmViewFactory {
         let balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let viewModelFactory = if showsNetwork {
-            DAppOperationConfirmViewModelFactory(chain: chain)
+            DAppOperationGenericConfirmViewModelFactory(chain: chain)
         } else {
             DAppOperationBytesConfirmViewModelFactory(chain: chain)
         }
