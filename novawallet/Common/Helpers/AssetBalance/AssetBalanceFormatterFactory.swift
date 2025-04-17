@@ -21,8 +21,6 @@ protocol AssetBalanceFormatterFactoryProtocol {
         useSuffixForBigNumbers: Bool
     ) -> LocalizableResource<TokenFormatter>
 
-    func createTotalPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
-
     func createInputTokenFormatter(
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter>
@@ -200,15 +198,6 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
             roundingMode: .down,
             preferredPrecisionOffset: 2,
             usesSuffixForBigNumbers: useSuffixForBigNumbers
-        )
-    }
-
-    func createTotalPriceFormatter(for info: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
-        createTokenFormatterCommon(
-            for: info,
-            roundingMode: .down,
-            preferredPrecisionOffset: 2,
-            usesSuffixForBigNumbers: false
         )
     }
 

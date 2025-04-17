@@ -191,11 +191,11 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             balanceContext: balanceContext,
             amountFormatter: viewModelFactory.amountFormatter(
                 assetDisplayInfo: chainAsset.assetDisplayInfo,
-                shrinkBigNumbers: false
+                shouldDisplayFullInteger: false
             ),
             priceFormatter: viewModelFactory.priceFormatter(
                 priceId: priceData?.currencyId,
-                shrinkBigNumbers: false
+                shouldDisplayFullInteger: false
             ),
             precision: Int16(precision)
         )
