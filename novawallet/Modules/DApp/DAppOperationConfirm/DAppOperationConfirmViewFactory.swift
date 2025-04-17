@@ -12,41 +12,46 @@ struct DAppOperationConfirmViewFactory {
     ) -> DAppOperationConfirmViewProtocol? {
         switch type {
         case let .extrinsic(chain):
-            let interactor = createExtrinsicInteractor(for: request, chain: chain)
-            return createGenericView(
-                for: interactor,
+            createGenericView(
+                for: createExtrinsicInteractor(for: request, chain: chain),
                 chain: .left(chain),
-                delegate: delegate
+                delegate: delegate,
+                showsNetwork: true
             )
         case let .bytes(chain):
-            let interactor = createSignBytesInteractor(for: request, chain: chain)
-            return createGenericView(
-                for: interactor,
+            createGenericView(
+                for: createSignBytesInteractor(for: request, chain: chain),
                 chain: .left(chain),
                 delegate: delegate,
                 showsNetwork: false
             )
         case let .ethereumSendTransaction(chain):
-            return createEvmTransactionView(
+            createEvmTransactionView(
                 for: chain,
                 request: request,
                 delegate: delegate,
                 shouldSendTransaction: true
             )
         case let .ethereumSignTransaction(chain):
-            return createEvmTransactionView(
+            createEvmTransactionView(
                 for: chain,
                 request: request,
                 delegate: delegate,
                 shouldSendTransaction: false
             )
         case let .ethereumBytes(chain):
-            let interactor = createEthereumPersonalSignInteractor(for: request)
-            return createGenericView(for: interactor, chain: chain, delegate: delegate)
+            createGenericView(
+                for: createEthereumPersonalSignInteractor(for: request),
+                chain: chain,
+                delegate: delegate,
+                showsNetwork: false
+            )
         }
     }
+}
 
-    private static func createEvmTransactionView(
+private extension DAppOperationConfirmViewFactory {
+    static func createEvmTransactionView(
         for chain: DAppEitherChain,
         request: DAppOperationRequest,
         delegate: DAppOperationConfirmDelegate,
@@ -108,11 +113,11 @@ struct DAppOperationConfirmViewFactory {
         return view
     }
 
-    private static func createGenericView(
+    static func createGenericView(
         for interactor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?,
         chain: DAppEitherChain,
         delegate: DAppOperationConfirmDelegate,
-        showsNetwork: Bool = true
+        showsNetwork: Bool
     ) -> DAppOperationConfirmViewProtocol? {
         guard
             let interactor = interactor,
@@ -152,7 +157,7 @@ struct DAppOperationConfirmViewFactory {
         return view
     }
 
-    private static func createExtrinsicInteractor(
+    static func createExtrinsicInteractor(
         for request: DAppOperationRequest,
         chain: ChainModel
     ) -> DAppOperationConfirmInteractor? {
@@ -208,7 +213,7 @@ struct DAppOperationConfirmViewFactory {
         )
     }
 
-    private static func createSignBytesInteractor(
+    static func createSignBytesInteractor(
         for request: DAppOperationRequest,
         chain: ChainModel
     ) -> DAppSignBytesConfirmInteractor {
@@ -221,7 +226,7 @@ struct DAppOperationConfirmViewFactory {
         )
     }
 
-    private static func createEthereumInteractor(
+    static func createEthereumInteractor(
         for request: DAppOperationRequest,
         chain: Either<ChainModel, DAppUnknownChain>,
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
@@ -264,7 +269,7 @@ struct DAppOperationConfirmViewFactory {
         )
     }
 
-    private static func createEthereumPersonalSignInteractor(
+    static func createEthereumPersonalSignInteractor(
         for request: DAppOperationRequest
     ) -> DAppEthereumSignBytesInteractor {
         DAppEthereumSignBytesInteractor(
