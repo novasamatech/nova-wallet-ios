@@ -4,11 +4,16 @@ import SubstrateSdk
 
 final class AssetConversionFeeEstimatingFactory {
     let host: ExtrinsicFeeEstimatorHostProtocol
+    let feeBufferInPercentage: BigRational
 
     private var hydraFlowState: HydraFlowState?
 
-    init(host: ExtrinsicFeeEstimatorHostProtocol) {
+    init(
+        host: ExtrinsicFeeEstimatorHostProtocol,
+        feeBufferInPercentage: BigRational = BigRational.percent(of: 0) // no overestimation by default
+    ) {
         self.host = host
+        self.feeBufferInPercentage = feeBufferInPercentage
     }
 
     private func setupHydraFlowState() -> HydraFlowState {
@@ -41,7 +46,8 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
             return ExtrinsicAssetConversionFeeEstimator(
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
-                quoteFactory: quoteFactory
+                quoteFactory: quoteFactory,
+                feeBufferInPercentage: feeBufferInPercentage
             )
         case .statemine where chainAsset.chain.hasAssetHubFees:
             let assetHubQuoteFactory = AssetHubSwapOperationFactory(
@@ -54,7 +60,8 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
             return ExtrinsicAssetConversionFeeEstimator(
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
-                quoteFactory: assetHubQuoteFactory
+                quoteFactory: assetHubQuoteFactory,
+                feeBufferInPercentage: feeBufferInPercentage
             )
         case .none, .equilibrium, .evmNative, .evmAsset, .orml, .statemine:
             return nil

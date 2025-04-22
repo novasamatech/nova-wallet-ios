@@ -4,9 +4,9 @@ import SubstrateSdk
 
 enum BlockchainWeightFactory {
     struct CallWeightConversionHandlers<T> {
-        let v1Handler: (T, BlockchainWeight.WeightV1) throws -> T
-        let v1P5Handler: (T, BlockchainWeight.WeightV1P5) throws -> T
-        let v2Handler: (T, BlockchainWeight.WeightV2) throws -> T
+        let v1Handler: (T, Substrate.WeightV1) throws -> T
+        let v1P5Handler: (T, Substrate.WeightV1P5) throws -> T
+        let v2Handler: (T, Substrate.WeightV2) throws -> T
     }
 
     struct CallWeightConversionParams {
@@ -105,7 +105,7 @@ enum BlockchainWeightFactory {
             let isV1P5 = codingFactory.isStructHasFieldsCount(type, count: 1)
 
             if isV1P5 {
-                return try handlers.v1P5Handler(builder, .init(refTime: weight))
+                return try handlers.v1P5Handler(builder, .init(refTime: BigUInt(weight)))
             } else {
                 return try handlers.v2Handler(builder, .init(refTime: BigUInt(weight), proofSize: 0))
             }
