@@ -165,7 +165,7 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
+            viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFacade: balanceViewModelFactory,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
@@ -287,7 +287,7 @@ class DAppOperationConfirmTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
-            viewModelFactory: DAppOperationConfirmViewModelFactory(chain: .left(chain)),
+            viewModelFactory: DAppOperationBytesConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFacade: balanceViewModelFacade,
             chain: .left(chain),
             localizationManager: LocalizationManager.shared
