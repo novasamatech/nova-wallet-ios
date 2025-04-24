@@ -1479,49 +1479,49 @@ PODS:
   - UIKit-iOS/PinView (1.1.2):
     - UIKit-iOS/Controls
   - UIKit-iOS/Skrull (1.1.2)
-  - WalletConnectSwiftV2 (1.19.6):
-    - WalletConnectSwiftV2/WalletConnect (= 1.19.6)
-  - WalletConnectSwiftV2/Commons (1.19.6)
-  - WalletConnectSwiftV2/Events (1.19.6):
+  - WalletConnectSwiftV2 (1.19.7):
+    - WalletConnectSwiftV2/WalletConnect (= 1.19.7)
+  - WalletConnectSwiftV2/Commons (1.19.7)
+  - WalletConnectSwiftV2/Events (1.19.7):
     - WalletConnectSwiftV2/WalletConnectNetworking
     - WalletConnectSwiftV2/WalletConnectUtils
-  - WalletConnectSwiftV2/HTTPClient (1.19.6)
-  - WalletConnectSwiftV2/JSONRPC (1.19.6):
+  - WalletConnectSwiftV2/HTTPClient (1.19.7)
+  - WalletConnectSwiftV2/JSONRPC (1.19.7):
     - WalletConnectSwiftV2/Commons
-  - WalletConnectSwiftV2/WalletConnect (1.19.6):
+  - WalletConnectSwiftV2/WalletConnect (1.19.7):
     - WalletConnectSwiftV2/WalletConnectAuth
     - WalletConnectSwiftV2/WalletConnectPush
     - WalletConnectSwiftV2/WalletConnectSign
     - WalletConnectSwiftV2/WalletConnectVerify
-  - WalletConnectSwiftV2/WalletConnectAuth (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectAuth (1.19.7):
     - WalletConnectSwiftV2/WalletConnectPairing
     - WalletConnectSwiftV2/WalletConnectSigner
     - WalletConnectSwiftV2/WalletConnectVerify
-  - WalletConnectSwiftV2/WalletConnectJWT (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectJWT (1.19.7):
     - WalletConnectSwiftV2/WalletConnectKMS
-  - WalletConnectSwiftV2/WalletConnectKMS (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectKMS (1.19.7):
     - WalletConnectSwiftV2/WalletConnectUtils
-  - WalletConnectSwiftV2/WalletConnectNetworking (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectNetworking (1.19.7):
     - WalletConnectSwiftV2/HTTPClient
     - WalletConnectSwiftV2/WalletConnectRelay
-  - WalletConnectSwiftV2/WalletConnectPairing (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectPairing (1.19.7):
     - WalletConnectSwiftV2/Events
     - WalletConnectSwiftV2/WalletConnectNetworking
-  - WalletConnectSwiftV2/WalletConnectPush (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectPush (1.19.7):
     - WalletConnectSwiftV2/WalletConnectJWT
     - WalletConnectSwiftV2/WalletConnectNetworking
-  - WalletConnectSwiftV2/WalletConnectRelay (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectRelay (1.19.7):
     - WalletConnectSwiftV2/WalletConnectJWT
-  - WalletConnectSwiftV2/WalletConnectSign (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectSign (1.19.7):
     - WalletConnectSwiftV2/Events
     - WalletConnectSwiftV2/WalletConnectPairing
     - WalletConnectSwiftV2/WalletConnectSigner
     - WalletConnectSwiftV2/WalletConnectVerify
-  - WalletConnectSwiftV2/WalletConnectSigner (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectSigner (1.19.7):
     - WalletConnectSwiftV2/WalletConnectNetworking
-  - WalletConnectSwiftV2/WalletConnectUtils (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectUtils (1.19.7):
     - WalletConnectSwiftV2/JSONRPC
-  - WalletConnectSwiftV2/WalletConnectVerify (1.19.6):
+  - WalletConnectSwiftV2/WalletConnectVerify (1.19.7):
     - WalletConnectSwiftV2/WalletConnectNetworking
     - WalletConnectSwiftV2/WalletConnectUtils
   - Web3Core (3.0.6):
@@ -1802,7 +1802,7 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   UIKit-iOS: 032f4ce4df6b7bdc9126a2086db511a5a171723c
-  WalletConnectSwiftV2: 2749d415b4e38d2d3f44d1640027c3b750485a33
+  WalletConnectSwiftV2: 520a04b40d50f759a6ced338d697d37decdd36be
   Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
