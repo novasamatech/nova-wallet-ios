@@ -50,6 +50,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         }
 
         let multisigModel = try chainAccountEntity.multisig.map { entity in
+            let threshold = Int(entity.threshold)
             let signatoryAccountId = try Data(hexString: entity.signatory!)
             let signatories = try entity.signatories?
                 .split(by: .comma)
@@ -63,6 +64,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             return MultisigAccountModel(
                 signatory: signatoryAccountId,
                 signatories: signatories,
+                threshold: threshold,
                 callHash: entity.callHash!,
                 timepoint: timepoint,
                 status: status
@@ -153,6 +155,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             chainAccounEntity.multisig?.timepoint = try? JSONEncoder().encode(multisig.timepoint)
             chainAccounEntity.multisig?.status = multisig.status.rawValue
             chainAccounEntity.multisig?.identifier = multisig.identifier
+            chainAccounEntity.multisig?.threshold = Int64(multisig.threshold)
         } else {
             chainAccounEntity.multisig = nil
         }

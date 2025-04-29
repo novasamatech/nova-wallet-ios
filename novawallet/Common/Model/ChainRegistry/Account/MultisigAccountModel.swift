@@ -4,6 +4,7 @@ import Operation_iOS
 struct MultisigAccountModel: Hashable {
     let signatory: AccountId
     let signatories: [AccountId]
+    let threshold: Int
     let callHash: String
     let timepoint: Timepoint
     let status: Status
