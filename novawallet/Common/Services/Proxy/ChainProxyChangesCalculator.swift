@@ -87,7 +87,8 @@ struct ChainProxyChangesCalculator {
                     accountId: accountId,
                     publicKey: accountId,
                     cryptoType: cryptoType.rawValue,
-                    proxy: .init(type: proxy.type, accountId: proxy.accountId, status: .new)
+                    proxy: .init(type: proxy.type, accountId: proxy.accountId, status: .new),
+                    multisig: nil
                 )
 
                 let name = try identities[accountId]?.displayName ?? accountId.toAddress(using: chainModel.chainFormat)

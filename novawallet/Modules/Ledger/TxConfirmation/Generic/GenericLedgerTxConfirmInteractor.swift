@@ -97,7 +97,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
         return proofWrapper.insertingHead(operations: [signatureParamsOperation])
     }
 
-    private func createChanAccountOperation(
+    private func createChainAccountOperation(
         dependingOn walletOperation: BaseOperation<MetaAccountModel?>,
         chain: ChainModel
     ) -> BaseOperation<ChainAccountModel> {
@@ -115,7 +115,8 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
                     accountId: accountId,
                     publicKey: publicKey,
                     cryptoType: cryptoType,
-                    proxy: nil
+                    proxy: nil,
+                    multisig: nil
                 )
             } else if let chainAccount = wallet.chainAccounts.first(where: { $0.chainId == chain.chainId }) {
                 return chainAccount
@@ -181,7 +182,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
 
         signatureFetchWrapper.addDependency(operations: [signatureParamsOperation])
 
-        let chainAccountOperation = createChanAccountOperation(
+        let chainAccountOperation = createChainAccountOperation(
             dependingOn: walletOperation,
             chain: chain
         )

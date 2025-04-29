@@ -166,7 +166,7 @@ extension MetaAccountModel {
             } else {
                 return nil
             }
-        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
             return executeFetch(request: request)
         }
     }

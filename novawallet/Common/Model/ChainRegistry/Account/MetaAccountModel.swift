@@ -9,13 +9,20 @@ enum MetaAccountModelType: UInt8 {
     case polkadotVault
     case proxied
     case genericLedger
+    case multisig
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
-            return true
+        case .secrets,
+             .paritySigner,
+             .polkadotVault,
+             .ledger,
+             .proxied,
+             .genericLedger,
+             .multisig:
+            true
         case .watchOnly:
-            return false
+            false
         }
     }
 }
@@ -27,6 +34,7 @@ extension MetaAccountModelType {
             .polkadotVault,
             .paritySigner,
             .ledger,
+            .multisig,
             .proxied,
             .watchOnly
         ]

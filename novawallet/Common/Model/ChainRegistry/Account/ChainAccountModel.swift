@@ -7,6 +7,7 @@ struct ChainAccountModel: Hashable {
     let publicKey: Data
     let cryptoType: UInt8
     let proxy: ProxyAccountModel?
+    let multisig: MultisigAccountModel?
 
     var isEthereumBased: Bool {
         cryptoType == MultiassetCryptoType.ethereumEcdsa.rawValue
@@ -37,7 +38,8 @@ extension ChainAccountModel {
             accountId: accountId,
             publicKey: publicKey,
             cryptoType: cryptoType,
-            proxy: .init(type: proxy.type, accountId: proxy.accountId, status: newStatus)
+            proxy: .init(type: proxy.type, accountId: proxy.accountId, status: newStatus),
+            multisig: multisig
         )
     }
 
@@ -47,7 +49,8 @@ extension ChainAccountModel {
             accountId: accountId,
             publicKey: publicKey,
             cryptoType: cryptoType,
-            proxy: proxy
+            proxy: proxy,
+            multisig: multisig
         )
     }
 }

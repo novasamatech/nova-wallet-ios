@@ -49,6 +49,26 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             )
         }
 
+        let multisigModel = try chainAccountEntity.multisig.map { entity in
+            let signatoryAccountId = try Data(hexString: entity.signatory!)
+            let signatories = try entity.signatories?
+                .split(by: .comma)
+                .compactMap { try Data(hexString: $0) } ?? []
+            let timepoint = try JSONDecoder().decode(
+                MultisigAccountModel.Timepoint.self,
+                from: entity.timepoint!
+            )
+            let status = MultisigAccountModel.Status(rawValue: entity.status!)!
+
+            return MultisigAccountModel(
+                signatory: signatoryAccountId,
+                signatories: signatories,
+                callHash: entity.callHash!,
+                timepoint: timepoint,
+                status: status
+            )
+        }
+
         let accountId = try Data(hexString: chainAccountEntity.accountId!)
 
         return ChainAccountModel(
@@ -56,7 +76,8 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             accountId: accountId,
             publicKey: chainAccountEntity.publicKey!,
             cryptoType: UInt8(chainAccountEntity.cryptoType),
-            proxy: proxyModel
+            proxy: proxyModel,
+            multisig: multisigModel
         )
     }
 
@@ -116,6 +137,24 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             chainAccounEntity.proxy?.identifier = proxy.identifier
         } else {
             chainAccounEntity.proxy = nil
+        }
+
+        if let multisig = model.multisig {
+            if chainAccounEntity.multisig == nil {
+                let multisig = CDMultisig(context: context)
+                multisig.chainAccount = chainAccounEntity
+                chainAccounEntity.multisig = multisig
+            }
+            chainAccounEntity.multisig?.signatory = multisig.signatory.toHex()
+            chainAccounEntity.multisig?.signatories = multisig.signatories
+                .map { $0.toHex() }
+                .joined(with: .comma)
+            chainAccounEntity.multisig?.callHash = multisig.callHash
+            chainAccounEntity.multisig?.timepoint = try? JSONEncoder().encode(multisig.timepoint)
+            chainAccounEntity.multisig?.status = multisig.status.rawValue
+            chainAccounEntity.multisig?.identifier = multisig.identifier
+        } else {
+            chainAccounEntity.multisig = nil
         }
     }
 }

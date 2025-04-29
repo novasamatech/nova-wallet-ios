@@ -1844,3 +1844,4 @@
 "offRamp.not.supported.alert.title" = "This token is not supported by the sell feature";
 "offRamp.not.supported.alert.message" = "None of our providers currently support the selling of this token. Please choose a different token, a different network, or check back later.";
 "sell.named.token" = "Sell %@ token";
+"common.multisig" = "Multisig";

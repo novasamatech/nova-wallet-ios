@@ -83,6 +83,12 @@ struct MessageSheetViewFactory {
             message = LocalizableResource { locale in
                 R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
             }
+        case .multisig:
+            // TODO: Change image and text when mockups are ready
+            icon = R.image.imageProxy()
+            message = LocalizableResource { locale in
+                R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
+            }
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(

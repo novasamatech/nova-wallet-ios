@@ -97,7 +97,7 @@ final class CloudBackupFileModelConverter {
             return .polkadotVault
         case .genericLedger:
             return .genericLedger
-        case .proxied:
+        case .proxied, .multisig: // TODO: Verify if backups is available for multisig
             throw CloudBackupFileModelConvertingError.unexpectedLocalWalletType(walletType)
         }
     }
@@ -113,7 +113,8 @@ final class CloudBackupFileModelConverter {
             accountId: accountId,
             publicKey: publicKey,
             cryptoType: cryptoType,
-            proxy: nil
+            proxy: nil,
+            multisig: nil
         )
     }
 

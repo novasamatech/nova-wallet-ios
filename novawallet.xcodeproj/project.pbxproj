@@ -1627,6 +1627,9 @@
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */; };
 		2DB5B1172D3FEF600075EB3F /* CollectionViewRotationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1162D3FEF600075EB3F /* CollectionViewRotationHandling.swift */; };
+		2DB71F2B2DBB766A00E5A4DD /* MultisigAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB71F2A2DBB766A00E5A4DD /* MultisigAccountModel.swift */; };
+		2DB71F2C2DBB76BD00E5A4DD /* MultisigAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB71F2A2DBB766A00E5A4DD /* MultisigAccountModel.swift */; };
+		2DB71F2F2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
 		2DBB28872CD2934500DFA0AD /* AssetIconURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */; };
 		2DBB28892CD42ACB00DFA0AD /* QRCreationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */; };
@@ -5266,6 +5269,7 @@
 		B6D4C073B3F984FE0348B7D4 /* ParaStkYieldBoostStartInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0988D8EC0768B03BA7C55612 /* ParaStkYieldBoostStartInteractor.swift */; };
 		B6DB30A8D1BF84158CAC635D /* OperationDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661356CFE77B978610397907 /* OperationDetailsInteractor.swift */; };
 		B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8939D2E509D6FF66B7E117 /* InAppUpdatesProtocols.swift */; };
+		B798DE501CE931E8143BDE6D /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B3C516E748F09D1A316E1D /* Pods_NovaPushNotificationServiceExtension.framework */; };
 		B7AA65C6A2A013A46B99B9D2 /* NetworksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2C52E727AAEF19EFC7761 /* NetworksListViewController.swift */; };
 		B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A93673EEA8F71E8DDA84557 /* StakingRedeemWireframe.swift */; };
 		B804BDDC5F3960AA59CE3E5B /* AssetDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667D74094E813EA3C53EE897 /* AssetDetailsPresenter.swift */; };
@@ -7400,6 +7404,7 @@
 		2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExportPresenter.swift; sourceTree = "<group>"; };
 		2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionInteractor.swift; sourceTree = "<group>"; };
 		2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupKeyListViewModelFactory.swift; sourceTree = "<group>"; };
+		2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel15.xcdatamodel; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
 		2D8BA3702C99A728002ED440 /* SwipeGovVotingListInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovVotingListInteractorError.swift; sourceTree = "<group>"; };
@@ -7459,6 +7464,8 @@
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTask.swift; sourceTree = "<group>"; };
 		2DB5B1162D3FEF600075EB3F /* CollectionViewRotationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewRotationHandling.swift; sourceTree = "<group>"; };
+		2DB71F2A2DBB766A00E5A4DD /* MultisigAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigAccountModel.swift; sourceTree = "<group>"; };
+		2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSigningWrapper.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
 		2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLFactory.swift; sourceTree = "<group>"; };
 		2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperation.swift; sourceTree = "<group>"; };
@@ -11571,6 +11578,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B798DE501CE931E8143BDE6D /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -15782,6 +15790,21 @@
 				2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */,
 			);
 			path = BrowserNavigationTaskFactory;
+			sourceTree = "<group>";
+		};
+		2DB71F2D2DBB8AC200E5A4DD /* SigningWrappers */ = {
+			isa = PBXGroup;
+			children = (
+				843612C82790109100DC739E /* SigningWrapperFactory.swift */,
+				84C74364251E4D60009576C6 /* SigningWrapperProtocol.swift */,
+				8467FD2924EA6C62005D486C /* SigningWrapper.swift */,
+				84ADF6F2288DE99C00C25B40 /* NoKeysSigningWrapper.swift */,
+				84282293289BB79300163031 /* ParitySignerSigningWrapper.swift */,
+				84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */,
+				0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */,
+				2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */,
+			);
+			path = SigningWrappers;
 			sourceTree = "<group>";
 		};
 		2DBB288A2CD42B5100DFA0AD /* Logo */ = {
@@ -21322,27 +21345,21 @@
 		8490147C24AA14AF008F705E /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
-				84C74364251E4D60009576C6 /* SigningWrapperProtocol.swift */,
-				8467FD2924EA6C62005D486C /* SigningWrapper.swift */,
+				2DB71F2D2DBB8AC200E5A4DD /* SigningWrappers */,
 				84C74362251E4C2F009576C6 /* DummySigner.swift */,
 				84F4A909254CC863000CF0A3 /* KeystoreExportWrapper.swift */,
 				AEF507AE262423FD0098574D /* HmacSigner.swift */,
 				84C515FA26D84F8C000DBA45 /* AccountImportWrapper.swift */,
 				F44225A02727466D00DF512E /* Data+Sha256.swift */,
-				843612C82790109100DC739E /* SigningWrapperFactory.swift */,
 				8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */,
 				841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */,
 				8482F632281024B80006C3A0 /* Data+EthereumSign.swift */,
 				84326220281050E6008C52C7 /* EthereumSigner.swift */,
-				84ADF6F2288DE99C00C25B40 /* NoKeysSigningWrapper.swift */,
-				84282293289BB79300163031 /* ParitySignerSigningWrapper.swift */,
 				84BC7042289EEF85008A9758 /* NoSigningSupportWrapper.swift */,
 				84A58FD328A05820003F6ABF /* HardwareSigningError.swift */,
 				844B6EC428A3153C00A8BE83 /* MetaAccountModelType+SignatureFormat.swift */,
-				84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */,
 				84466B3F28B77B4500FA1E0D /* SignatureVerificationWrapper.swift */,
 				0C6D66AA2A8C0B6700AAB988 /* BaseSigner.swift */,
-				0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */,
 				0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */,
 				0CCA70772CD0B4220082A9C8 /* SigningWrapperFactory+Async.swift */,
 			);
@@ -22912,6 +22929,7 @@
 			children = (
 				845B821A26EF80BC00D25C72 /* MetaAccountModel.swift */,
 				845B821C26EF80DB00D25C72 /* ChainAccountModel.swift */,
+				2DB71F2A2DBB766A00E5A4DD /* MultisigAccountModel.swift */,
 				845B821E26EF8E8900D25C72 /* ManagedMetaAccountModel.swift */,
 				77D2ED6A2B1DD78100A0E58C /* ProxyAccountModel.swift */,
 				0C37AFC72B59815500009ECA /* ProxiedSettings.swift */,
@@ -27463,13 +27481,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27523,13 +27537,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27566,13 +27576,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -27803,6 +27809,7 @@
 				77EDF9242B96DCEB003266B1 /* ProxyAccountModel.swift in Sources */,
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,
 				0CCD18B42BA1EDC30068D73A /* EquilibriumTokenExtras.swift in Sources */,
+				2DB71F2C2DBB76BD00E5A4DD /* MultisigAccountModel.swift in Sources */,
 				778215CD2B914EC4006C7D13 /* NotificationContentResult.swift in Sources */,
 				77AE4FA42B905CE700426519 /* Currency.swift in Sources */,
 				770898622BA23A7C00FACD2B /* PushNotificationNamespace.swift in Sources */,
@@ -32866,6 +32873,7 @@
 				2D3733062D66825100217F29 /* PriceChartPeriodControl.swift in Sources */,
 				C28A0BFC483095E132705C83 /* SwapConfirmViewLayout.swift in Sources */,
 				C61286217D7D54EC70E3F1AA /* SwapConfirmViewFactory.swift in Sources */,
+				2DB71F2B2DBB766A00E5A4DD /* MultisigAccountModel.swift in Sources */,
 				94A6747402550FB39D2E2BE7 /* SwapSlippageProtocols.swift in Sources */,
 				2DCC87742C598E770028C3CA /* CloudBackupEnablePasswordConfirmWireframe.swift in Sources */,
 				2451E27286A176CDA2DC040D /* SwapSlippageWireframe.swift in Sources */,
@@ -33138,6 +33146,7 @@
 				59E3304ED1BBA3CB2699C957 /* SwipeGovPresenter.swift in Sources */,
 				0C12BC372CEA7DCB00AB919D /* AssetExchangePrice.swift in Sources */,
 				7C54DE318B0675170102B7AD /* SwipeGovViewController.swift in Sources */,
+				2DB71F2F2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift in Sources */,
 				735E83BE57E30FBFD1382474 /* SwipeGovViewLayout.swift in Sources */,
 				EA5757C027BC51F64C28A4D3 /* SwipeGovViewFactory.swift in Sources */,
 				5EBDCC76C4957F83D1DACAD5 /* SwipeGovSetupProtocols.swift in Sources */,
@@ -34428,6 +34437,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */,
 				2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */,
 				0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */,
 				771DA4542B7383BD003C07DD /* MultiassetUserDataModel12.xcdatamodel */,
@@ -34444,7 +34454,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */;
+			currentVersion = 2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

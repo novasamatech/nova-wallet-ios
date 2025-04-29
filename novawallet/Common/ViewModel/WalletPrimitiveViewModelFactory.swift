@@ -13,9 +13,9 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
     func hasHeader(for walletType: MetaAccountModelType) -> Bool {
         switch walletType {
         case .secrets:
-            return false
-        case .watchOnly, .polkadotVault, .paritySigner, .ledger, .proxied, .genericLedger:
-            return true
+            false
+        case .watchOnly, .polkadotVault, .paritySigner, .ledger, .proxied, .genericLedger, .multisig:
+            true
         }
     }
 
@@ -24,11 +24,15 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
         case .secrets:
             return nil
         case .paritySigner:
-            let type = ParitySignerType.legacy
-            return .init(title: type.getName(for: locale).uppercased(), icon: type.icon)
+            return .init(
+                title: ParitySignerType.legacy.getName(for: locale).uppercased(),
+                icon: ParitySignerType.legacy.icon
+            )
         case .polkadotVault:
-            let type = ParitySignerType.vault
-            return .init(title: type.getName(for: locale).uppercased(), icon: type.icon)
+            return .init(
+                title: ParitySignerType.legacy.getName(for: locale).uppercased(),
+                icon: ParitySignerType.vault.icon
+            )
         case .ledger:
             return .init(
                 title: R.string.localizable.commonLedgerLegacy(
@@ -42,6 +46,13 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
                     preferredLanguages: locale.rLanguages
                 ).uppercased(),
                 icon: R.image.iconProxy()
+            )
+        case .multisig:
+            return .init(
+                title: R.string.localizable.commonMultisig(
+                    preferredLanguages: locale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconMultisig()
             )
         case .watchOnly:
             return .init(

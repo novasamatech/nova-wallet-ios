@@ -146,7 +146,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
                 showReceiveTokens()
             }
 
-        case .watchOnly:
+        case .watchOnly, .multisig:
             wireframe.showNoSigning(from: view)
         }
     }
@@ -161,7 +161,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
             } else {
                 showRamp()
             }
-        case .watchOnly:
+        case .watchOnly, .multisig:
             wireframe.showNoSigning(from: view)
         }
     }

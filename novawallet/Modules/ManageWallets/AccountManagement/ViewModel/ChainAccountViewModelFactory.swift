@@ -98,7 +98,7 @@ final class ChainAccountViewModelFactory {
             let hasAction: Bool
 
             switch wallet.type {
-            case .secrets, .watchOnly, .ledger, .proxied:
+            case .secrets, .watchOnly, .ledger, .proxied, .multisig:
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             case .paritySigner:
@@ -202,7 +202,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger, .proxied, .genericLedger:
+        case .ledger, .proxied, .genericLedger, .multisig:
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)
