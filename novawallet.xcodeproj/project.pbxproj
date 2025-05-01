@@ -1604,6 +1604,9 @@
 		2DA85A842C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A832C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift */; };
 		2DA85A872C81170700591900 /* CardsZStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A862C81170700591900 /* CardsZStack.swift */; };
 		2DA85A892C81172F00591900 /* VoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A882C81172F00591900 /* VoteCardView.swift */; };
+		2DA8DAC22DC2024E00AFE390 /* Multisig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC12DC2024E00AFE390 /* Multisig.swift */; };
+		2DA8DAC42DC20CBE00AFE390 /* Multisig+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC32DC20CBE00AFE390 /* Multisig+CodingPath.swift */; };
+		2DA8DAC72DC20E4400AFE390 /* MultisigOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */; };
 		2DA9CC932C2C261100DC74A8 /* BlockHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */; };
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
@@ -7440,6 +7443,9 @@
 		2DA85A832C80780600591900 /* ReferendumsPresenter+ViewUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumsPresenter+ViewUpdate.swift"; sourceTree = "<group>"; };
 		2DA85A862C81170700591900 /* CardsZStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsZStack.swift; sourceTree = "<group>"; };
 		2DA85A882C81172F00591900 /* VoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteCardView.swift; sourceTree = "<group>"; };
+		2DA8DAC12DC2024E00AFE390 /* Multisig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multisig.swift; sourceTree = "<group>"; };
+		2DA8DAC32DC20CBE00AFE390 /* Multisig+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multisig+CodingPath.swift"; sourceTree = "<group>"; };
+		2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFactory.swift; sourceTree = "<group>"; };
 		2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockHashOperationFactory.swift; sourceTree = "<group>"; };
 		2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
@@ -15704,6 +15710,23 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		2DA8DAC02DC2023D00AFE390 /* Multisig */ = {
+			isa = PBXGroup;
+			children = (
+				2DA8DAC12DC2024E00AFE390 /* Multisig.swift */,
+				2DA8DAC32DC20CBE00AFE390 /* Multisig+CodingPath.swift */,
+			);
+			path = Multisig;
+			sourceTree = "<group>";
+		};
+		2DA8DAC52DC20E2800AFE390 /* Multisig */ = {
+			isa = PBXGroup;
+			children = (
+				2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */,
+			);
+			path = Multisig;
+			sourceTree = "<group>";
+		};
 		2DAF53932C16C9120076B4B6 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -17944,6 +17967,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2DA8DAC52DC20E2800AFE390 /* Multisig */,
 				0C0CB37C2AC5408000EAC516 /* AssetConversion */,
 				0C9BCC562CBD6B1600CBE21B /* AssetExchange */,
 				0CC0F8202BB52C6F002C49F6 /* CloudBackup */,
@@ -18745,6 +18769,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				2DA8DAC02DC2023D00AFE390 /* Multisig */,
 				0C277DAE2D82E873004FF053 /* Primitives */,
 				0C0F6D992D3E75CE00943A7C /* Session */,
 				0C0F6D6A2D394C8E00943A7C /* MythosStaking */,
@@ -28878,6 +28903,7 @@
 				77F033A82A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift in Sources */,
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
+				2DA8DAC72DC20E4400AFE390 /* MultisigOperationFactory.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,
 				77E304B52AEFC303006FD6F0 /* FeeAssetSelectSheetViewFactory.swift in Sources */,
 				845B07F729162AB3005785D3 /* Democracy+ConstantPath.swift in Sources */,
@@ -30376,6 +30402,7 @@
 				2D1C5D162C24553200E2DBDD /* NetworkNodeAddPresenter.swift in Sources */,
 				0CE8621B2D64E86700245992 /* StakingRewardsLocalSubscriber.swift in Sources */,
 				849E17F02791909C002D1744 /* DAppSettings.swift in Sources */,
+				2DA8DAC42DC20CBE00AFE390 /* Multisig+CodingPath.swift in Sources */,
 				0CFF73EC2DA91633009889FC /* AssetExchangeFeeEstimatingRouter.swift in Sources */,
 				0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */,
 				0CCDB2EB2B74DA55007BC5D6 /* GraphModel.swift in Sources */,
@@ -31601,6 +31628,7 @@
 				0CF609352B9442F400DD4DB3 /* PushNotificationsServiceFacade.swift in Sources */,
 				286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */,
 				8825018E29D2E31F001BE6FB /* ModuleNameResolver.swift in Sources */,
+				2DA8DAC22DC2024E00AFE390 /* Multisig.swift in Sources */,
 				84350AD02845724E0031EF24 /* IdentityAccountInfoView.swift in Sources */,
 				2D32BE1C2C6A49900047F520 /* MultiExtrinsicFeeProxy.swift in Sources */,
 				E325FBFE10A037E58525DA66 /* DAppSearchViewFactory.swift in Sources */,

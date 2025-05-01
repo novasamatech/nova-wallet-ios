@@ -57,7 +57,6 @@
         <relationship name="multisig" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDMultisig" inverseName="metaAccount" inverseEntity="CDMultisig"/>
     </entity>
     <entity name="CDMultisig" representedClassName="CDMultisig" syncable="YES" codeGenerationType="class">
-        <attribute name="callHash" optional="YES" attributeType="String"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>
         <attribute name="signatories" optional="YES" attributeType="String"/>
         <attribute name="signatory" optional="YES" attributeType="String"/>

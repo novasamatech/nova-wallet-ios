@@ -1,11 +1,9 @@
 import Foundation
 import Operation_iOS
 
-struct MultisigAccountModel: Hashable {
+struct MultisigModel: Hashable {
     let signatory: AccountId
     let signatories: [AccountId]
-    let threshold: Int
-    let callHash: String
     let timepoint: Timepoint
     let status: Status
 
@@ -23,12 +21,11 @@ struct MultisigAccountModel: Hashable {
     }
 }
 
-extension MultisigAccountModel: Identifiable {
+extension MultisigModel: Identifiable {
     var identifier: String {
         [
             signatory.toHex(),
             signatories.map { $0.toHex() }.joined(with: .dash),
-            callHash,
             "\(timepoint.height)",
             "\(timepoint.index)"
         ].joined(with: .dash)

@@ -56,16 +56,14 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
                 .split(by: .comma)
                 .compactMap { try Data(hexString: $0) } ?? []
             let timepoint = try JSONDecoder().decode(
-                MultisigAccountModel.Timepoint.self,
+                MultisigModel.Timepoint.self,
                 from: entity.timepoint!
             )
-            let status = MultisigAccountModel.Status(rawValue: entity.status!)!
+            let status = MultisigModel.Status(rawValue: entity.status!)!
 
-            return MultisigAccountModel(
+            return MultisigModel(
                 signatory: signatoryAccountId,
                 signatories: signatories,
-                threshold: threshold,
-                callHash: entity.callHash!,
                 timepoint: timepoint,
                 status: status
             )
@@ -151,11 +149,9 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             chainAccounEntity.multisig?.signatories = multisig.signatories
                 .map { $0.toHex() }
                 .joined(with: .comma)
-            chainAccounEntity.multisig?.callHash = multisig.callHash
             chainAccounEntity.multisig?.timepoint = try? JSONEncoder().encode(multisig.timepoint)
             chainAccounEntity.multisig?.status = multisig.status.rawValue
             chainAccounEntity.multisig?.identifier = multisig.identifier
-            chainAccounEntity.multisig?.threshold = Int64(multisig.threshold)
         } else {
             chainAccounEntity.multisig = nil
         }

@@ -11,6 +11,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let chainRegistry: ChainRegistryProtocol
     let proxyOperationFactory: ProxyOperationFactoryProtocol
+    let multisigOperationFactory: MultisigStorageOperationFactoryProtocol
     let chainModel: ChainModel
     let requestFactory: StorageRequestFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
@@ -28,6 +29,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         chainRegistry: ChainRegistryProtocol,
         proxyOperationFactory: ProxyOperationFactoryProtocol,
+        multisigOperationFactory: MultisigStorageOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -36,6 +38,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         self.chainModel = chainModel
         self.chainRegistry = chainRegistry
         self.proxyOperationFactory = proxyOperationFactory
+        self.multisigOperationFactory = multisigOperationFactory
         self.operationQueue = operationQueue
         self.walletUpdateMediator = walletUpdateMediator
         self.metaAccountsRepository = metaAccountsRepository
@@ -104,9 +107,16 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         )
 
         let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)
+        
+        let multisigsOperation = createMultisigsOperation(
+            using: walletsWrapper,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
 
         let changesOperation = changesOperation(
             proxyListWrapper: proxyListWrapper,
+            multisigListOperation: multisigsOperation,
             metaAccountsWrapper: walletsWrapper,
             identityProxyFactory: identityProxyFactory,
             chainModel: chainModel
@@ -146,6 +156,42 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             }
         }
     }
+    
+    func createMultisigsOperation(
+        using walletsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> BaseOperation<[AccountMultisigs?]> {
+        let operation = OperationCombiningService(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+            
+            let chainMetaAccounts = try walletsWrapper.targetOperation.extractNoCancellableResultData()
+            
+            let accountIds: [AccountId] = chainMetaAccounts.compactMap { wallet in
+                guard wallet.info.type != .multisig else {
+                    return nil
+                }
+                
+                return wallet.info.fetch(for: self.chainModel.accountRequest())?.accountId
+            }
+            
+            return accountIds.map {
+                self.multisigOperationFactory.fetchMultisigStateWrapper(
+                    for: $0,
+                    connection: connection,
+                    runtimeProvider: runtimeProvider
+                )
+            }
+        }.longrunOperation()
+        
+        operation.addDependency(walletsWrapper.targetOperation)
+        
+        return operation
+    }
 
     private func createWalletsWrapper(
         for filter: ProxySyncChainWalletFilter?,
@@ -170,6 +216,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
 
     private func changesOperation(
         proxyListWrapper: CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>,
+        multisigListOperation: BaseOperation<[AccountMultisigs?]>,
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         chainModel: ChainModel
@@ -222,6 +269,11 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
             let remoteProxieds = try proxyListOperation.extractNoCancellableResultData()
+            let remoteMultisigs = try multisigListOperation.extractNoCancellableResultData()
+                .compactMap { $0 }
+                .reduce(into: [:]) { acc, accountMultisigs in
+                    acc[accountMultisigs.accountId] = accountMultisigs.multisigs
+                }
 
             return try changesCalculator.calculateUpdates(
                 from: remoteProxieds,
@@ -233,9 +285,12 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         mapOperation.addDependency(identityWrapper.targetOperation)
         mapOperation.addDependency(metaAccountsWrapper.targetOperation)
         mapOperation.addDependency(proxyListOperation)
+        mapOperation.addDependency(multisigListOperation)
 
-        let dependencies = proxyListWrapper.allOperations + identityWrapper.allOperations +
-            [proxyListOperation] + metaAccountsWrapper.allOperations
+        let dependencies = proxyListWrapper.allOperations
+            + identityWrapper.allOperations
+            + [proxyListOperation, multisigListOperation]
+            + metaAccountsWrapper.allOperations
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
