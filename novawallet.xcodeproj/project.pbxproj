@@ -1607,6 +1607,8 @@
 		2DA8DAC22DC2024E00AFE390 /* Multisig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC12DC2024E00AFE390 /* Multisig.swift */; };
 		2DA8DAC42DC20CBE00AFE390 /* Multisig+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC32DC20CBE00AFE390 /* Multisig+CodingPath.swift */; };
 		2DA8DAC72DC20E4400AFE390 /* MultisigOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */; };
+		2DA8DACC2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DACB2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift */; };
+		2DA8DACE2DC4B14500AFE390 /* SubqueryMultisigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DACD2DC4B14500AFE390 /* SubqueryMultisigs.swift */; };
 		2DA9CC932C2C261100DC74A8 /* BlockHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */; };
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
@@ -7446,6 +7448,8 @@
 		2DA8DAC12DC2024E00AFE390 /* Multisig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multisig.swift; sourceTree = "<group>"; };
 		2DA8DAC32DC20CBE00AFE390 /* Multisig+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multisig+CodingPath.swift"; sourceTree = "<group>"; };
 		2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFactory.swift; sourceTree = "<group>"; };
+		2DA8DACB2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultisigsOperationFactory.swift; sourceTree = "<group>"; };
+		2DA8DACD2DC4B14500AFE390 /* SubqueryMultisigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultisigs.swift; sourceTree = "<group>"; };
 		2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockHashOperationFactory.swift; sourceTree = "<group>"; };
 		2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
@@ -21959,6 +21963,7 @@
 				8455F1942A1DD6BD003F072D /* Filter */,
 				849AFEBB26DCCDDD00B65924 /* Models */,
 				84412EE026DAC3300049577A /* SubqueryHistoryOperationFactory.swift */,
+				2DA8DACB2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift */,
 				843461D026E2641500DCE0CD /* SubqueryRewardOperationFactory.swift */,
 				84DC3CE22795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift */,
 				84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */,
@@ -21982,6 +21987,7 @@
 				847EA1D32A1CA43A00F1CBD8 /* SubqueryNodes.swift */,
 				847EA1D52A1CA47500F1CBD8 /* SubqueryMultistaking.swift */,
 				0C7C88652A95030800DD96A1 /* SubqueryStakingType.swift */,
+				2DA8DACD2DC4B14500AFE390 /* SubqueryMultisigs.swift */,
 				0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */,
 			);
 			path = Models;
@@ -29705,6 +29711,7 @@
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
 				849014BF24AA87E4008F705E /* ScreenAuthorizationProtocol.swift in Sources */,
 				84CB2250270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift in Sources */,
+				2DA8DACC2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift in Sources */,
 				77CBD39E2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift in Sources */,
 				84F96FA52A136E1B00EB70E2 /* GladingCardView.swift in Sources */,
 				8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */,
@@ -31749,6 +31756,7 @@
 				84BAD213293AFCDA00C55C49 /* TokensManageTableViewCell.swift in Sources */,
 				84C5ADD02811E6FA006D7388 /* LinkCellView.swift in Sources */,
 				EBDDDEE1BAB05E95DC720783 /* NftListViewLayout.swift in Sources */,
+				2DA8DACE2DC4B14500AFE390 /* SubqueryMultisigs.swift in Sources */,
 				F4060BA8123ACD95A20535A5 /* NftListViewFactory.swift in Sources */,
 				8916E9179CF5409E65D1B3A6 /* NftDetailsProtocols.swift in Sources */,
 				247AE9F0FFC35C35B595EEE3 /* NftDetailsWireframe.swift in Sources */,
