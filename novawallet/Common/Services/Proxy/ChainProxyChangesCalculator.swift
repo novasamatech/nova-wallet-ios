@@ -19,7 +19,7 @@ struct ChainProxyChangesCalculator {
     }
 
     func calculateUpdates(
-        from remoteProxieds: [ProxiedAccountId: [ProxyAccount]],
+        from remoteProxieds: [AccountId: [DelegatedAccount]],
         chainMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {

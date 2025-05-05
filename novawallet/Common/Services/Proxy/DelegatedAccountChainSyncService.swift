@@ -2,6 +2,11 @@ import SubstrateSdk
 import Operation_iOS
 import BigInt
 
+enum DelegatedAccount {
+    case multisig(DiscoveredMultisig)
+    case proxy(ProxyAccount)
+}
+
 protocol DelegatedAccountChainSyncServiceProtocol: ObservableSyncServiceProtocol {
     func sync(at blockHash: Data?)
 }
@@ -78,24 +83,23 @@ private extension DelegatedAccountChainSyncService {
         }
 
         pendingCall.cancel()
+        
+        let metaAccountsWrapper = createWalletsWrapper(
+            for: chainWalletFilter,
+            chain: chainModel
+        )
 
-        let proxyRepository = ChainProxyAccountsRepository(
-            requestFactory: requestFactory,
+        let delegatedAccountsListWrapper = createDelegatedAccountsListWrapper(
             connection: connection,
             runtimeProvider: runtimeProvider,
-            blockHash: blockHash,
-            operationQueue: operationQueue
+            metaAccountsWrapper: metaAccountsWrapper,
+            blockHash: blockHash
         )
-        let multisigRepository = MultisigAccountsRepository(chain: chainModel)
 
-        let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)
-
-        let changesOperation = changesOperation(
-            proxyRepository: proxyRepository,
-            multisigRepository: multisigRepository,
-            metaAccountsWrapper: walletsWrapper,
-            identityProxyFactory: identityProxyFactory,
-            chainModel: chainModel
+        let changesOperation = createChangesWrapper(
+            delegatedAccountsListWrapper: delegatedAccountsListWrapper,
+            metaAccountsWrapper: metaAccountsWrapper,
+            identityProxyFactory: identityProxyFactory
         )
 
         let updateWrapper = walletUpdateMediator.saveChanges {
@@ -153,15 +157,44 @@ private extension DelegatedAccountChainSyncService {
 
         return CompoundOperationWrapper(targetOperation: filterOperation, dependencies: [metaAccountsOperation])
     }
+    
+    func createDelegatedAccountsListWrapper(
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
+        let proxyRepository = ChainProxyAccountsRepository(
+            requestFactory: requestFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash,
+            operationQueue: operationQueue
+        )
+        let multisigRepository = MultisigAccountsRepository(chain: chainModel)
 
-    func changesOperation(
+        let delegatedListWrapper = createDelegatedAccountsListWrapper(
+            proxyRepository: proxyRepository,
+            multisigRepository: multisigRepository,
+            metaAccountsWrapper: metaAccountsWrapper,
+            chainModel: chainModel
+        )
+        
+        return delegatedListWrapper
+    }
+
+    func createDelegatedAccountsListWrapper(
         proxyRepository: ProxyAccountsRepositoryProtocol,
         multisigRepository: MultisigAccountsRepositoryProtocol,
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
         chainModel: ChainModel
-    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
-        let proxyListOperation = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
+        let accountsListWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccount]]>
+        accountsListWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+            
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
 
             let possibleProxiesList: [AccountId] = chainMetaAccounts.compactMap { wallet in
@@ -173,44 +206,78 @@ private extension DelegatedAccountChainSyncService {
             }
 
             var possibleProxiesIds = Set(possibleProxiesList)
-            var prevProxiesIds = possibleProxiesIds
-            var proxies: [ProxiedAccountId: [ProxyAccount]] = [:]
-
-            repeat {
-                // We only need remote proxieds for current proxies and we don't support delayed proxies
-                proxies = proxyList.compactMapValues { accounts in
-                    accounts.filter {
-                        !$0.hasDelay && possibleProxiesIds.contains($0.accountId)
-                    }
-                }.filter { !$0.value.isEmpty }
-
-                prevProxiesIds = possibleProxiesIds
-                possibleProxiesIds = possibleProxiesIds.union(Set(proxies.keys))
-
-            } while possibleProxiesIds != prevProxiesIds
-
-            return proxies
+            
+            return createDiscoverAccountsWrapper(
+                proxyRepository: proxyRepository,
+                multisigRepository: multisigRepository,
+                possibleProxiesIds: possibleProxiesIds,
+                previousProxiesIds: possibleProxiesIds,
+                proxies: [:]
+            )
         }
-
-        proxyListOperation.addDependency(proxyListWrapper.targetOperation)
-        proxyListOperation.addDependency(metaAccountsWrapper.targetOperation)
-
+        
+        accountsListWrapper.addDependency(wrapper: metaAccountsWrapper)
+        
+        return accountsListWrapper.insertingHead(operations: metaAccountsWrapper.allOperations)
+    }
+    
+    func createDiscoverAccountsWrapper(
+        proxyRepository: ProxyAccountsRepositoryProtocol,
+        multisigRepository: MultisigAccountsRepositoryProtocol,
+        possibleProxiesIds: Set<AccountId>,
+        previousProxiesIds: Set<AccountId>,
+        proxies: [ProxiedAccountId: [ProxyAccount]]
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
+        let proxiesWrapper = proxyRepository.fetchProxiedAccountsWrapper(with: possibleProxiesIds)
+        let multisigWrapper = multisigRepository.fetchMultisigsWrapper(for: possibleProxiesIds)
+        
+        let resultWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccount]]>
+        resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+            
+            guard possibleProxiesIds != previousProxiesIds else {
+                return .createWithResult(proxies.mapValues { $0.map { value in .proxy(value) } })
+            }
+            
+            let proxies = try proxiesWrapper.targetOperation.extractNoCancellableResultData()
+            
+            return createDiscoverAccountsWrapper(
+                proxyRepository: proxyRepository,
+                multisigRepository: multisigRepository,
+                possibleProxiesIds: possibleProxiesIds.union(Set(proxies.keys)),
+                previousProxiesIds: possibleProxiesIds,
+                proxies: proxies
+            )
+        }
+        
+        resultWrapper.addDependency(wrapper: proxiesWrapper)
+        
+        return resultWrapper.insertingHead(operations: proxiesWrapper.allOperations)
+    }
+    
+    func createChangesWrapper(
+        delegatedAccountsListWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccount]]>,
+        metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
+        identityProxyFactory: IdentityProxyFactoryProtocol
+    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
             for: {
-                let proxieds = try proxyListOperation.extractNoCancellableResultData()
-                return Array(proxieds.keys)
+                let delegatedAccounts = try delegatedAccountsListWrapper.targetOperation.extractNoCancellableResultData()
+                return Array(delegatedAccounts.keys)
             }
         )
 
-        identityWrapper.addDependency(operations: [proxyListOperation])
+        identityWrapper.addDependency(wrapper: delegatedAccountsListWrapper)
 
         let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> { [changesCalculator] in
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
-            let remoteProxieds = try proxyListOperation.extractNoCancellableResultData()
+            let remoteDelegatedAccounts = try delegatedAccountsListWrapper.targetOperation.extractNoCancellableResultData()
 
             return try changesCalculator.calculateUpdates(
-                from: remoteProxieds,
+                from: remoteDelegatedAccounts,
                 chainMetaAccounts: chainMetaAccounts,
                 identities: identities
             )
@@ -218,11 +285,10 @@ private extension DelegatedAccountChainSyncService {
 
         mapOperation.addDependency(identityWrapper.targetOperation)
         mapOperation.addDependency(metaAccountsWrapper.targetOperation)
-        mapOperation.addDependency(proxyListOperation)
+        mapOperation.addDependency(delegatedAccountsListWrapper.targetOperation)
 
-        let dependencies = proxyListWrapper.allOperations
+        let dependencies = delegatedAccountsListWrapper.allOperations
             + identityWrapper.allOperations
-            + [proxyListOperation]
             + metaAccountsWrapper.allOperations
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
