@@ -7,6 +7,20 @@ enum DelegatedAccount {
     case proxy(ProxyAccount)
 }
 
+fileprivate struct DiscoveringAccountIds {
+    let possibleProxyIds: Set<AccountId>
+    let knownProxyIds: Set<AccountId>
+    let discoveredProxies: [AccountId: [DelegatedAccount]]
+    
+    let possibleMultisigIds: Set<AccountId>
+    let knownMultisigIds: Set<AccountId>
+    let discoveredMultisigs: [AccountId: [DelegatedAccount]]
+    
+    var allDiscoveredAccounts: [AccountId: [DelegatedAccount]] {
+        discoveredProxies.merging(discoveredMultisigs) { $0 + $1 }
+    }
+}
+
 protocol DelegatedAccountChainSyncServiceProtocol: ObservableSyncServiceProtocol {
     func sync(at blockHash: Data?)
 }
@@ -197,22 +211,40 @@ private extension DelegatedAccountChainSyncService {
             
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let possibleProxiesList: [AccountId] = chainMetaAccounts.compactMap { wallet in
-                guard wallet.info.type != .proxied else {
-                    return nil
+            var possibleProxiesList: [AccountId] = []
+            var possibleMultisigList: [AccountId] = []
+            
+            chainMetaAccounts.forEach { wallet in
+                let accountId: AccountId? = switch wallet.info.type {
+                case .proxied, .multisig:
+                    wallet.info.fetch(for: chainModel.accountRequest())?.accountId
+                default:
+                    nil
                 }
-
-                return wallet.info.fetch(for: chainModel.accountRequest())?.accountId
+                
+                guard let accountId else { return }
+                
+                wallet.info.type == .proxied
+                    ? possibleProxiesList.append(accountId)
+                    : possibleMultisigList.append(accountId)
             }
 
-            var possibleProxiesIds = Set(possibleProxiesList)
+            let possibleProxyIds = Set(possibleProxiesList)
+            let possibleMultisigIds = Set(possibleMultisigList)
+            
+            let discoveringAccounds = DiscoveringAccountIds(
+                possibleProxyIds: possibleProxyIds,
+                knownProxyIds: possibleProxyIds,
+                discoveredProxies: [:],
+                possibleMultisigIds: possibleMultisigIds,
+                knownMultisigIds: possibleMultisigIds,
+                discoveredMultisigs: [:]
+            )
             
             return createDiscoverAccountsWrapper(
                 proxyRepository: proxyRepository,
                 multisigRepository: multisigRepository,
-                possibleProxiesIds: possibleProxiesIds,
-                previousProxiesIds: possibleProxiesIds,
-                proxies: [:]
+                discoveringAccountIds: discoveringAccounds
             )
         }
         
@@ -224,12 +256,10 @@ private extension DelegatedAccountChainSyncService {
     func createDiscoverAccountsWrapper(
         proxyRepository: ProxyAccountsRepositoryProtocol,
         multisigRepository: MultisigAccountsRepositoryProtocol,
-        possibleProxiesIds: Set<AccountId>,
-        previousProxiesIds: Set<AccountId>,
-        proxies: [ProxiedAccountId: [ProxyAccount]]
+        discoveringAccountIds: DiscoveringAccountIds
     ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
-        let proxiesWrapper = proxyRepository.fetchProxiedAccountsWrapper(with: possibleProxiesIds)
-        let multisigWrapper = multisigRepository.fetchMultisigsWrapper(for: possibleProxiesIds)
+        let proxiesWrapper = proxyRepository.fetchProxiedAccountsWrapper(with: discoveringAccountIds.possibleProxyIds)
+        let multisigWrapper = multisigRepository.fetchMultisigsWrapper(for: discoveringAccountIds.possibleMultisigIds)
         
         let resultWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccount]]>
         resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -237,24 +267,45 @@ private extension DelegatedAccountChainSyncService {
         ) { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
             
-            guard possibleProxiesIds != previousProxiesIds else {
-                return .createWithResult(proxies.mapValues { $0.map { value in .proxy(value) } })
+            guard
+                discoveringAccountIds.possibleProxyIds != discoveringAccountIds.knownProxyIds
+                || discoveringAccountIds.possibleMultisigIds != discoveringAccountIds.knownMultisigIds
+            else {
+                return .createWithResult(discoveringAccountIds.allDiscoveredAccounts)
             }
             
-            let proxies = try proxiesWrapper.targetOperation.extractNoCancellableResultData()
+            let proxies = try proxiesWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .mapValues { accounts in accounts.map { DelegatedAccount.proxy($0) } }
+            
+            let multisigs = try multisigWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .mapValues { accounts in accounts.map { DelegatedAccount.multisig($0) } }
+            
+            let updatedDiscoveringIds = DiscoveringAccountIds(
+                possibleProxyIds: discoveringAccountIds.possibleProxyIds.union(Set(proxies.keys)),
+                knownProxyIds: discoveringAccountIds.possibleProxyIds,
+                discoveredProxies: proxies,
+                possibleMultisigIds: discoveringAccountIds.possibleMultisigIds.union(Set(proxies.keys)),
+                knownMultisigIds: discoveringAccountIds.possibleMultisigIds,
+                discoveredMultisigs: multisigs
+            )
             
             return createDiscoverAccountsWrapper(
                 proxyRepository: proxyRepository,
                 multisigRepository: multisigRepository,
-                possibleProxiesIds: possibleProxiesIds.union(Set(proxies.keys)),
-                previousProxiesIds: possibleProxiesIds,
-                proxies: proxies
+                discoveringAccountIds: updatedDiscoveringIds
             )
         }
         
         resultWrapper.addDependency(wrapper: proxiesWrapper)
+        resultWrapper.addDependency(wrapper: multisigWrapper)
         
-        return resultWrapper.insertingHead(operations: proxiesWrapper.allOperations)
+        return resultWrapper
+            .insertingHead(operations: proxiesWrapper.allOperations)
+            .insertingHead(operations: multisigWrapper.allOperations)
     }
     
     func createChangesWrapper(
