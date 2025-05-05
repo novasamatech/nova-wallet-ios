@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 final class ValidatorListFilterPresenter {
     weak var view: ValidatorListFilterViewProtocol?

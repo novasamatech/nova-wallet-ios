@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 enum CollatorStakingStakeScreenTitle {
     case setup(hasStake: Bool, assetSymbol: String)

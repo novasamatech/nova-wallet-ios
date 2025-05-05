@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
@@ -7,12 +7,14 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     let interactor: GenericLedgerWalletInteractorInputProtocol
     let logger: LoggerProtocol
     let deviceName: String
+    let deviceModel: LedgerDeviceModel
     let appName: String
 
     private var account: LedgerAccount?
 
     init(
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         appName: String,
         interactor: GenericLedgerWalletInteractorInputProtocol,
         wireframe: GenericLedgerWalletWireframeProtocol,
@@ -21,6 +23,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
         logger: LoggerProtocol
     ) {
         self.deviceName = deviceName
+        self.deviceModel = deviceModel
         self.appName = appName
         self.interactor = interactor
         self.wireframe = wireframe
@@ -38,6 +41,23 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
 
         view?.didReceive(descriptionViewModel: viewModel)
     }
+
+    private func confirmAccount() {
+        guard let address = account?.address else {
+            return
+        }
+
+        interactor.confirmAccount()
+
+        wireframe.showAddressVerification(
+            on: view,
+            deviceName: deviceName,
+            deviceModel: deviceModel,
+            address: address
+        ) { [weak self] in
+            self?.interactor.cancelRequest()
+        }
+    }
 }
 
 extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol {
@@ -51,15 +71,7 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
     }
 
     func proceed() {
-        guard let address = account?.address else {
-            return
-        }
-
-        interactor.confirmAccount()
-
-        wireframe.showAddressVerification(on: view, deviceName: deviceName, address: address) { [weak self] in
-            self?.interactor.cancelRequest()
-        }
+        confirmAccount()
     }
 }
 
@@ -107,7 +119,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
             internalError = confirmError
 
             retryClosure = { [weak self] in
-                self?.interactor.confirmAccount()
+                self?.confirmAccount()
             }
         }
 
@@ -115,9 +127,15 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
             wireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: appName,
-                cancelClosure: {},
-                retryClosure: retryClosure
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: deviceModel,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: retryClosure
+                )
             )
         } else {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale, retryAction: retryClosure)

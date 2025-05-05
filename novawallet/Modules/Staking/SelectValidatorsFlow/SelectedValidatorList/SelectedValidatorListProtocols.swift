@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol SelectedValidatorListViewProtocol: ControllerBackedProtocol, Localizable {
     func didReload(_ viewModel: SelectedValidatorListViewModel)

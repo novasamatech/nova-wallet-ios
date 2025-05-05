@@ -10,6 +10,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
     func showAddressVerification(
         on view: HardwareWalletAddressesViewProtocol?,
         deviceName: String,
+        deviceModel: LedgerDeviceModel,
         address: AccountAddress,
         cancelClosure: @escaping () -> Void
     ) {
@@ -17,6 +18,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
             let view = view,
             let confirmationView = LedgerMessageSheetViewFactory.createVerifyLedgerView(
                 for: deviceName,
+                deviceModel: deviceModel,
                 address: address,
                 cancelClosure: cancelClosure
             ) else {

@@ -43,12 +43,16 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
         let iconColor: UIColor
         let textColor: UIColor
 
-        if model.isDestructive {
-            iconColor = R.color.colorIconNegative()!
-            textColor = R.color.colorTextNegative()!
-        } else {
+        switch model.style {
+        case .available:
             iconColor = R.color.colorIconPrimary()!
             textColor = R.color.colorTextPrimary()!
+        case .unavailable:
+            iconColor = R.color.colorIconInactive()!
+            textColor = R.color.colorButtonTextInactive()!
+        case .destructive:
+            iconColor = R.color.colorIconNegative()!
+            textColor = R.color.colorTextNegative()!
         }
 
         if model.allowsIconModification {
@@ -59,8 +63,11 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
             manageContentView.iconImageView.image = model.icon
         }
 
-        manageContentView.titleLabel.textColor = textColor
+        manageContentView.titleValueView.valueTop.textColor = textColor
 
-        manageContentView.titleLabel.text = model.title
+        manageContentView.titleValueView.bind(
+            topValue: model.title,
+            bottomValue: model.subtitle
+        )
     }
 }

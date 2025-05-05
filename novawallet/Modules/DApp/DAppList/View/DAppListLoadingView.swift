@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 private typealias SkeletonsWithBottomY = (skeletons: [Skeletonable], bottomY: CGFloat)
 

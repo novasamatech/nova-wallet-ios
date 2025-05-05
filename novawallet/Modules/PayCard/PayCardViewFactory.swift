@@ -1,6 +1,6 @@
 import Foundation
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct PayCardViewFactory {
     static func createView() -> PayCardViewProtocol? {
@@ -40,7 +40,7 @@ struct PayCardViewFactory {
             payCardResourceProvider: resourceProvider,
             settingsManager: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            pendingTimeout: MercuryoCardApi.pendingTimeout,
+            pendingTimeout: MercuryoApi.pendingTimeout,
             logger: logger
         )
     }

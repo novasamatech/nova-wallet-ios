@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 enum ParitySignerSigningWrapperError: Error {
     case unsupportedContext

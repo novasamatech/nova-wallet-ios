@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class DAppListItemsLoadingView: UICollectionViewCell {
     static let preferredHeight: CGFloat = 274.0

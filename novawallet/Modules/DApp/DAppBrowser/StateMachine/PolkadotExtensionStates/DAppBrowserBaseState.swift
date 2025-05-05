@@ -18,7 +18,7 @@ class DAppBrowserBaseState {
     }
 
     func provideResponse<T: Encodable>(
-        for messageType: PolkadotExtensionMessage.MessageType,
+        for requestId: String,
         result: T,
         nextState: DAppBrowserStateProtocol
     ) throws {
@@ -29,7 +29,9 @@ class DAppBrowserBaseState {
         }
 
         let content = String(
-            format: "window.walletExtension.onAppResponse(\"%@\", %@, null)", messageType.rawValue, dataString
+            format: "window.walletExtension.onAppResponse(\"%@\", %@, null)",
+            requestId,
+            dataString
         )
 
         let response = DAppScriptResponse(content: content)
@@ -38,13 +40,14 @@ class DAppBrowserBaseState {
     }
 
     func provideError(
-        for messageType: PolkadotExtensionMessage.MessageType,
+        for requestId: String,
         errorMessage: String,
         nextState: DAppBrowserStateProtocol
     ) {
         let content = String(
             format: "window.walletExtension.onAppResponse(\"%@\", null, new Error(\"%@\"))",
-            messageType.rawValue, errorMessage
+            requestId,
+            errorMessage
         )
 
         let response = DAppScriptResponse(content: content)

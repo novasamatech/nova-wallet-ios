@@ -1,9 +1,9 @@
 import XCTest
 import Cuckoo
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
-import IrohaCrypto
+import NovaCrypto
 @testable import novawallet
 
 class StakingBondMoreTests: XCTestCase {
@@ -67,7 +67,7 @@ class StakingBondMoreTests: XCTestCase {
 
         presenter.didReceiveAccountBalance(result: .success(assetBalance))
 
-        let paymentInfo = ExtrinsicFee(amount: 12600002654,payer: nil, weight: 331759000)
+        let paymentInfo = ExtrinsicFee(amount: 12600002654,payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
         presenter.didReceiveFee(result: .success(paymentInfo))
 
         presenter.didReceiveStashItem(result: .success(stashItem))
@@ -105,7 +105,7 @@ class StakingBondMoreTests: XCTestCase {
         }
         // empty balance & extra fee is received
         presenter.didReceiveAccountBalance(result: .success(nil))
-        let paymentInfoWithExtraFee = ExtrinsicFee(amount: 12600000000002654, payer: nil, weight: 331759000)
+        let paymentInfoWithExtraFee = ExtrinsicFee(amount: 12600000000002654, payer: nil, weight: .init(refTime: 331759000, proofSize: 0))
         presenter.didReceiveFee(result: .success(paymentInfoWithExtraFee))
 
         // when

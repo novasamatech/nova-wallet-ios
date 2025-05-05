@@ -41,6 +41,7 @@ private extension StackTitleValueIconView {
         rowContentView.makeVertical()
         rowContentView.spacing = 4
         rowContentView.fView.makeHorizontal()
+        rowContentView.fView.spacing = 8.0
     }
 
     func updateSelection() {

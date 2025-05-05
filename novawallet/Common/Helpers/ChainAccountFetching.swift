@@ -150,6 +150,14 @@ extension MetaAccountModel {
         )
     }
 
+    func fetchOrError(for request: ChainAccountRequest) throws -> ChainAccountResponse {
+        guard let response = fetch(for: request) else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+
+        return response
+    }
+
     func fetch(for request: ChainAccountRequest) -> ChainAccountResponse? {
         switch type {
         case .genericLedger:
@@ -354,5 +362,13 @@ extension ChainModel {
         case .ethereum:
             return 20
         }
+    }
+
+    func emptyAccountId() throws -> AccountId {
+        guard let accountId = Data.random(of: accountIdSize) else {
+            throw ChainAccountFetchingError.accountNotExists
+        }
+
+        return accountId
     }
 }

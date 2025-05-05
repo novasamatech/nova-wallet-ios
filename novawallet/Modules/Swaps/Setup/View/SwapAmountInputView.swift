@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class SwapAmountInputView: RoundedView {
     let assetControl = SwapAssetControl()

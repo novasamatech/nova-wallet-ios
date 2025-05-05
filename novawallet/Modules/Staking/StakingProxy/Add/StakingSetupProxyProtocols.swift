@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 protocol StakingSetupProxyViewProtocol: StakingSetupProxyBaseViewProtocol {
     func didReceive(token: String)

@@ -1,6 +1,6 @@
 import Foundation
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 struct TransferNetworkSelectionViewFactory {
     static func createView(

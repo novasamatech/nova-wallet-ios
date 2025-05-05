@@ -13,5 +13,6 @@ struct RemoteEvmToken: Codable {
         let chainId: String
         let contractAddress: String
         let buyProviders: JSON?
+        let sellProviders: JSON?
     }
 }

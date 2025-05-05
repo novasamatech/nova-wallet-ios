@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 class StakingTypeBaseBannerView: UIView {
     let backgroundView: RoundedView = .create { view in

@@ -7,12 +7,10 @@ extension XcmV3 {
         static let byGenesisField = "ByGenesis"
         static let polkadotField = "Polkadot"
         static let kusamaField = "Kusama"
-        static let westendField = "Westend"
 
         case byGenesis(Data)
         case polkadot
         case kusama
-        case westend
         case unsupported(String)
 
         init(from decoder: Decoder) throws {
@@ -28,8 +26,6 @@ extension XcmV3 {
                 self = .polkadot
             case Self.kusamaField:
                 self = .kusama
-            case Self.westendField:
-                self = .westend
             default:
                 self = .unsupported(type)
             }
@@ -47,9 +43,6 @@ extension XcmV3 {
                 try container.encode(JSON.null)
             case .kusama:
                 try container.encode(Self.kusamaField)
-                try container.encode(JSON.null)
-            case .westend:
-                try container.encode(Self.westendField)
                 try container.encode(JSON.null)
             case let .unsupported(networkId):
                 throw EncodingError.invalidValue(

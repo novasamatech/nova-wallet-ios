@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class CollatorStakingSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = CollatorStakingSetupViewLayout

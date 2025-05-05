@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class ControlView<B: UIView, T: UIView>: BackgroundedContentControl {
     var preferredHeight: CGFloat? {

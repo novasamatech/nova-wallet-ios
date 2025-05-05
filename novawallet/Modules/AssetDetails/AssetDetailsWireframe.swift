@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
-final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
+final class AssetDetailsWireframe {
     let operationState: AssetOperationState
     let swapState: SwapTokensFlowStateProtocol
 
@@ -15,21 +15,22 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         self.swapState = swapState
     }
 
-    func showPurchaseTokens(
-        from view: AssetDetailsViewProtocol?,
-        action: PurchaseAction,
-        delegate: PurchaseDelegate
+    private func present(
+        _ viewController: UIViewController,
+        from view: AssetDetailsViewProtocol?
     ) {
-        guard let purchaseView = PurchaseViewFactory.createView(
-            for: action,
-            delegate: delegate
-        ) else {
+        guard let navigationController = view?.controller.navigationController else {
             return
         }
-        purchaseView.controller.modalPresentationStyle = .fullScreen
-        view?.controller.present(purchaseView.controller, animated: true)
-    }
 
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
+        viewController.modalTransitioningFactory = factory
+        viewController.modalPresentationStyle = .custom
+        navigationController.present(viewController, animated: true)
+    }
+}
+
+extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
         guard let transferSetupView = TransferSetupViewFactory.createView(
             from: chainAsset,
@@ -58,25 +59,10 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         view?.controller.navigationController?.presentWithCardLayout(navigationController, animated: true)
     }
 
-    func showPurchaseProviders(
+    func showLocks(
         from view: AssetDetailsViewProtocol?,
-        actions: [PurchaseAction],
-        delegate: ModalPickerViewControllerDelegate
+        model: AssetDetailsLocksViewModel
     ) {
-        guard let pickerView = ModalPickerFactory.createPickerForList(
-            actions,
-            delegate: delegate,
-            context: nil
-        ) else {
-            return
-        }
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        navigationController.present(pickerView, animated: true)
-    }
-
-    func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel) {
         let locksViewController = ModalInfoFactory.createFromBalanceContext(
             model.balanceContext,
             amountFormatter: model.amountFormatter,
@@ -94,7 +80,10 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         present(confirmationView.controller, from: view)
     }
 
-    func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?) {
+    func showLedgerNotSupport(
+        for tokenName: String,
+        from view: AssetDetailsViewProtocol?
+    ) {
         guard let confirmationView = LedgerMessageSheetViewFactory.createLedgerNotSupportTokenView(
             for: tokenName,
             cancelClosure: nil
@@ -104,7 +93,10 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         present(confirmationView.controller, from: view)
     }
 
-    func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
+    func showSwaps(
+        from view: AssetDetailsViewProtocol?,
+        chainAsset: ChainAsset
+    ) {
         guard let swapsView = SwapSetupViewFactory.createView(
             state: swapState,
             payChainAsset: chainAsset,
@@ -118,18 +110,21 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         view?.controller.presentWithCardLayout(navigationController, animated: true)
     }
 
-    private func present(_ viewController: UIViewController, from view: AssetDetailsViewProtocol?) {
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        let factory = ModalSheetPresentationFactory(configuration: .nova)
-        viewController.modalTransitioningFactory = factory
-        viewController.modalPresentationStyle = .custom
-        navigationController.present(viewController, animated: true)
-    }
-
-    func presentSuccessAlert(from view: AssetDetailsViewProtocol?, message: String) {
+    func presentSuccessAlert(
+        from view: AssetDetailsViewProtocol?,
+        message: String
+    ) {
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)
+    }
+
+    func dropModalFlow(
+        from view: AssetDetailsViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        view?.controller.presentedViewController?.dismiss(
+            animated: true,
+            completion: completion
+        )
     }
 }

@@ -58,6 +58,14 @@ final class ChainModelMapper {
             buyProviders = nil
         }
 
+        let sellProviders: JSON?
+
+        if let data = entity.sellProviders {
+            sellProviders = try jsonDecoder.decode(JSON.self, from: data)
+        } else {
+            sellProviders = nil
+        }
+
         let source = AssetModel.Source(rawValue: entity.source!) ?? .remote
 
         let stakings = try createStakings(from: entity)
@@ -73,6 +81,7 @@ final class ChainModelMapper {
             type: entity.type,
             typeExtras: typeExtras,
             buyProviders: buyProviders,
+            sellProviders: sellProviders,
             enabled: entity.enabled,
             source: source
         )
@@ -127,10 +136,16 @@ final class ChainModelMapper {
                 assetEntity.typeExtras = nil
             }
 
-            if let json = asset.buyProviders {
-                assetEntity.buyProviders = try jsonEncoder.encode(json)
+            if let buyProvidersJson = asset.buyProviders {
+                assetEntity.buyProviders = try jsonEncoder.encode(buyProvidersJson)
             } else {
                 assetEntity.buyProviders = nil
+            }
+
+            if let sellProvidersJson = asset.sellProviders {
+                assetEntity.sellProviders = try jsonEncoder.encode(sellProvidersJson)
+            } else {
+                assetEntity.sellProviders = nil
             }
 
             return assetEntity

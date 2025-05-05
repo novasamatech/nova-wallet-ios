@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 public struct ModalCardPresentationStyle {
     public let backdropColor: UIColor

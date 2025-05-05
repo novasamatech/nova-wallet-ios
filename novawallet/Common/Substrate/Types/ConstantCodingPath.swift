@@ -54,14 +54,6 @@ extension ConstantCodingPath {
         ConstantCodingPath(moduleName: "Crowdloan", constantName: "MinContribution")
     }
 
-    static var blockWeights: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "System", constantName: "BlockWeights")
-    }
-
-    static var blockHashCount: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "System", constantName: "BlockHashCount")
-    }
-
     static var electionsSessionPeriod: ConstantCodingPath {
         ConstantCodingPath(moduleName: "Elections", constantName: "SessionPeriod")
     }

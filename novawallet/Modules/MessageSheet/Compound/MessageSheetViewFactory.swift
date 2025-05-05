@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import UIKit
-import SoraKeystore
+import Keystore_iOS
 
 struct MessageSheetViewFactory {
     static func createNoSigningView(

@@ -1,7 +1,7 @@
 import Foundation
 import Kingfisher
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 
 struct BannersViewFactory {
     static func createView(

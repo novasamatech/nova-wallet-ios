@@ -1,8 +1,8 @@
 import XCTest
 @testable import novawallet
-import SoraFoundation
-import SoraKeystore
-import IrohaCrypto
+import Foundation_iOS
+import Keystore_iOS
+import NovaCrypto
 import Operation_iOS
 import Cuckoo
 import BigInt
@@ -77,7 +77,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
             feeProxy: MultiExtrinsicFeeProxy(),
             chainRegistry: chainRegistry,
             signer: signer,
-            operationManager: OperationManager(),
+            operationQueue: OperationQueue(),
             payouts: [PayoutInfo(validator: validatorAccountId, era: 1000, pages: [0], reward: 1, identity: nil)],
             currencyManager: CurrencyManagerStub()
         )

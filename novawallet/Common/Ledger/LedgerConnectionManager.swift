@@ -31,20 +31,20 @@ protocol LedgerConnectionManagerDelegate: AnyObject {
 }
 
 final class LedgerConnectionManager: NSObject {
+    weak var delegate: LedgerConnectionManagerDelegate?
+
+    let logger: LoggerProtocol
+
+    private let delegateQueue = DispatchQueue(label: "com.nova.wallet.ledger.connection." + UUID().uuidString)
+    private let supportedDevices: [CBUUID: SupportedBluetoothDevice] = SupportedBluetoothDevice.ledgers
+
     private var centralManager: CBCentralManager?
 
     @Atomic(defaultValue: [])
     private var devices: [BluetoothLedgerDevice]
 
-    private var supportedDevices: [SupportedBluetoothDevice] = SupportedBluetoothDevice.ledgers
-    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.map(\.uuid) }
-    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.map(\.notifyUuid) }
-
-    private let delegateQueue = DispatchQueue(label: "com.nova.wallet.ledger.connection." + UUID().uuidString)
-
-    weak var delegate: LedgerConnectionManagerDelegate?
-
-    let logger: LoggerProtocol
+    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.values.map(\.uuid) }
+    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.values.map(\.notifyUuid) }
 
     init(logger: LoggerProtocol) {
         self.logger = logger
@@ -64,9 +64,23 @@ final class LedgerConnectionManager: NSObject {
         device.transport.reset()
     }
 
-    private func didDiscoverDevice(_ peripheral: CBPeripheral) {
+    private func didDiscoverDevice(_ peripheral: CBPeripheral, advertisementData: [String: Any]) {
         if bluetoothDevice(id: peripheral.identifier) == nil {
-            let device = BluetoothLedgerDevice(peripheral: peripheral)
+            // if peripheral is not connected but discovered
+            // the service id is unavailble and extracted from the advertisement list
+            let advertisedServiceIds = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID]
+            let connectedServiceIds = peripheral.services?.compactMap(\.uuid) ?? []
+            let allServiceIds = connectedServiceIds + (advertisedServiceIds ?? [])
+
+            let deviceModel: LedgerDeviceModel = allServiceIds.compactMap {
+                supportedDevices[$0]?.model
+            }.first ?? .unknown
+
+            let device = BluetoothLedgerDevice(
+                peripheral: peripheral,
+                model: deviceModel
+            )
+
             devices.append(device)
             delegate?.ledgerConnection(manager: self, didDiscover: device)
         }
@@ -102,10 +116,16 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
         }
 
         centralManager.connect(device.peripheral, options: nil)
-        device.writeCommand = { [weak device] in
+        device.writeCommand = { [weak device, weak self] in
             if let currentDevice = device, let characteristic = currentDevice.writeCharacteristic {
                 currentDevice.responseCompletion = completion
-                let chunks = currentDevice.transport.prepareRequest(from: message)
+
+                // Force iOS to return negotiated mtu instead of the internal buffer size
+                let mtu = currentDevice.peripheral.maximumWriteValueLength(for: .withoutResponse)
+
+                let chunks = currentDevice.transport.prepareRequest(from: message, using: mtu)
+
+                self?.logger.debug("Writing \(chunks.count) chunks of data \(message.count) using mtu \(mtu)")
 
                 let type: CBCharacteristicWriteType = completion != nil ? .withResponse : .withoutResponse
 
@@ -134,7 +154,7 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
         switch central.state {
         case .poweredOn:
             centralManager?.retrieveConnectedPeripherals(withServices: supportedDeviceUUIDs).forEach { peripheral in
-                didDiscoverDevice(peripheral)
+                didDiscoverDevice(peripheral, advertisementData: [:])
             }
             centralManager?.scanForPeripherals(withServices: supportedDeviceUUIDs)
         case .unauthorized:
@@ -151,12 +171,12 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
     func centralManager(
         _: CBCentralManager,
         didDiscover peripheral: CBPeripheral,
-        advertisementData _: [String: Any],
+        advertisementData: [String: Any],
         rssi _: NSNumber
     ) {
         logger.debug("Did discover device: \(peripheral)")
 
-        didDiscoverDevice(peripheral)
+        didDiscoverDevice(peripheral, advertisementData: advertisementData)
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -261,9 +281,12 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
             if let message = characteristic.value {
                 do {
                     if let response = try device.transport.receive(partialResponseData: message) {
+                        logger.debug("Received response")
                         completeRequest(with: .success(response), device: device)
                     }
                 } catch {
+                    logger.debug("Can't handle response")
+
                     device.transport.reset()
                     completeRequest(with: .failure(LedgerError.internalTransport(error: error)), device: device)
                 }

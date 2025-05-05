@@ -35,7 +35,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
     func actionLocks()
     func actionSend()
     func actionReceive()
-    func actionBuy()
+    func actionBuySell()
     func actionSwap()
     func actionChangeAssetListStyle()
     func actionCardOpen()
@@ -86,7 +86,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func presentCard()
     func send()
     func receive()
-    func buy()
+    func buySell()
     func swap()
     func presentWalletConnect()
     func toggleAssetListStyle()
@@ -123,8 +123,15 @@ protocol AssetListInteractorOutputProtocol {
 
 // MARK: Wireframe
 
-protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPresentable, ErrorPresentable,
-    CommonRetryable, WalletConnectScanPresentable, WalletConnectErrorPresentable {
+protocol AssetListWireframeProtocol: AnyObject,
+    WalletSwitchPresentable,
+    AlertPresentable,
+    ErrorPresentable,
+    CommonRetryable,
+    WalletConnectScanPresentable,
+    WalletConnectErrorPresentable,
+    RampActionsPresentable,
+    RampPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showTokensManage(from view: AssetListViewProtocol?)
 
@@ -144,13 +151,22 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable, AlertPr
         buyTokensClosure: @escaping BuyTokensClosure
     )
 
-    func showBuyTokens(from view: AssetListViewProtocol?)
+    func showRamp(
+        from view: (any AssetListViewProtocol)?,
+        action: RampActionType,
+        delegate: RampFlowStartingDelegate?
+    )
 
     func showSwapTokens(from view: AssetListViewProtocol?)
 
     func showStaking(from view: AssetListViewProtocol?)
 
     func showCard(from view: AssetListViewProtocol?)
+
+    func dropModalFlow(
+        from view: AssetListViewProtocol?,
+        completion: @escaping () -> Void
+    )
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

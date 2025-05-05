@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 struct AssetListAssetAccountPrice {
@@ -87,7 +87,11 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     ) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createTotalPriceFormatter(for: assetDisplayInfo)
+
+        let priceFormatter = assetFormatterFactory.createAssetPriceFormatter(
+            for: assetDisplayInfo,
+            useSuffixForBigNumbers: false
+        )
 
         return priceFormatter.value(for: locale).stringFromDecimal(price) ?? ""
     }

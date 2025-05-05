@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 protocol GitHubOperationFactoryProtocol {
     func fetchPhishingListOperation(_ url: URL) -> NetworkOperation<[PhishingItem]>

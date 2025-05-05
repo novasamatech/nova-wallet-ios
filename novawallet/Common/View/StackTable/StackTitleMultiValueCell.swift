@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsView, MultiValueView>>, SkeletonableView {
     var titleLabel: UILabel { rowContentView.titleView.detailsLabel }

@@ -1,6 +1,6 @@
 import UIKit
 import SnapKit
-import SoraUI
+import UIKit_iOS
 
 class SettingsBaseTableViewCell<AccessoryView>: UITableViewCell, TableViewCellPositioning, ActivatableTableViewCell where AccessoryView: UIView {
     let iconImageView = UIImageView()

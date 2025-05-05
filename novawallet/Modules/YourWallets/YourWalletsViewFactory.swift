@@ -1,7 +1,7 @@
 import UIKit
 import SubstrateSdk
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 struct YourWalletsViewFactory {
     static func createView(

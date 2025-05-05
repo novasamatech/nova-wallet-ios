@@ -1,5 +1,5 @@
 import BigInt
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 
 protocol StakingTypeViewModelFactoryProtocol {

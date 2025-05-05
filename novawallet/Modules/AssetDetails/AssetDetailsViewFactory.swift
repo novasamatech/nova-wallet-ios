@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct AssetDetailsViewFactory {
     static func createView(
@@ -20,7 +20,7 @@ struct AssetDetailsViewFactory {
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
-            purchaseProvider: PurchaseAggregator.defaultAggregator(),
+            rampProvider: RampAggregator.defaultAggregator(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,

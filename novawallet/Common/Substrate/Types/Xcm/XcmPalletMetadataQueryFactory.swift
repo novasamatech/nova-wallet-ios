@@ -8,49 +8,50 @@ protocol XcmPalletMetadataQueryFactoryProtocol {
         for runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<String>
 
-    func createLowestMultiassetsVersionWrapper(
+    func createLowestXcmVersionWrapper(
         for runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<Xcm.Version?>
-
-    func createLowestMultiassetVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<Xcm.Version?>
-
-    func createLowestMultilocationVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<Xcm.Version?>
+    ) -> CompoundOperationWrapper<Xcm.Version>
 
     func createXcmMessageTypeResolutionWrapper(
         for runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<String?>
 }
 
-final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalletMetadataQueryFactoryProtocol {
-    func createLowestMultiassetsVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<Xcm.Version?> {
-        createXcmTypeVersionWrapper(
-            for: runtimeProvider,
-            oneOfTypes: ["xcm.VersionedMultiAssets", "xcm.VersionedAssets"]
-        )
-    }
+final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory {}
 
-    func createLowestMultiassetVersionWrapper(
+extension XcmPalletMetadataQueryFactory: XcmPalletMetadataQueryFactoryProtocol {
+    func createLowestXcmVersionWrapper(
         for runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<Xcm.Version?> {
-        createXcmTypeVersionWrapper(
-            for: runtimeProvider,
-            oneOfTypes: ["xcm.VersionedMultiAsset", "xcm.VersionedAsset"]
-        )
-    }
+    ) -> CompoundOperationWrapper<Xcm.Version> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        let xcmMessageTypeWrapper = createXcmMessageTypeResolutionWrapper(for: runtimeProvider)
 
-    func createLowestMultilocationVersionWrapper(
-        for runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<Xcm.Version?> {
-        createXcmTypeVersionWrapper(
-            for: runtimeProvider,
-            oneOfTypes: ["xcm.VersionedMultiLocation", "xcm.VersionedLocation"]
-        )
+        let resolutionOperation = ClosureOperation<Xcm.Version> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            guard
+                let xcmType = try xcmMessageTypeWrapper.targetOperation.extractNoCancellableResultData(),
+                let node = codingFactory.getTypeNode(for: xcmType),
+                let versionNode = node as? SiVariantNode else {
+                throw XcmMetadataQueryError.noXcmTypeFound
+            }
+
+            guard
+                let version = versionNode.typeMapping
+                .compactMap({ Xcm.Version(rawName: $0.name) })
+                .min() else {
+                throw XcmMetadataQueryError.noXcmVersionFound
+            }
+
+            return version
+        }
+
+        resolutionOperation.addDependency(codingFactoryOperation)
+        resolutionOperation.addDependency(xcmMessageTypeWrapper.targetOperation)
+
+        return xcmMessageTypeWrapper
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: resolutionOperation)
     }
 
     func createModuleNameResolutionWrapper(
@@ -68,7 +69,7 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let moduleResolutionWrapper = createModuleNameResolutionWrapper(for: runtimeProvider)
 
-        let resolutionOperation = ClosureOperation<String?> {
+        let resultOperation = ClosureOperation<String?> {
             let palletName = try moduleResolutionWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
@@ -80,12 +81,13 @@ final class XcmPalletMetadataQueryFactory: XcmBaseMetadataQueryFactory, XcmPalle
             )
         }
 
-        resolutionOperation.addDependency(codingFactoryOperation)
-        resolutionOperation.addDependency(moduleResolutionWrapper.targetOperation)
+        resultOperation.addDependency(codingFactoryOperation)
+        resultOperation.addDependency(moduleResolutionWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: resolutionOperation,
-            dependencies: [codingFactoryOperation] + moduleResolutionWrapper.allOperations
-        )
+        return moduleResolutionWrapper
+            .insertingHead(
+                operations: [codingFactoryOperation]
+            )
+            .insertingTail(operation: resultOperation)
     }
 }

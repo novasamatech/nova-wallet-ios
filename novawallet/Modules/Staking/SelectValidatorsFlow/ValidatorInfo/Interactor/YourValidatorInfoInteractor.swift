@@ -1,5 +1,5 @@
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 
 final class YourValidatorInfoInteractor: ValidatorInfoInteractorBase {
     private let accountAddress: AccountAddress

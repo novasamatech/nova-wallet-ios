@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 final class GovernanceNotificationsPresenter {
     weak var view: GovernanceNotificationsViewProtocol?

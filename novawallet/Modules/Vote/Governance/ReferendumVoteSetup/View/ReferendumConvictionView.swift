@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class ReferendumConvictionView: UIView {
     let backgroundView: RoundedView = .create { view in

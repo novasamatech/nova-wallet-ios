@@ -1,16 +1,21 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = CardTopUpTransferSetupViewLayout
 
     let presenter: TransferSetupPresenterProtocol
 
+    let titleResource: LocalizableResource<String>
+
     init(
         presenter: TransferSetupPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        titleResource: LocalizableResource<String>
     ) {
         self.presenter = presenter
+        self.titleResource = titleResource
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -55,9 +60,7 @@ final class CardTopUpTransferSetupViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.title.text = R.string.localizable.cardTopUpDotSetupTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.title.text = titleResource.value(for: selectedLocale)
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages

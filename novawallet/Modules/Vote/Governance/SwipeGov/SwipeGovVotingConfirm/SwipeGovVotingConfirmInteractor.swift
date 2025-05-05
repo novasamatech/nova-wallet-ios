@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import SubstrateSdk
 import Operation_iOS
 import BigInt
@@ -39,6 +39,7 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         logger: LoggerProtocol,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.votingItems = votingItems
@@ -62,6 +63,7 @@ final class SwipeGovVotingConfirmInteractor: ReferendumObservingVoteInteractor {
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
             lockStateFactory: lockStateFactory,
+            chainRegistry: chainRegistry,
             operationQueue: operationQueue
         )
     }

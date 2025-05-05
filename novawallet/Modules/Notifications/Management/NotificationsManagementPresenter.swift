@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 final class NotificationsManagementPresenter {
     weak var view: NotificationsManagementViewProtocol?

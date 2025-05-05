@@ -1,7 +1,7 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
-class ReceiveOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
+final class ReceiveOperationNetworkListPresenter: AssetOperationNetworkListPresenter {
     let wireframe: ReceiveAssetOperationWireframeProtocol
 
     let selectedAccount: MetaAccountModel

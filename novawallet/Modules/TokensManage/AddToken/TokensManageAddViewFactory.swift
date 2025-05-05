@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 
 struct TokensManageAddViewFactory {
     static func createView(for chain: ChainModel) -> TokensManageAddViewProtocol? {
