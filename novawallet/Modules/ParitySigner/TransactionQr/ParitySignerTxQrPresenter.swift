@@ -74,10 +74,10 @@ final class ParitySignerTxQrPresenter {
             view?.didReceiveQrFormat(viewModel: .none)
             return
         }
-        
+
         let canSwitchFormats = preferredFormats.contains(.extrinsicWithProof) &&
             preferredFormats.contains(.extrinsicWithoutProof)
-        
+
         if canSwitchFormats {
             switch qrFormat {
             case .extrinsicWithProof:
