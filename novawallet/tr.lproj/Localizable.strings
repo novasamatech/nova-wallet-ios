@@ -1847,3 +1847,4 @@
 "sell.named.token" = "%@ tokenini sat";
 "polkadot.vault.qr.type.v7" = "Yeni (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Eski";
+"parity.signer.scan.title_9_7_0" = "%@ ile imzala";

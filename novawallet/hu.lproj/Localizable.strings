@@ -1847,3 +1847,4 @@
 "sell.named.token" = "%@ token eladása";
 "polkadot.vault.qr.type.v7" = "Új (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Régi";
+"parity.signer.scan.title_9_7_0" = "%@ aláírás";

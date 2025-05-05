@@ -1847,3 +1847,4 @@
 "sell.named.token" = "%@トークンを売る";
 "polkadot.vault.qr.type.v7" = "新しい (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "レガシー";
+"parity.signer.scan.title_9_7_0" = "%@で署名";

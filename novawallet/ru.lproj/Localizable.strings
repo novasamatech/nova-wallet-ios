@@ -1847,3 +1847,4 @@
 "sell.named.token" = "Продать токен %@";
 "polkadot.vault.qr.type.v7" = "Новый (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Устаревший";
+"parity.signer.scan.title_9_7_0" = "Подписать с %@";

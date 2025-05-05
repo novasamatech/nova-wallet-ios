@@ -1847,3 +1847,4 @@
 "sell.named.token" = "Vendi token %@";
 "polkadot.vault.qr.type.v7" = "Nuovo (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Legacy";
+"parity.signer.scan.title_9_7_0" = "Firma con %@";

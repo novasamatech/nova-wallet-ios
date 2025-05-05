@@ -1847,3 +1847,4 @@
 "sell.named.token" = "Jual token %@";
 "polkadot.vault.qr.type.v7" = "Baru (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Legacy";
+"parity.signer.scan.title_9_7_0" = "Tanda tangani dengan %@";

@@ -1847,3 +1847,4 @@
 "sell.named.token" = "出售%@代币";
 "polkadot.vault.qr.type.v7" = "新的 (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "传统";
+"parity.signer.scan.title_9_7_0" = "使用 %@ 签名";

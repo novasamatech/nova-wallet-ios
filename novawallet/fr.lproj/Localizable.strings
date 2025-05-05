@@ -1847,3 +1847,4 @@
 "sell.named.token" = "Vendre le jeton %@";
 "polkadot.vault.qr.type.v7" = "Nouveau (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Héritage";
+"parity.signer.scan.title_9_7_0" = "Signer avec %@";

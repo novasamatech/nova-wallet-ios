@@ -1847,3 +1847,4 @@
 "sell.named.token" = "Bán token %@";
 "polkadot.vault.qr.type.v7" = "Mới (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Cũ";
+"parity.signer.scan.title_9_7_0" = "Ký với %@";
