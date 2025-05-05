@@ -101,7 +101,8 @@ struct ChainProxyChangesCalculator {
                     ethereumAddress: nil,
                     ethereumPublicKey: nil,
                     chainAccounts: [chainAccountModel],
-                    type: .proxied
+                    type: .proxied,
+                    multisig: nil
                 ))
 
                 result.append(newWallet)

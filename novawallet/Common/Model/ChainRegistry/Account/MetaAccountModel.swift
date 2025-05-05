@@ -54,6 +54,7 @@ struct MetaAccountModel: Equatable, Hashable {
     let ethereumPublicKey: Data?
     let chainAccounts: Set<ChainAccountModel>
     let type: MetaAccountModelType
+    let multisig: MultisigModel?
 }
 
 extension MetaAccountModel: Identifiable {
@@ -77,7 +78,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: newChainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -91,7 +93,8 @@ extension MetaAccountModel {
             ethereumAddress: newEthereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -105,7 +108,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: newEthereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -119,7 +123,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 

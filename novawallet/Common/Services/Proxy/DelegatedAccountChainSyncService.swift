@@ -2,16 +2,14 @@ import SubstrateSdk
 import Operation_iOS
 import BigInt
 
-protocol ChainProxySyncServiceProtocol: ObservableSyncServiceProtocol {
+protocol DelegatedAccountChainSyncServiceProtocol: ObservableSyncServiceProtocol {
     func sync(at blockHash: Data?)
 }
 
-final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceProtocol, AnyCancellableCleaning {
+final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancellableCleaning {
     let walletUpdateMediator: WalletUpdateMediating
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let chainRegistry: ChainRegistryProtocol
-    let proxyOperationFactory: ProxyOperationFactoryProtocol
-    let multisigOperationFactory: MultisigStorageOperationFactoryProtocol
     let chainModel: ChainModel
     let requestFactory: StorageRequestFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
@@ -28,8 +26,6 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         walletUpdateMediator: WalletUpdateMediating,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         chainRegistry: ChainRegistryProtocol,
-        proxyOperationFactory: ProxyOperationFactoryProtocol,
-        multisigOperationFactory: MultisigStorageOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -37,8 +33,6 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
     ) {
         self.chainModel = chainModel
         self.chainRegistry = chainRegistry
-        self.proxyOperationFactory = proxyOperationFactory
-        self.multisigOperationFactory = multisigOperationFactory
         self.operationQueue = operationQueue
         self.walletUpdateMediator = walletUpdateMediator
         self.metaAccountsRepository = metaAccountsRepository
@@ -63,28 +57,14 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         performSync(at: nil)
     }
 
-    func sync(at blockHash: Data?) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard isActive else {
-            return
-        }
-
-        if isSyncing {
-            stopSyncUp()
-
-            isSyncing = false
-        }
-
-        isSyncing = true
-
-        performSync(at: blockHash)
+    override func stopSyncUp() {
+        pendingCall.cancel()
     }
+}
 
+// MARK: Private
+
+private extension DelegatedAccountChainSyncService {
     func performSync(at blockHash: Data?) {
         let chainId = chainModel.chainId
         guard let connection = chainRegistry.getConnection(for: chainId) else {
@@ -99,24 +79,20 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
 
         pendingCall.cancel()
 
-        let proxyListWrapper = proxyOperationFactory.fetchProxyList(
+        let proxyRepository = ChainProxyAccountsRepository(
             requestFactory: requestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            at: blockHash
+            blockHash: blockHash,
+            operationQueue: operationQueue
         )
+        let multisigRepository = MultisigAccountsRepository(chain: chainModel)
 
         let walletsWrapper = createWalletsWrapper(for: chainWalletFilter, chain: chainModel)
-        
-        let multisigsOperation = createMultisigsOperation(
-            using: walletsWrapper,
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
 
         let changesOperation = changesOperation(
-            proxyListWrapper: proxyListWrapper,
-            multisigListOperation: multisigsOperation,
+            proxyRepository: proxyRepository,
+            multisigRepository: multisigRepository,
             metaAccountsWrapper: walletsWrapper,
             identityProxyFactory: identityProxyFactory,
             chainModel: chainModel
@@ -193,7 +169,7 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         return operation
     }
 
-    private func createWalletsWrapper(
+    func createWalletsWrapper(
         for filter: ProxySyncChainWalletFilter?,
         chain: ChainModel
     ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
@@ -214,15 +190,14 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         return CompoundOperationWrapper(targetOperation: filterOperation, dependencies: [metaAccountsOperation])
     }
 
-    private func changesOperation(
-        proxyListWrapper: CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>,
-        multisigListOperation: BaseOperation<[AccountMultisigs?]>,
+    func changesOperation(
+        proxyRepository: ProxyAccountsRepositoryProtocol,
+        multisigRepository: MultisigAccountsRepositoryProtocol,
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
         identityProxyFactory: IdentityProxyFactoryProtocol,
         chainModel: ChainModel
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let proxyListOperation = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
-            let proxyList = try proxyListWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
 
             let possibleProxiesList: [AccountId] = chainMetaAccounts.compactMap { wallet in
@@ -269,11 +244,6 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
             let remoteProxieds = try proxyListOperation.extractNoCancellableResultData()
-            let remoteMultisigs = try multisigListOperation.extractNoCancellableResultData()
-                .compactMap { $0 }
-                .reduce(into: [:]) { acc, accountMultisigs in
-                    acc[accountMultisigs.accountId] = accountMultisigs.multisigs
-                }
 
             return try changesCalculator.calculateUpdates(
                 from: remoteProxieds,
@@ -285,17 +255,38 @@ final class ChainProxySyncService: ObservableSyncService, ChainProxySyncServiceP
         mapOperation.addDependency(identityWrapper.targetOperation)
         mapOperation.addDependency(metaAccountsWrapper.targetOperation)
         mapOperation.addDependency(proxyListOperation)
-        mapOperation.addDependency(multisigListOperation)
 
         let dependencies = proxyListWrapper.allOperations
             + identityWrapper.allOperations
-            + [proxyListOperation, multisigListOperation]
+            + [proxyListOperation]
             + metaAccountsWrapper.allOperations
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
+}
 
-    override func stopSyncUp() {
-        pendingCall.cancel()
+// MARK: DelegatedAccountChainSyncServiceProtocol
+
+extension DelegatedAccountChainSyncService: DelegatedAccountChainSyncServiceProtocol {
+    func sync(at blockHash: Data?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        if isSyncing {
+            stopSyncUp()
+
+            isSyncing = false
+        }
+
+        isSyncing = true
+
+        performSync(at: blockHash)
     }
 }

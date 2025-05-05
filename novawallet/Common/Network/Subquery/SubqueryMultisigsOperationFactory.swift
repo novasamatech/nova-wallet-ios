@@ -5,7 +5,7 @@ import BigInt
 
 protocol SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
-        for accountIds: [AccountId]
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[DiscoveredMultisig]?>
 }
 
@@ -14,7 +14,7 @@ final class SubqueryMultisigsOperationFactory: SubqueryBaseOperationFactory {}
 // MARK: Private
 
 private extension SubqueryMultisigsOperationFactory {
-    func createRequestQuery(for accountIds: [AccountId]) -> String {
+    func createRequestQuery(for accountIds: Set<AccountId>) -> String {
         let accountIdsHex = accountIds.map { $0.toHexWithPrefix() }
         let idsInFilter = accountIdsHex.map { "\"\($0)\"" }.joined(with: .commaSpace)
 
@@ -64,9 +64,9 @@ private extension SubqueryMultisigsOperationFactory {
 
 // MARK: SubqueryMultisigsOperationFactoryProtocol
 
-extension SubqueryMultisigsOperationFactory {
+extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
-        for accountIds: [AccountId]
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[DiscoveredMultisig]?> {
         let query = createRequestQuery(for: accountIds)
         

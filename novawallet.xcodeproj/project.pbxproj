@@ -1609,6 +1609,8 @@
 		2DA8DAC72DC20E4400AFE390 /* MultisigOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */; };
 		2DA8DACC2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DACB2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift */; };
 		2DA8DACE2DC4B14500AFE390 /* SubqueryMultisigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DACD2DC4B14500AFE390 /* SubqueryMultisigs.swift */; };
+		2DA8DAD12DC4CFCA00AFE390 /* ProxyAccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAD02DC4CFCA00AFE390 /* ProxyAccountsRepository.swift */; };
+		2DA8DAD32DC89C0500AFE390 /* MultisigAccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8DAD22DC89C0500AFE390 /* MultisigAccountsRepository.swift */; };
 		2DA9CC932C2C261100DC74A8 /* BlockHashOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */; };
 		2DAF53952C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */; };
 		2DAF539B2C1842D00076B4B6 /* NetworkDetailsNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */; };
@@ -2345,7 +2347,7 @@
 		77CC82A72A986CF1002D022F /* StakingSelectValidatorsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */; };
 		77D2E2712B05416E0098F188 /* AssetListGroupModelCompator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */; };
 		77D2E2732B0542A50098F188 /* AmountPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2E2722B0542A50098F188 /* AmountPair.swift */; };
-		77D2ED5F2B18A50200A0E58C /* ChainProxySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED5E2B18A50200A0E58C /* ChainProxySyncService.swift */; };
+		77D2ED5F2B18A50200A0E58C /* DelegatedAccountChainSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED5E2B18A50200A0E58C /* DelegatedAccountChainSyncService.swift */; };
 		77D2ED612B18A5BF00A0E58C /* SyncChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED602B18A5BF00A0E58C /* SyncChanges.swift */; };
 		77D2ED632B192D5B00A0E58C /* ProxyOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED622B192D5B00A0E58C /* ProxyOperationFactoryTests.swift */; };
 		77D2ED652B19C42D00A0E58C /* ProxyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D2ED642B19C42D00A0E58C /* ProxyModels.swift */; };
@@ -2365,7 +2367,7 @@
 		77DAFF6F2B298FFF00D4220C /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6E2B298FFF00D4220C /* WalletView.swift */; };
 		77DB70EE2B709E4300288F26 /* Web3AlertRemoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DB70ED2B709E4300288F26 /* Web3AlertRemoteModel.swift */; };
 		77DC54842B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */; };
-		77DC54862B1FE5C100C7E45A /* ProxySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54852B1FE5C100C7E45A /* ProxySyncService.swift */; };
+		77DC54862B1FE5C100C7E45A /* DelegatedAccountSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54852B1FE5C100C7E45A /* DelegatedAccountSyncService.swift */; };
 		77DC54872B1FF31800C7E45A /* UserDataStorageTestFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */; };
 		77DF40392B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */; };
 		77DF403B2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF403A2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift */; };
@@ -7450,6 +7452,8 @@
 		2DA8DAC62DC20E4400AFE390 /* MultisigOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationFactory.swift; sourceTree = "<group>"; };
 		2DA8DACB2DC4AAB100AFE390 /* SubqueryMultisigsOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultisigsOperationFactory.swift; sourceTree = "<group>"; };
 		2DA8DACD2DC4B14500AFE390 /* SubqueryMultisigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultisigs.swift; sourceTree = "<group>"; };
+		2DA8DAD02DC4CFCA00AFE390 /* ProxyAccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyAccountsRepository.swift; sourceTree = "<group>"; };
+		2DA8DAD22DC89C0500AFE390 /* MultisigAccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigAccountsRepository.swift; sourceTree = "<group>"; };
 		2DA9CC922C2C261100DC74A8 /* BlockHashOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockHashOperationFactory.swift; sourceTree = "<group>"; };
 		2DAF53942C16E3D40076B4B6 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		2DAF539A2C1842D00076B4B6 /* NetworkDetailsNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsNodeView.swift; sourceTree = "<group>"; };
@@ -8124,7 +8128,7 @@
 		77CC82A62A986CF1002D022F /* StakingSelectValidatorsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSelectValidatorsDelegate.swift; sourceTree = "<group>"; };
 		77D2E2702B05416E0098F188 /* AssetListGroupModelCompator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListGroupModelCompator.swift; sourceTree = "<group>"; };
 		77D2E2722B0542A50098F188 /* AmountPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountPair.swift; sourceTree = "<group>"; };
-		77D2ED5E2B18A50200A0E58C /* ChainProxySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainProxySyncService.swift; sourceTree = "<group>"; };
+		77D2ED5E2B18A50200A0E58C /* DelegatedAccountChainSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountChainSyncService.swift; sourceTree = "<group>"; };
 		77D2ED602B18A5BF00A0E58C /* SyncChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncChanges.swift; sourceTree = "<group>"; };
 		77D2ED622B192D5B00A0E58C /* ProxyOperationFactoryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyOperationFactoryTests.swift; sourceTree = "<group>"; };
 		77D2ED642B19C42D00A0E58C /* ProxyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyModels.swift; sourceTree = "<group>"; };
@@ -8143,7 +8147,7 @@
 		77DAFF6E2B298FFF00D4220C /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		77DB70ED2B709E4300288F26 /* Web3AlertRemoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertRemoteModel.swift; sourceTree = "<group>"; };
 		77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxySyncIntegrationTests.swift; sourceTree = "<group>"; };
-		77DC54852B1FE5C100C7E45A /* ProxySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySyncService.swift; sourceTree = "<group>"; };
+		77DC54852B1FE5C100C7E45A /* DelegatedAccountSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountSyncService.swift; sourceTree = "<group>"; };
 		77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		77DF403A2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsSubscriptionHandler.swift; sourceTree = "<group>"; };
 		77DF403C2B7DC91200ABDB53 /* SettingsSubscriber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsSubscriber.swift; sourceTree = "<group>"; };
@@ -15731,6 +15735,15 @@
 			path = Multisig;
 			sourceTree = "<group>";
 		};
+		2DA8DACF2DC4CF4C00AFE390 /* DelegatedAccountsRepository */ = {
+			isa = PBXGroup;
+			children = (
+				2DA8DAD02DC4CFCA00AFE390 /* ProxyAccountsRepository.swift */,
+				2DA8DAD22DC89C0500AFE390 /* MultisigAccountsRepository.swift */,
+			);
+			path = DelegatedAccountsRepository;
+			sourceTree = "<group>";
+		};
 		2DAF53932C16C9120076B4B6 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -17372,8 +17385,9 @@
 		77D2ED5D2B18A4E200A0E58C /* Proxy */ = {
 			isa = PBXGroup;
 			children = (
-				77DC54852B1FE5C100C7E45A /* ProxySyncService.swift */,
-				77D2ED5E2B18A50200A0E58C /* ChainProxySyncService.swift */,
+				77DC54852B1FE5C100C7E45A /* DelegatedAccountSyncService.swift */,
+				77D2ED5E2B18A50200A0E58C /* DelegatedAccountChainSyncService.swift */,
+				2DA8DACF2DC4CF4C00AFE390 /* DelegatedAccountsRepository */,
 				77D2ED602B18A5BF00A0E58C /* SyncChanges.swift */,
 				77D2ED642B19C42D00A0E58C /* ProxyModels.swift */,
 				77D2ED662B19C44900A0E58C /* ProxyOperationFactory.swift */,
@@ -29135,7 +29149,7 @@
 				77EF9A702B9ECAE00034D619 /* PushNotificationHandlingService.swift in Sources */,
 				0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */,
 				0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */,
-				77DC54862B1FE5C100C7E45A /* ProxySyncService.swift in Sources */,
+				77DC54862B1FE5C100C7E45A /* DelegatedAccountSyncService.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,
 				77F033972A8142D1006BC67E /* StakingSetupAmountStyles.swift in Sources */,
 				AEF507F72625A3280098574D /* ValidatorState+Status.swift in Sources */,
@@ -30962,6 +30976,7 @@
 				846CA77E2709A34D0011124C /* StakingAnalyticsLocalStorageSubscriber.swift in Sources */,
 				0CC0F8272BB53376002C49F6 /* CloudBackupAvailabilityService.swift in Sources */,
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
+				2DA8DAD32DC89C0500AFE390 /* MultisigAccountsRepository.swift in Sources */,
 				844C3E772A09228200C4305F /* WalletChoosePresentable.swift in Sources */,
 				2D6287532C96CA7100060814 /* SwipeGovSetupViewLayout.swift in Sources */,
 				84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */,
@@ -31303,7 +31318,7 @@
 				84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */,
 				0CE933DE2C073344000F3EFE /* SwitchAccount+ImportOptionsWireframe.swift in Sources */,
 				EB5F587A71CCE1F0F86154CF /* ControllerAccountViewFactory.swift in Sources */,
-				77D2ED5F2B18A50200A0E58C /* ChainProxySyncService.swift in Sources */,
+				77D2ED5F2B18A50200A0E58C /* DelegatedAccountChainSyncService.swift in Sources */,
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,
 				84C9CF3B291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift in Sources */,
@@ -31784,6 +31799,7 @@
 				0CAB7DA82C47B8860070CE4D /* NominationPool+MigrateWrapping.swift in Sources */,
 				67684F7576ED0252C1050CA5 /* OperationDetailsViewLayout.swift in Sources */,
 				77F189442A49974A00E8B933 /* UITextView+bind.swift in Sources */,
+				2DA8DAD12DC4CFCA00AFE390 /* ProxyAccountsRepository.swift in Sources */,
 				D840B64C33EF47E723905378 /* OperationDetailsViewFactory.swift in Sources */,
 				84355CE628B507AD004E5C5E /* LedgerAccountAmount.swift in Sources */,
 				77E304AD2AEC16B2006FD6F0 /* SwapPriceDifferenceViewModelFactoryProtocol.swift in Sources */,
