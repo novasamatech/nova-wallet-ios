@@ -274,7 +274,7 @@ private extension ParitySignerTxQrInteractor {
         case .rawBytes:
             return [.rawBytes]
         case let .extrinsic(extrinsic):
-            if extrinsic.canIncludeProof {
+            if params.type == .vault && extrinsic.canIncludeProof {
                 return [.extrinsicWithProof, .extrinsicWithoutProof]
             } else {
                 return [.extrinsicWithoutProof]

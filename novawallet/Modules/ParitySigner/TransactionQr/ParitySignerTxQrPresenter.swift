@@ -70,12 +70,24 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func provideQrFormatViewModel() {
-        switch qrFormat {
-        case .extrinsicWithProof:
-            view?.didReceiveQrFormat(viewModel: .new)
-        case .extrinsicWithoutProof:
-            view?.didReceiveQrFormat(viewModel: .legacy)
-        case nil, .rawBytes:
+        guard let preferredFormats = model?.preferredFormats, let qrFormat else {
+            view?.didReceiveQrFormat(viewModel: .none)
+            return
+        }
+        
+        let canSwitchFormats = preferredFormats.contains(.extrinsicWithProof) &&
+            preferredFormats.contains(.extrinsicWithoutProof)
+        
+        if canSwitchFormats {
+            switch qrFormat {
+            case .extrinsicWithProof:
+                view?.didReceiveQrFormat(viewModel: .new)
+            case .extrinsicWithoutProof:
+                view?.didReceiveQrFormat(viewModel: .legacy)
+            case nil, .rawBytes:
+                view?.didReceiveQrFormat(viewModel: .none)
+            }
+        } else {
             view?.didReceiveQrFormat(viewModel: .none)
         }
     }
