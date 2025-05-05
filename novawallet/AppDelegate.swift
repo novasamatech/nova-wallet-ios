@@ -1,4 +1,5 @@
 import UIKit
+import BranchSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -10,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         guard !isUnitTesting else { return true }
 
@@ -20,16 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // the requirement is to set the delegate before living didFinishLaunching
         setupPushNotificationsDelegate()
 
+        setupBranch(with: launchOptions)
+
         let presenter = RootPresenterFactory.createPresenter(with: rootWindow)
         presenter.loadOnLaunch()
 
         rootWindow.makeKeyAndVisible()
         return true
-    }
-
-    func setupPushNotificationsDelegate() {
-        let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.delegate = self
     }
 
     func application(
@@ -69,6 +67,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         URLHandlingService.shared.handle(url: url)
 
         return true
+    }
+}
+
+private extension AppDelegate {
+    func setupPushNotificationsDelegate() {
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.delegate = self
+    }
+
+    func setupBranch(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+        Branch.setUseTestBranchKey(true)
+        Branch.enableLogging()
+
+        Branch.getInstance().initSession(launchOptions: launchOptions) { params, _ in
+            Logger.shared.debug("Did open branch: \(String(describing: params))")
+
+            guard let hasLink = params?["+clicked_branch_link"] as? NSNumber, hasLink.boolValue else {
+                Logger.shared.debug("No branch link")
+                return
+            }
+
+            guard let action = params?["action"] as? String, let mnemonic = params?["mnemonic"] as? String else {
+                Logger.shared.debug("No mnemonic")
+                return
+            }
+
+            guard let url = URL(string: "https://f8qk2.test-app.link/\(action)/wallet?mnemonic=\(mnemonic)") else {
+                Logger.shared.error("Invalida url")
+                return
+            }
+
+            URLHandlingService.shared.handle(url: url)
+        }
     }
 }
 

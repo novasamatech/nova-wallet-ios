@@ -326,7 +326,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://app.novawallet.io")!
         #else
-            URL(string: "https://dev.novawallet.io")!
+            URL(string: "https://f8qk2.test-app.link")!
         #endif
     }
 
