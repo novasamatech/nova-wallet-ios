@@ -132,42 +132,6 @@ private extension DelegatedAccountChainSyncService {
             }
         }
     }
-    
-    func createMultisigsOperation(
-        using walletsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> BaseOperation<[AccountMultisigs?]> {
-        let operation = OperationCombiningService(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-            
-            let chainMetaAccounts = try walletsWrapper.targetOperation.extractNoCancellableResultData()
-            
-            let accountIds: [AccountId] = chainMetaAccounts.compactMap { wallet in
-                guard wallet.info.type != .multisig else {
-                    return nil
-                }
-                
-                return wallet.info.fetch(for: self.chainModel.accountRequest())?.accountId
-            }
-            
-            return accountIds.map {
-                self.multisigOperationFactory.fetchMultisigStateWrapper(
-                    for: $0,
-                    connection: connection,
-                    runtimeProvider: runtimeProvider
-                )
-            }
-        }.longrunOperation()
-        
-        operation.addDependency(walletsWrapper.targetOperation)
-        
-        return operation
-    }
 
     func createWalletsWrapper(
         for filter: ProxySyncChainWalletFilter?,
