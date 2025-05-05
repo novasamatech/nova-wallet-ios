@@ -19,10 +19,10 @@ extension MetaAccountModelType {
             return nil
         case .paritySigner:
             return .paritySigner
-        case .ledger, .genericLedger:
-            return .ledger
         case .polkadotVault:
             return .polkadotVault
+        case .ledger, .genericLedger:
+            return .ledger
         }
     }
 }

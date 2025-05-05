@@ -1844,3 +1844,6 @@
 "offRamp.not.supported.alert.title" = "This token is not supported by the sell feature";
 "offRamp.not.supported.alert.message" = "None of our providers currently support the selling of this token. Please choose a different token, a different network, or check back later.";
 "sell.named.token" = "Sell %@ token";
+"polkadot.vault.qr.type.v7" = "New (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "Legacy";
+"parity.signer.scan.title_9_7_0" = "Sign with %@";
