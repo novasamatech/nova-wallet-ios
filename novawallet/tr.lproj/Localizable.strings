@@ -1845,3 +1845,5 @@
 "onRamp.not.supported.alert.message" = "Şu anda hiçbir sağlayıcımız bu tokenin satın alınmasını desteklemiyor. Lütfen farklı bir token, farklı bir ağ seçin veya daha sonra tekrar kontrol edin.";
 "offRamp.not.supported.alert.message" = "Şu anda hiçbir sağlayıcımız bu tokenin satılmasını desteklemiyor. Lütfen farklı bir token, farklı bir ağ seçin veya daha sonra tekrar kontrol edin.";
 "sell.named.token" = "%@ tokenini sat";
+"polkadot.vault.qr.type.v7" = "Yeni (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "Eski";

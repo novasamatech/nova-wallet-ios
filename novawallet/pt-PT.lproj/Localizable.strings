@@ -1845,3 +1845,5 @@
 "onRamp.not.supported.alert.message" = "Nenhum de nossos provedores atualmente suporta a compra deste token. Por favor, escolha um token diferente, uma rede diferente ou volte mais tarde.";
 "offRamp.not.supported.alert.message" = "Nenhum de nossos provedores atualmente suporta a venda deste token. Por favor, escolha um token diferente, uma rede diferente ou volte mais tarde.";
 "sell.named.token" = "Vender token %@";
+"polkadot.vault.qr.type.v7" = "Novo (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "Legado";

@@ -1845,3 +1845,5 @@
 "onRamp.not.supported.alert.message" = "Không có nhà cung cấp nào của chúng tôi hiện đang hỗ trợ mua token này. Vui lòng chọn token khác, mạng khác hoặc kiểm tra lại sau.";
 "offRamp.not.supported.alert.message" = "Không có nhà cung cấp nào của chúng tôi hiện đang hỗ trợ bán token này. Vui lòng chọn token khác, mạng khác hoặc kiểm tra lại sau.";
 "sell.named.token" = "Bán token %@";
+"polkadot.vault.qr.type.v7" = "Mới (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "Cũ";

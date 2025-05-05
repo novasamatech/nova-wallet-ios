@@ -1845,3 +1845,5 @@
 "onRamp.not.supported.alert.message" = "현재 제공업체 중 이 토큰을 구매할 수 있는 곳이 없습니다. 다른 토큰이나 네트워크를 선택하거나 나중에 다시 확인하세요.";
 "offRamp.not.supported.alert.message" = "현재 제공업체 중 이 토큰을 판매할 수 있는 곳이 없습니다. 다른 토큰이나 네트워크를 선택하거나 나중에 다시 확인하세요.";
 "sell.named.token" = "%@ 토큰 판매";
+"polkadot.vault.qr.type.v7" = "새로운 (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "레거시";

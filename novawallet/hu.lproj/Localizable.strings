@@ -1845,3 +1845,5 @@
 "onRamp.not.supported.alert.message" = "Egyik szolgáltatónk sem támogatja jelenleg ennek a tokennek a vásárlását. Kérjük, válasszon másik tokent, másik hálózatot, vagy térjen vissza később.";
 "offRamp.not.supported.alert.message" = "Egyik szolgáltatónk sem támogatja jelenleg ennek a tokennek az eladását. Kérjük, válasszon másik tokent, másik hálózatot, vagy térjen vissza később.";
 "sell.named.token" = "%@ token eladása";
+"polkadot.vault.qr.type.v7" = "Új (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "Régi";
