@@ -1,6 +1,6 @@
 import Foundation
 import UIKit.UIImage
-import SoraFoundation
+import Foundation_iOS
 
 enum StakingAlert {
     case bondedSetValidators

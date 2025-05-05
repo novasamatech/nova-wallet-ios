@@ -13,8 +13,9 @@ protocol XcmTransferResolutionFactoryProtocol {
 final class XcmTransferResolutionFactory {
     struct ResolvedChains {
         let origin: ChainAsset
-        let destination: ChainModel
+        let destination: ChainAsset
         let reserve: ChainModel
+        let metadata: XcmTransferMetadata
     }
 
     let chainRegistry: ChainRegistryProtocol
@@ -33,55 +34,66 @@ final class XcmTransferResolutionFactory {
         destinationId: XcmTransferDestinationId,
         xcmTransfers: XcmTransfers
     ) throws -> ResolvedChains {
-        guard
-            let originChain = chainRegistry.getChain(for: originChainAssetId.chainId),
-            let originAsset = originChain.asset(for: originChainAssetId.assetId) else {
-            throw ChainRegistryError.noChain(originChainAssetId.chainId)
-        }
+        let originChain = try chainRegistry.getChainOrError(for: originChainAssetId.chainId)
+        let originChainAsset = try originChain.chainAssetOrError(for: originChainAssetId.assetId)
 
-        let originChainAsset = ChainAsset(chain: originChain, asset: originAsset)
+        let destinationChain = try chainRegistry.getChainOrError(for: destinationId.chainId)
+        let destinationChainAsset = try destinationChain.chainAssetOrError(for: destinationId.chainAssetId.assetId)
 
-        guard let destinationChain = chainRegistry.getChain(for: destinationId.chainId) else {
-            throw ChainRegistryError.noChain(destinationId.chainId)
-        }
+        let metadata = try xcmTransfers.getTransferMetadata(
+            for: originChainAsset,
+            destinationChain: destinationChain
+        )
 
-        guard let reserveId = xcmTransfers.getReserveTransfering(
-            from: originChainAssetId.chainId,
-            assetId: originChainAssetId.assetId
-        ) else {
-            throw XcmTransferFactoryError.noReserve(originChainAssetId)
-        }
+        let reserveChain = try chainRegistry.getChainOrError(for: metadata.reserve.reserveId)
 
-        guard let reserveChain = chainRegistry.getChain(for: reserveId) else {
-            throw ChainRegistryError.noChain(reserveId)
-        }
-
-        return ResolvedChains(origin: originChainAsset, destination: destinationChain, reserve: reserveChain)
+        return ResolvedChains(
+            origin: originChainAsset,
+            destination: destinationChainAsset,
+            reserve: reserveChain,
+            metadata: metadata
+        )
     }
 
-    private func createParachainIdWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<ParaId> {
-        paraIdOperationFactory.createParaIdOperation(for: chainId)
+    private func createParachainIdWrapper(for chain: ChainModel) -> CompoundOperationWrapper<ParaId>? {
+        guard !chain.isRelaychain else {
+            return nil
+        }
+
+        return paraIdOperationFactory.createParaIdOperation(for: chain.chainId)
     }
 
     private func createMergeOperation(
         for resolvedChains: ResolvedChains,
         transferDestinationId: XcmTransferDestinationId,
+        originParaIdWrapper: CompoundOperationWrapper<ParaId>?,
         destinationParaIdWrapper: CompoundOperationWrapper<ParaId>?,
         reserveParaIdWrapper: CompoundOperationWrapper<ParaId>?
     ) -> BaseOperation<XcmTransferParties> {
         ClosureOperation<XcmTransferParties> {
+            let originParaId = try originParaIdWrapper?.targetOperation.extractNoCancellableResultData()
             let destinationParaId = try destinationParaIdWrapper?.targetOperation.extractNoCancellableResultData()
             let reserveParaId = try reserveParaIdWrapper?.targetOperation.extractNoCancellableResultData()
 
+            let origin = XcmTransferOrigin(
+                chainAsset: resolvedChains.origin,
+                parachainId: originParaId
+            )
+
             let destination = XcmTransferDestination(
-                chain: resolvedChains.destination,
+                chainAsset: resolvedChains.destination,
                 parachainId: destinationParaId,
                 accountId: transferDestinationId.accountId
             )
 
             let reserve = XcmTransferReserve(chain: resolvedChains.reserve, parachainId: reserveParaId)
 
-            return XcmTransferParties(origin: resolvedChains.origin, destination: destination, reserve: reserve)
+            return XcmTransferParties(
+                origin: origin,
+                destination: destination,
+                reserve: reserve,
+                metadata: resolvedChains.metadata
+            )
         }
     }
 }
@@ -101,29 +113,27 @@ extension XcmTransferResolutionFactory: XcmTransferResolutionFactoryProtocol {
 
             var dependencies: [Operation] = []
 
-            let destinationParaIdWrapper: CompoundOperationWrapper<ParaId>?
+            let originParaIdWrapper = createParachainIdWrapper(for: resolvedChains.origin.chain)
 
-            if !resolvedChains.destination.isRelaychain {
-                let wrapper = createParachainIdWrapper(
-                    for: resolvedChains.destination.chainId
-                )
+            if let originParaIdWrapper {
+                dependencies.append(contentsOf: originParaIdWrapper.allOperations)
+            }
 
-                dependencies.append(contentsOf: wrapper.allOperations)
+            let destinationParaIdWrapper = createParachainIdWrapper(for: resolvedChains.destination.chain)
 
-                destinationParaIdWrapper = wrapper
-            } else {
-                destinationParaIdWrapper = nil
+            if let destinationParaIdWrapper {
+                dependencies.append(contentsOf: destinationParaIdWrapper.allOperations)
             }
 
             let reserveParaIdWrapper: CompoundOperationWrapper<ParaId>?
 
             if !resolvedChains.reserve.isRelaychain {
-                if resolvedChains.reserve.chainId != resolvedChains.destination.chainId {
-                    let wrapper = createParachainIdWrapper(for: resolvedChains.reserve.chainId)
+                if resolvedChains.reserve.chainId != resolvedChains.destination.chain.chainId {
+                    reserveParaIdWrapper = createParachainIdWrapper(for: resolvedChains.reserve)
 
-                    dependencies.append(contentsOf: wrapper.allOperations)
-
-                    reserveParaIdWrapper = wrapper
+                    if let reserveParaIdWrapper {
+                        dependencies.append(contentsOf: reserveParaIdWrapper.allOperations)
+                    }
                 } else {
                     reserveParaIdWrapper = destinationParaIdWrapper
                 }
@@ -134,6 +144,7 @@ extension XcmTransferResolutionFactory: XcmTransferResolutionFactoryProtocol {
             let mergeOperation = createMergeOperation(
                 for: resolvedChains,
                 transferDestinationId: transferDestinationId,
+                originParaIdWrapper: originParaIdWrapper,
                 destinationParaIdWrapper: destinationParaIdWrapper,
                 reserveParaIdWrapper: reserveParaIdWrapper
             )

@@ -1,6 +1,6 @@
 import Foundation
-import IrohaCrypto
-import SoraKeystore
+import NovaCrypto
+import Keystore_iOS
 import SubstrateSdk
 
 final class EthereumSigner: BaseSigner {

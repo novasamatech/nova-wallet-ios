@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 final class DAppBrowserViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserViewLayout
@@ -76,10 +76,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if #available(iOS 16.0, *) {
-            deviceOrientationManager.enableLandscape()
-            setNeedsUpdateOfSupportedInterfaceOrientations()
-        }
+        deviceOrientationManager.enableLandscape()
+        setNeedsUpdateOfSupportedInterfaceOrientations()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -517,10 +515,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     }
 
     func didDecideClose() {
-        if #available(iOS 16.0, *) {
-            deviceOrientationManager.disableLandscape()
-            setNeedsUpdateOfSupportedInterfaceOrientations()
-        }
+        deviceOrientationManager.disableLandscape()
+        setNeedsUpdateOfSupportedInterfaceOrientations()
     }
 }
 

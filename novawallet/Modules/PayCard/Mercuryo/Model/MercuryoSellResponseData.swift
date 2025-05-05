@@ -1,6 +1,6 @@
 import Foundation
 
-struct MercuryoSellResponseData: Decodable {
+struct MercuryoRampResponseData: Decodable {
     let status: MercuryoStatus
     let amounts: MercuryoAmounts
     let address: AccountAddress

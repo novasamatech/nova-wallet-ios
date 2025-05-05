@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 final class SwapInfoViewCell: RowView<SwapInfoView>, StackTableViewCellProtocol {
     var titleButton: RoundedButton { rowContentView.titleView }

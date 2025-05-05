@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletAccountViewModel)

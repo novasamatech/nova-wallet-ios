@@ -1,6 +1,6 @@
 import Foundation
-import SoraKeystore
-import IrohaCrypto
+import Keystore_iOS
+import NovaCrypto
 import Operation_iOS
 
 final class RootInteractor {
@@ -92,9 +92,7 @@ final class RootInteractor {
     }
 
     private func setupTableViewsAppearance() {
-        if #available(iOS 15, *) {
-            UITableView.appearance().sectionHeaderTopPadding = 0
-        }
+        UITableView.appearance().sectionHeaderTopPadding = 0
     }
 
     private func setupSecurityLayer() {

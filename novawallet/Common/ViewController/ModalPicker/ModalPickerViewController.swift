@@ -1,6 +1,6 @@
 import UIKit
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 protocol ModalPickerViewControllerDelegate: AnyObject {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?)
@@ -132,12 +132,17 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
             tableView.separatorInset = separatorInset
         }
 
-        headerHeightConstraint.constant = headerHeight
-
         if let icon = icon {
             headerView.iconImage = icon
         } else {
             headerView.spacingBetweenLabelAndIcon = 0
+        }
+
+        if icon != nil || localizedTitle != nil {
+            headerHeightConstraint.constant = headerHeight
+        } else {
+            headerHeightConstraint.constant = .zero
+            headerHeight = 0
         }
 
         headerBackgroundView.borderType = headerBorderType

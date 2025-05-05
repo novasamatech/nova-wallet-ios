@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 class ChainNotificationSettingsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ChainNotificationSettingsViewLayout

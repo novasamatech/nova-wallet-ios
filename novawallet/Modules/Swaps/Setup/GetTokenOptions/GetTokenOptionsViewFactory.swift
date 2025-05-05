@@ -1,6 +1,6 @@
 import UIKit
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 enum GetTokenOptionsViewFactory {
     static func createView(
@@ -62,7 +62,7 @@ enum GetTokenOptionsViewFactory {
         }
 
         let xcmTransfersSyncService = XcmTransfersSyncService(
-            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
+            config: ApplicationConfig.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
@@ -71,7 +71,7 @@ enum GetTokenOptionsViewFactory {
             destinationChainAsset: destinationChainAsset,
             assetModelObservable: assetModelObservable,
             xcmTransfersSyncService: xcmTransfersSyncService,
-            purchaseProvider: PurchaseAggregator.defaultAggregator(),
+            rampProvider: RampAggregator.defaultAggregator(),
             logger: Logger.shared
         )
     }

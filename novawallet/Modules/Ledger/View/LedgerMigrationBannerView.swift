@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 class LedgerMigrationBannerView: GenericBorderedView<
     IconDetailsGenericView<GenericPairValueView<MultiValueView, RoundedButton>>

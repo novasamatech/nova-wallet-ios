@@ -1,5 +1,5 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 extension KeystoreProtocol {
     func loadIfKeyExists(_ tag: String) throws -> Data? {

@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import Operation_iOS
 
 struct GovernanceRemoveVotesConfirmViewFactory {
@@ -110,6 +110,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
             extrinsicService: extrinsicService,
             extrinsicFactory: extrinsicFactory,
             signer: signer,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }

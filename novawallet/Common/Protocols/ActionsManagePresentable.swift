@@ -1,12 +1,12 @@
 import Foundation
-import SoraFoundation
-import SoraUI
+import Foundation_iOS
+import UIKit_iOS
 
 protocol ActionsManagePresentable {
     func presentActionsManage(
         from view: ControllerBackedProtocol,
         actions: [LocalizableResource<ActionManageViewModel>],
-        title: LocalizableResource<String>,
+        title: LocalizableResource<String>?,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     )
@@ -16,7 +16,7 @@ extension ActionsManagePresentable {
     func presentActionsManage(
         from view: ControllerBackedProtocol,
         actions: [LocalizableResource<ActionManageViewModel>],
-        title: LocalizableResource<String>,
+        title: LocalizableResource<String>?,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     ) {

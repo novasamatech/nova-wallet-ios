@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 import Operation_iOS
 
 final class TransactionHistoryInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning {

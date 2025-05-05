@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 struct ReferendumVoteConfirmViewFactory {
     // swiftlint:disable:next function_body_length
@@ -146,6 +146,7 @@ struct ReferendumVoteConfirmViewFactory {
             signer: signer,
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
+            chainRegistry: state.chainRegistry,
             operationQueue: operationQueue
         )
     }

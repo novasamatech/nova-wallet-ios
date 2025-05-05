@@ -1,8 +1,8 @@
 import Foundation
-import SoraKeystore
-import SoraFoundation
+import Keystore_iOS
+import Foundation_iOS
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class StakingRewardPayoutsViewFactory {
     static func createViewForNominator(

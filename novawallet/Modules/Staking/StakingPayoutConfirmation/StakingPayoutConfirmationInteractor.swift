@@ -1,8 +1,8 @@
 import Foundation
-import SoraKeystore
+import Keystore_iOS
 
 import Operation_iOS
-import IrohaCrypto
+import NovaCrypto
 import BigInt
 
 final class StakingPayoutConfirmationInteractor {
@@ -15,7 +15,7 @@ final class StakingPayoutConfirmationInteractor {
     let feeProxy: MultiExtrinsicFeeProxyProtocol
     let chainRegistry: ChainRegistryProtocol
     let signer: SigningWrapperProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol?
     let payouts: [PayoutInfo]
 
@@ -36,7 +36,7 @@ final class StakingPayoutConfirmationInteractor {
         feeProxy: MultiExtrinsicFeeProxyProtocol,
         chainRegistry: ChainRegistryProtocol,
         signer: SigningWrapperProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         payouts: [PayoutInfo],
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
@@ -50,7 +50,7 @@ final class StakingPayoutConfirmationInteractor {
         self.extrinsicService = extrinsicService
         self.chainRegistry = chainRegistry
         self.signer = signer
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.payouts = payouts
         self.logger = logger
         self.currencyManager = currencyManager
@@ -66,7 +66,8 @@ final class StakingPayoutConfirmationInteractor {
         var splitter: ExtrinsicSplitting = ExtrinsicSplitter(
             chain: chainAsset.chain,
             maxCallsPerExtrinsic: selectedAccount.chainAccount.type.maxCallsPerExtrinsic,
-            chainRegistry: chainRegistry
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         splitter = try payouts.reduce(splitter) { accum, payout in
@@ -114,7 +115,7 @@ final class StakingPayoutConfirmationInteractor {
 extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteractorInputProtocol {
     func setup() {
         runtimeService.fetchCoderFactory(
-            runningIn: operationManager,
+            runningIn: OperationManager(operationQueue: operationQueue),
             completion: { [weak self] codingFactory in
                 self?.codingFactory = codingFactory
                 self?.continueSetup()

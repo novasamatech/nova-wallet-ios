@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 import UIKit
 
 extension ModalSheetPresentationStyle {
@@ -14,6 +14,7 @@ extension ModalSheetPresentationStyle {
             indicatorColor: R.color.colorPullIndicator()!
         )
         let style = ModalSheetPresentationStyle(
+            sizing: .manual,
             backdropColor: R.color.colorDimBackground()!,
             headerStyle: headerStyle
         )

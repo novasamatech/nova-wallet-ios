@@ -1,4 +1,4 @@
-import IrohaCrypto
+import NovaCrypto
 import Foundation
 
 protocol LedgerTxConfirmPresenterProtocol: LedgerPerformOperationPresenterProtocol {
@@ -20,7 +20,7 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
-        deviceName: String,
+        deviceInfo: LedgerDeviceDisplayInfo,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping () -> Void
     )
@@ -28,12 +28,14 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
     func transitToTransactionExpired(
         on view: ControllerBackedProtocol?,
         expirationTimeInterval: TimeInterval,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         completion: @escaping MessageSheetCallback
     )
 
     func transitToInvalidSignature(
         on view: ControllerBackedProtocol?,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         completion: @escaping MessageSheetCallback
     )

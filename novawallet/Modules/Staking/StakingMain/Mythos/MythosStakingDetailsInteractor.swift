@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 import SubstrateSdk
-import SoraFoundation
+import Foundation_iOS
 
 final class MythosStakingDetailsInteractor: AnyProviderAutoCleaning {
     weak var presenter: MythosStakingDetailsInteractorOutputProtocol?

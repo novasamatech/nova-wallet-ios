@@ -2,23 +2,23 @@ import Foundation
 import SubstrateSdk
 
 extension XcmV3 {
-    struct DepositAssetValue: Encodable {
+    struct DepositAssetValue: Codable {
         let assets: XcmV3.MultiassetFilter
         let beneficiary: XcmV3.Multilocation
     }
 
-    struct BuyExecutionValue: Encodable {
+    struct BuyExecutionValue: Codable {
         let fees: XcmV3.Multiasset
-        let weightLimit: Xcm.WeightLimit<BlockchainWeight.WeightV2>
+        let weightLimit: Xcm.WeightLimit<Substrate.WeightV2>
     }
 
-    struct DepositReserveAssetValue: Encodable {
+    struct DepositReserveAssetValue: Codable {
         let assets: XcmV3.MultiassetFilter
         let dest: XcmV3.Multilocation
         let xcm: [Instruction]
     }
 
-    enum Instruction: Encodable {
+    enum Instruction: Codable {
         static let fieldWithdrawAsset = "WithdrawAsset"
         static let fieldClearOrigin = "ClearOrigin"
         static let fieldReserveAssetDeposited = "ReserveAssetDeposited"
@@ -34,6 +34,39 @@ extension XcmV3 {
         case buyExecution(BuyExecutionValue)
         case depositReserveAsset(DepositReserveAssetValue)
         case receiveTeleportedAsset([XcmV3.Multiasset])
+        case other(String, JSON)
+
+        init(from decoder: any Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case Self.fieldWithdrawAsset:
+                let value = try container.decode([XcmV3.Multiasset].self)
+                self = .withdrawAsset(value)
+            case Self.fieldDepositAsset:
+                let value = try container.decode(DepositAssetValue.self)
+                self = .depositAsset(value)
+            case Self.fieldClearOrigin:
+                self = .clearOrigin
+            case Self.fieldReserveAssetDeposited:
+                let value = try container.decode([XcmV3.Multiasset].self)
+                self = .reserveAssetDeposited(value)
+            case Self.fieldBuyExecution:
+                let value = try container.decode(BuyExecutionValue.self)
+                self = .buyExecution(value)
+            case Self.fieldDepositReserveAsset:
+                let value = try container.decode(DepositReserveAssetValue.self)
+                self = .depositReserveAsset(value)
+            case Self.fieldReceiveTeleportedAsset:
+                let value = try container.decode([XcmV3.Multiasset].self)
+                self = .receiveTeleportedAsset(value)
+            default:
+                let value = try container.decode(JSON.self)
+                self = .other(type, value)
+            }
+        }
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -60,6 +93,9 @@ extension XcmV3 {
             case let .receiveTeleportedAsset(assets):
                 try container.encode(Self.fieldReceiveTeleportedAsset)
                 try container.encode(assets)
+            case let .other(type, value):
+                try container.encode(type)
+                try container.encode(value)
             }
         }
     }

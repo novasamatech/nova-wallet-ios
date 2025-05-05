@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 final class NotificationsManagementViewController: UIViewController, ViewHolder {
     typealias DataSource = SettingsTableDataSource<NotificationsManagementRow, NotificationsManagementSection>

@@ -1,6 +1,6 @@
 import UIKit
-import SoraUI
-import SoraFoundation
+import UIKit_iOS
+import Foundation_iOS
 
 final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func complete(on view: ControllerBackedProtocol?, completionClosure: @escaping () -> Void) {
@@ -10,7 +10,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
-        deviceName: String,
+        deviceInfo: LedgerDeviceDisplayInfo,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         cancelClosure: @escaping () -> Void
     ) {
@@ -21,7 +21,8 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         guard
             let transactionSignView = LedgerMessageSheetViewFactory.createReviewLedgerTransactionView(
                 for: timer,
-                deviceName: deviceName,
+                deviceName: deviceInfo.deviceName,
+                deviceModel: deviceInfo.deviceModel,
                 cancelClosure: cancelClosure,
                 migrationViewModel: migrationViewModel
             ) else {
@@ -34,6 +35,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func transitToTransactionExpired(
         on view: ControllerBackedProtocol?,
         expirationTimeInterval: TimeInterval,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         completion: @escaping MessageSheetCallback
     ) {
@@ -44,6 +46,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         guard
             let transactionExpiredView = LedgerMessageSheetViewFactory.createTransactionExpiredView(
                 for: expirationTimeInterval,
+                deviceModel: deviceModel,
                 completionClosure: completion,
                 migrationViewModel: migrationViewModel
             ) else {
@@ -55,6 +58,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
 
     func transitToInvalidSignature(
         on view: ControllerBackedProtocol?,
+        deviceModel: LedgerDeviceModel,
         migrationViewModel: MessageSheetMigrationBannerView.ContentViewModel?,
         completion: @escaping MessageSheetCallback
     ) {
@@ -63,6 +67,7 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         }
 
         guard let invalidSignatureView = LedgerMessageSheetViewFactory.createSignatureInvalidView(
+            deviceModel: deviceModel,
             completionClosure: completion,
             migrationViewModel: migrationViewModel
         ) else {

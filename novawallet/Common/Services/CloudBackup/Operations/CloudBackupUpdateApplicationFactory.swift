@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import SoraKeystore
+import Keystore_iOS
 
 protocol CloudBackupUpdateApplicationFactoryProtocol {
     func createUpdateApplyOperation(for changes: CloudBackupSyncResult.Changes) -> CompoundOperationWrapper<Void>

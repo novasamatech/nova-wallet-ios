@@ -1,5 +1,5 @@
 import Foundation
-import SoraFoundation
+import Foundation_iOS
 import BigInt
 
 final class SwapSetupPresenter: SwapBasePresenter {
@@ -903,21 +903,19 @@ extension SwapSetupPresenter: Localizable {
     }
 }
 
-extension SwapSetupPresenter: PurchaseFlowManaging, PurchaseDelegate, ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard let actions = context as? [PurchaseAction] else {
-            return
+extension SwapSetupPresenter: RampFlowManaging, RampDelegate {
+    func rampDidComplete(
+        action: RampActionType,
+        chainAsset _: ChainAsset
+    ) {
+        wireframe.popTopControllers(from: view) { [weak self] in
+            guard let self else { return }
+
+            wireframe.presentRampDidComplete(
+                view: view,
+                action: action,
+                locale: selectedLocale
+            )
         }
-
-        startPuchaseFlow(
-            from: view,
-            purchaseAction: actions[index],
-            wireframe: wireframe,
-            locale: selectedLocale
-        )
-    }
-
-    func purchaseDidComplete() {
-        wireframe.presentPurchaseDidComplete(view: view, locale: selectedLocale)
     }
 }

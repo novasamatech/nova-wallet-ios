@@ -8,8 +8,14 @@ struct DAppOperationConfirmViewModel {
     let walletIcon: DrawableIcon?
     let address: String
     let addressIcon: DrawableIcon?
-    let networkName: String
-    let networkIconViewModel: ImageViewModelProtocol?
+    let network: Network?
+}
+
+extension DAppOperationConfirmViewModel {
+    struct Network {
+        let name: String
+        let iconViewModel: ImageViewModelProtocol?
+    }
 }
 
 enum DAppOperationFeeViewModel {

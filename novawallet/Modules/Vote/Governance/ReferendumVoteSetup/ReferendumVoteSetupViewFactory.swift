@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import SoraFoundation
+import Foundation_iOS
 
 struct ReferendumVoteSetupViewFactory {
     static func createView(
@@ -163,6 +163,7 @@ struct ReferendumVoteSetupViewFactory {
             extrinsicService: extrinsicService,
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
+            chainRegistry: state.chainRegistry,
             operationQueue: operationQueue
         )
     }

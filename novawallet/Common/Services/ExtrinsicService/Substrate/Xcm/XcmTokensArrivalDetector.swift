@@ -7,6 +7,12 @@ protocol XcmTokensArrivalDetecting {
         accountId: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> TokenDepositEvent?
+
+    func searchDepositInEvents(
+        _ events: [Event],
+        accountId: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> TokenDepositEvent?
 }
 
 final class XcmTokensArrivalDetector {
@@ -115,6 +121,18 @@ extension XcmTokensArrivalDetector: XcmTokensArrivalDetecting {
 
         return searchForXcmArrivalInSetValidationData(
             in: blockDetails.extrinsicsWithEvents,
+            accountId: accountId,
+            codingFactory: codingFactory
+        )
+    }
+
+    func searchDepositInEvents(
+        _ events: [Event],
+        accountId: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> TokenDepositEvent? {
+        detectDepositIn(
+            events: events,
             accountId: accountId,
             codingFactory: codingFactory
         )

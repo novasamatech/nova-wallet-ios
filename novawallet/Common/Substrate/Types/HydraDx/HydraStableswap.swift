@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 import BigInt
-import IrohaCrypto
+import NovaCrypto
 
 enum HydraStableswap {
     static let module = "Stableswap"

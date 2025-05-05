@@ -1,7 +1,7 @@
 import UIKit
 import Operation_iOS
 import SubstrateSdk
-import SoraKeystore
+import Keystore_iOS
 
 final class NetworksListInteractor {
     weak var presenter: NetworksListInteractorOutputProtocol?

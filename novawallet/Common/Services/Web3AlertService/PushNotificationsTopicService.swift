@@ -1,6 +1,6 @@
 import Operation_iOS
-import SoraFoundation
-import SoraKeystore
+import Foundation_iOS
+import Keystore_iOS
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseMessaging

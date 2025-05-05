@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 extension UILabel {
     struct Style {
@@ -148,6 +148,11 @@ extension UILabel.Style {
 
     static let semiboldCaps2Primary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
+        font: .semiBoldCaps2
+    )
+
+    static let semiboldCaps2Chip = UILabel.Style(
+        textColor: R.color.colorChipText(),
         font: .semiBoldCaps2
     )
 

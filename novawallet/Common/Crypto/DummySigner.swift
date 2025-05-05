@@ -1,5 +1,5 @@
 import Foundation
-import IrohaCrypto
+import NovaCrypto
 
 enum DummySigningType {
     case sr25519(secretKeyData: Data, publicKeyData: Data)

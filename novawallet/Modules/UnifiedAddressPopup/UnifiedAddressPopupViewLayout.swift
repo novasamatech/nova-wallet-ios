@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 final class UnifiedAddressPopupViewLayout: UIView {
     private let titleValueView: GenericMultiValueView<UITextView> = .create { view in

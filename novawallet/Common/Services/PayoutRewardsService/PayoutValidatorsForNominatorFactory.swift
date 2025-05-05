@@ -1,7 +1,7 @@
 import Operation_iOS
 import Foundation
 import SubstrateSdk
-import IrohaCrypto
+import NovaCrypto
 
 final class PayoutValidatorsForNominatorFactory {
     let url: URL

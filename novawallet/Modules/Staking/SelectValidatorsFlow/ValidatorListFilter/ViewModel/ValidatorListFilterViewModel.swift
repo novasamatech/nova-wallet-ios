@@ -1,4 +1,4 @@
-import SoraFoundation
+import Foundation_iOS
 
 struct ValidatorListFilterViewModel {
     let filterModel: ValidatorListFilterViewModelSection<ValidatorListFilterRow>

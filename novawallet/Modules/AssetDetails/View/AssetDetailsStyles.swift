@@ -1,5 +1,5 @@
 import Foundation
-import SoraUI
+import UIKit_iOS
 
 extension RoundedButton.Style {
     static let operation = RoundedButton.Style(
@@ -44,6 +44,7 @@ extension StackTitleValueIconView.Style {
         icon: R.image.iconSmallArrowDown()?
             .tinted(with: R.color.colorIconChip()!)?
             .withAlignmentRectInsets(.init(inset: -4)),
-        iconBorderStyle: .chips
+        iconBorderStyle: .chips,
+        adjustsFontSizeToFitWidth: true
     )
 }

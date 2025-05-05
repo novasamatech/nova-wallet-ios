@@ -1,4 +1,4 @@
-import SoraUI
+import UIKit_iOS
 
 extension BorderedIconLabelView {
     struct Style {

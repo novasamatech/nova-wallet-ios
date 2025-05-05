@@ -1,5 +1,5 @@
 import UIKit
-import SoraFoundation
+import Foundation_iOS
 
 class CollatorStkBaseUnstakeSetupVC<V: CollatorStkBaseUnstakeSetupLayout>: UIViewController,
     ViewHolder, ImportantViewProtocol {

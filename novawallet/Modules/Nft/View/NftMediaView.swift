@@ -1,5 +1,5 @@
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol NftMediaViewDelegate: AnyObject {
     func nftMediaDidLoad(_ view: NftMediaView)

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import SoraUI
+import UIKit_iOS
 
 protocol AssetDetailsBalanceWidgetDelegate: AnyObject {
     func didChangeState(to state: AssetDetailsBalanceWidget.State)
@@ -54,11 +54,19 @@ class AssetDetailsBalanceWidget: UIView {
     let transferrableCell: StackTitleMultiValueCell = .create {
         $0.apply(style: .balancePart)
         $0.canSelect = false
+        $0.topValueLabel.adjustsFontSizeToFitWidth = true
+        $0.topValueLabel.minimumScaleFactor = 0.5
+        $0.bottomValueLabel.adjustsFontSizeToFitWidth = true
+        $0.bottomValueLabel.minimumScaleFactor = 0.5
     }
 
     let lockCell: StackTitleMultiValueCell = .create {
         $0.apply(style: .balancePart)
         $0.canSelect = false
+        $0.topValueLabel.adjustsFontSizeToFitWidth = true
+        $0.topValueLabel.minimumScaleFactor = 0.5
+        $0.bottomValueLabel.adjustsFontSizeToFitWidth = true
+        $0.bottomValueLabel.minimumScaleFactor = 0.5
     }
 
     var rowIconImageView: UIImageView {
