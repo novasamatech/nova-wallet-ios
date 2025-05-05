@@ -15,10 +15,12 @@ extension MetaAccountModelType {
 
     var notSupportedRawBytesSigner: NoSigningSupportType? {
         switch self {
-        case .secrets, .watchOnly, .proxied, .polkadotVault:
+        case .secrets, .watchOnly, .proxied:
             return nil
         case .paritySigner:
             return .paritySigner
+        case .polkadotVault:
+            return .polkadotVault
         case .ledger, .genericLedger:
             return .ledger
         }
