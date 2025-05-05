@@ -150,6 +150,7 @@ struct SwipeGovVotingConfirmViewFactory {
             feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
             logger: Logger.shared,
+            chainRegistry: state.chainRegistry,
             operationQueue: operationQueue
         )
     }

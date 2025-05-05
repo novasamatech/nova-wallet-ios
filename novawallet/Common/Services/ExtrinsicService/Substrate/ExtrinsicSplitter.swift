@@ -16,15 +16,14 @@ protocol ExtrinsicSplitting: AnyObject {
 }
 
 enum ExtrinsicSplitterError: Error {
-    case extrinsicTooLarge(blockLimit: UInt64, callWeight: UInt64)
+    case extrinsicTooLarge(blockLimit: Substrate.Weight, callWeight: Substrate.Weight)
     case weightNotFound(path: CallCodingPath)
     case invalidExtrinsicIndex(index: Int, totalExtrinsics: Int)
     case noCalls
 }
 
 final class ExtrinsicSplitter {
-    static let maxExtrinsicSizePercent: CGFloat = 0.5
-    static let blockSizeMultiplier: CGFloat = 0.64
+    static let extrinsicSizePercent: BigRational = .percent(of: 80)
 
     typealias CallConverter = (RuntimeJsonContext?) throws -> JSON
 
@@ -43,52 +42,64 @@ final class ExtrinsicSplitter {
     let chainRegistry: ChainRegistryProtocol
     let maxCallsPerExtrinsic: Int?
 
+    private let blockLimitOperationFactory: BlockLimitOperationFactoryProtocol
+
     private var internalCalls: [InternalCall] = []
 
     init(
         chain: ChainModel,
         maxCallsPerExtrinsic: Int?,
-        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.maxCallsPerExtrinsic = maxCallsPerExtrinsic
         self.chainRegistry = chainRegistry
+
+        blockLimitOperationFactory = BlockLimitOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
     }
 
-    private func createBlockLimitWrapper(
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<UInt64> {
-        let blockWeightsOperation = StorageConstantOperation<BlockWeights>(
-            path: .blockWeights
-        )
+    private func createBlockLimitWrapper() -> CompoundOperationWrapper<Substrate.Weight> {
+        let blockWeightsWrapper = blockLimitOperationFactory.fetchBlockWeights(for: chain.chainId)
+        let lastWeightWrapper = blockLimitOperationFactory.fetchLastBlockWeight(for: chain.chainId)
 
-        blockWeightsOperation.configurationBlock = {
-            do {
-                blockWeightsOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                blockWeightsOperation.result = .failure(error)
-            }
+        let mappingOperation = ClosureOperation<Substrate.Weight> {
+            let blockWeights = try blockWeightsWrapper.targetOperation.extractNoCancellableResultData()
+            let lastBlockWeight = try lastWeightWrapper.targetOperation.extractNoCancellableResultData()
+
+            // dont't exceed extrinsic limit
+            let extrinsicLimit = blockWeights.perClass.normal.maxExtrinsic ?? .maxWeight
+
+            // don't exceed all normal extrinsic limit in the block
+            let normalClassLimit = blockWeights.perClass.normal.maxTotal.map {
+                $0 - lastBlockWeight.normal
+            } ?? .maxWeight
+
+            // don't exceed total block limit
+            let blockLimit = blockWeights.maxBlock - lastBlockWeight.totalWeight
+
+            let unionLimit = extrinsicLimit
+                .minByComponent(with: normalClassLimit)
+                .minByComponent(with: blockLimit)
+
+            return unionLimit * Self.extrinsicSizePercent
         }
 
-        let mappingOperation = ClosureOperation<UInt64> {
-            let blockWeights = try blockWeightsOperation.extractNoCancellableResultData()
+        mappingOperation.addDependency(blockWeightsWrapper.targetOperation)
+        mappingOperation.addDependency(lastWeightWrapper.targetOperation)
 
-            if let maxExtrinsicWeight = blockWeights.normalExtrinsicMaxWeight {
-                return UInt64(CGFloat(maxExtrinsicWeight) * Self.maxExtrinsicSizePercent)
-            } else {
-                return UInt64(CGFloat(blockWeights.maxBlock) * Self.blockSizeMultiplier)
-            }
-        }
-
-        mappingOperation.addDependency(blockWeightsOperation)
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [blockWeightsOperation])
+        return lastWeightWrapper
+            .insertingHead(operations: blockWeightsWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
     }
 
     func estimateWeightForCallTypesWrapper(
         using operationFactory: ExtrinsicOperationFactoryProtocol,
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<[CallCodingPath: UInt64]> {
+    ) -> CompoundOperationWrapper<[CallCodingPath: Substrate.Weight]> {
         let callTypes = internalCalls.reduce(into: [CallCodingPath: InternalCall]()) { accum, call in
             if accum[call.path] == nil {
                 accum[call.path] = call
@@ -110,15 +121,15 @@ final class ExtrinsicSplitter {
 
         let feeWrapper = operationFactory.estimateFeeOperation(closure, numberOfExtrinsics: callTypes.count)
 
-        let mapOperation = ClosureOperation<[CallCodingPath: UInt64]> {
+        let mapOperation = ClosureOperation<[CallCodingPath: Substrate.Weight]> {
             let feeResults = try feeWrapper.targetOperation.extractNoCancellableResultData().results
 
-            return try zip(targetCalls, feeResults).reduce(into: [CallCodingPath: UInt64]()) { accum, pair in
+            return try zip(targetCalls, feeResults).reduce(into: [CallCodingPath: Substrate.Weight]()) { accum, pair in
                 let callPath = pair.0.path
                 let feeResult = pair.1.result
 
                 let fee = try feeResult.get()
-                accum[callPath] = UInt64(fee.weight)
+                accum[callPath] = fee.weight
             }
         }
 
@@ -128,8 +139,8 @@ final class ExtrinsicSplitter {
     }
 
     private func extrinsicsSplitOperation(
-        dependingOn blockLimitOperation: BaseOperation<UInt64>,
-        callTypeWeightOperation: BaseOperation<[CallCodingPath: UInt64]>,
+        dependingOn blockLimitOperation: BaseOperation<Substrate.Weight>,
+        callTypeWeightOperation: BaseOperation<[CallCodingPath: Substrate.Weight]>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         internalCalls: [InternalCall],
         maxCallsPerExtrinsic: Int?
@@ -141,14 +152,14 @@ final class ExtrinsicSplitter {
 
             var extrinsics: [[InternalCall]] = []
             var targetCalls: [InternalCall] = []
-            var totalWeight: UInt64 = 0
+            var totalWeight: Substrate.Weight = .zero
 
             try internalCalls.forEach { internalCall in
                 guard let callWeight = callTypeWeight[internalCall.path] else {
                     throw ExtrinsicSplitterError.weightNotFound(path: internalCall.path)
                 }
 
-                guard blockLimit >= callWeight else {
+                guard callWeight.fits(in: blockLimit) else {
                     throw ExtrinsicSplitterError.extrinsicTooLarge(blockLimit: blockLimit, callWeight: callWeight)
                 }
 
@@ -158,7 +169,7 @@ final class ExtrinsicSplitter {
                     false
                 }
 
-                if blockLimit >= totalWeight + callWeight, !maxCallsExceeded {
+                if (totalWeight + callWeight).fits(in: blockLimit), !maxCallsExceeded {
                     targetCalls.append(internalCall)
                     totalWeight += callWeight
                 } else {
@@ -254,7 +265,7 @@ extension ExtrinsicSplitter: ExtrinsicSplitting {
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let blockLimitWrapper = createBlockLimitWrapper(dependingOn: codingFactoryOperation)
+        let blockLimitWrapper = createBlockLimitWrapper()
 
         let callTypeWeightWrapper = estimateWeightForCallTypesWrapper(
             using: operationFactory,
@@ -269,7 +280,6 @@ extension ExtrinsicSplitter: ExtrinsicSplitting {
             maxCallsPerExtrinsic: maxCallsPerExtrinsic
         )
 
-        blockLimitWrapper.addDependency(operations: [codingFactoryOperation])
         callTypeWeightWrapper.addDependency(operations: [codingFactoryOperation])
         extrinsicsSplitOperation.addDependency(blockLimitWrapper.targetOperation)
         extrinsicsSplitOperation.addDependency(callTypeWeightWrapper.targetOperation)

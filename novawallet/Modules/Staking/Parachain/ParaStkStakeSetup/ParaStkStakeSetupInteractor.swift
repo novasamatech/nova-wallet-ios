@@ -276,9 +276,21 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
     func estimateFee(with callWrapper: DelegationCallWrapper) {
         let identifier = callWrapper.extrinsicId()
 
-        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-            try callWrapper.accept(builder: builder)
-        }
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] codingFactory in
+                guard let self else {
+                    return
+                }
+
+                feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+                    try callWrapper.accept(builder: builder, codingFactory: codingFactory)
+                }
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didReceiveFee(.failure(error))
+            }
+        )
     }
 }
 
