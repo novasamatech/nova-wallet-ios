@@ -285,7 +285,7 @@ private extension DelegatedAccountChainSyncService {
                 possibleProxyIds: discoveringAccountIds.possibleProxyIds.union(Set(proxies.keys)),
                 knownProxyIds: discoveringAccountIds.possibleProxyIds,
                 discoveredProxies: proxies,
-                possibleMultisigIds: discoveringAccountIds.possibleMultisigIds.union(Set(proxies.keys)),
+                possibleMultisigIds: discoveringAccountIds.possibleMultisigIds.union(Set(multisigs.keys)),
                 knownMultisigIds: discoveringAccountIds.possibleMultisigIds,
                 discoveredMultisigs: multisigs
             )
