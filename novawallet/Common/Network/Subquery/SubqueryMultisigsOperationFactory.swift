@@ -6,7 +6,7 @@ import BigInt
 protocol SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
         for accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[DiscoveredMultisig]?>
+    ) -> BaseOperation<[DiscoveredMultisig]?>
 }
 
 final class SubqueryMultisigsOperationFactory: SubqueryBaseOperationFactory {}
@@ -53,10 +53,10 @@ private extension SubqueryMultisigsOperationFactory {
     func mapResponse(
         _ response: SubqueryMultisigs.FindMultisigsResponse
     ) throws -> [DiscoveredMultisig] {
-        response.accounts.nodes.map { node in
+        try response.accounts.nodes.map { node in
             DiscoveredMultisig(
-                accountId: node.id,
-                signatories: node.signatories.nodes.map(\.signatory.id),
+                accountId: try Data(hexString: node.id),
+                signatories: try node.signatories.nodes.map { try Data(hexString: $0.signatory.id) },
                 threshold: node.threshold
             )
         }
@@ -68,15 +68,15 @@ private extension SubqueryMultisigsOperationFactory {
 extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
         for accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[DiscoveredMultisig]?> {
+    ) -> BaseOperation<[DiscoveredMultisig]?> {
         let query = createRequestQuery(for: accountIds)
 
         let operation: BaseOperation<[DiscoveredMultisig]?>
 
-        operation = createOperation(for: query) { [weak self] (response: SubqueryMultisigs.FindMultisigsResponse) in
-            try self?.mapResponse(response)
+        operation = createOperation(for: query) { [weak self] (response: SubqueryMultisigs.FindMultisigsResponseQueryWrapper) in
+            try self?.mapResponse(response.query)
         }
 
-        return CompoundOperationWrapper(targetOperation: operation)
+        return operation
     }
 }

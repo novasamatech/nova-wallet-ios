@@ -45,14 +45,14 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
             url: apiURL
         )
 
-        let fetchWrapper = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
+        let fetchOperation = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
 
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredMultisig]]> { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
-            let fetchResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            let fetchResult = try fetchOperation.extractNoCancellableResultData()
 
             guard let fetchResult else { return [:] }
 
@@ -64,23 +64,26 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
                         }
 
                         if acc[accountId] == nil {
-                            acc[accountId]?.append(multisig)
-                        } else {
                             acc[accountId] = [multisig]
+                        } else {
+                            acc[accountId]?.append(multisig)
                         }
                     }
                 }
 
             mutex.lock()
             multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
-            mutex.lock()
+            mutex.unlock()
 
             let result = cachedMultisigsForSignatories.merging(mappedFetchResult) { $0 + $1 }
             return result
         }
 
-        mapOperation.addDependency(fetchWrapper.targetOperation)
+        mapOperation.addDependency(fetchOperation)
 
-        return fetchWrapper.insertingTail(operation: mapOperation)
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation]
+        )
     }
 }

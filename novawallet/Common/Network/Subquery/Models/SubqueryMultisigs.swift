@@ -1,12 +1,16 @@
 import Foundation
 
 enum SubqueryMultisigs {
+    struct FindMultisigsResponseQueryWrapper: Decodable {
+        let query: FindMultisigsResponse
+    }
+
     struct FindMultisigsResponse: Decodable {
         let accounts: SubqueryNodes<RemoteMultisig>
     }
 
     struct RemoteMultisig: Decodable {
-        let id: AccountId
+        let id: String
         let threshold: Int
         let signatories: SubqueryNodes<RemoteSignatoryWrapper>
     }
@@ -16,7 +20,7 @@ enum SubqueryMultisigs {
     }
 
     struct RemoteSignatory: Decodable {
-        let id: AccountId
+        let id: String
     }
 }
 
