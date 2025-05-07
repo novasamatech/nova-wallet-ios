@@ -43,7 +43,8 @@ final class SubqueryMultistakingTests: XCTestCase {
             ethereumAddress: ethereumAccountId,
             ethereumPublicKey: ethereumAccountId,
             chainAccounts: [],
-            type: .watchOnly
+            type: .watchOnly,
+            multisig: nil
         )
 
         let chainAssets = ChainsStore(chainRegistry: chainRegistry).getAllStakebleAssets()

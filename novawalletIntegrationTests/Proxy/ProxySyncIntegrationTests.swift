@@ -44,7 +44,7 @@ final class ProxySyncIntegrationTests: XCTestCase {
             operationQueue: operationQueue
         )
         
-        let syncService = ProxySyncService(
+        let syncService = DelegatedAccountSyncService(
             chainRegistry: chainRegistry,
             proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: managedAccountRepository, 
@@ -97,7 +97,8 @@ extension ManagedMetaAccountModel {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .watchOnly
+            type: .watchOnly,
+            multisig: nil
         )
         
         return ManagedMetaAccountModel(
