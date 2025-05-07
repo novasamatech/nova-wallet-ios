@@ -222,22 +222,15 @@ private extension DelegatedAccountChainSyncService {
 
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
 
-            var possibleProxiesList: [AccountId] = []
-            var possibleMultisigList: [AccountId] = []
-
-            chainMetaAccounts.forEach { wallet in
-                let accountId: AccountId? = switch wallet.info.type {
-                case .proxied, .multisig:
-                    wallet.info.fetch(for: chainModel.accountRequest())?.accountId
-                default:
-                    nil
+            let possibleProxiesList: [AccountId] = chainMetaAccounts.compactMap { wallet in
+                guard wallet.info.type != .proxied else {
+                    return nil
                 }
 
-                guard let accountId else { return }
-
-                wallet.info.type == .proxied
-                    ? possibleProxiesList.append(accountId)
-                    : possibleMultisigList.append(accountId)
+                return wallet.info.fetch(for: chainModel.accountRequest())?.accountId
+            }
+            let possibleMultisigList: [AccountId] = chainMetaAccounts.compactMap { wallet in
+                wallet.info.fetch(for: chainModel.accountRequest())?.accountId
             }
 
             let possibleProxyIds = Set(possibleProxiesList)
