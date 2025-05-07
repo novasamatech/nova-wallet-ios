@@ -274,20 +274,30 @@ private extension DelegatedAccountChainSyncService {
             let proxies = try proxiesWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-                .mapValues { accounts in accounts.map { DelegatedAccount.proxy($0) } }
 
             let multisigs = try multisigWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-                .mapValues { accounts in accounts.map { DelegatedAccount.multisig($0) } }
+
+            let discoveredProxieds = Set(proxies.keys)
+
+            let discoveredProxies = Set(
+                proxies.values
+                    .flatMap { $0 }
+                    .map(\.accountId)
+            )
+
+            let newPossibleSignatories = Set(multisigs.keys)
+                .union(discoveredProxies)
+                .union(discoveredProxieds)
 
             let updatedDiscoveringIds = DiscoveringAccountIds(
-                possibleProxyIds: discoveringAccountIds.possibleProxyIds.union(Set(proxies.keys)),
+                possibleProxyIds: discoveringAccountIds.possibleProxyIds.union(discoveredProxieds),
                 knownProxyIds: discoveringAccountIds.possibleProxyIds,
-                discoveredProxies: proxies,
-                possibleMultisigIds: discoveringAccountIds.possibleMultisigIds.union(Set(multisigs.keys)),
+                discoveredProxies: proxies.mapValues { accounts in accounts.map { DelegatedAccount.proxy($0) } },
+                possibleMultisigIds: discoveringAccountIds.possibleMultisigIds.union(newPossibleSignatories),
                 knownMultisigIds: discoveringAccountIds.possibleMultisigIds,
-                discoveredMultisigs: multisigs
+                discoveredMultisigs: multisigs.mapValues { accounts in accounts.map { DelegatedAccount.multisig($0) } }
             )
 
             return if updatedDiscoveringIds.possibleProxyIds != updatedDiscoveringIds.knownProxyIds
