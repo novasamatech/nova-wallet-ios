@@ -57,7 +57,8 @@ extension WalletView {
 
         enum TypeInfo: Hashable {
             case regular(BalanceInfo)
-            case proxy(ProxyInfo)
+            case proxy(DelegatedAccountInfo)
+            case multisig(DelegatedAccountInfo)
             case noInfo
         }
 
@@ -76,35 +77,35 @@ extension WalletView {
             }
         }
 
-        struct ProxyInfo: Hashable {
+        struct DelegatedAccountInfo: Hashable {
             let networkIcon: IdentifiableImageViewModelProtocol?
-            let proxyType: String
-            let proxyIcon: IdentifiableImageViewModelProtocol?
-            let proxyName: String?
+            let type: String
+            let pairedAccountIcon: IdentifiableImageViewModelProtocol?
+            let pairedAccountName: String?
             let isNew: Bool
 
-            static func == (lhs: ProxyInfo, rhs: ProxyInfo) -> Bool {
+            static func == (lhs: DelegatedAccountInfo, rhs: DelegatedAccountInfo) -> Bool {
                 lhs.networkIcon?.identifier == rhs.networkIcon?.identifier &&
-                    lhs.proxyType == rhs.proxyType &&
-                    lhs.proxyIcon?.identifier == rhs.proxyIcon?.identifier &&
-                    lhs.proxyName == rhs.proxyName &&
+                    lhs.type == rhs.type &&
+                    lhs.pairedAccountIcon?.identifier == rhs.pairedAccountIcon?.identifier &&
+                    lhs.pairedAccountName == rhs.pairedAccountName &&
                     lhs.isNew == rhs.isNew
             }
 
             func hash(into hasher: inout Hasher) {
                 hasher.combine(networkIcon?.identifier ?? "")
-                hasher.combine(proxyType)
-                hasher.combine(proxyIcon?.identifier ?? "")
-                hasher.combine(proxyName ?? "")
+                hasher.combine(type)
+                hasher.combine(pairedAccountIcon?.identifier ?? "")
+                hasher.combine(pairedAccountName ?? "")
                 hasher.combine(isNew)
             }
         }
 
         typealias BalanceInfo = String
 
-        var proxyInfo: ProxyInfo? {
+        var delegatedAccountInfo: DelegatedAccountInfo? {
             switch type {
-            case let .proxy(info):
+            case let .proxy(info), let .multisig(info):
                 return info
             case .regular, .noInfo:
                 return nil
@@ -112,11 +113,11 @@ extension WalletView {
         }
     }
 
-    func cancelProxyIconsLoading(info: ViewModel.ProxyInfo?) {
+    func cancelIconsLoading(info: ViewModel.DelegatedAccountInfo?) {
         info?.networkIcon?.cancel(on: networkImageView)
         networkImageView.image = nil
 
-        info?.proxyIcon?.cancel(on: subtitleDetailsImage)
+        info?.pairedAccountIcon?.cancel(on: subtitleDetailsImage)
         subtitleDetailsImage.image = nil
 
         titleView.clear()
@@ -138,23 +139,23 @@ extension WalletView {
         indicatorImageView.isHidden = true
     }
 
-    func bind(proxy viewModel: ViewModel.ProxyInfo) {
+    func bind(delegatedAccount viewModel: ViewModel.DelegatedAccountInfo) {
         viewModel.networkIcon?.loadImage(
             on: networkImageView,
             targetSize: WalletIconView.Constants.networkIconSize,
             animated: true
         )
 
-        viewModel.proxyIcon?.loadImage(
+        viewModel.pairedAccountIcon?.loadImage(
             on: subtitleDetailsImage,
             targetSize: .init(width: 16, height: 16),
             animated: true
         )
 
-        subtitleLabel.text = viewModel.proxyType
-        subtitleDetailsLabel.text = viewModel.proxyName
+        subtitleLabel.text = viewModel.type
+        subtitleDetailsLabel.text = viewModel.pairedAccountName
         networkImageView.isHidden = viewModel.networkIcon == nil
-        subtitleDetailsImage.isHidden = viewModel.proxyIcon == nil
+        subtitleDetailsImage.isHidden = viewModel.pairedAccountIcon == nil
         indicatorImageView.isHidden = !viewModel.isNew
 
         titleView.setNeedsLayout()
