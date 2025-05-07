@@ -351,8 +351,7 @@ private extension DelegatedAccountChainSyncService {
         mapOperation.addDependency(metaAccountsWrapper.targetOperation)
         mapOperation.addDependency(delegatedAccountsListWrapper.targetOperation)
 
-        let dependencies = delegatedAccountsListWrapper.allOperations
-            + identityWrapper.allOperations
+        let dependencies = delegatedAccountsListWrapper.allOperations + identityWrapper.allOperations
 
         return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
