@@ -82,7 +82,7 @@ private extension ChainProxyChangesCalculator {
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: [chainAccountModel],
-                type: .proxied,
+                type: .multisig,
                 multisig: nil
             ))
 
