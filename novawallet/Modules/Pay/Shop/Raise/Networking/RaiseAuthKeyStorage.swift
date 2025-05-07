@@ -12,8 +12,8 @@ protocol RaiseAuthKeyStorageProtocol {
 }
 
 /**
- *  The class handle autorization storage for keys needed to authenticate on Raise.
- *  Only substrate wallets with secrets are supported.
+ *  The class handles autorization key and token storage for Raise.
+ *  Only substrate wallets seeds are supported.
  */
 final class RaiseAuthKeyStorage {
     static let derivationPath = "//raise//auth"
