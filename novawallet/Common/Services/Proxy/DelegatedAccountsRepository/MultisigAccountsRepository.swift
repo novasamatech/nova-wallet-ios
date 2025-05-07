@@ -12,9 +12,9 @@ final class MultisigAccountsRepository {
     private let chain: ChainModel
 
     private let mutex = NSLock()
-    
+
     private var multisigsBySignatories: [AccountId: [DiscoveredMultisig]] = [:]
-    
+
     init(chain: ChainModel) {
         self.chain = chain
     }
@@ -29,14 +29,14 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
         let cachedMultisigsForSignatories = accountIds
             .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
             .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
-        
+
         let cachedSignatories = Set(cachedMultisigsForSignatories.keys)
         let nonCachedSignatories = accountIds.subtracting(cachedSignatories)
-        
+
         guard nonCachedSignatories.isEmpty else {
             return .createWithResult(cachedMultisigsForSignatories)
         }
-        
+
         guard let apiURL = chain.externalApis?.getApis(for: .multisig)?.first?.url else {
             return .createWithResult([:])
         }
@@ -51,7 +51,7 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
-            
+
             let fetchResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
             guard let fetchResult else { return [:] }
@@ -62,7 +62,7 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
                         guard multisig.signatories.contains(accountId) else {
                             return
                         }
-                        
+
                         if acc[accountId] == nil {
                             acc[accountId]?.append(multisig)
                         } else {
@@ -70,11 +70,11 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
                         }
                     }
                 }
-            
+
             mutex.lock()
             multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
             mutex.lock()
-            
+
             let result = cachedMultisigsForSignatories.merging(mappedFetchResult) { $0 + $1 }
             return result
         }
