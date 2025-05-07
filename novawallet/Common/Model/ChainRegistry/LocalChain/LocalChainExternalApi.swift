@@ -84,6 +84,7 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
             .addingApis(from: remoteApi.governance, apiType: .governance)
             .addingApis(from: remoteApi.goverananceDelegations, apiType: .governanceDelegations)
             .addingApis(from: remoteApi.referendumSummary, apiType: .referendumSummary)
+            .addingApis(from: remoteApi.multisig, apiType: .multisig)
     }
 }
 
