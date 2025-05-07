@@ -2,7 +2,7 @@ import Foundation
 import NovaCrypto
 
 protocol ParitySignerTxScanViewProtocol: QRScannerViewProtocol {
-    func didReceiveExpiration(viewModel: ExpirationTimeViewModel)
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel?)
 }
 
 protocol ParitySignerTxScanPresenterProtocol: AnyObject {

@@ -1845,3 +1845,6 @@
 "onRamp.not.supported.alert.message" = "現在、弊社のプロバイダーはこのトークンの購入をサポートしていません。別のトークン、異なるネットワークを選択するか、後ほど再確認してください。";
 "offRamp.not.supported.alert.message" = "現在、弊社のプロバイダーはこのトークンの売却をサポートしていません。別のトークン、異なるネットワークを選択するか、後ほど再確認してください。";
 "sell.named.token" = "%@トークンを売る";
+"polkadot.vault.qr.type.v7" = "新しい (Vault v7+)";
+"polkadot.vault.qr.type.legacy" = "レガシー";
+"parity.signer.scan.title_9_7_0" = "%@で署名";

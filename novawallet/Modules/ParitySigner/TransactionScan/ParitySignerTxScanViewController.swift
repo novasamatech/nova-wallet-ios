@@ -7,8 +7,14 @@ final class ParitySignerTxScanViewController: QRScannerViewController {
 }
 
 extension ParitySignerTxScanViewController: ParitySignerTxScanViewProtocol {
-    func didReceiveExpiration(viewModel: ExpirationTimeViewModel) {
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel?) {
         let rootView = view as? ParitySignerTxScanViewLayout
-        rootView?.timerLabel.bindQr(viewModel: viewModel, locale: selectedLocale)
+
+        if let viewModel {
+            rootView?.timerLabel.isHidden = false
+            rootView?.timerLabel.bindQr(viewModel: viewModel, locale: selectedLocale)
+        } else {
+            rootView?.timerLabel.isHidden = true
+        }
     }
 }
