@@ -326,7 +326,8 @@ private extension DelegatedAccountChainSyncService {
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
             for: {
-                let delegatedAccounts = try delegatedAccountsListWrapper.targetOperation.extractNoCancellableResultData()
+                let delegatedAccounts = try delegatedAccountsListWrapper
+                    .targetOperation.extractNoCancellableResultData()
                 return Array(delegatedAccounts.keys)
             }
         )
@@ -336,7 +337,8 @@ private extension DelegatedAccountChainSyncService {
         let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> { [changesCalculator] in
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let chainMetaAccounts = try metaAccountsWrapper.targetOperation.extractNoCancellableResultData()
-            let remoteDelegatedAccounts = try delegatedAccountsListWrapper.targetOperation.extractNoCancellableResultData()
+            let remoteDelegatedAccounts = try delegatedAccountsListWrapper
+                .targetOperation.extractNoCancellableResultData()
 
             return try changesCalculator.calculateUpdates(
                 from: remoteDelegatedAccounts,
