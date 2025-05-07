@@ -2,12 +2,6 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol MultisigAccountsRepositoryProtocol {
-    func fetchMultisigsWrapper(
-        for accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredMultisig]]>
-}
-
 final class MultisigAccountsRepository {
     private let chain: ChainModel
 
@@ -18,23 +12,29 @@ final class MultisigAccountsRepository {
     init(chain: ChainModel) {
         self.chain = chain
     }
+
+    private func mapToDelegatedAccounts(_ multisigs: [DiscoveredMultisig]) -> [DelegatedAccount] {
+        multisigs.map { DelegatedAccount.multisig($0) }
+    }
 }
 
-// MARK: MultisigAccountsRepositoryProtocol
+// MARK: DelegatedAccountsRepositoryProtocol
 
-extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
-    func fetchMultisigsWrapper(
-        for accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredMultisig]]> {
-        let cachedMultisigsForSignatories = accountIds
+extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
+    func fetchDelegatedAccountsWrapper(
+        for delegators: Set<AccountId>
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
+        let cachedMultisigsForSignatories = delegators
             .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
             .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
 
         let cachedSignatories = Set(cachedMultisigsForSignatories.keys)
-        let nonCachedSignatories = accountIds.subtracting(cachedSignatories)
+        let nonCachedSignatories = delegators.subtracting(cachedSignatories)
 
         guard !nonCachedSignatories.isEmpty else {
-            return .createWithResult(cachedMultisigsForSignatories)
+            return .createWithResult(
+                cachedMultisigsForSignatories.mapValues(mapToDelegatedAccounts)
+            )
         }
 
         guard let apiURL = chain.externalApis?.getApis(for: .multisig)?.first?.url else {
@@ -47,7 +47,7 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
 
         let fetchOperation = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
 
-        let mapOperation = ClosureOperation<[AccountId: [DiscoveredMultisig]]> { [weak self] in
+        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccount]]> { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
@@ -75,7 +75,10 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
             multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
             mutex.unlock()
 
-            let result = cachedMultisigsForSignatories.merging(mappedFetchResult) { $0 + $1 }
+            let result = cachedMultisigsForSignatories
+                .merging(mappedFetchResult) { $0 + $1 }
+                .mapValues(mapToDelegatedAccounts)
+
             return result
         }
 

@@ -2,12 +2,6 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol ProxyAccountsRepositoryProtocol {
-    func fetchProxiedAccountsWrapper(
-        with proxyIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [ProxyAccount]]>
-}
-
 final class ChainProxyAccountsRepository {
     private let requestFactory: StorageRequestFactoryProtocol
     private let connection: JSONRPCEngine
@@ -48,10 +42,12 @@ final class ChainProxyAccountsRepository {
     }
 }
 
-extension ChainProxyAccountsRepository: ProxyAccountsRepositoryProtocol {
-    func fetchProxiedAccountsWrapper(
-        with proxyIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [ProxyAccount]]> {
+// MARK: DelegatedAccountsRepositoryProtocol
+
+extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
+    func fetchDelegatedAccountsWrapper(
+        for delegators: Set<AccountId>
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
         let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxyAccount]]> = if proxies.isEmpty {
             proxyOperationFactory.fetchProxyList(
                 requestFactory: requestFactory,
@@ -74,7 +70,9 @@ extension ChainProxyAccountsRepository: ProxyAccountsRepositoryProtocol {
 
             proxies = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return filterProxyList(proxies, by: proxyIds)
+            return filterProxyList(proxies, by: delegators).mapValues {
+                proxies in proxies.map { DelegatedAccount.proxy($0) }
+            }
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
