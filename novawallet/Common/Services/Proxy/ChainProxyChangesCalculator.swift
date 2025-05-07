@@ -55,19 +55,21 @@ private extension ChainProxyChangesCalculator {
         } else {
             let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
 
+            let multisigModel = MultisigModel(
+                accountId: multisig.accountId,
+                signatory: accountId,
+                otherSignatories: multisig.otherSignatories(than: accountId),
+                threshold: multisig.threshold,
+                status: .pending
+            )
+
             let chainAccountModel = ChainAccountModel(
                 chainId: chainModel.chainId,
                 accountId: accountId,
                 publicKey: accountId,
                 cryptoType: cryptoType.rawValue,
                 proxy: nil,
-                multisig: .init(
-                    accountId: multisig.accountId,
-                    signatory: accountId,
-                    otherSignatories: multisig.otherSignatories(than: accountId),
-                    threshold: multisig.threshold,
-                    status: .pending
-                )
+                multisig: multisigModel
             )
 
             let name = try identities[accountId]?.displayName ?? accountId.toAddress(using: chainModel.chainFormat)
