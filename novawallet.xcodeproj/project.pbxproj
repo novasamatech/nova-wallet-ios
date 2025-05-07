@@ -2366,7 +2366,7 @@
 		77DAFF6D2B297DB500D4220C /* ProxyAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6C2B297DB500D4220C /* ProxyAccountMapper.swift */; };
 		77DAFF6F2B298FFF00D4220C /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DAFF6E2B298FFF00D4220C /* WalletView.swift */; };
 		77DB70EE2B709E4300288F26 /* Web3AlertRemoteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DB70ED2B709E4300288F26 /* Web3AlertRemoteModel.swift */; };
-		77DC54842B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */; };
+		77DC54842B1FE2F500C7E45A /* DelegatedAccountsSyncIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54832B1FE2F500C7E45A /* DelegatedAccountsSyncIntegrationTests.swift */; };
 		77DC54862B1FE5C100C7E45A /* DelegatedAccountSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DC54852B1FE5C100C7E45A /* DelegatedAccountSyncService.swift */; };
 		77DC54872B1FF31800C7E45A /* UserDataStorageTestFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */; };
 		77DF40392B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */; };
@@ -8146,7 +8146,7 @@
 		77DAFF6C2B297DB500D4220C /* ProxyAccountMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyAccountMapper.swift; sourceTree = "<group>"; };
 		77DAFF6E2B298FFF00D4220C /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		77DB70ED2B709E4300288F26 /* Web3AlertRemoteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertRemoteModel.swift; sourceTree = "<group>"; };
-		77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxySyncIntegrationTests.swift; sourceTree = "<group>"; };
+		77DC54832B1FE2F500C7E45A /* DelegatedAccountsSyncIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsSyncIntegrationTests.swift; sourceTree = "<group>"; };
 		77DC54852B1FE5C100C7E45A /* DelegatedAccountSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountSyncService.swift; sourceTree = "<group>"; };
 		77DF40382B7DC69300ABDB53 /* SettingsLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		77DF403A2B7DC8C900ABDB53 /* SettingsSubscriptionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsSubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -14994,6 +14994,15 @@
 			path = FeeManaging;
 			sourceTree = "<group>";
 		};
+		2D32D72E2DCB95840016354C /* DelegatedAccounts */ = {
+			isa = PBXGroup;
+			children = (
+				77DC54832B1FE2F500C7E45A /* DelegatedAccountsSyncIntegrationTests.swift */,
+				77DC54822B1FE2DC00C7E45A /* Proxy */,
+			);
+			path = DelegatedAccounts;
+			sourceTree = "<group>";
+		};
 		2D3733072D66972400217F29 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -17439,7 +17448,6 @@
 			isa = PBXGroup;
 			children = (
 				77D2ED622B192D5B00A0E58C /* ProxyOperationFactoryTests.swift */,
-				77DC54832B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift */,
 			);
 			path = Proxy;
 			sourceTree = "<group>";
@@ -18740,7 +18748,7 @@
 				0C71046E2C29B60D00487E64 /* MetadataShortener */,
 				0CA26D8E2BBBBD9A0086748F /* CloudBackup */,
 				0CA7198A2B78FDC5000B086E /* HydraDx */,
-				77DC54822B1FE2DC00C7E45A /* Proxy */,
+				2D32D72E2DCB95840016354C /* DelegatedAccounts */,
 				F441BE12263986BE0096B67B /* ExtrinsicServiceTests.swift */,
 				8438E1D124BFAAD2001BDB13 /* JSONRPCTests.swift */,
 				8438E1D324BFAAD2001BDB13 /* Info.plist */,
@@ -27994,7 +28002,7 @@
 				84BFE8A228C2420A00140F1F /* AutocompounDelegateStakeTests.swift in Sources */,
 				F49F49A326A5C45600A25931 /* BabeEraOperationFactoryTests.swift in Sources */,
 				0CEBAD612D61BDA9000EBA45 /* StateCallTests.swift in Sources */,
-				77DC54842B1FE2F500C7E45A /* ProxySyncIntegrationTests.swift in Sources */,
+				77DC54842B1FE2F500C7E45A /* DelegatedAccountsSyncIntegrationTests.swift in Sources */,
 				0C2DA8AF2CC2F928001F79C8 /* AssetsExchangeGraphDescription.swift in Sources */,
 				84532D5F28E4210E00EF4ADC /* ConvictionVotesFetchTests.swift in Sources */,
 				0C992C432B54F5D900ACC129 /* EraStakersPagedSearchOperationFactoryTests.swift in Sources */,
