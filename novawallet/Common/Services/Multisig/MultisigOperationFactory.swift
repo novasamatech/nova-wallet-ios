@@ -6,10 +6,10 @@ protocol MultisigStorageOperationFactoryProtocol {
         for accountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<AccountMultisigs?>
+    ) -> CompoundOperationWrapper<OnChainMultisigs?>
 }
 
-typealias AccountMultisigs = (accountId: AccountId, multisigs: [MultisigModel])
+typealias OnChainMultisigs = (accountId: AccountId, multisigs: [Multisig.MultisigOperation])
 
 final class MultisigStorageOperationFactory {
     private let storageRequestFactory: StorageRequestFactoryProtocol
@@ -24,7 +24,7 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
         for accountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<AccountMultisigs?> {
+    ) -> CompoundOperationWrapper<OnChainMultisigs?> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let wrapper: CompoundOperationWrapper<[StorageResponse<[Multisig.MultisigOperation]>]> = storageRequestFactory.queryItems(
@@ -36,24 +36,12 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<AccountMultisigs?> {
+        let mapOperation = ClosureOperation<OnChainMultisigs?> {
             let result = try wrapper.targetOperation.extractNoCancellableResultData()
 
             guard let values = result.first?.value else { return nil }
 
-            let multisigs = values.map { _ in
-                let multisig = MultisigModel(
-                    accountId: accountId, // TODO: Construct account id from signatories and threshold
-                    signatory: accountId,
-                    otherSignatories: [], // TODO: Learn how to obtain onchain signatories
-                    threshold: 1, // TODO: Learn how to obtain onchain threshold
-                    status: .pending
-                )
-
-                return multisig
-            }
-
-            return (accountId, multisigs)
+            return (accountId, values.compactMap { $0 })
         }
 
         mapOperation.addDependency(wrapper.targetOperation)

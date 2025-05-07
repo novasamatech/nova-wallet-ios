@@ -9,6 +9,7 @@ struct MultisigModel: Hashable {
     let status: Status
 
     enum Status: String, CaseIterable {
+        case new
         case pending
         case approved
         case rejected

@@ -60,7 +60,7 @@ private extension ChainProxyChangesCalculator {
                 signatory: accountId,
                 otherSignatories: multisig.otherSignatories(than: accountId),
                 threshold: multisig.threshold,
-                status: .pending
+                status: .new
             )
 
             let chainAccountModel = ChainAccountModel(
