@@ -31,3 +31,8 @@ enum WalletConnectCISecrets {
 enum PolkassemblyApiKeys {
     static var summaryApi: String = "{{ argument.polkassemblySummaryApiKey }}"
 }
+
+enum RaiseApiKeys {
+    static var raiseSandboxClientId: String = "{{ argument.raiseSandboxClientId }}"
+    static var raiseSandboxSecret: String = "{{ argument.raiseSandboxSecret }}"
+}
