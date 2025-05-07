@@ -271,13 +271,6 @@ private extension DelegatedAccountChainSyncService {
         ) { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
-            guard
-                discoveringAccountIds.possibleProxyIds != discoveringAccountIds.knownProxyIds
-                || discoveringAccountIds.possibleMultisigIds != discoveringAccountIds.knownMultisigIds
-            else {
-                return .createWithResult(discoveringAccountIds.allDiscoveredAccounts)
-            }
-
             let proxies = try proxiesWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
@@ -297,11 +290,17 @@ private extension DelegatedAccountChainSyncService {
                 discoveredMultisigs: multisigs
             )
 
-            return createDiscoverAccountsWrapper(
-                proxyRepository: proxyRepository,
-                multisigRepository: multisigRepository,
-                discoveringAccountIds: updatedDiscoveringIds
-            )
+            return if updatedDiscoveringIds.possibleProxyIds != updatedDiscoveringIds.knownProxyIds
+                || updatedDiscoveringIds.possibleMultisigIds != updatedDiscoveringIds.knownMultisigIds
+            {
+                createDiscoverAccountsWrapper(
+                    proxyRepository: proxyRepository,
+                    multisigRepository: multisigRepository,
+                    discoveringAccountIds: updatedDiscoveringIds
+                )
+            } else {
+                .createWithResult(updatedDiscoveringIds.allDiscoveredAccounts)
+            }
         }
 
         resultWrapper.addDependency(wrapper: proxiesWrapper)

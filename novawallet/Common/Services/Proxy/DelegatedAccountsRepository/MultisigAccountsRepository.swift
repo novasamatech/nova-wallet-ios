@@ -33,7 +33,7 @@ extension MultisigAccountsRepository: MultisigAccountsRepositoryProtocol {
         let cachedSignatories = Set(cachedMultisigsForSignatories.keys)
         let nonCachedSignatories = accountIds.subtracting(cachedSignatories)
 
-        guard nonCachedSignatories.isEmpty else {
+        guard !nonCachedSignatories.isEmpty else {
             return .createWithResult(cachedMultisigsForSignatories)
         }
 
