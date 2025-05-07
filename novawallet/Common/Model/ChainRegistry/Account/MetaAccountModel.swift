@@ -132,10 +132,23 @@ extension MetaAccountModel {
         let proxyChainAccount = chainAccounts.first {
             $0.chainId == chainId && $0.proxy != nil
         }
-        if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
-            return replacingChainAccount(newProxyChainAccount)
+
+        return if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
+            replacingChainAccount(newProxyChainAccount)
         } else {
-            return self
+            self
+        }
+    }
+
+    func replacingMultisig(chainId: ChainModel.Id, multisig: MultisigModel) -> MetaAccountModel {
+        let multisigChainAccount = chainAccounts.first {
+            $0.chainId == chainId && $0.multisig != nil
+        }
+
+        return if let newMultisigChainAccount = multisigChainAccount?.replacingMultisig(multisig) {
+            replacingChainAccount(newMultisigChainAccount)
+        } else {
+            self
         }
     }
 }

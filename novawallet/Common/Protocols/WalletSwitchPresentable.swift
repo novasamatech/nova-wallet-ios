@@ -1,7 +1,7 @@
 import Foundation
 
 protocol WalletSwitchPresentable {
-    var proxySyncService: ProxySyncServiceProtocol { get }
+    var proxySyncService: DelegatedAccountSyncServiceProtocol { get }
 
     func showWalletSwitch(from view: ControllerBackedProtocol?)
 }

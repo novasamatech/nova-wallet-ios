@@ -186,7 +186,8 @@ extension CloudBackupFileModelConverter: CloudBackupFileModelConverting {
                 ethereumAddress: ethereumAddress,
                 ethereumPublicKey: ethereumPublicKey,
                 chainAccounts: Set(chainAccounts),
-                type: type
+                type: type,
+                multisig: nil
             )
         }
 

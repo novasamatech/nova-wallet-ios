@@ -67,7 +67,7 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
     func referendumSummary() -> Set<LocalChainExternalApi>? {
         getApis(for: .referendumSummary)
     }
-    
+
     func multisig() -> Set<LocalChainExternalApi>? {
         getApis(for: .multisig)
     }

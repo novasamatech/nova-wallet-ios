@@ -151,7 +151,8 @@ extension MetaAccountOperationFactory {
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: [],
-                type: .secrets
+                type: .secrets,
+                multisig: nil
             )
         }
     }

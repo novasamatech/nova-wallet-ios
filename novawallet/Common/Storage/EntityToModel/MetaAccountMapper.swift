@@ -19,6 +19,8 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             return try transform(chainAccountEntity: chainAccountEntity)
         } ?? []
 
+        let multisig: MultisigModel? = try transform(multisigEntity: entity.multisig)
+
         let substrateAccountId = try entity.substrateAccountId.map { try Data(hexString: $0) }
         let substrateCryptoType = UInt8(bitPattern: Int8(entity.substrateCryptoType))
 
@@ -33,7 +35,29 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: entity.ethereumPublicKey,
             chainAccounts: Set(chainAccounts),
-            type: MetaAccountModelType(rawValue: UInt8(bitPattern: Int8(entity.type)))!
+            type: MetaAccountModelType(rawValue: UInt8(bitPattern: Int8(entity.type)))!,
+            multisig: multisig
+        )
+    }
+
+    func transform(multisigEntity: CDMultisig?) throws -> MultisigModel? {
+        guard let multisigEntity else { return nil }
+
+        let threshold = Int(multisigEntity.threshold)
+        let multisigAccountId = try Data(hexString: multisigEntity.multisigAccountId!)
+        let signatoryAccountId = try Data(hexString: multisigEntity.signatory!)
+        let otherSignatories = try multisigEntity.otherSignatories?
+            .split(by: .comma)
+            .compactMap { try Data(hexString: $0) } ?? []
+
+        let status = MultisigModel.Status(rawValue: multisigEntity.status!)!
+
+        return MultisigModel(
+            accountId: multisigAccountId,
+            signatory: signatoryAccountId,
+            otherSignatories: otherSignatories,
+            threshold: threshold,
+            status: status
         )
     }
 
@@ -49,25 +73,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             )
         }
 
-        let multisigModel = try chainAccountEntity.multisig.map { entity in
-            let threshold = Int(entity.threshold)
-            let signatoryAccountId = try Data(hexString: entity.signatory!)
-            let signatories = try entity.signatories?
-                .split(by: .comma)
-                .compactMap { try Data(hexString: $0) } ?? []
-            let timepoint = try JSONDecoder().decode(
-                MultisigModel.Timepoint.self,
-                from: entity.timepoint!
-            )
-            let status = MultisigModel.Status(rawValue: entity.status!)!
-
-            return MultisigModel(
-                signatory: signatoryAccountId,
-                signatories: signatories,
-                timepoint: timepoint,
-                status: status
-            )
-        }
+        let multisigModel = try transform(multisigEntity: chainAccountEntity.multisig)
 
         let accountId = try Data(hexString: chainAccountEntity.accountId!)
 
@@ -145,11 +151,12 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
                 multisig.chainAccount = chainAccounEntity
                 chainAccounEntity.multisig = multisig
             }
+            chainAccounEntity.multisig?.multisigAccountId = multisig.accountId.toHex()
             chainAccounEntity.multisig?.signatory = multisig.signatory.toHex()
-            chainAccounEntity.multisig?.signatories = multisig.signatories
+            chainAccounEntity.multisig?.otherSignatories = multisig.otherSignatories
                 .map { $0.toHex() }
                 .joined(with: .comma)
-            chainAccounEntity.multisig?.timepoint = try? JSONEncoder().encode(multisig.timepoint)
+            chainAccounEntity.multisig?.threshold = Int64(multisig.threshold)
             chainAccounEntity.multisig?.status = multisig.status.rawValue
             chainAccounEntity.multisig?.identifier = multisig.identifier
         } else {

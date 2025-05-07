@@ -58,11 +58,11 @@
     </entity>
     <entity name="CDMultisig" representedClassName="CDMultisig" syncable="YES" codeGenerationType="class">
         <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="signatories" optional="YES" attributeType="String"/>
+        <attribute name="multisigAccountId" optional="YES" attributeType="String"/>
+        <attribute name="otherSignatories" optional="YES" attributeType="String"/>
         <attribute name="signatory" optional="YES" attributeType="String"/>
         <attribute name="status" optional="YES" attributeType="String"/>
         <attribute name="threshold" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="timepoint" optional="YES" attributeType="Binary"/>
         <relationship name="chainAccount" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChainAccount" inverseName="multisig" inverseEntity="CDChainAccount"/>
         <relationship name="metaAccount" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDMetaAccount" inverseName="multisig" inverseEntity="CDMetaAccount"/>
     </entity>

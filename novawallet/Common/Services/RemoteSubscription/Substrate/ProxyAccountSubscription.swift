@@ -7,7 +7,7 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
     let accountId: AccountId
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
-    let proxySyncService: ProxySyncServiceProtocol
+    let proxySyncService: DelegatedAccountSyncServiceProtocol
     let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
 
@@ -27,7 +27,7 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
         accountId: AccountId,
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        proxySyncService: DelegatedAccountSyncServiceProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,

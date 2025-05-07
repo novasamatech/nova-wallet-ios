@@ -49,15 +49,16 @@ private extension SubqueryMultisigsOperationFactory {
         }
         """
     }
-    
+
     func mapResponse(
         _ response: SubqueryMultisigs.FindMultisigsResponse
     ) throws -> [DiscoveredMultisig] {
         response.accounts.nodes.map { node in
             DiscoveredMultisig(
-                signatory: node.id,
-                signatories: node.signatories.nodes.map { $0.signatory.id },
-                threshold: node.threshold)
+                accountId: node.id,
+                signatories: node.signatories.nodes.map(\.signatory.id),
+                threshold: node.threshold
+            )
         }
     }
 }
@@ -69,13 +70,13 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
         for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[DiscoveredMultisig]?> {
         let query = createRequestQuery(for: accountIds)
-        
+
         let operation: BaseOperation<[DiscoveredMultisig]?>
-        
+
         operation = createOperation(for: query) { [weak self] (response: SubqueryMultisigs.FindMultisigsResponse) in
             try self?.mapResponse(response)
         }
-        
+
         return CompoundOperationWrapper(targetOperation: operation)
     }
 }

@@ -326,6 +326,12 @@ extension MetaAccountModel {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
 
+    func multisigChainAccount(
+        chainId: ChainModel.Id
+    ) -> ChainAccountModel? {
+        chainAccounts.first { $0.chainId == chainId && $0.multisig != nil }
+    }
+
     func proxy() -> ProxyAccountModel? {
         guard type == .proxied,
               let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {

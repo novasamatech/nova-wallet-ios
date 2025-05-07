@@ -13,14 +13,14 @@ class ProxyAccountUpdatingService: ProxyAccountUpdatingServiceProtocol {
     private var proxySubscription: ProxyAccountSubscription?
 
     let chainRegistry: ChainRegistryProtocol
-    let proxySyncService: ProxySyncServiceProtocol
+    let proxySyncService: DelegatedAccountSyncServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
     let storageFacade: StorageFacadeProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        proxySyncService: DelegatedAccountSyncServiceProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil

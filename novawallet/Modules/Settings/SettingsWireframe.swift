@@ -4,7 +4,7 @@ import UIKit
 final class SettingsWireframe {
     let serviceCoordinator: ServiceCoordinatorProtocol
 
-    var proxySyncService: ProxySyncServiceProtocol {
+    var proxySyncService: DelegatedAccountSyncServiceProtocol {
         serviceCoordinator.proxySyncService
     }
 

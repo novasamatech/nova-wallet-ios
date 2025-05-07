@@ -55,7 +55,8 @@ final class LedgerWalletFactory: LedgerWalletFactoryProtocol {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: Set(chainAccounts),
-            type: .ledger
+            type: .ledger,
+            multisig: nil
         )
 
         return LedgerWalletFactoryResult(wallet: wallet, derivationPaths: accountsAndPaths)

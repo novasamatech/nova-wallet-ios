@@ -53,4 +53,15 @@ extension ChainAccountModel {
             multisig: multisig
         )
     }
+
+    func replacingMultisig(_ multisig: MultisigModel?) -> ChainAccountModel {
+        .init(
+            chainId: chainId,
+            accountId: accountId,
+            publicKey: publicKey,
+            cryptoType: cryptoType,
+            proxy: proxy,
+            multisig: multisig
+        )
+    }
 }
