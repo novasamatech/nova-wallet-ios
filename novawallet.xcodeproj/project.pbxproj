@@ -1666,6 +1666,12 @@
 		2DBEE9932D7A29CB000B735B /* StackTitleValueIconView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBEE9922D7A29CB000B735B /* StackTitleValueIconView+Style.swift */; };
 		2DC075E32BF24AB400868563 /* CheckBoxIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */; };
 		2DC075E92BF4B97900868563 /* BackupAttentionTableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */; };
+		2DC08BE22DCCF95C00C690D4 /* ChainAccountFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2626F6A2A500F0A25E /* ChainAccountFetching.swift */; };
+		2DC08BE32DCCF96B00C690D4 /* Data+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84443BA126C123F100C33B5D /* Data+Random.swift */; };
+		2DC08BE42DCCF98200C690D4 /* MetaAccountModel+Identicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */; };
+		2DC08BE52DCCF99D00C690D4 /* WalletDisplayAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */; };
+		2DC08BE62DCCF9B300C690D4 /* DisplayAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84729740260A9C13009B86D0 /* DisplayAddress.swift */; };
+		2DC08BE72DCCF9C600C690D4 /* Ethereum+Checksum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */; };
 		2DC304EC2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */; };
 		2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		2DCC875D2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */; };
@@ -5286,7 +5292,6 @@
 		B6D4C073B3F984FE0348B7D4 /* ParaStkYieldBoostStartInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0988D8EC0768B03BA7C55612 /* ParaStkYieldBoostStartInteractor.swift */; };
 		B6DB30A8D1BF84158CAC635D /* OperationDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661356CFE77B978610397907 /* OperationDetailsInteractor.swift */; };
 		B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8939D2E509D6FF66B7E117 /* InAppUpdatesProtocols.swift */; };
-		B798DE501CE931E8143BDE6D /* Pods_NovaPushNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B3C516E748F09D1A316E1D /* Pods_NovaPushNotificationServiceExtension.framework */; };
 		B7AA65C6A2A013A46B99B9D2 /* NetworksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2C52E727AAEF19EFC7761 /* NetworksListViewController.swift */; };
 		B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A93673EEA8F71E8DDA84557 /* StakingRedeemWireframe.swift */; };
 		B804BDDC5F3960AA59CE3E5B /* AssetDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667D74094E813EA3C53EE897 /* AssetDetailsPresenter.swift */; };
@@ -27901,6 +27906,7 @@
 				7778FE3A2B90AC0B0023E801 /* ChainModelMapper.swift in Sources */,
 				0CCD18B32BA1ED3E0068D73A /* CustomAssetMapper.swift in Sources */,
 				7778FE3E2B90CCDD0023E801 /* SubstrateStorageVersion.swift in Sources */,
+				2DC08BE22DCCF95C00C690D4 /* ChainAccountFetching.swift in Sources */,
 				7778FE3D2B90CCA20023E801 /* String+Split.swift in Sources */,
 				7778FE502B9108AA0023E801 /* CompoundOperationWrapper+Result.swift in Sources */,
 				0C28DF0D2D1AC69F0016DB8E /* SNAddressType.swift in Sources */,
@@ -27935,9 +27941,12 @@
 				778215E32B95B8E1006C7D13 /* NewReleaseHandler.swift in Sources */,
 				7778FE4B2B9105A10023E801 /* BalanceViewModel.swift in Sources */,
 				77AE4F9D2B905BB100426519 /* StakingType.swift in Sources */,
+				2DC08BE72DCCF9C600C690D4 /* Ethereum+Checksum.swift in Sources */,
 				778215C62B914E25006C7D13 /* CommonHandler.swift in Sources */,
 				7778FE3C2B90CC440023E801 /* SubstrateDataStorageFacade.swift in Sources */,
 				77EF9A7E2B9F138A0034D619 /* OperatingCall.swift in Sources */,
+				2DC08BE32DCCF96B00C690D4 /* Data+Random.swift in Sources */,
+				2DC08BE42DCCF98200C690D4 /* MetaAccountModel+Identicon.swift in Sources */,
 				0CCD18B22BA1C58D0068D73A /* Decimal+String.swift in Sources */,
 				778215C42B914DF8006C7D13 /* TransferHandler.swift in Sources */,
 				778215C92B914E6F006C7D13 /* TransferType.swift in Sources */,
@@ -27979,6 +27988,7 @@
 				77FC822F2BA1B99E00E7ED3C /* TransferTypeExtensions.swift in Sources */,
 				77EDF9272B96DD8E003266B1 /* MetaAccountMapper.swift in Sources */,
 				77AE4F9A2B905B7500426519 /* LocalChainExternalApi.swift in Sources */,
+				2DC08BE52DCCF99D00C690D4 /* WalletDisplayAddress.swift in Sources */,
 				7778FE452B90FA1C0023E801 /* OperationCombiningService.swift in Sources */,
 				77AE4FAF2B90611800426519 /* BaseOperation+Result.swift in Sources */,
 				0CCD18C82BA1F0830068D73A /* ImageViewModel.swift in Sources */,
@@ -27999,6 +28009,7 @@
 				77EDF9222B96D654003266B1 /* Web3Alert.swift in Sources */,
 				778215BD2B9140CD006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
 				77AE4F952B905B0C00426519 /* SubstrateAlias.swift in Sources */,
+				2DC08BE62DCCF9B300C690D4 /* DisplayAddress.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

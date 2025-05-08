@@ -34,8 +34,8 @@ extension MetaAccountModelType {
             .polkadotVault,
             .paritySigner,
             .ledger,
-            .multisig,
             .proxied,
+            .multisig,
             .watchOnly
         ]
     }
@@ -140,15 +140,23 @@ extension MetaAccountModel {
         }
     }
 
-    func replacingMultisig(chainId: ChainModel.Id, multisig: MultisigModel) -> MetaAccountModel {
-        let multisigChainAccount = chainAccounts.first {
-            $0.chainId == chainId && $0.multisig != nil
-        }
-
-        return if let newMultisigChainAccount = multisigChainAccount?.replacingMultisig(multisig) {
-            replacingChainAccount(newMultisigChainAccount)
-        } else {
-            self
+    func replacingMultisig(with multisigType: MultisigAccountType) -> MetaAccountModel? {
+        switch multisigType {
+        case let .universal(multisig):
+            MetaAccountModel(
+                metaId: metaId,
+                name: name,
+                substrateAccountId: substrateAccountId,
+                substrateCryptoType: substrateCryptoType,
+                substratePublicKey: substratePublicKey,
+                ethereumAddress: ethereumAddress,
+                ethereumPublicKey: ethereumPublicKey,
+                chainAccounts: [],
+                type: type,
+                multisig: multisig
+            )
+        case let .singleChain(chainAccount, multisig):
+            replacingChainAccount(chainAccount.replacingMultisig(multisig))
         }
     }
 }
