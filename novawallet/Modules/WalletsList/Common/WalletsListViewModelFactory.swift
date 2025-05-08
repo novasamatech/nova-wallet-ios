@@ -291,7 +291,15 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             return nil
         }
 
-        let optIcon = wallet.info.walletIdenticonData().flatMap {
+        let identiconAccountId = if let multisigChainAccount = wallet.info.chainAccounts.first(
+            where: { $0.multisig != nil }
+        ) {
+            multisigChainAccount.multisig?.accountId
+        } else {
+            wallet.info.walletIdenticonData()
+        }
+
+        let optIcon = identiconAccountId.flatMap {
             try? iconGenerator.generateFromAccountId($0)
         }
         let iconViewModel = optIcon.map {
