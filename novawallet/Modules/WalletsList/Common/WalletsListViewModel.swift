@@ -16,6 +16,7 @@ struct WalletsListSectionViewModel {
         case polkadotVault
         case proxied
         case genericLedger
+        case multisig
 
         init(walletType: MetaAccountModelType) {
             switch walletType {
@@ -33,6 +34,8 @@ struct WalletsListSectionViewModel {
                 self = .proxied
             case .genericLedger:
                 self = .genericLedger
+            case .multisig:
+                self = .multisig
             }
         }
     }

@@ -4,7 +4,7 @@ import Foundation_iOS
 enum VoteViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        proxySyncService: DelegatedAccountSyncServiceProtocol
     ) -> VoteViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil

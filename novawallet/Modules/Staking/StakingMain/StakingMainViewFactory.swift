@@ -7,7 +7,7 @@ import Operation_iOS
 enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        proxySyncService: ProxySyncServiceProtocol
+        proxySyncService: DelegatedAccountSyncServiceProtocol
     ) -> StakingMainViewProtocol? {
         let settings = SettingsManager.shared
 

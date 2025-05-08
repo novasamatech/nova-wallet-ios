@@ -4,7 +4,7 @@ import Foundation_iOS
 struct StakingDashboardViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        proxySyncService: DelegatedAccountSyncServiceProtocol
     ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 

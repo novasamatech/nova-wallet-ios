@@ -1276,7 +1276,7 @@ import Foundation
     
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var proxySyncService: DelegatedAccountSyncServiceProtocol {
         get {
             return cuckoo_manager.getter("proxySyncService",
                 superclassCall:
@@ -1316,7 +1316,7 @@ import Foundation
 	    }
 	    
 	    
-	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockWalletSwitchPresentable, ProxySyncServiceProtocol> {
+	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockWalletSwitchPresentable, DelegatedAccountSyncServiceProtocol> {
 	        return .init(manager: cuckoo_manager, name: "proxySyncService")
 	    }
 	    
@@ -1341,7 +1341,7 @@ import Foundation
 	
 	    
 	    
-	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<ProxySyncServiceProtocol> {
+	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<DelegatedAccountSyncServiceProtocol> {
 	        return .init(manager: cuckoo_manager, name: "proxySyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
@@ -1360,9 +1360,9 @@ import Foundation
         
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var proxySyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return DefaultValueRegistry.defaultValue(for: (ProxySyncServiceProtocol).self)
+            return DefaultValueRegistry.defaultValue(for: (DelegatedAccountSyncServiceProtocol).self)
         }
         
     }
@@ -1617,19 +1617,19 @@ import Foundation
 import Operation_iOS
 
 
- class MockProxySyncServiceProtocol: ProxySyncServiceProtocol, Cuckoo.ProtocolMock {
+ class MockDelegatedAccountSyncServiceProtocol: DelegatedAccountSyncServiceProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = ProxySyncServiceProtocol
+     typealias MocksType = DelegatedAccountSyncServiceProtocol
     
-     typealias Stubbing = __StubbingProxy_ProxySyncServiceProtocol
-     typealias Verification = __VerificationProxy_ProxySyncServiceProtocol
+     typealias Stubbing = __StubbingProxy_DelegatedAccountSyncServiceProtocol
+     typealias Verification = __VerificationProxy_DelegatedAccountSyncServiceProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: ProxySyncServiceProtocol?
+    private var __defaultImplStub: DelegatedAccountSyncServiceProtocol?
 
-     func enableDefaultImplementation(_ stub: ProxySyncServiceProtocol) {
+     func enableDefaultImplementation(_ stub: DelegatedAccountSyncServiceProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -1642,9 +1642,9 @@ import Operation_iOS
     
     
     
-     func subscribeSyncState(_ target: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)  {
+     func subscribeSyncState(_ target: AnyObject, queue: DispatchQueue?, closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)  {
         
-    return cuckoo_manager.call("subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)",
+    return cuckoo_manager.call("subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)",
             parameters: (target, queue, closure),
             escapingParameters: (target, queue, closure),
             superclassCall:
@@ -1746,7 +1746,7 @@ import Operation_iOS
     }
     
 
-	 struct __StubbingProxy_ProxySyncServiceProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_DelegatedAccountSyncServiceProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -1754,44 +1754,44 @@ import Operation_iOS
 	    }
 	    
 	    
-	    func subscribeSyncState<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(_ target: M1, queue: M2, closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void)> where M1.MatchedType == AnyObject, M2.OptionalMatchedType == DispatchQueue, M3.MatchedType == (ProxySyncServiceState, ProxySyncServiceState) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)", parameterMatchers: matchers))
+	    func subscribeSyncState<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(_ target: M1, queue: M2, closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject, DispatchQueue?, (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)> where M1.MatchedType == AnyObject, M2.OptionalMatchedType == DispatchQueue, M3.MatchedType == (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue?, (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)", parameterMatchers: matchers))
 	    }
 	    
 	    func unsubscribeSyncState<M1: Cuckoo.Matchable>(_ target: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject)> where M1.MatchedType == AnyObject {
 	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject)>] = [wrap(matchable: target) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "unsubscribeSyncState(_: AnyObject)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "unsubscribeSyncState(_: AnyObject)", parameterMatchers: matchers))
 	    }
 	    
 	    func updateWalletsStatuses() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "updateWalletsStatuses()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "updateWalletsStatuses()", parameterMatchers: matchers))
 	    }
 	    
 	    func syncUp() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "syncUp()", parameterMatchers: matchers))
 	    }
 	    
 	    func syncUp<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(chainId: M1, blockHash: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id, Data?)> where M1.MatchedType == ChainModel.Id, M2.OptionalMatchedType == Data {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Data?)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: blockHash) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "syncUp(chainId: ChainModel.Id, blockHash: Data?)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "syncUp(chainId: ChainModel.Id, blockHash: Data?)", parameterMatchers: matchers))
 	    }
 	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
 	    func throttle() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockProxySyncServiceProtocol.self, method: "throttle()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockDelegatedAccountSyncServiceProtocol.self, method: "throttle()", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_ProxySyncServiceProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_DelegatedAccountSyncServiceProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -1806,9 +1806,9 @@ import Operation_iOS
 	
 	    
 	    @discardableResult
-	    func subscribeSyncState<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(_ target: M1, queue: M2, closure: M3) -> Cuckoo.__DoNotUse<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void), Void> where M1.MatchedType == AnyObject, M2.OptionalMatchedType == DispatchQueue, M3.MatchedType == (ProxySyncServiceState, ProxySyncServiceState) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue?, (ProxySyncServiceState, ProxySyncServiceState) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
-	        return cuckoo_manager.verify("subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func subscribeSyncState<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(_ target: M1, queue: M2, closure: M3) -> Cuckoo.__DoNotUse<(AnyObject, DispatchQueue?, (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void), Void> where M1.MatchedType == AnyObject, M2.OptionalMatchedType == DispatchQueue, M3.MatchedType == (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject, DispatchQueue?, (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)>] = [wrap(matchable: target) { $0.0 }, wrap(matchable: queue) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("subscribeSyncState(_: AnyObject, queue: DispatchQueue?, closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -1850,7 +1850,7 @@ import Operation_iOS
 	}
 }
 
- class ProxySyncServiceProtocolStub: ProxySyncServiceProtocol {
+ class DelegatedAccountSyncServiceProtocolStub: DelegatedAccountSyncServiceProtocol {
     
 
     
@@ -1858,7 +1858,7 @@ import Operation_iOS
     
     
     
-     func subscribeSyncState(_ target: AnyObject, queue: DispatchQueue?, closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void)   {
+     func subscribeSyncState(_ target: AnyObject, queue: DispatchQueue?, closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -7534,7 +7534,7 @@ import SubstrateSdk
     
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var proxySyncService: DelegatedAccountSyncServiceProtocol {
         get {
             return cuckoo_manager.getter("proxySyncService",
                 superclassCall:
@@ -7619,7 +7619,7 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppListWireframeProtocol, ProxySyncServiceProtocol> {
+	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppListWireframeProtocol, DelegatedAccountSyncServiceProtocol> {
 	        return .init(manager: cuckoo_manager, name: "proxySyncService")
 	    }
 	    
@@ -7659,7 +7659,7 @@ import SubstrateSdk
 	
 	    
 	    
-	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<ProxySyncServiceProtocol> {
+	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<DelegatedAccountSyncServiceProtocol> {
 	        return .init(manager: cuckoo_manager, name: "proxySyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
@@ -7696,9 +7696,9 @@ import SubstrateSdk
         
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var proxySyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return DefaultValueRegistry.defaultValue(for: (ProxySyncServiceProtocol).self)
+            return DefaultValueRegistry.defaultValue(for: (DelegatedAccountSyncServiceProtocol).self)
         }
         
     }
@@ -22912,7 +22912,7 @@ import UIKit.UIImage
     
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var proxySyncService: DelegatedAccountSyncServiceProtocol {
         get {
             return cuckoo_manager.getter("proxySyncService",
                 superclassCall:
@@ -23237,7 +23237,7 @@ import UIKit.UIImage
 	    }
 	    
 	    
-	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockSettingsWireframeProtocol, ProxySyncServiceProtocol> {
+	    var proxySyncService: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockSettingsWireframeProtocol, DelegatedAccountSyncServiceProtocol> {
 	        return .init(manager: cuckoo_manager, name: "proxySyncService")
 	    }
 	    
@@ -23357,7 +23357,7 @@ import UIKit.UIImage
 	
 	    
 	    
-	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<ProxySyncServiceProtocol> {
+	    var proxySyncService: Cuckoo.VerifyReadOnlyProperty<DelegatedAccountSyncServiceProtocol> {
 	        return .init(manager: cuckoo_manager, name: "proxySyncService", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
@@ -23490,9 +23490,9 @@ import UIKit.UIImage
         
     
     
-     var proxySyncService: ProxySyncServiceProtocol {
+     var proxySyncService: DelegatedAccountSyncServiceProtocol {
         get {
-            return DefaultValueRegistry.defaultValue(for: (ProxySyncServiceProtocol).self)
+            return DefaultValueRegistry.defaultValue(for: (DelegatedAccountSyncServiceProtocol).self)
         }
         
     }

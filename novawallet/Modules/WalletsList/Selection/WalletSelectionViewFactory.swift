@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 
 struct WalletSelectionViewFactory {
-    static func createView(proxySyncService: ProxySyncServiceProtocol) -> WalletsListViewProtocol? {
+    static func createView(proxySyncService: DelegatedAccountSyncServiceProtocol) -> WalletsListViewProtocol? {
         guard let interactor = createInteractor(proxySyncService: proxySyncService),
               let currencyManager = CurrencyManager.shared else {
             return nil
@@ -35,7 +35,7 @@ struct WalletSelectionViewFactory {
         return view
     }
 
-    private static func createInteractor(proxySyncService: ProxySyncServiceProtocol) -> WalletSelectionInteractor? {
+    private static func createInteractor(proxySyncService: DelegatedAccountSyncServiceProtocol) -> WalletSelectionInteractor? {
         guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }

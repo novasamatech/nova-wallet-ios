@@ -12,7 +12,8 @@ enum AccountGenerator {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .watchOnly
+            type: .watchOnly,
+            multisig: nil
         )
     }
     
@@ -34,7 +35,8 @@ enum AccountGenerator {
             ethereumAddress: Data.random(of: 20)!,
             ethereumPublicKey: Data.random(of: 32)!,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: nil
         )
     }
 
@@ -44,7 +46,8 @@ enum AccountGenerator {
             accountId: Data.random(of: 32)!,
             publicKey: Data.random(of: 32)!,
             cryptoType: 0,
-            proxy: nil
+            proxy: nil,
+            multisig: nil
         )
     }
     
@@ -57,7 +60,22 @@ enum AccountGenerator {
             accountId: Data.random(of: 32)!,
             publicKey: Data.random(of: 32)!,
             cryptoType: 0,
-            proxy: model
+            proxy: model,
+            multisig: nil
+        )
+    }
+    
+    static func generateMultisigChainAccount(
+        for model: MultisigModel,
+        chainId: ChainModel.Id
+    ) -> ChainAccountModel {
+        ChainAccountModel(
+            chainId: chainId,
+            accountId: Data.random(of: 32)!,
+            publicKey: Data.random(of: 32)!,
+            cryptoType: 0,
+            proxy: nil,
+            multisig: model
         )
     }
 }

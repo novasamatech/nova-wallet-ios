@@ -61,7 +61,7 @@ final class StakingSharedStateFactory {
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
     let eventCenter: EventCenterProtocol
-    let proxySyncService: ProxySyncServiceProtocol?
+    let proxySyncService: DelegatedAccountSyncServiceProtocol?
     let syncOperationQueue: OperationQueue
     let repositoryOperationQueue: OperationQueue
     let applicationConfig: ApplicationConfigProtocol
@@ -70,7 +70,7 @@ final class StakingSharedStateFactory {
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
-        proxySyncService: ProxySyncServiceProtocol?,
+        proxySyncService: DelegatedAccountSyncServiceProtocol?,
         eventCenter: EventCenterProtocol,
         syncOperationQueue: OperationQueue,
         repositoryOperationQueue: OperationQueue,

@@ -1,13 +1,14 @@
 import Foundation
 import Operation_iOS
 
-typealias ProxySyncServiceState = [ChainModel.Id: Bool]
+typealias DelegatedAccountSyncServiceState = [ChainModel.Id: Bool]
+typealias DelegatedAccountUpdater = DelegatedAccountChainSyncServiceProtocol & ApplicationServiceProtocol
 
-protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
+protocol DelegatedAccountSyncServiceProtocol: ApplicationServiceProtocol {
     func subscribeSyncState(
         _ target: AnyObject,
         queue: DispatchQueue?,
-        closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void
+        closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void
     )
 
     func unsubscribeSyncState(_ target: AnyObject)
@@ -22,7 +23,7 @@ protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
 typealias ProxySyncChainFilter = (ChainModel) -> Bool
 typealias ProxySyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
 
-final class ProxySyncService {
+final class DelegatedAccountSyncService {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
@@ -37,10 +38,10 @@ final class ProxySyncService {
 
     private(set) var isActive: Bool = false
 
-    private(set) var updaters: [ChainModel.Id: ChainProxySyncServiceProtocol & ApplicationServiceProtocol] = [:]
+    private(set) var updaters: [ChainModel.Id: DelegatedAccountUpdater] = [:]
     private let mutex = NSLock()
 
-    private var stateObserver = Observable<ProxySyncServiceState>(state: [:])
+    private var stateObserver = Observable<DelegatedAccountSyncServiceState>(state: [:])
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -50,7 +51,7 @@ final class ProxySyncService {
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         eventCenter: EventCenterProtocol = EventCenter.shared,
         workingQueue: DispatchQueue = DispatchQueue(
-            label: "com.nova.wallet.proxy.sync",
+            label: "com.nova.wallet.delegatedAccount.sync",
             qos: .userInitiated,
             attributes: .concurrent
         ),
@@ -71,8 +72,12 @@ final class ProxySyncService {
 
         subscribeChains()
     }
+}
 
-    private func subscribeChains() {
+// MARK: Private
+
+private extension DelegatedAccountSyncService {
+    func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: workingQueue,
@@ -90,7 +95,7 @@ final class ProxySyncService {
         }
     }
 
-    private func handleChain(changes: [DataProviderChange<ChainModel>]) {
+    func handleChain(changes: [DataProviderChange<ChainModel>]) {
         changes.forEach { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
@@ -101,22 +106,21 @@ final class ProxySyncService {
         }
     }
 
-    private func stopSyncSevice(for chainId: ChainModel.Id) {
+    func stopSyncSevice(for chainId: ChainModel.Id) {
         updaters[chainId]?.stopSyncUp()
         updaters[chainId] = nil
     }
 
-    private func setupSyncService(for chain: ChainModel) {
+    func setupSyncService(for chain: ChainModel) {
         guard updaters[chain.chainId] == nil else {
             return
         }
 
-        let service = ChainProxySyncService(
+        let service = DelegatedAccountChainSyncService(
             chainModel: chain,
             walletUpdateMediator: walletUpdateMediator,
             metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
-            proxyOperationFactory: proxyOperationFactory,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
@@ -131,11 +135,11 @@ final class ProxySyncService {
         }
     }
 
-    private func removeOnchainSyncHandler() {
+    func removeOnchainSyncHandler() {
         updaters.values.forEach { $0.unsubscribeSyncState(self) }
     }
 
-    private func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
+    func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
         service.subscribeSyncState(
             self,
             queue: workingQueue
@@ -153,11 +157,13 @@ final class ProxySyncService {
     }
 }
 
-extension ProxySyncService: ProxySyncServiceProtocol {
+// MARK: DelegatedAccountSyncServiceProtocol
+
+extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
     func subscribeSyncState(
         _ target: AnyObject,
         queue: DispatchQueue?,
-        closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void
+        closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void
     ) {
         mutex.lock()
 

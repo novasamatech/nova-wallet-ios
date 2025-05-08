@@ -35,7 +35,8 @@ class ETHAccountInjectionTest: XCTestCase {
             ethereumAddress: try Data(hexString: ethAddress),
             ethereumPublicKey: try Data(hexString: ethPublicKey),
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         settings.save(value: metaAccountItem)

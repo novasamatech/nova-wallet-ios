@@ -14,12 +14,12 @@ final class WalletSelectionInteractor: WalletsListInteractor {
 
     let settings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
-    let proxySyncService: ProxySyncServiceProtocol
+    let proxySyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        proxySyncService: DelegatedAccountSyncServiceProtocol,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol
     ) {

@@ -6,7 +6,7 @@ struct AssetListViewFactory {
     static func createView(
         with dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        proxySyncService: DelegatedAccountSyncServiceProtocol
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let walletConnect = dappMediator.children.first(

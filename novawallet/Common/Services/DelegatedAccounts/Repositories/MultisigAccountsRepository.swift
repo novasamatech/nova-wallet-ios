@@ -1,0 +1,92 @@
+import Foundation
+import SubstrateSdk
+import Operation_iOS
+
+final class MultisigAccountsRepository {
+    private let chain: ChainModel
+
+    private let mutex = NSLock()
+
+    private var multisigsBySignatories: [AccountId: [DiscoveredMultisig]] = [:]
+
+    init(chain: ChainModel) {
+        self.chain = chain
+    }
+
+    private func mapToDelegatedAccounts(_ multisigs: [DiscoveredMultisig]) -> [DelegatedAccount] {
+        multisigs.map { DelegatedAccount.multisig($0) }
+    }
+}
+
+// MARK: DelegatedAccountsRepositoryProtocol
+
+extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
+    func fetchDelegatedAccountsWrapper(
+        for delegators: Set<AccountId>
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
+        let cachedMultisigsForSignatories = delegators
+            .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
+            .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
+
+        let cachedSignatories = Set(cachedMultisigsForSignatories.keys)
+        let nonCachedSignatories = delegators.subtracting(cachedSignatories)
+
+        guard !nonCachedSignatories.isEmpty else {
+            return .createWithResult(
+                cachedMultisigsForSignatories.mapValues(mapToDelegatedAccounts)
+            )
+        }
+
+        guard let apiURL = chain.externalApis?.getApis(for: .multisig)?.first?.url else {
+            return .createWithResult([:])
+        }
+
+        let fetchFactory = SubqueryMultisigsOperationFactory(
+            url: apiURL
+        )
+
+        let fetchOperation = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
+
+        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccount]]> { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let fetchResult = try fetchOperation.extractNoCancellableResultData()
+
+            guard let fetchResult else { return [:] }
+
+            let mappedFetchResult: [AccountId: [DiscoveredMultisig]] = fetchResult
+                .reduce(into: [:]) { acc, multisig in
+                    nonCachedSignatories.forEach { accountId in
+                        guard multisig.signatories.contains(accountId) else {
+                            return
+                        }
+
+                        if acc[accountId] == nil {
+                            acc[accountId] = [multisig]
+                        } else {
+                            acc[accountId]?.append(multisig)
+                        }
+                    }
+                }
+
+            mutex.lock()
+            multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
+            mutex.unlock()
+
+            let result = cachedMultisigsForSignatories
+                .merging(mappedFetchResult) { $0 + $1 }
+                .mapValues(mapToDelegatedAccounts)
+
+            return result
+        }
+
+        mapOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation]
+        )
+    }
+}

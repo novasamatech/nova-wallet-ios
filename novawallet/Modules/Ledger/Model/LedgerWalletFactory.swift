@@ -29,7 +29,8 @@ final class LedgerWalletFactory: LedgerWalletFactoryProtocol {
                     accountId: info.accountId,
                     publicKey: info.publicKey,
                     cryptoType: info.cryptoType.rawValue,
-                    proxy: nil
+                    proxy: nil,
+                    multisig: nil
                 )
 
                 guard let derivationPath = accountsStore.derivationPath(for: chainAccount.accountId) else {
@@ -54,7 +55,8 @@ final class LedgerWalletFactory: LedgerWalletFactoryProtocol {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: Set(chainAccounts),
-            type: .ledger
+            type: .ledger,
+            multisig: nil
         )
 
         return LedgerWalletFactoryResult(wallet: wallet, derivationPaths: accountsAndPaths)

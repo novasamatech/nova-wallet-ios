@@ -9,13 +9,20 @@ enum MetaAccountModelType: UInt8 {
     case polkadotVault
     case proxied
     case genericLedger
+    case multisig
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
-            return true
+        case .secrets,
+             .paritySigner,
+             .polkadotVault,
+             .ledger,
+             .proxied,
+             .genericLedger,
+             .multisig:
+            true
         case .watchOnly:
-            return false
+            false
         }
     }
 }
@@ -28,6 +35,7 @@ extension MetaAccountModelType {
             .paritySigner,
             .ledger,
             .proxied,
+            .multisig,
             .watchOnly
         ]
     }
@@ -46,6 +54,7 @@ struct MetaAccountModel: Equatable, Hashable {
     let ethereumPublicKey: Data?
     let chainAccounts: Set<ChainAccountModel>
     let type: MetaAccountModelType
+    let multisig: MultisigModel?
 }
 
 extension MetaAccountModel: Identifiable {
@@ -69,7 +78,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: newChainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -83,7 +93,8 @@ extension MetaAccountModel {
             ethereumAddress: newEthereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -97,7 +108,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: newEthereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -111,7 +123,8 @@ extension MetaAccountModel {
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: ethereumPublicKey,
             chainAccounts: chainAccounts,
-            type: type
+            type: type,
+            multisig: multisig
         )
     }
 
@@ -119,10 +132,31 @@ extension MetaAccountModel {
         let proxyChainAccount = chainAccounts.first {
             $0.chainId == chainId && $0.proxy != nil
         }
-        if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
-            return replacingChainAccount(newProxyChainAccount)
+
+        return if let newProxyChainAccount = proxyChainAccount?.replacingProxy(proxy) {
+            replacingChainAccount(newProxyChainAccount)
         } else {
-            return self
+            self
+        }
+    }
+
+    func replacingMultisig(with multisigType: MultisigAccountType) -> MetaAccountModel? {
+        switch multisigType {
+        case let .universal(multisig):
+            MetaAccountModel(
+                metaId: metaId,
+                name: name,
+                substrateAccountId: substrateAccountId,
+                substrateCryptoType: substrateCryptoType,
+                substratePublicKey: substratePublicKey,
+                ethereumAddress: ethereumAddress,
+                ethereumPublicKey: ethereumPublicKey,
+                chainAccounts: [],
+                type: type,
+                multisig: multisig
+            )
+        case let .singleChain(chainAccount, multisig):
+            replacingChainAccount(chainAccount.replacingMultisig(multisig))
         }
     }
 }

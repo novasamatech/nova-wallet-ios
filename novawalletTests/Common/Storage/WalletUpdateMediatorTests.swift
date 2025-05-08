@@ -165,7 +165,8 @@ final class WalletUpdateMediatorTests: XCTestCase {
                     type: .any,
                     accountId: proxied3ChainAccount.accountId,
                     status: .active
-                )
+                ),
+                multisig: nil
             )
             
             recursiveProxiedForProxiedWallet1 = ManagedMetaAccountModel(
