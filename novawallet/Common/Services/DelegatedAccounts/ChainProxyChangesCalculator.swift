@@ -146,38 +146,26 @@ private extension ChainProxyChangesCalculator {
         }
     }
 
-    func calculateUpdates(
+    func calculateProxyUpdates(
         for localProxies: [ProxyIdentifier: ProxiedMetaAccount],
-        localMultisigs: [MultisigIdentifier: MultisigMetaAccount],
         from remoteDelegatedAccounts: [DelegatedAccount],
         accountId: AccountId,
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
-        let updatedDelegatedMetaAccounts = try remoteDelegatedAccounts
-            .reduce(into: [ManagedMetaAccountModel]()) { result, account in
-                switch account {
-                case let .proxy(proxy):
-                    try addUpdated(
-                        proxy: proxy,
-                        to: &result,
-                        for: accountId,
-                        basedOn: localProxies,
-                        identities: identities
-                    )
-                case let .multisig(multisig):
-                    try addUpdated(
-                        multisig: multisig,
-                        to: &result,
-                        for: accountId,
-                        basedOn: localMultisigs,
-                        identities: identities
-                    )
-                }
+        let remoteProxyAccounts = remoteDelegatedAccounts
+            .compactMap(\.proxy)
+        let updatedProxyAccounts = try remoteProxyAccounts
+            .reduce(into: [ManagedMetaAccountModel]()) { result, proxy in
+                try addUpdated(
+                    proxy: proxy,
+                    to: &result,
+                    for: accountId,
+                    basedOn: localProxies,
+                    identities: identities
+                )
             }
-
         let revokedProxiedMetaAccounts = localProxies.filter { localProxy in
-            !remoteDelegatedAccounts
-                .compactMap(\.proxy)
+            !remoteProxyAccounts
                 .contains {
                     localProxy.key.proxiedAccountId == accountId &&
                         localProxy.key.proxyType == $0.type &&
@@ -192,18 +180,87 @@ private extension ChainProxyChangesCalculator {
             return updatedItem
         }
 
+        return SyncChanges(
+            newOrUpdatedItems: updatedProxyAccounts + revokedProxiedMetaAccounts,
+            removedItems: []
+        )
+    }
+
+    func calculateMultisigUpdates(
+        for localMultisigs: [MultisigIdentifier: MultisigMetaAccount],
+        from remoteDelegatedAccounts: [DelegatedAccount],
+        accountId: AccountId,
+        identities: [AccountId: AccountIdentity]
+    ) throws -> SyncChanges<ManagedMetaAccountModel> {
+        let remoteMultisigAccounts = remoteDelegatedAccounts
+            .compactMap(\.multisig)
+
+        let updatedMultisigMetaAccounts = try remoteMultisigAccounts
+            .reduce(into: [ManagedMetaAccountModel]()) { result, multisig in
+                try addUpdated(
+                    multisig: multisig,
+                    to: &result,
+                    for: accountId,
+                    basedOn: localMultisigs,
+                    identities: identities
+                )
+            }
         let resolvedMultisigMetaAccounts = localMultisigs.filter { localMultisig in
-            !remoteDelegatedAccounts
-                .compactMap(\.multisig)
+            !remoteMultisigAccounts
                 .contains {
                     localMultisig.key.multisigAccountId == $0.accountId &&
                         localMultisig.key.signatoryAccountId == accountId
                 }
         }
 
-        return .init(
-            newOrUpdatedItems: updatedDelegatedMetaAccounts + revokedProxiedMetaAccounts,
+        return SyncChanges(
+            newOrUpdatedItems: updatedMultisigMetaAccounts,
             removedItems: resolvedMultisigMetaAccounts.map(\.value.metaAccount)
+        )
+    }
+
+    func calculateChanges(
+        for remoteDelegatedAccounts: [AccountId: [DelegatedAccount]],
+        localProxies: [ProxyIdentifier: ProxiedMetaAccount],
+        localMultisigs: [MultisigIdentifier: MultisigMetaAccount],
+        using identities: [AccountId: AccountIdentity]
+    ) throws -> SyncChanges<ManagedMetaAccountModel> {
+        let remoteProxiedAccountIds = remoteDelegatedAccounts
+            .filter { $0.value.contains { $0.proxy != nil } }.keys
+        let remoteMultisigAccountIds = remoteDelegatedAccounts
+            .filter { $0.value.contains { $0.multisig != nil } }.keys
+
+        let proxiedAccountIds = Set(remoteProxiedAccountIds + localProxies.map(\.key.proxiedAccountId))
+        let multisigAccountIds = Set(remoteMultisigAccountIds + localMultisigs.map(\.key.signatoryAccountId))
+
+        let proxyChanges = try proxiedAccountIds.map { accountId in
+            let localProxiesForProxied = localProxies.filter { $0.key.proxiedAccountId == accountId }
+            let remoteDelegatedAccounts = remoteDelegatedAccounts[accountId] ?? []
+
+            return try calculateProxyUpdates(
+                for: localProxiesForProxied,
+                from: remoteDelegatedAccounts,
+                accountId: accountId,
+                identities: identities
+            )
+        }
+        let multisigChanges = try multisigAccountIds.map { accountId in
+            let localMultisigsForSignatory = localMultisigs.filter { $0.key.signatoryAccountId == accountId }
+            let remoteDelegatedAccounts = remoteDelegatedAccounts[accountId] ?? []
+
+            return try calculateMultisigUpdates(
+                for: localMultisigsForSignatory,
+                from: remoteDelegatedAccounts,
+                accountId: accountId,
+                identities: identities
+            )
+        }
+
+        let changes = proxyChanges + multisigChanges
+
+        return SyncChanges(
+            newOrUpdatedItems: changes.flatMap(\.newOrUpdatedItems),
+            removedItems: changes.flatMap(\.removedItems)
         )
     }
 }
@@ -233,39 +290,22 @@ extension ChainProxyChangesCalculator {
 
             guard
                 let multisig,
-                let signatoryAccountId = chainAccount?.accountId ?? item.info.substrateAccountId
+                let chainAccount,
+                chainAccount.chainId == chainModel.chainId
             else { return }
 
             let localMultisigId = MultisigIdentifier(
-                signatoryAccountId: signatoryAccountId,
+                signatoryAccountId: chainAccount.accountId,
                 multisigAccountId: multisig.accountId
             )
             result[localMultisigId] = .init(multisig: multisig, metaAccount: item)
         }
 
-        let allDelegatedAccounts = Set(
-            remoteDelegatedAccounts.map(\.key)
-                + localProxies.map(\.key.proxiedAccountId)
-                + localMultisigs.map(\.key.signatoryAccountId)
-        )
-
-        let changes = try allDelegatedAccounts.map { accountId in
-            let localProxiesForProxied = localProxies.filter { $0.key.proxiedAccountId == accountId }
-            let localMultisigForSignatory = localMultisigs.filter { $0.key.signatoryAccountId == accountId }
-            let remoteDelegatedAccounts = remoteDelegatedAccounts[accountId] ?? []
-
-            return try calculateUpdates(
-                for: localProxiesForProxied,
-                localMultisigs: localMultisigForSignatory,
-                from: remoteDelegatedAccounts,
-                accountId: accountId,
-                identities: identities
-            )
-        }
-
-        return SyncChanges(
-            newOrUpdatedItems: changes.flatMap(\.newOrUpdatedItems),
-            removedItems: changes.flatMap(\.removedItems)
+        return try calculateChanges(
+            for: remoteDelegatedAccounts,
+            localProxies: localProxies,
+            localMultisigs: localMultisigs,
+            using: identities
         )
     }
 }
