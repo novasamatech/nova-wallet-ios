@@ -183,38 +183,13 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
             self.extrinsicSubscriptionId = nil
         }
     }
-}
 
-extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProtocol {
-    func setup() {
-        feeProxy.delegate = self
-
-        subscribeAccountBalance()
-        subscribePriceIfNeeded()
-        subscribeDelegator()
-        subscribeCollatorMetadata()
-        subscribeScheduledRequests()
-
-        provideMinTechStake()
-        provideMinDelegationAmount()
-        provideMaxDelegationsPerDelegator()
-        provideStakingDuration()
-    }
-
-    func estimateFee(with callWrapper: DelegationCallWrapper) {
-        let identifier = callWrapper.extrinsicId()
-
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: identifier
-        ) { builder in
-            try callWrapper.accept(builder: builder)
-        }
-    }
-
-    func confirm(with callWrapper: DelegationCallWrapper) {
+    private func doConfirmExtrinsic(
+        with callWrapper: DelegationCallWrapper,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) {
         let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
-            try callWrapper.accept(builder: builder)
+            try callWrapper.accept(builder: builder, codingFactory: codingFactory)
         }
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
@@ -245,6 +220,55 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
             runningIn: .main,
             subscriptionIdClosure: subscriptionIdClosure,
             notificationClosure: notificationClosure
+        )
+    }
+}
+
+extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProtocol {
+    func setup() {
+        feeProxy.delegate = self
+
+        subscribeAccountBalance()
+        subscribePriceIfNeeded()
+        subscribeDelegator()
+        subscribeCollatorMetadata()
+        subscribeScheduledRequests()
+
+        provideMinTechStake()
+        provideMinDelegationAmount()
+        provideMaxDelegationsPerDelegator()
+        provideStakingDuration()
+    }
+
+    func estimateFee(with callWrapper: DelegationCallWrapper) {
+        let identifier = callWrapper.extrinsicId()
+
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] codingFactory in
+                guard let self else {
+                    return
+                }
+
+                feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+                    try callWrapper.accept(builder: builder, codingFactory: codingFactory)
+                }
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didReceiveError(error)
+            }
+        )
+    }
+
+    func confirm(with callWrapper: DelegationCallWrapper) {
+        runtimeProvider.fetchCoderFactory(
+            runningIn: OperationManager(operationQueue: operationQueue),
+            completion: { [weak self] codingFactory in
+                self?.doConfirmExtrinsic(with: callWrapper, codingFactory: codingFactory)
+            },
+            errorClosure: { [weak self] error in
+                self?.presenter?.didCompleteExtrinsicSubmission(for: .failure(error))
+            }
         )
     }
 }

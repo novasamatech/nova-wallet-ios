@@ -267,6 +267,31 @@ final class AccountCreationHelper {
         _ = try operation.extractNoCancellableResultData()
     }
     
+    static func createWatchOnlyMetaAccount(
+        from substrateAddress: AccountAddress,
+        ethereumAddress: AccountAddress?,
+        settings: SelectedWalletSettings,
+        username: String = "username"
+    ) throws {
+        let request = WatchOnlyWallet(
+            name: username,
+            substrateAddress: substrateAddress,
+            evmAddress: ethereumAddress
+        )
+        
+        let factory = WatchOnlyWalletOperationFactory()
+        
+        let operation = factory.newWatchOnlyWalletOperation(for: request)
+        
+        let operationQueue = OperationQueue()
+        
+        operationQueue.addOperation(operation)
+        
+        let wallet = try operation.extractNoCancellableResultData()
+        
+        try selectMetaAccount(wallet, settings: settings)
+    }
+    
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {
         settings.save(value: accountItem)
         settings.setup()
