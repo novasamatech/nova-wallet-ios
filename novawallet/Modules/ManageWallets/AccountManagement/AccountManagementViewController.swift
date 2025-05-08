@@ -153,9 +153,7 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
         case .multisig:
             rootView.headerView.messageType = .hint
 
-            // TODO: Change text and icon when mockups are ready
-
-            let text = R.string.localizable.proxyDetailsHint(
+            let text = R.string.localizable.multisigDetailsHint(
                 preferredLanguages: selectedLocale.rLanguages
             )
 

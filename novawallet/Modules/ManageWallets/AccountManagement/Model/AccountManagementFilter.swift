@@ -14,28 +14,30 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
     func accountManagementSupports(wallet: MetaAccountModel, for chain: ChainModel) -> Bool {
         switch wallet.type {
         case .watchOnly, .paritySigner, .polkadotVault, .secrets:
-            return true
-        case .proxied, .multisig:
-            return wallet.fetch(for: chain.accountRequest()) != nil
+            true
+        case .multisig:
+            false
+        case .proxied:
+            wallet.fetch(for: chain.accountRequest()) != nil
         case .ledger:
-            return supportedLedgerChains.contains(chain.chainId)
+            supportedLedgerChains.contains(chain.chainId)
         case .genericLedger:
-            return chain.supportsGenericLedgerApp && (wallet.fetch(for: chain.accountRequest()) != nil)
+            chain.supportsGenericLedgerApp && (wallet.fetch(for: chain.accountRequest()) != nil)
         }
     }
 
     func canAddAccount(to wallet: MetaAccountModel, chain: ChainModel) -> Bool {
         switch wallet.type {
         case .watchOnly, .secrets:
-            return true
+            true
         case .proxied, .multisig:
-            return false
+            false
         case .paritySigner, .polkadotVault:
-            return !chain.isEthereumBased
+            !chain.isEthereumBased
         case .ledger:
-            return supportedLedgerChains.contains(chain.chainId)
+            supportedLedgerChains.contains(chain.chainId)
         case .genericLedger:
-            return chain.supportsGenericLedgerApp
+            chain.supportsGenericLedgerApp
         }
     }
 }

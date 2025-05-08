@@ -353,7 +353,7 @@ final class AccountManagementPresenter {
         switch walletType {
         case .secrets:
             displaySecretsReplaceActions(for: chainModel)
-        case .watchOnly, .proxied, .multisig:
+        case .watchOnly, .proxied:
             if let wallet = wallet {
                 presentCloudRemindIfNeededBefore { [weak self] in
                     self?.wireframe.showChangeWatchOnlyAccount(
@@ -363,8 +363,8 @@ final class AccountManagementPresenter {
                     )
                 }
             }
-        case .paritySigner, .polkadotVault, .ledger, .genericLedger:
-            // change account not supported for Parity Signer and Ledger Wallets
+        case .paritySigner, .polkadotVault, .ledger, .genericLedger, .multisig:
+            // change account not supported for Parity Signer, Ledger and Multisig wallets
             break
         }
     }
