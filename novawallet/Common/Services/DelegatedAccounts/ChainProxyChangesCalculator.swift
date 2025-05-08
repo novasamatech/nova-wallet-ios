@@ -229,22 +229,18 @@ extension ChainProxyChangesCalculator {
         let localMultisigs = chainMetaAccounts.reduce(
             into: [MultisigIdentifier: MultisigMetaAccount]()
         ) { result, item in
-            if
-                let chainAccount = item.info.multisigChainAccount(chainId: chainModel.chainId),
-                let multisig = chainAccount.multisig {
-                let multisigId = MultisigIdentifier(
-                    signatoryAccountId: chainAccount.accountId,
-                    multisigAccountId: multisig.accountId
-                )
+            let (chainAccount, multisig) = item.info.multisigAccount().multisig
 
-                result[multisigId] = .init(multisig: multisig, metaAccount: item)
-            } else if let multisig = item.info.multisig, let signatoryAccountId = item.info.substrateAccountId {
-                let multisigId = MultisigIdentifier(
-                    signatoryAccountId: signatoryAccountId,
-                    multisigAccountId: multisig.accountId
-                )
-                result[multisigId] = .init(multisig: multisig, metaAccount: item)
-            }
+            guard
+                let multisig,
+                let signatoryAccountId = chainAccount?.accountId ?? item.info.substrateAccountId
+            else { return }
+
+            let localMultisigId = MultisigIdentifier(
+                signatoryAccountId: signatoryAccountId,
+                multisigAccountId: multisig.accountId
+            )
+            result[localMultisigId] = .init(multisig: multisig, metaAccount: item)
         }
 
         let allDelegatedAccounts = Set(

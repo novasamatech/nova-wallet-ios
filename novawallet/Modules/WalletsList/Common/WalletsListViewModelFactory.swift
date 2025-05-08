@@ -97,19 +97,19 @@ private extension WalletsListViewModelFactory {
     ) -> WalletsListSectionViewModel? {
         let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
             WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .proxied
-        }.compactMap { wallet -> WalletsListViewModel? in
+        }.compactMap { proxiedWallets -> WalletsListViewModel? in
             createProxyItemViewModel(
-                for: wallet,
+                for: proxiedWallets,
                 wallets: wallets,
                 chains: chains,
                 locale: locale
             )
         }
 
-        if !viewModels.isEmpty {
-            return WalletsListSectionViewModel(type: .proxied, items: viewModels)
+        return if !viewModels.isEmpty {
+            WalletsListSectionViewModel(type: .proxied, items: viewModels)
         } else {
-            return nil
+            nil
         }
     }
 
@@ -120,19 +120,19 @@ private extension WalletsListViewModelFactory {
     ) -> WalletsListSectionViewModel? {
         let viewModels: [WalletsListViewModel] = wallets.filter { wallet in
             WalletsListSectionViewModel.SectionType(walletType: wallet.info.type) == .multisig
-        }.compactMap { wallet -> WalletsListViewModel? in
+        }.compactMap { multisigWallet -> WalletsListViewModel? in
             createMultisigItemViewModel(
-                for: wallet,
+                for: multisigWallet,
                 wallets: wallets,
                 chains: chains,
                 locale: locale
             )
         }
 
-        if !viewModels.isEmpty {
-            return WalletsListSectionViewModel(type: .multisig, items: viewModels)
+        return if !viewModels.isEmpty {
+            WalletsListSectionViewModel(type: .multisig, items: viewModels)
         } else {
-            return nil
+            nil
         }
     }
 
@@ -277,16 +277,11 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> WalletsListViewModel? {
-        guard let chainAccount = wallet.info.chainAccounts.first(where: { $0.multisig != nil }),
-              let multisig = chainAccount.multisig,
-              let signatoryWallet = wallets.first(
-                  where: {
-                      $0.info.has(
-                          accountId: multisig.signatory,
-                          chainId: chainAccount.chainId
-                      )
-                  }
-              )
+        let (chainAccount, multisig) = wallet.info.multisigAccount().multisig
+
+        guard
+            let multisig,
+            let signatoryWallet = wallets.first(where: { $0.info.isSignatory(for: multisig) })
         else {
             return nil
         }
@@ -311,9 +306,15 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
             IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: signatoryWallet.info.metaId)
         }
-        let chainModel = chains[chainAccount.chainId]
-        let chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
-        let proxyInfo = WalletView.ViewModel.DelegatedAccountInfo(
+
+        var chainIcon: IdentifiableImageViewModelProtocol?
+
+        if let chainAccount {
+            let chainModel = chains[chainAccount.chainId]
+            chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
+        }
+
+        let info = WalletView.ViewModel.DelegatedAccountInfo(
             networkIcon: chainIcon,
             type: R.string.localizable.commonSigner(preferredLanguages: locale.rLanguages),
             pairedAccountIcon: subtitleDetailsIconViewModel,
@@ -321,14 +322,14 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             isNew: multisig.status == .new
         )
 
-        let proxyModel = WalletView.ViewModel(
+        let viewModel = WalletView.ViewModel(
             wallet: .init(icon: iconViewModel, name: wallet.info.name),
-            type: .proxy(proxyInfo)
+            type: .multisig(info)
         )
 
         return WalletsListViewModel(
             identifier: wallet.identifier,
-            walletViewModel: proxyModel,
+            walletViewModel: viewModel,
             isSelected: isSelected(wallet: wallet)
         )
     }

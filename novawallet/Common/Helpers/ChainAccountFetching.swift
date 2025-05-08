@@ -320,16 +320,25 @@ extension MetaAccountModel {
         type == .proxied && has(accountId: accountId, chainId: chainId)
     }
 
+    func isSignatory(for multisig: MultisigModel) -> Bool {
+        multisig.signatory == substrateAccountId || chainAccounts.contains { $0.accountId == multisig.signatory }
+    }
+
     func proxyChainAccount(
         chainId: ChainModel.Id
     ) -> ChainAccountModel? {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
 
-    func multisigChainAccount(
-        chainId: ChainModel.Id
-    ) -> ChainAccountModel? {
-        chainAccounts.first { $0.chainId == chainId && $0.multisig != nil }
+    func multisigAccount() -> MultisigAccountType {
+        if let multisig {
+            .universal(multisig: multisig)
+        } else if let chainAccount = chainAccounts.first(where: { $0.multisig != nil }),
+                  let multisig = chainAccount.multisig {
+            .singleChain(chainAccount: chainAccount, multisig: multisig)
+        } else {
+            .none
+        }
     }
 
     func proxy() -> ProxyAccountModel? {
@@ -344,6 +353,41 @@ extension MetaAccountModel {
     func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
         let request = chainAsset.chain.accountRequest()
         return fetch(for: request)?.toAddress()
+    }
+}
+
+extension MetaAccountModel {
+    enum MultisigAccountType {
+        case universal(multisig: MultisigModel)
+        case singleChain(chainAccount: ChainAccountModel, multisig: MultisigModel)
+        case none
+
+        var multisig: (ChainAccountModel?, MultisigModel?) {
+            switch self {
+            case let .universal(multisig):
+                (nil, multisig)
+            case let .singleChain(chainAccount, multisig):
+                (chainAccount, multisig)
+            case .none:
+                (nil, nil)
+            }
+        }
+
+        func isUniversal() -> Bool {
+            if case .universal = self {
+                true
+            } else {
+                false
+            }
+        }
+
+        func isSingleChain() -> Bool {
+            if case .singleChain = self {
+                true
+            } else {
+                false
+            }
+        }
     }
 }
 
