@@ -72,7 +72,9 @@ private extension ChainProxyChangesCalculator {
                 multisig: multisigModel
             )
 
-            let name = try identities[accountId]?.displayName ?? accountId.toAddress(using: chainModel.chainFormat)
+            let name = try identities[multisig.accountId]?.displayName
+                ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
+            
             let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: name,
