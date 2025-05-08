@@ -84,7 +84,7 @@ struct MessageSheetViewFactory {
                 R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
             }
         case .multisig:
-            // TODO: Change image and text when mockups are ready
+            // TODO: Remove after implementing signer
             icon = R.image.imageProxy()
             message = LocalizableResource { locale in
                 R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)

@@ -131,7 +131,6 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
 
             typeImageView.image = R.image.iconProxiedWallet()
         case .multisig:
-            // TODO: Change image when mockups are ready
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconMultisig()

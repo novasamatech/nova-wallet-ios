@@ -137,7 +137,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
 
     func handleReceive() {
         switch selectedAccount.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .multisig:
             showReceiveTokens()
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
@@ -146,7 +146,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
                 showReceiveTokens()
             }
 
-        case .watchOnly, .multisig:
+        case .watchOnly:
             wireframe.showNoSigning(from: view)
         }
     }
