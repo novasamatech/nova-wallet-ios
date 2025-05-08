@@ -343,7 +343,15 @@ private extension DelegatedAccountChainSyncService {
             for: {
                 let delegatedAccounts = try delegatedAccountsListWrapper
                     .targetOperation.extractNoCancellableResultData()
-                return Array(delegatedAccounts.keys)
+
+                let proxiedIds = delegatedAccounts
+                    .filter { pair in pair.value.contains { $0.proxy != nil } }
+                    .map(\.key)
+                let multisigIds = delegatedAccounts
+                    .flatMap(\.value)
+                    .compactMap { $0.multisig?.accountId }
+
+                return proxiedIds + multisigIds
             }
         )
 
