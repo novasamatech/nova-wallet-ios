@@ -130,7 +130,7 @@ private extension WalletsListViewModelFactory {
         }
 
         if !viewModels.isEmpty {
-            return WalletsListSectionViewModel(type: .proxied, items: viewModels)
+            return WalletsListSectionViewModel(type: .multisig, items: viewModels)
         } else {
             return nil
         }

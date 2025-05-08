@@ -1846,3 +1846,4 @@
 "sell.named.token" = "Sell %@ token";
 "common.multisig" = "Multisig";
 "common.signer" = "Signer";
+"wallet.list.multisig" = "Shared contol (multisig)";
