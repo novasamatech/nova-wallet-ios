@@ -330,14 +330,14 @@ extension MetaAccountModel {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
 
-    func multisigAccount() -> MultisigAccountType {
+    func multisigAccount() -> MultisigAccountType? {
         if let multisig {
             .universal(multisig: multisig)
         } else if let chainAccount = chainAccounts.first(where: { $0.multisig != nil }),
                   let multisig = chainAccount.multisig {
             .singleChain(chainAccount: chainAccount, multisig: multisig)
         } else {
-            .none
+            nil
         }
     }
 
@@ -360,16 +360,13 @@ extension MetaAccountModel {
     enum MultisigAccountType {
         case universal(multisig: MultisigModel)
         case singleChain(chainAccount: ChainAccountModel, multisig: MultisigModel)
-        case none
 
-        var multisig: (ChainAccountModel?, MultisigModel?) {
+        var multisig: (chainAccount: ChainAccountModel?, multisigAccount: MultisigModel?) {
             switch self {
             case let .universal(multisig):
                 (nil, multisig)
             case let .singleChain(chainAccount, multisig):
                 (chainAccount, multisig)
-            case .none:
-                (nil, nil)
             }
         }
 

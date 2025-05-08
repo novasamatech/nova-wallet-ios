@@ -8,6 +8,8 @@ struct ChainProxyChangesCalculator {
     }
 }
 
+// MARK: - Private structs
+
 private extension ChainProxyChangesCalculator {
     struct ProxyIdentifier: Hashable {
         let proxiedAccountId: AccountId
@@ -31,7 +33,11 @@ private extension ChainProxyChangesCalculator {
     }
 }
 
+// MARK: - Private
+
 private extension ChainProxyChangesCalculator {
+    // MARK: Multisig update
+
     func addUpdated(
         multisig: DiscoveredMultisig,
         to metaAccounts: inout [ManagedMetaAccountModel],
@@ -45,52 +51,93 @@ private extension ChainProxyChangesCalculator {
         )
 
         if let localMultisig = localMultisigs[key] {
-            let newInfo = localMultisig.metaAccount.info.replacingMultisig(
-                chainId: chainModel.chainId,
-                multisig: localMultisig.multisig.replacingStatus(.pending)
-            )
-
-            let updatedItem = localMultisig.metaAccount.replacingInfo(newInfo)
-            metaAccounts.append(updatedItem)
+            let updatedMultisigMetaAccount = updateMultisigStatus(for: localMultisig)
+            metaAccounts.append(updatedMultisigMetaAccount.metaAccount)
         } else {
-            let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
-
-            let multisigModel = MultisigModel(
-                accountId: multisig.accountId,
-                signatory: accountId,
-                otherSignatories: multisig.otherSignatories(than: accountId),
-                threshold: multisig.threshold,
-                status: .new
-            )
-
-            let chainAccountModel = ChainAccountModel(
-                chainId: chainModel.chainId,
+            let newMultisigMetaAccount = try createMultisigMetaAccount(
+                multisig: multisig,
                 accountId: accountId,
-                publicKey: accountId,
-                cryptoType: cryptoType.rawValue,
-                proxy: nil,
-                multisig: multisigModel
+                using: identities
             )
-
-            let name = try identities[multisig.accountId]?.displayName
-                ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
-
-            let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
-                metaId: UUID().uuidString,
-                name: name,
-                substrateAccountId: nil,
-                substrateCryptoType: nil,
-                substratePublicKey: nil,
-                ethereumAddress: nil,
-                ethereumPublicKey: nil,
-                chainAccounts: [chainAccountModel],
-                type: .multisig,
-                multisig: nil
-            ))
-
-            metaAccounts.append(newWallet)
+            metaAccounts.append(newMultisigMetaAccount)
         }
     }
+
+    func updateMultisigStatus(
+        for localMultisigMetaAccount: MultisigMetaAccount
+    ) -> MultisigMetaAccount {
+        let chainAccount = localMultisigMetaAccount.metaAccount.info
+            .multisigAccount()?
+            .multisig
+            .chainAccount
+        let updatedMultisig = localMultisigMetaAccount.multisig.replacingStatus(.pending)
+
+        guard
+            let chainAccount,
+            let newInfo = localMultisigMetaAccount.metaAccount.info.replacingMultisig(
+                with: .singleChain(
+                    chainAccount: chainAccount,
+                    multisig: updatedMultisig
+                )
+            )
+        else {
+            return localMultisigMetaAccount
+        }
+
+        let updatedMultisigMetaAccount = localMultisigMetaAccount
+            .metaAccount
+            .replacingInfo(newInfo)
+
+        return MultisigMetaAccount(
+            multisig: updatedMultisig,
+            metaAccount: updatedMultisigMetaAccount
+        )
+    }
+
+    func createMultisigMetaAccount(
+        multisig: DiscoveredMultisig,
+        accountId: AccountId,
+        using identities: [AccountId: AccountIdentity]
+    ) throws -> ManagedMetaAccountModel {
+        let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
+
+        let multisigModel = MultisigModel(
+            accountId: multisig.accountId,
+            signatory: accountId,
+            otherSignatories: multisig.otherSignatories(than: accountId),
+            threshold: multisig.threshold,
+            status: .new
+        )
+
+        let chainAccountModel = ChainAccountModel(
+            chainId: chainModel.chainId,
+            accountId: accountId,
+            publicKey: accountId,
+            cryptoType: cryptoType.rawValue,
+            proxy: nil,
+            multisig: multisigModel
+        )
+
+        let name = try identities[multisig.accountId]?.displayName
+            ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
+
+        let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
+            metaId: UUID().uuidString,
+            name: name,
+            substrateAccountId: nil,
+            substrateCryptoType: nil,
+            substratePublicKey: nil,
+            ethereumAddress: nil,
+            ethereumPublicKey: nil,
+            chainAccounts: [chainAccountModel],
+            type: .multisig,
+            multisig: nil
+        ))
+
+        return newWallet
+    }
+
+    // MARK: Proxy update
 
     func addUpdated(
         proxy: ProxyAccount,
@@ -105,46 +152,74 @@ private extension ChainProxyChangesCalculator {
             proxyType: proxy.type
         )
 
-        if let localProxy = localProxies[key] {
-            guard localProxy.proxy.status == .revoked else {
-                return
-            }
-
-            let newInfo = localProxy.metaAccount.info.replacingProxy(
-                chainId: chainModel.chainId,
-                proxy: localProxy.proxy.replacingStatus(.new)
-            )
-            let updatedItem = localProxy.metaAccount.replacingInfo(newInfo)
-            metaAccounts.append(updatedItem)
+        if let localProxied = localProxies[key] {
+            let updatedProxied = updateProxyStatus(for: localProxied)
+            metaAccounts.append(updatedProxied.metaAccount)
         } else {
-            let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
-
-            let chainAccountModel = ChainAccountModel(
-                chainId: chainModel.chainId,
+            let newProxiedMetaAccount = try createProxiedMetaAccount(
+                proxy: proxy,
                 accountId: accountId,
-                publicKey: accountId,
-                cryptoType: cryptoType.rawValue,
-                proxy: .init(type: proxy.type, accountId: proxy.accountId, status: .new),
-                multisig: nil
+                using: identities
             )
-
-            let name = try identities[accountId]?.displayName ?? accountId.toAddress(using: chainModel.chainFormat)
-            let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
-                metaId: UUID().uuidString,
-                name: name,
-                substrateAccountId: nil,
-                substrateCryptoType: nil,
-                substratePublicKey: nil,
-                ethereumAddress: nil,
-                ethereumPublicKey: nil,
-                chainAccounts: [chainAccountModel],
-                type: .proxied,
-                multisig: nil
-            ))
-
-            metaAccounts.append(newWallet)
+            metaAccounts.append(newProxiedMetaAccount)
         }
     }
+
+    func updateProxyStatus(for localProxied: ProxiedMetaAccount) -> ProxiedMetaAccount {
+        guard localProxied.proxy.status == .revoked else {
+            return localProxied
+        }
+
+        let updatedProxy = localProxied.proxy.replacingStatus(.new)
+
+        let newInfo = localProxied.metaAccount.info.replacingProxy(
+            chainId: chainModel.chainId,
+            proxy: updatedProxy
+        )
+        let updatedItem = localProxied.metaAccount.replacingInfo(newInfo)
+
+        return ProxiedMetaAccount(
+            proxy: updatedProxy,
+            metaAccount: updatedItem
+        )
+    }
+
+    func createProxiedMetaAccount(
+        proxy: ProxyAccount,
+        accountId: AccountId,
+        using identities: [AccountId: AccountIdentity]
+    ) throws -> ManagedMetaAccountModel {
+        let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
+
+        let chainAccountModel = ChainAccountModel(
+            chainId: chainModel.chainId,
+            accountId: accountId,
+            publicKey: accountId,
+            cryptoType: cryptoType.rawValue,
+            proxy: .init(type: proxy.type, accountId: proxy.accountId, status: .new),
+            multisig: nil
+        )
+
+        let name = try identities[accountId]?.displayName
+            ?? accountId.toAddress(using: chainModel.chainFormat)
+
+        let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
+            metaId: UUID().uuidString,
+            name: name,
+            substrateAccountId: nil,
+            substrateCryptoType: nil,
+            substratePublicKey: nil,
+            ethereumAddress: nil,
+            ethereumPublicKey: nil,
+            chainAccounts: [chainAccountModel],
+            type: .proxied,
+            multisig: nil
+        ))
+
+        return newWallet
+    }
+
+    // MARK: Calculate
 
     func calculateProxyUpdates(
         for localProxies: [ProxyIdentifier: ProxiedMetaAccount],
@@ -265,6 +340,8 @@ private extension ChainProxyChangesCalculator {
     }
 }
 
+// MARK: - Internal
+
 extension ChainProxyChangesCalculator {
     func calculateUpdates(
         from remoteDelegatedAccounts: [AccountId: [DelegatedAccount]],
@@ -286,7 +363,11 @@ extension ChainProxyChangesCalculator {
         let localMultisigs = chainMetaAccounts.reduce(
             into: [MultisigIdentifier: MultisigMetaAccount]()
         ) { result, item in
-            let (chainAccount, multisig) = item.info.multisigAccount().multisig
+            guard let multisigAccountType = item.info.multisigAccount() else {
+                return
+            }
+
+            let (chainAccount, multisig) = multisigAccountType.multisig
 
             guard
                 let multisig,
