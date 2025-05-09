@@ -1847,3 +1847,4 @@
 "polkadot.vault.qr.type.v7" = "New (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Legacy";
 "parity.signer.scan.title_9_7_0" = "Sign with %@";
+"tabbar.pay.title" = "Pay";

@@ -3,9 +3,6 @@ import Foundation_iOS
 import Keystore_iOS
 
 final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
-    static let walletIndex: Int = 0
-    static let crowdloanIndex: Int = 1
-
     static func createView() -> MainTabBarViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingService.shared)
@@ -91,6 +88,7 @@ private extension MainTabBarViewFactory {
                 walletNotificationService: walletNotificationService,
                 proxySyncService: proxySyncService
             ),
+            let payController = createPayController(for: localizationManager),
             let voteController = createVoteController(
                 for: localizationManager,
                 walletNotificationService: walletNotificationService,
@@ -112,9 +110,9 @@ private extension MainTabBarViewFactory {
         return [
             (MainTabBarIndex.wallet, walletController),
             (MainTabBarIndex.vote, voteController),
-            (MainTabBarIndex.dapps, dappsController),
+            (MainTabBarIndex.pay, payController),
             (MainTabBarIndex.staking, stakingController),
-            (MainTabBarIndex.settings, settingsController)
+            (MainTabBarIndex.dapps, dappsController)
         ].sorted { cont1, cont2 in
             cont1.0 < cont2.0
         }
@@ -305,6 +303,40 @@ private extension MainTabBarViewFactory {
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
         let commonIconImage = R.image.iconTabDApps()
         let selectedIconImage = R.image.iconTabDAppsFilled()
+
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
+            .withRenderingMode(.alwaysOriginal)
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
+            .withRenderingMode(.alwaysOriginal)
+
+        navigationController.tabBarItem = createTabBarItem(
+            title: currentTitle,
+            normalImage: commonIcon,
+            selectedImage: selectedIcon
+        )
+
+        localizationManager.addObserver(with: navigationController) { [weak navigationController] _, _ in
+            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+            navigationController?.tabBarItem.title = currentTitle
+        }
+
+        return navigationController
+    }
+
+    static func createPayController(for localizationManager: LocalizationManagerProtocol) -> UIViewController? {
+        guard let payView = PayRootViewFactory.createView() else {
+            return nil
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: payView.controller)
+
+        let localizableTitle = LocalizableResource { locale in
+            R.string.localizable.tabbarPayTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+        let commonIconImage = R.image.iconTabPay()
+        let selectedIconImage = R.image.iconTabPayFilled()
 
         let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
