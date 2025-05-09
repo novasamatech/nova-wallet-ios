@@ -16,6 +16,8 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     private var inactiveItems: [StakingDashboardDisabledViewModel] { dashboardViewModel?.inactive ?? [] }
     private var hasMoreOptions: Bool { dashboardViewModel?.hasMoreOptions ?? false }
 
+    weak var scrollViewTracker: ScrollViewTrackingProtocol?
+
     init(
         presenter: StakingDashboardPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -317,4 +319,18 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
     }
 }
 
-extension StakingDashboardViewController: HiddableBarWhenPushed {}
+extension StakingDashboardViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
+
+    func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
+}
+
+extension StakingDashboardViewController: ScrollViewHostProtocol {
+    var initialTrackingInsets: UIEdgeInsets {
+        rootView.collectionView.adjustedContentInset
+    }
+}
