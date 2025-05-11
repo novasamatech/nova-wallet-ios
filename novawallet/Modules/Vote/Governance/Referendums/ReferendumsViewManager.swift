@@ -15,6 +15,8 @@ final class ReferendumsViewManager: NSObject {
     let chainSelectionView: VoteChainViewProtocol
     private var referendumsViewModel: ReferendumsViewModel = .init(sections: [])
 
+    weak var scrollViewTracker: ScrollViewTrackingProtocol?
+
     var locale = Locale.current {
         didSet {
             if locale != oldValue {
@@ -268,6 +270,16 @@ extension ReferendumsViewManager: UITableViewDelegate {
 
     func tableView(_: UITableView, willDisplayHeaderView view: UIView, forSection _: Int) {
         (view as? SkeletonableView)?.updateLoadingState()
+    }
+}
+
+extension ReferendumsViewManager: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
+
+    func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
     }
 }
 

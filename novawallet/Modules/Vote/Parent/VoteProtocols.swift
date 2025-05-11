@@ -6,7 +6,7 @@ enum VoteType: UInt8 {
 }
 
 protocol VoteViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didSwitchWallet(with viewModel: WalletSwitchViewModel)
+    func didSwitchWallet()
     func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
     func didReceive(voteType: VoteType)
 }
@@ -20,7 +20,6 @@ protocol VotePresenterProtocol: AnyObject {
     func becomeOnline()
     func putOffline()
     func selectChain()
-    func selectWallet()
     func switchToGovernance(_ view: ReferendumsViewProtocol)
     func switchToCrowdloans(_ view: CrowdloansViewProtocol)
     func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
@@ -32,12 +31,11 @@ protocol VoteInteractorInputProtocol: AnyObject {
 
 protocol VoteInteractorOutputProtocol: AnyObject {
     func didReceiveWallet(_ wallet: MetaAccountModel)
-    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
-protocol VoteWireframeProtocol: AlertPresentable, ErrorPresentable, WalletSwitchPresentable {}
-
 protocol VoteChildViewProtocol: ControllerBackedProtocol {
+    var scrollViewTracker: ScrollViewTrackingProtocol? { get set }
+
     var locale: Locale { get set }
 
     func bind()

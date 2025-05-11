@@ -45,7 +45,7 @@ final class VoteTableHeaderView: UIView {
     private func setupLayout() {
         addSubview(votingTypeSwitch)
         votingTypeSwitch.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(40.0)
         }
@@ -67,8 +67,6 @@ final class VoteTableHeaderView: UIView {
 
     private func setupLocalization() {
         let languages = locale.rLanguages
-
-        titleLabel.text = R.string.localizable.tabbarVoteTitle(preferredLanguages: languages)
 
         votingTypeSwitch.titles = [
             R.string.localizable.tabbarGovernanceTitle(preferredLanguages: languages),

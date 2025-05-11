@@ -3048,7 +3048,6 @@
 		8442002928E7004B00C49C4A /* VoteViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442002828E7004B00C49C4A /* VoteViewLayout.swift */; };
 		8442002B28E9ACDB00C49C4A /* VotePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442002A28E9ACDB00C49C4A /* VotePresenter.swift */; };
 		8442002D28E9ADB500C49C4A /* VoteInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442002C28E9ADB500C49C4A /* VoteInteractor.swift */; };
-		8442002F28E9AEFB00C49C4A /* VoteWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442002E28E9AEFB00C49C4A /* VoteWireframe.swift */; };
 		8442003428E9BD3200C49C4A /* VoteChildPresenterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003328E9BD3200C49C4A /* VoteChildPresenterFactory.swift */; };
 		8442003628EA9DF100C49C4A /* VoteViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003528EA9DF100C49C4A /* VoteViewFactory.swift */; };
 		8442003828EAA16600C49C4A /* ReferendumsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003728EAA16600C49C4A /* ReferendumsPresenter.swift */; };
@@ -8871,7 +8870,6 @@
 		8442002828E7004B00C49C4A /* VoteViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteViewLayout.swift; sourceTree = "<group>"; };
 		8442002A28E9ACDB00C49C4A /* VotePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotePresenter.swift; sourceTree = "<group>"; };
 		8442002C28E9ADB500C49C4A /* VoteInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteInteractor.swift; sourceTree = "<group>"; };
-		8442002E28E9AEFB00C49C4A /* VoteWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteWireframe.swift; sourceTree = "<group>"; };
 		8442003328E9BD3200C49C4A /* VoteChildPresenterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteChildPresenterFactory.swift; sourceTree = "<group>"; };
 		8442003528EA9DF100C49C4A /* VoteViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteViewFactory.swift; sourceTree = "<group>"; };
 		8442003728EAA16600C49C4A /* ReferendumsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsPresenter.swift; sourceTree = "<group>"; };
@@ -20060,7 +20058,6 @@
 				8442002828E7004B00C49C4A /* VoteViewLayout.swift */,
 				8442002A28E9ACDB00C49C4A /* VotePresenter.swift */,
 				8442002C28E9ADB500C49C4A /* VoteInteractor.swift */,
-				8442002E28E9AEFB00C49C4A /* VoteWireframe.swift */,
 				8442003328E9BD3200C49C4A /* VoteChildPresenterFactory.swift */,
 				8442003528EA9DF100C49C4A /* VoteViewFactory.swift */,
 				77AAD2982B1731D1007AD86F /* ReferendumsInitState.swift */,
@@ -31495,7 +31492,6 @@
 				2D5EBEB42D38F0FD0016AC4E /* AssetListMeasurement.swift in Sources */,
 				845B07EF2915951A005785D3 /* DemocracyVoteThreshold.swift in Sources */,
 				885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */,
-				8442002F28E9AEFB00C49C4A /* VoteWireframe.swift in Sources */,
 				0CA719792B768ABC000B086E /* JsonStringify.swift in Sources */,
 				0CCA245F2AC6974200AEF23D /* XcmV3Multilocation.swift in Sources */,
 				88E5E2A5295D8F8E001B1D41 /* DAppGlobalSettingsViewModel.swift in Sources */,

@@ -9,6 +9,12 @@ final class VoteViewController: UIViewController, ViewHolder {
 
     private(set) var childView: VoteChildViewProtocol?
 
+    weak var scrollViewTracker: ScrollViewTrackingProtocol? {
+        didSet {
+            childView?.scrollViewTracker = scrollViewTracker
+        }
+    }
+
     var selectedType: VoteType {
         VoteType(rawValue: UInt8(rootView.headerView.votingTypeSwitch.selectedSegmentIndex)) ?? .governance
     }
@@ -61,12 +67,6 @@ final class VoteViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.headerView.walletSwitch.addTarget(
-            self,
-            action: #selector(actionWalletSwitch),
-            for: .touchUpInside
-        )
-
         rootView.headerView.votingTypeSwitch.addTarget(
             self,
             action: #selector(actionVoteTypeChanged),
@@ -81,10 +81,6 @@ final class VoteViewController: UIViewController, ViewHolder {
 
     @objc func actionSelectChain() {
         presenter.selectChain()
-    }
-
-    @objc func actionWalletSwitch() {
-        presenter.selectWallet()
     }
 
     @objc func actionVoteTypeChanged() {
@@ -103,6 +99,8 @@ final class VoteViewController: UIViewController, ViewHolder {
                 parent: self
             )
 
+            governanceChildView.scrollViewTracker = scrollViewTracker
+
             childView = governanceChildView
             childView?.bind()
             childView?.locale = selectedLocale
@@ -115,6 +113,8 @@ final class VoteViewController: UIViewController, ViewHolder {
                 parent: self
             )
 
+            crowdloanChildView.scrollViewTracker = scrollViewTracker
+
             childView = crowdloanChildView
             childView?.bind()
             childView?.locale = selectedLocale
@@ -125,9 +125,7 @@ final class VoteViewController: UIViewController, ViewHolder {
 }
 
 extension VoteViewController: VoteViewProtocol {
-    func didSwitchWallet(with viewModel: WalletSwitchViewModel) {
-        rootView.headerView.walletSwitch.bind(viewModel: viewModel)
-
+    func didSwitchWallet() {
         setupChildView()
     }
 
@@ -150,4 +148,8 @@ extension VoteViewController: Localizable {
     }
 }
 
-extension VoteViewController: HiddableBarWhenPushed {}
+extension VoteViewController: ScrollViewHostProtocol {
+    var initialTrackingInsets: UIEdgeInsets {
+        rootView.tableView.adjustedContentInset
+    }
+}

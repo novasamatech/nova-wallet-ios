@@ -18,6 +18,8 @@ final class CrowdloanListViewManager: NSObject {
     private weak var parent: (ControllerBackedProtocol & LoadableViewProtocol)?
     private var viewModel: CrowdloansViewModel = .init(sections: [])
 
+    weak var scrollViewTracker: ScrollViewTrackingProtocol?
+
     init(
         tableView: UITableView,
         chainSelectionView: VoteChainViewProtocol,
@@ -169,6 +171,16 @@ extension CrowdloanListViewManager: UITableViewDelegate {
         default:
             return UITableView.automaticDimension
         }
+    }
+}
+
+extension CrowdloanListViewManager: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
+
+    func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
     }
 }
 
