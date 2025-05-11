@@ -21,11 +21,7 @@ struct NavigationRootViewFactory {
             walletNotificationService: serviceCoordinator.walletNotificationService
         )
 
-        let wireframe = NavigationRootWireframe(
-            dappMediator: dappMediator,
-            proxySyncService: serviceCoordinator.proxySyncService,
-            serviceCoordinator: serviceCoordinator
-        )
+        let wireframe = NavigationRootWireframe(serviceCoordinator: serviceCoordinator)
 
         let presenter = NavigationRootPresenter(
             interactor: interactor,

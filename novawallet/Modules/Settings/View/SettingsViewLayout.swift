@@ -28,7 +28,7 @@ final class SettingsViewLayout: UIView {
 
         headerView.bounds = CGRect(
             origin: .zero,
-            size: CGSize(width: bounds.width, height: 118)
+            size: CGSize(width: bounds.width, height: SettingsTableHeaderView.Constants.totalHeight)
         )
         footerView.bounds = CGRect(
             origin: .zero,

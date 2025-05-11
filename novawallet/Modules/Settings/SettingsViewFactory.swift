@@ -32,7 +32,6 @@ struct SettingsViewFactory {
             currencyManager: currencyManager,
             settingsManager: SettingsManager.shared,
             biometryAuth: BiometryAuth(),
-            walletNotificationService: serviceCoordinator.walletNotificationService,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
             operationQueue: operationQueue
         )

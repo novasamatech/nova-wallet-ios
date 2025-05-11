@@ -11,11 +11,10 @@ protocol SettingsPresenterProtocol: AnyObject {
     func setup()
     func actionRow(_ row: SettingsRow)
     func handleWalletAction()
-    func handleSwitchAction()
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
-    func createAccountViewModel(for wallet: MetaAccountModel, hasWalletNotification: Bool) -> SettingsAccountViewModel
+    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
 
     func createSectionViewModels(
         language: Language?,
@@ -40,7 +39,6 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(biometrySettings: BiometrySettings)
     func didReceive(pinConfirmationEnabled: Bool)
     func didReceive(error: SettingsError)
-    func didReceiveWalletsState(hasUpdates: Bool)
     func didReceive(pushNotificationsStatus: PushNotificationsStatus)
 }
 

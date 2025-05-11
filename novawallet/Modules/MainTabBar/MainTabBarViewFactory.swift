@@ -94,10 +94,6 @@ private extension MainTabBarViewFactory {
             let dappsController = createDappsController(
                 for: localizationManager,
                 serviceCoordinator: serviceCoordinator
-            ),
-            let settingsController = createProfileController(
-                for: localizationManager,
-                serviceCoordinator: serviceCoordinator
             )
         else {
             return nil
@@ -207,45 +203,6 @@ private extension MainTabBarViewFactory {
         }
 
         let navigationController = NovaNavigationController(rootViewController: viewController)
-
-        return navigationController
-    }
-
-    static func createProfileController(
-        for localizationManager: LocalizationManagerProtocol,
-        serviceCoordinator: ServiceCoordinatorProtocol
-    ) -> UIViewController? {
-        guard let view = SettingsViewFactory.createView(
-            with: serviceCoordinator
-        ) else { return nil }
-
-        let viewController = view.controller
-
-        let navigationController = NovaNavigationController(rootViewController: viewController)
-
-        let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarSettingsTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabSettings()
-        let selectedIconImage = R.image.iconTabSettingsFilled()
-
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
-            .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
-            .withRenderingMode(.alwaysOriginal)
-
-        navigationController.tabBarItem = createTabBarItem(
-            title: currentTitle,
-            normalImage: commonIcon,
-            selectedImage: selectedIcon
-        )
-
-        localizationManager.addObserver(with: navigationController) { [weak navigationController] _, _ in
-            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-            navigationController?.tabBarItem.title = currentTitle
-        }
 
         return navigationController
     }

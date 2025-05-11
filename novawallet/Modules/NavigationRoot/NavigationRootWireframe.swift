@@ -1,24 +1,18 @@
 import Foundation
 
 final class NavigationRootWireframe: NavigationRootWireframeProtocol {
-    let dappMediator: DAppInteractionMediating
-    let proxySyncService: ProxySyncServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
 
-    init(
-        dappMediator: DAppInteractionMediating,
-        proxySyncService: ProxySyncServiceProtocol,
-        serviceCoordinator: ServiceCoordinatorProtocol
-    ) {
-        self.dappMediator = dappMediator
-        self.proxySyncService = proxySyncService
+    var proxySyncService: ProxySyncServiceProtocol { serviceCoordinator.proxySyncService }
+
+    init(serviceCoordinator: ServiceCoordinatorProtocol) {
         self.serviceCoordinator = serviceCoordinator
     }
 
     func showWalletConnect(from view: NavigationRootViewProtocol?) {
         guard
             let walletConnectView = WalletConnectSessionsViewFactory.createViewForCurrentWallet(
-                with: dappMediator
+                with: serviceCoordinator.dappMediator
             ) else {
             return
         }

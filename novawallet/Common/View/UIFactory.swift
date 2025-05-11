@@ -23,7 +23,6 @@ struct UIConstants {
     static let triangularedViewHeight: CGFloat = 52.0
     static let verticalTitleInset: CGFloat = 8.0
     static let navigationAccountIconSize: CGFloat = 40.0
-    static let walletSwitchSize = CGSize(width: 79.0, height: 40.0)
     static let bouncesOffset: CGFloat = 100
 }
 

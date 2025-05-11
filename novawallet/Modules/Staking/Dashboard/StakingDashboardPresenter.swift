@@ -9,11 +9,7 @@ final class StakingDashboardPresenter {
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
     let logger: LoggerProtocol
 
-    let walletViewModelFactory = WalletSwitchViewModelFactory()
-
     private var lastResult: StakingDashboardBuilderResult?
-    private var wallet: MetaAccountModel?
-    private var hasWalletsListUpdates: Bool = false
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -27,21 +23,6 @@ final class StakingDashboardPresenter {
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
-    }
-
-    private func updateWalletView() {
-        guard let wallet = wallet else {
-            return
-        }
-
-        let viewModel = walletViewModelFactory.createViewModel(
-            from: wallet.identifier,
-            walletIdenticon: wallet.walletIdenticonData(),
-            walletType: wallet.type,
-            hasNotification: hasWalletsListUpdates
-        )
-
-        view?.didReceiveWallet(viewModel: viewModel)
     }
 
     private func updateStakingsView() {
