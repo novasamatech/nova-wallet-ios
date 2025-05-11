@@ -29,4 +29,23 @@ final class NavigationRootWireframe: NavigationRootWireframeProtocol {
         settingsView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(settingsView.controller, animated: true)
     }
+
+    func showCloudBackupSettins(from view: NavigationRootViewProtocol?) {
+        let navigationController = view?.controller.navigationController
+
+        let optBackupSettings = navigationController?.topViewController as? CloudBackupSettingsViewProtocol
+
+        guard
+            optBackupSettings == nil,
+            let settingsView = SettingsViewFactory.createView(with: serviceCoordinator),
+            let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
+            return
+        }
+
+        settingsView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.popToRootViewController(animated: false)
+        navigationController?.pushViewController(settingsView.controller, animated: false)
+        navigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
+    }
 }

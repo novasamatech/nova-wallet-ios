@@ -4043,7 +4043,6 @@
 		84B1318C29ED70BF004EA1FF /* EvmFallbackGasLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B1318B29ED70BF004EA1FF /* EvmFallbackGasLimit.swift */; };
 		84B24F9C2A2E297000F9BF59 /* StakingDashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B24F9B2A2E297000F9BF59 /* StakingDashboardViewModel.swift */; };
 		84B24F9E2A2E307F00F9BF59 /* StakingDashboardViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B24F9D2A2E307F00F9BF59 /* StakingDashboardViewModelFactory.swift */; };
-		84B24FA02A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B24F9F2A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift */; };
 		84B24FA32A2F1CB300F9BF59 /* TitleCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B24FA22A2F1CB300F9BF59 /* TitleCollectionHeaderView.swift */; };
 		84B24FA62A2F232700F9BF59 /* StakingDashboardActiveCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B24FA52A2F232700F9BF59 /* StakingDashboardActiveCell.swift */; };
 		84B24FA82A2F23F700F9BF59 /* BlurredTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B24FA72A2F23F700F9BF59 /* BlurredTableViewCell.swift */; };
@@ -9878,7 +9877,6 @@
 		84B1318B29ED70BF004EA1FF /* EvmFallbackGasLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmFallbackGasLimit.swift; sourceTree = "<group>"; };
 		84B24F9B2A2E297000F9BF59 /* StakingDashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardViewModel.swift; sourceTree = "<group>"; };
 		84B24F9D2A2E307F00F9BF59 /* StakingDashboardViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardViewModelFactory.swift; sourceTree = "<group>"; };
-		84B24F9F2A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSwitchCollectionViewCell.swift; sourceTree = "<group>"; };
 		84B24FA22A2F1CB300F9BF59 /* TitleCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleCollectionHeaderView.swift; sourceTree = "<group>"; };
 		84B24FA52A2F232700F9BF59 /* StakingDashboardActiveCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardActiveCell.swift; sourceTree = "<group>"; };
 		84B24FA72A2F23F700F9BF59 /* BlurredTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredTableViewCell.swift; sourceTree = "<group>"; };
@@ -23455,7 +23453,6 @@
 				84350ACF2845724E0031EF24 /* IdentityAccountInfoView.swift */,
 				84BC7048289F10AE008A9758 /* WalletAccountInfoView+Style.swift */,
 				844C3E662A0763D500C4305F /* WalletTotalAmountView.swift */,
-				84B24F9F2A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift */,
 			);
 			path = WalletAccount;
 			sourceTree = "<group>";
@@ -31579,7 +31576,6 @@
 				2D6287652C995F9900060814 /* BaseReferendumVoteConfirmViewController.swift in Sources */,
 				0CCD18BA2BA1EE690068D73A /* StatemineAssetExtras+AssetStorageInfo.swift in Sources */,
 				7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */,
-				84B24FA02A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift in Sources */,
 				0CA72A842D4A2B1B00B3FD02 /* CollatorStkPartialUnstakeSetupLayout.swift in Sources */,
 				8480154E29BB6521008557F3 /* BorderedImageView.swift in Sources */,
 				84BFE89C28C23A2500140F1F /* AutomationTime.swift in Sources */,

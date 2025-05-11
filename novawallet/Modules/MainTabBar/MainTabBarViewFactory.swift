@@ -160,14 +160,7 @@ private extension MainTabBarViewFactory {
         serviceCoordinator: ServiceCoordinatorProtocol
     ) -> UIViewController? {
         guard
-            let stakingView = StakingDashboardViewFactory.createView(
-                walletNotificationService: serviceCoordinator.walletNotificationService,
-                proxySyncService: serviceCoordinator.proxySyncService
-            ) else {
-            return nil
-        }
-
-        guard
+            let stakingView = StakingDashboardViewFactory.createView(for: serviceCoordinator),
             let rootView = NavigationRootViewFactory.createView(
                 with: stakingView,
                 serviceCoordinator: serviceCoordinator

@@ -72,3 +72,9 @@ extension NavigationRootViewController: NavigationRootViewProtocol {
         }
     }
 }
+
+extension NavigationRootViewController: NavigationRootSettingsProtocol {
+    func presentCloudBackupSettings() {
+        presenter.activateCloudBackupSettings()
+    }
+}

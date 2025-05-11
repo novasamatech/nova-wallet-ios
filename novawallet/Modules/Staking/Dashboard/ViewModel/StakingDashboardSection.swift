@@ -1,15 +1,12 @@
 import UIKit
 
 enum StakingDashboardSection: Int, CaseIterable {
-    case walletSwitch
     case activeStakings
     case inactiveStakings
     case moreOptions
 
     var rowHeight: CGFloat {
         switch self {
-        case .walletSwitch:
-            return 45
         case .activeStakings:
             return 160
         case .inactiveStakings:
@@ -21,7 +18,7 @@ enum StakingDashboardSection: Int, CaseIterable {
 
     var loadingCellsCount: Int {
         switch self {
-        case .walletSwitch, .moreOptions:
+        case .moreOptions:
             return 0
         case .activeStakings:
             return 1
@@ -32,7 +29,7 @@ enum StakingDashboardSection: Int, CaseIterable {
 
     var headerHeight: CGFloat {
         switch self {
-        case .activeStakings, .walletSwitch, .moreOptions:
+        case .activeStakings, .moreOptions:
             return 0
         case .inactiveStakings:
             return 32
@@ -45,8 +42,6 @@ enum StakingDashboardSection: Int, CaseIterable {
 
     var insets: UIEdgeInsets {
         switch self {
-        case .walletSwitch:
-            return UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
         case .activeStakings:
             return UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
         case .inactiveStakings:

@@ -8,7 +8,6 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     let localizationManager: LocalizationManagerProtocol
 
     private var dashboardViewModel: StakingDashboardViewModel?
-    private var walletViewModel: WalletSwitchViewModel?
 
     private var isLoading: Bool { dashboardViewModel?.isLoading ?? false }
 
@@ -52,8 +51,6 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     }
 
     private func setupCollectionView() {
-        rootView.collectionView.registerCellClass(WalletSwitchCollectionViewCell.self)
-
         rootView.collectionView.registerClass(
             TitleCollectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -84,10 +81,6 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
     @objc private func actionRefresh() {
         presenter.refresh()
     }
-
-    @objc private func actionSwitchWallet() {
-        presenter.switchWallet()
-    }
 }
 
 extension StakingDashboardViewController: UICollectionViewDataSource {
@@ -101,8 +94,6 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         }
 
         switch sectionModel {
-        case .walletSwitch:
-            return 1
         case .activeStakings:
             return isLoading ? sectionModel.loadingCellsCount : activeItems.count
         case .inactiveStakings:
@@ -121,28 +112,6 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         }
 
         switch section {
-        case .walletSwitch:
-            let cell: WalletSwitchCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
-
-            cell.titleLabel.apply(style: .boldLargePrimary)
-
-            cell.walletSwitch.addTarget(
-                self,
-                action: #selector(actionSwitchWallet),
-                for: .touchUpInside
-            )
-
-            let title = R.string.localizable.stakingTitle(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            )
-
-            cell.bind(title: title)
-
-            if let walletViewModel = walletViewModel {
-                cell.bind(viewModel: walletViewModel)
-            }
-
-            return cell
         case .activeStakings:
             let cell: StakingDashboardActiveCell = collectionView.dequeueReusableCell(for: indexPath)!
 
@@ -198,7 +167,7 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
             header.bind(title: title)
 
             return header
-        case .walletSwitch, .activeStakings, .moreOptions, .none:
+        case .activeStakings, .moreOptions, .none:
             return UICollectionReusableView()
         }
     }
@@ -247,8 +216,6 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
             }
         case .moreOptions:
             presenter.selectMoreOptions()
-        case .walletSwitch:
-            break
         }
     }
 
@@ -278,12 +245,6 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension StakingDashboardViewController: StakingDashboardViewProtocol {
-    func didReceiveWallet(viewModel: WalletSwitchViewModel) {
-        walletViewModel = viewModel
-
-        rootView.collectionView.reloadData()
-    }
-
     func didReceiveStakings(viewModel: StakingDashboardViewModel) {
         dashboardViewModel = viewModel
 

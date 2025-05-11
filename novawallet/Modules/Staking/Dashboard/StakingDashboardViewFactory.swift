@@ -3,23 +3,19 @@ import Foundation_iOS
 
 struct StakingDashboardViewFactory {
     static func createView(
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        for serviceCoordinator: ServiceCoordinatorProtocol
     ) -> ScrollViewHostControlling? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
         guard
-            let interactor = createInteractor(
-                for: stateObserver,
-                walletNotificationService: walletNotificationService
-            ),
+            let interactor = createInteractor(for: stateObserver),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = StakingDashboardWireframe(
             stateObserver: stateObserver,
-            proxySyncService: proxySyncService
+            serviceCoordinator: serviceCoordinator
         )
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -51,8 +47,7 @@ struct StakingDashboardViewFactory {
     }
 
     private static func createInteractor(
-        for stateObserver: Observable<StakingDashboardModel>,
-        walletNotificationService: WalletNotificationServiceProtocol
+        for stateObserver: Observable<StakingDashboardModel>
     ) -> StakingDashboardInteractor? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -89,7 +84,6 @@ struct StakingDashboardViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stateObserver: stateObserver,
             applicationHandler: ApplicationHandler(),
-            walletNotificationService: walletNotificationService,
             currencyManager: currencyManager
         )
     }

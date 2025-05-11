@@ -1,7 +1,6 @@
 import Operation_iOS
 
 protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
-    func didReceiveWallet(viewModel: WalletSwitchViewModel)
     func didReceiveStakings(viewModel: StakingDashboardViewModel)
     func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel)
 }
@@ -11,7 +10,6 @@ protocol StakingDashboardPresenterProtocol: AnyObject {
     func selectActiveStaking(at index: Int)
     func selectInactiveStaking(at index: Int)
     func selectMoreOptions()
-    func switchWallet()
     func refresh()
 }
 
@@ -26,14 +24,12 @@ protocol StakingDashboardInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingDashboardInteractorOutputProtocol: AnyObject {
-    func didReceive(wallet: MetaAccountModel)
+    func didReceive(walletId: String)
     func didReceive(result: StakingDashboardBuilderResult)
     func didReceive(error: StakingDashboardInteractorError)
-    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
-protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,
-    WalletSwitchPresentable {
+protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {
     func showMoreOptions(from view: ControllerBackedProtocol?)
     func showStakingDetails(
         from view: StakingDashboardViewProtocol?,

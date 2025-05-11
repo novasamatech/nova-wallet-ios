@@ -52,6 +52,10 @@ extension NavigationRootPresenter: NavigationRootPresenterProtocol {
         wireframe.showSettings(from: view)
     }
 
+    func activateCloudBackupSettings() {
+        wireframe.showCloudBackupSettins(from: view)
+    }
+
     func activateWalletSelection() {
         wireframe.showWalletSwitch(from: view)
     }

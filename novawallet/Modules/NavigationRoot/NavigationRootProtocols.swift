@@ -6,6 +6,7 @@ protocol NavigationRootViewProtocol: ControllerBackedProtocol {
 protocol NavigationRootPresenterProtocol: AnyObject {
     func setup()
     func activateSettings()
+    func activateCloudBackupSettings()
     func activateWalletSelection()
     func activateWalletConnect()
 }
@@ -30,6 +31,11 @@ protocol NavigationRootWireframeProtocol: WalletSwitchPresentable,
     WalletConnectErrorPresentable {
     func showWalletConnect(from view: NavigationRootViewProtocol?)
     func showSettings(from view: NavigationRootViewProtocol?)
+    func showCloudBackupSettins(from view: NavigationRootViewProtocol?)
 }
 
 typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError
+
+protocol NavigationRootSettingsProtocol: AnyObject {
+    func presentCloudBackupSettings()
+}
