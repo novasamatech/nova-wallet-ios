@@ -1,7 +1,7 @@
 import UIKit
 
 final class NavigationRootViewLayout: UIView {
-    let titleView = WWalletSwitchControl()
+    let titleView = WalletSwitchControl()
 
     let walletConnectBarItem: UIBarButtonItem = .create { item in
         item.style = .plain

@@ -187,8 +187,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         in controller: UITabBarController,
         chainAsset: ChainAsset
     ) {
-        controller.selectedIndex = MainTabBarIndex.wallet
-        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        controller.selectedIndex = MainTabBarIndex.assets
+        let viewController = controller.viewControllers?[MainTabBarIndex.assets]
         let navigationController = viewController as? UINavigationController
         navigationController?.popToRootViewController(animated: true)
 

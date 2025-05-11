@@ -88,7 +88,6 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         viewController?.rootView.collectionView.registerCellClass(AssetListTokenGroupAssetCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListNetworkGroupAssetCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
-        viewController?.rootView.collectionView.registerCellClass(AssetListAccountCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListNftsCell.self)
@@ -187,6 +186,20 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
 
     func updateLoadingState() {
         viewController?.rootView.collectionView.visibleCells.forEach { updateLoadingState(for: $0) }
+    }
+
+    var initialTrackingInsets: UIEdgeInsets {
+        viewController?.rootView.collectionView.adjustedContentInset ?? .zero
+    }
+
+    var scrollViewTracker: ScrollViewTrackingProtocol? {
+        get {
+            collectionViewDelegate.scrollViewTracker
+        }
+
+        set {
+            collectionViewDelegate.scrollViewTracker = newValue
+        }
     }
 }
 

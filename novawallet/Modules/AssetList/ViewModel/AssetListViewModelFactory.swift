@@ -10,16 +10,6 @@ struct AssetListAssetAccountPrice {
 }
 
 struct AssetListHeaderParams {
-    struct Wallet {
-        let identifier: String
-        let walletIdenticon: Data?
-        let walletType: MetaAccountModelType
-        let walletConnectSessionsCount: Int
-        let hasWalletsUpdates: Bool
-    }
-
-    let title: String
-    let wallet: Wallet
     let prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?
     let locks: [AssetListAssetAccountPrice]?
     let hasSwaps: Bool
@@ -125,24 +115,9 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
 
 extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
     func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel {
-        let icon = params.wallet.walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
-        let walletSwitch = WalletSwitchViewModel(
-            identifier: params.wallet.identifier,
-            type: WalletsListSectionViewModel.SectionType(walletType: params.wallet.walletType),
-            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) },
-            hasNotification: params.wallet.hasWalletsUpdates
-        )
-
-        let walletConnectSessionsCount = params.wallet.walletConnectSessionsCount
-        let formattedWalletConnectSessionsCount = walletConnectSessionsCount > 0 ?
-            quantityFormatter.value(for: locale).string(from: NSNumber(value: walletConnectSessionsCount)) :
-            nil
-
         if let prices = params.prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return AssetListHeaderViewModel(
-                walletConnectSessionsCount: formattedWalletConnectSessionsCount,
-                title: params.title,
                 amount: totalPrice,
                 locksAmount: params.locks.map { lock in
                     formatPrice(
@@ -151,16 +126,12 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
                         locale: locale
                     )
                 },
-                walletSwitch: walletSwitch,
                 hasSwaps: params.hasSwaps
             )
         } else {
             return AssetListHeaderViewModel(
-                walletConnectSessionsCount: formattedWalletConnectSessionsCount,
-                title: params.title,
                 amount: .loading,
                 locksAmount: nil,
-                walletSwitch: walletSwitch,
                 hasSwaps: params.hasSwaps
             )
         }

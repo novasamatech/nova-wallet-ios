@@ -161,8 +161,7 @@ private extension AssetListFlowLayout {
         let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
 
         if hasSummarySection {
-            initialY = AssetListMeasurement.accountHeight + SectionType.summary.cellSpacing +
-                totalBalanceHeight
+            initialY = totalBalanceHeight
         }
 
         initialY += totalBalanceInsets.top + totalBalanceInsets.bottom
@@ -300,8 +299,6 @@ extension AssetListFlowLayout {
         at indexPath: IndexPath
     ) -> CGFloat {
         switch type {
-        case .account:
-            AssetListMeasurement.accountHeight
         case .totalBalance:
             totalBalanceHeight
         case .yourNfts:

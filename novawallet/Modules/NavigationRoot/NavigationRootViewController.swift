@@ -58,7 +58,7 @@ private extension NavigationRootViewController {
 }
 
 extension NavigationRootViewController: NavigationRootViewProtocol {
-    func didReceive(walletSwitchViewModel: WWalletSwitchViewModel) {
+    func didReceive(walletSwitchViewModel: WalletSwitchViewModel) {
         rootView.titleView.bind(viewModel: walletSwitchViewModel)
 
         navigationItem.titleView = rootView.titleView

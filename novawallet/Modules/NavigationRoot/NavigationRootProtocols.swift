@@ -1,5 +1,5 @@
 protocol NavigationRootViewProtocol: ControllerBackedProtocol {
-    func didReceive(walletSwitchViewModel: WWalletSwitchViewModel)
+    func didReceive(walletSwitchViewModel: WalletSwitchViewModel)
     func didReceive(walletConnectSessions: Int)
 }
 
@@ -31,3 +31,5 @@ protocol NavigationRootWireframeProtocol: WalletSwitchPresentable,
     func showWalletConnect(from view: NavigationRootViewProtocol?)
     func showSettings(from view: NavigationRootViewProtocol?)
 }
+
+typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError

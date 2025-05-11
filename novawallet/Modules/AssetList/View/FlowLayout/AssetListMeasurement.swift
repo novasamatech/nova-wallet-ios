@@ -1,8 +1,6 @@
 import UIKit
 
 enum AssetListMeasurement {
-    static let accountHeight: CGFloat = 56.0
-
     static var totalBalanceHeight: CGFloat {
         // TODO: Remove conditional compilation on cards release
         #if F_RELEASE

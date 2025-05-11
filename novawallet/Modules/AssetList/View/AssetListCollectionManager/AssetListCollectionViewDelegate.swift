@@ -8,6 +8,8 @@ final class AssetListCollectionViewDelegate: NSObject {
     weak var selectionDelegate: AssetListCollectionSelectionDelegate?
     weak var groupsLayoutDelegate: AssetListCollectionViewLayoutDelegate?
 
+    weak var scrollViewTracker: ScrollViewTrackingProtocol?
+
     init(
         bannersViewProvider: BannersViewProviderProtocol,
         groupsViewModel: AssetListViewModel,
@@ -117,7 +119,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .settings, .emptyState, .totalBalance, .banner:
+        case .settings, .emptyState, .totalBalance, .banner:
             break
         case .asset:
             processAssetSelect(collectionView, at: indexPath)
@@ -145,5 +147,15 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
             for: sectionType,
             section: section
         ) ?? .zero
+    }
+}
+
+extension AssetListCollectionViewDelegate: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
+
+    func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
     }
 }

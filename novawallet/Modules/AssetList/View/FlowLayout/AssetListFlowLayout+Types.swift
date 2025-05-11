@@ -54,16 +54,13 @@ extension AssetListFlowLayout {
 
         var cellSpacing: CGFloat {
             switch self {
-            case .summary:
-                return 10.0
-            case .settings, .assetGroup, .nfts, .banners:
+            case .settings, .assetGroup, .nfts, .banners, .summary:
                 return 0
             }
         }
     }
 
     enum CellType {
-        case account
         case totalBalance
         case yourNfts
         case banner
@@ -74,7 +71,7 @@ extension AssetListFlowLayout {
         init(indexPath: IndexPath) {
             switch indexPath.section {
             case 0:
-                self = indexPath.row == 0 ? .account : .totalBalance
+                self = .totalBalance
             case 1:
                 self = .yourNfts
             case 2:
@@ -88,10 +85,8 @@ extension AssetListFlowLayout {
 
         var indexPath: IndexPath {
             switch self {
-            case .account:
-                return IndexPath(item: 0, section: 0)
             case .totalBalance:
-                return IndexPath(item: 1, section: 0)
+                return IndexPath(item: 0, section: 0)
             case .yourNfts:
                 return IndexPath(item: 0, section: 1)
             case .banner:

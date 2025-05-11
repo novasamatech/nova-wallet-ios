@@ -77,11 +77,9 @@ private extension MainTabBarViewFactory {
         let proxySyncService = serviceCoordinator.proxySyncService
 
         guard
-            let walletController = createWalletController(
+            let assetsController = createAssetsController(
                 for: localizationManager,
-                dappMediator: serviceCoordinator.dappMediator,
-                walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                serviceCoordinator: serviceCoordinator
             ),
             let stakingController = createStakingController(
                 for: localizationManager,
@@ -106,7 +104,7 @@ private extension MainTabBarViewFactory {
         }
 
         return [
-            (MainTabBarIndex.wallet, walletController),
+            (MainTabBarIndex.assets, assetsController),
             (MainTabBarIndex.vote, voteController),
             (MainTabBarIndex.pay, payController),
             (MainTabBarIndex.staking, stakingController),
@@ -116,19 +114,20 @@ private extension MainTabBarViewFactory {
         }
     }
 
-    static func createWalletController(
+    static func createAssetsController(
         for localizationManager: LocalizationManagerProtocol,
-        dappMediator: DAppInteractionMediating,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol
     ) -> UIViewController? {
-        guard let viewController = AssetListViewFactory.createView(
-            with: dappMediator,
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        )?.controller else {
+        guard
+            let assetsView = AssetListViewFactory.createView(),
+            let rootView = NavigationRootViewFactory.createView(
+                with: assetsView,
+                serviceCoordinator: serviceCoordinator
+            ) else {
             return nil
         }
+
+        let viewController = rootView.controller
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarAssetsTitle(preferredLanguages: locale.rLanguages)
