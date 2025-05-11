@@ -5,7 +5,7 @@ struct StakingDashboardViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
         proxySyncService: ProxySyncServiceProtocol
-    ) -> ControllerBackedProtocol? {
+    ) -> ScrollViewHostControlling? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
         guard
@@ -47,9 +47,7 @@ struct StakingDashboardViewFactory {
         presenter.view = view
         interactor.presenter = presenter
 
-        let rootController = NavigationRootViewFactory.createView(with: view)
-
-        return rootController
+        return view
     }
 
     private static func createInteractor(

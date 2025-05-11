@@ -1028,6 +1028,7 @@
 		0CD2FB542DCE2B9E006208FD /* ScrollDecorationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD2FB532DCE2B9E006208FD /* ScrollDecorationController.swift */; };
 		0CD2FB562DCE2BF9006208FD /* ScrollHostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD2FB552DCE2BF9006208FD /* ScrollHostController.swift */; };
 		0CD2FB582DCE30B8006208FD /* DecorateNavbarOnScrollController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD2FB572DCE30B8006208FD /* DecorateNavbarOnScrollController.swift */; };
+		0CD2FB5D2DD05FB9006208FD /* UIBarButtonItem+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD2FB5C2DD05FB9006208FD /* UIBarButtonItem+Create.swift */; };
 		0CD352952ACAF59900B3E446 /* BigRational.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352942ACAF59900B3E446 /* BigRational.swift */; };
 		0CD352972ACAFADA00B3E446 /* AssetConversionOperationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD352962ACAFADA00B3E446 /* AssetConversionOperationError.swift */; };
 		0CD352982ACB01FD00B3E446 /* AccountGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822426EFE03E00D25C72 /* AccountGenerator.swift */; };
@@ -6905,6 +6906,7 @@
 		0CD2FB532DCE2B9E006208FD /* ScrollDecorationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollDecorationController.swift; sourceTree = "<group>"; };
 		0CD2FB552DCE2BF9006208FD /* ScrollHostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollHostController.swift; sourceTree = "<group>"; };
 		0CD2FB572DCE30B8006208FD /* DecorateNavbarOnScrollController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecorateNavbarOnScrollController.swift; sourceTree = "<group>"; };
+		0CD2FB5C2DD05FB9006208FD /* UIBarButtonItem+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Create.swift"; sourceTree = "<group>"; };
 		0CD352942ACAF59900B3E446 /* BigRational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigRational.swift; sourceTree = "<group>"; };
 		0CD352962ACAFADA00B3E446 /* AssetConversionOperationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionOperationError.swift; sourceTree = "<group>"; };
 		0CD3529A2ACD3E4300B3E446 /* PalletAssets+CallPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+CallPath.swift"; sourceTree = "<group>"; };
@@ -21390,6 +21392,7 @@
 				0CD846262BDDF43A0026B5CA /* UIImage+Resize.swift */,
 				0CEB6B4E2CA6AC9700609DC2 /* UIEdgeInsets+Init.swift */,
 				0CBABFF52CEEACB60047F29E /* RoundedButton+Set.swift */,
+				0CD2FB5C2DD05FB9006208FD /* UIBarButtonItem+Create.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -33019,6 +33022,7 @@
 				845C068E2A0C9E6600DAF4DF /* WalletConnectSecret.swift in Sources */,
 				3C6C738F4AB7AC6FEA290D59 /* WalletsChoosePresenter.swift in Sources */,
 				DD3EB45488B37F390718F407 /* WalletsChooseViewController.swift in Sources */,
+				0CD2FB5D2DD05FB9006208FD /* UIBarButtonItem+Create.swift in Sources */,
 				E6D68574A02FFF372F8D9BC3 /* StakingDashboardProtocols.swift in Sources */,
 				EA44FEB35901A8BD8B1A4B79 /* StakingDashboardWireframe.swift in Sources */,
 				16EDDDC4B234CAB0D6326B74 /* StakingDashboardPresenter.swift in Sources */,

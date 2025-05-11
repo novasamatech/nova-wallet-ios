@@ -1,11 +1,38 @@
 import Foundation
+import Foundation_iOS
 
 struct NavigationRootViewFactory {
-    static func createView(with child: ScrollViewHostControlling) -> NavigationRootViewProtocol? {
-        let interactor = NavigationRootInteractor()
-        let wireframe = NavigationRootWireframe()
+    static func createView(
+        with child: ScrollViewHostControlling,
+        serviceCoordinator: ServiceCoordinatorProtocol
+    ) -> NavigationRootViewProtocol? {
+        let dappMediator = serviceCoordinator.dappMediator
 
-        let presenter = NavigationRootPresenter(interactor: interactor, wireframe: wireframe)
+        guard let walletConnect = dappMediator.children.first(
+            where: { $0 is WalletConnectDelegateInputProtocol }
+        ) as? WalletConnectDelegateInputProtocol else {
+            return nil
+        }
+
+        let interactor = NavigationRootInteractor(
+            eventCenter: EventCenter.shared,
+            walletSettings: SelectedWalletSettings.shared,
+            walletConnect: walletConnect,
+            walletNotificationService: serviceCoordinator.walletNotificationService
+        )
+
+        let wireframe = NavigationRootWireframe(
+            dappMediator: dappMediator,
+            proxySyncService: serviceCoordinator.proxySyncService,
+            serviceCoordinator: serviceCoordinator
+        )
+
+        let presenter = NavigationRootPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            walletSwitchViewModelFactory: WalletSwitchViewModelFactory(),
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = NavigationRootViewController(scrollHost: child, presenter: presenter)
 

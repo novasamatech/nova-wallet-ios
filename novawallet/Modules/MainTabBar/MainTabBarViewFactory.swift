@@ -85,8 +85,7 @@ private extension MainTabBarViewFactory {
             ),
             let stakingController = createStakingController(
                 for: localizationManager,
-                walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                serviceCoordinator: serviceCoordinator
             ),
             let payController = createPayController(for: localizationManager),
             let voteController = createVoteController(
@@ -96,8 +95,7 @@ private extension MainTabBarViewFactory {
             ),
             let dappsController = createDappsController(
                 for: localizationManager,
-                walletNotificationService: walletNotificationService,
-                proxySyncService: proxySyncService
+                serviceCoordinator: serviceCoordinator
             ),
             let settingsController = createProfileController(
                 for: localizationManager,
@@ -164,13 +162,25 @@ private extension MainTabBarViewFactory {
 
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol
     ) -> UIViewController? {
-        let viewController = StakingDashboardViewFactory.createView(
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        )?.controller ?? UIViewController()
+        guard
+            let stakingView = StakingDashboardViewFactory.createView(
+                walletNotificationService: serviceCoordinator.walletNotificationService,
+                proxySyncService: serviceCoordinator.proxySyncService
+            ) else {
+            return nil
+        }
+
+        guard
+            let rootView = NavigationRootViewFactory.createView(
+                with: stakingView,
+                serviceCoordinator: serviceCoordinator
+            ) else {
+            return nil
+        }
+
+        let viewController = rootView.controller
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarStakingTitle(preferredLanguages: locale.rLanguages)
@@ -284,12 +294,11 @@ private extension MainTabBarViewFactory {
 
     static func createDappsController(
         for localizationManager: LocalizationManagerProtocol,
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol
     ) -> UIViewController? {
         guard let dappsView = DAppListViewFactory.createView(
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
+            walletNotificationService: serviceCoordinator.walletNotificationService,
+            proxySyncService: serviceCoordinator.proxySyncService
         ) else {
             return nil
         }
