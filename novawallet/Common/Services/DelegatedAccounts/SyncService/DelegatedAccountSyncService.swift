@@ -96,10 +96,12 @@ private extension DelegatedAccountSyncService {
     }
 
     func handleChain(changes: [DataProviderChange<ChainModel>]) {
+        let barrier = DelegatedAccountSyncBarrier()
+
         changes.forEach { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                setupSyncService(for: newItem)
+                setupSyncService(for: newItem, barrier: barrier)
             case let .delete(deletedIdentifier):
                 stopSyncSevice(for: deletedIdentifier)
             }
@@ -111,7 +113,10 @@ private extension DelegatedAccountSyncService {
         updaters[chainId] = nil
     }
 
-    func setupSyncService(for chain: ChainModel) {
+    func setupSyncService(
+        for chain: ChainModel,
+        barrier: DelegatedAccountSyncBarrierProtocol
+    ) {
         guard updaters[chain.chainId] == nil else {
             return
         }
@@ -124,7 +129,8 @@ private extension DelegatedAccountSyncService {
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
-            chainWalletFilter: chainWalletFilter
+            chainWalletFilter: chainWalletFilter,
+            uniqueUpdatesBarrier: barrier
         )
 
         updaters[chain.chainId] = service

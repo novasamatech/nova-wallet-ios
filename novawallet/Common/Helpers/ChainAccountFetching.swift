@@ -37,6 +37,11 @@ struct MetaChainAccountResponse {
     let chainAccount: ChainAccountResponse
 }
 
+struct MetaAccountDelegationId: Hashable {
+    let delegatedAccountId: AccountId
+    let delegatorId: AccountId
+}
+
 enum ChainAccountFetchingError: Error {
     case accountNotExists
 }
@@ -364,6 +369,32 @@ extension MetaAccountModel {
     func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
         let request = chainAsset.chain.accountRequest()
         return fetch(for: request)?.toAddress()
+    }
+
+    func delegationId() -> MetaAccountDelegationId? {
+        switch type {
+        case .multisig:
+            guard let multisigModel = multisigAccount()?.multisig.multisigAccount else {
+                return nil
+            }
+
+            return MetaAccountDelegationId(
+                delegatedAccountId: multisigModel.accountId,
+                delegatorId: multisigModel.signatory
+            )
+        case .proxied:
+            guard
+                let proxyAccountId = proxy()?.accountId,
+                let proxiedAccount = chainAccounts.first(where: { $0.proxy?.accountId == proxyAccountId })
+            else { return nil }
+
+            return MetaAccountDelegationId(
+                delegatedAccountId: proxyAccountId,
+                delegatorId: proxiedAccount.accountId
+            )
+        default:
+            return nil
+        }
     }
 }
 
