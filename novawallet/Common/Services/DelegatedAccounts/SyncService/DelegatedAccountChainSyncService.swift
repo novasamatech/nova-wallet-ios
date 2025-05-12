@@ -31,6 +31,7 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
     private let workingQueue: DispatchQueue
     private var pendingCall = CancellableCallStore()
     private let changesCalculator: DelegatedAccountsChangesCalcualtorProtocol
+    private let uniqueUpdatesBarrier: DelegatedAccountSyncBarrierProtocol
 
     init(
         chainModel: ChainModel,
@@ -40,7 +41,8 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        chainWalletFilter: ProxySyncChainWalletFilter?
+        chainWalletFilter: ProxySyncChainWalletFilter?,
+        uniqueUpdatesBarrier: DelegatedAccountSyncBarrierProtocol
     ) {
         self.chainModel = chainModel
         self.chainRegistry = chainRegistry
@@ -50,6 +52,7 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
         self.workingQueue = workingQueue
         self.eventCenter = eventCenter
         self.chainWalletFilter = chainWalletFilter
+        self.uniqueUpdatesBarrier = uniqueUpdatesBarrier
         changesCalculator = DelegatedAccountsChangesCalculator(chainModel: chainModel)
         requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -101,7 +104,9 @@ private extension DelegatedAccountChainSyncService {
         )
 
         let updateWrapper = walletUpdateMediator.saveChanges {
-            try changesOperation.targetOperation.extractNoCancellableResultData()
+            let changes = try changesOperation.targetOperation.extractNoCancellableResultData()
+
+            return self.uniqueUpdatesBarrier.filter(changes)
         }
 
         updateWrapper.addDependency(wrapper: changesOperation)
