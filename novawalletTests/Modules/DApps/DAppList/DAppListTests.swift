@@ -39,33 +39,15 @@ class DAppListTests: XCTestCase {
             storageFacade: storageFacade,
             operationQueue: operationQueue
         )
-        let streamableProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateStorageTestFacade(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
         
         let mapper = DAppFavoriteMapper()
         let dappsFavoriteRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
-        let proxyListLocalSubscriptionFactory = ProxyListLocalSubscriptionFactory(
-            chainRegistry: ChainRegistryProtocolStub(),
-            streamableProviderFactory: streamableProviderFactory,
-            storageFacade: storageFacade,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
-        )
-        let walletNotificationService = WalletNotificationService(
-            proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
-            logger: Logger.shared
-        )
         
         let interactor = DAppListInteractor(
-            walletSettings: walletSettings,
-            eventCenter: EventCenter.shared,
             dAppProvider: AnySingleValueProvider(dAppProvider),
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
             dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
-            walletNotificationService: walletNotificationService,
             logger: Logger.shared
         )
         
@@ -77,7 +59,6 @@ class DAppListTests: XCTestCase {
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            initialWallet: walletSettings.value,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared
         )
@@ -105,16 +86,13 @@ class DAppListTests: XCTestCase {
                 
                 stateExpectation.fulfill()
                 
-                let walletSection = sections
-                    .first { section in
-                        section.model.cells.contains(
-                            where: { cell in
-                                guard case let .header(header) = cell else { return false }
-                                
-                                return true
-                            }
-                        )
-                    }
+                let walletSection = sections.first(where: { section in
+                    section.model.cells.contains(where: { cell in
+                        guard case .header = cell else { return false }
+                            
+                        return true
+                    })
+                })
                 
                 guard walletSection != nil else { return }
                 
