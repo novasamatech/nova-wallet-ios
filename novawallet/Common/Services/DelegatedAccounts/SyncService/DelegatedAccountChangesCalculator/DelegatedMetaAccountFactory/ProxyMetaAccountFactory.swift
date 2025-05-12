@@ -6,6 +6,21 @@ class ProxyMetaAccountFactory {
     init(chainModel: ChainModel) {
         self.chainModel = chainModel
     }
+
+    private func updateProxyStatus(
+        for metaAccount: ManagedMetaAccountModel,
+        _ newStatus: ProxyAccountModel.Status,
+        proxy: ProxyAccountModel
+    ) -> ManagedMetaAccountModel {
+        let updatedProxy = proxy.replacingStatus(newStatus)
+
+        let newInfo = metaAccount.info.replacingProxy(
+            chainId: chainModel.chainId,
+            proxy: updatedProxy
+        )
+
+        return metaAccount.replacingInfo(newInfo)
+    }
 }
 
 extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
@@ -48,44 +63,31 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         return newWallet
     }
 
-    func updateMetaAccount(
-        _ metaAccount: ManagedMetaAccountModel,
-        for _: DelegatedAccountProtocol,
-        delegatorAccountId _: AccountId
-    ) -> ManagedMetaAccountModel {
+    func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
             let proxyAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
             let proxy = proxyAccount.proxy,
             proxy.status == .revoked
         else { return metaAccount }
 
-        let updatedProxy = proxy.replacingStatus(.new)
-
-        let newInfo = metaAccount.info.replacingProxy(
-            chainId: chainModel.chainId,
-            proxy: updatedProxy
+        return updateProxyStatus(
+            for: metaAccount,
+            .new,
+            proxy: proxy
         )
-
-        return metaAccount.replacingInfo(newInfo)
     }
 
-    func markAsRevoked(
-        _ metaAccount: ManagedMetaAccountModel,
-        delegatorAccountId _: AccountId
-    ) -> ManagedMetaAccountModel {
+    func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
             let proxyAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
             let proxy = proxyAccount.proxy
         else { return metaAccount }
 
-        let updatedProxy = proxy.replacingStatus(.revoked)
-
-        let newInfo = metaAccount.info.replacingProxy(
-            chainId: chainModel.chainId,
-            proxy: updatedProxy
+        return updateProxyStatus(
+            for: metaAccount,
+            .revoked,
+            proxy: proxy
         )
-
-        return metaAccount.replacingInfo(newInfo)
     }
 
     func matchesDelegatedAccount(
@@ -117,12 +119,16 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         )
     }
 
-    func canHandle(metaAccount: ManagedMetaAccountModel) -> Bool {
+    func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool {
         guard let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId) else {
             return false
         }
 
         return chainAccount.proxy != nil
+    }
+
+    func canHandle(_ delegatedAccount: any DelegatedAccountProtocol) -> Bool {
+        delegatedAccount is ProxyAccount
     }
 }
 

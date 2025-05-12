@@ -10,9 +10,8 @@ struct MultisigModel: Hashable {
 
     enum Status: String, CaseIterable {
         case new
-        case pending
-        case approved
-        case rejected
+        case active
+        case revoked
     }
 }
 
