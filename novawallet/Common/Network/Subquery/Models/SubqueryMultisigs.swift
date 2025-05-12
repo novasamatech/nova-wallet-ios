@@ -24,7 +24,7 @@ enum SubqueryMultisigs {
     }
 }
 
-struct DiscoveredMultisig {
+struct DiscoveredMultisig: DelegatedAccountProtocol {
     let accountId: AccountId
     let signatories: [AccountId]
     let threshold: Int
