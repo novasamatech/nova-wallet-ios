@@ -1,0 +1,25 @@
+import Foundation
+
+protocol DelegatedMetaAccountFactoryProtocol {
+    func createMetaAccount(
+        for delegatedAccount: DelegatedAccountProtocol,
+        delegatorAccountId: AccountId,
+        using identities: [AccountId: AccountIdentity]
+    ) throws -> ManagedMetaAccountModel
+
+    func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel
+
+    func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel
+
+    func matchesDelegatedAccount(
+        _ metaAccount: ManagedMetaAccountModel,
+        delegatedAccount: DelegatedAccountProtocol,
+        delegatorAccountId: AccountId
+    ) -> Bool
+
+    func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier?
+
+    func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool
+
+    func canHandle(_ delegatedAccount: DelegatedAccountProtocol) -> Bool
+}

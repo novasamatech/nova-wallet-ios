@@ -6,6 +6,34 @@ class MultisigMetaAccountFactory {
     init(chainModel: ChainModel) {
         self.chainModel = chainModel
     }
+
+    private func updateMultisigStatus(
+        for metaAccount: ManagedMetaAccountModel,
+        _ newStatus: MultisigModel.Status,
+        multisigType: MetaAccountModel.MultisigAccountType
+    ) -> ManagedMetaAccountModel {
+        let newInfo: MetaAccountModel?
+
+        switch multisigType {
+        case let .singleChain(chainAccount, multisig):
+            guard chainAccount.chainId == chainModel.chainId else { return metaAccount }
+
+            newInfo = metaAccount.info.replacingMultisig(
+                with: .singleChain(
+                    chainAccount: chainAccount,
+                    multisig: multisig.replacingStatus(newStatus)
+                )
+            )
+        case let .universal(multisig):
+            newInfo = metaAccount.info.replacingMultisig(
+                with: .universal(multisig: multisig.replacingStatus(newStatus))
+            )
+        }
+
+        guard let newInfo else { return metaAccount }
+
+        return metaAccount.replacingInfo(newInfo)
+    }
 }
 
 extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
@@ -56,47 +84,29 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         return newWallet
     }
 
-    func updateMetaAccount(
-        _ metaAccount: ManagedMetaAccountModel,
-        for _: DelegatedAccountProtocol,
-        delegatorAccountId: AccountId
-    ) -> ManagedMetaAccountModel {
-        guard let multisigAccountType = metaAccount.info.multisigAccount() else {
+    func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
+        guard
+            let multisigAccountType = metaAccount.info.multisigAccount(),
+            multisigAccountType.multisig.multisigAccount?.status == .revoked
+        else {
             return metaAccount
         }
 
-        let newInfo: MetaAccountModel?
-
-        switch multisigAccountType {
-        case let .singleChain(chainAccount, multisig):
-            guard
-                chainAccount.chainId == chainModel.chainId,
-                chainAccount.accountId == delegatorAccountId
-            else { return metaAccount }
-
-            newInfo = metaAccount.info.replacingMultisig(
-                with: .singleChain(
-                    chainAccount: chainAccount,
-                    multisig: multisig.replacingStatus(.pending)
-                )
-            )
-        case let .universal(multisig):
-            newInfo = metaAccount.info.replacingMultisig(
-                with: .universal(multisig: multisig.replacingStatus(.pending))
-            )
-        }
-
-        guard let newInfo else { return metaAccount }
-
-        return metaAccount.replacingInfo(newInfo)
+        return updateMultisigStatus(
+            for: metaAccount,
+            .new,
+            multisigType: multisigAccountType
+        )
     }
 
-    func markAsRevoked(
-        _ metaAccount: ManagedMetaAccountModel,
-        delegatorAccountId _: AccountId
-    ) -> ManagedMetaAccountModel {
-        // For multisigs, we typically remove them entirely instead of marking as revoked
-        metaAccount
+    func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
+        guard let multisigType = metaAccount.info.multisigAccount() else { return metaAccount }
+
+        return updateMultisigStatus(
+            for: metaAccount,
+            .revoked,
+            multisigType: multisigType
+        )
     }
 
     func matchesDelegatedAccount(
@@ -147,7 +157,11 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         )
     }
 
-    func canHandle(metaAccount: ManagedMetaAccountModel) -> Bool {
+    func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool {
         metaAccount.info.multisigAccount() != nil
+    }
+
+    func canHandle(_ delegatedAccount: any DelegatedAccountProtocol) -> Bool {
+        delegatedAccount is DiscoveredMultisig
     }
 }

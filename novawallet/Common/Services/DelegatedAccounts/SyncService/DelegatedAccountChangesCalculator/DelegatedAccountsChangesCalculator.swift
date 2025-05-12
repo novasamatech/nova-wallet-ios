@@ -37,7 +37,7 @@ private extension DelegatedAccountsChangesCalculator {
     ) -> [DelegateIdentifier: ManagedMetaAccountModel] {
         chainMetaAccounts.reduce(into: [:]) { acc, metaAccount in
             factories
-                .filter { $0.canHandle(metaAccount: metaAccount) }
+                .filter { $0.canHandle(metaAccount) }
                 .forEach { factory in
                     if let identifier = factory.extractDelegateIdentifier(from: metaAccount) {
                         acc[identifier] = metaAccount
@@ -52,7 +52,7 @@ private extension DelegatedAccountsChangesCalculator {
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
-        var updatedMetaAccounts = try remoteDelegatedAccounts.compactMap { remoteDelegatedAccount in
+        let updatedMetaAccounts = try remoteDelegatedAccounts.compactMap { remoteDelegatedAccount in
             try processRemoteDelegatedAccount(
                 remoteDelegatedAccount,
                 delegatorAccountId: delegatorAccountId,
@@ -67,26 +67,9 @@ private extension DelegatedAccountsChangesCalculator {
             localDelegatedAccounts: localDelegatedAccounts
         )
 
-        let removedMetaAccounts = revokedAccounts.compactMap { _, metaAccount -> ManagedMetaAccountModel? in
-            guard let factory = getFactoryForMetaAccount(metaAccount) else {
-                return nil
-            }
-
-            // If this is a proxy, mark as revoked and keep it
-            if factory is ProxyMetaAccountFactory {
-                let updatedMetaAccount = factory.markAsRevoked(metaAccount, delegatorAccountId: delegatorAccountId)
-                updatedMetaAccounts.append(updatedMetaAccount)
-
-                return nil
-            } else {
-                // For multisigs or other types, remove entirely
-                return metaAccount
-            }
-        }
-
         return SyncChanges(
-            newOrUpdatedItems: updatedMetaAccounts,
-            removedItems: removedMetaAccounts
+            newOrUpdatedItems: updatedMetaAccounts + revokedAccounts.values,
+            removedItems: []
         )
     }
 
@@ -108,11 +91,7 @@ private extension DelegatedAccountsChangesCalculator {
         )
 
         return if let existingMetaAccount {
-            factory.updateMetaAccount(
-                existingMetaAccount,
-                for: delegatedAccount,
-                delegatorAccountId: delegatorAccountId
-            )
+            factory.renew(existingMetaAccount)
         } else {
             try factory.createMetaAccount(
                 for: delegatedAccount,
@@ -165,19 +144,13 @@ private extension DelegatedAccountsChangesCalculator {
     func getFactoryForDelegatedAccount(
         _ delegatedAccount: DelegatedAccountProtocol
     ) -> DelegatedMetaAccountFactoryProtocol? {
-        if delegatedAccount is ProxyAccount {
-            return factories.first { $0 is ProxyMetaAccountFactory }
-        } else if delegatedAccount is DiscoveredMultisig {
-            return factories.first { $0 is MultisigMetaAccountFactory }
-        }
-
-        return nil
+        factories.first { $0.canHandle(delegatedAccount) }
     }
 
     func getFactoryForMetaAccount(
         _ metaAccount: ManagedMetaAccountModel
     ) -> DelegatedMetaAccountFactoryProtocol? {
-        factories.first { $0.canHandle(metaAccount: metaAccount) }
+        factories.first { $0.canHandle(metaAccount) }
     }
 }
 
