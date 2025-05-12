@@ -50,7 +50,6 @@ private extension DelegatedAccountsChangesCalculator {
         for delegatorAccountId: AccountId,
         remoteDelegatedAccounts: [DelegatedAccountProtocol],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
-        chainMetaAccounts _: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
         var updatedMetaAccounts = try remoteDelegatedAccounts.compactMap { remoteDelegatedAccount in
@@ -200,7 +199,6 @@ extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalcualtor
                 for: delegatorAccountId,
                 remoteDelegatedAccounts: remoteDelegatedAccounts[delegatorAccountId] ?? [],
                 localDelegatedAccounts: localDelegatedAccounts,
-                chainMetaAccounts: chainMetaAccounts,
                 identities: identities
             )
         }

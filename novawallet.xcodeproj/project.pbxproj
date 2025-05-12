@@ -2122,7 +2122,7 @@
 		772540342AC41FF7002B3FD4 /* BanxaProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540332AC41FF7002B3FD4 /* BanxaProvider.swift */; };
 		772540362AC45CDB002B3FD4 /* RampFlowManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540352AC45CDB002B3FD4 /* RampFlowManaging.swift */; };
 		772540382AC45D22002B3FD4 /* RampPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772540372AC45D22002B3FD4 /* RampPresentable.swift */; };
-		7725EB442B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7725EB432B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift */; };
+		7725EB442B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7725EB432B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift */; };
 		7726CD552A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7726CD542A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift */; };
 		7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E58A2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift */; };
 		7728E58D2A123B42007901E0 /* SearchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728E58C2A123B42007901E0 /* SearchOperationFactory.swift */; };
@@ -7973,7 +7973,7 @@
 		772540332AC41FF7002B3FD4 /* BanxaProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanxaProvider.swift; sourceTree = "<group>"; };
 		772540352AC45CDB002B3FD4 /* RampFlowManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampFlowManaging.swift; sourceTree = "<group>"; };
 		772540372AC45D22002B3FD4 /* RampPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampPresentable.swift; sourceTree = "<group>"; };
-		7725EB432B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainProxyChangesCalculator.swift; sourceTree = "<group>"; };
+		7725EB432B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsChangesCalculator.swift; sourceTree = "<group>"; };
 		7726CD542A9728D700CE9064 /* StakingTypeSelectedStakingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingTypeSelectedStakingViewModelFactory.swift; sourceTree = "<group>"; };
 		7728E58A2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsSearchOperationFactory.swift; sourceTree = "<group>"; };
 		7728E58C2A123B42007901E0 /* SearchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchOperationFactory.swift; sourceTree = "<group>"; };
@@ -15629,7 +15629,7 @@
 		2D6CC2552DD1E91800FF5FA8 /* DelegatedAccountChangesCalculator */ = {
 			isa = PBXGroup;
 			children = (
-				7725EB432B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift */,
+				7725EB432B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift */,
 				2D6CC2562DD1E94F00FF5FA8 /* ProxyAccountsChangesCalculator.swift */,
 				2D6CC2582DD1EC9100FF5FA8 /* MultisigAccountsChangesCalculator.swift */,
 			);
@@ -30020,7 +30020,7 @@
 				0CAB7DA12C4714CD0070CE4D /* StakingActivityProviding.swift in Sources */,
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
 				84A5915C292B390800BCCF8F /* EvmTransactionBuilder.swift in Sources */,
-				7725EB442B2AC9BA007E1A8A /* ChainProxyChangesCalculator.swift in Sources */,
+				7725EB442B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift in Sources */,
 				0C277DB72D83F310004FF053 /* MythosStkClaimRewardsState.swift in Sources */,
 				842A738627DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift in Sources */,
 				0CA72A9B2D4B874700B3FD02 /* BlockCountdownDisplay.swift in Sources */,
