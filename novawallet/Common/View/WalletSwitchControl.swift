@@ -107,6 +107,8 @@ final class WalletSwitchControl: BackgroundedContentControl {
     init() {
         let titleView = WalletSwitchContentView()
 
+        titleView.isUserInteractionEnabled = false
+
         let backgroundView = UIView()
         backgroundView.isUserInteractionEnabled = false
         backgroundView.backgroundColor = .clear
@@ -119,6 +121,8 @@ final class WalletSwitchControl: BackgroundedContentControl {
         self.backgroundView = backgroundView
 
         contentInsets = .zero
+
+        changesContentOpacityWhenHighlighted = true
     }
 
     func bind(viewModel: WalletSwitchViewModel) {

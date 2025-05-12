@@ -23,7 +23,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
     lazy var dataSource = createDataSource()
 
     var sectionViewModels: [DAppListSectionViewModel] = []
-    var walletSwitchViewModel: WalletSwitchViewModel?
+
+    weak var scrollViewTracker: ScrollViewTrackingProtocol?
 
     init(
         presenter: DAppListPresenterProtocol,
@@ -103,19 +104,11 @@ private extension DAppListViewController {
             for: .valueChanged
         )
     }
-
-    func updateIcon(for headerView: DAppListHeaderView, walletSwitchViewModel: WalletSwitchViewModel) {
-        headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
-    }
 }
 
 // MARK: Actions
 
 extension DAppListViewController {
-    @objc func actionSelectAccount() {
-        presenter.activateAccount()
-    }
-
     @objc func actionSearch() {
         presenter.activateSearch()
     }
@@ -175,6 +168,14 @@ extension DAppListViewController: UICollectionViewDelegate {
             break
         }
     }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
+
+    func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        scrollViewTracker?.trackScrollViewDidChangeOffset(scrollView.contentOffset)
+    }
 }
 
 // MARK: ErrorStateViewDelegate
@@ -225,4 +226,8 @@ extension DAppListViewController: Localizable {
 
 // MARK: HiddableBarWhenPushed
 
-extension DAppListViewController: HiddableBarWhenPushed {}
+extension DAppListViewController: ScrollViewHostProtocol {
+    var initialTrackingInsets: UIEdgeInsets {
+        rootView.collectionView.adjustedContentInset
+    }
+}

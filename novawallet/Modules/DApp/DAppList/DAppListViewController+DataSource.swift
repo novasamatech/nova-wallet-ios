@@ -18,10 +18,9 @@ extension DAppListViewController {
             guard let self else { return nil }
 
             return switch model {
-            case let .header(model):
+            case .header:
                 setupHeaderView(
                     using: collectionView,
-                    walletSwitchViewModel: model,
                     indexPath: indexPath
                 )
             case let .categorySelect(models):
@@ -79,7 +78,6 @@ extension DAppListViewController {
 private extension DAppListViewController {
     func setupHeaderView(
         using collectionView: UICollectionView,
-        walletSwitchViewModel: WalletSwitchViewModel,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         let view: DAppListHeaderView = collectionView.dequeueReusableCellWithType(
@@ -88,18 +86,13 @@ private extension DAppListViewController {
         )!
 
         view.selectedLocale = selectedLocale
-        view.walletSwitch.bind(viewModel: walletSwitchViewModel)
 
-        view.walletSwitch.addTarget(
-            self,
-            action: #selector(actionSelectAccount),
-            for: .touchUpInside
-        )
         view.searchView.addTarget(
             self,
             action: #selector(actionSearch),
             for: .touchUpInside
         )
+
         view.settingsButton.addTarget(
             self,
             action: #selector(actionSettings),

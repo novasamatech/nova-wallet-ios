@@ -73,9 +73,6 @@ private extension MainTabBarViewFactory {
         localizationManager: LocalizationManagerProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol
     ) -> [(Int, UIViewController)]? {
-        let walletNotificationService = serviceCoordinator.walletNotificationService
-        let proxySyncService = serviceCoordinator.proxySyncService
-
         guard
             let assetsController = createAssetsController(
                 for: localizationManager,
@@ -245,14 +242,16 @@ private extension MainTabBarViewFactory {
         for localizationManager: LocalizationManagerProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol
     ) -> UIViewController? {
-        guard let dappsView = DAppListViewFactory.createView(
-            walletNotificationService: serviceCoordinator.walletNotificationService,
-            proxySyncService: serviceCoordinator.proxySyncService
-        ) else {
+        guard
+            let dappsView = DAppListViewFactory.createView(),
+            let rootView = NavigationRootViewFactory.createView(
+                with: dappsView,
+                serviceCoordinator: serviceCoordinator
+            ) else {
             return nil
         }
 
-        let navigationController = NovaNavigationController(rootViewController: dappsView.controller)
+        let navigationController = NovaNavigationController(rootViewController: rootView.controller)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarDappsTitle_2_4_3(preferredLanguages: locale.rLanguages)

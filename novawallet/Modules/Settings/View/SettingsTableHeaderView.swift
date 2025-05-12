@@ -2,7 +2,7 @@ import UIKit
 
 final class SettingsTableHeaderView: UIView {
     enum Constants {
-        static let topOffset: CGFloat = 16
+        static let topOffset: CGFloat = 12
         static let cellHeight: CGFloat = 56
 
         static var totalHeight: CGFloat {

@@ -100,7 +100,7 @@ extension SettingsViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section == 0 ? 57.0 : 37.0
+        section == 0 ? 48.0 : 36.0
     }
 }
 

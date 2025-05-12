@@ -64,6 +64,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearLocksSubscription()
         clearHoldsSubscription()
 
+        provideWalletInfo()
+
         super.resetWallet()
     }
 
@@ -84,6 +86,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
         }
 
         presenter?.didReceive(walletId: wallet.identifier)
+
+        modelBuilder?.applyWallet(wallet)
     }
 
     private func clearLocksSubscription() {
@@ -141,14 +145,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     override func setup() {
-        provideWalletInfo()
-
         presenter?.didReceiveAssetListGroupStyle(settingsManager.assetListGroupStyle)
         modelBuilder = .init { [weak self] result in
             self?.presenter?.didReceive(result: result)
 
             self?.assetListModelObservable.state = .init(value: .init(model: result.model))
         }
+
+        provideWalletInfo()
 
         provideHidesZeroBalances()
 
@@ -319,14 +323,10 @@ extension AssetListInteractor {
 
 extension AssetListInteractor: EventVisitorProtocol {
     func processChainAccountChanged(event _: ChainAccountChanged) {
-        provideWalletInfo()
-
         resetWallet()
     }
 
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
-        provideWalletInfo()
-
         resetWallet()
     }
 

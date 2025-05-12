@@ -22,6 +22,7 @@ enum VoteViewFactory {
         let view = VoteViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
 
         presenter.view = view
+        interactor.presenter = presenter
 
         return view
     }

@@ -67,7 +67,7 @@ private extension DAppListViewLayout {
             switch sectionViewModels[index] {
             case .header:
                 section = maxWidthsection(
-                    fixedHeight: 108,
+                    fixedHeight: 48,
                     scrollingBehavior: .none
                 )
             case .categorySelect:
@@ -76,7 +76,7 @@ private extension DAppListViewLayout {
                     scrollingBehavior: .none
                 )
                 contentInsets.bottom = 4
-                contentInsets.top = 12
+                contentInsets.top = 16
             case .banners:
                 section = bannersSectionLayout()
                 contentInsets.bottom = 16
