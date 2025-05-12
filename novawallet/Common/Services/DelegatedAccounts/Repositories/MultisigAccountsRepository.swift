@@ -41,11 +41,7 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
 
         let fetchOperation = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
 
-        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
+        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> {
             let fetchResult = try fetchOperation.extractNoCancellableResultData()
 
             guard let fetchResult else { return [:] }
@@ -65,9 +61,9 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
                     }
                 }
 
-            mutex.lock()
-            multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
-            mutex.unlock()
+            self.mutex.lock()
+            self.multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
+            self.mutex.unlock()
 
             let result = cachedMultisigsForSignatories
                 .merging(mappedFetchResult) { $0 + $1 }

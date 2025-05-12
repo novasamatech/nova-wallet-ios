@@ -17,11 +17,7 @@ struct MultisigModel: Hashable {
 
 extension MultisigModel: Identifiable {
     var identifier: String {
-        [
-            accountId.toHex(),
-            signatory.toHex(),
-            otherSignatories.map { $0.toHex() }.joined(with: .dash)
-        ].joined(with: .dash)
+        accountId.toHex()
     }
 }
 

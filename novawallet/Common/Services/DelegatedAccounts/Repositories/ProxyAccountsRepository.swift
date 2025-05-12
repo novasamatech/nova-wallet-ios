@@ -59,18 +59,16 @@ extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
             .createWithResult(proxies)
         }
 
-        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-
-            mutex.lock()
+        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> {
+            self.mutex.lock()
 
             defer {
-                mutex.unlock()
+                self.mutex.unlock()
             }
 
-            proxies = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            self.proxies = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return filterProxyList(proxies, by: delegators)
+            return self.filterProxyList(self.proxies, by: delegators)
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)

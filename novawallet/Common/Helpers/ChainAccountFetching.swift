@@ -374,16 +374,8 @@ extension MetaAccountModel {
             }
         }
 
-        func isUniversal() -> Bool {
+        var isUniversal: Bool {
             if case .universal = self {
-                true
-            } else {
-                false
-            }
-        }
-
-        func isSingleChain() -> Bool {
-            if case .singleChain = self {
                 true
             } else {
                 false
