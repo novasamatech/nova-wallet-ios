@@ -12,10 +12,6 @@ final class MultisigAccountsRepository {
     init(chain: ChainModel) {
         self.chain = chain
     }
-
-    private func mapToDelegatedAccounts(_ multisigs: [DiscoveredMultisig]) -> [DelegatedAccount] {
-        multisigs.map { DelegatedAccount.multisig($0) }
-    }
 }
 
 // MARK: DelegatedAccountsRepositoryProtocol
@@ -23,7 +19,7 @@ final class MultisigAccountsRepository {
 extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
         for delegators: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccount]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]> {
         let cachedMultisigsForSignatories = delegators
             .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
             .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
@@ -32,9 +28,7 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
         let nonCachedSignatories = delegators.subtracting(cachedSignatories)
 
         guard !nonCachedSignatories.isEmpty else {
-            return .createWithResult(
-                cachedMultisigsForSignatories.mapValues(mapToDelegatedAccounts)
-            )
+            return .createWithResult(cachedMultisigsForSignatories)
         }
 
         guard let apiURL = chain.externalApis?.getApis(for: .multisig)?.first?.url else {
@@ -47,7 +41,7 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
 
         let fetchOperation = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
 
-        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccount]]> { [weak self] in
+        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> { [weak self] in
             guard let self else {
                 throw BaseOperationError.parentOperationCancelled
             }
@@ -77,7 +71,6 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
 
             let result = cachedMultisigsForSignatories
                 .merging(mappedFetchResult) { $0 + $1 }
-                .mapValues(mapToDelegatedAccounts)
 
             return result
         }

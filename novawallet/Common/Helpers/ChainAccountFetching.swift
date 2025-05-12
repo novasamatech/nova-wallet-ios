@@ -324,6 +324,10 @@ extension MetaAccountModel {
         multisig.signatory == substrateAccountId || chainAccounts.contains { $0.accountId == multisig.signatory }
     }
 
+    func isDelegated() -> Bool {
+        type == .proxied || type == .multisig
+    }
+
     func proxyChainAccount(
         chainId: ChainModel.Id
     ) -> ChainAccountModel? {
