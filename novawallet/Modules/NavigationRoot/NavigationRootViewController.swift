@@ -78,3 +78,9 @@ extension NavigationRootViewController: NavigationRootSettingsProtocol {
         presenter.activateCloudBackupSettings()
     }
 }
+
+extension NavigationRootViewController: ScrollsToTop {
+    func scrollToTop() {
+        (scrollHost as? ScrollsToTop)?.scrollToTop()
+    }
+}

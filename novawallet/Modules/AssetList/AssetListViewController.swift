@@ -237,3 +237,12 @@ extension AssetListViewController: ScrollViewHostProtocol {
         }
     }
 }
+
+extension AssetListViewController: ScrollsToTop {
+    func scrollToTop() {
+        rootView.collectionView.setContentOffset(
+            CGPoint(x: 0, y: -initialTrackingInsets.top),
+            animated: true
+        )
+    }
+}

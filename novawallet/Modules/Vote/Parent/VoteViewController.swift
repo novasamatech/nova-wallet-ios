@@ -72,6 +72,15 @@ final class VoteViewController: UIViewController, ViewHolder {
             action: #selector(actionVoteTypeChanged),
             for: .valueChanged
         )
+
+        let swipeRecognizer = UISwipeGestureRecognizer(
+            target: self,
+            action: #selector(actionSwipeToSwitch)
+        )
+
+        swipeRecognizer.direction = [.left, .right]
+
+        rootView.tableView.addGestureRecognizer(swipeRecognizer)
     }
 
     private func setupLocalization() {
@@ -84,6 +93,17 @@ final class VoteViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionVoteTypeChanged() {
+        setupChildView()
+    }
+
+    @objc func actionSwipeToSwitch() {
+        switch selectedType {
+        case .governance:
+            rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(VoteType.crowdloan.rawValue)
+        case .crowdloan:
+            rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(VoteType.governance.rawValue)
+        }
+
         setupChildView()
     }
 
@@ -140,6 +160,16 @@ extension VoteViewController: VoteViewProtocol {
     }
 }
 
+extension VoteViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(
+        _: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer
+    ) -> Bool {
+        // Prevent swipe from interfering with scroll
+        false
+    }
+}
+
 extension VoteViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
@@ -151,5 +181,11 @@ extension VoteViewController: Localizable {
 extension VoteViewController: ScrollViewHostProtocol {
     var initialTrackingInsets: UIEdgeInsets {
         rootView.tableView.adjustedContentInset
+    }
+}
+
+extension VoteViewController: ScrollsToTop {
+    func scrollToTop() {
+        rootView.tableView.setContentOffset(CGPoint(x: 0, y: -initialTrackingInsets.top), animated: true)
     }
 }

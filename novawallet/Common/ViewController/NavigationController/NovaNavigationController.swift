@@ -140,3 +140,9 @@ class NovaNavigationController: UINavigationController, UINavigationControllerDe
 }
 
 extension NovaNavigationController: NavigationControlling {}
+
+extension NovaNavigationController: ScrollsToTop {
+    func scrollToTop() {
+        (topViewController as? ScrollsToTop)?.scrollToTop()
+    }
+}

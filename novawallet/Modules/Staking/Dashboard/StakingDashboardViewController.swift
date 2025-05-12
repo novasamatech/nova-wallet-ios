@@ -295,3 +295,12 @@ extension StakingDashboardViewController: ScrollViewHostProtocol {
         rootView.collectionView.adjustedContentInset
     }
 }
+
+extension StakingDashboardViewController: ScrollsToTop {
+    func scrollToTop() {
+        rootView.collectionView.setContentOffset(
+            CGPoint(x: 0, y: -initialTrackingInsets.top),
+            animated: true
+        )
+    }
+}

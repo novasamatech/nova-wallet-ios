@@ -231,3 +231,12 @@ extension DAppListViewController: ScrollViewHostProtocol {
         rootView.collectionView.adjustedContentInset
     }
 }
+
+extension DAppListViewController: ScrollsToTop {
+    func scrollToTop() {
+        rootView.collectionView.setContentOffset(
+            CGPoint(x: 0, y: -initialTrackingInsets.top),
+            animated: true
+        )
+    }
+}
