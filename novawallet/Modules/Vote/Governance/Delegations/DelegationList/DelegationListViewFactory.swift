@@ -65,7 +65,7 @@ struct DelegationListViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -76,7 +76,7 @@ struct DelegationListViewFactory {
         let delegationsLocalWrapperFactoryProtocol = GovernanceDelegationsLocalWrapperFactory(
             chain: chain,
             operationFactory: subquery,
-            identityProxyFactory: identityProxyFactory
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory
         )
 
         return DelegationListInteractor(

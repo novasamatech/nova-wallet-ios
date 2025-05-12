@@ -6,7 +6,7 @@ final class StakingProxyManagementInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingProxyManagementInteractorOutputProtocol?
 
     let sharedState: RelaychainStakingSharedStateProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let selectedAccount: MetaChainAccountResponse
     private var chainAsset: ChainAsset { sharedState.stakingOption.chainAsset }
     private let operationQueue: OperationQueue
@@ -20,12 +20,12 @@ final class StakingProxyManagementInteractor: AnyProviderAutoCleaning {
     init(
         selectedAccount: MetaChainAccountResponse,
         sharedState: RelaychainStakingSharedStateProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
         self.sharedState = sharedState
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.operationQueue = operationQueue
     }
 
@@ -44,7 +44,7 @@ final class StakingProxyManagementInteractor: AnyProviderAutoCleaning {
             return
         }
 
-        let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
+        let identityWrapper = identityDelegatedAccountFactory.createIdentityWrapperByAccountId(
             for: {
                 proxyDefifnition.definition.map(\.proxy)
             }

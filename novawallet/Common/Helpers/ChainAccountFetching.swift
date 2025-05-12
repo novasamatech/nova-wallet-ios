@@ -320,8 +320,15 @@ extension MetaAccountModel {
         type == .proxied && has(accountId: accountId, chainId: chainId)
     }
 
-    func isSignatory(for multisig: MultisigModel) -> Bool {
-        multisig.signatory == substrateAccountId || chainAccounts.contains { $0.accountId == multisig.signatory }
+    func isSignatory(for multisig: MultisigAccountType) -> Bool {
+        switch multisig {
+        case let .universal(multisig):
+            multisig.signatory == substrateAccountId || multisig.signatory == ethereumAddress
+        case let .singleChain(chainAccount, multisig):
+            chainAccounts.contains {
+                $0.chainId == chainAccount.chainId && $0.accountId == multisig.signatory
+            }
+        }
     }
 
     func isDelegated() -> Bool {

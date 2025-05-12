@@ -20,7 +20,7 @@ struct StakingProxyManagementViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -29,7 +29,7 @@ struct StakingProxyManagementViewFactory {
         let interactor = StakingProxyManagementInteractor(
             selectedAccount: selectedAccount,
             sharedState: state,
-            identityProxyFactory: identityProxyFactory,
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

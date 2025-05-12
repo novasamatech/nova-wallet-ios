@@ -14,7 +14,7 @@ final class SwipeGovReferendumDetailsInteractor {
     private let spendingAmountExtractor: GovSpendingExtracting
     private let connection: JSONRPCEngine
     private let runtimeProvider: RuntimeProviderProtocol
-    private let identityProxyFactory: IdentityProxyFactoryProtocol
+    private let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     private let blockTimeService: BlockTimeEstimationServiceProtocol
     private let blockTimeFactory: BlockTimeOperationFactoryProtocol
 
@@ -45,7 +45,7 @@ final class SwipeGovReferendumDetailsInteractor {
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
@@ -58,7 +58,7 @@ final class SwipeGovReferendumDetailsInteractor {
         self.spendingAmountExtractor = spendingAmountExtractor
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
@@ -179,7 +179,7 @@ private extension SwipeGovReferendumDetailsInteractor {
 
         let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
 
-        let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
+        let wrapper = identityDelegatedAccountFactory.createIdentityWrapper(for: accountIdsClosure)
 
         executeCancellable(
             wrapper: wrapper,

@@ -23,7 +23,7 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
     let chainModel: ChainModel
     let accountSourceFactory: DelegatedAccountSourceFactoryProtocol
     let requestFactory: StorageRequestFactoryProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let eventCenter: EventCenterProtocol
     let chainWalletFilter: ProxySyncChainWalletFilter?
 
@@ -62,7 +62,7 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        identityProxyFactory = IdentityProxyFactory(
+        identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chainModel,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -97,7 +97,7 @@ private extension DelegatedAccountChainSyncService {
         let changesOperation = createChangesWrapper(
             delegatedAccountsListWrapper: delegatedAccountsListWrapper,
             metaAccountsWrapper: metaAccountsWrapper,
-            identityProxyFactory: identityProxyFactory
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory
         )
 
         let updateWrapper = walletUpdateMediator.saveChanges {
@@ -174,6 +174,8 @@ private extension DelegatedAccountChainSyncService {
                 guard !wallet.info.isDelegated() else { return nil }
 
                 return wallet.info.fetch(for: self.chainModel.accountRequest())?.accountId
+                    ?? wallet.info.substrateAccountId
+                    ?? wallet.info.ethereumAddress
             }
 
             let discoveringAccounds = DiscoveringAccountIds(
@@ -273,9 +275,9 @@ private extension DelegatedAccountChainSyncService {
     func createChangesWrapper(
         delegatedAccountsListWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]>,
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
-        identityProxyFactory: IdentityProxyFactoryProtocol
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
-        let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
+        let identityWrapper = identityDelegatedAccountFactory.createIdentityWrapperByAccountId(
             for: {
                 let delegatedAccounts = try delegatedAccountsListWrapper
                     .targetOperation

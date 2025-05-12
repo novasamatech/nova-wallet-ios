@@ -78,7 +78,7 @@ class PayoutRewardsServiceTests: XCTestCase {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -108,7 +108,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             storageRequestFactory: storageRequestFactory,
             engine: chainRegistry.getConnection(for: chainAsset.chain.chainId)!,
             operationManager: operationManager,
-            identityProxyFactory: identityProxyFactory,
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
             payoutInfoFactory: payoutInfoFactory
         )
 
@@ -139,7 +139,7 @@ class PayoutRewardsServiceTests: XCTestCase {
         let validatorsResolutionFactory = PayoutValidatorsForValidatorFactory()
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -169,7 +169,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             storageRequestFactory: storageRequestFactory,
             engine: chainRegistry.getConnection(for: chainAsset.chain.chainId)!,
             operationManager: operationManager,
-            identityProxyFactory: identityProxyFactory,
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
             payoutInfoFactory: payoutInfoFactory
         )
 

@@ -10,7 +10,7 @@ final class ReferendumVotersInteractor {
     let chain: ChainModel
     let votersType: ReferendumVotersType
     let referendumIndex: ReferendumIdLocal
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
@@ -23,7 +23,7 @@ final class ReferendumVotersInteractor {
         votersType: ReferendumVotersType,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
         votersLocalWrapperFactory: ReferendumVotersLocalWrapperFactoryProtocol?,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue
@@ -33,7 +33,7 @@ final class ReferendumVotersInteractor {
         self.votersType = votersType
         self.referendumsOperationFactory = referendumsOperationFactory
         self.votersLocalWrapperFactory = votersLocalWrapperFactory
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
@@ -111,7 +111,7 @@ final class ReferendumVotersInteractor {
             runtimeProvider: runtimeProvider
         )
 
-        let identityWrapper = identityProxyFactory.createIdentityWrapper(
+        let identityWrapper = identityDelegatedAccountFactory.createIdentityWrapper(
             for: {
                 let voters = try voterWrapper.targetOperation.extractNoCancellableResultData()
                 return voters.map(\.accountId)

@@ -15,7 +15,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
     let storageRequestFactory: StorageRequestFactoryProtocol
     let engine: JSONRPCEngine
     let operationManager: OperationManagerProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let payoutInfoFactory: PayoutInfoFactoryProtocol
     let logger: LoggerProtocol?
 
@@ -30,7 +30,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
         storageRequestFactory: StorageRequestFactoryProtocol,
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         payoutInfoFactory: PayoutInfoFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -44,7 +44,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
         self.storageRequestFactory = storageRequestFactory
         self.engine = engine
         self.operationManager = operationManager
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.payoutInfoFactory = payoutInfoFactory
         self.logger = logger
     }
@@ -109,7 +109,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
 
             prefsByEraWrapper.addDependency(wrapper: unclaimedRewardsWrapper)
 
-            let identityWrapper = identityProxyFactory.createIdentityWrapper(
+            let identityWrapper = identityDelegatedAccountFactory.createIdentityWrapper(
                 for: {
                     try unclaimedRewardsWrapper.targetOperation.extractNoCancellableResultData()
                         .map(\.accountId)

@@ -13,7 +13,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let connection: JSONRPCEngine
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol
     let yieldBoostOperationFactory: ParaStkYieldBoostOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -38,7 +38,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         rewardService: CollatorStakingRewardCalculatorServiceProtocol,
         connection: JSONRPCEngine,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol,
         yieldBoostOperationFactory: ParaStkYieldBoostOperationFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -53,7 +53,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         self.rewardService = rewardService
         self.connection = connection
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.yieldBoostProviderFactory = yieldBoostProviderFactory
         self.yieldBoostOperationFactory = yieldBoostOperationFactory
         self.operationQueue = operationQueue
@@ -115,7 +115,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     }
 
     private func provideIdentities(for delegations: [AccountId]) {
-        let wrapper = identityProxyFactory.createIdentityWrapper(for: { delegations })
+        let wrapper = identityDelegatedAccountFactory.createIdentityWrapper(for: { delegations })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

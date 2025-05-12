@@ -27,7 +27,8 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
         for delegatedAccount: DelegatedAccountProtocol,
         delegatorAccountId: AccountId,
-        using identities: [AccountId: AccountIdentity]
+        using identities: [AccountId: AccountIdentity],
+        localMetaAccounts _: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel {
         guard let proxy = delegatedAccount as? ProxyAccount else {
             throw DelegatedAccountError.invalidAccountType

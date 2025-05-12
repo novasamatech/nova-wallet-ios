@@ -19,7 +19,7 @@ final class MythosStakableCollatorOperationFactory {
 
     let collatorService: MythosCollatorServiceProtocol
     let rewardsService: CollatorStakingRewardCalculatorServiceProtocol
-    let identityFactory: IdentityProxyFactoryProtocol
+    let identityFactory: IdentityDelegatedAccountFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
     let connection: JSONRPCEngine
 
@@ -30,7 +30,7 @@ final class MythosStakableCollatorOperationFactory {
         rewardsService: CollatorStakingRewardCalculatorServiceProtocol,
         runtimeProvider: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
-        identityFactory: IdentityProxyFactoryProtocol,
+        identityFactory: IdentityDelegatedAccountFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.collatorService = collatorService

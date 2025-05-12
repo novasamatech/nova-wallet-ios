@@ -76,7 +76,7 @@ struct GovernanceDelegateInfoViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -94,7 +94,7 @@ struct GovernanceDelegateInfoViewFactory {
             detailsOperationFactory: statsOperationFactory,
             runtimeService: runtimeProvider,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            identityProxyFactory: identityProxyFactory,
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
             govJsonProviderFactory: JsonDataProviderFactory.shared,

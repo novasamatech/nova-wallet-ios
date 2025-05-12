@@ -8,7 +8,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         basePresenter as? ParaStkUnstakeInteractorOutputProtocol
     }
 
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
 
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
     private var identitiesCancellable: CancellableCall?
@@ -21,7 +21,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         connection: JSONRPCEngine,
@@ -32,7 +32,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -143,7 +143,7 @@ extension ParaStkUnstakeInteractor: ParaStkUnstakeInteractorInputProtocol {
     func fetchIdentities(for collatorIds: [AccountId]) {
         clear(cancellable: &identitiesCancellable)
 
-        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { collatorIds })
+        let wrapper = identityDelegatedAccountFactory.createIdentityWrapperByAccountId(for: { collatorIds })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
