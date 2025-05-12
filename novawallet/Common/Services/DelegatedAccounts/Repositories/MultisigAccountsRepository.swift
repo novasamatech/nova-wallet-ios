@@ -19,7 +19,7 @@ final class MultisigAccountsRepository {
 extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
         for delegators: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let cachedMultisigsForSignatories = delegators
             .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
             .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
@@ -41,7 +41,7 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
 
         let fetchOperation = fetchFactory.createDiscoverMultisigsOperation(for: nonCachedSignatories)
 
-        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> {
+        let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
             let fetchResult = try fetchOperation.extractNoCancellableResultData()
 
             guard let fetchResult else { return [:] }

@@ -8,10 +8,10 @@ final class WalletNotificationService: WalletNotificationServiceProtocol, AnyPro
     let proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
     let logger: LoggerProtocol
 
-    private var proxyDataProvider: StreamableProvider<ProxyAccountModel>?
+    private var proxyDataProvider: StreamableProvider<DelegatedAccount.ProxyAccountModel>?
     var hasUpdatesObservable: Observable<Bool> = .init(state: false)
 
-    private var proxies: [ProxyAccountModel] = [] {
+    private var proxies: [DelegatedAccount.ProxyAccountModel] = [] {
         didSet {
             if proxies != oldValue {
                 hasUpdatesObservable.state = proxies.hasNotActive
@@ -37,7 +37,7 @@ final class WalletNotificationService: WalletNotificationServiceProtocol, AnyPro
 }
 
 extension WalletNotificationService: ProxyListLocalStorageSubscriber, ProxyListLocalSubscriptionHandler {
-    func handleAllProxies(result: Result<[DataProviderChange<ProxyAccountModel>], Error>) {
+    func handleAllProxies(result: Result<[DataProviderChange<DelegatedAccount.ProxyAccountModel>], Error>) {
         switch result {
         case let .success(changes):
             proxies = proxies.applying(changes: changes)

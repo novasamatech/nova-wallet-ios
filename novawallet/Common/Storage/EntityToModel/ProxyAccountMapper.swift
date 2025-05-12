@@ -5,7 +5,7 @@ import CoreData
 final class ProxyAccountMapper {
     var entityIdentifierFieldName: String { #keyPath(CDProxy.identifier) }
 
-    typealias DataProviderModel = ProxyAccountModel
+    typealias DataProviderModel = DelegatedAccount.ProxyAccountModel
     typealias CoreDataEntity = CDProxy
 }
 
@@ -14,10 +14,10 @@ extension ProxyAccountMapper: CoreDataMapperProtocol {
         let accountId = try Data(hexString: entity.proxyAccountId!)
         let type = Proxy.ProxyType(id: entity.type!)
 
-        return ProxyAccountModel(
+        return DataProviderModel(
             type: type,
             accountId: accountId,
-            status: ProxyAccountModel.Status(rawValue: entity.status!)!
+            status: DelegatedAccount.Status(rawValue: entity.status!)!
         )
     }
 

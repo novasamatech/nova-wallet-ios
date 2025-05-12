@@ -2,7 +2,7 @@ import Foundation
 
 protocol DelegatedAccountsChangesCalcualtorProtocol {
     func calculateUpdates(
-        from remoteDelegatedAccounts: [AccountId: [DelegatedAccountProtocol]],
+        from remoteDelegatedAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]],
         chainMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel>
@@ -48,7 +48,7 @@ private extension DelegatedAccountsChangesCalculator {
 
     func calculateUpdates(
         for delegatorAccountId: AccountId,
-        remoteDelegatedAccounts: [DelegatedAccountProtocol],
+        remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
@@ -76,7 +76,7 @@ private extension DelegatedAccountsChangesCalculator {
     }
 
     func processRemoteDelegatedAccount(
-        _ delegatedAccount: DelegatedAccountProtocol,
+        _ delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId,
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         localMetaAccounts: [ManagedMetaAccountModel],
@@ -106,7 +106,7 @@ private extension DelegatedAccountsChangesCalculator {
     }
 
     func findExistingMetaAccount(
-        for delegatedAccount: DelegatedAccountProtocol,
+        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId,
         in localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         using factory: DelegatedMetaAccountFactoryProtocol
@@ -123,30 +123,32 @@ private extension DelegatedAccountsChangesCalculator {
 
     func findRevokedAccounts(
         for delegatorAccountId: AccountId,
-        remoteDelegatedAccounts: [DelegatedAccountProtocol],
+        remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel]
     ) -> [DelegateIdentifier: ManagedMetaAccountModel] {
         let relevantLocalAccounts = localDelegatedAccounts.filter {
             $0.key.delegatorAccountId == delegatorAccountId
         }
 
-        let revokedAccounts = relevantLocalAccounts.filter { _, metaAccount in
-            guard let factory = getFactoryForMetaAccount(metaAccount) else { return false }
+        return relevantLocalAccounts.compactMapValues { metaAccount in
+            guard let factory = getFactoryForMetaAccount(metaAccount) else { return nil }
 
-            return !remoteDelegatedAccounts.contains { remoteDelegatedAccount in
+            guard !remoteDelegatedAccounts.contains(where: { remoteDelegatedAccount in
                 factory.matchesDelegatedAccount(
                     metaAccount,
                     delegatedAccount: remoteDelegatedAccount,
                     delegatorAccountId: delegatorAccountId
                 )
+            }) else {
+                return nil
             }
-        }
 
-        return revokedAccounts
+            return factory.markAsRevoked(metaAccount)
+        }
     }
 
     func getFactoryForDelegatedAccount(
-        _ delegatedAccount: DelegatedAccountProtocol
+        _ delegatedAccount: DiscoveredDelegatedAccountProtocol
     ) -> DelegatedMetaAccountFactoryProtocol? {
         factories.first { $0.canHandle(delegatedAccount) }
     }
@@ -162,7 +164,7 @@ private extension DelegatedAccountsChangesCalculator {
 
 extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalcualtorProtocol {
     func calculateUpdates(
-        from remoteDelegatedAccounts: [AccountId: [DelegatedAccountProtocol]],
+        from remoteDelegatedAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]],
         chainMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {

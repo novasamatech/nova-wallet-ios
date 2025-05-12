@@ -54,7 +54,7 @@ struct MetaAccountModel: Equatable, Hashable {
     let ethereumPublicKey: Data?
     let chainAccounts: Set<ChainAccountModel>
     let type: MetaAccountModelType
-    let multisig: MultisigModel?
+    let multisig: DelegatedAccount.MultisigAccountModel?
 }
 
 extension MetaAccountModel: Identifiable {
@@ -128,7 +128,10 @@ extension MetaAccountModel {
         )
     }
 
-    func replacingProxy(chainId: ChainModel.Id, proxy: ProxyAccountModel) -> MetaAccountModel {
+    func replacingProxy(
+        chainId: ChainModel.Id,
+        proxy: DelegatedAccount.ProxyAccountModel
+    ) -> MetaAccountModel {
         let proxyChainAccount = chainAccounts.first {
             $0.chainId == chainId && $0.proxy != nil
         }
@@ -157,6 +160,50 @@ extension MetaAccountModel {
             )
         case let .singleChain(chainAccount, multisig):
             replacingChainAccount(chainAccount.replacingMultisig(multisig))
+        }
+    }
+
+    func replacingDelegatedAccountStatus(
+        from oldStatus: DelegatedAccount.Status,
+        to newStatus: DelegatedAccount.Status
+    ) -> MetaAccountModel {
+        guard type == .multisig || type == .proxied else {
+            return self
+        }
+
+        if let multisig, multisig.status == oldStatus {
+            return MetaAccountModel(
+                metaId: metaId,
+                name: name,
+                substrateAccountId: substrateAccountId,
+                substrateCryptoType: substrateCryptoType,
+                substratePublicKey: substratePublicKey,
+                ethereumAddress: ethereumAddress,
+                ethereumPublicKey: ethereumPublicKey,
+                chainAccounts: chainAccounts,
+                type: type,
+                multisig: multisig.replacingStatus(newStatus)
+            )
+        } else {
+            let updatedChainAccounts = chainAccounts.map { delegatorAccount in
+                delegatorAccount.replacingDelegatedAccountStatus(
+                    from: oldStatus,
+                    to: newStatus
+                )
+            }
+
+            return MetaAccountModel(
+                metaId: metaId,
+                name: name,
+                substrateAccountId: substrateAccountId,
+                substrateCryptoType: substrateCryptoType,
+                substratePublicKey: substratePublicKey,
+                ethereumAddress: ethereumAddress,
+                ethereumPublicKey: ethereumPublicKey,
+                chainAccounts: Set(updatedChainAccounts),
+                type: type,
+                multisig: multisig
+            )
         }
     }
 }

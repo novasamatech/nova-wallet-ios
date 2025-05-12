@@ -20,8 +20,8 @@ protocol DelegatedAccountSyncServiceProtocol: ApplicationServiceProtocol {
     )
 }
 
-typealias ProxySyncChainFilter = (ChainModel) -> Bool
-typealias ProxySyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
+typealias DelegatedAccountSyncChainFilter = (ChainModel) -> Bool
+typealias DelegatedAccountSyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
 
 final class DelegatedAccountSyncService {
     let chainRegistry: ChainRegistryProtocol
@@ -34,7 +34,7 @@ final class DelegatedAccountSyncService {
     let eventCenter: EventCenterProtocol
 
     let chainFilter: ChainFilterStrategy
-    let chainWalletFilter: ProxySyncChainWalletFilter?
+    let chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
 
     private(set) var isActive: Bool = false
 
@@ -57,7 +57,7 @@ final class DelegatedAccountSyncService {
         ),
         logger: LoggerProtocol = Logger.shared,
         chainFilter: ChainFilterStrategy,
-        chainWalletFilter: ProxySyncChainWalletFilter?
+        chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
     ) {
         self.chainRegistry = chainRegistry
         self.proxyOperationFactory = proxyOperationFactory
@@ -231,37 +231,34 @@ extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
     func updateWalletsStatuses() {
         let walletsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
 
-        let proxiesOperation: ClosureOperation<[ManagedMetaAccountModel: ChainAccountModel]> = .init {
-            let wallets = try walletsOperation.extractNoCancellableResultData()
-            return wallets.reduce(into: [ManagedMetaAccountModel: ChainAccountModel]()) { result, item in
-                if let chainAccount = item.info.chainAccounts.first(where: { $0.proxy != nil }) {
-                    result[item] = chainAccount
-                }
-            }
+        let delegatedAccountsOperation: ClosureOperation<[ManagedMetaAccountModel]> = .init {
+            try walletsOperation.extractNoCancellableResultData().filter { $0.info.isDelegated() }
         }
-        proxiesOperation.addDependency(walletsOperation)
+
+        delegatedAccountsOperation.addDependency(walletsOperation)
 
         let walletUpdateWrapper = walletUpdateMediator.saveChanges {
-            let proxies = try proxiesOperation.extractNoCancellableResultData()
+            let delegatedAccounts = try delegatedAccountsOperation.extractNoCancellableResultData()
 
-            let updated = proxies.map {
-                $0.key.replacingInfo($0.key.info.replacingChainAccount(
-                    $0.value.replacingProxyStatus(from: .new, to: .active)
-                ))
-            }.compactMap { $0 }
+            let updated = delegatedAccounts.map { delegatedAccount in
+                let updatedInfo = delegatedAccount.info.replacingDelegatedAccountStatus(
+                    from: .new,
+                    to: .active
+                )
 
-            let removed = proxies
-                .filter { $0.value.proxy?.status == .revoked }
-                .map(\.key)
+                return delegatedAccount.replacingInfo(updatedInfo)
+            }
+
+            let removed = delegatedAccounts.filter { $0.info.delegatedAccountStatus() == .revoked }
 
             return SyncChanges(newOrUpdatedItems: updated, removedItems: removed)
         }
 
-        walletUpdateWrapper.addDependency(operations: [proxiesOperation])
+        walletUpdateWrapper.addDependency(operations: [delegatedAccountsOperation])
 
         let compoundWrapper = CompoundOperationWrapper(
             targetOperation: walletUpdateWrapper.targetOperation,
-            dependencies: [walletsOperation, proxiesOperation] + walletUpdateWrapper.dependencies
+            dependencies: [walletsOperation, delegatedAccountsOperation] + walletUpdateWrapper.dependencies
         )
 
         execute(
@@ -275,9 +272,9 @@ extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
                     self.eventCenter.notify(with: SelectedWalletSwitched())
                 }
 
-                self.logger.debug("Proxy statuses updated")
+                self.logger.debug("Delegated accounts statuses updated")
             case let .failure(error):
-                self.logger.error("Did fail to update proxy statuses: \(error)")
+                self.logger.error("Did fail to update delegated accounts statuses: \(error)")
             }
         }
     }

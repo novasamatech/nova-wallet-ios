@@ -4,7 +4,7 @@ import SubstrateSdk
 protocol ProxiedsUpdateFactoryProtocol {
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
-        statuses: [ProxyAccountModel.Status],
+        statuses: [DelegatedAccount.Status],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletView.ViewModel]
@@ -15,7 +15,7 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
 
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
-        statuses: [ProxyAccountModel.Status],
+        statuses: [DelegatedAccount.Status],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletView.ViewModel] {

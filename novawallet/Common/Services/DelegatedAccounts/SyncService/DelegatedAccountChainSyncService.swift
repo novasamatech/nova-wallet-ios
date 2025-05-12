@@ -2,14 +2,14 @@ import SubstrateSdk
 import Operation_iOS
 import BigInt
 
-protocol DelegatedAccountProtocol {
+protocol DiscoveredDelegatedAccountProtocol {
     var accountId: AccountId { get }
 }
 
 private struct DiscoveringAccountIds {
     let possibleAccountIds: Set<AccountId>
     let knownAccountIds: Set<AccountId>
-    let discoveredAccounts: [AccountId: [DelegatedAccountProtocol]]
+    let discoveredAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]]
 }
 
 protocol DelegatedAccountChainSyncServiceProtocol: ObservableSyncServiceProtocol {
@@ -25,7 +25,7 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
     let requestFactory: StorageRequestFactoryProtocol
     let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let eventCenter: EventCenterProtocol
-    let chainWalletFilter: ProxySyncChainWalletFilter?
+    let chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
 
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
@@ -41,7 +41,7 @@ final class DelegatedAccountChainSyncService: ObservableSyncService, AnyCancella
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        chainWalletFilter: ProxySyncChainWalletFilter?,
+        chainWalletFilter: DelegatedAccountSyncChainWalletFilter?,
         uniqueUpdatesBarrier: DelegatedAccountSyncBarrierProtocol
     ) {
         self.chainModel = chainModel
@@ -141,7 +141,7 @@ private extension DelegatedAccountChainSyncService {
     }
 
     func createWalletsWrapper(
-        for filter: ProxySyncChainWalletFilter?,
+        for filter: DelegatedAccountSyncChainWalletFilter?,
         chain: ChainModel
     ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
         let metaAccountsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
@@ -164,10 +164,10 @@ private extension DelegatedAccountChainSyncService {
     func createDelegatedAccountsListWrapper(
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
         blockHash: Data?
-    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let sources = accountSourceFactory.createSources(for: blockHash)
 
-        let accountsListWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]>
+        let accountsListWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
         accountsListWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -203,10 +203,10 @@ private extension DelegatedAccountChainSyncService {
     func createAccountsFetchWrapper(
         for sources: [DelegatedAccountsRepositoryProtocol],
         accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let fetchWrappers = sources.map { $0.fetchDelegatedAccountsWrapper(for: accountIds) }
 
-        let mapOperation = ClosureOperation<[AccountId: [DelegatedAccountProtocol]]> {
+        let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
             try fetchWrappers.reduce(into: [:]) { acc, wrapper in
                 let accounts = try wrapper.targetOperation.extractNoCancellableResultData()
 
@@ -233,13 +233,13 @@ private extension DelegatedAccountChainSyncService {
     func createDiscoverAccountsWrapper(
         delegatedAccountsSources: [DelegatedAccountsRepositoryProtocol],
         discoveringAccountIds: DiscoveringAccountIds
-    ) -> CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let accountsFetchWrapper = createAccountsFetchWrapper(
             for: delegatedAccountsSources,
             accountIds: discoveringAccountIds.possibleAccountIds
         )
 
-        let resultWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]>
+        let resultWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
         resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -278,7 +278,7 @@ private extension DelegatedAccountChainSyncService {
     }
 
     func createChangesWrapper(
-        delegatedAccountsListWrapper: CompoundOperationWrapper<[AccountId: [DelegatedAccountProtocol]]>,
+        delegatedAccountsListWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>,
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
         identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
