@@ -14,8 +14,8 @@ final class WalletSwitchContentView: UIView {
 
     let typeView: GenericBackgroundView<UIImageView> = .create { view in
         view.apply(style: .chips)
-        view.cornerRadius = 8
-        view.contentInsets = UIEdgeInsets(verticalInset: 4, horizontalInset: 3)
+        view.contentInsets = UIEdgeInsets(verticalInset: 3, horizontalInset: 4)
+        view.cornerRadius = 7
     }
 
     let badgeView: RoundedView = .create { view in
@@ -59,7 +59,7 @@ final class WalletSwitchContentView: UIView {
 
         if let typeIcon = viewModel.icon {
             typeView.isHidden = false
-            typeView.wrappedView.image = typeIcon
+            typeView.wrappedView.image = typeIcon.tinted(with: R.color.colorIconChip()!)
         } else {
             typeView.isHidden = true
             typeView.wrappedView.image = nil
@@ -69,6 +69,11 @@ final class WalletSwitchContentView: UIView {
     }
 
     private func setupLayout() {
+        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        indicatorImageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        typeView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        badgeView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
         let contentView = UIView.hStack(
             alignment: .center,
             distribution: .fill,
