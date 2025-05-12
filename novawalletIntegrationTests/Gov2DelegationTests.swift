@@ -258,7 +258,7 @@ final class Gov2DelegationTests: XCTestCase {
             emptyIdentitiesWhenNoStorage: true
         )
         
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -268,7 +268,7 @@ final class Gov2DelegationTests: XCTestCase {
             chain: chain,
             statsOperationFactory: statsOperationFactory,
             metadataOperationFactory: metadataOperationFactory,
-            identityProxyFactory: identityProxyFactory
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory
         )
     }
     

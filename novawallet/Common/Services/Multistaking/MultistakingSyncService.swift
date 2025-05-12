@@ -316,7 +316,7 @@ final class MultistakingSyncService {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityFactory
@@ -326,7 +326,7 @@ final class MultistakingSyncService {
             requestFactory: requestFactory,
             connection: connection,
             runtimeProvider: runtimeService,
-            identityProxyFactory: identityProxyFactory,
+            identityFactory: identityDelegatedAccountFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 

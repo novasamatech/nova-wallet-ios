@@ -27,7 +27,7 @@ struct DelegationReferendumVotersViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityProxyFactory = IdentityProxyFactory(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -38,7 +38,7 @@ struct DelegationReferendumVotersViewFactory {
         let votersLocalWrapperFactory = ReferendumVotersLocalWrapperFactory(
             chain: chain,
             operationFactory: subquery,
-            identityProxyFactory: identityProxyFactory,
+            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
             metadataOperationFactory: GovernanceDelegateMetadataFactory()
         )
 

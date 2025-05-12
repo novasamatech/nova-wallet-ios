@@ -9,7 +9,7 @@ final class GovernanceDelegateSearchInteractor {
     let lastVotedDays: Int
     let runtimeService: RuntimeProviderProtocol
     let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
@@ -24,7 +24,7 @@ final class GovernanceDelegateSearchInteractor {
         lastVotedDays: Int,
         runtimeService: RuntimeProviderProtocol,
         metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
@@ -35,7 +35,7 @@ final class GovernanceDelegateSearchInteractor {
         self.lastVotedDays = lastVotedDays
         self.runtimeService = runtimeService
         self.metadataProvider = metadataProvider
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
@@ -121,7 +121,7 @@ extension GovernanceDelegateSearchInteractor: GovernanceDelegateSearchInteractor
     }
 
     func performDelegateSearch(accountId: AccountId) {
-        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { [accountId] })
+        let wrapper = identityDelegatedAccountFactory.createIdentityWrapperByAccountId(for: { [accountId] })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

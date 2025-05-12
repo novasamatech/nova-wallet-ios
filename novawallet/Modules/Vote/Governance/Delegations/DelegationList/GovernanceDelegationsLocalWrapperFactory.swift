@@ -18,13 +18,13 @@ final class GovernanceDelegationsLocalWrapperFactory: GovOffchainModelWrapperFac
     init(
         chain: ChainModel,
         operationFactory: GovernanceOffchainDelegationsFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     ) {
         self.operationFactory = operationFactory
 
         super.init(
             chain: chain,
-            identityParams: .init(proxyFactory: identityProxyFactory) { delegations in
+            identityParams: .init(proxyFactory: identityDelegatedAccountFactory) { delegations in
                 delegations.compactMap { try? $0.delegator.toAccountId() }
             }
         )

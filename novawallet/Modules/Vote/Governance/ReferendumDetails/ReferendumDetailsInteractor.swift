@@ -13,7 +13,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -49,7 +49,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
@@ -66,7 +66,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
         self.spendingAmountExtractor = spendingAmountExtractor
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
@@ -203,7 +203,7 @@ final class ReferendumDetailsInteractor: AnyProviderAutoCleaning {
 
         let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
 
-        let wrapper = identityProxyFactory.createIdentityWrapper(for: accountIdsClosure)
+        let wrapper = identityDelegatedAccountFactory.createIdentityWrapper(for: accountIdsClosure)
 
         executeCancellable(
             wrapper: wrapper,

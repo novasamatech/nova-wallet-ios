@@ -16,13 +16,13 @@ final class GovernanceOffchainVotingWrapperFactory: GovOffchainModelWrapperFacto
     init(
         chain: ChainModel,
         operationFactory: GovernanceOffchainVotingFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     ) {
         self.operationFactory = operationFactory
 
         super.init(
             chain: chain,
-            identityParams: .init(proxyFactory: identityProxyFactory) { voting in
+            identityParams: .init(proxyFactory: identityDelegatedAccountFactory) { voting in
                 Array(voting.getAllDelegates())
             }
         )

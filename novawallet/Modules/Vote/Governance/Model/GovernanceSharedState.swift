@@ -238,7 +238,7 @@ final class GovernanceSharedState {
                 emptyIdentitiesWhenNoStorage: true
             )
 
-            let identityProxyFactory = IdentityProxyFactory(
+            let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
                 originChain: option.chain,
                 chainRegistry: chainRegistry,
                 identityOperationFactory: identityOperationFactory
@@ -249,7 +249,7 @@ final class GovernanceSharedState {
             return GovernanceOffchainVotingWrapperFactory(
                 chain: option.chain,
                 operationFactory: fetchOperationFactory,
-                identityProxyFactory: identityProxyFactory
+                identityDelegatedAccountFactory: identityDelegatedAccountFactory
             )
         }
     }
@@ -273,7 +273,7 @@ final class GovernanceSharedState {
                 emptyIdentitiesWhenNoStorage: true
             )
 
-            let identityProxyFactory = IdentityProxyFactory(
+            let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
                 originChain: option.chain,
                 chainRegistry: chainRegistry,
                 identityOperationFactory: identityOperationFactory
@@ -283,7 +283,7 @@ final class GovernanceSharedState {
                 chain: option.chain,
                 statsOperationFactory: statsOperationFactory,
                 metadataOperationFactory: delegateMetadataFactory,
-                identityProxyFactory: identityProxyFactory
+                identityDelegatedAccountFactory: identityDelegatedAccountFactory
             )
         }
     }

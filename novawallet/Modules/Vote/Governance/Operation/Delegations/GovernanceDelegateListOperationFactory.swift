@@ -5,25 +5,25 @@ import SubstrateSdk
 final class GovernanceDelegateListOperationFactory {
     let statsOperationFactory: GovernanceDelegateStatsFactoryProtocol
     let metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol
-    let identityProxyFactory: IdentityProxyFactoryProtocol
+    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     let chain: ChainModel
 
     init(
         chain: ChainModel,
         statsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
         metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol
+        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
     ) {
         self.chain = chain
         self.statsOperationFactory = statsOperationFactory
         self.metadataOperationFactory = metadataOperationFactory
-        self.identityProxyFactory = identityProxyFactory
+        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
     }
 
     private func createIdentityWrapper(
         dependingOn statsOperation: BaseOperation<[GovernanceDelegateStats]>
     ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
-        identityProxyFactory.createIdentityWrapperByAccountId(
+        identityDelegatedAccountFactory.createIdentityWrapperByAccountId(
             for: {
                 let stats = try statsOperation.extractNoCancellableResultData()
                 return try stats.map { try $0.address.toAccountId() }

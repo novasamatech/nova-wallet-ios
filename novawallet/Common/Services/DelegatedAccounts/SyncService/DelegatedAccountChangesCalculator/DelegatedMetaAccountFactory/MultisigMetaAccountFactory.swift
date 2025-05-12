@@ -6,8 +6,18 @@ class MultisigMetaAccountFactory {
     init(chainModel: ChainModel) {
         self.chainModel = chainModel
     }
+}
 
-    private func updateMultisigStatus(
+private extension MultisigMetaAccountFactory {
+    enum MultisigMetaAccountType {
+        case singleChain(ChainAccountModel, MultisigModel)
+        case universalSubstrate(AccountId, MultisigModel)
+        case universamEvm(AccountId, MultisigModel)
+    }
+}
+
+private extension MultisigMetaAccountFactory {
+    func updateMultisigStatus(
         for metaAccount: ManagedMetaAccountModel,
         _ newStatus: MultisigModel.Status,
         multisigType: MetaAccountModel.MultisigAccountType
@@ -34,54 +44,111 @@ class MultisigMetaAccountFactory {
 
         return metaAccount.replacingInfo(newInfo)
     }
+
+    func createMultisigType(
+        for signatory: AccountId,
+        discoveredMultisig: DiscoveredMultisig,
+        localMetaAccounts: [ManagedMetaAccountModel]
+    ) -> MultisigMetaAccountType? {
+        let signatoryWallet = localMetaAccounts.first { wallet in
+            wallet.info.chainAccounts.contains { $0.accountId == signatory } &&
+                wallet.info.substrateAccountId == signatory &&
+                wallet.info.ethereumAddress == signatory
+        }
+
+        guard let signatoryWallet else { return nil }
+
+        let multisigModel = MultisigModel(
+            accountId: discoveredMultisig.accountId,
+            signatory: signatory,
+            otherSignatories: discoveredMultisig.otherSignatories(than: signatory),
+            threshold: discoveredMultisig.threshold,
+            status: .new
+        )
+
+        if signatoryWallet.info.chainAccounts.isEmpty {
+            if let substrateAccountId = signatoryWallet.info.substrateAccountId {
+                return .universalSubstrate(substrateAccountId, multisigModel)
+            } else if let ethereumAddress = signatoryWallet.info.ethereumAddress {
+                return .universamEvm(ethereumAddress, multisigModel)
+            } else {
+                return nil
+            }
+        } else {
+            guard let chainAccount = signatoryWallet.info.chainAccounts.first(where: {
+                $0.chainId == chainModel.chainId && $0.accountId == signatory
+            }) else {
+                return nil
+            }
+
+            return .singleChain(chainAccount, multisigModel)
+        }
+    }
 }
 
 extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
         for delegatedAccount: DelegatedAccountProtocol,
         delegatorAccountId: AccountId,
-        using identities: [AccountId: AccountIdentity]
+        using identities: [AccountId: AccountIdentity],
+        localMetaAccounts: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel {
         guard let multisig = delegatedAccount as? DiscoveredMultisig else {
             throw DelegatedAccountError.invalidAccountType
         }
 
-        let cryptoType: MultiassetCryptoType = !chainModel.isEthereumBased ? .sr25519 : .ethereumEcdsa
-
-        let multisigModel = MultisigModel(
-            accountId: multisig.accountId,
-            signatory: delegatorAccountId,
-            otherSignatories: multisig.otherSignatories(than: delegatorAccountId),
-            threshold: multisig.threshold,
-            status: .new
-        )
-
-        let chainAccountModel = ChainAccountModel(
-            chainId: chainModel.chainId,
-            accountId: delegatorAccountId,
-            publicKey: delegatorAccountId,
-            cryptoType: cryptoType.rawValue,
-            proxy: nil,
-            multisig: multisigModel
-        )
-
         let name = try identities[multisig.accountId]?.displayName
             ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
 
-        let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
-            metaId: UUID().uuidString,
-            name: name,
-            substrateAccountId: nil,
-            substrateCryptoType: nil,
-            substratePublicKey: nil,
-            ethereumAddress: nil,
-            ethereumPublicKey: nil,
-            chainAccounts: [chainAccountModel],
-            type: .multisig,
-            multisig: nil
-        ))
+        guard let multisigAccountType = createMultisigType(
+            for: delegatorAccountId,
+            discoveredMultisig: multisig,
+            localMetaAccounts: localMetaAccounts
+        ) else {
+            throw DelegatedAccountError.invalidAccountType
+        }
 
-        return newWallet
+        return switch multisigAccountType {
+        case let .universalSubstrate(accountId, multisigModel):
+            ManagedMetaAccountModel(info: MetaAccountModel(
+                metaId: UUID().uuidString,
+                name: name,
+                substrateAccountId: accountId,
+                substrateCryptoType: nil,
+                substratePublicKey: nil,
+                ethereumAddress: nil,
+                ethereumPublicKey: nil,
+                chainAccounts: [],
+                type: .multisig,
+                multisig: multisigModel
+            ))
+        case let .universamEvm(address, multisigModel):
+            ManagedMetaAccountModel(info: MetaAccountModel(
+                metaId: UUID().uuidString,
+                name: name,
+                substrateAccountId: nil,
+                substrateCryptoType: nil,
+                substratePublicKey: nil,
+                ethereumAddress: address,
+                ethereumPublicKey: nil,
+                chainAccounts: [],
+                type: .multisig,
+                multisig: multisigModel
+            ))
+        case let .singleChain(chainAccount, multisigModel):
+            ManagedMetaAccountModel(info: MetaAccountModel(
+                metaId: UUID().uuidString,
+                name: name,
+                substrateAccountId: nil,
+                substrateCryptoType: nil,
+                substratePublicKey: nil,
+                ethereumAddress: nil,
+                ethereumPublicKey: nil,
+                chainAccounts: [chainAccount.replacingMultisig(multisigModel)],
+                type: .multisig,
+                multisig: nil
+            ))
+        }
     }
 
     func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {

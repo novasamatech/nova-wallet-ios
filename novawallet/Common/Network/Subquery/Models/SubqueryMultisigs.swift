@@ -10,7 +10,7 @@ enum SubqueryMultisigs {
     }
 
     struct RemoteMultisig: Decodable {
-        let id: String
+        @HexCodable var id: AccountId
         let threshold: Int
         let signatories: SubqueryNodes<RemoteSignatoryWrapper>
     }
@@ -20,7 +20,7 @@ enum SubqueryMultisigs {
     }
 
     struct RemoteSignatory: Decodable {
-        let id: String
+        @HexCodable var id: AccountId
     }
 }
 

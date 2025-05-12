@@ -62,7 +62,7 @@ struct MythosStkYourCollatorsViewFactory {
             return nil
         }
 
-        let identityProxyFactory = IdentityProxyFactory.createDefaultProxy(
+        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory.createDefaultProxy(
             from: chainAsset.chain,
             chainRegistry: state.chainRegistry
         )
@@ -72,7 +72,7 @@ struct MythosStkYourCollatorsViewFactory {
             rewardsService: state.rewardCalculatorService,
             runtimeProvider: runtimeProvider,
             connection: connection,
-            identityFactory: identityProxyFactory,
+            identityFactory: identityDelegatedAccountFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

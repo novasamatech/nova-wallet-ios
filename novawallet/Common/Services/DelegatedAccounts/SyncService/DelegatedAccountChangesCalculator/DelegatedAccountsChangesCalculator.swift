@@ -50,6 +50,7 @@ private extension DelegatedAccountsChangesCalculator {
         for delegatorAccountId: AccountId,
         remoteDelegatedAccounts: [DelegatedAccountProtocol],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
+        localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
         let updatedMetaAccounts = try remoteDelegatedAccounts.compactMap { remoteDelegatedAccount in
@@ -57,6 +58,7 @@ private extension DelegatedAccountsChangesCalculator {
                 remoteDelegatedAccount,
                 delegatorAccountId: delegatorAccountId,
                 localDelegatedAccounts: localDelegatedAccounts,
+                localMetaAccounts: localMetaAccounts,
                 identities: identities
             )
         }
@@ -77,6 +79,7 @@ private extension DelegatedAccountsChangesCalculator {
         _ delegatedAccount: DelegatedAccountProtocol,
         delegatorAccountId: AccountId,
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
+        localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> ManagedMetaAccountModel? {
         guard let factory = getFactoryForDelegatedAccount(delegatedAccount) else {
@@ -96,7 +99,8 @@ private extension DelegatedAccountsChangesCalculator {
             try factory.createMetaAccount(
                 for: delegatedAccount,
                 delegatorAccountId: delegatorAccountId,
-                using: identities
+                using: identities,
+                localMetaAccounts: localMetaAccounts
             )
         }
     }
@@ -172,6 +176,7 @@ extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalcualtor
                 for: delegatorAccountId,
                 remoteDelegatedAccounts: remoteDelegatedAccounts[delegatorAccountId] ?? [],
                 localDelegatedAccounts: localDelegatedAccounts,
+                localMetaAccounts: chainMetaAccounts,
                 identities: identities
             )
         }
