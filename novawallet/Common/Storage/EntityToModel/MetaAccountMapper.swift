@@ -19,7 +19,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             return try transform(chainAccountEntity: chainAccountEntity)
         } ?? []
 
-        let multisig: MultisigModel? = try transform(multisigEntity: entity.multisig)
+        let multisig: DelegatedAccount.MultisigAccountModel? = try transform(multisigEntity: entity.multisig)
 
         let substrateAccountId = try entity.substrateAccountId.map { try Data(hexString: $0) }
         let substrateCryptoType = UInt8(bitPattern: Int8(entity.substrateCryptoType))
@@ -40,7 +40,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         )
     }
 
-    func transform(multisigEntity: CDMultisig?) throws -> MultisigModel? {
+    func transform(multisigEntity: CDMultisig?) throws -> DelegatedAccount.MultisigAccountModel? {
         guard let multisigEntity else { return nil }
 
         let threshold = Int(multisigEntity.threshold)
@@ -50,9 +50,9 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             .split(by: .comma)
             .compactMap { try Data(hexString: $0) } ?? []
 
-        let status = MultisigModel.Status(rawValue: multisigEntity.status!)!
+        let status = DelegatedAccount.Status(rawValue: multisigEntity.status!)!
 
-        return MultisigModel(
+        return DelegatedAccount.MultisigAccountModel(
             accountId: multisigAccountId,
             signatory: signatoryAccountId,
             otherSignatories: otherSignatories,
@@ -66,10 +66,10 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             let accountId = try Data(hexString: $0.proxyAccountId!)
             let type = Proxy.ProxyType(id: $0.type!)
 
-            return ProxyAccountModel(
+            return DelegatedAccount.ProxyAccountModel(
                 type: type,
                 accountId: accountId,
-                status: ProxyAccountModel.Status(rawValue: $0.status!)!
+                status: DelegatedAccount.Status(rawValue: $0.status!)!
             )
         }
 
@@ -109,8 +109,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             }
             try populateMultisigEntity(
                 entity.multisig,
-                from: multisig,
-                using: context
+                from: multisig
             )
         }
 
@@ -166,8 +165,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             }
             try populateMultisigEntity(
                 chainAccounEntity.multisig,
-                from: multisig,
-                using: context
+                from: multisig
             )
         } else {
             chainAccounEntity.multisig = nil
@@ -176,8 +174,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
 
     func populateMultisigEntity(
         _ entity: CDMultisig?,
-        from model: MultisigModel,
-        using _: NSManagedObjectContext
+        from model: DelegatedAccount.MultisigAccountModel
     ) throws {
         entity?.multisigAccountId = model.accountId.toHex()
         entity?.signatory = model.signatory.toHex()

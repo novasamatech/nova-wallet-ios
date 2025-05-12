@@ -10,16 +10,16 @@ class MultisigMetaAccountFactory {
 
 private extension MultisigMetaAccountFactory {
     enum MultisigMetaAccountType {
-        case singleChain(ChainAccountModel, MultisigModel)
-        case universalSubstrate(AccountId, MultisigModel)
-        case universamEvm(AccountId, MultisigModel)
+        case singleChain(ChainAccountModel, DelegatedAccount.MultisigAccountModel)
+        case universalSubstrate(AccountId, DelegatedAccount.MultisigAccountModel)
+        case universamEvm(AccountId, DelegatedAccount.MultisigAccountModel)
     }
 }
 
 private extension MultisigMetaAccountFactory {
     func updateMultisigStatus(
         for metaAccount: ManagedMetaAccountModel,
-        _ newStatus: MultisigModel.Status,
+        _ newStatus: DelegatedAccount.Status,
         multisigType: MetaAccountModel.MultisigAccountType
     ) -> ManagedMetaAccountModel {
         let newInfo: MetaAccountModel?
@@ -58,7 +58,7 @@ private extension MultisigMetaAccountFactory {
 
         guard let signatoryWallet else { return nil }
 
-        let multisigModel = MultisigModel(
+        let multisigModel = DelegatedAccount.MultisigAccountModel(
             accountId: discoveredMultisig.accountId,
             signatory: signatory,
             otherSignatories: discoveredMultisig.otherSignatories(than: signatory),
@@ -88,7 +88,7 @@ private extension MultisigMetaAccountFactory {
 
 extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
-        for delegatedAccount: DelegatedAccountProtocol,
+        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId,
         using identities: [AccountId: AccountIdentity],
         localMetaAccounts: [ManagedMetaAccountModel]
@@ -108,14 +108,16 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
             throw DelegatedAccountError.invalidAccountType
         }
 
+        let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
+
         return switch multisigAccountType {
         case let .universalSubstrate(accountId, multisigModel):
             ManagedMetaAccountModel(info: MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: name,
                 substrateAccountId: accountId,
-                substrateCryptoType: nil,
-                substratePublicKey: nil,
+                substrateCryptoType: cryptoType.rawValue,
+                substratePublicKey: accountId,
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: [],
@@ -127,10 +129,10 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
                 metaId: UUID().uuidString,
                 name: name,
                 substrateAccountId: nil,
-                substrateCryptoType: nil,
+                substrateCryptoType: cryptoType.rawValue,
                 substratePublicKey: nil,
                 ethereumAddress: address,
-                ethereumPublicKey: nil,
+                ethereumPublicKey: address,
                 chainAccounts: [],
                 type: .multisig,
                 multisig: multisigModel
@@ -178,7 +180,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
     func matchesDelegatedAccount(
         _ metaAccount: ManagedMetaAccountModel,
-        delegatedAccount: DelegatedAccountProtocol,
+        delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId
     ) -> Bool {
         guard
@@ -228,7 +230,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         metaAccount.info.multisigAccount() != nil
     }
 
-    func canHandle(_ delegatedAccount: any DelegatedAccountProtocol) -> Bool {
+    func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
         delegatedAccount is DiscoveredMultisig
     }
 }

@@ -9,8 +9,8 @@ class ProxyMetaAccountFactory {
 
     private func updateProxyStatus(
         for metaAccount: ManagedMetaAccountModel,
-        _ newStatus: ProxyAccountModel.Status,
-        proxy: ProxyAccountModel
+        _ newStatus: DelegatedAccount.Status,
+        proxy: DelegatedAccount.ProxyAccountModel
     ) -> ManagedMetaAccountModel {
         let updatedProxy = proxy.replacingStatus(newStatus)
 
@@ -25,7 +25,7 @@ class ProxyMetaAccountFactory {
 
 extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
-        for delegatedAccount: DelegatedAccountProtocol,
+        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId,
         using identities: [AccountId: AccountIdentity],
         localMetaAccounts _: [ManagedMetaAccountModel]
@@ -93,7 +93,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
     func matchesDelegatedAccount(
         _ metaAccount: ManagedMetaAccountModel,
-        delegatedAccount: DelegatedAccountProtocol,
+        delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId
     ) -> Bool {
         guard
@@ -128,7 +128,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         return chainAccount.proxy != nil
     }
 
-    func canHandle(_ delegatedAccount: any DelegatedAccountProtocol) -> Bool {
+    func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
         delegatedAccount is ProxyAccount
     }
 }

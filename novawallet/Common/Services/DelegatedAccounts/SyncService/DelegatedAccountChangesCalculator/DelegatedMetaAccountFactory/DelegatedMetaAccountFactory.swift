@@ -2,7 +2,7 @@ import Foundation
 
 protocol DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
-        for delegatedAccount: DelegatedAccountProtocol,
+        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId,
         using identities: [AccountId: AccountIdentity],
         localMetaAccounts: [ManagedMetaAccountModel]
@@ -14,7 +14,7 @@ protocol DelegatedMetaAccountFactoryProtocol {
 
     func matchesDelegatedAccount(
         _ metaAccount: ManagedMetaAccountModel,
-        delegatedAccount: DelegatedAccountProtocol,
+        delegatedAccount: DiscoveredDelegatedAccountProtocol,
         delegatorAccountId: AccountId
     ) -> Bool
 
@@ -22,5 +22,5 @@ protocol DelegatedMetaAccountFactoryProtocol {
 
     func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool
 
-    func canHandle(_ delegatedAccount: DelegatedAccountProtocol) -> Bool
+    func canHandle(_ delegatedAccount: DiscoveredDelegatedAccountProtocol) -> Bool
 }
