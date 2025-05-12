@@ -101,6 +101,19 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         entity.ethereumAddress = model.ethereumAddress?.toHex()
         entity.type = Int16(bitPattern: UInt16(model.type.rawValue))
 
+        if let multisig = model.multisig {
+            if entity.multisig == nil {
+                let multisig = CDMultisig(context: context)
+                multisig.metaAccount = entity
+                entity.multisig = multisig
+            }
+            try populateMultisigEntity(
+                entity.multisig,
+                from: multisig,
+                using: context
+            )
+        }
+
         for chainAccount in model.chainAccounts {
             var chainAccountEntity = entity.chainAccounts?.first {
                 if let entity = $0 as? CDChainAccount,
@@ -151,17 +164,29 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
                 multisig.chainAccount = chainAccounEntity
                 chainAccounEntity.multisig = multisig
             }
-            chainAccounEntity.multisig?.multisigAccountId = multisig.accountId.toHex()
-            chainAccounEntity.multisig?.signatory = multisig.signatory.toHex()
-            chainAccounEntity.multisig?.otherSignatories = multisig.otherSignatories
-                .map { $0.toHex() }
-                .joined(with: .comma)
-            chainAccounEntity.multisig?.threshold = Int64(multisig.threshold)
-            chainAccounEntity.multisig?.status = multisig.status.rawValue
-            chainAccounEntity.multisig?.identifier = multisig.identifier
+            try populateMultisigEntity(
+                chainAccounEntity.multisig,
+                from: multisig,
+                using: context
+            )
         } else {
             chainAccounEntity.multisig = nil
         }
+    }
+
+    func populateMultisigEntity(
+        _ entity: CDMultisig?,
+        from model: MultisigModel,
+        using _: NSManagedObjectContext
+    ) throws {
+        entity?.multisigAccountId = model.accountId.toHex()
+        entity?.signatory = model.signatory.toHex()
+        entity?.otherSignatories = model.otherSignatories
+            .map { $0.toHex() }
+            .joined(with: .comma)
+        entity?.threshold = Int64(model.threshold)
+        entity?.status = model.status.rawValue
+        entity?.identifier = model.identifier
     }
 }
 
