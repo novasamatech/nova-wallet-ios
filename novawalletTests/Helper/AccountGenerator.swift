@@ -52,7 +52,7 @@ enum AccountGenerator {
     }
     
     static func generateProxiedChainAccount(
-        for model: ProxyAccountModel,
+        for model: DelegatedAccount.ProxyAccountModel,
         chainId: ChainModel.Id
     ) -> ChainAccountModel {
         ChainAccountModel(
@@ -66,7 +66,7 @@ enum AccountGenerator {
     }
     
     static func generateMultisigChainAccount(
-        for model: MultisigModel,
+        for model: DelegatedAccount.MultisigAccountModel,
         chainId: ChainModel.Id
     ) -> ChainAccountModel {
         ChainAccountModel(
