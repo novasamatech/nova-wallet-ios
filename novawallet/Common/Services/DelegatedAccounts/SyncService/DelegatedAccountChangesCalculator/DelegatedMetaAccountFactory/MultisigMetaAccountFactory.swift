@@ -51,8 +51,8 @@ private extension MultisigMetaAccountFactory {
         localMetaAccounts: [ManagedMetaAccountModel]
     ) -> MultisigMetaAccountType? {
         let signatoryWallet = localMetaAccounts.first { wallet in
-            wallet.info.chainAccounts.contains { $0.accountId == signatory } &&
-                wallet.info.substrateAccountId == signatory &&
+            wallet.info.chainAccounts.contains { $0.accountId == signatory } ||
+                wallet.info.substrateAccountId == signatory ||
                 wallet.info.ethereumAddress == signatory
         }
 
@@ -97,7 +97,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
             throw DelegatedAccountError.invalidAccountType
         }
 
-        let name = try identities[multisig.accountId]?.displayName
+        let name = try identities[delegatorAccountId]?.displayName
             ?? multisig.accountId.toAddress(using: chainModel.chainFormat)
 
         guard let multisigAccountType = createMultisigType(
