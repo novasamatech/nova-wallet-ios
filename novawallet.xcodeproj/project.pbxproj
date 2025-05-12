@@ -1551,8 +1551,6 @@
 		2D6C5FA32CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */; };
 		2D6CC2522DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2512DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift */; };
 		2D6CC2542DD1DAE500FF5FA8 /* DelegatedAccountSourcesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2532DD1DAE500FF5FA8 /* DelegatedAccountSourcesFactory.swift */; };
-		2D6CC2572DD1E94F00FF5FA8 /* ProxyAccountsChangesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2562DD1E94F00FF5FA8 /* ProxyAccountsChangesCalculator.swift */; };
-		2D6CC2592DD1EC9100FF5FA8 /* MultisigAccountsChangesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2582DD1EC9100FF5FA8 /* MultisigAccountsChangesCalculator.swift */; };
 		2D6CC25B2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25A2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift */; };
 		2D6CC25D2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25C2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift */; };
 		2D6F51A22CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */; };
@@ -7413,8 +7411,6 @@
 		2D6C5FA22CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentTabLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D6CC2512DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedMetaAccountFactory.swift; sourceTree = "<group>"; };
 		2D6CC2532DD1DAE500FF5FA8 /* DelegatedAccountSourcesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountSourcesFactory.swift; sourceTree = "<group>"; };
-		2D6CC2562DD1E94F00FF5FA8 /* ProxyAccountsChangesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyAccountsChangesCalculator.swift; sourceTree = "<group>"; };
-		2D6CC2582DD1EC9100FF5FA8 /* MultisigAccountsChangesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigAccountsChangesCalculator.swift; sourceTree = "<group>"; };
 		2D6CC25A2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMetaAccountFactory.swift; sourceTree = "<group>"; };
 		2D6CC25C2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigMetaAccountFactory.swift; sourceTree = "<group>"; };
 		2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceChainSelectionViewFactory.swift; sourceTree = "<group>"; };
@@ -15630,8 +15626,6 @@
 			isa = PBXGroup;
 			children = (
 				7725EB432B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift */,
-				2D6CC2562DD1E94F00FF5FA8 /* ProxyAccountsChangesCalculator.swift */,
-				2D6CC2582DD1EC9100FF5FA8 /* MultisigAccountsChangesCalculator.swift */,
 			);
 			path = DelegatedAccountChangesCalculator;
 			sourceTree = "<group>";
@@ -29223,7 +29217,6 @@
 				8455F1962A1DD705003F072D /* SubqueryFilterBuilder.swift in Sources */,
 				0C83775D2A4EEB380072102D /* AssetListState.swift in Sources */,
 				848FFE9525E6DF2200652AA5 /* PagedKeysRequest.swift in Sources */,
-				2D6CC2592DD1EC9100FF5FA8 /* MultisigAccountsChangesCalculator.swift in Sources */,
 				8428766B24ADF51D00D91AD8 /* UIViewController+Content.swift in Sources */,
 				77CB33D22A38893900B6709A /* Web3NameIntegrityVerifierWithCanonicalizationData.swift in Sources */,
 				84468A09286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift in Sources */,
@@ -31139,7 +31132,6 @@
 				84100F3C26A60E4C00A5054E /* YourValidatorListWarningSectionView.swift in Sources */,
 				58F693958EF69F59D7C9760E /* StakingRewardPayoutsInteractor.swift in Sources */,
 				88F19DDE28D8D0A100F6E459 /* Either.swift in Sources */,
-				2D6CC2572DD1E94F00FF5FA8 /* ProxyAccountsChangesCalculator.swift in Sources */,
 				50758C9BBB27AE5732FF78BA /* StakingRewardPayoutsViewController.swift in Sources */,
 				AEF507AF262423FD0098574D /* HmacSigner.swift in Sources */,
 				773618712B874C6E00C922FB /* SelectTracksProtocols.swift in Sources */,
