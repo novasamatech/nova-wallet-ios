@@ -56,7 +56,7 @@ private extension SubqueryMultisigsOperationFactory {
         response.accounts.nodes.map { node in
             DiscoveredMultisig(
                 accountId: node.id,
-                signatories: node.signatories.nodes.map { $0.signatory.id },
+                signatories: node.signatories.nodes.map(\.signatory.id),
                 threshold: node.threshold
             )
         }
