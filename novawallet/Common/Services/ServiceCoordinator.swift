@@ -194,7 +194,6 @@ extension ServiceCoordinator {
 
         let proxySyncService = DelegatedAccountSyncService(
             chainRegistry: chainRegistry,
-            proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .allSatisfies([.enabledChains, .hasProxy]),
