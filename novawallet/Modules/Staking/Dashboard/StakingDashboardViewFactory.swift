@@ -4,7 +4,7 @@ import Foundation_iOS
 struct StakingDashboardViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
@@ -19,7 +19,7 @@ struct StakingDashboardViewFactory {
 
         let wireframe = StakingDashboardWireframe(
             stateObserver: stateObserver,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         )
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
