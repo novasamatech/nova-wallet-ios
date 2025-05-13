@@ -103,7 +103,7 @@ class WalletsListViewController<
             ).uppercased()
         case .multisig:
             icon = R.image.iconMultisig()
-            title = R.string.localizable.commonMultisig(
+            title = R.string.localizable.walletListMultisig(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
         case .genericLedger:

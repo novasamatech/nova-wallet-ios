@@ -1848,3 +1848,6 @@
 "polkadot.vault.qr.type.legacy" = "Legacy";
 "parity.signer.scan.title_9_7_0" = "Sign with %@";
 "common.multisig" = "Multisig";
+"common.signer" = "Signer";
+"wallet.list.multisig" = "Shared contol (multisig)";
+"multisig.details.hint" = "Transactions from this wallet require approval from multiple signers. This account is one of the signers:";
