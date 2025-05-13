@@ -5,9 +5,8 @@ import Operation_iOS
 final class MultisigAccountsRepository {
     private let chain: ChainModel
 
-    private let mutex = NSLock()
-
-    private var multisigsBySignatories: [AccountId: [DiscoveredMultisig]] = [:]
+    @Atomic(defaultValue: [:])
+    private var multisigsBySignatories: [AccountId: [DiscoveredMultisig]]
 
     init(chain: ChainModel) {
         self.chain = chain
@@ -61,9 +60,7 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
                     }
                 }
 
-            self.mutex.lock()
             self.multisigsBySignatories.merge(mappedFetchResult) { $0 + $1 }
-            self.mutex.unlock()
 
             let result = cachedMultisigsForSignatories
                 .merging(mappedFetchResult) { $0 + $1 }
