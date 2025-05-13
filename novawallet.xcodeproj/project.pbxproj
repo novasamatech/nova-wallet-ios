@@ -1561,6 +1561,7 @@
 		2D6CC2682DD26CA700FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2632DD26BC800FF5FA8 /* DelegatedAccount+ProxyAccountModel.swift */; };
 		2D6CC26A2DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2692DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift */; };
 		2D6CC26B2DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2692DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift */; };
+		2D6CC26C2DD35CB100FF5FA8 /* DelegateIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25F2DD212D600FF5FA8 /* DelegateIdentifier.swift */; };
 		2D6F51A22CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */; };
 		2D6F51A52CDBCFAC00564C00 /* AssetListStyleSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */; };
 		2D6F51A72CDD035900564C00 /* AssetDecorationAttributesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */; };
@@ -27992,6 +27993,7 @@
 				2DC08BE42DCCF98200C690D4 /* MetaAccountModel+Identicon.swift in Sources */,
 				0CCD18B22BA1C58D0068D73A /* Decimal+String.swift in Sources */,
 				778215C42B914DF8006C7D13 /* TransferHandler.swift in Sources */,
+				2D6CC26C2DD35CB100FF5FA8 /* DelegateIdentifier.swift in Sources */,
 				778215C92B914E6F006C7D13 /* TransferType.swift in Sources */,
 				7778FE5A2B910A9B0023E801 /* LongrunOperation.swift in Sources */,
 				0CCD18B12BA1C5830068D73A /* ChainAssetDisplayInfo.swift in Sources */,

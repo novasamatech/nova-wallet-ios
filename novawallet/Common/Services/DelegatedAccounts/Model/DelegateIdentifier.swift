@@ -3,10 +3,10 @@ import Foundation
 struct DelegateIdentifier: Hashable {
     let delegatorAccountId: AccountId
     let delegateAccountId: AccountId
-    let delegateType: DelegateType
+    let delegateType: DelegationType
 }
 
-enum DelegateType: Hashable {
+enum DelegationType: Hashable {
     case proxy(Proxy.ProxyType)
     case multisig
 }

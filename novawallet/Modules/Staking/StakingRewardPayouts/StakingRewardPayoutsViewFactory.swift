@@ -72,7 +72,7 @@ final class StakingRewardPayoutsViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -99,7 +99,7 @@ final class StakingRewardPayoutsViewFactory {
             storageRequestFactory: storageRequestFactory,
             engine: connection,
             operationManager: operationManager,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             payoutInfoFactory: payoutInfoFactory,
             logger: Logger.shared
         )

@@ -9,7 +9,7 @@ final class ValidatorOperationFactory {
     let rewardService: RewardCalculatorServiceProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
-    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let engine: JSONRPCEngine
 
     init(
@@ -19,7 +19,7 @@ final class ValidatorOperationFactory {
         storageRequestFactory: StorageRequestFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+        identityProxyFactory: IdentityProxyFactoryProtocol
     ) {
         self.chainInfo = chainInfo
         self.eraValidatorService = eraValidatorService
@@ -27,7 +27,7 @@ final class ValidatorOperationFactory {
         self.storageRequestFactory = storageRequestFactory
         self.runtimeService = runtimeService
         self.engine = engine
-        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
+        self.identityProxyFactory = identityProxyFactory
     }
 
     func createUnappliedSlashesWrapper(

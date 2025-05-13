@@ -54,23 +54,29 @@ extension MetaAccountModel {
     func delegationId() -> MetaAccountDelegationId? {
         switch type {
         case .multisig:
-            guard let multisigModel = multisigAccount()?.multisig.multisigAccount else {
-                return nil
-            }
+            guard
+                let (chainAccount, multisigModel) = multisigAccount()?.multisig,
+                let multisigModel
+            else { return nil }
 
             return MetaAccountDelegationId(
                 delegatedAccountId: multisigModel.accountId,
-                delegatorId: multisigModel.signatory
+                delegatorId: multisigModel.signatory,
+                chainId: chainAccount?.chainId,
+                delegationType: .multisig
             )
         case .proxied:
             guard
                 let proxyAccountId = proxy()?.accountId,
-                let proxiedAccount = chainAccounts.first(where: { $0.proxy?.accountId == proxyAccountId })
+                let proxiedAccount = chainAccounts.first(where: { $0.proxy?.accountId == proxyAccountId }),
+                let proxy = proxiedAccount.proxy
             else { return nil }
 
             return MetaAccountDelegationId(
                 delegatedAccountId: proxyAccountId,
-                delegatorId: proxiedAccount.accountId
+                delegatorId: proxiedAccount.accountId,
+                chainId: proxiedAccount.chainId,
+                delegationType: .proxy(proxy.type)
             )
         default:
             return nil

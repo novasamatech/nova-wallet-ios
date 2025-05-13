@@ -24,14 +24,14 @@ final class ParaStkCollatorsOperationFactory {
     let requestFactory: StorageRequestFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
-    let identityFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityFactory: IdentityProxyFactoryProtocol
     let chainFormat: ChainFormat
 
     init(
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        identityFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityFactory: IdentityProxyFactoryProtocol,
         chainFormat: ChainFormat
     ) {
         self.requestFactory = requestFactory

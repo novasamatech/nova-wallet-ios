@@ -65,12 +65,12 @@ private extension DelegatedAccountsChangesCalculator {
 
         let revokedAccounts = findRevokedAccounts(
             for: delegatorAccountId,
-            remoteDelegatedAccounts: remoteDelegatedAccounts,
+            updatedDelegatedAccounts: updatedMetaAccounts,
             localDelegatedAccounts: localDelegatedAccounts
         )
 
         return SyncChanges(
-            newOrUpdatedItems: updatedMetaAccounts + revokedAccounts.values,
+            newOrUpdatedItems: updatedMetaAccounts + revokedAccounts,
             removedItems: []
         )
     }
@@ -123,28 +123,22 @@ private extension DelegatedAccountsChangesCalculator {
 
     func findRevokedAccounts(
         for delegatorAccountId: AccountId,
-        remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
+        updatedDelegatedAccounts: [ManagedMetaAccountModel],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel]
-    ) -> [DelegateIdentifier: ManagedMetaAccountModel] {
+    ) -> [ManagedMetaAccountModel] {
         let relevantLocalAccounts = localDelegatedAccounts.filter {
             $0.key.delegatorAccountId == delegatorAccountId
-        }
+        }.values
 
-        return relevantLocalAccounts.compactMapValues { metaAccount in
-            guard let factory = getFactoryForMetaAccount(metaAccount) else { return nil }
+        let revokedAccounts: [ManagedMetaAccountModel] = Set(relevantLocalAccounts)
+            .subtracting(Set(updatedDelegatedAccounts))
+            .compactMap { metaAccount in
+                guard let factory = getFactoryForMetaAccount(metaAccount) else { return nil }
 
-            guard !remoteDelegatedAccounts.contains(where: { remoteDelegatedAccount in
-                factory.matchesDelegatedAccount(
-                    metaAccount,
-                    delegatedAccount: remoteDelegatedAccount,
-                    delegatorAccountId: delegatorAccountId
-                )
-            }) else {
-                return nil
+                return factory.markAsRevoked(metaAccount)
             }
 
-            return factory.markAsRevoked(metaAccount)
-        }
+        return revokedAccounts
     }
 
     func getFactoryForDelegatedAccount(

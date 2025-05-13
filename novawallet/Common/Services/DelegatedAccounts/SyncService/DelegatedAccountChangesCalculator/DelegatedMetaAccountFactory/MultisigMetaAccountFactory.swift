@@ -12,7 +12,7 @@ private extension MultisigMetaAccountFactory {
     enum MultisigMetaAccountType {
         case singleChain(ChainAccountModel, DelegatedAccount.MultisigAccountModel)
         case universalSubstrate(AccountId, DelegatedAccount.MultisigAccountModel)
-        case universamEvm(AccountId, DelegatedAccount.MultisigAccountModel)
+        case universalEvm(AccountId, DelegatedAccount.MultisigAccountModel)
     }
 }
 
@@ -51,9 +51,7 @@ private extension MultisigMetaAccountFactory {
         localMetaAccounts: [ManagedMetaAccountModel]
     ) -> MultisigMetaAccountType? {
         let signatoryWallet = localMetaAccounts.first { wallet in
-            wallet.info.chainAccounts.contains { $0.accountId == signatory } ||
-                wallet.info.substrateAccountId == signatory ||
-                wallet.info.ethereumAddress == signatory
+            wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatory
         }
 
         guard let signatoryWallet else { return nil }
@@ -70,7 +68,7 @@ private extension MultisigMetaAccountFactory {
             if let substrateAccountId = signatoryWallet.info.substrateAccountId {
                 return .universalSubstrate(substrateAccountId, multisigModel)
             } else if let ethereumAddress = signatoryWallet.info.ethereumAddress {
-                return .universamEvm(ethereumAddress, multisigModel)
+                return .universalEvm(ethereumAddress, multisigModel)
             } else {
                 return nil
             }
@@ -124,12 +122,12 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
                 type: .multisig,
                 multisig: multisigModel
             ))
-        case let .universamEvm(address, multisigModel):
+        case let .universalEvm(address, multisigModel):
             ManagedMetaAccountModel(info: MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: name,
                 substrateAccountId: nil,
-                substrateCryptoType: cryptoType.rawValue,
+                substrateCryptoType: nil,
                 substratePublicKey: nil,
                 ethereumAddress: address,
                 ethereumPublicKey: address,
@@ -190,10 +188,12 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
         return switch multisigAccountType {
         case let .singleChain(chainAccount, multisigModel):
-            chainAccount.accountId == delegatorAccountId &&
+            chainAccount.chainId == chainModel.chainId &&
+                chainAccount.accountId == delegatorAccountId &&
                 multisigModel.accountId == multisig.accountId
         case let .universal(multisigModel):
-            metaAccount.info.substrateAccountId == delegatorAccountId &&
+            (metaAccount.info.substrateAccountId == delegatorAccountId ||
+                metaAccount.info.ethereumAddress == delegatorAccountId) &&
                 multisigModel.accountId == multisig.accountId
         }
     }

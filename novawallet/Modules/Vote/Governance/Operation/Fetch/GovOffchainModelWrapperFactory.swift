@@ -9,7 +9,7 @@ class GovOffchainModelWrapperFactory<P, R: Equatable> {
     }
 
     struct IdentityParams {
-        let proxyFactory: IdentityDelegatedAccountFactoryProtocol
+        let proxyFactory: IdentityProxyFactoryProtocol
         let closure: (R) throws -> [AccountId]
     }
 

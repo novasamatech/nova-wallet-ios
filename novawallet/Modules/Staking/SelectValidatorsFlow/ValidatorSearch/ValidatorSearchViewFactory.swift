@@ -21,7 +21,7 @@ struct ValidatorSearchViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
@@ -34,7 +34,7 @@ struct ValidatorSearchViewFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         return ValidatorSearchInteractor(

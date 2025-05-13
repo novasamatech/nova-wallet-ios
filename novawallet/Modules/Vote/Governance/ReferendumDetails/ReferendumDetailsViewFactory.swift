@@ -159,7 +159,7 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -187,7 +187,7 @@ struct ReferendumDetailsViewFactory {
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeFactory,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,

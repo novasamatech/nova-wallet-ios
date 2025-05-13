@@ -40,6 +40,8 @@ struct MetaChainAccountResponse {
 struct MetaAccountDelegationId: Hashable {
     let delegatedAccountId: AccountId
     let delegatorId: AccountId
+    let chainId: ChainModel.Id?
+    let delegationType: DelegationType
 }
 
 enum ChainAccountFetchingError: Error {

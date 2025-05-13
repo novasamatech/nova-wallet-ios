@@ -10,7 +10,8 @@ final class ChainProxyAccountsRepository {
 
     private let proxyOperationFactory: ProxyOperationFactoryProtocol
 
-    private var proxies: [ProxiedAccountId: [ProxyAccount]] = [:]
+    @Atomic(defaultValue: [:])
+    private var proxies: [ProxiedAccountId: [ProxyAccount]]
 
     private let mutex = NSLock()
 
@@ -60,12 +61,6 @@ extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
         }
 
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-            self.mutex.lock()
-
-            defer {
-                self.mutex.unlock()
-            }
-
             self.proxies = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
             return self.filterProxyList(self.proxies, by: delegators)

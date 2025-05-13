@@ -99,7 +99,7 @@ extension ValidatorInfoViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
@@ -112,7 +112,7 @@ extension ValidatorInfoViewFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         let interactor = YourValidatorInfoInteractor(

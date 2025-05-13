@@ -14,7 +14,7 @@ final class GovernanceDelegateInfoInteractor {
     let detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol
     let runtimeService: RuntimeProviderProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
@@ -34,7 +34,7 @@ final class GovernanceDelegateInfoInteractor {
         detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
         runtimeService: RuntimeProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
@@ -49,7 +49,7 @@ final class GovernanceDelegateInfoInteractor {
         self.subscriptionFactory = subscriptionFactory
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
+        self.identityProxyFactory = identityProxyFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
         self.govJsonProviderFactory = govJsonProviderFactory
@@ -177,7 +177,7 @@ final class GovernanceDelegateInfoInteractor {
     }
 
     private func provideIdentity(for delegate: AccountId) {
-        let wrapper = identityDelegatedAccountFactory.createIdentityWrapper(for: { [delegate] })
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: { [delegate] })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

@@ -55,7 +55,7 @@ extension CollatorStakingSelectViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -66,7 +66,7 @@ extension CollatorStakingSelectViewFactory {
             rewardsService: state.rewardCalculatorService,
             runtimeProvider: runtimeProvider,
             connection: connection,
-            identityFactory: identityDelegatedAccountFactory,
+            identityFactory: identityProxyFactory,
             operationQueue: operationQueue
         )
     }

@@ -88,7 +88,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -131,7 +131,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             rewardService: rewardService,
             connection: connection,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
             yieldBoostOperationFactory: yieldBoostOperationFactory,
             currencyManager: currencyManager,

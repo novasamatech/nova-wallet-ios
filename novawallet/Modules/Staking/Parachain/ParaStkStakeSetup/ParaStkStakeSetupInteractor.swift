@@ -18,7 +18,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -44,7 +44,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -60,7 +60,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.repositoryFactory = repositoryFactory
-        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
+        self.identityProxyFactory = identityProxyFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -200,7 +200,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     }
 
     private func provideIdentities(for delegations: [AccountId]) {
-        let wrapper = identityDelegatedAccountFactory.createIdentityWrapper(for: { delegations })
+        let wrapper = identityProxyFactory.createIdentityWrapper(for: { delegations })
 
         executeCancellable(
             wrapper: wrapper,

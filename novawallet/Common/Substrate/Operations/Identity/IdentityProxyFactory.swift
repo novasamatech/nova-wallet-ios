@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol IdentityDelegatedAccountFactoryProtocol {
+protocol IdentityProxyFactoryProtocol {
     func createIdentityWrapper(
         for accountIdClosure: @escaping () throws -> [AccountId]
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]>
@@ -11,7 +11,7 @@ protocol IdentityDelegatedAccountFactoryProtocol {
     ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]>
 }
 
-final class IdentityDelegatedAccountFactory {
+final class IdentityProxyFactory {
     let originChain: ChainModel
     let chainRegistry: ChainRegistryProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
@@ -41,7 +41,7 @@ final class IdentityDelegatedAccountFactory {
     }
 }
 
-extension IdentityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol {
+extension IdentityProxyFactory: IdentityProxyFactoryProtocol {
     func createIdentityWrapper(
         for accountIdClosure: @escaping () throws -> [AccountId]
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]> {

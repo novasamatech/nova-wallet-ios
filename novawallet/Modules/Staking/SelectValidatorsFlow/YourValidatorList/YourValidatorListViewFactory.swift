@@ -79,7 +79,7 @@ struct YourValidatorListViewFactory {
             operationManager: operationManager
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
@@ -92,7 +92,7 @@ struct YourValidatorListViewFactory {
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         return YourValidatorListInteractor(

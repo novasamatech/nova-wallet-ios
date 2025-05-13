@@ -121,7 +121,7 @@ struct SwipeGovReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -137,7 +137,7 @@ struct SwipeGovReferendumDetailsViewFactory {
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeFactory,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,

@@ -79,7 +79,7 @@ struct ParaStkYourCollatorsViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -89,7 +89,7 @@ struct ParaStkYourCollatorsViewFactory {
             requestFactory: requestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityFactory: identityDelegatedAccountFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 

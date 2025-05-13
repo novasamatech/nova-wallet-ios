@@ -18,7 +18,7 @@ final class MythosStakingIdentitiesSyncService: BaseSyncService, AnyProviderAuto
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
     let stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
-    let operationFactory: IdentityDelegatedAccountFactoryProtocol
+    let operationFactory: IdentityProxyFactoryProtocol
     let operationQueue: OperationQueue
     let workQueue: DispatchQueue
 
@@ -33,7 +33,7 @@ final class MythosStakingIdentitiesSyncService: BaseSyncService, AnyProviderAuto
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol,
-        operationFactory: IdentityDelegatedAccountFactoryProtocol,
+        operationFactory: IdentityProxyFactoryProtocol,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue = .global()
     ) {

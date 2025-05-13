@@ -13,7 +13,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let signer: SigningWrapperProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
-    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -32,7 +32,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         feeProxy: ExtrinsicFeeProxyProtocol,
         signer: SigningWrapperProtocol,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -44,7 +44,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         self.feeProxy = feeProxy
         self.signer = signer
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
+        self.identityProxyFactory = identityProxyFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -137,7 +137,7 @@ extension ParaStkRebondInteractor: ParaStkRebondInteractorInputProtocol {
     func fetchIdentity(for collator: AccountId) {
         clear(cancellable: &identityFetchCall)
 
-        let wrapper = identityDelegatedAccountFactory.createIdentityWrapperByAccountId(for: { [collator] })
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { [collator] })
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

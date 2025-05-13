@@ -151,7 +151,7 @@ private extension MythosStakingSharedState {
             requestFactory: requestFactory
         )
 
-        let identitiesProxyFactory = IdentityDelegatedAccountFactory(
+        let identitiesProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identitiesOperationFactory

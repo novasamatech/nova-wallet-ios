@@ -2,12 +2,12 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-extension IdentityDelegatedAccountFactory {
+extension IdentityProxyFactory {
     static func createDefaultProxy(
         from originChain: ChainModel,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
-    ) -> IdentityDelegatedAccountFactory {
+    ) -> IdentityProxyFactory {
         let storageKeyFactory = StorageKeyFactory()
         let operationManager = OperationManager(operationQueue: operationQueue)
 
@@ -18,7 +18,7 @@ extension IdentityDelegatedAccountFactory {
 
         let operationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
 
-        return IdentityDelegatedAccountFactory(
+        return IdentityProxyFactory(
             originChain: originChain,
             chainRegistry: chainRegistry,
             identityOperationFactory: operationFactory

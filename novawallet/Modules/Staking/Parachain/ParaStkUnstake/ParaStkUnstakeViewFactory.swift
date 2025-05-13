@@ -98,7 +98,7 @@ struct ParaStkUnstakeViewFactory {
         let requestFactory = StorageRequestFactory(remoteFactory: keyFactory, operationManager: operationManager)
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -115,7 +115,7 @@ struct ParaStkUnstakeViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             connection: connection,

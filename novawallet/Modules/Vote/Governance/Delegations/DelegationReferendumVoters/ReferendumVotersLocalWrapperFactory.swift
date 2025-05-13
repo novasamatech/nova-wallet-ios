@@ -25,7 +25,7 @@ final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<
     init(
         chain: ChainModel,
         operationFactory: GovernanceOffchainVotingFactoryProtocol,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         metadataOperationFactory: GovernanceDelegateMetadataFactoryProtocol
     ) {
         self.operationFactory = operationFactory
@@ -33,7 +33,7 @@ final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<
         super.init(
             chain: chain,
             identityParams: .init(
-                proxyFactory: identityDelegatedAccountFactory,
+                proxyFactory: identityProxyFactory,
                 closure: Self.mapAccounts
             ),
             metadataParams: .init(

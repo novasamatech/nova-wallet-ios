@@ -10,7 +10,7 @@ final class PreferredStakingCollatorFactory {
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
-    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
     let collatorService: StakingCollatorsServiceProtocol
     let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let preferredCollatorProvider: PreferredValidatorsProviding
@@ -22,7 +22,7 @@ final class PreferredStakingCollatorFactory {
         runtimeService: RuntimeCodingServiceProtocol,
         collatorService: StakingCollatorsServiceProtocol,
         rewardService: CollatorStakingRewardCalculatorServiceProtocol,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         preferredCollatorProvider: PreferredValidatorsProviding,
         operationQueue: OperationQueue
     ) {
@@ -31,7 +31,7 @@ final class PreferredStakingCollatorFactory {
         self.runtimeService = runtimeService
         self.rewardService = rewardService
         self.collatorService = collatorService
-        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
+        self.identityProxyFactory = identityProxyFactory
         self.preferredCollatorProvider = preferredCollatorProvider
         self.operationQueue = operationQueue
     }
@@ -48,7 +48,7 @@ final class PreferredStakingCollatorFactory {
                 return CompoundOperationWrapper.createWithResult(nil)
             }
 
-            let identityWrapper = self.identityDelegatedAccountFactory.createIdentityWrapper(for: { [accountId] })
+            let identityWrapper = self.identityProxyFactory.createIdentityWrapper(for: { [accountId] })
 
             let mappingOperation = ClosureOperation<DisplayAddress?> {
                 let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()

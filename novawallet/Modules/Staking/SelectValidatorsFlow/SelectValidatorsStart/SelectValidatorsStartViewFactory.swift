@@ -80,7 +80,7 @@ final class SelectValidatorsStartViewFactory {
             operationManager: operationManager
         )
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageOperationFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -93,7 +93,7 @@ final class SelectValidatorsStartViewFactory {
             storageRequestFactory: storageOperationFactory,
             runtimeService: runtimeService,
             engine: connection,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory
+            identityProxyFactory: identityProxyFactory
         )
 
         let maxNominationsFactory = MaxNominationsOperationFactory(operationQueue: operationQueue)

@@ -109,7 +109,7 @@ struct MythosStakingSetupViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: state.chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -124,7 +124,7 @@ struct MythosStakingSetupViewFactory {
                 runtimeService: runtimeProvider,
                 collatorService: state.collatorService,
                 rewardService: state.rewardCalculatorService,
-                identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+                identityProxyFactory: identityProxyFactory,
                 preferredCollatorProvider: state.preferredCollatorsProvider,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
@@ -147,7 +147,7 @@ struct MythosStakingSetupViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             repositoryFactory: repositoryFactory,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared

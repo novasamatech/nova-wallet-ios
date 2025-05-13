@@ -17,7 +17,7 @@ final class MythosStakingSetupInteractor: MythosStakingBaseInteractor {
     let rewardService: CollatorStakingRewardCalculatorServiceProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let connection: JSONRPCEngine
-    let identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol
+    let identityProxyFactory: IdentityProxyFactoryProtocol
 
     private var collatorSubscription: CallbackStorageSubscription<MythosStakingPallet.CandidateInfo>?
     private var delegatorIdentityCancellable = CancellableCallStore()
@@ -39,7 +39,7 @@ final class MythosStakingSetupInteractor: MythosStakingBaseInteractor {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        identityDelegatedAccountFactory: IdentityDelegatedAccountFactoryProtocol,
+        identityProxyFactory: IdentityProxyFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -48,7 +48,7 @@ final class MythosStakingSetupInteractor: MythosStakingBaseInteractor {
         self.rewardService = rewardService
         self.repositoryFactory = repositoryFactory
         self.connection = connection
-        self.identityDelegatedAccountFactory = identityDelegatedAccountFactory
+        self.identityProxyFactory = identityProxyFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -147,7 +147,7 @@ private extension MythosStakingSetupInteractor {
     func provideIdentities(for delegations: [AccountId]) {
         delegatorIdentityCancellable.cancel()
 
-        let wrapper = identityDelegatedAccountFactory.createIdentityWrapperByAccountId(for: { delegations })
+        let wrapper = identityProxyFactory.createIdentityWrapperByAccountId(for: { delegations })
 
         executeCancellable(
             wrapper: wrapper,

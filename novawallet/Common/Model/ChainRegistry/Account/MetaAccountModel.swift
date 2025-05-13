@@ -171,39 +171,61 @@ extension MetaAccountModel {
             return self
         }
 
-        if let multisig, multisig.status == oldStatus {
-            return MetaAccountModel(
-                metaId: metaId,
-                name: name,
-                substrateAccountId: substrateAccountId,
-                substrateCryptoType: substrateCryptoType,
-                substratePublicKey: substratePublicKey,
-                ethereumAddress: ethereumAddress,
-                ethereumPublicKey: ethereumPublicKey,
-                chainAccounts: chainAccounts,
-                type: type,
-                multisig: multisig.replacingStatus(newStatus)
-            )
+        return if let multisig {
+            replacingUniversalMultisigStatus(from: oldStatus, to: newStatus)
         } else {
-            let updatedChainAccounts = chainAccounts.map { delegatorAccount in
-                delegatorAccount.replacingDelegatedAccountStatus(
-                    from: oldStatus,
-                    to: newStatus
-                )
-            }
+            replacingDelegatedChainAccountStatus(from: oldStatus, to: newStatus)
+        }
+    }
+}
 
-            return MetaAccountModel(
-                metaId: metaId,
-                name: name,
-                substrateAccountId: substrateAccountId,
-                substrateCryptoType: substrateCryptoType,
-                substratePublicKey: substratePublicKey,
-                ethereumAddress: ethereumAddress,
-                ethereumPublicKey: ethereumPublicKey,
-                chainAccounts: Set(updatedChainAccounts),
-                type: type,
-                multisig: multisig
+private extension MetaAccountModel {
+    func replacingUniversalMultisigStatus(
+        from oldStatus: DelegatedAccount.Status,
+        to newStatus: DelegatedAccount.Status
+    ) -> MetaAccountModel {
+        guard multisig?.status == oldStatus else { return self }
+
+        return MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: chainAccounts,
+            type: type,
+            multisig: multisig?.replacingStatus(newStatus)
+        )
+    }
+
+    func replacingDelegatedChainAccountStatus(
+        from oldStatus: DelegatedAccount.Status,
+        to newStatus: DelegatedAccount.Status
+    ) -> MetaAccountModel {
+        let updatedChainAccounts = chainAccounts.map { delegatorAccount in
+            let status = delegatorAccount.proxy?.status ?? delegatorAccount.multisig?.status
+
+            guard status == oldStatus else { return delegatorAccount }
+
+            return delegatorAccount.replacingDelegatedAccountStatus(
+                from: oldStatus,
+                to: newStatus
             )
         }
+
+        return MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: Set(updatedChainAccounts),
+            type: type,
+            multisig: multisig
+        )
     }
 }

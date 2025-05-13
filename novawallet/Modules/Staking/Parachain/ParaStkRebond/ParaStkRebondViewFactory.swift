@@ -94,7 +94,7 @@ struct ParaStkRebondViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -114,7 +114,7 @@ struct ParaStkRebondViewFactory {
             feeProxy: ExtrinsicFeeProxy(),
             signer: signer,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

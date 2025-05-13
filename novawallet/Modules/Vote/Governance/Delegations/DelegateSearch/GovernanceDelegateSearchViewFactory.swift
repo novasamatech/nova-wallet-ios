@@ -82,7 +82,7 @@ struct GovernanceDelegateSearchViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -95,7 +95,7 @@ struct GovernanceDelegateSearchViewFactory {
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             runtimeService: runtimeService,
             metadataProvider: metadataProvider,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,

@@ -108,7 +108,7 @@ struct ParaStkStakeSetupViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -123,7 +123,7 @@ struct ParaStkStakeSetupViewFactory {
                 runtimeService: runtimeProvider,
                 collatorService: collatorService,
                 rewardService: rewardService,
-                identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+                identityProxyFactory: identityProxyFactory,
                 preferredCollatorProvider: state.preferredCollatorsProvider,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
@@ -144,7 +144,7 @@ struct ParaStkStakeSetupViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             repositoryFactory: repositoryFactory,
-            identityDelegatedAccountFactory: identityDelegatedAccountFactory,
+            identityProxyFactory: identityProxyFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

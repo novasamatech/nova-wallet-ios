@@ -77,7 +77,7 @@ extension StakingMainPresenterFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
-        let identityDelegatedAccountFactory = IdentityDelegatedAccountFactory(
+        let identityProxyFactory = IdentityProxyFactory(
             originChain: chainAsset.chain,
             chainRegistry: state.chainRegistry,
             identityOperationFactory: identityOperationFactory
@@ -87,7 +87,7 @@ extension StakingMainPresenterFactory {
             requestFactory: storageRequestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityFactory: identityDelegatedAccountFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 
