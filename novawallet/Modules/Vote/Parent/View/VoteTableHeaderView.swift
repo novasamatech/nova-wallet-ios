@@ -3,11 +3,7 @@ import UIKit_iOS
 
 final class VoteTableHeaderView: UIView {
     let votingTypeSwitch: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
+        view.applyPageSwitchStyle()
     }
 
     let chainSelectionView: DetailsTriangularedView = {

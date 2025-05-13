@@ -64,11 +64,12 @@ class GenericCollectionViewLayout<THeaderView: UIView>: UIView {
         .createSectionLayoutWithFullWidthRow(settings:
             .init(
                 estimatedRowHeight: settings.estimatedRowHeight,
-                absoluteHeaderHeight: settings.absoluteHeaderHeight,
-                estimatedHeaderHeight: settings.estimatedSectionHeaderHeight,
                 sectionContentInsets: settings.sectionContentInsets,
                 sectionInterGroupSpacing: settings.interGroupSpacing,
-                header: showHeader ? .init(pinToVisibleBounds: settings.pinToVisibleBounds) : nil
+                header: showHeader ? .init(
+                    pinToVisibleBounds: settings.pinToVisibleBounds,
+                    height: settings.headerHeight
+                ) : nil
             ))
     }
 }
@@ -101,6 +102,14 @@ struct GenericCollectionViewLayoutSettings {
         bottom: 12,
         right: 0
     )
+
+    var headerHeight: NSCollectionLayoutDimension {
+        if let absoluteHeaderHeight {
+            return .absolute(absoluteHeaderHeight)
+        } else {
+            return .estimated(estimatedHeaderHeight)
+        }
+    }
 }
 
 // MARK: - ContentHeight

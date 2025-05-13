@@ -32,13 +32,14 @@ final class CurrencyViewLayout: UIView {
     }()
 
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
-        let settings = NSCollectionLayoutSection.Settings(
+        let settings = NSCollectionLayoutSection.VerticalSectionSettings(
             estimatedRowHeight: Constants.estimatedRowHeight,
-            absoluteHeaderHeight: Constants.absoluteHeaderHeight,
-            estimatedHeaderHeight: Constants.absoluteHeaderHeight,
             sectionContentInsets: Constants.sectionContentInsets,
             sectionInterGroupSpacing: Constants.interGroupSpacing,
-            header: .init(pinToVisibleBounds: false)
+            header: .init(
+                pinToVisibleBounds: false,
+                height: .absolute(Constants.absoluteHeaderHeight)
+            )
         )
 
         return UICollectionViewCompositionalLayout(section:

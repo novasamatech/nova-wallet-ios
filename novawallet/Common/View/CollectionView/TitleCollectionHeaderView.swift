@@ -1,7 +1,7 @@
 import UIKit
 import UIKit_iOS
 
-final class TitleCollectionHeaderView: UICollectionReusableView {
+class TitleCollectionHeaderView: UICollectionReusableView {
     private let displayContentView = UIView()
 
     private let titleView: IconDetailsView = {
@@ -69,7 +69,7 @@ final class TitleCollectionHeaderView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setupLayout() {
+    private func setupLayout() {
         addSubview(displayContentView)
         displayContentView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(contentInsets)
