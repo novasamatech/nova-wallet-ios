@@ -80,7 +80,6 @@ final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
         
         let syncService = DelegatedAccountSyncService(
             chainRegistry: chainRegistry,
-            proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: managedAccountRepository, 
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .chainId(chainId),

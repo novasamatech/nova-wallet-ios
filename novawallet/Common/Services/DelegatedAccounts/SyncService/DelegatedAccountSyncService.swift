@@ -28,7 +28,6 @@ final class DelegatedAccountSyncService {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
-    let proxyOperationFactory: ProxyOperationFactoryProtocol
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
@@ -45,7 +44,6 @@ final class DelegatedAccountSyncService {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        proxyOperationFactory: ProxyOperationFactoryProtocol,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         walletUpdateMediator: WalletUpdateMediating,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
@@ -60,7 +58,6 @@ final class DelegatedAccountSyncService {
         chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
     ) {
         self.chainRegistry = chainRegistry
-        self.proxyOperationFactory = proxyOperationFactory
         self.walletUpdateMediator = walletUpdateMediator
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
