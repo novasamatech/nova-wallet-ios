@@ -1427,7 +1427,7 @@
 		2D32BE1D2C6A49900047F520 /* TransactionFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE102C6A49900047F520 /* TransactionFeeProxy.swift */; };
 		2D32BE202C6CF4A20047F520 /* AssetTransferAggregationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE1F2C6CF4A20047F520 /* AssetTransferAggregationFactory.swift */; };
 		2D32BE222C6D247C0047F520 /* FeeAssetSelectionPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE212C6D247C0047F520 /* FeeAssetSelectionPresentable.swift */; };
-		2D32D7352DCBC1530016354C /* DelegatedAccountsRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32D7342DCBC1530016354C /* DelegatedAccountsRepositoryProtocol.swift */; };
+		2D32D7352DCBC1530016354C /* DelegatedAccountsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32D7342DCBC1530016354C /* DelegatedAccountsRepository.swift */; };
 		2D350D9E2C3827DA00F34E25 /* NetworkEnabledChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */; };
 		2D350DA02C38335300F34E25 /* ChainFilterStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */; };
 		2D367C0C2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */; };
@@ -7296,7 +7296,7 @@
 		2D32BE102C6A49900047F520 /* TransactionFeeProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionFeeProxy.swift; sourceTree = "<group>"; };
 		2D32BE1F2C6CF4A20047F520 /* AssetTransferAggregationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTransferAggregationFactory.swift; sourceTree = "<group>"; };
 		2D32BE212C6D247C0047F520 /* FeeAssetSelectionPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeAssetSelectionPresentable.swift; sourceTree = "<group>"; };
-		2D32D7342DCBC1530016354C /* DelegatedAccountsRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsRepositoryProtocol.swift; sourceTree = "<group>"; };
+		2D32D7342DCBC1530016354C /* DelegatedAccountsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountsRepository.swift; sourceTree = "<group>"; };
 		2D350D9D2C3827DA00F34E25 /* NetworkEnabledChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnabledChanged.swift; sourceTree = "<group>"; };
 		2D350D9F2C38335300F34E25 /* ChainFilterStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainFilterStrategy.swift; sourceTree = "<group>"; };
 		2D367C0B2C52EFE400B5AFF9 /* GovernanceVoteValidatingHandlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceVoteValidatingHandlers.swift; sourceTree = "<group>"; };
@@ -15160,7 +15160,7 @@
 		2D32D7332DCBBF710016354C /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
-				2D32D7342DCBC1530016354C /* DelegatedAccountsRepositoryProtocol.swift */,
+				2D32D7342DCBC1530016354C /* DelegatedAccountsRepository.swift */,
 				2DA8DAD02DC4CFCA00AFE390 /* ProxyAccountsRepository.swift */,
 				2DA8DAD22DC89C0500AFE390 /* MultisigAccountsRepository.swift */,
 			);
@@ -30945,7 +30945,7 @@
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,
 				844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */,
 				6D6C6FD2F13603BCE83CFC65 /* ExportMnemonicConfirmInteractor.swift in Sources */,
-				2D32D7352DCBC1530016354C /* DelegatedAccountsRepositoryProtocol.swift in Sources */,
+				2D32D7352DCBC1530016354C /* DelegatedAccountsRepository.swift in Sources */,
 				77ED16802A0D6E9A00E1FC8C /* TableViewModels.swift in Sources */,
 				0CA307BC2F570941CD22C9AA /* ExportMnemonicConfirmViewFactory.swift in Sources */,
 				840EAE6929FA935900453C7E /* WalletConnectModelFactory.swift in Sources */,

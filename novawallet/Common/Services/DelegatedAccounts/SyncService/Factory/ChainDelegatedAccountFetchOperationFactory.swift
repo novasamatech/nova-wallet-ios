@@ -41,10 +41,11 @@ final class ChainDelegatedAccountFetchOperationFactory {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
-        accountSourceFactory = DelegatedAccountSourcesFactory(
+        accountSourceFactory = DelegatedAccountSourceFactory(
             chain: chainModel,
             chainRegistry: chainRegistry,
-            requestFactory: requestFactory
+            requestFactory: requestFactory,
+            operationQueue: operationQueue
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
@@ -84,7 +85,7 @@ private extension ChainDelegatedAccountFetchOperationFactory {
         metaAccountsWrapper: CompoundOperationWrapper<[ManagedMetaAccountModel]>,
         blockHash: Data?
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        let sources = accountSourceFactory.createSources(for: blockHash)
+        let source = accountSourceFactory.createSource(for: blockHash)
 
         let accountsListWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
         accountsListWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -106,7 +107,7 @@ private extension ChainDelegatedAccountFetchOperationFactory {
             )
 
             return createDiscoverAccountsWrapper(
-                delegatedAccountsSources: sources,
+                delegatedAccountsSource: source,
                 discoveringAccountIds: discoveringAccounds
             )
         }
@@ -116,43 +117,12 @@ private extension ChainDelegatedAccountFetchOperationFactory {
         return accountsListWrapper.insertingHead(operations: metaAccountsWrapper.allOperations)
     }
 
-    func createAccountsFetchWrapper(
-        for sources: [DelegatedAccountsRepositoryProtocol],
-        accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        let fetchWrappers = sources.map { $0.fetchDelegatedAccountsWrapper(for: accountIds) }
-
-        let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-            try fetchWrappers.reduce(into: [:]) { acc, wrapper in
-                let accounts = try wrapper.targetOperation.extractNoCancellableResultData()
-
-                accounts.forEach {
-                    if let delegatedAccounts = acc[$0.key] {
-                        acc[$0.key] = delegatedAccounts + $0.value
-                    } else {
-                        acc[$0.key] = $0.value
-                    }
-                }
-            }
-        }
-
-        fetchWrappers.forEach {
-            mapOperation.addDependency($0.targetOperation)
-        }
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: fetchWrappers.flatMap(\.allOperations)
-        )
-    }
-
     func createDiscoverAccountsWrapper(
-        delegatedAccountsSources: [DelegatedAccountsRepositoryProtocol],
+        delegatedAccountsSource: DelegatedAccountsRepositoryProtocol,
         discoveringAccountIds: DiscoveringAccountIds
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        let accountsFetchWrapper = createAccountsFetchWrapper(
-            for: delegatedAccountsSources,
-            accountIds: discoveringAccountIds.possibleAccountIds
+        let accountsFetchWrapper = delegatedAccountsSource.fetchDelegatedAccountsWrapper(
+            for: discoveringAccountIds.possibleAccountIds
         )
 
         let resultWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
@@ -182,7 +152,7 @@ private extension ChainDelegatedAccountFetchOperationFactory {
             }
 
             return createDiscoverAccountsWrapper(
-                delegatedAccountsSources: delegatedAccountsSources,
+                delegatedAccountsSource: delegatedAccountsSource,
                 discoveringAccountIds: updatedDiscoveringIds
             )
         }

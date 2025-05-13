@@ -2,29 +2,32 @@ import Foundation
 import SubstrateSdk
 
 protocol DelegatedAccountSourceFactoryProtocol {
-    func createSources(for blockHash: Data?) -> [DelegatedAccountsRepositoryProtocol]
+    func createSource(for blockHash: Data?) -> DelegatedAccountsRepositoryProtocol
 }
 
-class DelegatedAccountSourcesFactory {
+class DelegatedAccountSourceFactory {
     private let chain: ChainModel
     private let chainRegistry: ChainRegistryProtocol
     private let requestFactory: StorageRequestFactoryProtocol
+    private let operationQueue: OperationQueue
 
     init(
         chain: ChainModel,
         chainRegistry: ChainRegistryProtocol,
-        requestFactory: StorageRequestFactoryProtocol
+        requestFactory: StorageRequestFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.chainRegistry = chainRegistry
         self.requestFactory = requestFactory
+        self.operationQueue = operationQueue
     }
 }
 
 // MARK: - DelegatedAccountSourceFactoryProtocol
 
-extension DelegatedAccountSourcesFactory: DelegatedAccountSourceFactoryProtocol {
-    func createSources(for blockHash: Data?) -> [DelegatedAccountsRepositoryProtocol] {
+extension DelegatedAccountSourceFactory: DelegatedAccountSourceFactoryProtocol {
+    func createSource(for blockHash: Data?) -> DelegatedAccountsRepositoryProtocol {
         var sources: [DelegatedAccountsRepositoryProtocol] = []
 
         let chainId = chain.chainId
@@ -44,6 +47,11 @@ extension DelegatedAccountSourcesFactory: DelegatedAccountSourceFactoryProtocol 
         let multisigRepository = MultisigAccountsRepository(chain: chain)
         sources.append(multisigRepository)
 
-        return sources
+        let repository = DelegatedAccountsRepository(
+            sources: sources,
+            operationQueue: operationQueue
+        )
+
+        return repository
     }
 }

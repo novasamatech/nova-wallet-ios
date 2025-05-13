@@ -8,7 +8,7 @@ protocol DelegatedAccountsChangesCalcualtorProtocol {
     ) throws -> SyncChanges<ManagedMetaAccountModel>
 }
 
-class DelegatedAccountsChangesCalculator {
+final class DelegatedAccountsChangesCalculator {
     let chainModel: ChainModel
     let factories: [DelegatedMetaAccountFactoryProtocol]
 

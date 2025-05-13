@@ -94,7 +94,7 @@ final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
             self,
             queue: nil
         ) { (_, state) in
-            let synced = state.values.allSatisfy({ !$0 }) && state.values.count == 1
+            let synced = state
             
             if synced {
                 do {
