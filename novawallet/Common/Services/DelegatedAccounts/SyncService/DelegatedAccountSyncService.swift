@@ -99,7 +99,7 @@ private extension DelegatedAccountSyncService {
             }
         }
 
-        guard isActive else { return }
+        guard isActive, !changes.isEmpty else { return }
 
         performSyncUp(at: nil)
     }
@@ -147,7 +147,9 @@ private extension DelegatedAccountSyncService {
         let changesWrapper = updatesOperationFactory.createChangesWrapper(at: blockHash)
 
         let updateWrapper = walletUpdateMediator.saveChanges {
-            try changesWrapper.targetOperation.extractNoCancellableResultData()
+            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return changes
         }
 
         updateWrapper.addDependency(wrapper: changesWrapper)
