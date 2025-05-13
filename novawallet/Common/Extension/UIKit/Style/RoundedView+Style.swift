@@ -261,6 +261,16 @@ extension RoundedView.Style {
         highlightedFillColor: .clear,
         rounding: .init(radius: 0, corners: .allCorners)
     )
+
+    static let badge = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        strokeColor: .clear,
+        highlightedStrokeColor: .clear,
+        fillColor: R.color.colorIconAccent()!,
+        highlightedFillColor: R.color.colorIconAccent()!,
+        rounding: .init(radius: 5, corners: .allCorners)
+    )
 }
 
 extension RoundedView.Style {

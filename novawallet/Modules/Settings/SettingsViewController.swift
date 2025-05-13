@@ -25,12 +25,6 @@ final class SettingsViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.headerView.walletSwitch.addTarget(
-            self,
-            action: #selector(handleSwitchAction),
-            for: .touchUpInside
-        )
-
         presenter.setup()
     }
 
@@ -46,10 +40,6 @@ final class SettingsViewController: UIViewController, ViewHolder {
 
     @objc private func handleAccountAction() {
         presenter.handleWalletAction()
-    }
-
-    @objc private func handleSwitchAction() {
-        presenter.handleSwitchAction()
     }
 }
 
@@ -110,7 +100,7 @@ extension SettingsViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section == 0 ? 57.0 : 37.0
+        section == 0 ? 48.0 : 36.0
     }
 }
 
@@ -118,15 +108,6 @@ extension SettingsViewController: SettingsViewProtocol {
     func didLoad(userViewModel: SettingsAccountViewModel) {
         rootView.headerView.accountDetailsView.iconImage = userViewModel.icon
         rootView.headerView.accountDetailsView.title = userViewModel.name
-
-        let walletSwitchViewModel = WalletSwitchViewModel(
-            identifier: userViewModel.identifier,
-            type: userViewModel.walletType,
-            iconViewModel: userViewModel.icon.map { StaticImageViewModel(image: $0) },
-            hasNotification: userViewModel.hasWalletNotification
-        )
-
-        rootView.headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
 
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {
@@ -138,8 +119,10 @@ extension SettingsViewController: SettingsViewProtocol {
 extension SettingsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            rootView.headerView.titleLabel.text = R.string.localizable
-                .tabbarSettingsTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.tabbarSettingsTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
             rootView.footerView.appNameLabel.text = presenter.appNameText
         }
     }
@@ -157,5 +140,3 @@ extension SettingsViewController: SwitchSettingsTableViewCellDelegate {
         presenter.actionRow(cellViewModel.row)
     }
 }
-
-extension SettingsViewController: HiddableBarWhenPushed {}

@@ -2,14 +2,14 @@ import Foundation
 
 final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     let stateObserver: Observable<StakingDashboardModel>
-    let proxySyncService: ProxySyncServiceProtocol
+    let serviceCoordinator: ServiceCoordinatorProtocol
 
     init(
         stateObserver: Observable<StakingDashboardModel>,
-        proxySyncService: ProxySyncServiceProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol
     ) {
         self.stateObserver = stateObserver
-        self.proxySyncService = proxySyncService
+        self.serviceCoordinator = serviceCoordinator
     }
 
     func showMoreOptions(from view: ControllerBackedProtocol?) {
@@ -31,7 +31,7 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     ) {
         guard let detailsView = StakingMainViewFactory.createView(
             for: option,
-            proxySyncService: proxySyncService
+            proxySyncService: serviceCoordinator.proxySyncService
         ) else {
             return
         }

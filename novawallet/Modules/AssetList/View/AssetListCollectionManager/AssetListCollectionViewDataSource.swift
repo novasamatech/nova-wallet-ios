@@ -34,33 +34,6 @@ final class AssetListCollectionViewDataSource: NSObject {
 // MARK: Private
 
 private extension AssetListCollectionViewDataSource {
-    func provideAccountCell(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath
-    ) -> AssetListAccountCell {
-        let accountCell = collectionView.dequeueReusableCellWithType(
-            AssetListAccountCell.self,
-            for: indexPath
-        )!
-
-        if let viewModel = headerViewModel {
-            accountCell.bind(viewModel: viewModel)
-        }
-
-        accountCell.walletSwitch.addTarget(
-            self,
-            action: #selector(actionSelectAccount),
-            for: .touchUpInside
-        )
-
-        accountCell.walletConnect.addGestureRecognizer(UITapGestureRecognizer(
-            target: self,
-            action: #selector(actionSelectWalletConnect)
-        ))
-
-        return accountCell
-    }
-
     func provideTotalBalanceCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
@@ -303,14 +276,6 @@ private extension AssetListCollectionViewDataSource {
         }
     }
 
-    @objc func actionSelectAccount() {
-        actionsDelegate?.actionSelectAccount()
-    }
-
-    @objc func actionSelectWalletConnect() {
-        actionsDelegate?.actionSelectWalletConnect()
-    }
-
     @objc func actionSearch() {
         actionsDelegate?.actionSearch()
     }
@@ -361,7 +326,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     ) -> Int {
         switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
-            headerViewModel != nil ? 2 : 0
+            headerViewModel != nil ? 1 : 0
         case .nfts:
             nftViewModel != nil ? 1 : 0
         case .banners:
@@ -378,8 +343,6 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch AssetListFlowLayout.CellType(indexPath: indexPath) {
-        case .account:
-            return provideAccountCell(collectionView, indexPath: indexPath)
         case .totalBalance:
             return provideTotalBalanceCell(collectionView, indexPath: indexPath)
         case .yourNfts:

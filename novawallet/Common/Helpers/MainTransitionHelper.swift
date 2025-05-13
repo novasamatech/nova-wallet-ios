@@ -3,7 +3,7 @@ import UIKit_iOS
 
 struct MainTransitionHelper {
     static func transitToMainTabBarController(
-        selectingIndex: Int = MainTabBarIndex.wallet,
+        selectingIndex: Int = MainTabBarIndex.assets,
         closing controller: UIViewController,
         animated: Bool
     ) {

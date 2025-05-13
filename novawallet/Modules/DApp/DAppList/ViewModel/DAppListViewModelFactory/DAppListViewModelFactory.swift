@@ -5,7 +5,6 @@ typealias IndexedDApp = (index: Int, dapp: DApp)
 
 final class DAppListViewModelFactory: DAppSearchingByQuery {
     private let dappCategoriesViewModelFactory: DAppCategoryViewModelFactoryProtocol
-    private let walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
     private let dappIconViewModelFactory: DAppIconViewModelFactoryProtocol
 
     init(
@@ -111,10 +110,7 @@ private extension DAppListViewModelFactory {
 
     func sortedDAppViewModels(from viewModels: [DAppViewModel]) -> [DAppViewModel] {
         viewModels.sorted { lhsModel, rhsModel in
-            let lhsIsFavorite = lhsModel.isFavorite ? 1 : 0
-            let rhsIsFavorite = rhsModel.isFavorite ? 1 : 0
-
-            return if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
+            if let lhsOrder = lhsModel.order, let rhsOrder = rhsModel.order {
                 lhsOrder < rhsOrder
             } else if lhsModel.order != nil {
                 false
@@ -271,23 +267,6 @@ private extension DAppListViewModelFactory {
             cells: [.categorySelect(categoryViewModels)]
         )
     }
-
-    func headerSection(
-        for wallet: MetaAccountModel,
-        hasWalletsListUpdates: Bool
-    ) -> DAppListSection {
-        let headerViewModel = walletSwitchViewModelFactory.createViewModel(
-            from: wallet.identifier,
-            walletIdenticon: wallet.walletIdenticonData(),
-            walletType: wallet.type,
-            hasNotification: hasWalletsListUpdates
-        )
-
-        return DAppListSection(
-            title: nil,
-            cells: [.header(headerViewModel)]
-        )
-    }
 }
 
 // MARK: DAppListViewModelFactoryProtocol
@@ -395,20 +374,18 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
     func createDAppSections(
         from dAppList: DAppList?,
         favorites: [String: DAppFavorite],
-        wallet: MetaAccountModel?,
         params: DAppListViewModelFactory.ListSectionsParams,
         bannersState: BannersState,
         locale: Locale
     ) -> [DAppListSectionViewModel] {
-        var viewModels: [DAppListSectionViewModel] = []
-
-        if let wallet {
-            let headerSection = headerSection(
-                for: wallet,
-                hasWalletsListUpdates: params.hasWalletsListUpdates
+        var viewModels: [DAppListSectionViewModel] = [
+            .header(
+                DAppListSection(
+                    title: nil,
+                    cells: [.header]
+                )
             )
-            viewModels.append(.header(headerSection))
-        }
+        ]
 
         guard let dAppList else {
             viewModels.append(
@@ -465,6 +442,5 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
 extension DAppListViewModelFactory {
     struct ListSectionsParams {
         let randomizationSeed: Int
-        let hasWalletsListUpdates: Bool
     }
 }

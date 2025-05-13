@@ -138,37 +138,13 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     }
 
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?) {
-        guard let tabBarController = view?.controller as? UITabBarController else {
+        guard
+            let tabBarController = view?.controller as? UITabBarController,
+            let settingsNavigation = tabBarController.selectedViewController as? NavigationRootSettingsProtocol else {
             return
         }
 
-        tabBarController.selectedIndex = MainTabBarIndex.settings
-
-        let settingsNavigationController = getSettingsNavigationController(from: view)
-
-        let optBackupSettings = settingsNavigationController?.topViewController as? CloudBackupSettingsViewProtocol
-
-        if optBackupSettings == nil {
-            settingsNavigationController?.popToRootViewController(animated: false)
-
-            guard let cloudBackupSettings = CloudBackupSettingsViewFactory.createView() else {
-                return
-            }
-
-            cloudBackupSettings.controller.hidesBottomBarWhenPushed = true
-
-            settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
-        }
-    }
-
-    private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
-        guard let tabBarController = view?.controller as? UITabBarController else {
-            return nil
-        }
-
-        let settingsViewController = tabBarController.viewControllers?[MainTabBarIndex.settings]
-
-        return settingsViewController as? UINavigationController
+        settingsNavigation.presentCloudBackupSettings()
     }
 
     private func openGovernanceScreen(
@@ -187,8 +163,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         in controller: UITabBarController,
         chainAsset: ChainAsset
     ) {
-        controller.selectedIndex = MainTabBarIndex.wallet
-        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        controller.selectedIndex = MainTabBarIndex.assets
+        let viewController = controller.viewControllers?[MainTabBarIndex.assets]
         let navigationController = viewController as? UINavigationController
         navigationController?.popToRootViewController(animated: true)
 

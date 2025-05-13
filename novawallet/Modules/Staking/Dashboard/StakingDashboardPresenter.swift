@@ -9,11 +9,7 @@ final class StakingDashboardPresenter {
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
     let logger: LoggerProtocol
 
-    let walletViewModelFactory = WalletSwitchViewModelFactory()
-
     private var lastResult: StakingDashboardBuilderResult?
-    private var wallet: MetaAccountModel?
-    private var hasWalletsListUpdates: Bool = false
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -27,21 +23,6 @@ final class StakingDashboardPresenter {
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
-    }
-
-    private func updateWalletView() {
-        guard let wallet = wallet else {
-            return
-        }
-
-        let viewModel = walletViewModelFactory.createViewModel(
-            from: wallet.identifier,
-            walletIdenticon: wallet.walletIdenticonData(),
-            walletType: wallet.type,
-            hasNotification: hasWalletsListUpdates
-        )
-
-        view?.didReceiveWallet(viewModel: viewModel)
     }
 
     private func updateStakingsView() {
@@ -101,30 +82,24 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         wireframe.showMoreOptions(from: view)
     }
 
-    func switchWallet() {
-        wireframe.showWalletSwitch(from: view)
-    }
-
     func refresh() {
         interactor.refresh()
     }
 }
 
 extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
-    func didReceive(wallet: MetaAccountModel) {
-        self.wallet = wallet
+    func didReceive(walletId: String) {
         lastResult = StakingDashboardBuilderResult(
-            walletId: wallet.metaId,
+            walletId: walletId,
             model: .init(),
             changeKind: .reload
         )
 
-        updateWalletView()
         updateStakingsView()
     }
 
     func didReceive(result: StakingDashboardBuilderResult) {
-        guard wallet?.metaId == result.walletId else {
+        guard lastResult?.walletId == result.walletId else {
             return
         }
 
@@ -151,17 +126,11 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
             }
         }
     }
-
-    func didReceiveWalletsState(hasUpdates: Bool) {
-        hasWalletsListUpdates = hasUpdates
-        updateWalletView()
-    }
 }
 
 extension StakingDashboardPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            updateWalletView()
             updateStakingsView()
         }
     }

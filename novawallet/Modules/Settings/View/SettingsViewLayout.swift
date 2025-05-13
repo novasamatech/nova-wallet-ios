@@ -15,6 +15,8 @@ final class SettingsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        backgroundColor = R.color.colorSecondaryScreenBackground()
+
         setupLayout()
     }
 
@@ -28,7 +30,7 @@ final class SettingsViewLayout: UIView {
 
         headerView.bounds = CGRect(
             origin: .zero,
-            size: CGSize(width: bounds.width, height: 118)
+            size: CGSize(width: bounds.width, height: SettingsTableHeaderView.Constants.totalHeight)
         )
         footerView.bounds = CGRect(
             origin: .zero,
@@ -45,7 +47,8 @@ final class SettingsViewLayout: UIView {
     private func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.trailing.leading.bottom.equalToSuperview()
         }
         tableView.tableHeaderView = headerView
         tableView.tableFooterView = footerView

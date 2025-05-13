@@ -21,7 +21,6 @@ protocol DAppListViewModelFactoryProtocol {
     func createDAppSections(
         from dAppList: DAppList?,
         favorites: [String: DAppFavorite],
-        wallet: MetaAccountModel?,
         params: DAppListViewModelFactory.ListSectionsParams,
         bannersState: BannersState,
         locale: Locale

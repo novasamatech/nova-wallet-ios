@@ -163,14 +163,6 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.selectNfts()
     }
 
-    func actionSelectAccount() {
-        presenter.selectWallet()
-    }
-
-    func actionSelectWalletConnect() {
-        presenter.presentWalletConnect()
-    }
-
     func actionRefresh() {
         let nftIndexPath = AssetListFlowLayout.CellType.yourNfts.indexPath
         if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? AssetListNftsCell {
@@ -228,6 +220,29 @@ extension AssetListViewController: Localizable {
     }
 }
 
-// MARK: HiddableBarWhenPushed
+// MARK: ScrollViewHostProtocol
 
-extension AssetListViewController: HiddableBarWhenPushed {}
+extension AssetListViewController: ScrollViewHostProtocol {
+    var initialTrackingInsets: UIEdgeInsets {
+        collectionViewManager.initialTrackingInsets
+    }
+
+    var scrollViewTracker: ScrollViewTrackingProtocol? {
+        get {
+            collectionViewManager.scrollViewTracker
+        }
+
+        set {
+            collectionViewManager.scrollViewTracker = newValue
+        }
+    }
+}
+
+extension AssetListViewController: ScrollsToTop {
+    func scrollToTop() {
+        rootView.collectionView.setContentOffset(
+            CGPoint(x: 0, y: -initialTrackingInsets.top),
+            animated: true
+        )
+    }
+}

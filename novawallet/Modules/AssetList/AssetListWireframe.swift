@@ -3,18 +3,10 @@ import UIKit
 import UIKit_iOS
 
 final class AssetListWireframe: AssetListWireframeProtocol {
-    let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
-    let proxySyncService: ProxySyncServiceProtocol
 
-    init(
-        dappMediator: DAppInteractionMediating,
-        assetListModelObservable: AssetListModelObservable,
-        proxySyncService: ProxySyncServiceProtocol
-    ) {
-        self.dappMediator = dappMediator
+    init(assetListModelObservable: AssetListModelObservable) {
         self.assetListModelObservable = assetListModelObservable
-        self.proxySyncService = proxySyncService
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
@@ -189,18 +181,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             viewController.controller,
             animated: true
         )
-    }
-
-    func showWalletConnect(from view: AssetListViewProtocol?) {
-        guard
-            let walletConnectView = WalletConnectSessionsViewFactory.createViewForCurrentWallet(
-                with: dappMediator
-            ) else {
-            return
-        }
-
-        walletConnectView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
     }
 
     func showStaking(from view: AssetListViewProtocol?) {

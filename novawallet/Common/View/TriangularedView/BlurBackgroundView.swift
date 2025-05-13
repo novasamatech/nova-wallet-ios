@@ -62,7 +62,7 @@ open class BlurBackgroundView: UIView {
         }
     }
 
-    var blurStyle: UIBlurEffect = .init(style: .dark) {
+    var blurStyle: UIBlurEffect? = .init(style: .dark) {
         didSet {
             blurView?.effect = blurStyle
         }

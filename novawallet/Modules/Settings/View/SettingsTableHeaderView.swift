@@ -1,14 +1,14 @@
 import UIKit
 
 final class SettingsTableHeaderView: UIView {
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .boldLargeTitle
-        return label
-    }()
+    enum Constants {
+        static let topOffset: CGFloat = 12
+        static let cellHeight: CGFloat = 56
 
-    let walletSwitch = WalletSwitchControl()
+        static var totalHeight: CGFloat {
+            topOffset + cellHeight
+        }
+    }
 
     let accountDetailsView: DetailsTriangularedView = {
         let detailsView = DetailsTriangularedView()
@@ -38,24 +38,11 @@ final class SettingsTableHeaderView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(walletSwitch)
-        walletSwitch.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10.0)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.size.equalTo(UIConstants.walletSwitchSize)
-        }
-
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(walletSwitch.snp.centerY)
-        }
-
         addSubview(accountDetailsView)
         accountDetailsView.snp.makeConstraints { make in
-            make.top.equalTo(walletSwitch.snp.bottom).offset(16.0)
+            make.top.equalToSuperview().offset(Constants.topOffset)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
+            make.height.equalTo(Constants.cellHeight)
         }
     }
 }

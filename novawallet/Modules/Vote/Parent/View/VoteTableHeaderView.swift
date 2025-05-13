@@ -2,15 +2,6 @@ import UIKit
 import UIKit_iOS
 
 final class VoteTableHeaderView: UIView {
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .boldLargeTitle
-        return label
-    }()
-
-    let walletSwitch = WalletSwitchControl()
-
     let votingTypeSwitch: RoundedSegmentedControl = .create { view in
         view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
         view.selectionColor = R.color.colorSegmentedTabActive()!
@@ -52,23 +43,9 @@ final class VoteTableHeaderView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(walletSwitch)
-        walletSwitch.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10.0)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.size.equalTo(UIConstants.walletSwitchSize)
-        }
-
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(walletSwitch.snp.leading).inset(-8.0)
-            make.centerY.equalTo(walletSwitch)
-        }
-
         addSubview(votingTypeSwitch)
         votingTypeSwitch.snp.makeConstraints { make in
-            make.top.equalTo(walletSwitch.snp.bottom).offset(16)
+            make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(40.0)
         }
@@ -90,8 +67,6 @@ final class VoteTableHeaderView: UIView {
 
     private func setupLocalization() {
         let languages = locale.rLanguages
-
-        titleLabel.text = R.string.localizable.tabbarVoteTitle(preferredLanguages: languages)
 
         votingTypeSwitch.titles = [
             R.string.localizable.tabbarGovernanceTitle(preferredLanguages: languages),

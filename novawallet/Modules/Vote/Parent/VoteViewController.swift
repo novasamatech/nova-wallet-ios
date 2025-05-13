@@ -9,6 +9,12 @@ final class VoteViewController: UIViewController, ViewHolder {
 
     private(set) var childView: VoteChildViewProtocol?
 
+    weak var scrollViewTracker: ScrollViewTrackingProtocol? {
+        didSet {
+            childView?.scrollViewTracker = scrollViewTracker
+        }
+    }
+
     var selectedType: VoteType {
         VoteType(rawValue: UInt8(rootView.headerView.votingTypeSwitch.selectedSegmentIndex)) ?? .governance
     }
@@ -61,17 +67,20 @@ final class VoteViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.headerView.walletSwitch.addTarget(
-            self,
-            action: #selector(actionWalletSwitch),
-            for: .touchUpInside
-        )
-
         rootView.headerView.votingTypeSwitch.addTarget(
             self,
             action: #selector(actionVoteTypeChanged),
             for: .valueChanged
         )
+
+        let swipeRecognizer = UISwipeGestureRecognizer(
+            target: self,
+            action: #selector(actionSwipeToSwitch)
+        )
+
+        swipeRecognizer.direction = [.left, .right]
+
+        rootView.tableView.addGestureRecognizer(swipeRecognizer)
     }
 
     private func setupLocalization() {
@@ -83,11 +92,18 @@ final class VoteViewController: UIViewController, ViewHolder {
         presenter.selectChain()
     }
 
-    @objc func actionWalletSwitch() {
-        presenter.selectWallet()
+    @objc func actionVoteTypeChanged() {
+        setupChildView()
     }
 
-    @objc func actionVoteTypeChanged() {
+    @objc func actionSwipeToSwitch() {
+        switch selectedType {
+        case .governance:
+            rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(VoteType.crowdloan.rawValue)
+        case .crowdloan:
+            rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(VoteType.governance.rawValue)
+        }
+
         setupChildView()
     }
 
@@ -103,6 +119,8 @@ final class VoteViewController: UIViewController, ViewHolder {
                 parent: self
             )
 
+            governanceChildView.scrollViewTracker = scrollViewTracker
+
             childView = governanceChildView
             childView?.bind()
             childView?.locale = selectedLocale
@@ -115,6 +133,8 @@ final class VoteViewController: UIViewController, ViewHolder {
                 parent: self
             )
 
+            crowdloanChildView.scrollViewTracker = scrollViewTracker
+
             childView = crowdloanChildView
             childView?.bind()
             childView?.locale = selectedLocale
@@ -125,9 +145,7 @@ final class VoteViewController: UIViewController, ViewHolder {
 }
 
 extension VoteViewController: VoteViewProtocol {
-    func didSwitchWallet(with viewModel: WalletSwitchViewModel) {
-        rootView.headerView.walletSwitch.bind(viewModel: viewModel)
-
+    func didSwitchWallet() {
         setupChildView()
     }
 
@@ -142,6 +160,16 @@ extension VoteViewController: VoteViewProtocol {
     }
 }
 
+extension VoteViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(
+        _: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer
+    ) -> Bool {
+        // Prevent swipe from interfering with scroll
+        false
+    }
+}
+
 extension VoteViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
@@ -150,4 +178,14 @@ extension VoteViewController: Localizable {
     }
 }
 
-extension VoteViewController: HiddableBarWhenPushed {}
+extension VoteViewController: ScrollViewHostProtocol {
+    var initialTrackingInsets: UIEdgeInsets {
+        rootView.tableView.adjustedContentInset
+    }
+}
+
+extension VoteViewController: ScrollsToTop {
+    func scrollToTop() {
+        rootView.tableView.setContentOffset(CGPoint(x: 0, y: -initialTrackingInsets.top), animated: true)
+    }
+}

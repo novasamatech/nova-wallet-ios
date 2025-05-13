@@ -5,7 +5,7 @@ import BigInt
 
 // MARK: AssetListCollectionManager
 
-protocol AssetListCollectionManagerProtocol {
+protocol AssetListCollectionManagerProtocol: ScrollViewHostProtocol {
     var delegate: AssetListCollectionManagerDelegate? { get set }
 
     func setupCollectionView()
@@ -27,11 +27,9 @@ typealias AssetListCollectionManagerDelegate = AssetListCollectionViewActionsDel
     & AssetListCollectionSelectionDelegate
 
 protocol AssetListCollectionViewActionsDelegate: AnyObject {
-    func actionSelectAccount()
     func actionSearch()
     func actionRefresh()
     func actionManage()
-    func actionSelectWalletConnect()
     func actionLocks()
     func actionSend()
     func actionReceive()
@@ -76,7 +74,6 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
 
 protocol AssetListPresenterProtocol: AnyObject {
     func setup()
-    func selectWallet()
     func selectAsset(for chainAssetId: ChainAssetId)
     func selectNfts()
     func refresh()
@@ -88,7 +85,6 @@ protocol AssetListPresenterProtocol: AnyObject {
     func receive()
     func buySell()
     func swap()
-    func presentWalletConnect()
     func toggleAssetListStyle()
 }
 
@@ -98,38 +94,23 @@ protocol AssetListInteractorInputProtocol {
     func setup()
     func getFullChain(for chainId: ChainModel.Id) -> ChainModel?
     func refresh()
-    func connectWalletConnect(uri: String)
-    func retryFetchWalletConnectSessionsCount()
     func setAssetListGroupsStyle(_ style: AssetListGroupsStyle)
 }
 
 protocol AssetListInteractorOutputProtocol {
-    func didReceive(
-        walletId: MetaAccountModel.Id,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    )
-
-    func didChange(name: String)
+    func didReceive(walletId: String)
     func didReceive(hidesZeroBalances: Bool)
     func didReceive(result: AssetListBuilderResult)
-    func didReceiveWalletConnect(sessionsCount: Int)
-    func didReceiveWalletConnect(error: WalletConnectSessionsError)
     func didCompleteRefreshing()
-    func didReceiveWalletsState(hasUpdates: Bool)
     func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle)
 }
 
 // MARK: Wireframe
 
 protocol AssetListWireframeProtocol: AnyObject,
-    WalletSwitchPresentable,
     AlertPresentable,
     ErrorPresentable,
     CommonRetryable,
-    WalletConnectScanPresentable,
-    WalletConnectErrorPresentable,
     RampActionsPresentable,
     RampPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
@@ -140,8 +121,6 @@ protocol AssetListWireframeProtocol: AnyObject,
     func showNfts(from view: AssetListViewProtocol?)
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput)
-
-    func showWalletConnect(from view: AssetListViewProtocol?)
 
     func showRecieveTokens(from view: AssetListViewProtocol?)
 
@@ -169,7 +148,6 @@ protocol AssetListWireframeProtocol: AnyObject,
     )
 }
 
-typealias WalletConnectSessionsError = WalletConnectSessionsInteractorError
 typealias TransferCompletionClosure = (ChainAsset) -> Void
 typealias BuyTokensClosure = () -> Void
 typealias SwapCompletionClosure = (ChainAsset) -> Void

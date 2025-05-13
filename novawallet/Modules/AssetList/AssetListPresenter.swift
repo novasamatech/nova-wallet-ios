@@ -17,14 +17,8 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
 
-    private(set) var walletId: MetaAccountModel.Id?
-    private var walletIdenticon: Data?
-    private var walletType: MetaAccountModelType?
-    private var name: String?
+    private var walletId: String?
     private var hidesZeroBalances: Bool?
-    private var hasWalletsUpdates: Bool = false
-
-    private(set) var walletConnectSessionsCount: Int = 0
 
     private(set) var assetListStyle: AssetListGroupsStyle?
 
@@ -54,24 +48,9 @@ private extension AssetListPresenter {
     }
 
     func provideHeaderViewModel() {
-        guard
-            let walletId = walletId,
-            let walletType = walletType,
-            let name = name else {
-            return
-        }
-
         guard case let .success(priceMapping) = model.priceResult, !model.balanceResults.isEmpty else {
             let viewModel = viewModelFactory.createHeaderViewModel(
                 params: .init(
-                    title: name,
-                    wallet: .init(
-                        identifier: walletId,
-                        walletIdenticon: walletIdenticon,
-                        walletType: walletType,
-                        walletConnectSessionsCount: walletConnectSessionsCount,
-                        hasWalletsUpdates: hasWalletsUpdates
-                    ),
                     prices: nil,
                     locks: nil,
                     hasSwaps: model.hasSwaps()
@@ -83,13 +62,7 @@ private extension AssetListPresenter {
             return
         }
 
-        provideHeaderViewModel(
-            with: walletId,
-            priceMapping: priceMapping,
-            walletIdenticon: walletIdenticon,
-            walletType: walletType,
-            name: name
-        )
+        provideHeaderViewModel(priceMapping: priceMapping)
     }
 
     func createAssetAccountPrice(
@@ -145,27 +118,13 @@ private extension AssetListPresenter {
         )
     }
 
-    func provideHeaderViewModel(
-        with walletId: String,
-        priceMapping: [ChainAssetId: PriceData],
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    ) {
+    func provideHeaderViewModel(priceMapping: [ChainAssetId: PriceData]) {
         let externalBalances = externalBalanceModel(prices: priceMapping)
         let totalValue = createHeaderPriceState(from: priceMapping, externalBalances: externalBalances)
         let totalLocks = createHeaderLockState(from: priceMapping, externalBalances: externalBalances)
 
         let viewModel = viewModelFactory.createHeaderViewModel(
             params: .init(
-                title: name,
-                wallet: .init(
-                    identifier: walletId,
-                    walletIdenticon: walletIdenticon,
-                    walletType: walletType,
-                    walletConnectSessionsCount: walletConnectSessionsCount,
-                    hasWalletsUpdates: hasWalletsUpdates
-                ),
                 prices: totalValue,
                 locks: totalLocks,
                 hasSwaps: model.hasSwaps()
@@ -455,10 +414,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         interactor.setup()
     }
 
-    func selectWallet() {
-        wireframe.showWalletSwitch(from: view)
-    }
-
     func selectAsset(for chainAssetId: ChainAssetId) {
         presentAssetDetails(for: chainAssetId)
     }
@@ -552,14 +507,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showSwapTokens(from: view)
     }
 
-    func presentWalletConnect() {
-        if walletConnectSessionsCount > 0 {
-            wireframe.showWalletConnect(from: view)
-        } else {
-            wireframe.showScan(from: view, delegate: self)
-        }
-    }
-
     func toggleAssetListStyle() {
         assetListStyle?.toggle()
 
@@ -575,6 +522,15 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 // MARK: AssetListInteractorOutputProtocol
 
 extension AssetListPresenter: AssetListInteractorOutputProtocol {
+    func didReceive(walletId: String) {
+        self.walletId = walletId
+
+        model = .init()
+
+        updateAssetsView()
+        updateNftView()
+    }
+
     func didReceive(result: AssetListBuilderResult) {
         guard result.walletId != nil, result.walletId == walletId else {
             return
@@ -590,58 +546,14 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         }
     }
 
-    func didReceive(
-        walletId: MetaAccountModel.Id,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    ) {
-        self.walletId = walletId
-        self.walletIdenticon = walletIdenticon
-        self.walletType = walletType
-        self.name = name
-
-        model = .init()
-
-        updateAssetsView()
-        updateNftView()
-    }
-
-    func didChange(name: String) {
-        self.name = name
-
-        updateHeaderView()
-    }
-
     func didReceive(hidesZeroBalances: Bool) {
         self.hidesZeroBalances = hidesZeroBalances
 
         updateAssetsView()
     }
 
-    func didReceiveWalletConnect(error: WalletConnectSessionsError) {
-        switch error {
-        case let .connectionFailed(internalError):
-            wireframe.presentWCConnectionError(from: view, error: internalError, locale: selectedLocale)
-        case .sessionsFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryFetchWalletConnectSessionsCount()
-            }
-        }
-    }
-
-    func didReceiveWalletConnect(sessionsCount: Int) {
-        walletConnectSessionsCount = sessionsCount
-        updateHeaderView()
-    }
-
     func didCompleteRefreshing() {
         view?.didCompleteRefreshing()
-    }
-
-    func didReceiveWalletsState(hasUpdates: Bool) {
-        hasWalletsUpdates = hasUpdates
-        provideHeaderViewModel()
     }
 
     func didReceiveAssetListGroupStyle(_ style: AssetListGroupsStyle) {
@@ -745,14 +657,6 @@ extension AssetListPresenter: Localizable {
 extension AssetListPresenter: AssetsSearchDelegate {
     func assetSearchDidSelect(chainAssetId: ChainAssetId) {
         presentAssetDetails(for: chainAssetId)
-    }
-}
-
-extension AssetListPresenter: URIScanDelegate {
-    func uriScanDidReceive(uri: String, context _: AnyObject?) {
-        wireframe.hideUriScanAnimated(from: view) { [weak self] in
-            self?.interactor.connectWalletConnect(uri: uri)
-        }
     }
 }
 

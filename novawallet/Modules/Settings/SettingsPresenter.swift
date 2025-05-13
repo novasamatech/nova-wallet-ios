@@ -11,7 +11,6 @@ final class SettingsPresenter {
     private var currency: String?
     private var isPinConfirmationOn: Bool = false
     private var biometrySettings: BiometrySettings?
-    private var hasWalletsListUpdates: Bool = false
     private var pushNotificationsStatus: PushNotificationsStatus?
 
     private var wallet: MetaAccountModel?
@@ -55,10 +54,9 @@ final class SettingsPresenter {
 
     private func updateAccountView() {
         guard let wallet = wallet else { return }
-        let viewModel = viewModelFactory.createAccountViewModel(
-            for: wallet,
-            hasWalletNotification: hasWalletsListUpdates
-        )
+
+        let viewModel = viewModelFactory.createAccountViewModel(for: wallet)
+
         view?.didLoad(userViewModel: viewModel)
     }
 
@@ -225,10 +223,6 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         guard let wallet = wallet else { return }
         wireframe.showAccountDetails(for: wallet.identifier, from: view)
     }
-
-    func handleSwitchAction() {
-        wireframe.showWalletSwitch(from: view)
-    }
 }
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {
@@ -304,11 +298,6 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         walletConnectSessionsCount = sessionsCount
 
         updateView()
-    }
-
-    func didReceiveWalletsState(hasUpdates: Bool) {
-        hasWalletsListUpdates = hasUpdates
-        updateAccountView()
     }
 
     func didReceive(pushNotificationsStatus: PushNotificationsStatus) {

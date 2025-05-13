@@ -11,26 +11,22 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
-    private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
     private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
     private var randomizationSeed: Int = 1
-    private var hasWalletsListUpdates: Bool = false
 
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
-        initialWallet: MetaAccountModel,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        wallet = initialWallet
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
@@ -38,13 +34,12 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     private func provideSections() {
         do {
             let params = DAppListViewModelFactory.ListSectionsParams(
-                randomizationSeed: randomizationSeed,
-                hasWalletsListUpdates: hasWalletsListUpdates
+                randomizationSeed: randomizationSeed
             )
+
             let sections = viewModelFactory.createDAppSections(
                 from: try dAppsResult?.get(),
                 favorites: favorites ?? [:],
-                wallet: wallet,
                 params: params,
                 bannersState: bannersModule?.bannersState ?? .unavailable,
                 locale: selectedLocale
@@ -72,10 +67,6 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     func refresh() {
         interactor.refresh()
         bannersModule?.refresh()
-    }
-
-    func activateAccount() {
-        wireframe.showWalletSwitch(from: view)
     }
 
     func activateSearch() {
@@ -109,17 +100,6 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 // MARK: DAppListInteractorOutputProtocol
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {
-    func didReceive(walletResult: Result<MetaAccountModel, Error>) {
-        switch walletResult {
-        case let .success(wallet):
-            self.wallet = wallet
-            provideSections()
-        case let .failure(error):
-            wallet = nil
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-        }
-    }
-
     func didReceive(dAppsResult: Result<DAppList, Error>?) {
         view?.didCompleteRefreshing()
 
@@ -143,11 +123,6 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
 
-        provideSections()
-    }
-
-    func didReceiveWalletsState(hasUpdates: Bool) {
-        hasWalletsListUpdates = hasUpdates
         provideSections()
     }
 }

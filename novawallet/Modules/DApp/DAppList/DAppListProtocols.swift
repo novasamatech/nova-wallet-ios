@@ -10,7 +10,6 @@ protocol DAppListPresenterProtocol: AnyObject {
     func setup()
     func refresh()
     func seeAllFavorites()
-    func activateAccount()
     func activateSearch()
     func activateSettings()
 
@@ -24,17 +23,14 @@ protocol DAppListInteractorInputProtocol: AnyObject {
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
-    func didReceive(walletResult: Result<MetaAccountModel, Error>)
     func didReceive(dAppsResult: Result<DAppList, Error>?)
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])
-    func didReceiveWalletsState(hasUpdates: Bool)
 }
 
 protocol DAppListWireframeProtocol: DAppAlertPresentable,
     DAppBrowserSearchPresentable,
     ErrorPresentable,
     WebPresentable,
-    WalletSwitchPresentable,
     BrowserOpening {
     func showSetting(from view: DAppListViewProtocol?)
     func showFavorites(from view: DAppListViewProtocol?)

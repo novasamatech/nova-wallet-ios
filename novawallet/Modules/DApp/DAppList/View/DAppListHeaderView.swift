@@ -2,15 +2,6 @@ import UIKit
 import UIKit_iOS
 
 final class DAppListHeaderView: UICollectionViewCell {
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = .boldLargeTitle
-        return label
-    }()
-
-    let walletSwitch = WalletSwitchControl()
-
     let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
         let backgroundView = BlockBackgroundView()
         backgroundView.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
@@ -72,45 +63,26 @@ final class DAppListHeaderView: UICollectionViewCell {
     }
 
     private func setupLocalization() {
-        titleLabel.text = R.string.localizable.tabbarDappsTitle_2_4_3(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
         searchView.controlContentView.detailsLabel.text = R.string.localizable.dappListSearch(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
 
     private func setupLayout() {
-        contentView.addSubview(walletSwitch)
-        walletSwitch.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10.0)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.size.equalTo(UIConstants.walletSwitchSize)
-        }
-
-        contentView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        contentView.addSubview(searchView)
+        searchView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(walletSwitch.snp.leading).offset(-8.0)
-            make.centerY.equalTo(walletSwitch.snp.centerY)
+            make.trailing.equalToSuperview().inset(44 + UIConstants.horizontalInset)
+            make.top.equalToSuperview().offset(12.0)
+            make.bottom.equalToSuperview().inset(0.0)
         }
 
         contentView.addSubview(settingsButton)
         settingsButton.snp.makeConstraints { make in
             make.width.equalTo(44.0)
             make.height.equalTo(32.0)
-            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
+            make.centerY.equalTo(searchView)
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        contentView.addSubview(searchView)
-        searchView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(settingsButton.snp.leading)
-            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
-            make.height.equalTo(36.0)
-            make.bottom.equalToSuperview().inset(0.0)
         }
     }
 }

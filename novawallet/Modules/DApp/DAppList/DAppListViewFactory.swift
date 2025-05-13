@@ -3,16 +3,10 @@ import Foundation_iOS
 import Operation_iOS
 
 struct DAppListViewFactory {
-    static func createView(
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
-    ) -> DAppListViewProtocol? {
-        let interactor = createInteractor(
-            walletNotificationService: walletNotificationService,
-            proxySyncService: proxySyncService
-        )
+    static func createView() -> ScrollViewHostControlling? {
+        let interactor = createInteractor()
 
-        let wireframe = DAppListWireframe(proxySyncService: proxySyncService)
+        let wireframe = DAppListWireframe()
 
         let localizationManager = LocalizationManager.shared
 
@@ -24,7 +18,6 @@ struct DAppListViewFactory {
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            initialWallet: SelectedWalletSettings.shared.value,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager
         )
@@ -50,10 +43,7 @@ struct DAppListViewFactory {
         return view
     }
 
-    private static func createInteractor(
-        walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService _: ProxySyncServiceProtocol
-    ) -> DAppListInteractor {
+    private static func createInteractor() -> DAppListInteractor {
         let appConfig = ApplicationConfig.shared
         let dAppsUrl = appConfig.dAppsListURL
         let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
@@ -77,13 +67,10 @@ struct DAppListViewFactory {
         ).createFavoriteDAppsRepository()
 
         let interactor = DAppListInteractor(
-            walletSettings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared,
             dAppProvider: dAppProvider,
             phishingSyncService: phishingSyncService,
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
-            walletNotificationService: walletNotificationService,
             logger: logger
         )
 
