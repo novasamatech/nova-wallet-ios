@@ -1,6 +1,12 @@
 import SubstrateSdk
 import Operation_iOS
 
+protocol DelegatedAccountFetchOperationFactoryProtocol {
+    func createChangesWrapper(
+        at blockHash: Data?
+    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>>
+}
+
 private struct DiscoveringAccountIds {
     let possibleAccountIds: Set<AccountId>
     let discoveredAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]]
@@ -232,7 +238,7 @@ private extension ChainDelegatedAccountFetchOperationFactory {
     }
 }
 
-// MARK: ChainDelegatedAccountFetchOperationFactoryProtocol
+// MARK: DelegatedAccountFetchOperationFactoryProtocol
 
 extension ChainDelegatedAccountFetchOperationFactory: DelegatedAccountFetchOperationFactoryProtocol {
     func createChangesWrapper(

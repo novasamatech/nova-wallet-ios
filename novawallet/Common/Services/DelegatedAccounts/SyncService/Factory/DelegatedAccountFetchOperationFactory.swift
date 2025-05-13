@@ -1,12 +1,6 @@
 import Foundation
 import Operation_iOS
 
-protocol DelegatedAccountFetchOperationFactoryProtocol {
-    func createChangesWrapper(
-        at blockHash: Data?
-    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>>
-}
-
 protocol CompoundDelegatedAccountFetchOperationFactory: DelegatedAccountFetchOperationFactoryProtocol {
     func supportsChain(with chainId: ChainModel.Id) -> Bool
 
@@ -96,7 +90,7 @@ private extension DelegatedAccountFetchOperationFactory {
     }
 }
 
-// MARK: - DelegatedAccountFetchOperationFactoryProtocol
+// MARK: - CompoundDelegatedAccountFetchOperationFactory
 
 extension DelegatedAccountFetchOperationFactory: CompoundDelegatedAccountFetchOperationFactory {
     func createChangesWrapper(
