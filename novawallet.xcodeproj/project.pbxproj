@@ -1103,6 +1103,7 @@
 		0CEAC0FB2DD45FA000015058 /* PayShopSearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */; };
 		0CEAC0FD2DD4A2E700015058 /* PayPageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */; };
 		0CEAC0FF2DD4A5BD00015058 /* PageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */; };
+		0CEAC1042DD4DC9400015058 /* PayShopBrandsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1032DD4DC9400015058 /* PayShopBrandsInteractor.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6971,6 +6972,7 @@
 		0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopSearchHeaderView.swift; sourceTree = "<group>"; };
 		0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPageProvider.swift; sourceTree = "<group>"; };
 		0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageProvider.swift; sourceTree = "<group>"; };
+		0CEAC1032DD4DC9400015058 /* PayShopBrandsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandsInteractor.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -12060,7 +12062,7 @@
 		0C028E8F2DCA23A50060A0E8 /* Pay */ = {
 			isa = PBXGroup;
 			children = (
-				4FDE6862B9CD10D9C24986F1 /* Shop */,
+				0CEAC1002DD4DC1500015058 /* Shop */,
 				935D5C2180BE948082E3A15E /* Spend */,
 				FC131E482126E95E4E5332E6 /* Root */,
 			);
@@ -14402,6 +14404,23 @@
 			path = Presenters;
 			sourceTree = "<group>";
 		};
+		0CEAC1002DD4DC1500015058 /* Shop */ = {
+			isa = PBXGroup;
+			children = (
+				0CEAC1022DD4DC8200015058 /* BrandsBase */,
+				4FDE6862B9CD10D9C24986F1 /* BrandsList */,
+			);
+			path = Shop;
+			sourceTree = "<group>";
+		};
+		0CEAC1022DD4DC8200015058 /* BrandsBase */ = {
+			isa = PBXGroup;
+			children = (
+				0CEAC1032DD4DC9400015058 /* PayShopBrandsInteractor.swift */,
+			);
+			path = BrandsBase;
+			sourceTree = "<group>";
+		};
 		0CEB6B342CA4507200609DC2 /* V4 */ = {
 			isa = PBXGroup;
 			children = (
@@ -16579,7 +16598,7 @@
 			path = MoonbeamTerms;
 			sourceTree = "<group>";
 		};
-		4FDE6862B9CD10D9C24986F1 /* Shop */ = {
+		4FDE6862B9CD10D9C24986F1 /* BrandsList */ = {
 			isa = PBXGroup;
 			children = (
 				0C39ADE32DD24F4500B05714 /* View */,
@@ -16592,7 +16611,7 @@
 				F3BAE2D6E7202334E2E22B39 /* PayShopViewLayout.swift */,
 				62DB50CCC815A0B6F70BD7E2 /* PayShopViewFactory.swift */,
 			);
-			path = Shop;
+			path = BrandsList;
 			sourceTree = "<group>";
 		};
 		525901B46946ED08CB25F6C3 /* Banners */ = {
@@ -28234,6 +28253,7 @@
 				841AAC2326F6879900F0A25E /* AssetBalanceDisplayInfo.swift in Sources */,
 				8842105A289BBA8D00306F2C /* CurrencyWireframe.swift in Sources */,
 				849014BD24AA87E4008F705E /* PinViewFactory.swift in Sources */,
+				0CEAC1042DD4DC9400015058 /* PayShopBrandsInteractor.swift in Sources */,
 				8428765524ADDE0200D91AD8 /* SettingsAccountViewModel.swift in Sources */,
 				0C8AF7AC2B3437E700005AC9 /* ExtrinsicSenderResolving.swift in Sources */,
 				0CC2E5662A6E64EC004092E7 /* NPoolsLocalStorageSubscriber.swift in Sources */,
