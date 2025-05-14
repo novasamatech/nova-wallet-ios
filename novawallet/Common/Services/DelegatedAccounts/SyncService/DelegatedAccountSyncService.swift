@@ -25,8 +25,6 @@ final class DelegatedAccountSyncService: ObservableSyncService {
 
     private let callStore = CancellableCallStore()
 
-    private var stateObserver = Observable<DelegatedAccountSyncServiceState>(state: false)
-
     init(
         chainRegistry: ChainRegistryProtocol,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
@@ -122,23 +120,6 @@ private extension DelegatedAccountSyncService {
         )
 
         updatesOperationFactory.addChainFactory(factory, for: chain.chainId)
-    }
-
-    func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId _: ChainModel.Id) {
-        service.subscribeSyncState(
-            self,
-            queue: workingQueue
-        ) { [weak self] _, newState in
-            guard let self = self else {
-                return
-            }
-
-            self.mutex.lock()
-
-            self.stateObserver.state = newState
-
-            self.mutex.unlock()
-        }
     }
 
     func performSyncUp(at blockHash: Data?) {
