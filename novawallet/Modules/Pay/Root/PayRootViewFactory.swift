@@ -1,17 +1,11 @@
 import Foundation
+import Foundation_iOS
 
 struct PayRootViewFactory {
-    static func createView() -> PayRootViewProtocol? {
-        let interactor = PayRootInteractor()
-        let wireframe = PayRootWireframe()
-
-        let presenter = PayRootPresenter(interactor: interactor, wireframe: wireframe)
-
-        let view = PayRootViewController(presenter: presenter)
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return view
+    static func createView() -> ScrollViewHostControlling? {
+        PayRootViewController(
+            pageProvider: PayPageProvider(),
+            localizationManager: LocalizationManager.shared
+        )
     }
 }

@@ -455,7 +455,6 @@
 		0C3976AF2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */; };
 		0C3976B12C33ABA600998DD6 /* HydraXYKFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */; };
 		0C3976B32C33BFB700998DD6 /* HydraPoolAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */; };
-		0C39ADD92DD22FDD00B05714 /* PayShopViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADD82DD22FDD00B05714 /* PayShopViewManager.swift */; };
 		0C39ADDC2DD2465700B05714 /* PayShopBrandViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADDB2DD2465700B05714 /* PayShopBrandViewModel.swift */; };
 		0C39ADDE2DD246AD00B05714 /* PayShopRecommendedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADDD2DD246AD00B05714 /* PayShopRecommendedViewModel.swift */; };
 		0C39ADE02DD24A6500B05714 /* PayShopAvailabilityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADDF2DD24A6500B05714 /* PayShopAvailabilityViewModel.swift */; };
@@ -463,7 +462,6 @@
 		0C39ADE72DD2F5BA00B05714 /* NSCollectionLayoutSection+Horizontal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADE62DD2F5BA00B05714 /* NSCollectionLayoutSection+Horizontal.swift */; };
 		0C39ADE92DD3006200B05714 /* PayShopBrandCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADE82DD3006200B05714 /* PayShopBrandCell.swift */; };
 		0C39ADEB2DD30AC000B05714 /* CollectionViewReusableContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADEA2DD30AC000B05714 /* CollectionViewReusableContainerView.swift */; };
-		0C39ADEE2DD30B5100B05714 /* PayRootSwitchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADED2DD30B5100B05714 /* PayRootSwitchHeaderView.swift */; };
 		0C39ADF02DD30BC700B05714 /* RoundedSegmentedControl+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39ADEF2DD30BC700B05714 /* RoundedSegmentedControl+Style.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
@@ -1103,6 +1101,8 @@
 		0CEAC0F72DD44CAE00015058 /* PayShopAvailabilityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0F62DD44CAE00015058 /* PayShopAvailabilityCell.swift */; };
 		0CEAC0F92DD4544D00015058 /* GradientModel+PolkadotPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0F82DD4544D00015058 /* GradientModel+PolkadotPay.swift */; };
 		0CEAC0FB2DD45FA000015058 /* PayShopSearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */; };
+		0CEAC0FD2DD4A2E700015058 /* PayPageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */; };
+		0CEAC0FF2DD4A5BD00015058 /* PageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -1284,7 +1284,6 @@
 		1B1402BB29CFF6D9FB944B2D /* CreateWatchOnlyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9DD724F02DA0A174D875A8 /* CreateWatchOnlyViewLayout.swift */; };
 		1B1A6061327C143BA38AD745 /* AssetOperationNetworkListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7095E8DFCBC16F925C919E /* AssetOperationNetworkListPresenter.swift */; };
 		1B3E22DE61BAC810106A7D1A /* GovernanceDelegateSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B1EE1E66B8325C47D8A404 /* GovernanceDelegateSearchProtocols.swift */; };
-		1BC401E1A0EFC5FB33064593 /* PayRootInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58E80D13A34903FE36502CA0 /* PayRootInteractor.swift */; };
 		1BEADE77C6236CB3BF719A47 /* CrowdloanContributionSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C96E41F878ED0A0A6F469D3 /* CrowdloanContributionSetupViewFactory.swift */; };
 		1BFC90E1D8646F7429FFD5E6 /* ExportMnemonicProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3AD755B2B3DCFB3D14DF91 /* ExportMnemonicProtocols.swift */; };
 		1C50003ECAFD943EB67B092D /* BannersWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D0CB9381AF203E5730CD35 /* BannersWireframe.swift */; };
@@ -1327,7 +1326,6 @@
 		25E4B008933E2EF7F2FAAA46 /* StakingMoreOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2FE7131747C08259EB98AC /* StakingMoreOptionsViewController.swift */; };
 		26533668754DB6C1DF2425AB /* TokenManageSingleViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D19485BAFCB2056BDC135441 /* TokenManageSingleViewFactory.swift */; };
 		265C6E00915F2F186551A67B /* NPoolsUnstakeSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3246115B53EFE9461CD2F68B /* NPoolsUnstakeSetupViewFactory.swift */; };
-		26FCE459D465A3A802D96361 /* PayRootWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB9D42E3E63D2974B532C2 /* PayRootWireframe.swift */; };
 		26FFA7D4465596728AA9C55F /* NetworkNodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D56AAF0DE08FFC0BA83B74E /* NetworkNodeViewController.swift */; };
 		270C21973CB61F0BF3D2D1E3 /* CrowdloanListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02ACCC85B2CCF3D9392CA9B4 /* CrowdloanListProtocols.swift */; };
 		2736BAABAE1389260A0B28D6 /* AssetListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B754B68D6F1D1ED5C8577A5 /* AssetListViewFactory.swift */; };
@@ -2046,7 +2044,6 @@
 		6BBD025775841F8B055CA367 /* AssetsSearchViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475B5A735FE818842CB3C82C /* AssetsSearchViewFactory.swift */; };
 		6C56AB4AE63AB2DC73DE98E0 /* AccountImportInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CC1FB277A878E9C9B7EAEB /* AccountImportInteractor.swift */; };
 		6C56D43878A36E0AB7451DF6 /* NominationPoolSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31B8F292DA050D1D19B9F5F /* NominationPoolSearchProtocols.swift */; };
-		6D016C418D5111A06211A853 /* PayRootPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304AD5DBC584D555F65CA381 /* PayRootPresenter.swift */; };
 		6D0B75F91BF98EE23D0C1E2A /* NetworkDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2BC4DC3F8FD02ACE0817C96 /* NetworkDetailsViewLayout.swift */; };
 		6D315EFF2B664235D297674E /* AccountImportProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29514E516CEAAB159851D95 /* AccountImportProtocols.swift */; };
 		6D47EAB127FAB7559A9FA107 /* StakingPayoutConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BACB7E24BC87F9218DBBC4 /* StakingPayoutConfirmationViewController.swift */; };
@@ -6298,7 +6295,6 @@
 		0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKQuoteRemoteState.swift; sourceTree = "<group>"; };
 		0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKFlowState.swift; sourceTree = "<group>"; };
 		0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraPoolAccountTests.swift; sourceTree = "<group>"; };
-		0C39ADD82DD22FDD00B05714 /* PayShopViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopViewManager.swift; sourceTree = "<group>"; };
 		0C39ADDB2DD2465700B05714 /* PayShopBrandViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandViewModel.swift; sourceTree = "<group>"; };
 		0C39ADDD2DD246AD00B05714 /* PayShopRecommendedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopRecommendedViewModel.swift; sourceTree = "<group>"; };
 		0C39ADDF2DD24A6500B05714 /* PayShopAvailabilityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopAvailabilityViewModel.swift; sourceTree = "<group>"; };
@@ -6306,7 +6302,6 @@
 		0C39ADE62DD2F5BA00B05714 /* NSCollectionLayoutSection+Horizontal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCollectionLayoutSection+Horizontal.swift"; sourceTree = "<group>"; };
 		0C39ADE82DD3006200B05714 /* PayShopBrandCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandCell.swift; sourceTree = "<group>"; };
 		0C39ADEA2DD30AC000B05714 /* CollectionViewReusableContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewReusableContainerView.swift; sourceTree = "<group>"; };
-		0C39ADED2DD30B5100B05714 /* PayRootSwitchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayRootSwitchHeaderView.swift; sourceTree = "<group>"; };
 		0C39ADEF2DD30BC700B05714 /* RoundedSegmentedControl+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedSegmentedControl+Style.swift"; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
@@ -6974,6 +6969,8 @@
 		0CEAC0F62DD44CAE00015058 /* PayShopAvailabilityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopAvailabilityCell.swift; sourceTree = "<group>"; };
 		0CEAC0F82DD4544D00015058 /* GradientModel+PolkadotPay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GradientModel+PolkadotPay.swift"; sourceTree = "<group>"; };
 		0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopSearchHeaderView.swift; sourceTree = "<group>"; };
+		0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPageProvider.swift; sourceTree = "<group>"; };
+		0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageProvider.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -7631,7 +7628,6 @@
 		2F8A45125DF93218FC6C5119 /* ParaStkYourCollatorsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYourCollatorsViewFactory.swift; sourceTree = "<group>"; };
 		2FC9F0E50317E1583EA8E345 /* GovernanceUnlockSetupViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockSetupViewController.swift; sourceTree = "<group>"; };
 		301287CBBF23EF58186A7BB5 /* DAppAuthConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmViewLayout.swift; sourceTree = "<group>"; };
-		304AD5DBC584D555F65CA381 /* PayRootPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayRootPresenter.swift; sourceTree = "<group>"; };
 		3089A0A7C992300CE839A050 /* ParaStkYieldBoostStartPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStartPresenter.swift; sourceTree = "<group>"; };
 		30D089568ABA686D509DF917 /* StakingRebagConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRebagConfirmViewLayout.swift; sourceTree = "<group>"; };
 		30E25CF67173500E0AC19387 /* GovernanceUnavailableTracksViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnavailableTracksViewController.swift; sourceTree = "<group>"; };
@@ -7843,7 +7839,6 @@
 		57E6825E525785A1A12C62E7 /* MarkdownDescriptionWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownDescriptionWireframe.swift; sourceTree = "<group>"; };
 		57F0C615209D923E08357766 /* ImportCloudPasswordViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImportCloudPasswordViewController.swift; sourceTree = "<group>"; };
 		58612684146AD03AD7BC30DF /* ChangeWatchOnlyViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChangeWatchOnlyViewLayout.swift; sourceTree = "<group>"; };
-		58E80D13A34903FE36502CA0 /* PayRootInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayRootInteractor.swift; sourceTree = "<group>"; };
 		58F9884EB10C98632C6A41C5 /* WalletImportOptionsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletImportOptionsViewFactory.swift; sourceTree = "<group>"; };
 		594BC61689EC942ED0A64A4A /* ReferralCrowdloanViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferralCrowdloanViewLayout.swift; sourceTree = "<group>"; };
 		595EF68393284A976472FDF7 /* Pods_novawalletAll_novawallet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawallet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7881,7 +7876,6 @@
 		5F791FE1B479CE1DF936F79F /* CrowdloanContributionConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmViewFactory.swift; sourceTree = "<group>"; };
 		5FCECA20E6DCA5D228F44477 /* StakingUnbondSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupPresenter.swift; sourceTree = "<group>"; };
 		5FD612D8F897463726CDD033 /* LedgerPerformOperationViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerPerformOperationViewController.swift; sourceTree = "<group>"; };
-		5FFB9D42E3E63D2974B532C2 /* PayRootWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayRootWireframe.swift; sourceTree = "<group>"; };
 		601E112BB57943F0E824F7A3 /* MythosStkUnstakeConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeConfirmWireframe.swift; sourceTree = "<group>"; };
 		60F6D1F16B35354844E435AC /* WalletConnectProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WalletConnectProtocols.swift; sourceTree = "<group>"; };
 		611FBB25D55CF56F36026074 /* AssetsSearchViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSearchViewController.swift; sourceTree = "<group>"; };
@@ -12977,14 +12971,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		0C39ADEC2DD30B1000B05714 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				0C39ADED2DD30B5100B05714 /* PayRootSwitchHeaderView.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		0C3C49D12AAF3D5900F0F274 /* Predicate */ = {
 			isa = PBXGroup;
 			children = (
@@ -16605,7 +16591,6 @@
 				70C513E621851216255589BC /* PayShopViewController.swift */,
 				F3BAE2D6E7202334E2E22B39 /* PayShopViewLayout.swift */,
 				62DB50CCC815A0B6F70BD7E2 /* PayShopViewFactory.swift */,
-				0C39ADD82DD22FDD00B05714 /* PayShopViewManager.swift */,
 			);
 			path = Shop;
 			sourceTree = "<group>";
@@ -21276,6 +21261,7 @@
 				2D74CA3E2CF7262E004EAD8C /* BrowserOpening.swift */,
 				0CFF82502D9275C900DB17A4 /* AvailableBalanceMapping.swift */,
 				0CD2FB462DCB5F4A006208FD /* URLConvertible.swift */,
+				0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -27413,14 +27399,11 @@
 		FC131E482126E95E4E5332E6 /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				0C39ADEC2DD30B1000B05714 /* View */,
 				D75E67DEFE2D57A741E8CFC8 /* PayRootProtocols.swift */,
-				5FFB9D42E3E63D2974B532C2 /* PayRootWireframe.swift */,
-				304AD5DBC584D555F65CA381 /* PayRootPresenter.swift */,
-				58E80D13A34903FE36502CA0 /* PayRootInteractor.swift */,
 				86CC557C4FC5DA6E769958B2 /* PayRootViewController.swift */,
 				E60345CBF629A82608C84406 /* PayRootViewLayout.swift */,
 				4C32EE7BA51CAC8B67FF17D1 /* PayRootViewFactory.swift */,
+				0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */,
 			);
 			path = Root;
 			sourceTree = "<group>";
@@ -29138,6 +29121,7 @@
 				842EBB3B2890B06500B952D8 /* WalletSelectionPresenter.swift in Sources */,
 				2DB5B1102D3EE75B0075EB3F /* DAppIconImageViewModel.swift in Sources */,
 				88D1F1B22981212700316A1A /* InAppUpdatesServiceWireframeProtocol.swift in Sources */,
+				0CEAC0FF2DD4A5BD00015058 /* PageProvider.swift in Sources */,
 				0C2DA89E2CC21853001F79C8 /* CrosschainExchangeEdge.swift in Sources */,
 				84C1DBC329C27A6600F295A5 /* Paras.swift in Sources */,
 				846B749228B420FC00C39B93 /* ChainAccountAddTableViewCell.swift in Sources */,
@@ -31497,7 +31481,6 @@
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,
 				84C9CF3B291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift in Sources */,
 				8858917429A4BA0A00320896 /* DelegateGroupVotesHeader.swift in Sources */,
-				0C39ADD92DD22FDD00B05714 /* PayShopViewManager.swift in Sources */,
 				0C0F6D752D3A5C5C00943A7C /* StartStakingInfoMythosPresenter.swift in Sources */,
 				D886425A55425810AD070AB5 /* ControllerAccountConfirmationWireframe.swift in Sources */,
 				84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */,
@@ -31656,6 +31639,7 @@
 				CE2792E78B14CE02394D8CF4 /* ReferralCrowdloanViewLayout.swift in Sources */,
 				84E5D14227E32E8B00D27B1E /* AccountInputView.swift in Sources */,
 				2D6287472C941DFE00060814 /* SwipeGovVotingListItemView.swift in Sources */,
+				0CEAC0FD2DD4A2E700015058 /* PayPageProvider.swift in Sources */,
 				2B0FC94B4AE9AFE9532F493F /* ReferralCrowdloanViewFactory.swift in Sources */,
 				2D60C9BF2D1AA9E500027EC6 /* ModalCardPresentationStyle.swift in Sources */,
 				84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */,
@@ -33032,7 +33016,6 @@
 				1180349875F35B4D4DD88A4C /* StakingTypeViewFactory.swift in Sources */,
 				838D584B803A5A7BCBAD9395 /* StartStakingConfirmProtocols.swift in Sources */,
 				08999A79B34D287030887A7C /* StartStakingConfirmWireframe.swift in Sources */,
-				0C39ADEE2DD30B5100B05714 /* PayRootSwitchHeaderView.swift in Sources */,
 				60808D290AE02E3A284EC3E9 /* StartStakingConfirmPresenter.swift in Sources */,
 				F7D3092FDF42D9356654D85A /* StartStakingConfirmInteractor.swift in Sources */,
 				A99428A540CDA6B359220477 /* StartStakingConfirmViewController.swift in Sources */,
@@ -33553,9 +33536,6 @@
 				CC8E2564D41575ABE3C43882 /* UnifiedAddressPopupViewLayout.swift in Sources */,
 				FED75BD7C31275BD40CCEE30 /* UnifiedAddressPopupViewFactory.swift in Sources */,
 				07A5840E96BEBA8BBA9A3EEE /* PayRootProtocols.swift in Sources */,
-				26FCE459D465A3A802D96361 /* PayRootWireframe.swift in Sources */,
-				6D016C418D5111A06211A853 /* PayRootPresenter.swift in Sources */,
-				1BC401E1A0EFC5FB33064593 /* PayRootInteractor.swift in Sources */,
 				9A06FC557E7F08B1F53AF62A /* PayRootViewController.swift in Sources */,
 				CCF9CEB2FE787DE2772AC84D /* PayRootViewLayout.swift in Sources */,
 				AE0BBCED4D87A81CD918D695 /* PayRootViewFactory.swift in Sources */,

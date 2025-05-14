@@ -1,4 +1,0 @@
-import Foundation
-import UIKit_iOS
-
-typealias PayRootSwitchHeaderViewModel = CollectionViewReusableContainerView<RoundedSegmentedControl>

@@ -24,6 +24,7 @@ struct UIConstants {
     static let verticalTitleInset: CGFloat = 8.0
     static let navigationAccountIconSize: CGFloat = 40.0
     static let bouncesOffset: CGFloat = 100
+    static let segmentedControlHeight: CGFloat = 44.0
 }
 
 enum AccountViewMode {
