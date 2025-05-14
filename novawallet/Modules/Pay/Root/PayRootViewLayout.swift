@@ -2,7 +2,7 @@ import UIKit
 
 final class PayRootViewLayout: UIView {
     private let backgroundView = MultigradientView.background
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 

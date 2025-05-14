@@ -3,10 +3,10 @@ import UIKit
 final class PayShopBrandCell: BlurredCollectionViewCell<PayShopBrandContentView> {
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         setupStyle()
     }
-    
+
     private func setupStyle() {
         view.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 14)
     }

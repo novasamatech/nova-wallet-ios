@@ -1100,6 +1100,9 @@
 		0CE94FF42D04969100E31D0C /* SwapInterEDNotMet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */; };
 		0CE94FF62D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */; };
 		0CE94FF82D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */; };
+		0CEAC0F72DD44CAE00015058 /* PayShopAvailabilityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0F62DD44CAE00015058 /* PayShopAvailabilityCell.swift */; };
+		0CEAC0F92DD4544D00015058 /* GradientModel+PolkadotPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0F82DD4544D00015058 /* GradientModel+PolkadotPay.swift */; };
+		0CEAC0FB2DD45FA000015058 /* PayShopSearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6968,6 +6971,9 @@
 		0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInterEDNotMet.swift; sourceTree = "<group>"; };
 		0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangePathCostEstimator.swift; sourceTree = "<group>"; };
 		0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationPrototypeFactory.swift; sourceTree = "<group>"; };
+		0CEAC0F62DD44CAE00015058 /* PayShopAvailabilityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopAvailabilityCell.swift; sourceTree = "<group>"; };
+		0CEAC0F82DD4544D00015058 /* GradientModel+PolkadotPay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GradientModel+PolkadotPay.swift"; sourceTree = "<group>"; };
+		0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopSearchHeaderView.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -12964,6 +12970,9 @@
 			isa = PBXGroup;
 			children = (
 				0C39ADE82DD3006200B05714 /* PayShopBrandCell.swift */,
+				0CEAC0F62DD44CAE00015058 /* PayShopAvailabilityCell.swift */,
+				0CEAC0F82DD4544D00015058 /* GradientModel+PolkadotPay.swift */,
+				0CEAC0FA2DD45FA000015058 /* PayShopSearchHeaderView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -28218,6 +28227,7 @@
 				2DD018BD2D635AD10063F9BB /* TextHeightOperationFactory.swift in Sources */,
 				886A278029E939D9003B269F /* EquilibriumAccountData.swift in Sources */,
 				88F34FD228FF045400712BDE /* BindableView.swift in Sources */,
+				0CEAC0F72DD44CAE00015058 /* PayShopAvailabilityCell.swift in Sources */,
 				8857E03128A6A22500260BA2 /* PriceAssetInfoFactory.swift in Sources */,
 				0CF193D52A861926003F12F6 /* PredefinedTimeShortcut.swift in Sources */,
 				0CD846172BDA5B040026B5CA /* AttributedString+Style.swift in Sources */,
@@ -28797,6 +28807,7 @@
 				84EE2FB1289128E400A98816 /* WalletManageProtocols.swift in Sources */,
 				88AC186528CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift in Sources */,
 				0C4394D42BD6661F00578761 /* PasswordInputView.swift in Sources */,
+				0CEAC0F92DD4544D00015058 /* GradientModel+PolkadotPay.swift in Sources */,
 				8460E711284AB99E002896E9 /* ParaStkHintsViewModelFactory.swift in Sources */,
 				2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */,
 				882C29AA28DC7B3D009CA4B6 /* SubstrateStorageMigrator.swift in Sources */,
@@ -31180,6 +31191,7 @@
 				84906FEA28AFCC3F0049B57D /* LoadableStackCellView.swift in Sources */,
 				840EAE6B29FB8AEA00453C7E /* WalletConnectMethod.swift in Sources */,
 				84C3420728314D9600156569 /* ParaStkScheduledRequestsQueryFactory.swift in Sources */,
+				0CEAC0FB2DD45FA000015058 /* PayShopSearchHeaderView.swift in Sources */,
 				CC545DF80038901FA06FDD58 /* SelectValidatorsConfirmViewController.swift in Sources */,
 				1F88F3DBFA0BD6D0FDF558F3 /* SelectValidatorsConfirmViewFactory.swift in Sources */,
 				0CCD18B82BA1EE3D0068D73A /* StatemineAssetSerializer.swift in Sources */,
