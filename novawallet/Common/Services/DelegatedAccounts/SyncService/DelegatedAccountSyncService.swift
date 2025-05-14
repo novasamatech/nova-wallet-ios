@@ -1,15 +1,15 @@
 import Foundation
 import Operation_iOS
 
-typealias DelegatedAccountSyncServiceState = Bool
-
 protocol DelegatedAccountSyncServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
     func updateWalletsStatuses()
-    func syncUp(blockHash: Data?)
+    func syncUp(
+        chainId: ChainModel.Id,
+        at blockHash: Data?
+    )
 }
 
-typealias DelegatedAccountSyncChainFilter = (ChainModel) -> Bool
-typealias DelegatedAccountSyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
+typealias DelegatedAccountSyncChainWalletFilter = (MetaAccountModel) -> Bool
 
 final class DelegatedAccountSyncService: ObservableSyncService {
     let chainRegistry: ChainRegistryProtocol
@@ -58,7 +58,7 @@ final class DelegatedAccountSyncService: ObservableSyncService {
     }
 
     override func performSyncUp() {
-        performSyncUp(at: nil)
+        performSync(for: nil, at: nil)
     }
 
     override func stopSyncUp() {
@@ -99,7 +99,7 @@ private extension DelegatedAccountSyncService {
 
         guard isActive, !changes.isEmpty else { return }
 
-        performSyncUp(at: nil)
+        performSyncUp()
     }
 
     func stopSyncSevice(for chainId: ChainModel.Id) {
@@ -122,10 +122,19 @@ private extension DelegatedAccountSyncService {
         updatesOperationFactory.addChainFactory(factory, for: chain.chainId)
     }
 
-    func performSyncUp(at blockHash: Data?) {
+    func performSync(
+        for chainId: ChainModel.Id?,
+        at blockHash: Data?
+    ) {
         callStore.cancel()
 
-        let changesWrapper = updatesOperationFactory.createChangesWrapper(at: blockHash)
+        let metaAccountsWrapper = createWalletsWrapper(for: chainWalletFilter)
+
+        let changesWrapper = updatesOperationFactory.createChangesWrapper(
+            for: chainId,
+            at: blockHash,
+            metaAccountsClosure: { try metaAccountsWrapper.targetOperation.extractNoCancellableResultData() }
+        )
 
         let updateWrapper = walletUpdateMediator.saveChanges {
             let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
@@ -133,10 +142,15 @@ private extension DelegatedAccountSyncService {
             return changes
         }
 
+        changesWrapper.addDependency(wrapper: metaAccountsWrapper)
         updateWrapper.addDependency(wrapper: changesWrapper)
 
+        let resultWrapper = updateWrapper
+            .insertingHead(operations: metaAccountsWrapper.allOperations)
+            .insertingHead(operations: changesWrapper.allOperations)
+
         executeCancellable(
-            wrapper: updateWrapper.insertingHead(operations: changesWrapper.allOperations),
+            wrapper: resultWrapper,
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
             runningCallbackIn: workingQueue,
@@ -156,6 +170,29 @@ private extension DelegatedAccountSyncService {
                 self?.completeImmediate(error)
             }
         }
+    }
+
+    func createWalletsWrapper(
+        for filter: DelegatedAccountSyncChainWalletFilter?
+    ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
+        let metaAccountsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
+
+        let filterOperation = ClosureOperation<[ManagedMetaAccountModel]> {
+            let allWallets = try metaAccountsOperation.extractNoCancellableResultData()
+
+            guard let filter else {
+                return allWallets
+            }
+
+            return allWallets.filter { filter($0.info) }
+        }
+
+        filterOperation.addDependency(metaAccountsOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: filterOperation,
+            dependencies: [metaAccountsOperation]
+        )
     }
 }
 
@@ -213,7 +250,10 @@ extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         }
     }
 
-    func syncUp(blockHash: Data?) {
+    func syncUp(
+        chainId: ChainModel.Id,
+        at blockHash: Data?
+    ) {
         mutex.lock()
 
         defer {
@@ -232,6 +272,6 @@ extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
 
         isSyncing = true
 
-        performSyncUp(at: blockHash)
+        performSync(for: chainId, at: blockHash)
     }
 }

@@ -197,7 +197,7 @@ extension ServiceCoordinator {
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .allSatisfies([.enabledChains, .hasProxy]),
-            chainWalletFilter: { _, wallet in
+            chainWalletFilter: { wallet in
                 #if F_RELEASE
                     return wallet.type != .watchOnly
                 #else

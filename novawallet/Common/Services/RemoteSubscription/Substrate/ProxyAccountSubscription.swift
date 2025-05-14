@@ -104,7 +104,7 @@ final class ProxyAccountSubscription: WebSocketSubscribing {
         switch result {
         case let .success(handler):
             if let blockHash = handler.blockHash {
-                delegatedAccountSyncService.syncUp(blockHash: blockHash)
+                delegatedAccountSyncService.syncUp(chainId: chainId, at: blockHash)
             }
         case let .failure(error):
             logger?.error(error.localizedDescription)

@@ -1,7 +1,13 @@
 import Foundation
 import Operation_iOS
 
-protocol CompoundDelegatedAccountFetchOperationFactory: DelegatedAccountFetchOperationFactoryProtocol {
+protocol CompoundDelegatedAccountFetchOperationFactory {
+    func createChangesWrapper(
+        for chainId: ChainModel.Id?,
+        at blockHash: Data?,
+        metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel]
+    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>>
+
     func supportsChain(with chainId: ChainModel.Id) -> Bool
 
     func addChainFactory(
@@ -10,6 +16,18 @@ protocol CompoundDelegatedAccountFetchOperationFactory: DelegatedAccountFetchOpe
     )
 
     func removeChainFactory(for chainId: ChainModel.Id)
+}
+
+extension CompoundDelegatedAccountFetchOperationFactory {
+    func createChangesWrapper(
+        metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel]
+    ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
+        createChangesWrapper(
+            for: nil,
+            at: nil,
+            metaAccountsClosure: metaAccountsClosure
+        )
+    }
 }
 
 final class DelegatedAccountFetchOperationFactory {
@@ -26,45 +44,33 @@ final class DelegatedAccountFetchOperationFactory {
 // MARK: - Private
 
 private extension DelegatedAccountFetchOperationFactory {
-    func createFetchAllChangesOperation(
-        at blockHash: Data?
-    ) -> BaseOperation<[SyncChanges<ManagedMetaAccountModel>]> {
-        OperationCombiningService(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            self.chainSyncFactories.map { $0.value.createChangesWrapper(at: blockHash) }
-        }.longrunOperation()
-    }
-
     func mapFetchResult(
         _ fetchResult: [SyncChanges<ManagedMetaAccountModel>]
     ) -> SyncChanges<ManagedMetaAccountModel> {
-        var delegateStatusMap: [MetaAccountDelegationId: Set<DelegatedAccount.Status>] = [:]
+        var delegateStatusMap: [MetaAccountDelegationId: (Set<DelegatedAccount.Status>, ManagedMetaAccountModel)]
 
-        let filteredUpdates = fetchResult
+        delegateStatusMap = fetchResult
             .flatMap(\.newOrUpdatedItems)
-            .compactMap { managedMetaAccount -> ManagedMetaAccountModel? in
+            .reduce(into: [:]) { acc, managedMetaAccount in
                 guard
                     let delegationId = managedMetaAccount.info.delegationId(),
                     let status = managedMetaAccount.info.delegatedAccountStatus()
-                else { return nil }
+                else { return }
 
-                guard delegateStatusMap[delegationId] == nil else {
-                    delegateStatusMap[delegationId]?.insert(status)
-                    return nil
+                if acc[delegationId] == nil {
+                    acc[delegationId] = ([status], managedMetaAccount)
+                } else {
+                    acc[delegationId]?.0.insert(status)
                 }
-
-                delegateStatusMap[delegationId] = [status]
-
-                return managedMetaAccount
             }
 
-        let resultUpdates = filteredUpdates.map { managedMetaAccount in
+        let resultUpdates = delegateStatusMap.map { _, value in
+            let collectedStatuses = value.0
+            let managedMetaAccount = value.1
+
             guard
-                let delegationId = managedMetaAccount.info.delegationId(),
-                let currentStatus = managedMetaAccount.info.delegatedAccountStatus(),
-                let collectedStatuses = delegateStatusMap[delegationId],
-                collectedStatuses.count > 1
+                collectedStatuses.count > 1,
+                let currentStatus = managedMetaAccount.info.delegatedAccountStatus()
             else { return managedMetaAccount }
 
             let resultStatus: DelegatedAccount.Status = if collectedStatuses.contains(.new) {
@@ -94,21 +100,28 @@ private extension DelegatedAccountFetchOperationFactory {
 
 extension DelegatedAccountFetchOperationFactory: CompoundDelegatedAccountFetchOperationFactory {
     func createChangesWrapper(
-        at blockHash: Data?
+        for chainId: ChainModel.Id?,
+        at blockHash: Data?,
+        metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel]
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
-        let fetchAllChangesOperation = createFetchAllChangesOperation(at: blockHash)
-
-        let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
-            let fetchResult = try fetchAllChangesOperation.extractNoCancellableResultData()
-
-            return self.mapFetchResult(fetchResult)
+        let wrappers = chainSyncFactories.map { id, factory in
+            factory.createChangesWrapper(
+                metaAccountsClosure: metaAccountsClosure,
+                at: chainId == id ? blockHash : nil
+            )
         }
 
-        mapOperation.addDependency(fetchAllChangesOperation)
+        let mapOperation = ClosureOperation<SyncChanges<ManagedMetaAccountModel>> {
+            self.mapFetchResult(
+                try wrappers.compactMap { try $0.targetOperation.extractNoCancellableResultData() }
+            )
+        }
+
+        wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [fetchAllChangesOperation]
+            dependencies: wrappers.flatMap(\.allOperations)
         )
     }
 
