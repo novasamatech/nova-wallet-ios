@@ -17,14 +17,14 @@ final class MultisigAccountsRepository {
 
 extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for delegators: Set<AccountId>
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        let cachedMultisigsForSignatories = delegators
+        let cachedMultisigsForSignatories = accountIds
             .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
             .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
 
         let cachedSignatories = Set(cachedMultisigsForSignatories.keys)
-        let nonCachedSignatories = delegators.subtracting(cachedSignatories)
+        let nonCachedSignatories = accountIds.subtracting(cachedSignatories)
 
         guard !nonCachedSignatories.isEmpty else {
             return .createWithResult(cachedMultisigsForSignatories)

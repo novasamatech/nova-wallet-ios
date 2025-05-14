@@ -2,7 +2,7 @@ import Operation_iOS
 
 protocol DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for delegators: Set<AccountId>
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
 }
 
