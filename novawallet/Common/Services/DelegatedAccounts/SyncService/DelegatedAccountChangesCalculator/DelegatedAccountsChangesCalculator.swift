@@ -66,7 +66,7 @@ private extension DelegatedAccountsChangesCalculator {
         let revokedAccounts = findRevokedAccounts(
             for: delegatorAccountId,
             updatedDelegatedAccounts: updatedMetaAccounts,
-            localDelegatedAccounts: localDelegatedAccounts
+            localDelegatedAccounts: Array(localDelegatedAccounts.values)
         )
 
         return SyncChanges(
@@ -124,18 +124,28 @@ private extension DelegatedAccountsChangesCalculator {
     func findRevokedAccounts(
         for delegatorAccountId: AccountId,
         updatedDelegatedAccounts: [ManagedMetaAccountModel],
-        localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel]
+        localDelegatedAccounts: [ManagedMetaAccountModel]
     ) -> [ManagedMetaAccountModel] {
-        let relevantLocalAccounts = localDelegatedAccounts.filter {
-            $0.key.delegatorAccountId == delegatorAccountId
-        }.values
+        let relevantLocalAccounts: [MetaAccountDelegationId: ManagedMetaAccountModel] = localDelegatedAccounts
+            .reduce(into: [:]) { acc, metaAccount in
+                guard
+                    let delegationId = metaAccount.info.delegationId(),
+                    delegationId.delegatorId == delegatorAccountId
+                else { return }
 
-        let revokedAccounts: [ManagedMetaAccountModel] = Set(relevantLocalAccounts)
-            .subtracting(Set(updatedDelegatedAccounts))
-            .compactMap { metaAccount in
-                guard let factory = getFactoryForMetaAccount(metaAccount) else { return nil }
+                acc[delegationId] = metaAccount
+            }
+        let updatedDelegationIds = updatedDelegatedAccounts.compactMap { $0.info.delegationId() }
 
-                return factory.markAsRevoked(metaAccount)
+        let revokedAccounts: [ManagedMetaAccountModel] = Set(relevantLocalAccounts.keys)
+            .subtracting(Set(updatedDelegationIds))
+            .compactMap { delegationId in
+                guard
+                    let localAccountToRevoke = relevantLocalAccounts[delegationId],
+                    let factory = getFactoryForMetaAccount(localAccountToRevoke)
+                else { return nil }
+
+                return factory.markAsRevoked(localAccountToRevoke)
             }
 
         return revokedAccounts
