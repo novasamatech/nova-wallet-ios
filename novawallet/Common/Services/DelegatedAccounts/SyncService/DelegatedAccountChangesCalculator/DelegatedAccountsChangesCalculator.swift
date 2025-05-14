@@ -56,7 +56,6 @@ private extension DelegatedAccountsChangesCalculator {
         let updatedMetaAccounts = try remoteDelegatedAccounts.compactMap { remoteDelegatedAccount in
             try processRemoteDelegatedAccount(
                 remoteDelegatedAccount,
-                delegatorAccountId: delegatorAccountId,
                 localDelegatedAccounts: localDelegatedAccounts,
                 localMetaAccounts: localMetaAccounts,
                 identities: identities
@@ -77,7 +76,6 @@ private extension DelegatedAccountsChangesCalculator {
 
     func processRemoteDelegatedAccount(
         _ delegatedAccount: DiscoveredDelegatedAccountProtocol,
-        delegatorAccountId: AccountId,
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
@@ -88,7 +86,6 @@ private extension DelegatedAccountsChangesCalculator {
 
         let existingMetaAccount = findExistingMetaAccount(
             for: delegatedAccount,
-            delegatorAccountId: delegatorAccountId,
             in: localDelegatedAccounts,
             using: factory
         )
@@ -98,7 +95,6 @@ private extension DelegatedAccountsChangesCalculator {
         } else {
             try factory.createMetaAccount(
                 for: delegatedAccount,
-                delegatorAccountId: delegatorAccountId,
                 using: identities,
                 localMetaAccounts: localMetaAccounts
             )
@@ -107,16 +103,14 @@ private extension DelegatedAccountsChangesCalculator {
 
     func findExistingMetaAccount(
         for delegatedAccount: DiscoveredDelegatedAccountProtocol,
-        delegatorAccountId: AccountId,
         in localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         using factory: DelegatedMetaAccountFactoryProtocol
     ) -> ManagedMetaAccountModel? {
         localDelegatedAccounts.first { id, metaAccount in
-            id.delegatorAccountId == delegatorAccountId &&
+            id.delegatorAccountId == delegatedAccount.accountId &&
                 factory.matchesDelegatedAccount(
                     metaAccount,
-                    delegatedAccount: delegatedAccount,
-                    delegatorAccountId: delegatorAccountId
+                    delegatedAccount: delegatedAccount
                 )
         }?.value
     }

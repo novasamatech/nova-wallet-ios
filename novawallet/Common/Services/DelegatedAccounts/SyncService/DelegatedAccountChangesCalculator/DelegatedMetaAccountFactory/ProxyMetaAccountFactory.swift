@@ -26,27 +26,32 @@ final class ProxyMetaAccountFactory {
 extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
         for delegatedAccount: DiscoveredDelegatedAccountProtocol,
-        delegatorAccountId: AccountId,
         using identities: [AccountId: AccountIdentity],
         localMetaAccounts _: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel {
-        guard let proxy = delegatedAccount as? ProxyAccount else {
+        guard let proxied = delegatedAccount as? ProxiedAccount else {
             throw DelegatedAccountError.invalidAccountType
         }
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
 
+        let proxy = DelegatedAccount.ProxyAccountModel(
+            type: proxied.proxyAccount.type,
+            accountId: proxied.proxyAccount.accountId,
+            status: .new
+        )
+
         let chainAccountModel = ChainAccountModel(
             chainId: chainModel.chainId,
-            accountId: delegatorAccountId,
-            publicKey: delegatorAccountId,
+            accountId: proxied.accountId,
+            publicKey: proxied.accountId,
             cryptoType: cryptoType.rawValue,
-            proxy: .init(type: proxy.type, accountId: proxy.accountId, status: .new),
+            proxy: proxy,
             multisig: nil
         )
 
-        let name = try identities[delegatorAccountId]?.displayName
-            ?? delegatorAccountId.toAddress(using: chainModel.chainFormat)
+        let name = try identities[proxied.accountId]?.displayName
+            ?? proxied.accountId.toAddress(using: chainModel.chainFormat)
 
         let newWallet = ManagedMetaAccountModel(info: MetaAccountModel(
             metaId: UUID().uuidString,
@@ -93,18 +98,17 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
     func matchesDelegatedAccount(
         _ metaAccount: ManagedMetaAccountModel,
-        delegatedAccount: DiscoveredDelegatedAccountProtocol,
-        delegatorAccountId: AccountId
+        delegatedAccount: DiscoveredDelegatedAccountProtocol
     ) -> Bool {
         guard
-            let proxy = delegatedAccount as? ProxyAccount,
+            let remoteProxied = delegatedAccount as? ProxiedAccount,
             let chainAccount = metaAccount.info.proxyChainAccount(chainId: chainModel.chainId),
-            let proxyModel = chainAccount.proxy
+            let localProxyModel = chainAccount.proxy
         else { return false }
 
-        return chainAccount.accountId == delegatorAccountId &&
-            proxyModel.accountId == proxy.accountId &&
-            proxyModel.type == proxy.type
+        return chainAccount.accountId == remoteProxied.accountId &&
+            localProxyModel.accountId == remoteProxied.proxyAccount.accountId &&
+            localProxyModel.type == remoteProxied.proxyAccount.type
     }
 
     func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier? {
@@ -129,7 +133,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
-        delegatedAccount is ProxyAccount
+        delegatedAccount is ProxiedAccount
     }
 }
 

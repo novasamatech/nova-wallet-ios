@@ -11,7 +11,7 @@ final class ChainProxyAccountsRepository {
     private let proxyOperationFactory: ProxyOperationFactoryProtocol
 
     @Atomic(defaultValue: [:])
-    private var proxies: [ProxiedAccountId: [ProxyAccount]]
+    private var proxies: [ProxiedAccountId: [ProxiedAccount]]
 
     private let mutex = NSLock()
 
@@ -30,14 +30,14 @@ final class ChainProxyAccountsRepository {
     }
 
     private func filterProxyList(
-        _ proxyList: [ProxiedAccountId: [ProxyAccount]],
+        _ proxyList: [ProxiedAccountId: [ProxiedAccount]],
         by proxyIds: Set<AccountId>
-    ) -> [ProxiedAccountId: [ProxyAccount]] {
+    ) -> [ProxiedAccountId: [ProxiedAccount]] {
         guard !proxyIds.isEmpty else { return proxyList }
 
         return proxyList.compactMapValues { accounts in
             accounts.filter {
-                !$0.hasDelay && proxyIds.contains($0.accountId)
+                !$0.proxyAccount.hasDelay && proxyIds.contains($0.accountId)
             }
         }.filter { !$0.value.isEmpty }
     }
@@ -49,7 +49,7 @@ extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
         for delegators: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxyAccount]]> = if proxies.isEmpty {
+        let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> = if proxies.isEmpty {
             proxyOperationFactory.fetchProxyList(
                 requestFactory: requestFactory,
                 connection: connection,

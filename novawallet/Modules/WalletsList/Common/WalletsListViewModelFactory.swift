@@ -277,17 +277,17 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> WalletsListViewModel? {
-        guard let multisigAccountType = wallet.info.multisigAccount() else {
-            return nil
-        }
-
-        let (chainAccount, multisig) = multisigAccountType.multisig
-
         guard
-            let multisig,
+            let multisigAccountType = wallet.info.multisigAccount(),
+            let multisig = multisigAccountType.multisig,
             let signatoryWallet = wallets.first(where: { $0.info.isSignatory(for: multisigAccountType) })
-        else {
-            return nil
+        else { return nil }
+
+        var chainIcon: IdentifiableImageViewModelProtocol?
+
+        if case let .singleChain(chainAccount) = multisigAccountType {
+            let chainModel = chains[chainAccount.chainId]
+            chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
         }
 
         let optIcon = try? iconGenerator.generateFromAccountId(multisig.accountId)
@@ -300,13 +300,6 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
         let subtitleDetailsIconViewModel = optSubtitleDetailsIcon.map {
             IdentifiableDrawableIconViewModel(.init(icon: $0), identifier: signatoryWallet.info.metaId)
-        }
-
-        var chainIcon: IdentifiableImageViewModelProtocol?
-
-        if let chainAccount {
-            let chainModel = chains[chainAccount.chainId]
-            chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
         }
 
         let info = WalletView.ViewModel.DelegatedAccountInfo(
