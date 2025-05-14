@@ -150,6 +150,16 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             let icon = R.image.iconProxiedWallet()
 
             rootView.headerView.bindHint(text: text, icon: icon)
+        case .multisig:
+            rootView.headerView.messageType = .hint
+
+            let text = R.string.localizable.multisigDetailsHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let icon = R.image.iconMultisig()
+
+            rootView.headerView.bindHint(text: text, icon: icon)
         case .genericLedger:
             rootView.headerView.messageType = .hint
 

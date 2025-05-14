@@ -1,7 +1,7 @@
 import Operation_iOS
 
 protocol ProxyListLocalSubscriptionFactoryProtocol {
-    func getProxyListProvider() throws -> StreamableProvider<ProxyAccountModel>
+    func getProxyListProvider() throws -> StreamableProvider<DelegatedAccount.ProxyAccountModel>
     func getProxyListProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id
@@ -43,16 +43,16 @@ final class ProxyListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
 }
 
 extension ProxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol {
-    func getProxyListProvider() throws -> StreamableProvider<ProxyAccountModel> {
+    func getProxyListProvider() throws -> StreamableProvider<DelegatedAccount.ProxyAccountModel> {
         clearIfNeeded()
 
         let cacheKey = "proxy"
 
-        if let provider = getProvider(for: cacheKey) as? StreamableProvider<ProxyAccountModel> {
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<DelegatedAccount.ProxyAccountModel> {
             return provider
         }
 
-        let source = EmptyStreamableSource<ProxyAccountModel>()
+        let source = EmptyStreamableSource<DelegatedAccount.ProxyAccountModel>()
 
         let mapper = ProxyAccountMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))

@@ -27,7 +27,8 @@ final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProt
                 ethereumAddress: evmAddress,
                 ethereumPublicKey: evmAddress,
                 chainAccounts: [],
-                type: .watchOnly
+                type: .watchOnly,
+                multisig: nil
             )
         }
     }
@@ -48,7 +49,8 @@ final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProt
                 accountId: accountId,
                 publicKey: accountId,
                 cryptoType: cryptoType.rawValue,
-                proxy: nil
+                proxy: nil,
+                multisig: nil
             )
 
             return wallet.replacingChainAccount(chainAccount)

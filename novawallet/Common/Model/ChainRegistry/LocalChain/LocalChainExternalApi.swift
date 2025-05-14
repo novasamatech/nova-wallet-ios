@@ -8,6 +8,7 @@ enum LocalChainApiExternalType: String {
     case crowdloans
     case governanceDelegations
     case referendumSummary
+    case multisig
 }
 
 struct LocalChainExternalApi: Equatable, Codable, Hashable {
@@ -67,6 +68,10 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
         getApis(for: .referendumSummary)
     }
 
+    func multisig() -> Set<LocalChainExternalApi>? {
+        getApis(for: .multisig)
+    }
+
     init(localApis: Set<LocalChainExternalApi>) {
         apis = localApis
     }
@@ -79,6 +84,7 @@ struct LocalChainExternalApiSet: Codable, Equatable, Hashable {
             .addingApis(from: remoteApi.governance, apiType: .governance)
             .addingApis(from: remoteApi.goverananceDelegations, apiType: .governanceDelegations)
             .addingApis(from: remoteApi.referendumSummary, apiType: .referendumSummary)
+            .addingApis(from: remoteApi.multisig, apiType: .multisig)
     }
 }
 

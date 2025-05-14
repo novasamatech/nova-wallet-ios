@@ -5,12 +5,12 @@ import UIKit_iOS
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
-    let proxySyncService: ProxySyncServiceProtocol
+    let proxySyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         dappMediator: DAppInteractionMediating,
         assetListModelObservable: AssetListModelObservable,
-        proxySyncService: ProxySyncServiceProtocol
+        proxySyncService: DelegatedAccountSyncServiceProtocol
     ) {
         self.dappMediator = dappMediator
         self.assetListModelObservable = assetListModelObservable

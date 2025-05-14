@@ -111,7 +111,7 @@ final class CloudBackupSecretsImporter {
         isEthereumBased: Bool
     ) throws {
         switch wallet.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
             return try saveRegularDerivationPath(
                 derivationPath,
                 wallet: wallet,

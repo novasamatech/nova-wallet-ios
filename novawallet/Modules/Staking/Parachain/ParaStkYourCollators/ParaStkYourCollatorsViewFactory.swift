@@ -89,7 +89,7 @@ struct ParaStkYourCollatorsViewFactory {
             requestFactory: requestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 

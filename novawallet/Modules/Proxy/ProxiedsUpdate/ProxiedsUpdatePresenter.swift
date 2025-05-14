@@ -44,7 +44,7 @@ final class ProxiedsUpdatePresenter {
     }
 
     private func viewModels(
-        _ statuses: [ProxyAccountModel.Status],
+        _ statuses: [DelegatedAccount.Status],
         wallets: [ManagedMetaAccountModel]
     ) -> [WalletView.ViewModel] {
         viewModelsFactory.createViewModels(

@@ -141,9 +141,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/feature/multisig_discovery/chains/v21/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/feature/multisig_discovery/chains/v21/chains_dev.json")!
         #endif
     }
 

@@ -288,6 +288,16 @@ final class AccountManagementPresenter {
         )
     }
 
+    private func displayMultisigAddressAction(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        displayExistingHardwareAddressActions(
+            for: chain,
+            viewModel: viewModel
+        )
+    }
+
     private func displayExistingHardwareAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
@@ -353,8 +363,8 @@ final class AccountManagementPresenter {
                     )
                 }
             }
-        case .paritySigner, .polkadotVault, .ledger, .genericLedger:
-            // change account not supported for Parity Signer and Ledger Wallets
+        case .paritySigner, .polkadotVault, .ledger, .genericLedger, .multisig:
+            // change account not supported for Parity Signer, Ledger and Multisig wallets
             break
         }
     }
@@ -464,7 +474,7 @@ final class AccountManagementPresenter {
         let handlingClosure: () -> Void
 
         switch walletType {
-        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .proxied, .multisig:
             handlingClosure = { [weak self] in
                 self?.activateChangeAccount(for: chain, walletType: walletType)
             }
@@ -561,6 +571,8 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             }
         case .genericLedger:
             displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
+        case .multisig:
+            displayMultisigAddressAction(for: chainModel, viewModel: chainViewModel)
         }
     }
 

@@ -4,7 +4,7 @@ import SubstrateSdk
 protocol ProxiedsUpdateFactoryProtocol {
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
-        statuses: [ProxyAccountModel.Status],
+        statuses: [DelegatedAccount.Status],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletView.ViewModel]
@@ -15,7 +15,7 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
 
     func createViewModels(
         for wallets: [ManagedMetaAccountModel],
-        statuses: [ProxyAccountModel.Status],
+        statuses: [DelegatedAccount.Status],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletView.ViewModel] {
@@ -52,11 +52,11 @@ final class ProxiedsUpdateFactory: ProxiedsUpdateFactoryProtocol {
 
                 let chainModel = chains[chainAccount.chainId]
                 let chainIcon = ImageViewModelFactory.createIdentifiableChainIcon(from: chainModel?.icon)
-                let proxyInfo = WalletView.ViewModel.ProxyInfo(
+                let proxyInfo = WalletView.ViewModel.DelegatedAccountInfo(
                     networkIcon: chainIcon,
-                    proxyType: proxy.type.subtitle(locale: locale),
-                    proxyIcon: subtitleDetailsIconViewModel,
-                    proxyName: proxyWallet?.info.name,
+                    type: proxy.type.subtitle(locale: locale),
+                    pairedAccountIcon: subtitleDetailsIconViewModel,
+                    pairedAccountName: proxyWallet?.info.name,
                     isNew: false
                 )
 

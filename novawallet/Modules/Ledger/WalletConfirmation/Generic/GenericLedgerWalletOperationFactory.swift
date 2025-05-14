@@ -28,7 +28,8 @@ final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFac
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: [],
-                type: .genericLedger
+                type: .genericLedger,
+                multisig: nil
             )
 
             let tag = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)

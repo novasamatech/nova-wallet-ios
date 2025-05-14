@@ -2,18 +2,52 @@ import XCTest
 @testable import novawallet
 import Operation_iOS
 
-final class ProxySyncIntegrationTests: XCTestCase {
+final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
     func testKusamaSync() throws {
         let kusamaAccountId = try "G4qFCkKu7BiaWFNLXfcdZpY94hndyKnzqY1JtmiSBsTPSxC".toAccountId()
-        testSyncChain(chainId: KnowChainId.kusama, substrateAccountId: kusamaAccountId)
+        
+        testSyncChain(
+            chainId: KnowChainId.kusama,
+            substrateAccountId: kusamaAccountId,
+            checkAccountClosure: checkProxyAdded
+        )
     }
     
     func testPolkadotSync() throws {
         let polkadotAccountId = try "16aBtmicQscoxSYDZGNzVJFTHS1GoeDWx51whmKxLFSZCYTU".toAccountId()
-        testSyncChain(chainId: KnowChainId.polkadot, substrateAccountId: polkadotAccountId)
+        
+        testSyncChain(
+            chainId: KnowChainId.polkadot,
+            substrateAccountId: polkadotAccountId,
+            checkAccountClosure: checkProxyAdded
+        )
     }
     
-    func testSyncChain(chainId: ChainModel.Id, substrateAccountId: AccountId) {
+    func testMultisigSync() throws {
+        let polkadotAccountId = try "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ".toAccountId()
+        
+        testSyncChain(
+            chainId: KnowChainId.polkadot,
+            substrateAccountId: polkadotAccountId,
+            checkAccountClosure: checkMultisigAdded
+        )
+    }
+    
+    func checkProxyAdded(to metaAccounts: [ManagedMetaAccountModel]) -> Bool {
+        metaAccounts.first(where: { $0.info.type == .proxied }) != nil
+    }
+    
+    func checkMultisigAdded(to metaAccounts: [ManagedMetaAccountModel]) -> Bool {
+        metaAccounts.first { metaAccount in
+            metaAccount.info.chainAccounts.contains { $0.multisig != nil }
+        } != nil
+    }
+    
+    func testSyncChain(
+        chainId: ChainModel.Id,
+        substrateAccountId: AccountId,
+        checkAccountClosure: @escaping ([ManagedMetaAccountModel]) -> Bool
+    ) {
         let storageFacade = SubstrateStorageTestFacade()
         let userStorageFacade = UserDataStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
@@ -44,9 +78,8 @@ final class ProxySyncIntegrationTests: XCTestCase {
             operationQueue: operationQueue
         )
         
-        let syncService = ProxySyncService(
+        let syncService = DelegatedAccountSyncService(
             chainRegistry: chainRegistry,
-            proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: managedAccountRepository, 
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .chainId(chainId),
@@ -68,7 +101,7 @@ final class ProxySyncIntegrationTests: XCTestCase {
                     let fetchWalletsOperation = managedAccountRepository.fetchAllOperation(with: RepositoryFetchOptions())
                     operationQueue.addOperations([fetchWalletsOperation], waitUntilFinished: true)
                     let wallets = try fetchWalletsOperation.extractNoCancellableResultData()
-                    if wallets.first(where: { $0.info.type == .proxied }) != nil {
+                    if checkAccountClosure(wallets) {
                         Logger.shared.info("Proxy wallet was added")
                         completionExpectation.fulfill()
                     } else {
@@ -83,7 +116,6 @@ final class ProxySyncIntegrationTests: XCTestCase {
         
         wait(for: [completionExpectation], timeout: 6000)
     }
-
 }
 
 extension ManagedMetaAccountModel {
@@ -97,7 +129,8 @@ extension ManagedMetaAccountModel {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .watchOnly
+            type: .watchOnly,
+            multisig: nil
         )
         
         return ManagedMetaAccountModel(

@@ -35,49 +35,51 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     ) -> SigningWrapperProtocol {
         switch accountResponse.type {
         case .secrets:
-            return SigningWrapper(
+            SigningWrapper(
                 keystore: keystore,
                 metaId: metaId,
                 accountResponse: accountResponse,
                 settingsManager: settingsManager
             )
         case .watchOnly:
-            return NoKeysSigningWrapper()
+            NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper(
+            ParitySignerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
                 chainId: accountResponse.chainId,
                 type: .legacy
             )
         case .polkadotVault:
-            return ParitySignerSigningWrapper(
+            ParitySignerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
                 chainId: accountResponse.chainId,
                 type: .vault
             )
         case .ledger:
-            return LedgerSigningWrapper(
+            LedgerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
                 chainId: accountResponse.chainId,
                 ledgerWalletType: .legacy
             )
         case .proxied:
-            return ProxySigningWrapper(
+            ProxySigningWrapper(
                 metaId: metaId,
                 signingWrapperFactory: self,
                 settingsManager: settingsManager,
                 uiPresenter: uiPresenter
             )
         case .genericLedger:
-            return LedgerSigningWrapper(
+            LedgerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
                 chainId: accountResponse.chainId,
                 ledgerWalletType: .generic
             )
+        case .multisig:
+            MultisigSigningWrapper()
         }
     }
 
@@ -86,38 +88,44 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     ) -> SigningWrapperProtocol {
         switch ethereumAccountResponse.type {
         case .secrets:
-            return SigningWrapper(
+            SigningWrapper(
                 keystore: keystore,
                 ethereumAccountResponse: ethereumAccountResponse,
                 settingsManager: settingsManager
             )
         case .watchOnly, .proxied:
-            return NoKeysSigningWrapper()
+            NoKeysSigningWrapper()
         case .paritySigner:
-            return NoSigningSupportWrapper(type: .paritySigner)
+            NoSigningSupportWrapper(type: .paritySigner)
         case .polkadotVault:
-            return NoSigningSupportWrapper(type: .polkadotVault)
+            NoSigningSupportWrapper(type: .polkadotVault)
         case .ledger, .genericLedger:
-            return NoSigningSupportWrapper(type: .ledger)
+            NoSigningSupportWrapper(type: .ledger)
+        case .multisig:
+            // TODO: Implement signing wrapper
+            NoSigningSupportWrapper(type: .multisig)
         }
     }
 
     func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol {
         switch ethereumAccountResponse.type {
         case .secrets:
-            return EthereumSigner(
+            EthereumSigner(
                 keystore: keystore,
                 ethereumAccountResponse: ethereumAccountResponse,
                 settingsManager: settingsManager
             )
         case .watchOnly, .proxied:
-            return NoKeysSigningWrapper()
+            NoKeysSigningWrapper()
         case .paritySigner:
-            return NoSigningSupportWrapper(type: .paritySigner)
+            NoSigningSupportWrapper(type: .paritySigner)
         case .polkadotVault:
-            return NoSigningSupportWrapper(type: .polkadotVault)
+            NoSigningSupportWrapper(type: .polkadotVault)
         case .ledger, .genericLedger:
-            return NoSigningSupportWrapper(type: .ledger)
+            NoSigningSupportWrapper(type: .ledger)
+        case .multisig:
+            // TODO: Implement signing wrapper
+            NoSigningSupportWrapper(type: .multisig)
         }
     }
 }

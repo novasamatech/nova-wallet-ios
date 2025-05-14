@@ -2,11 +2,11 @@ import Foundation
 
 final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     let stateObserver: Observable<StakingDashboardModel>
-    let proxySyncService: ProxySyncServiceProtocol
+    let proxySyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         stateObserver: Observable<StakingDashboardModel>,
-        proxySyncService: ProxySyncServiceProtocol
+        proxySyncService: DelegatedAccountSyncServiceProtocol
     ) {
         self.stateObserver = stateObserver
         self.proxySyncService = proxySyncService

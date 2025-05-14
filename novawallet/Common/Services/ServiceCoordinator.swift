@@ -7,7 +7,7 @@ import Operation_iOS
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     var dappMediator: DAppInteractionMediating { get }
     var walletNotificationService: WalletNotificationServiceProtocol { get }
-    var proxySyncService: ProxySyncServiceProtocol { get }
+    var proxySyncService: DelegatedAccountSyncServiceProtocol { get }
 
     func updateOnWalletSelectionChange()
 
@@ -23,7 +23,7 @@ final class ServiceCoordinator {
     let githubPhishingService: ApplicationServiceProtocol
     let equilibriumService: AssetBalanceUpdatingServiceProtocol
     let dappMediator: DAppInteractionMediating
-    let proxySyncService: ProxySyncServiceProtocol
+    let proxySyncService: DelegatedAccountSyncServiceProtocol
     let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
@@ -35,7 +35,7 @@ final class ServiceCoordinator {
         evmNativeService: AssetBalanceUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
         equilibriumService: AssetBalanceUpdatingServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        proxySyncService: DelegatedAccountSyncServiceProtocol,
         dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
@@ -192,9 +192,8 @@ extension ServiceCoordinator {
             operationQueue: operationQueue
         )
 
-        let proxySyncService = ProxySyncService(
+        let proxySyncService = DelegatedAccountSyncService(
             chainRegistry: chainRegistry,
-            proxyOperationFactory: ProxyOperationFactory(),
             metaAccountsRepository: metaAccountsRepository,
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .allSatisfies([.enabledChains, .hasProxy]),

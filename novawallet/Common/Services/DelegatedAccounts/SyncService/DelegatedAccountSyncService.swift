@@ -1,13 +1,14 @@
 import Foundation
 import Operation_iOS
 
-typealias ProxySyncServiceState = [ChainModel.Id: Bool]
+typealias DelegatedAccountSyncServiceState = [ChainModel.Id: Bool]
+typealias DelegatedAccountUpdater = DelegatedAccountChainSyncServiceProtocol & ApplicationServiceProtocol
 
-protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
+protocol DelegatedAccountSyncServiceProtocol: ApplicationServiceProtocol {
     func subscribeSyncState(
         _ target: AnyObject,
         queue: DispatchQueue?,
-        closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void
+        closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void
     )
 
     func unsubscribeSyncState(_ target: AnyObject)
@@ -19,47 +20,44 @@ protocol ProxySyncServiceProtocol: ApplicationServiceProtocol {
     )
 }
 
-typealias ProxySyncChainFilter = (ChainModel) -> Bool
-typealias ProxySyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
+typealias DelegatedAccountSyncChainFilter = (ChainModel) -> Bool
+typealias DelegatedAccountSyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
 
-final class ProxySyncService {
+final class DelegatedAccountSyncService {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
-    let proxyOperationFactory: ProxyOperationFactoryProtocol
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
 
     let chainFilter: ChainFilterStrategy
-    let chainWalletFilter: ProxySyncChainWalletFilter?
+    let chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
 
     private(set) var isActive: Bool = false
 
-    private(set) var updaters: [ChainModel.Id: ChainProxySyncServiceProtocol & ApplicationServiceProtocol] = [:]
+    private(set) var updaters: [ChainModel.Id: DelegatedAccountUpdater] = [:]
     private let mutex = NSLock()
 
-    private var stateObserver = Observable<ProxySyncServiceState>(state: [:])
+    private var stateObserver = Observable<DelegatedAccountSyncServiceState>(state: [:])
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        proxyOperationFactory: ProxyOperationFactoryProtocol,
         metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
         walletUpdateMediator: WalletUpdateMediating,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         eventCenter: EventCenterProtocol = EventCenter.shared,
         workingQueue: DispatchQueue = DispatchQueue(
-            label: "com.nova.wallet.proxy.sync",
+            label: "com.nova.wallet.delegatedAccount.sync",
             qos: .userInitiated,
             attributes: .concurrent
         ),
         logger: LoggerProtocol = Logger.shared,
         chainFilter: ChainFilterStrategy,
-        chainWalletFilter: ProxySyncChainWalletFilter?
+        chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
     ) {
         self.chainRegistry = chainRegistry
-        self.proxyOperationFactory = proxyOperationFactory
         self.walletUpdateMediator = walletUpdateMediator
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
@@ -71,8 +69,12 @@ final class ProxySyncService {
 
         subscribeChains()
     }
+}
 
-    private func subscribeChains() {
+// MARK: Private
+
+private extension DelegatedAccountSyncService {
+    func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: workingQueue,
@@ -90,37 +92,42 @@ final class ProxySyncService {
         }
     }
 
-    private func handleChain(changes: [DataProviderChange<ChainModel>]) {
+    func handleChain(changes: [DataProviderChange<ChainModel>]) {
+        let barrier = DelegatedAccountSyncBarrier()
+
         changes.forEach { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                setupSyncService(for: newItem)
+                setupSyncService(for: newItem, barrier: barrier)
             case let .delete(deletedIdentifier):
                 stopSyncSevice(for: deletedIdentifier)
             }
         }
     }
 
-    private func stopSyncSevice(for chainId: ChainModel.Id) {
+    func stopSyncSevice(for chainId: ChainModel.Id) {
         updaters[chainId]?.stopSyncUp()
         updaters[chainId] = nil
     }
 
-    private func setupSyncService(for chain: ChainModel) {
+    func setupSyncService(
+        for chain: ChainModel,
+        barrier: DelegatedAccountSyncBarrierProtocol
+    ) {
         guard updaters[chain.chainId] == nil else {
             return
         }
 
-        let service = ChainProxySyncService(
+        let service = DelegatedAccountChainSyncService(
             chainModel: chain,
             walletUpdateMediator: walletUpdateMediator,
             metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
-            proxyOperationFactory: proxyOperationFactory,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
-            chainWalletFilter: chainWalletFilter
+            chainWalletFilter: chainWalletFilter,
+            uniqueUpdatesBarrier: barrier
         )
 
         updaters[chain.chainId] = service
@@ -131,11 +138,11 @@ final class ProxySyncService {
         }
     }
 
-    private func removeOnchainSyncHandler() {
+    func removeOnchainSyncHandler() {
         updaters.values.forEach { $0.unsubscribeSyncState(self) }
     }
 
-    private func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
+    func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
         service.subscribeSyncState(
             self,
             queue: workingQueue
@@ -153,11 +160,13 @@ final class ProxySyncService {
     }
 }
 
-extension ProxySyncService: ProxySyncServiceProtocol {
+// MARK: DelegatedAccountSyncServiceProtocol
+
+extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
     func subscribeSyncState(
         _ target: AnyObject,
         queue: DispatchQueue?,
-        closure: @escaping (ProxySyncServiceState, ProxySyncServiceState) -> Void
+        closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void
     ) {
         mutex.lock()
 
@@ -219,37 +228,34 @@ extension ProxySyncService: ProxySyncServiceProtocol {
     func updateWalletsStatuses() {
         let walletsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
 
-        let proxiesOperation: ClosureOperation<[ManagedMetaAccountModel: ChainAccountModel]> = .init {
-            let wallets = try walletsOperation.extractNoCancellableResultData()
-            return wallets.reduce(into: [ManagedMetaAccountModel: ChainAccountModel]()) { result, item in
-                if let chainAccount = item.info.chainAccounts.first(where: { $0.proxy != nil }) {
-                    result[item] = chainAccount
-                }
-            }
+        let delegatedAccountsOperation: ClosureOperation<[ManagedMetaAccountModel]> = .init {
+            try walletsOperation.extractNoCancellableResultData().filter { $0.info.isDelegated() }
         }
-        proxiesOperation.addDependency(walletsOperation)
+
+        delegatedAccountsOperation.addDependency(walletsOperation)
 
         let walletUpdateWrapper = walletUpdateMediator.saveChanges {
-            let proxies = try proxiesOperation.extractNoCancellableResultData()
+            let delegatedAccounts = try delegatedAccountsOperation.extractNoCancellableResultData()
 
-            let updated = proxies.map {
-                $0.key.replacingInfo($0.key.info.replacingChainAccount(
-                    $0.value.replacingProxyStatus(from: .new, to: .active)
-                ))
-            }.compactMap { $0 }
+            let updated = delegatedAccounts.map { delegatedAccount in
+                let updatedInfo = delegatedAccount.info.replacingDelegatedAccountStatus(
+                    from: .new,
+                    to: .active
+                )
 
-            let removed = proxies
-                .filter { $0.value.proxy?.status == .revoked }
-                .map(\.key)
+                return delegatedAccount.replacingInfo(updatedInfo)
+            }
+
+            let removed = delegatedAccounts.filter { $0.info.delegatedAccountStatus() == .revoked }
 
             return SyncChanges(newOrUpdatedItems: updated, removedItems: removed)
         }
 
-        walletUpdateWrapper.addDependency(operations: [proxiesOperation])
+        walletUpdateWrapper.addDependency(operations: [delegatedAccountsOperation])
 
         let compoundWrapper = CompoundOperationWrapper(
             targetOperation: walletUpdateWrapper.targetOperation,
-            dependencies: [walletsOperation, proxiesOperation] + walletUpdateWrapper.dependencies
+            dependencies: [walletsOperation, delegatedAccountsOperation] + walletUpdateWrapper.dependencies
         )
 
         execute(
@@ -263,9 +269,9 @@ extension ProxySyncService: ProxySyncServiceProtocol {
                     self.eventCenter.notify(with: SelectedWalletSwitched())
                 }
 
-                self.logger.debug("Proxy statuses updated")
+                self.logger.debug("Delegated accounts statuses updated")
             case let .failure(error):
-                self.logger.error("Did fail to update proxy statuses: \(error)")
+                self.logger.error("Did fail to update delegated accounts statuses: \(error)")
             }
         }
     }
