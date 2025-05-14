@@ -47,7 +47,7 @@ final class ChainProxyAccountsRepository {
 
 extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for accountIds: Set<AccountId>
+        for proxiedIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> = if proxieds.isEmpty {
             proxyOperationFactory.fetchProxyList(
@@ -63,7 +63,7 @@ extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
             self.proxieds = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.filterProxiedList(self.proxieds, by: accountIds)
+            return self.filterProxiedList(self.proxieds, by: proxiedIds)
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
