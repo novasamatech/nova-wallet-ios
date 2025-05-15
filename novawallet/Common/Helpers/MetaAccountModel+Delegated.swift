@@ -70,8 +70,8 @@ extension MetaAccountModel {
             guard let multisigModel else { return nil }
 
             return MetaAccountDelegationId(
-                delegatedAccountId: multisigModel.accountId,
-                delegatorId: multisigModel.signatory,
+                delegateAccountId: multisigModel.signatory,
+                delegatorId: multisigModel.accountId,
                 chainId: chainId,
                 delegationType: .multisig
             )
@@ -83,7 +83,7 @@ extension MetaAccountModel {
             else { return nil }
 
             return MetaAccountDelegationId(
-                delegatedAccountId: proxyAccountId,
+                delegateAccountId: proxyAccountId,
                 delegatorId: proxiedAccount.accountId,
                 chainId: proxiedAccount.chainId,
                 delegationType: .proxy(proxy.type)
