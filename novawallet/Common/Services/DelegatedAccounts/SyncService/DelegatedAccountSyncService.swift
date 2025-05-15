@@ -1,46 +1,29 @@
 import Foundation
 import Operation_iOS
 
-typealias DelegatedAccountSyncServiceState = [ChainModel.Id: Bool]
-typealias DelegatedAccountUpdater = DelegatedAccountChainSyncServiceProtocol & ApplicationServiceProtocol
-
-protocol DelegatedAccountSyncServiceProtocol: ApplicationServiceProtocol {
-    func subscribeSyncState(
-        _ target: AnyObject,
-        queue: DispatchQueue?,
-        closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void
-    )
-
-    func unsubscribeSyncState(_ target: AnyObject)
+protocol DelegatedAccountSyncServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
     func updateWalletsStatuses()
-    func syncUp()
     func syncUp(
         chainId: ChainModel.Id,
-        blockHash: Data?
+        at blockHash: Data?
     )
 }
 
-typealias DelegatedAccountSyncChainFilter = (ChainModel) -> Bool
-typealias DelegatedAccountSyncChainWalletFilter = (ChainModel, MetaAccountModel) -> Bool
+typealias DelegatedAccountSyncChainWalletFilter = (MetaAccountModel) -> Bool
 
-final class DelegatedAccountSyncService {
+final class DelegatedAccountSyncService: ObservableSyncService {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
-    let logger: LoggerProtocol
     let metaAccountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let updatesOperationFactory: CompoundDelegatedAccountFetchOperationFactory
     let walletUpdateMediator: WalletUpdateMediating
     let eventCenter: EventCenterProtocol
 
     let chainFilter: ChainFilterStrategy
     let chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
 
-    private(set) var isActive: Bool = false
-
-    private(set) var updaters: [ChainModel.Id: DelegatedAccountUpdater] = [:]
-    private let mutex = NSLock()
-
-    private var stateObserver = Observable<DelegatedAccountSyncServiceState>(state: [:])
+    private let callStore = CancellableCallStore()
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -53,7 +36,6 @@ final class DelegatedAccountSyncService {
             qos: .userInitiated,
             attributes: .concurrent
         ),
-        logger: LoggerProtocol = Logger.shared,
         chainFilter: ChainFilterStrategy,
         chainWalletFilter: DelegatedAccountSyncChainWalletFilter?
     ) {
@@ -61,13 +43,26 @@ final class DelegatedAccountSyncService {
         self.walletUpdateMediator = walletUpdateMediator
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
-        self.logger = logger
         self.eventCenter = eventCenter
         self.metaAccountsRepository = metaAccountsRepository
         self.chainFilter = chainFilter
         self.chainWalletFilter = chainWalletFilter
 
+        updatesOperationFactory = DelegatedAccountFetchOperationFactory(
+            operationQueue: operationQueue
+        )
+
+        super.init()
+
         subscribeChains()
+    }
+
+    override func performSyncUp() {
+        performSync(for: nil, at: nil)
+    }
+
+    override func stopSyncUp() {
+        callStore.cancel()
     }
 }
 
@@ -93,138 +88,117 @@ private extension DelegatedAccountSyncService {
     }
 
     func handleChain(changes: [DataProviderChange<ChainModel>]) {
-        let barrier = DelegatedAccountSyncBarrier()
-
         changes.forEach { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                setupSyncService(for: newItem, barrier: barrier)
+                setupSyncFactory(for: newItem)
             case let .delete(deletedIdentifier):
                 stopSyncSevice(for: deletedIdentifier)
             }
         }
+
+        guard isActive, !changes.isEmpty else { return }
+
+        performSyncUp()
     }
 
     func stopSyncSevice(for chainId: ChainModel.Id) {
-        updaters[chainId]?.stopSyncUp()
-        updaters[chainId] = nil
+        updatesOperationFactory.removeChainFactory(for: chainId)
     }
 
-    func setupSyncService(
-        for chain: ChainModel,
-        barrier: DelegatedAccountSyncBarrierProtocol
-    ) {
-        guard updaters[chain.chainId] == nil else {
+    func setupSyncFactory(for chain: ChainModel) {
+        guard !updatesOperationFactory.supportsChain(with: chain.chainId) else {
             return
         }
 
-        let service = DelegatedAccountChainSyncService(
+        let factory = ChainDelegatedAccountFetchOperationFactory(
             chainModel: chain,
-            walletUpdateMediator: walletUpdateMediator,
             metaAccountsRepository: metaAccountsRepository,
             chainRegistry: chainRegistry,
-            eventCenter: eventCenter,
             operationQueue: operationQueue,
-            workingQueue: workingQueue,
-            chainWalletFilter: chainWalletFilter,
-            uniqueUpdatesBarrier: barrier
+            chainWalletFilter: chainWalletFilter
         )
 
-        updaters[chain.chainId] = service
-        addSyncHandler(for: service, chainId: chain.chainId)
+        updatesOperationFactory.addChainFactory(factory, for: chain.chainId)
+    }
 
-        if isActive {
-            service.setup()
+    func performSync(
+        for chainId: ChainModel.Id?,
+        at blockHash: Data?
+    ) {
+        callStore.cancel()
+
+        let metaAccountsWrapper = createWalletsWrapper(for: chainWalletFilter)
+
+        let changesWrapper = updatesOperationFactory.createChangesWrapper(
+            for: chainId,
+            at: blockHash,
+            metaAccountsClosure: { try metaAccountsWrapper.targetOperation.extractNoCancellableResultData() }
+        )
+
+        let updateWrapper = walletUpdateMediator.saveChanges {
+            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return changes
+        }
+
+        changesWrapper.addDependency(wrapper: metaAccountsWrapper)
+        updateWrapper.addDependency(wrapper: changesWrapper)
+
+        let resultWrapper = updateWrapper
+            .insertingHead(operations: metaAccountsWrapper.allOperations)
+            .insertingHead(operations: changesWrapper.allOperations)
+
+        executeCancellable(
+            wrapper: resultWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case let .success(update):
+                DispatchQueue.main.async {
+                    self?.eventCenter.notify(with: WalletsChanged(source: .byProxyService))
+
+                    if update.isWalletSwitched {
+                        self?.eventCenter.notify(with: SelectedWalletSwitched())
+                    }
+                }
+                self?.completeImmediate(nil)
+            case let .failure(error):
+                self?.completeImmediate(error)
+            }
         }
     }
 
-    func removeOnchainSyncHandler() {
-        updaters.values.forEach { $0.unsubscribeSyncState(self) }
-    }
+    func createWalletsWrapper(
+        for filter: DelegatedAccountSyncChainWalletFilter?
+    ) -> CompoundOperationWrapper<[ManagedMetaAccountModel]> {
+        let metaAccountsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
 
-    func addSyncHandler(for service: ObservableSyncServiceProtocol, chainId: ChainModel.Id) {
-        service.subscribeSyncState(
-            self,
-            queue: workingQueue
-        ) { [weak self] _, newState in
-            guard let self = self else {
-                return
+        let filterOperation = ClosureOperation<[ManagedMetaAccountModel]> {
+            let allWallets = try metaAccountsOperation.extractNoCancellableResultData()
+
+            guard let filter else {
+                return allWallets
             }
 
-            self.mutex.lock()
-
-            self.stateObserver.state.updateValue(newState, forKey: chainId)
-
-            self.mutex.unlock()
+            return allWallets.filter { filter($0.info) }
         }
+
+        filterOperation.addDependency(metaAccountsOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: filterOperation,
+            dependencies: [metaAccountsOperation]
+        )
     }
 }
 
 // MARK: DelegatedAccountSyncServiceProtocol
 
 extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
-    func subscribeSyncState(
-        _ target: AnyObject,
-        queue: DispatchQueue?,
-        closure: @escaping (DelegatedAccountSyncServiceState, DelegatedAccountSyncServiceState) -> Void
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        let state = stateObserver.state
-
-        dispatchInQueueWhenPossible(queue) {
-            closure(state, state)
-        }
-
-        stateObserver.addObserver(with: target, queue: queue, closure: closure)
-    }
-
-    func unsubscribeSyncState(_ target: AnyObject) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        stateObserver.removeObserver(by: target)
-    }
-
-    func setup() {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard !isActive else {
-            return
-        }
-
-        isActive = true
-
-        updaters.values.forEach { $0.setup() }
-    }
-
-    func throttle() {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard isActive else {
-            return
-        }
-
-        isActive = false
-
-        updaters.values.forEach { $0.throttle() }
-    }
-
     func updateWalletsStatuses() {
         let walletsOperation = metaAccountsRepository.fetchAllOperation(with: .init())
 
@@ -276,14 +250,28 @@ extension DelegatedAccountSyncService: DelegatedAccountSyncServiceProtocol {
         }
     }
 
-    func syncUp() {
-        updaters.values.forEach { $0.syncUp() }
-    }
-
     func syncUp(
         chainId: ChainModel.Id,
-        blockHash: Data?
+        at blockHash: Data?
     ) {
-        updaters[chainId]?.sync(at: blockHash)
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        if isSyncing {
+            stopSyncUp()
+
+            isSyncing = false
+        }
+
+        isSyncing = true
+
+        performSync(for: chainId, at: blockHash)
     }
 }

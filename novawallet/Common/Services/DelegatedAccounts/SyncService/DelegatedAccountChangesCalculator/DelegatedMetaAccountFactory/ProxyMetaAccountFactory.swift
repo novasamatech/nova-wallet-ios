@@ -1,6 +1,6 @@
 import Foundation
 
-class ProxyMetaAccountFactory {
+final class ProxyMetaAccountFactory {
     let chainModel: ChainModel
 
     init(chainModel: ChainModel) {

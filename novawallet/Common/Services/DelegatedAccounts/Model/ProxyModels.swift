@@ -1,5 +1,9 @@
 import SubstrateSdk
 
+protocol DiscoveredDelegatedAccountProtocol {
+    var accountId: AccountId { get }
+}
+
 struct ProxyAccount: DiscoveredDelegatedAccountProtocol, Hashable {
     let accountId: AccountId
     let type: Proxy.ProxyType

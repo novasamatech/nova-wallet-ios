@@ -5,16 +5,16 @@ import UIKit_iOS
 final class AssetListWireframe: AssetListWireframeProtocol {
     let dappMediator: DAppInteractionMediating
     let assetListModelObservable: AssetListModelObservable
-    let proxySyncService: DelegatedAccountSyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         dappMediator: DAppInteractionMediating,
         assetListModelObservable: AssetListModelObservable,
-        proxySyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) {
         self.dappMediator = dappMediator
         self.assetListModelObservable = assetListModelObservable
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {

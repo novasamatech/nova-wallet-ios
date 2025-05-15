@@ -1,6 +1,6 @@
 import Foundation
 
-class MultisigMetaAccountFactory {
+final class MultisigMetaAccountFactory {
     let chainModel: ChainModel
 
     init(chainModel: ChainModel) {
