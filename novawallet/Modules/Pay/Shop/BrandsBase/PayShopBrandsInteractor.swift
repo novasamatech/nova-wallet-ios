@@ -2,14 +2,14 @@ import UIKit
 import Foundation_iOS
 
 class PayShopBrandsInteractor {
-    weak var presenter: RaiseBrandsInteractorOutputProtocol?
+    weak var presenter: PayShopBrandsInteractorOutputProtocol?
 
     let operationFactory: RaiseOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     let callStore = CancellableCallStore()
 
-    private var scheduler: SchedulerProtocol?
+    private var debouncer = Debouncer(delay: 1, queue: .main)
     private var pendingRequest: RaiseBrandsRequestInfo?
 
     init(
@@ -21,7 +21,7 @@ class PayShopBrandsInteractor {
     }
 
     deinit {
-        cancelScheduler()
+        debouncer.cancel()
         callStore.cancel()
     }
 
@@ -42,42 +42,14 @@ class PayShopBrandsInteractor {
             }
         }
     }
-
-    private func cancelScheduler() {
-        scheduler?.cancel()
-        scheduler = nil
-    }
-
-    private func schedule(request: RaiseBrandsRequestInfo) {
-        pendingRequest = request
-
-        scheduler = Scheduler(with: self, callbackQueue: .main)
-        scheduler?.notifyAfter(RaiseConstants.debounceInterval)
-    }
 }
 
-extension PayShopBrandsInteractor: RaiseBrandsInteractorInputProtocol {
+extension PayShopBrandsInteractor: PayShopBrandsInteractorInputProtocol {
     func requestBrands(for info: RaiseBrandsRequestInfo) {
-        let hadRequest = callStore.hasCall
-
         callStore.cancel()
-        cancelScheduler()
 
-        if hadRequest {
-            schedule(request: info)
-        } else {
-            sendRequest(info)
+        debouncer.debounce { [weak self] in
+            self?.sendRequest(info)
         }
-    }
-}
-
-extension PayShopBrandsInteractor: SchedulerDelegate {
-    func didTrigger(scheduler _: SchedulerProtocol) {
-        guard let pendingRequest else {
-            return
-        }
-
-        cancelScheduler()
-        sendRequest(pendingRequest)
     }
 }

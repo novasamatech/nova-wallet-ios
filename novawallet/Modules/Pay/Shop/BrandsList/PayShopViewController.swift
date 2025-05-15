@@ -26,4 +26,10 @@ final class PayShopViewController: UIViewController, ViewHolder {
     }
 }
 
-extension PayShopViewController: PayShopViewProtocol {}
+extension PayShopViewController: PayShopViewProtocol {
+    func didReceive(availabilityViewModel _: PayShopAvailabilityViewModel) {}
+
+    func didReload(viewModels _: [PayShopBrandViewModel]) {}
+
+    func didLoad(viewModels _: [PayShopBrandViewModel]) {}
+}

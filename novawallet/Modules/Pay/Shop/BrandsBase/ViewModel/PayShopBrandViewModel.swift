@@ -5,7 +5,6 @@ struct PayShopBrandViewModel: Hashable {
     let iconViewModel: ImageViewModelProtocol?
     let name: String
     let commission: String?
-    let commissionTitle: String?
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.identifier == rhs.identifier

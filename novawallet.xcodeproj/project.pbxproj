@@ -1104,6 +1104,39 @@
 		0CEAC0FD2DD4A2E700015058 /* PayPageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */; };
 		0CEAC0FF2DD4A5BD00015058 /* PageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */; };
 		0CEAC1042DD4DC9400015058 /* PayShopBrandsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1032DD4DC9400015058 /* PayShopBrandsInteractor.swift */; };
+		0CEAC1252DD4DE1400015058 /* RaiseTransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC11A2DD4DE1400015058 /* RaiseTransactionRequest.swift */; };
+		0CEAC1262DD4DE1400015058 /* RaiseLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1212DD4DE1400015058 /* RaiseLocalSubscriptionHandler.swift */; };
+		0CEAC1272DD4DE1400015058 /* RaiseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC11C2DD4DE1400015058 /* RaiseTypes.swift */; };
+		0CEAC1282DD4DE1400015058 /* RaiseBrandsRequestInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC10F2DD4DE1400015058 /* RaiseBrandsRequestInfo.swift */; };
+		0CEAC1292DD4DE1400015058 /* RaiseAuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC10E2DD4DE1400015058 /* RaiseAuthResponse.swift */; };
+		0CEAC12A2DD4DE1400015058 /* RaiseCustomerProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1122DD4DE1400015058 /* RaiseCustomerProviding.swift */; };
+		0CEAC12B2DD4DE1400015058 /* RaiseTokensConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1062DD4DE1400015058 /* RaiseTokensConverter.swift */; };
+		0CEAC12C2DD4DE1400015058 /* RaiseRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1162DD4DE1400015058 /* RaiseRequest.swift */; };
+		0CEAC12D2DD4DE1400015058 /* RaiseApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1092DD4DE1400015058 /* RaiseApi.swift */; };
+		0CEAC12E2DD4DE1400015058 /* RaiseOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1142DD4DE1400015058 /* RaiseOperationFactory.swift */; };
+		0CEAC12F2DD4DE1400015058 /* RaiseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1052DD4DE1400015058 /* RaiseModel.swift */; };
+		0CEAC1302DD4DE1400015058 /* RaiseAuthRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC10D2DD4DE1400015058 /* RaiseAuthRequest.swift */; };
+		0CEAC1312DD4DE1400015058 /* RaiseCardLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC11E2DD4DE1400015058 /* RaiseCardLocal.swift */; };
+		0CEAC1322DD4DE1400015058 /* RaiseAuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC10C2DD4DE1400015058 /* RaiseAuthProvider.swift */; };
+		0CEAC1332DD4DE1400015058 /* RaiseProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1222DD4DE1400015058 /* RaiseProviderFactory.swift */; };
+		0CEAC1342DD4DE1400015058 /* RaiseAuthFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC10A2DD4DE1400015058 /* RaiseAuthFactory.swift */; };
+		0CEAC1352DD4DE1400015058 /* RaiseAuthKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC10B2DD4DE1400015058 /* RaiseAuthKeyStorage.swift */; };
+		0CEAC1362DD4DE1400015058 /* RaiseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1172DD4DE1400015058 /* RaiseResponse.swift */; };
+		0CEAC1372DD4DE1400015058 /* AuthCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1082DD4DE1400015058 /* AuthCredentials.swift */; };
+		0CEAC1382DD4DE1400015058 /* RaiseNetworkRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1132DD4DE1400015058 /* RaiseNetworkRequestFactory.swift */; };
+		0CEAC1392DD4DE1400015058 /* RaiseSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1192DD4DE1400015058 /* RaiseSecret.swift */; };
+		0CEAC13A2DD4DE1400015058 /* RaiseCardsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1102DD4DE1400015058 /* RaiseCardsResponse.swift */; };
+		0CEAC13B2DD4DE1400015058 /* RaiseResultFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1182DD4DE1400015058 /* RaiseResultFactory.swift */; };
+		0CEAC13C2DD4DE1400015058 /* RaiseOperationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1152DD4DE1400015058 /* RaiseOperationResponse.swift */; };
+		0CEAC13D2DD4DE1400015058 /* RaiseCryptoAssetLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1112DD4DE1400015058 /* RaiseCryptoAssetLocal.swift */; };
+		0CEAC13E2DD4DE1400015058 /* RaiseLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1202DD4DE1400015058 /* RaiseLocalStorageSubscriber.swift */; };
+		0CEAC13F2DD4DE1400015058 /* RaiseCardsProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC11F2DD4DE1400015058 /* RaiseCardsProviderSource.swift */; };
+		0CEAC1402DD4DE1400015058 /* RaiseTransactionRequestInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC11B2DD4DE1400015058 /* RaiseTransactionRequestInfo.swift */; };
+		0CEAC1422DD4E15C00015058 /* PayShopBrandsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1412DD4E15C00015058 /* PayShopBrandsProtocols.swift */; };
+		0CEAC1442DD4E26C00015058 /* PayShopBrandsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1432DD4E26C00015058 /* PayShopBrandsPresenter.swift */; };
+		0CEAC1472DD4E39300015058 /* PayShopBrandViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1462DD4E39300015058 /* PayShopBrandViewModelFactory.swift */; };
+		0CEAC14A2DD4E53300015058 /* NumberFormatter+Raise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC1492DD4E53300015058 /* NumberFormatter+Raise.swift */; };
+		0CEAC14C2DD596F900015058 /* PayShopViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAC14B2DD596F900015058 /* PayShopViewModelFactory.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6973,6 +7006,39 @@
 		0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPageProvider.swift; sourceTree = "<group>"; };
 		0CEAC0FE2DD4A5BD00015058 /* PageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageProvider.swift; sourceTree = "<group>"; };
 		0CEAC1032DD4DC9400015058 /* PayShopBrandsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandsInteractor.swift; sourceTree = "<group>"; };
+		0CEAC1052DD4DE1400015058 /* RaiseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseModel.swift; sourceTree = "<group>"; };
+		0CEAC1062DD4DE1400015058 /* RaiseTokensConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTokensConverter.swift; sourceTree = "<group>"; };
+		0CEAC1082DD4DE1400015058 /* AuthCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCredentials.swift; sourceTree = "<group>"; };
+		0CEAC1092DD4DE1400015058 /* RaiseApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseApi.swift; sourceTree = "<group>"; };
+		0CEAC10A2DD4DE1400015058 /* RaiseAuthFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseAuthFactory.swift; sourceTree = "<group>"; };
+		0CEAC10B2DD4DE1400015058 /* RaiseAuthKeyStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseAuthKeyStorage.swift; sourceTree = "<group>"; };
+		0CEAC10C2DD4DE1400015058 /* RaiseAuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseAuthProvider.swift; sourceTree = "<group>"; };
+		0CEAC10D2DD4DE1400015058 /* RaiseAuthRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseAuthRequest.swift; sourceTree = "<group>"; };
+		0CEAC10E2DD4DE1400015058 /* RaiseAuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseAuthResponse.swift; sourceTree = "<group>"; };
+		0CEAC10F2DD4DE1400015058 /* RaiseBrandsRequestInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseBrandsRequestInfo.swift; sourceTree = "<group>"; };
+		0CEAC1102DD4DE1400015058 /* RaiseCardsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseCardsResponse.swift; sourceTree = "<group>"; };
+		0CEAC1112DD4DE1400015058 /* RaiseCryptoAssetLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseCryptoAssetLocal.swift; sourceTree = "<group>"; };
+		0CEAC1122DD4DE1400015058 /* RaiseCustomerProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseCustomerProviding.swift; sourceTree = "<group>"; };
+		0CEAC1132DD4DE1400015058 /* RaiseNetworkRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseNetworkRequestFactory.swift; sourceTree = "<group>"; };
+		0CEAC1142DD4DE1400015058 /* RaiseOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseOperationFactory.swift; sourceTree = "<group>"; };
+		0CEAC1152DD4DE1400015058 /* RaiseOperationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseOperationResponse.swift; sourceTree = "<group>"; };
+		0CEAC1162DD4DE1400015058 /* RaiseRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseRequest.swift; sourceTree = "<group>"; };
+		0CEAC1172DD4DE1400015058 /* RaiseResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseResponse.swift; sourceTree = "<group>"; };
+		0CEAC1182DD4DE1400015058 /* RaiseResultFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseResultFactory.swift; sourceTree = "<group>"; };
+		0CEAC1192DD4DE1400015058 /* RaiseSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseSecret.swift; sourceTree = "<group>"; };
+		0CEAC11A2DD4DE1400015058 /* RaiseTransactionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTransactionRequest.swift; sourceTree = "<group>"; };
+		0CEAC11B2DD4DE1400015058 /* RaiseTransactionRequestInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTransactionRequestInfo.swift; sourceTree = "<group>"; };
+		0CEAC11C2DD4DE1400015058 /* RaiseTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTypes.swift; sourceTree = "<group>"; };
+		0CEAC11E2DD4DE1400015058 /* RaiseCardLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseCardLocal.swift; sourceTree = "<group>"; };
+		0CEAC11F2DD4DE1400015058 /* RaiseCardsProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseCardsProviderSource.swift; sourceTree = "<group>"; };
+		0CEAC1202DD4DE1400015058 /* RaiseLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		0CEAC1212DD4DE1400015058 /* RaiseLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
+		0CEAC1222DD4DE1400015058 /* RaiseProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseProviderFactory.swift; sourceTree = "<group>"; };
+		0CEAC1412DD4E15C00015058 /* PayShopBrandsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandsProtocols.swift; sourceTree = "<group>"; };
+		0CEAC1432DD4E26C00015058 /* PayShopBrandsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandsPresenter.swift; sourceTree = "<group>"; };
+		0CEAC1462DD4E39300015058 /* PayShopBrandViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopBrandViewModelFactory.swift; sourceTree = "<group>"; };
+		0CEAC1492DD4E53300015058 /* NumberFormatter+Raise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NumberFormatter+Raise.swift"; sourceTree = "<group>"; };
+		0CEAC14B2DD596F900015058 /* PayShopViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -12955,9 +13021,9 @@
 		0C39ADDA2DD2462800B05714 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				0C39ADDB2DD2465700B05714 /* PayShopBrandViewModel.swift */,
 				0C39ADDD2DD246AD00B05714 /* PayShopRecommendedViewModel.swift */,
 				0C39ADDF2DD24A6500B05714 /* PayShopAvailabilityViewModel.swift */,
+				0CEAC14B2DD596F900015058 /* PayShopViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -14407,6 +14473,7 @@
 		0CEAC1002DD4DC1500015058 /* Shop */ = {
 			isa = PBXGroup;
 			children = (
+				0CEAC1242DD4DE1400015058 /* Raise */,
 				0CEAC1022DD4DC8200015058 /* BrandsBase */,
 				4FDE6862B9CD10D9C24986F1 /* BrandsList */,
 			);
@@ -14416,9 +14483,81 @@
 		0CEAC1022DD4DC8200015058 /* BrandsBase */ = {
 			isa = PBXGroup;
 			children = (
+				0CEAC1452DD4E37700015058 /* ViewModel */,
 				0CEAC1032DD4DC9400015058 /* PayShopBrandsInteractor.swift */,
+				0CEAC1412DD4E15C00015058 /* PayShopBrandsProtocols.swift */,
+				0CEAC1432DD4E26C00015058 /* PayShopBrandsPresenter.swift */,
 			);
 			path = BrandsBase;
+			sourceTree = "<group>";
+		};
+		0CEAC1072DD4DE1400015058 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0CEAC1052DD4DE1400015058 /* RaiseModel.swift */,
+				0CEAC1062DD4DE1400015058 /* RaiseTokensConverter.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0CEAC11D2DD4DE1400015058 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				0CEAC1082DD4DE1400015058 /* AuthCredentials.swift */,
+				0CEAC1092DD4DE1400015058 /* RaiseApi.swift */,
+				0CEAC10A2DD4DE1400015058 /* RaiseAuthFactory.swift */,
+				0CEAC10B2DD4DE1400015058 /* RaiseAuthKeyStorage.swift */,
+				0CEAC10C2DD4DE1400015058 /* RaiseAuthProvider.swift */,
+				0CEAC10D2DD4DE1400015058 /* RaiseAuthRequest.swift */,
+				0CEAC10E2DD4DE1400015058 /* RaiseAuthResponse.swift */,
+				0CEAC10F2DD4DE1400015058 /* RaiseBrandsRequestInfo.swift */,
+				0CEAC1102DD4DE1400015058 /* RaiseCardsResponse.swift */,
+				0CEAC1112DD4DE1400015058 /* RaiseCryptoAssetLocal.swift */,
+				0CEAC1122DD4DE1400015058 /* RaiseCustomerProviding.swift */,
+				0CEAC1132DD4DE1400015058 /* RaiseNetworkRequestFactory.swift */,
+				0CEAC1142DD4DE1400015058 /* RaiseOperationFactory.swift */,
+				0CEAC1152DD4DE1400015058 /* RaiseOperationResponse.swift */,
+				0CEAC1162DD4DE1400015058 /* RaiseRequest.swift */,
+				0CEAC1172DD4DE1400015058 /* RaiseResponse.swift */,
+				0CEAC1182DD4DE1400015058 /* RaiseResultFactory.swift */,
+				0CEAC1192DD4DE1400015058 /* RaiseSecret.swift */,
+				0CEAC11A2DD4DE1400015058 /* RaiseTransactionRequest.swift */,
+				0CEAC11B2DD4DE1400015058 /* RaiseTransactionRequestInfo.swift */,
+				0CEAC11C2DD4DE1400015058 /* RaiseTypes.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		0CEAC1232DD4DE1400015058 /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				0CEAC11E2DD4DE1400015058 /* RaiseCardLocal.swift */,
+				0CEAC11F2DD4DE1400015058 /* RaiseCardsProviderSource.swift */,
+				0CEAC1202DD4DE1400015058 /* RaiseLocalStorageSubscriber.swift */,
+				0CEAC1212DD4DE1400015058 /* RaiseLocalSubscriptionHandler.swift */,
+				0CEAC1222DD4DE1400015058 /* RaiseProviderFactory.swift */,
+			);
+			path = Providers;
+			sourceTree = "<group>";
+		};
+		0CEAC1242DD4DE1400015058 /* Raise */ = {
+			isa = PBXGroup;
+			children = (
+				0CEAC1072DD4DE1400015058 /* Model */,
+				0CEAC11D2DD4DE1400015058 /* Networking */,
+				0CEAC1232DD4DE1400015058 /* Providers */,
+			);
+			path = Raise;
+			sourceTree = "<group>";
+		};
+		0CEAC1452DD4E37700015058 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0C39ADDB2DD2465700B05714 /* PayShopBrandViewModel.swift */,
+				0CEAC1462DD4E39300015058 /* PayShopBrandViewModelFactory.swift */,
+				0CEAC1492DD4E53300015058 /* NumberFormatter+Raise.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		0CEB6B342CA4507200609DC2 /* V4 */ = {
@@ -28482,6 +28621,7 @@
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
 				0C0F6DD42D41362200943A7C /* ParachainStakingCollatorService+CollatorService.swift in Sources */,
+				0CEAC1442DD4E26C00015058 /* PayShopBrandsPresenter.swift in Sources */,
 				887AFC8D28BCB314002A0422 /* SelectableIconSubtitleCollectionViewCell.swift in Sources */,
 				840DFF57289482F5001B11EA /* ActionsManagePresentable.swift in Sources */,
 				F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */,
@@ -28830,6 +28970,7 @@
 				84002AA32992508600A80672 /* GovernanceDelegateInteractorError.swift in Sources */,
 				840DFDD8277061ED00B62981 /* DAppOperationConfirmModel.swift in Sources */,
 				84F4393A25DAC48D00AEDA56 /* JSONRPCAliases.swift in Sources */,
+				0CEAC14A2DD4E53300015058 /* NumberFormatter+Raise.swift in Sources */,
 				84466B3728B7588F00FA1E0D /* LedgerWalletFactory.swift in Sources */,
 				2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */,
 				84C5ADD928127F4D006D7388 /* WalletAccountSelectionView.swift in Sources */,
@@ -29091,6 +29232,7 @@
 				0C3205DA2A896029002EB914 /* EvmConstantNonceProvider.swift in Sources */,
 				0CF6928C2C231CA5000FC395 /* SharedStatusView.swift in Sources */,
 				8499FEDC27BFDD4300712589 /* NftLocalSubscriptionFactory.swift in Sources */,
+				0CEAC1422DD4E15C00015058 /* PayShopBrandsProtocols.swift in Sources */,
 				0C6D66AB2A8C0B6700AAB988 /* BaseSigner.swift in Sources */,
 				88BB0B4529C1E29F00D041C1 /* Web3NameLocal.swift in Sources */,
 				F4B06BFA264509E8003214D5 /* SetControllerCall.swift in Sources */,
@@ -30790,6 +30932,7 @@
 				0CF5F68C2CC7B1B6007BAAC5 /* AssetsExchageGraphReachability.swift in Sources */,
 				0C13D2FA2A7D473B0054BB6F /* DirectStakingRestrictionsBuilder.swift in Sources */,
 				0CE933922C043F00000F3EFE /* CloudBackupSyncMediatorFactory.swift in Sources */,
+				0CEAC14C2DD596F900015058 /* PayShopViewModelFactory.swift in Sources */,
 				0C7104772C2AC00000487E64 /* CommonMetadataShortenerError.swift in Sources */,
 				AEE5FB072641669B002B8FDC /* StakingRebondSetupLayout.swift in Sources */,
 				0CE9339A2C05163A000F3EFE /* CloudBackupReviewViewModelFactory.swift in Sources */,
@@ -32391,6 +32534,7 @@
 				84FBDBE128C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift in Sources */,
 				845B07F929162D24005785D3 /* Gov1LocalMappingFactory.swift in Sources */,
 				88E74E8A29538C1F008031A3 /* NovaAccountShareFactoryProtocol.swift in Sources */,
+				0CEAC1472DD4E39300015058 /* PayShopBrandViewModelFactory.swift in Sources */,
 				77EFFC932A72A288009E28F8 /* StakingTypeBaseBannerView.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
 				7796C6FD2A174E6300D56094 /* StakingRewardFiltersPeriod+Title.swift in Sources */,
@@ -32455,6 +32599,34 @@
 				964DE461970AF6B89D0968C5 /* YourWalletsViewFactory.swift in Sources */,
 				9E40464B7687006B1EE75C72 /* LocksProtocols.swift in Sources */,
 				30413A3C5ADB96B7D663F94D /* LocksWireframe.swift in Sources */,
+				0CEAC1252DD4DE1400015058 /* RaiseTransactionRequest.swift in Sources */,
+				0CEAC1262DD4DE1400015058 /* RaiseLocalSubscriptionHandler.swift in Sources */,
+				0CEAC1272DD4DE1400015058 /* RaiseTypes.swift in Sources */,
+				0CEAC1282DD4DE1400015058 /* RaiseBrandsRequestInfo.swift in Sources */,
+				0CEAC1292DD4DE1400015058 /* RaiseAuthResponse.swift in Sources */,
+				0CEAC12A2DD4DE1400015058 /* RaiseCustomerProviding.swift in Sources */,
+				0CEAC12B2DD4DE1400015058 /* RaiseTokensConverter.swift in Sources */,
+				0CEAC12C2DD4DE1400015058 /* RaiseRequest.swift in Sources */,
+				0CEAC12D2DD4DE1400015058 /* RaiseApi.swift in Sources */,
+				0CEAC12E2DD4DE1400015058 /* RaiseOperationFactory.swift in Sources */,
+				0CEAC12F2DD4DE1400015058 /* RaiseModel.swift in Sources */,
+				0CEAC1302DD4DE1400015058 /* RaiseAuthRequest.swift in Sources */,
+				0CEAC1312DD4DE1400015058 /* RaiseCardLocal.swift in Sources */,
+				0CEAC1322DD4DE1400015058 /* RaiseAuthProvider.swift in Sources */,
+				0CEAC1332DD4DE1400015058 /* RaiseProviderFactory.swift in Sources */,
+				0CEAC1342DD4DE1400015058 /* RaiseAuthFactory.swift in Sources */,
+				0CEAC1352DD4DE1400015058 /* RaiseAuthKeyStorage.swift in Sources */,
+				0CEAC1362DD4DE1400015058 /* RaiseResponse.swift in Sources */,
+				0CEAC1372DD4DE1400015058 /* AuthCredentials.swift in Sources */,
+				0CEAC1382DD4DE1400015058 /* RaiseNetworkRequestFactory.swift in Sources */,
+				0CEAC1392DD4DE1400015058 /* RaiseSecret.swift in Sources */,
+				0CEAC13A2DD4DE1400015058 /* RaiseCardsResponse.swift in Sources */,
+				0CEAC13B2DD4DE1400015058 /* RaiseResultFactory.swift in Sources */,
+				0CEAC13C2DD4DE1400015058 /* RaiseOperationResponse.swift in Sources */,
+				0CEAC13D2DD4DE1400015058 /* RaiseCryptoAssetLocal.swift in Sources */,
+				0CEAC13E2DD4DE1400015058 /* RaiseLocalStorageSubscriber.swift in Sources */,
+				0CEAC13F2DD4DE1400015058 /* RaiseCardsProviderSource.swift in Sources */,
+				0CEAC1402DD4DE1400015058 /* RaiseTransactionRequestInfo.swift in Sources */,
 				0C0387982D0CE605000A2F24 /* SwapFeeDetailsViewModel.swift in Sources */,
 				2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */,
 				0CD2FB4A2DCB63E0006208FD /* ISO8601Codable.swift in Sources */,

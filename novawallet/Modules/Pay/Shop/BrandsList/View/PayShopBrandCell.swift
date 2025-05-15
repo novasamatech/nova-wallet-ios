@@ -61,7 +61,7 @@ final class PayShopBrandContentView: GenericTitleValueView<
         valueView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
-    func bind(viewModel: PayShopBrandViewModel) {
+    func bind(viewModel: PayShopBrandViewModel, locale: Locale) {
         let titleViewModel = StackCellViewModel(
             details: viewModel.name,
             imageViewModel: viewModel.iconViewModel
@@ -69,9 +69,13 @@ final class PayShopBrandContentView: GenericTitleValueView<
 
         titleView.bind(viewModel: titleViewModel)
 
+        let bottomValue = viewModel.commission != nil ? R.string.localizable.commonCashback(
+            preferredLanguages: locale.rLanguages
+        ) : nil
+
         valueView.detailsView.bind(
             topValue: viewModel.commission ?? "",
-            bottomValue: viewModel.commissionTitle
+            bottomValue: bottomValue
         )
     }
 }
