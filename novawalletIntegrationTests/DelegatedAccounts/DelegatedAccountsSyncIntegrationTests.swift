@@ -83,7 +83,7 @@ final class DelegatedAccountsSyncIntegrationTests: XCTestCase {
             metaAccountsRepository: managedAccountRepository, 
             walletUpdateMediator: walletUpdateMediator,
             chainFilter: .chainId(chainId),
-            chainWalletFilter: { _, _ in true }
+            chainWalletFilter: { _ in true }
         )
         
         let completionExpectation = XCTestExpectation()
