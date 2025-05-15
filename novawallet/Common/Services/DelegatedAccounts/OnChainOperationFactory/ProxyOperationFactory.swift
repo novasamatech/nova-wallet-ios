@@ -9,7 +9,7 @@ protocol ProxyOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         at blockHash: Data?
-    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]>
+    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxiedAccount]]>
 }
 
 final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
@@ -18,7 +18,7 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         at blockHash: Data?
-    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxyAccount]]> {
+    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxiedAccount]]> {
         let request = UnkeyedRemoteStorageRequest(storagePath: Proxy.proxyList)
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -35,11 +35,18 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
                 options: options
             )
 
-        let mapper = ClosureOperation<[ProxiedAccountId: [ProxyAccount]]> {
+        let mapper = ClosureOperation<[ProxiedAccountId: [ProxiedAccount]]> {
             let proxyResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-            return proxyResult.reduce(into: [AccountId: [ProxyAccount]]()) { result, nextPart in
+
+            return proxyResult.reduce(into: [AccountId: [ProxiedAccount]]()) { result, nextPart in
                 result[nextPart.key.accountId] = nextPart.value.definition.map {
-                    ProxyAccount(accountId: $0.proxy, type: $0.proxyType, delay: $0.delay)
+                    let proxyModel = ProxyAccount(
+                        accountId: $0.proxy,
+                        type: $0.proxyType,
+                        delay: $0.delay
+                    )
+
+                    return ProxiedAccount(accountId: nextPart.key.accountId, proxyAccount: proxyModel)
                 }
             }
         }

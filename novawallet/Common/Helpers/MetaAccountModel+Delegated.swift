@@ -9,9 +9,9 @@ extension MetaAccountModel {
         switch multisig {
         case let .universal(multisig):
             multisig.signatory == substrateAccountId || multisig.signatory == ethereumAddress
-        case let .singleChain(chainAccount, multisig):
+        case let .singleChain(chainAccount):
             chainAccounts.contains {
-                $0.chainId == chainAccount.chainId && $0.accountId == multisig.signatory
+                $0.chainId == chainAccount.chainId && $0.accountId == chainAccount.multisig?.signatory
             }
         }
     }
@@ -31,7 +31,7 @@ extension MetaAccountModel {
             .universal(multisig: multisig)
         } else if let chainAccount = chainAccounts.first(where: { $0.multisig != nil }),
                   let multisig = chainAccount.multisig {
-            .singleChain(chainAccount: chainAccount, multisig: multisig)
+            .singleChain(chainAccount: chainAccount)
         } else {
             nil
         }
@@ -54,15 +54,25 @@ extension MetaAccountModel {
     func delegationId() -> MetaAccountDelegationId? {
         switch type {
         case .multisig:
-            guard
-                let (chainAccount, multisigModel) = multisigAccount()?.multisig,
-                let multisigModel
-            else { return nil }
+            var multisigModel: DelegatedAccount.MultisigAccountModel?
+            var chainId: ChainModel.Id?
+
+            switch multisigAccount() {
+            case let .universal(multisig):
+                multisigModel = multisig
+            case let .singleChain(chainAccount):
+                multisigModel = chainAccount.multisig
+                chainId = chainAccount.chainId
+            default:
+                return nil
+            }
+
+            guard let multisigModel else { return nil }
 
             return MetaAccountDelegationId(
-                delegatedAccountId: multisigModel.accountId,
-                delegatorId: multisigModel.signatory,
-                chainId: chainAccount?.chainId,
+                delegateAccountId: multisigModel.signatory,
+                delegatorId: multisigModel.accountId,
+                chainId: chainId,
                 delegationType: .multisig
             )
         case .proxied:
@@ -73,7 +83,7 @@ extension MetaAccountModel {
             else { return nil }
 
             return MetaAccountDelegationId(
-                delegatedAccountId: proxyAccountId,
+                delegateAccountId: proxyAccountId,
                 delegatorId: proxiedAccount.accountId,
                 chainId: proxiedAccount.chainId,
                 delegationType: .proxy(proxy.type)
@@ -86,7 +96,7 @@ extension MetaAccountModel {
     func delegatedAccountStatus() -> DelegatedAccount.Status? {
         if let proxyAccount = proxy() {
             proxyAccount.status
-        } else if let multisigAccount = multisigAccount()?.multisig.multisigAccount {
+        } else if let multisigAccount = multisigAccount()?.multisig {
             multisigAccount.status
         } else {
             nil
@@ -97,14 +107,14 @@ extension MetaAccountModel {
 extension MetaAccountModel {
     enum MultisigAccountType {
         case universal(multisig: DelegatedAccount.MultisigAccountModel)
-        case singleChain(chainAccount: ChainAccountModel, multisig: DelegatedAccount.MultisigAccountModel)
+        case singleChain(chainAccount: ChainAccountModel)
 
-        var multisig: (chainAccount: ChainAccountModel?, multisigAccount: DelegatedAccount.MultisigAccountModel?) {
+        var multisig: DelegatedAccount.MultisigAccountModel? {
             switch self {
             case let .universal(multisig):
-                (nil, multisig)
-            case let .singleChain(chainAccount, multisig):
-                (chainAccount, multisig)
+                multisig
+            case let .singleChain(chainAccount):
+                chainAccount.multisig
             }
         }
 

@@ -2,9 +2,19 @@ import SubstrateSdk
 
 protocol DiscoveredDelegatedAccountProtocol {
     var accountId: AccountId { get }
+    var delegateAccountId: AccountId { get }
 }
 
-struct ProxyAccount: DiscoveredDelegatedAccountProtocol, Hashable {
+struct ProxiedAccount: DiscoveredDelegatedAccountProtocol, Hashable {
+    var delegateAccountId: AccountId {
+        proxyAccount.accountId
+    }
+
+    let accountId: AccountId
+    let proxyAccount: ProxyAccount
+}
+
+struct ProxyAccount: Hashable {
     let accountId: AccountId
     let type: Proxy.ProxyType
     let delay: BlockNumber

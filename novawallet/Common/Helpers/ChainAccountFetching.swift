@@ -38,7 +38,7 @@ struct MetaChainAccountResponse {
 }
 
 struct MetaAccountDelegationId: Hashable {
-    let delegatedAccountId: AccountId
+    let delegateAccountId: AccountId
     let delegatorId: AccountId
     let chainId: ChainModel.Id?
     let delegationType: DelegationType

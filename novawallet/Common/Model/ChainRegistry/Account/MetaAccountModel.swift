@@ -158,7 +158,7 @@ extension MetaAccountModel {
                 type: type,
                 multisig: multisig
             )
-        case let .singleChain(chainAccount, multisig):
+        case let .singleChain(chainAccount):
             replacingChainAccount(chainAccount.replacingMultisig(multisig))
         }
     }

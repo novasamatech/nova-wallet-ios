@@ -2,7 +2,7 @@ import Operation_iOS
 
 protocol DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for delegators: Set<AccountId>
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
 }
 
@@ -21,13 +21,13 @@ final class DelegatedAccountsRepository {
 
 extension DelegatedAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for delegators: Set<AccountId>
+        for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [any DiscoveredDelegatedAccountProtocol]]> {
         let accountsFetchOperation = OperationCombiningService(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             self.sources.map {
-                $0.fetchDelegatedAccountsWrapper(for: delegators)
+                $0.fetchDelegatedAccountsWrapper(for: accountIds)
             }
         }.longrunOperation()
 

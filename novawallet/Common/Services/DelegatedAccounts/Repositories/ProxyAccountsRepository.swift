@@ -11,7 +11,7 @@ final class ChainProxyAccountsRepository {
     private let proxyOperationFactory: ProxyOperationFactoryProtocol
 
     @Atomic(defaultValue: [:])
-    private var proxies: [ProxiedAccountId: [ProxyAccount]]
+    private var proxieds: [ProxiedAccountId: [ProxiedAccount]]
 
     private let mutex = NSLock()
 
@@ -29,15 +29,15 @@ final class ChainProxyAccountsRepository {
         self.proxyOperationFactory = proxyOperationFactory
     }
 
-    private func filterProxyList(
-        _ proxyList: [ProxiedAccountId: [ProxyAccount]],
+    private func filterProxiedList(
+        _ proxiedList: [ProxiedAccountId: [ProxiedAccount]],
         by proxyIds: Set<AccountId>
-    ) -> [ProxiedAccountId: [ProxyAccount]] {
-        guard !proxyIds.isEmpty else { return proxyList }
+    ) -> [ProxiedAccountId: [ProxiedAccount]] {
+        guard !proxyIds.isEmpty else { return proxiedList }
 
-        return proxyList.compactMapValues { accounts in
+        return proxiedList.compactMapValues { accounts in
             accounts.filter {
-                !$0.hasDelay && proxyIds.contains($0.accountId)
+                !$0.proxyAccount.hasDelay && proxyIds.contains($0.accountId)
             }
         }.filter { !$0.value.isEmpty }
     }
@@ -47,9 +47,9 @@ final class ChainProxyAccountsRepository {
 
 extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for delegators: Set<AccountId>
+        for proxiedIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-        let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxyAccount]]> = if proxies.isEmpty {
+        let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> = if proxieds.isEmpty {
             proxyOperationFactory.fetchProxyList(
                 requestFactory: requestFactory,
                 connection: connection,
@@ -57,13 +57,13 @@ extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
                 at: blockHash
             )
         } else {
-            .createWithResult(proxies)
+            .createWithResult(proxieds)
         }
 
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-            self.proxies = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            self.proxieds = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.filterProxyList(self.proxies, by: delegators)
+            return self.filterProxiedList(self.proxieds, by: proxiedIds)
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)

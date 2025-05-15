@@ -81,14 +81,14 @@ private extension ChainDelegatedAccountFetchOperationFactory {
                 return wallet.info.fetch(for: self.chainModel.accountRequest())?.accountId
             }
 
-            let discoveringAccounds = DiscoveringAccountIds(
+            let discoveringAccountIds = DiscoveringAccountIds(
                 possibleAccountIds: Set(possibleDelegatorAccountsList),
                 discoveredAccounts: [:]
             )
 
             return createDiscoverAccountsWrapper(
                 delegatedAccountsSource: source,
-                discoveringAccountIds: discoveringAccounds
+                discoveringAccountIds: discoveringAccountIds
             )
         }
 
@@ -113,12 +113,14 @@ private extension ChainDelegatedAccountFetchOperationFactory {
                 .targetOperation
                 .extractNoCancellableResultData()
 
-            let discoveredAccountIds: Set<AccountId> = Set(
-                delegatedAccounts.values
-                    .flatMap { $0 }
-                    .compactMap(\.accountId)
-                    + delegatedAccounts.keys
-            )
+            let discoveredAccountIds: Set<AccountId> = delegatedAccounts
+                .values
+                .reduce(into: []) { acc, accounts in
+                    accounts.forEach {
+                        acc.insert($0.accountId)
+                        acc.insert($0.delegateAccountId)
+                    }
+                }
 
             let updatedDiscoveringIds = DiscoveringAccountIds(
                 possibleAccountIds: discoveringAccountIds.possibleAccountIds.union(discoveredAccountIds),
@@ -147,17 +149,20 @@ private extension ChainDelegatedAccountFetchOperationFactory {
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
             for: {
-                let delegatedAccounts = try delegatedAccountsListWrapper
+                let discoveredAccounts = try delegatedAccountsListWrapper
                     .targetOperation
                     .extractNoCancellableResultData()
 
-                let delegatorIds = delegatedAccounts
-                    .map(\.key)
-                let delegatedIds = delegatedAccounts
-                    .flatMap(\.value)
-                    .compactMap(\.accountId)
+                let allDiscoveredIds = discoveredAccounts
+                    .values
+                    .reduce(into: Set<AccountId>()) { acc, accounts in
+                        accounts.forEach {
+                            acc.insert($0.accountId)
+                            acc.insert($0.delegateAccountId)
+                        }
+                    }
 
-                return delegatorIds + delegatedIds
+                return Array(allDiscoveredIds)
             }
         )
 
@@ -167,7 +172,8 @@ private extension ChainDelegatedAccountFetchOperationFactory {
             let metaAccounts = try metaAccountsClosure()
             let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
             let remoteDelegatedAccounts = try delegatedAccountsListWrapper
-                .targetOperation.extractNoCancellableResultData()
+                .targetOperation
+                .extractNoCancellableResultData()
 
             return try changesCalculator.calculateUpdates(
                 from: remoteDelegatedAccounts,
