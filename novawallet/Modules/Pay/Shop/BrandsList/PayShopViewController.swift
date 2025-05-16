@@ -29,6 +29,8 @@ final class PayShopViewController: UIViewController, ViewHolder {
 
     weak var scrollViewTracker: ScrollViewTrackingProtocol?
 
+    private var hasLoadMore: Bool = false
+
     init(presenter: PayShopPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -155,18 +157,24 @@ private extension PayShopViewController {
     }
 
     func updateLoadMoreCell(in snapshot: inout Snapshot, hasMore: Bool) {
-        let hasLoadMoreCell = !snapshot.itemIdentifiers(inSection: .loadMore).isEmpty
+        let hadLoadMore = hasLoadMore
 
-        if hasMore, !hasLoadMoreCell {
+        hasLoadMore = hasMore
+
+        if hasMore, !hadLoadMore {
             snapshot.appendItems([.loadMore], toSection: .loadMore)
-        } else if !hasMore, hasLoadMoreCell {
+        } else if !hasMore, hadLoadMore {
             snapshot.deleteItems([.loadMore])
         }
     }
 
     func loadMoreIfNeeded(_ scrollView: UIScrollView) {
+        guard hasLoadMore else {
+            return
+        }
+
         var threshold = scrollView.contentSize.height
-        threshold -= scrollView.bounds.height * 1.5
+        threshold -= scrollView.bounds.height * 2
 
         guard scrollView.contentOffset.y > threshold else {
             return

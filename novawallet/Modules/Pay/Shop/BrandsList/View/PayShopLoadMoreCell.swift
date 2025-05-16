@@ -38,7 +38,7 @@ final class PayShopLoadMoreView: GenericPairValueView<UIActivityIndicatorView, U
         setVerticalAndSpacing(8)
 
         activityIndicatorView.style = .medium
-        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.hidesWhenStopped = false
 
         titleLabel.apply(style: .footnoteSecondary)
         titleLabel.textAlignment = .center
