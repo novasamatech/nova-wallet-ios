@@ -35,7 +35,7 @@ final class PayShopSearchHeaderView: CollectionViewReusableContainerView<TitleCo
         view.spacing = 0
 
         searchButton.applyIconStyle()
-        searchButton.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        searchButton.contentInsets = .zero
 
         view.buttonWidth = 44
 

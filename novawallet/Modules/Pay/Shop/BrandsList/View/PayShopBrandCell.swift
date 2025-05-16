@@ -9,7 +9,7 @@ final class PayShopBrandCell: BlurredCollectionViewCell<PayShopBrandContentView>
 
     private func setupStyle() {
         view.contentInsets = .zero
-        view.innerInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 14)
+        view.innerInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 8)
     }
 
     func bind(viewModel: PayShopBrandViewModel, locale: Locale) {
