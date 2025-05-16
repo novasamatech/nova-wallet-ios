@@ -115,9 +115,9 @@ private extension PayShopBrandsPresenter {
         let viewModels = newBrands.map { viewModelFactory.createViewModel(fromBrand: $0, locale: selectedLocale) }
 
         if loadedMore {
-            baseView?.didLoad(viewModels: viewModels)
+            baseView?.didLoad(viewModels: viewModels, hasMore: hasMore)
         } else {
-            baseView?.didReload(viewModels: viewModels)
+            baseView?.didReload(viewModels: viewModels, hasMore: hasMore)
         }
     }
 }

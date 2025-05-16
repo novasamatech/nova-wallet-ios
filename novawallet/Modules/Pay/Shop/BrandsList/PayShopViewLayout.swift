@@ -47,6 +47,8 @@ private extension PayShopViewLayout {
                 return createRecommendedSection()
             case .brands:
                 return createBrandsSection()
+            case .loadMore:
+                return createLoadMoreSection()
             }
         }
 
@@ -100,6 +102,17 @@ private extension PayShopViewLayout {
             )
         )
     }
+
+    func createLoadMoreSection() -> NSCollectionLayoutSection {
+        .createSectionLayoutWithFullWidthRow(
+            settings: .init(
+                estimatedRowHeight: Constants.loadMoreEstimatedHeight,
+                sectionContentInsets: Constants.loadMoreSectionInsets,
+                sectionInterGroupSpacing: 0,
+                header: nil
+            )
+        )
+    }
 }
 
 private enum Constants {
@@ -144,4 +157,13 @@ private enum Constants {
     static let brandCellHeight: CGFloat = 64
 
     static let brandCellSpacing: CGFloat = 8
+
+    static let loadMoreSectionInsets = NSDirectionalEdgeInsets(
+        top: 16,
+        leading: 16,
+        bottom: 16,
+        trailing: 16
+    )
+
+    static let loadMoreEstimatedHeight: CGFloat = 50
 }

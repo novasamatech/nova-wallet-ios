@@ -1855,3 +1855,4 @@
 "shop.merchants.availability.title" = "Available at US merchants, Online or In-Store";
 "shop.merchants.search" = "Merchants";
 "common.cashback" = "cashback";
+"shop.merchants.loading.more" = "Searching for merchants...";

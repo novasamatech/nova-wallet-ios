@@ -1,8 +1,8 @@
 import Foundation
 
 protocol PayShopBrandsViewProtocol: ControllerBackedProtocol {
-    func didReload(viewModels: [PayShopBrandViewModel])
-    func didLoad(viewModels: [PayShopBrandViewModel])
+    func didReload(viewModels: [PayShopBrandViewModel], hasMore: Bool)
+    func didLoad(viewModels: [PayShopBrandViewModel], hasMore: Bool)
 }
 
 protocol PayShopBrandsPresenterProtocol: AnyObject {
