@@ -25,12 +25,13 @@ final class ProxyMetaAccountFactory {
 
 extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
-        for delegatedAccount: DiscoveredDelegatedAccountProtocol,
+        for delegatedAccount: any DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
-        localMetaAccounts _: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel {
+        localMetaAccounts _: [ManagedMetaAccountModel],
+        remoteMetaAccounts _: [ManagedMetaAccountModel]
+    ) throws -> ManagedMetaAccountModel? {
         guard let proxied = delegatedAccount as? ProxiedAccount else {
-            throw DelegatedAccountError.invalidAccountType
+            return nil
         }
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
