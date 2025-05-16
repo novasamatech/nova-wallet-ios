@@ -3,7 +3,7 @@ import Foundation_iOS
 
 final class PayShopViewController: UIViewController, ViewHolder {
     typealias RootViewType = PayShopViewLayout
-    
+
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
@@ -134,7 +134,9 @@ private extension PayShopViewController {
                 forSupplementaryViewOfKind: kind,
                 for: indexPath
             )!
-            
+
+            view.locale = selectedLocale
+
             view.searchButton.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
 
             return view
@@ -172,13 +174,13 @@ private extension PayShopViewController {
 
         presenter.loadMore()
     }
-    
+
     func reloadCollectionView() {
         var snapshot = dataSource.snapshot()
         snapshot.reloadSections(snapshot.sectionIdentifiers)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
-    
+
     @objc func actionSearch() {
         presenter.activateSearch()
     }

@@ -1,5 +1,3 @@
 import Foundation
 
-enum PayShopDatasourceDef {
-    
-}
+enum PayShopDatasourceDef {}
