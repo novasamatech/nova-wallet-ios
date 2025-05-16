@@ -35,10 +35,6 @@ final class PayShopBrandContentView: GenericTitleValueView<
 
     var indicatorView: UIImageView { valueView.imageView }
 
-    convenience init() {
-        self.init(frame: .zero)
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 

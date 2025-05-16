@@ -657,6 +657,7 @@
 		0C8597562DD74441009D82D3 /* PayRootPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8597552DD74441009D82D3 /* PayRootPresenter.swift */; };
 		0C8597582DD74456009D82D3 /* PayRootInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8597572DD74456009D82D3 /* PayRootInteractor.swift */; };
 		0C85975A2DD75949009D82D3 /* PayShopLoadMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8597592DD75949009D82D3 /* PayShopLoadMoreCell.swift */; };
+		0C85975C2DD77458009D82D3 /* PayShopDatasourceDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85975B2DD77458009D82D3 /* PayShopDatasourceDefinition.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF2A2B6D230100FC0014 /* AssetHubReQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */; };
 		0C85FF2C2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */; };
@@ -6535,6 +6536,7 @@
 		0C8597552DD74441009D82D3 /* PayRootPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayRootPresenter.swift; sourceTree = "<group>"; };
 		0C8597572DD74456009D82D3 /* PayRootInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayRootInteractor.swift; sourceTree = "<group>"; };
 		0C8597592DD75949009D82D3 /* PayShopLoadMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopLoadMoreCell.swift; sourceTree = "<group>"; };
+		0C85975B2DD77458009D82D3 /* PayShopDatasourceDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayShopDatasourceDefinition.swift; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubReQuoteService.swift; sourceTree = "<group>"; };
 		0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionSyncState.swift; sourceTree = "<group>"; };
@@ -13032,6 +13034,7 @@
 				0C39ADDD2DD246AD00B05714 /* PayShopRecommendedViewModel.swift */,
 				0C39ADDF2DD24A6500B05714 /* PayShopAvailabilityViewModel.swift */,
 				0CEAC14B2DD596F900015058 /* PayShopViewModelFactory.swift */,
+				0C85975B2DD77458009D82D3 /* PayShopDatasourceDefinition.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -31544,6 +31547,7 @@
 				0CE933902C01A009000F3EFE /* ExtrinsicServiceTypes+Conversion.swift in Sources */,
 				84AEEE6C27A92AEF005EBA77 /* AssetListFlowLayout.swift in Sources */,
 				8410D6972815DE3300B83CF7 /* IconDetails+Hint.swift in Sources */,
+				0C85975C2DD77458009D82D3 /* PayShopDatasourceDefinition.swift in Sources */,
 				4FBD73DD27CAA339727616B5 /* StakingUnbondSetupPresenter.swift in Sources */,
 				84CFF1F026526FBC00DB7CF7 /* StakingBondMoreConfirmationViewLayout.swift in Sources */,
 				F83EA1F4ECE14C390C0B287F /* StakingUnbondSetupInteractor.swift in Sources */,

@@ -18,7 +18,7 @@ extension NSCollectionLayoutSection {
     ) -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .fractionalHeight(1)
+            heightDimension: .estimated(settings.estimatedRowHeight)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 

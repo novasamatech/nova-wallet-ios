@@ -53,8 +53,12 @@ final class PayShopAvailabilityContentView: UIView {
     private func applyState(_ state: PayShopAvailabilityViewModel.Available) {
         switch state {
         case let .loaded(cashback):
-            cashbackLabel.text = R.string.localizable.shopMerchantsCashbackFormat(cashback)
+            cashbackLabel.text = R.string.localizable.shopMerchantsCashbackFormat(
+                cashback,
+                preferredLanguages: locale?.rLanguages
+            )
         case .loading:
+            // TODO: activate loading state
             break
         case .error:
             cashbackLabel.text = ""

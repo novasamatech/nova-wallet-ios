@@ -24,7 +24,7 @@ struct PayShopViewFactory {
             logger: Logger.shared
         )
 
-        let view = PayShopViewController(presenter: presenter)
+        let view = PayShopViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
 
         presenter.baseView = view
         interactor.presenter = presenter

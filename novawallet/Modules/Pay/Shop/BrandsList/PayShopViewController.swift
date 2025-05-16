@@ -1,8 +1,9 @@
 import UIKit
+import Foundation_iOS
 
 final class PayShopViewController: UIViewController, ViewHolder {
     typealias RootViewType = PayShopViewLayout
-
+    
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
@@ -14,27 +15,12 @@ final class PayShopViewController: UIViewController, ViewHolder {
         case loadMore
     }
 
-    enum Item: Identifiable, Hashable {
+    enum Item: Hashable {
         case availability(PayShopAvailabilityViewModel)
         case purchases(Int)
         case recommended(PayShopRecommendedViewModel)
         case brand(PayShopBrandViewModel)
         case loadMore
-
-        var id: String {
-            switch self {
-            case .availability:
-                "shop.availability"
-            case .purchases:
-                "shop.purchases"
-            case let .recommended(viewModel):
-                "shop.recommended.\(viewModel.identifier)"
-            case let .brand(viewModel):
-                "shop.brand.\(viewModel.identifier)"
-            case .loadMore:
-                "shop.load.more"
-            }
-        }
     }
 
     let presenter: PayShopPresenterProtocol
@@ -43,9 +29,11 @@ final class PayShopViewController: UIViewController, ViewHolder {
 
     weak var scrollViewTracker: ScrollViewTrackingProtocol?
 
-    init(presenter: PayShopPresenterProtocol) {
+    init(presenter: PayShopPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -111,6 +99,8 @@ private extension PayShopViewController {
         switch model {
         case let .availability(viewModel):
             let cell = collectionView.dequeueReusableCellWithType(PayShopAvailabilityCell.self, for: indexPath)!
+            cell.view.locale = selectedLocale
+
             cell.view.bind(viewModel: viewModel)
             return cell
         case .purchases:
@@ -121,10 +111,11 @@ private extension PayShopViewController {
             return UICollectionViewCell()
         case let .brand(viewModel):
             let cell = collectionView.dequeueReusableCellWithType(PayShopBrandCell.self, for: indexPath)!
-            cell.bind(viewModel: viewModel, locale: Locale.current)
+            cell.bind(viewModel: viewModel, locale: selectedLocale)
             return cell
         case .loadMore:
             let cell = collectionView.dequeueReusableCellWithType(PayShopLoadMoreCell.self, for: indexPath)!
+            cell.view.locale = selectedLocale
 
             return cell
         }
@@ -143,6 +134,8 @@ private extension PayShopViewController {
                 forSupplementaryViewOfKind: kind,
                 for: indexPath
             )!
+            
+            view.searchButton.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
 
             return view
         default:
@@ -179,10 +172,27 @@ private extension PayShopViewController {
 
         presenter.loadMore()
     }
+    
+    func reloadCollectionView() {
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadSections(snapshot.sectionIdentifiers)
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    @objc func actionSearch() {
+        presenter.activateSearch()
+    }
 }
 
 extension PayShopViewController: UICollectionViewDelegate {
-    func collectionView(_: UICollectionView, didSelectItemAt _: IndexPath) {}
+    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch dataSource.itemIdentifier(for: indexPath) {
+        case let .brand(viewModel):
+            presenter.select(brand: viewModel)
+        default:
+            break
+        }
+    }
 
     func collectionView(
         _: UICollectionView,
@@ -225,6 +235,14 @@ extension PayShopViewController: ScrollsToTop {
             CGPoint(x: 0, y: -initialTrackingInsets.top),
             animated: true
         )
+    }
+}
+
+extension PayShopViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            reloadCollectionView()
+        }
     }
 }
 
