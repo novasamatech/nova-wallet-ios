@@ -151,6 +151,16 @@ extension PayRootViewController: ScrollViewHostControlling {
     }
 }
 
+extension PayRootViewController: ScrollsToTop {
+    func scrollToTop() {
+        guard let scrollViewHost = currentPageView as? ScrollsToTop else {
+            return
+        }
+
+        scrollViewHost.scrollToTop()
+    }
+}
+
 extension PayRootViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {

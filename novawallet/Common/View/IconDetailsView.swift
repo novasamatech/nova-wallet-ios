@@ -132,6 +132,14 @@ class LoadableIconDetailsView: IconDetailsView {
     private var imageViewModel: ImageViewModelProtocol?
 
     func bind(viewModel: StackCellViewModel?) {
+        let imageSettings = ImageViewModelSettings(
+            targetSize: CGSize(width: iconWidth, height: iconWidth)
+        )
+
+        bind(viewModel: viewModel, imageSettings: imageSettings)
+    }
+
+    func bind(viewModel: StackCellViewModel?, imageSettings: ImageViewModelSettings) {
         imageViewModel?.cancel(on: imageView)
         imageView.image = nil
 
@@ -139,10 +147,6 @@ class LoadableIconDetailsView: IconDetailsView {
 
         imageViewModel = viewModel?.imageViewModel
 
-        viewModel?.imageViewModel?.loadImage(
-            on: imageView,
-            targetSize: CGSize(width: iconWidth, height: iconWidth),
-            animated: true
-        )
+        viewModel?.imageViewModel?.loadImage(on: imageView, settings: imageSettings, animated: true)
     }
 }

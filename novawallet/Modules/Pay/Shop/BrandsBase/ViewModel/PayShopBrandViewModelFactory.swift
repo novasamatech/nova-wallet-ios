@@ -29,7 +29,9 @@ extension PayShopBrandViewModelFactory: PayShopBrandViewModelFactoryProtocol {
 
         let commission = model.attributes.comissionInPercentFraction
         let commissionNumber = NSNumber(value: commission)
-        let commissionString = commission > 0 ? comissionFormatter.value(for: locale).string(from: commissionNumber) : nil
+        let commissionString = commission > 0 ?
+            comissionFormatter.value(for: locale).string(from: commissionNumber) :
+            nil
 
         return PayShopBrandViewModel(
             identifier: model.identifier,

@@ -46,6 +46,7 @@ extension NSCollectionLayoutSection {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .topLeading
         )
+
         sectionHeader.pinToVisibleBounds = headerSettings.pinToVisibleBounds
 
         section.boundarySupplementaryItems = [sectionHeader]

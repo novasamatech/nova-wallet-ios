@@ -26,14 +26,19 @@ final class PayShopSearchHeaderView: CollectionViewReusableContainerView<TitleCo
     }
 
     private func configure() {
-        titleLabel.apply(style: .semiboldCaps1Primary)
+        view.apply(style: .titleWithButton)
+
+        view.contentInsets = .zero
+
+        titleLabel.apply(style: .title3Primary)
         view.iconWidth = 0
         view.spacing = 0
 
         searchButton.applyIconStyle()
-        searchButton.setIcon(R.image.iconSearch())
         searchButton.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
 
         view.buttonWidth = 44
+
+        searchButton.setIcon(R.image.iconSearchButton())
     }
 }

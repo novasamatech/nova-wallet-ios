@@ -40,10 +40,31 @@ final class PayShopAvailabilityContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func bind(viewModel: PayShopAvailabilityViewModel) {
+        switch viewModel {
+        case let .available(state):
+            applyState(state)
+        case .unsupported:
+            // TODO: Switch style here for unsupported state
+            break
+        }
+    }
+
+    private func applyState(_ state: PayShopAvailabilityViewModel.Available) {
+        switch state {
+        case let .loaded(cashback):
+            cashbackLabel.text = R.string.localizable.shopMerchantsCashbackFormat(cashback)
+        case .loading:
+            break
+        case .error:
+            cashbackLabel.text = ""
+        }
+    }
+
     private func applyLocalization() {
         logoView.titleView.detailsLabel.text = R.string.localizable.commonPolkadotPay(
             preferredLanguages: locale?.rLanguages
-        )
+        ).uppercased()
 
         detailsLabel.text = R.string.localizable.shopMerchantsAvailabilityTitle(
             preferredLanguages: locale?.rLanguages
@@ -76,3 +97,5 @@ final class PayShopAvailabilityContentView: UIView {
         }
     }
 }
+
+typealias PayShopAvailabilityCell = CollectionViewContainerCell<PayShopAvailabilityContentView>

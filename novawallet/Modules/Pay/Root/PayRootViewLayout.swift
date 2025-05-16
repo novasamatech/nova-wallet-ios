@@ -28,7 +28,7 @@ final class PayRootViewLayout: UIView {
     }
 
     func setupPage(view: UIView) {
-        addSubview(view)
+        insertSubview(view, belowSubview: segmentedControl)
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }

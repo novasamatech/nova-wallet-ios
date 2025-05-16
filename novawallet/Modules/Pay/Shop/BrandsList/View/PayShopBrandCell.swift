@@ -8,7 +8,12 @@ final class PayShopBrandCell: BlurredCollectionViewCell<PayShopBrandContentView>
     }
 
     private func setupStyle() {
-        view.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 14)
+        view.contentInsets = .zero
+        view.innerInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 14)
+    }
+
+    func bind(viewModel: PayShopBrandViewModel, locale: Locale) {
+        view.view.bind(viewModel: viewModel, locale: locale)
     }
 }
 
@@ -20,7 +25,8 @@ final class PayShopBrandContentView: GenericTitleValueView<
         static let iconDetailsSpacing: CGFloat = 12
         static let horizontalSpacing: CGFloat = 8
         static let cashbackSpacing: CGFloat = 0
-        static let indicatorSpacing: CGFloat = 0
+        static let indicatorSpacing: CGFloat = 4
+        static let indicatorWidth: CGFloat = 24
     }
 
     var commissionValueLabel: UILabel { valueView.detailsView.valueTop }
@@ -46,6 +52,7 @@ final class PayShopBrandContentView: GenericTitleValueView<
 
         valueView.mode = .detailsIcon
         valueView.spacing = Constants.indicatorSpacing
+        valueView.iconWidth = Constants.indicatorWidth
         valueView.detailsView.spacing = Constants.cashbackSpacing
 
         commissionValueLabel.textAlignment = .right
@@ -67,7 +74,12 @@ final class PayShopBrandContentView: GenericTitleValueView<
             imageViewModel: viewModel.iconViewModel
         )
 
-        titleView.bind(viewModel: titleViewModel)
+        let imageSettings = ImageViewModelSettings(
+            targetSize: CGSize(width: Constants.iconSize, height: Constants.iconSize),
+            cornerRadius: Constants.iconSize / 2
+        )
+
+        titleView.bind(viewModel: titleViewModel, imageSettings: imageSettings)
 
         let bottomValue = viewModel.commission != nil ? R.string.localizable.commonCashback(
             preferredLanguages: locale.rLanguages

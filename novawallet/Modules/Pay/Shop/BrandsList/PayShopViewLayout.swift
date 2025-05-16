@@ -1,10 +1,17 @@
 import UIKit
 
 final class PayShopViewLayout: UIView {
-    private var dataSource: DataSource!
+    lazy var collectionView: UICollectionView = {
+        let view = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+        view.backgroundColor = .clear
+        view.contentInsetAdjustmentBehavior = .always
+        return view
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -14,40 +21,20 @@ final class PayShopViewLayout: UIView {
 }
 
 private extension PayShopViewLayout {
-    typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
-
-    enum Section: Int, CaseIterable {
-        case availability
-        case purchases
-        case recommended
-        case brands
-    }
-
-    enum Item: Identifiable, Hashable {
-        case availability(PayShopAvailabilityViewModel)
-        case purchases(Int)
-        case recommended(PayShopRecommendedViewModel)
-        case brand(PayShopBrandViewModel)
-
-        var id: String {
-            switch self {
-            case .availability:
-                "shop.availability"
-            case .purchases:
-                "shop.purchases"
-            case let .recommended(viewModel):
-                "shop.recommended.\(viewModel.identifier)"
-            case let .brand(viewModel):
-                "shop.brand.\(viewModel.identifier)"
-            }
+    func setupLayout() {
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
-}
 
-private extension PayShopViewLayout {
     func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { [unowned self] sectionIndex, _ in
+            guard
+                let dataSource = collectionView.dataSource as? PayShopViewController.DataSource else {
+                fatalError("DataSource not set")
+            }
+
             let snap = dataSource.snapshot()
             let section = snap.sectionIdentifiers[sectionIndex]
 
@@ -70,7 +57,7 @@ private extension PayShopViewLayout {
         .createSectionLayoutWithFullWidthRow(
             settings: .init(
                 estimatedRowHeight: Constants.availabilityHeight,
-                sectionContentInsets: Constants.headerSectionInsets,
+                sectionContentInsets: Constants.availabilitySectionInsets,
                 sectionInterGroupSpacing: 0,
                 header: nil
             )
@@ -94,7 +81,7 @@ private extension PayShopViewLayout {
             settings: .init(
                 estimatedRowHeight: Constants.brandCellHeight,
                 sectionContentInsets: Constants.brandsSectionInsets,
-                sectionInterGroupSpacing: Constants.brandCellHeight,
+                sectionInterGroupSpacing: Constants.brandCellSpacing,
                 header: .init(
                     pinToVisibleBounds: false,
                     height: .absolute(Constants.searchHeaderHeight)
@@ -116,11 +103,10 @@ private extension PayShopViewLayout {
 }
 
 private enum Constants {
-    static let headerHeight: CGFloat = 40
-    static let headerSectionInsets = NSDirectionalEdgeInsets(
-        top: 12,
+    static let availabilitySectionInsets = NSDirectionalEdgeInsets(
+        top: 32,
         leading: 16,
-        bottom: 0,
+        bottom: 18,
         trailing: 16
     )
 
@@ -138,7 +124,7 @@ private enum Constants {
     static let recommendedSectionInsets = NSDirectionalEdgeInsets(
         top: 16,
         leading: 16,
-        bottom: 0,
+        bottom: 18,
         trailing: 16
     )
 
@@ -147,7 +133,7 @@ private enum Constants {
     static let recommendedItemSpacing: CGFloat = 12
 
     static let brandsSectionInsets = NSDirectionalEdgeInsets(
-        top: 16,
+        top: 12,
         leading: 16,
         bottom: 0,
         trailing: 16
