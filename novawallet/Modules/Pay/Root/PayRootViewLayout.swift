@@ -16,6 +16,8 @@ final class PayRootViewLayout: UIView {
         2 * Constants.segmentedControlVerticalInset + UIConstants.segmentedControlHeight
     }
 
+    private var barExtendingView: UIView?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -28,10 +30,30 @@ final class PayRootViewLayout: UIView {
     }
 
     func setupPage(view: UIView) {
-        insertSubview(view, belowSubview: segmentedControl)
+        addSubview(view)
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    func provideTopBarExtensionDecoration() -> UIView {
+        if let barExtendingView {
+            return barExtendingView
+        }
+
+        let view = UIView()
+
+        view.addSubview(segmentedControl)
+
+        segmentedControl.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(Constants.segmentedControlVerticalInset)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(UIConstants.segmentedControlHeight)
+        }
+
+        barExtendingView = view
+
+        return view
     }
 }
 
@@ -39,12 +61,5 @@ private extension PayRootViewLayout {
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-        addSubview(segmentedControl)
-        segmentedControl.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.segmentedControlVerticalInset)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(UIConstants.segmentedControlHeight)
-        }
     }
 }

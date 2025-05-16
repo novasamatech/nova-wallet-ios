@@ -291,7 +291,8 @@ private extension MainTabBarViewFactory {
             let payView = PayRootViewFactory.createView(),
             let rootView = NavigationRootViewFactory.createView(
                 with: payView,
-                serviceCoordinator: serviceCoordinator
+                serviceCoordinator: serviceCoordinator,
+                decorationProvider: payView
             ) else {
             return nil
         }

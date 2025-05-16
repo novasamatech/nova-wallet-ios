@@ -4,7 +4,8 @@ import Foundation_iOS
 struct NavigationRootViewFactory {
     static func createView(
         with child: ScrollViewHostControlling,
-        serviceCoordinator: ServiceCoordinatorProtocol
+        serviceCoordinator: ServiceCoordinatorProtocol,
+        decorationProvider: ScrollDecorationProviding? = nil
     ) -> NavigationRootViewProtocol? {
         let dappMediator = serviceCoordinator.dappMediator
 
@@ -30,7 +31,11 @@ struct NavigationRootViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = NavigationRootViewController(scrollHost: child, presenter: presenter)
+        let view = NavigationRootViewController(
+            scrollHost: child,
+            presenter: presenter,
+            decorationProvider: decorationProvider
+        )
 
         presenter.view = view
         interactor.presenter = presenter

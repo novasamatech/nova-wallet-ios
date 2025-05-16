@@ -653,6 +653,9 @@
 		0C846B902BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */; };
 		0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C846B952BE69417000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */; };
+		0C8597542DD73881009D82D3 /* ScrollDecorationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8597532DD73881009D82D3 /* ScrollDecorationProvider.swift */; };
+		0C8597562DD74441009D82D3 /* PayRootPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8597552DD74441009D82D3 /* PayRootPresenter.swift */; };
+		0C8597582DD74456009D82D3 /* PayRootInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8597572DD74456009D82D3 /* PayRootInteractor.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF2A2B6D230100FC0014 /* AssetHubReQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */; };
 		0C85FF2C2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */; };
@@ -6527,6 +6530,9 @@
 		0C846B8F2BE5F069000EBFC2 /* StakingGlobalConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingGlobalConfigProvider.swift; sourceTree = "<group>"; };
 		0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		0C8597532DD73881009D82D3 /* ScrollDecorationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollDecorationProvider.swift; sourceTree = "<group>"; };
+		0C8597552DD74441009D82D3 /* PayRootPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayRootPresenter.swift; sourceTree = "<group>"; };
+		0C8597572DD74456009D82D3 /* PayRootInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayRootInteractor.swift; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubReQuoteService.swift; sourceTree = "<group>"; };
 		0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionSyncState.swift; sourceTree = "<group>"; };
@@ -14246,6 +14252,7 @@
 				0CD2FB532DCE2B9E006208FD /* ScrollDecorationController.swift */,
 				0CD2FB552DCE2BF9006208FD /* ScrollHostController.swift */,
 				0CD2FB572DCE30B8006208FD /* DecorateNavbarOnScrollController.swift */,
+				0C8597532DD73881009D82D3 /* ScrollDecorationProvider.swift */,
 			);
 			path = ScrollDecoration;
 			sourceTree = "<group>";
@@ -27562,6 +27569,8 @@
 				E60345CBF629A82608C84406 /* PayRootViewLayout.swift */,
 				4C32EE7BA51CAC8B67FF17D1 /* PayRootViewFactory.swift */,
 				0CEAC0FC2DD4A2E700015058 /* PayPageProvider.swift */,
+				0C8597552DD74441009D82D3 /* PayRootPresenter.swift */,
+				0C8597572DD74456009D82D3 /* PayRootInteractor.swift */,
 			);
 			path = Root;
 			sourceTree = "<group>";
@@ -29903,6 +29912,7 @@
 				84754C882510BAFE00854599 /* ModalAlertFactory.swift in Sources */,
 				8430AACC2602249B005B1066 /* InitialStakingState.swift in Sources */,
 				0C0F6DF72D42A96F00943A7C /* CollatorStakingSelectViewFactory+ParachainStaking.swift in Sources */,
+				0C8597542DD73881009D82D3 /* ScrollDecorationProvider.swift in Sources */,
 				0C27F38E2DA81B5E00191FFF /* JSON+BigUInt.swift in Sources */,
 				0C56B4FB2A4B0C320030F9C9 /* AssetListBaseBuilder.swift in Sources */,
 				2D32BE1A2C6A49900047F520 /* ExtrinsicNativeFeeEstimator.swift in Sources */,
@@ -33342,6 +33352,7 @@
 				C641C8A414F7F4E3B96B16CE /* ProxySignValidationProtocols.swift in Sources */,
 				1DA7B852B65ED2DC69E8A906 /* ProxySignValidationWireframe.swift in Sources */,
 				9AA018D4BDEEECF00018F049 /* ProxySignValidationPresenter.swift in Sources */,
+				0C8597562DD74441009D82D3 /* PayRootPresenter.swift in Sources */,
 				0C6FE80C2D50C6AC00E5B651 /* HydraFeeRateFactory.swift in Sources */,
 				2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */,
 				4DBCCC36F7CD1876D6E77ECC /* ProxySignValidationInteractor.swift in Sources */,
@@ -33590,6 +33601,7 @@
 				BA70314B7C83ADD171FA0C64 /* SwipeGovVotingListInteractor.swift in Sources */,
 				F5DD5BD30644FCA2491B03F1 /* SwipeGovVotingListViewController.swift in Sources */,
 				CF1272B8CA2C661E931222F0 /* SwipeGovVotingListViewLayout.swift in Sources */,
+				0C8597582DD74456009D82D3 /* PayRootInteractor.swift in Sources */,
 				A08CEF86F8DC6DD4DD10E035 /* SwipeGovVotingListViewFactory.swift in Sources */,
 				E7007B72D82B64DDF4718D0B /* SwipeGovReferendumDetailsProtocols.swift in Sources */,
 				88132A0B7C93C6A899B4403B /* SwipeGovReferendumDetailsWireframe.swift in Sources */,
