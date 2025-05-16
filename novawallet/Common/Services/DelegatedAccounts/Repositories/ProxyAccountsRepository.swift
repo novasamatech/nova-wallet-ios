@@ -37,7 +37,7 @@ final class ChainProxyAccountsRepository {
 
         return proxiedList.compactMapValues { accounts in
             accounts.filter {
-                !$0.proxyAccount.hasDelay && proxyIds.contains($0.accountId)
+                !$0.proxyAccount.hasDelay && proxyIds.contains($0.proxyAccount.accountId)
             }
         }.filter { !$0.value.isEmpty }
     }
@@ -47,7 +47,7 @@ final class ChainProxyAccountsRepository {
 
 extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
-        for proxiedIds: Set<AccountId>
+        for proxyIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let fetchWrapper: CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> = if proxieds.isEmpty {
             proxyOperationFactory.fetchProxyList(
@@ -63,7 +63,7 @@ extension ChainProxyAccountsRepository: DelegatedAccountsRepositoryProtocol {
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
             self.proxieds = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.filterProxiedList(self.proxieds, by: proxiedIds)
+            return self.filterProxiedList(self.proxieds, by: proxyIds)
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)

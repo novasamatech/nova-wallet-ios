@@ -23,25 +23,23 @@ extension DelegatedAccountsRepository: DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
         for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [any DiscoveredDelegatedAccountProtocol]]> {
-        let accountsFetchOperation = OperationCombiningService(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            self.sources.map {
-                $0.fetchDelegatedAccountsWrapper(for: accountIds)
-            }
-        }.longrunOperation()
-
-        let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
-            try accountsFetchOperation
-                .extractNoCancellableResultData()
-                .reduce(into: [:]) { $0.merge($1, uniquingKeysWith: { $0 + $1 }) }
+        let fetchWrappers = sources.map {
+            $0.fetchDelegatedAccountsWrapper(for: accountIds)
         }
 
-        mapOperation.addDependency(accountsFetchOperation)
+        let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
+            let fetchResult = try fetchWrappers
+                .map { try $0.targetOperation.extractNoCancellableResultData() }
+                .reduce(into: [:]) { $0.merge($1, uniquingKeysWith: { $0 + $1 }) }
+
+            return fetchResult
+        }
+
+        fetchWrappers.forEach { mapOperation.addDependency($0.targetOperation) }
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [accountsFetchOperation]
+            dependencies: fetchWrappers.flatMap(\.allOperations)
         )
     }
 }
