@@ -1,6 +1,10 @@
 import UIKit
+import UIKit_iOS
 
 final class PayShopAvailabilityContentView: UIView {
+    var skeletonView: SkrullableView?
+    private var isLoading: Bool = false
+
     let logoView: GradientIconDetailsView = .create { view in
         view.bind(gradient: .polkadotPay)
         view.backgroundView.cornerRadius = 8
@@ -53,14 +57,15 @@ final class PayShopAvailabilityContentView: UIView {
     private func applyState(_ state: PayShopAvailabilityViewModel.Available) {
         switch state {
         case let .loaded(cashback):
+            stopLoadingIfNeeded()
             cashbackLabel.text = R.string.localizable.shopMerchantsCashbackFormat(
                 cashback,
                 preferredLanguages: locale?.rLanguages
             )
         case .loading:
-            // TODO: activate loading state
-            break
+            startLoadingIfNeeded()
         case .error:
+            stopLoadingIfNeeded()
             cashbackLabel.text = ""
         }
     }
@@ -99,6 +104,50 @@ final class PayShopAvailabilityContentView: UIView {
             make.top.greaterThanOrEqualTo(logoView.snp.bottom).offset(45)
             make.bottom.equalToSuperview()
         }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+        }
+    }
+}
+
+extension PayShopAvailabilityContentView: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [cashbackLabel]
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let skeletonSize = CGSize(width: spaceSize.width - 80, height: 18)
+        let offset = CGPoint(
+            x: spaceSize.width / 2 - skeletonSize.width / 2,
+            y: logoView.frame.maxY + 8 + cashbackLabel.font.lineHeight / 2 - skeletonSize.height / 2
+        )
+
+        return [
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: offset,
+                size: skeletonSize
+            )
+        ]
+    }
+
+    func didStartSkeleton() {
+        isLoading = true
+    }
+
+    func didStopSkeleton() {
+        isLoading = false
     }
 }
 
