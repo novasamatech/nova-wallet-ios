@@ -1,7 +1,8 @@
 import UIKit
 import Foundation_iOS
+import UIKit_iOS
 
-final class PayShopViewController: UIViewController, ViewHolder {
+final class PayShopViewController: UIViewController, ViewHolder, AdaptiveDesignable {
     typealias RootViewType = PayShopViewLayout
 
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
@@ -20,12 +21,18 @@ final class PayShopViewController: UIViewController, ViewHolder {
         case purchases(Int)
         case recommended(PayShopRecommendedViewModel)
         case brand(PayShopBrandViewModel)
+        case brandSkeleton(Int)
         case loadMore
     }
 
     let presenter: PayShopPresenterProtocol
 
     private lazy var dataSource = createDataSource()
+
+    private var skeletonItemsCount: Int {
+        let baseCount: Int = 6 // Base number of skeleton cells for standard screen size
+        return Int(ceil(Double(baseCount) * designScaleRatio.height))
+    }
 
     weak var scrollViewTracker: ScrollViewTrackingProtocol?
 
@@ -60,6 +67,7 @@ private extension PayShopViewController {
     func setupCollectionView() {
         rootView.collectionView.registerCellClass(PayShopAvailabilityCell.self)
         rootView.collectionView.registerCellClass(PayShopBrandCell.self)
+        rootView.collectionView.registerCellClass(PayShopSkeletonBrandCell.self)
         rootView.collectionView.registerCellClass(PayShopLoadMoreCell.self)
         rootView.collectionView.registerClass(
             PayShopSearchHeaderView.self,
@@ -115,6 +123,9 @@ private extension PayShopViewController {
             let cell = collectionView.dequeueReusableCellWithType(PayShopBrandCell.self, for: indexPath)!
             cell.bind(viewModel: viewModel, locale: selectedLocale)
             return cell
+        case .brandSkeleton:
+            let cell = collectionView.dequeueReusableCellWithType(PayShopSkeletonBrandCell.self, for: indexPath)!
+            return cell
         case .loadMore:
             let cell = collectionView.dequeueReusableCellWithType(PayShopLoadMoreCell.self, for: indexPath)!
             cell.view.locale = selectedLocale
@@ -152,6 +163,9 @@ private extension PayShopViewController {
 
         snapshot.appendSections([.availability, .brands, .loadMore])
         snapshot.appendItems([.availability(.available(.loading))], toSection: .availability)
+
+        let skeletonItems = (0 ..< skeletonItemsCount).map { Item.brandSkeleton($0) }
+        snapshot.appendItems(skeletonItems, toSection: .brands)
 
         dataSource.apply(snapshot, animatingDifferences: false)
     }
@@ -212,6 +226,10 @@ extension PayShopViewController: UICollectionViewDelegate {
         if let loadMoreCell = cell as? PayShopLoadMoreCell {
             loadMoreCell.view.startLoading()
         }
+
+        if let skeletonCell = cell as? PayShopSkeletonBrandCell {
+            skeletonCell.startLoading()
+        }
     }
 
     func collectionView(
@@ -221,6 +239,10 @@ extension PayShopViewController: UICollectionViewDelegate {
     ) {
         if let loadMoreCell = cell as? PayShopLoadMoreCell {
             loadMoreCell.view.stopLoading()
+        }
+
+        if let skeletonCell = cell as? PayShopSkeletonBrandCell {
+            skeletonCell.stopLoading()
         }
     }
 }
@@ -290,5 +312,12 @@ extension PayShopViewController: PayShopViewProtocol {
         updateLoadMoreCell(in: &snapshot, hasMore: hasMore)
 
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
+
+private extension PayShopViewController {
+    enum Constants {
+        static let brandCellHeight: CGFloat = 64
+        static let brandCellSpacing: CGFloat = 8
     }
 }
