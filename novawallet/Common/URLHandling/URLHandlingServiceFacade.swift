@@ -46,7 +46,7 @@ final class URLHandlingServiceFacade {
 
         branchLinkService = BranchLinkService(
             deepLinkHandler: urlHandlingService,
-            deepLinkFactory: BranchDeepLinkFactory(),
+            deepLinkFactory: BranchDeepLinkFactory(config: appConfig),
             logger: logger
         )
     }

@@ -1,6 +1,15 @@
 import Foundation
 
 enum UniversalLink {
+    enum Action: String {
+        case open
+        case create
+    }
+
+    enum Entity: String {
+        case wallet
+    }
+
     enum Screen: String {
         case staking
         case governance = "gov"
@@ -44,6 +53,21 @@ enum UniversalLink {
             } else {
                 return nil
             }
+        }
+    }
+
+    enum WalletEntity {
+        enum QueryKey {
+            static let mnemonic = "mnemonic"
+            static let type = "cryptotype"
+            static let substrateDp = "substratedp"
+            static let evmDp = "evmdp"
+        }
+    }
+
+    enum DAppScreen {
+        enum QueryKey {
+            static let url = "url"
         }
     }
 }

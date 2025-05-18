@@ -23,7 +23,7 @@ private extension BranchLinkService {
     func setupSdk(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         Branch.getInstance().initSession(
             launchOptions: launchOptions
-        ) { [weak self] (params: BranchLinkParams?, _: Error?) in
+        ) { [weak self] (params: ExternalUniversalLink.Params?, _: Error?) in
             // Branch sdk delivers callback in the main queue
 
             guard let self else {
@@ -32,7 +32,7 @@ private extension BranchLinkService {
 
             guard
                 let branchParams = params,
-                let clickedBranchLink = branchParams[BrankKey.clickedBranchLink] as? NSNumber,
+                let clickedBranchLink = branchParams[BranchParamKey.clickedBranchLink] as? NSNumber,
                 clickedBranchLink.boolValue
             else {
                 logger.debug("No branch link to handle")
@@ -43,7 +43,7 @@ private extension BranchLinkService {
         }
     }
 
-    func handleDeepLink(params: BranchLinkParams) {
+    func handleDeepLink(params: ExternalUniversalLink.Params) {
         guard let url = deepLinkFactory.createDeepLink(from: params) else {
             return
         }
@@ -67,8 +67,4 @@ extension BranchLinkService {
 
         setupSdk(with: launchOptions)
     }
-}
-
-private enum BrankKey {
-    static let clickedBranchLink = "+clicked_branch_link"
 }

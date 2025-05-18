@@ -59,7 +59,7 @@ final class ScreenOpenService {
 extension ScreenOpenService {
     struct ActivityValidator: URLActivityValidator {
         func validate(_ url: URL) -> Bool {
-            let deeplinkHost = "nova"
+            let deeplinkHost = ApplicationConfig.shared.deepLinkHost
             let applinkHost = ApplicationConfig.shared.internalUniversalLinkURL.host
 
             guard url.host == deeplinkHost || url.host == applinkHost else {

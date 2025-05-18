@@ -9,6 +9,8 @@ protocol ApplicationConfigProtocol {
     var appStoreURL: URL { get }
     var externalUniversalLinkURL: URL { get }
     var internalUniversalLinkURL: URL { get }
+    var deepLinkScheme: String { get }
+    var deepLinkHost: String { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
@@ -48,6 +50,12 @@ protocol ApplicationConfigProtocol {
     var wikiURL: URL { get }
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
+}
+
+extension ApplicationConfigProtocol {
+    var deepLinkURL: URL {
+        URL(string: "\(deepLinkScheme)://\(deepLinkHost)")!
+    }
 }
 
 final class ApplicationConfig {
@@ -338,6 +346,18 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://dev.novawallet.io")!
         #endif
+    }
+
+    var deepLinkScheme: String {
+        #if F_RELEASE
+            "novawallet"
+        #else
+            "novawallet"
+        #endif
+    }
+
+    var deepLinkHost: String {
+        "nova"
     }
 
     var whiteAppearanceIconsPath: String {
