@@ -9,7 +9,7 @@ extension MnemonicInternalLinkFactory: InternalLinkFactoryProtocol {
             action == UniversalLink.Action.create.rawValue,
             let entity = externalParams[ExternalUniversalLink.entityKey] as? String,
             entity == UniversalLink.Entity.wallet.rawValue,
-            let mnemonic = externalParams[ImportWalletUrlParsingService.Key.mnemonic] as? String else {
+            let mnemonic = externalParams[UniversalLink.WalletEntity.QueryKey.mnemonic] as? String else {
             return nil
         }
 
