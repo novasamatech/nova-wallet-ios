@@ -71,3 +71,11 @@ enum UniversalLink {
         }
     }
 }
+
+protocol UniversalLinkFactoryProtocol {
+    func createUrl(
+        for chainModel: ChainModel,
+        referendumId: ReferendumIdLocal,
+        type: GovernanceType
+    ) -> URL?
+}

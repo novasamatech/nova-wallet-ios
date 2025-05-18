@@ -96,7 +96,7 @@ struct ReferendumDetailsViewFactory {
             stringFactory: referendumDisplayStringFactory
         )
 
-        let linkFactory = UniversalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL)
+        let linkFactory = ExternalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL)
 
         return ReferendumDetailsPresenter(
             chain: chain,
