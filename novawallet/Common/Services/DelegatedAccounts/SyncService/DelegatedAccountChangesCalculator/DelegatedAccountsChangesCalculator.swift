@@ -78,14 +78,9 @@ private extension DelegatedAccountsChangesCalculator {
         localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> [ManagedMetaAccountModel] {
-        var leftRemoteDelegatedAccounts = remoteDelegatedAccounts
-        var newOrUpdatedMetaAccounts: [ManagedMetaAccountModel] = []
-
-        while !leftRemoteDelegatedAccounts.isEmpty {
-            let delegatedAccount = leftRemoteDelegatedAccounts.removeFirst()
-
+        try remoteDelegatedAccounts.reduce(localMetaAccounts) { updatedMetaAccounts, delegatedAccount in
             guard let factory = getFactoryForDelegatedAccount(delegatedAccount) else {
-                continue
+                return updatedMetaAccounts
             }
 
             let existingMetaAccount = findExistingMetaAccount(
@@ -100,20 +95,12 @@ private extension DelegatedAccountsChangesCalculator {
                 try factory.createMetaAccount(
                     for: delegatedAccount,
                     using: identities,
-                    localMetaAccounts: localMetaAccounts,
-                    remoteMetaAccounts: newOrUpdatedMetaAccounts
+                    metaAccounts: updatedMetaAccounts
                 )
             }
 
-            guard let delegatedMetaAccount else {
-                leftRemoteDelegatedAccounts.append(delegatedAccount)
-                continue
-            }
-
-            newOrUpdatedMetaAccounts.append(delegatedMetaAccount)
+            return updatedMetaAccounts + [delegatedMetaAccount].compactMap { $0 }
         }
-
-        return newOrUpdatedMetaAccounts
     }
 
     func findExistingMetaAccount(

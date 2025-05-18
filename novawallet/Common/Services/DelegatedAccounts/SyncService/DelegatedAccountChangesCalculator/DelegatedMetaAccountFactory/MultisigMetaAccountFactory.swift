@@ -19,14 +19,13 @@ private extension MultisigMetaAccountFactory {
 private extension MultisigMetaAccountFactory {
     func createMultisigType(
         discoveredMultisig: DiscoveredMultisig,
-        localMetaAccounts: [ManagedMetaAccountModel],
-        remoteMetaAccounts: [ManagedMetaAccountModel]
+        metaAccounts: [ManagedMetaAccountModel]
     ) -> MultisigMetaAccountType? {
         let signatoryAccountId = discoveredMultisig.signatory
 
-        let signatoryWallet = localMetaAccounts.first { wallet in
+        let signatoryWallet = metaAccounts.first { wallet in
             wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId
-        } ?? remoteMetaAccounts.first { $0.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId }
+        }
 
         guard let signatoryWallet else { return nil }
 
@@ -66,15 +65,13 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
         for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
-        localMetaAccounts: [ManagedMetaAccountModel],
-        remoteMetaAccounts: [ManagedMetaAccountModel]
+        metaAccounts: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel? {
         guard
             let multisig = delegatedAccount as? DiscoveredMultisig,
             let multisigAccountType = createMultisigType(
                 discoveredMultisig: multisig,
-                localMetaAccounts: localMetaAccounts,
-                remoteMetaAccounts: remoteMetaAccounts
+                metaAccounts: metaAccounts
             )
         else {
             return nil

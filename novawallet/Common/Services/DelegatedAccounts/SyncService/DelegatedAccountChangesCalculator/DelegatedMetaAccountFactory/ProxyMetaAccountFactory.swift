@@ -27,8 +27,7 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func createMetaAccount(
         for delegatedAccount: any DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
-        localMetaAccounts _: [ManagedMetaAccountModel],
-        remoteMetaAccounts _: [ManagedMetaAccountModel]
+        metaAccounts _: [ManagedMetaAccountModel]
     ) throws -> ManagedMetaAccountModel? {
         guard let proxied = delegatedAccount as? ProxiedAccount else {
             return nil
