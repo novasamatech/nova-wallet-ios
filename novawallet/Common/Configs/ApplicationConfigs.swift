@@ -7,6 +7,8 @@ protocol ApplicationConfigProtocol {
     var supportEmail: String { get }
     var websiteURL: URL { get }
     var appStoreURL: URL { get }
+    var externalUniversalLinkURL: URL { get }
+    var internalUniversalLinkURL: URL { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
@@ -322,7 +324,15 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
     }
 
-    var universalLinkURL: URL {
+    var externalUniversalLinkURL: URL {
+        #if F_RELEASE
+            URL(string: "https://app.novawallet.io")!
+        #else
+            URL(string: "https://dev.novawallet.io")!
+        #endif
+    }
+
+    var internalUniversalLinkURL: URL {
         #if F_RELEASE
             URL(string: "https://app.novawallet.io")!
         #else

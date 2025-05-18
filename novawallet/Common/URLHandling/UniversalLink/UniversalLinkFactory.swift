@@ -8,6 +8,7 @@ protocol UniversalLinkFactoryProtocol {
     ) -> URL?
 }
 
+// TODO: Rename to external universal link factory
 final class UniversalLinkFactory: UniversalLinkFactoryProtocol {
     let baseUrl: URL
 

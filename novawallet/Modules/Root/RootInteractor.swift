@@ -59,9 +59,10 @@ final class RootInteractor {
             WalletConnectUrlParsingService.WCActivityValidator(),
             WalletConnectUrlParsingService.OldWCActivityValidator()
         ]
+
         let wcHandlingService = WalletConnectUrlParsingService(validators: wcURLActivityValidators)
 
-        URLHandlingService.shared.setup(
+        let urlHandlingService = URLHandlingService(
             children: [
                 screenOpenService,
                 purchaseHandler,
@@ -69,6 +70,8 @@ final class RootInteractor {
                 keystoreImportService
             ]
         )
+
+        URLHandlingServiceFacade.setup(with: urlHandlingService)
     }
 
     private func setupPushHandlingService() {

@@ -1036,6 +1036,9 @@
 		0CE629E22AA9BE3000E250BD /* StakingSetupTypeEntityFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE629E12AA9BE3000E250BD /* StakingSetupTypeEntityFacade.swift */; };
 		0CE632A12B9035B2002E4D20 /* Web3Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A02B9035B2002E4D20 /* Web3Alert.swift */; };
 		0CE632A32B904449002E4D20 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE632A22B904449002E4D20 /* PushNotification.swift */; };
+		0CE75D342DD9DE7500D3DEE4 /* BranchLinkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE75D332DD9DE7500D3DEE4 /* BranchLinkService.swift */; };
+		0CE75D372DD9E57800D3DEE4 /* BranchDeepLinkFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE75D362DD9E57800D3DEE4 /* BranchDeepLinkFactory.swift */; };
+		0CE75D392DD9E89800D3DEE4 /* URLHandlingServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE75D382DD9E89800D3DEE4 /* URLHandlingServiceFacade.swift */; };
 		0CE840E22BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */; };
 		0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */; };
 		0CE862152D64B61C00245992 /* ObservableSubscriptionStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */; };
@@ -6865,6 +6868,9 @@
 		0CE629E12AA9BE3000E250BD /* StakingSetupTypeEntityFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSetupTypeEntityFacade.swift; sourceTree = "<group>"; };
 		0CE632A02B9035B2002E4D20 /* Web3Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3Alert.swift; sourceTree = "<group>"; };
 		0CE632A22B904449002E4D20 /* PushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
+		0CE75D332DD9DE7500D3DEE4 /* BranchLinkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchLinkService.swift; sourceTree = "<group>"; };
+		0CE75D362DD9E57800D3DEE4 /* BranchDeepLinkFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchDeepLinkFactory.swift; sourceTree = "<group>"; };
+		0CE75D382DD9E89800D3DEE4 /* URLHandlingServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLHandlingServiceFacade.swift; sourceTree = "<group>"; };
 		0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactory.swift; sourceTree = "<group>"; };
 		0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
 		0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionStateStore.swift; sourceTree = "<group>"; };
@@ -14200,6 +14206,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0CE75D352DD9E56200D3DEE4 /* Branch */ = {
+			isa = PBXGroup;
+			children = (
+				0CE75D332DD9DE7500D3DEE4 /* BranchLinkService.swift */,
+				0CE75D362DD9E57800D3DEE4 /* BranchDeepLinkFactory.swift */,
+			);
+			path = Branch;
+			sourceTree = "<group>";
+		};
 		0CE862262D659AE400245992 /* StateCall */ = {
 			isa = PBXGroup;
 			children = (
@@ -19735,6 +19750,7 @@
 		8467FCFA24E59C3E005D486C /* URLHandling */ = {
 			isa = PBXGroup;
 			children = (
+				0CE75D352DD9E56200D3DEE4 /* Branch */,
 				0C2F8C542D547059003A9DA0 /* UniversalLink */,
 				774A98122B0D3638009146CA /* Parsing */,
 				8467FCFB24E5C3BD005D486C /* URLHandlingService.swift */,
@@ -19742,6 +19758,7 @@
 				0C21D77B2AB42A3500EB2DBD /* ScreenOpenService.swift */,
 				0C21D77D2AB42D4100EB2DBD /* UrlHandlingAction.swift */,
 				0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */,
+				0CE75D382DD9E89800D3DEE4 /* URLHandlingServiceFacade.swift */,
 			);
 			path = URLHandling;
 			sourceTree = "<group>";
@@ -28081,6 +28098,7 @@
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
 				0C7C886E2A962B0D00DD96A1 /* StackAddressCell.swift in Sources */,
 				0C8FDBB22CAFDC6000775D7F /* VoteCardSummaryProcessing.swift in Sources */,
+				0CE75D342DD9DE7500D3DEE4 /* BranchLinkService.swift in Sources */,
 				843612C92790109100DC739E /* SigningWrapperFactory.swift in Sources */,
 				88FF5C7F29C8364500D1CB5D /* Caip2+ParseError.swift in Sources */,
 				8473D40D2657E9DC00B394B2 /* MultiSigner.swift in Sources */,
@@ -30627,6 +30645,7 @@
 				8499FEC627BEC68000712589 /* UniquesInstanceMetadata.swift in Sources */,
 				77AAD2992B1731D1007AD86F /* ReferendumsInitState.swift in Sources */,
 				840EAE6729FA8F0000453C7E /* WalletConnectDecision.swift in Sources */,
+				0CE75D372DD9E57800D3DEE4 /* BranchDeepLinkFactory.swift in Sources */,
 				84EBFCE9285E7C100006327E /* XcmInstruction.swift in Sources */,
 				2AFF4BA2274D1E5C00D790B4 /* UsernameSetupViewLayout.swift in Sources */,
 				0C0F6E472D47559100943A7C /* MythosClaimRewardsPresenting.swift in Sources */,
@@ -33003,6 +33022,7 @@
 				0CA8AD642CE08FEE00ED9746 /* SubstrateExtrinsicEvents.swift in Sources */,
 				0CA8AD652CE08FEE00ED9746 /* ExtrinsicSubmissionMonitor.swift in Sources */,
 				0CA8AD662CE08FEE00ED9746 /* ExtrinsicEventsMatching.swift in Sources */,
+				0CE75D392DD9E89800D3DEE4 /* URLHandlingServiceFacade.swift in Sources */,
 				0CA8AD672CE08FEE00ED9746 /* SubstrateExtrinsicStatus.swift in Sources */,
 				0566845B5E1D65E3632C54CE /* NotificationWalletListViewLayout.swift in Sources */,
 				C802F43E2481C2A091F86CFF /* NotificationWalletListViewFactory.swift in Sources */,

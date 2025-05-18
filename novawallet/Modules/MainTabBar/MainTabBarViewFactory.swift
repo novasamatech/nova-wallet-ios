@@ -8,7 +8,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func createView() -> MainTabBarViewProtocol? {
         let localizationManager = LocalizationManager.shared
-        let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingService.shared)
+        let serviceCoordinator = ServiceCoordinator.createDefault(for: URLHandlingServiceFacade.shared)
 
         guard
             let interactor = createInteractor(serviceCoordinator: serviceCoordinator),
@@ -42,10 +42,11 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
 private extension MainTabBarViewFactory {
     static func createInteractor(serviceCoordinator: ServiceCoordinatorProtocol) -> MainTabBarInteractor? {
+        let urlServiceFacade: URLHandlingServiceFacadeProtocol = URLHandlingServiceFacade.shared
+
         guard
-            let keystoreImportService: KeystoreImportServiceProtocol = URLHandlingService.shared
-            .findService(),
-            let screenOpenService: ScreenOpenServiceProtocol = URLHandlingService.shared.findService(),
+            let keystoreImportService: KeystoreImportServiceProtocol = urlServiceFacade.findInternalService(),
+            let screenOpenService: ScreenOpenServiceProtocol = urlServiceFacade.findInternalService(),
             let pushScreenOpenService = PushNotificationHandlingService.shared.service
         else {
             Logger.shared.error("Can't find required keystore import service")
