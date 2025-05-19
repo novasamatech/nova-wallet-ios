@@ -7,7 +7,7 @@ extension RoundedView.Style {
             shadow: .init(
                 shadowOpacity: 1,
                 shadowColor: R.color.colorChipBackgroundShadow()!,
-                shadowRadius: 6,
+                shadowRadius: 8,
                 shadowOffset: CGSize(width: 0, height: 2)
             ),
             strokeWidth: 0,
@@ -15,7 +15,7 @@ extension RoundedView.Style {
             highlightedStrokeColor: nil,
             fillColor: R.color.colorPolkadotPayBackground()!,
             highlightedFillColor: R.color.colorPolkadotPayBackground()!,
-            rounding: .init(radius: 8, corners: .allCorners)
+            rounding: .init(radius: 7, corners: .allCorners)
         )
     }
 }
