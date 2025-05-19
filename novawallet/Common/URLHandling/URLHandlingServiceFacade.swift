@@ -54,9 +54,11 @@ final class URLHandlingServiceFacade {
 
 private extension URLHandlingServiceFacade {
     func setupBranchIfNeeded(for launchOptions: AppLaunchOptions?) {
-        guard branchLinkService.isActive else {
+        guard !branchLinkService.isActive else {
             return
         }
+
+        logger.debug("Setup branch service")
 
         branchLinkService.setup(with: launchOptions)
     }
@@ -67,6 +69,7 @@ extension URLHandlingServiceFacade: URLHandlingServiceFacadeProtocol {
         if settingsManager.isAppFirstLaunch {
             setupBranchIfNeeded(for: launchOptions)
         } else {
+            logger.debug("No need to init branch for now")
             delayedLaunchOptions = launchOptions
         }
     }

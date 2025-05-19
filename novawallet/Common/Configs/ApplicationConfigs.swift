@@ -333,10 +333,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var externalUniversalLinkURL: URL {
+        // TODO: Change production one
         #if F_RELEASE
-            URL(string: "https://app.novawallet.io")!
+            URL(string: "https://wdeqe.app.link")!
         #else
-            URL(string: "https://dev.novawallet.io")!
+            URL(string: "https://wdeqe.test-app.link")!
         #endif
     }
 
@@ -349,6 +350,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var deepLinkScheme: String {
+        // TODO: Consider different deep links
         #if F_RELEASE
             "novawallet"
         #else

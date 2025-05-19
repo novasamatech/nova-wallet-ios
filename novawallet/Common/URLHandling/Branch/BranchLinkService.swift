@@ -21,6 +21,14 @@ final class BranchLinkService {
 
 private extension BranchLinkService {
     func setupSdk(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+        #if DEBUG
+            Branch.enableLogging()
+        #endif
+
+        #if F_DEV
+            Branch.setUseTestBranchKey(true)
+        #endif
+
         Branch.getInstance().initSession(
             launchOptions: launchOptions
         ) { [weak self] (params: ExternalUniversalLink.Params?, _: Error?) in
@@ -38,6 +46,8 @@ private extension BranchLinkService {
                 logger.debug("No branch link to handle")
                 return
             }
+
+            logger.debug("Handling branch link")
 
             handleDeepLink(params: branchParams)
         }
