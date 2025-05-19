@@ -5,13 +5,13 @@ final class PayShopAvailabilityContentView: UIView {
     var skeletonView: SkrullableView?
     private var isLoading: Bool = false
 
-    let logoView: GradientIconDetailsView = .create { view in
-        view.bind(gradient: .polkadotPay)
-        view.backgroundView.cornerRadius = 8
-        view.contentInsets = UIEdgeInsets(verticalInset: 4, horizontalInset: 6)
-        view.titleView.spacing = 6
-        view.titleView.imageView.image = R.image.iconPolkadot()
-        view.titleView.detailsLabel.apply(style: .semiboldCaps1Primary)
+    let logoView: GenericBackgroundView<IconDetailsView> = .create { view in
+        view.wrappedView.mode = .iconDetails
+        view.apply(style: .polkadotPay)
+        view.contentInsets = UIEdgeInsets(verticalInset: 4.5, horizontalInset: 6)
+        view.wrappedView.spacing = 6
+        view.wrappedView.imageView.image = R.image.iconPolkadot()?.tinted(with: R.color.colorPolkadotPayText()!)
+        view.wrappedView.detailsLabel.apply(style: .polkadotPay)
     }
 
     let cashbackLabel: UILabel = .create { label in
@@ -71,7 +71,7 @@ final class PayShopAvailabilityContentView: UIView {
     }
 
     private func applyLocalization() {
-        logoView.titleView.detailsLabel.text = R.string.localizable.commonPolkadotPay(
+        logoView.wrappedView.detailsLabel.text = R.string.localizable.commonPolkadotPay(
             preferredLanguages: locale?.rLanguages
         ).uppercased()
 

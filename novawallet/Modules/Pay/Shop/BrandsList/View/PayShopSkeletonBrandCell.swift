@@ -24,12 +24,13 @@ final class PayShopSkeletonBrandCell: BlurredCollectionViewCell<PayShopSkeletonB
 
 final class PayShopSkeletonBrandContentView: UIView {
     enum Constants {
-        static let iconSize: CGFloat = 36
-        static let iconDetailsSpacing: CGFloat = 12
-        static let horizontalSpacing: CGFloat = 8
-        static let cashbackSpacing: CGFloat = 0
-        static let indicatorSpacing: CGFloat = 4
-        static let indicatorWidth: CGFloat = 24
+        static var iconSize: CGFloat {
+            PayShopBrandContentView.Constants.iconSize
+        }
+
+        static var iconDetailsSpacing: CGFloat {
+            PayShopBrandContentView.Constants.iconDetailsSpacing
+        }
     }
 
     var skeletonView: SkrullableView?
