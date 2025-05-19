@@ -66,7 +66,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         for delegatedAccount: DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
         metaAccounts: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel? {
+    ) throws -> ManagedMetaAccountModel {
         guard
             let multisig = delegatedAccount as? DiscoveredMultisig,
             let multisigAccountType = createMultisigType(
@@ -74,7 +74,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
                 metaAccounts: metaAccounts
             )
         else {
-            return nil
+            throw DelegatedAccountError.invalidAccountType
         }
 
         let name = try identities[multisig.accountId]?.displayName

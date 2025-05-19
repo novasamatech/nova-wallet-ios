@@ -28,9 +28,9 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         for delegatedAccount: any DiscoveredDelegatedAccountProtocol,
         using identities: [AccountId: AccountIdentity],
         metaAccounts _: [ManagedMetaAccountModel]
-    ) throws -> ManagedMetaAccountModel? {
+    ) throws -> ManagedMetaAccountModel {
         guard let proxied = delegatedAccount as? ProxiedAccount else {
-            return nil
+            throw DelegatedAccountError.invalidAccountType
         }
 
         let cryptoType: MultiassetCryptoType = chainModel.isEthereumBased ? .ethereumEcdsa : .sr25519
