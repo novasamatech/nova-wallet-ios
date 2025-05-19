@@ -22,7 +22,8 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         )
 
         let interactor = RootInteractor(
-            settings: SelectedWalletSettings.shared,
+            walletSettings: SelectedWalletSettings.shared,
+            settings: settings,
             keystore: keychain,
             applicationConfig: ApplicationConfig.shared,
             securityLayerInteractor: SecurityLayerService.shared.interactor,

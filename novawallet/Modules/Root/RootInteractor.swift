@@ -6,7 +6,8 @@ import Operation_iOS
 final class RootInteractor {
     weak var presenter: RootInteractorOutputProtocol?
 
-    let settings: SelectedWalletSettings
+    let walletSettings: SelectedWalletSettings
+    let settings: SettingsManagerProtocol
     let keystore: KeystoreProtocol
     let applicationConfig: ApplicationConfigProtocol
     let chainRegistryClosure: ChainRegistryLazyClosure
@@ -16,7 +17,8 @@ final class RootInteractor {
     let logger: LoggerProtocol?
 
     init(
-        settings: SelectedWalletSettings,
+        walletSettings: SelectedWalletSettings,
+        settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         applicationConfig: ApplicationConfigProtocol,
         securityLayerInteractor: SecurityLayerInteractorInputProtocol,
@@ -25,6 +27,7 @@ final class RootInteractor {
         migrators: [Migrating],
         logger: LoggerProtocol? = nil
     ) {
+        self.walletSettings = walletSettings
         self.settings = settings
         self.keystore = keystore
         self.applicationConfig = applicationConfig
@@ -40,6 +43,7 @@ final class RootInteractor {
         let screenOpenURLActivityValidators: [URLActivityValidator] = [ScreenOpenService.ActivityValidator()]
         let screenOpenService = ScreenOpenService(
             parsingFactory: parsingFactory,
+            pendingLinkStore: URLHandlingPersistentStore(settings: settings),
             logger: Logger.shared,
             validators: screenOpenURLActivityValidators
         )
@@ -106,7 +110,7 @@ final class RootInteractor {
 extension RootInteractor: RootInteractorInputProtocol {
     func decideModuleSynchroniously() {
         do {
-            if !settings.hasValue {
+            if !walletSettings.hasValue {
                 try keystore.deleteKeyIfExists(for: KeystoreTag.pincode.rawValue)
 
                 presenter?.didDecideOnboarding()
@@ -134,7 +138,7 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupPushHandlingService()
         runMigrators()
 
-        settings.setup(runningCompletionIn: .main) { result in
+        walletSettings.setup(runningCompletionIn: .main) { result in
             switch result {
             case let .success(maybeMetaAccount):
                 if let metaAccount = maybeMetaAccount {
