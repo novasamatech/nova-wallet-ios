@@ -53,14 +53,12 @@ private extension DelegatedAccountsChangesCalculator {
         localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
-        let updatedMetaAccounts = try remoteDelegatedAccounts.compactMap { remoteDelegatedAccount in
-            try processRemoteDelegatedAccount(
-                remoteDelegatedAccount,
-                localDelegatedAccounts: localDelegatedAccounts,
-                localMetaAccounts: localMetaAccounts,
-                identities: identities
-            )
-        }
+        let updatedMetaAccounts = try processRemoteDelegatedAccounts(
+            remoteDelegatedAccounts,
+            localDelegatedAccounts: localDelegatedAccounts,
+            localMetaAccounts: localMetaAccounts,
+            identities: identities
+        )
 
         let revokedAccounts = findRevokedAccounts(
             for: delegatorAccountId,
@@ -74,30 +72,34 @@ private extension DelegatedAccountsChangesCalculator {
         )
     }
 
-    func processRemoteDelegatedAccount(
-        _ delegatedAccount: DiscoveredDelegatedAccountProtocol,
+    func processRemoteDelegatedAccounts(
+        _ remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         localMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
-    ) throws -> ManagedMetaAccountModel? {
-        guard let factory = getFactoryForDelegatedAccount(delegatedAccount) else {
-            return nil
-        }
+    ) throws -> [ManagedMetaAccountModel] {
+        try remoteDelegatedAccounts.reduce(localMetaAccounts) { updatedMetaAccounts, delegatedAccount in
+            guard let factory = getFactoryForDelegatedAccount(delegatedAccount) else {
+                return updatedMetaAccounts
+            }
 
-        let existingMetaAccount = findExistingMetaAccount(
-            for: delegatedAccount,
-            in: localDelegatedAccounts,
-            using: factory
-        )
-
-        return if let existingMetaAccount {
-            factory.renew(existingMetaAccount)
-        } else {
-            try factory.createMetaAccount(
+            let existingMetaAccount = findExistingMetaAccount(
                 for: delegatedAccount,
-                using: identities,
-                localMetaAccounts: localMetaAccounts
+                in: localDelegatedAccounts,
+                using: factory
             )
+
+            let delegatedMetaAccount = if let existingMetaAccount {
+                factory.renew(existingMetaAccount)
+            } else {
+                try factory.createMetaAccount(
+                    for: delegatedAccount,
+                    using: identities,
+                    metaAccounts: updatedMetaAccounts
+                )
+            }
+
+            return updatedMetaAccounts + [delegatedMetaAccount].compactMap { $0 }
         }
     }
 
