@@ -1,20 +1,20 @@
 import Foundation
 import SubstrateSdk
 
-final class ExtrinsicProxySenderResolver {
+final class ExtrinsicDelegateSenderResolver {
     let wallets: [MetaAccountModel]
-    let proxiedAccount: ChainAccountResponse
-    let proxyAccountId: AccountId
+    let delegatedAccount: ChainAccountResponse
+    let delegateAccountId: AccountId
     let chain: ChainModel
 
     init(
-        proxiedAccount: ChainAccountResponse,
-        proxyAccountId: AccountId,
+        delegatedAccount: ChainAccountResponse,
+        delegateAccountId: AccountId,
         wallets: [MetaAccountModel],
         chain: ChainModel
     ) {
-        self.proxiedAccount = proxiedAccount
-        self.proxyAccountId = proxyAccountId
+        self.delegatedAccount = delegatedAccount
+        self.delegateAccountId = delegateAccountId
         self.wallets = wallets
         self.chain = chain
     }
@@ -31,9 +31,9 @@ final class ExtrinsicProxySenderResolver {
     }
 
     private func createResult(
-        from solution: ProxyResolution.PathFinderResult,
+        from solution: DelegationResolution.PathFinderResult,
         builders: [ExtrinsicBuilderProtocol],
-        resolutionFailures: [ExtrinsicSenderResolution.ResolutionProxyFailure],
+        resolutionFailures: [ExtrinsicSenderResolution.ResolutionDelegateFailure],
         context: RuntimeJsonContext
     ) throws -> ExtrinsicSenderBuilderResolution {
         let newBuilders = try builders.map { builder in
@@ -41,23 +41,25 @@ final class ExtrinsicProxySenderResolver {
                 let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
                 let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
-                guard let proxyPath = solution.callToPath[callPath] else {
+                guard let delegatePath = solution.callToPath[callPath] else {
                     return callJson
                 }
 
-                let (resultCall, _) = try proxyPath.components.reduce(
-                    (callJson, proxiedAccount.accountId)
+                let (resultCall, _) = try delegatePath.components.reduce(
+                    (callJson, delegatedAccount.accountId)
                 ) { callAndProxied, component in
                     let call = callAndProxied.0
-                    let proxiedAccountId = callAndProxied.1
-
-                    let newCall = try Proxy.ProxyCall(
-                        real: .accoundId(proxiedAccountId),
-                        forceProxyType: component.proxyType,
-                        call: call
+                    let delegatedAccountId = callAndProxied.1
+                    let delegationKey = DelegationKey(
+                        delegate: component.account.chainAccount.accountId,
+                        delegated: delegatedAccountId
                     )
-                    .runtimeCall()
-                    .toScaleCompatibleJSON(with: context.toRawContext())
+                    
+                    let newCall = try component.delegationValue.wrapCall(
+                        call,
+                        delegation: delegationKey,
+                        context: context
+                    )
 
                     return (newCall, component.account.chainAccount.accountId)
                 }
@@ -66,25 +68,28 @@ final class ExtrinsicProxySenderResolver {
             }
         }
 
-        let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
-            proxyAccount: solution.proxy,
-            proxiedAccount: proxiedAccount,
+        let resolvedDelegate = ExtrinsicSenderResolution.ResolvedDelegate(
+            delegateAccount: solution.delegate,
+            delegatedAccount: delegatedAccount,
             paths: solution.callToPath,
             allWallets: wallets,
             chain: chain,
             failures: resolutionFailures
         )
 
-        return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: newBuilders)
+        return ExtrinsicSenderBuilderResolution(
+            sender: .delegate(resolvedDelegate),
+            builders: newBuilders
+        )
     }
 }
 
-extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
+extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
     func resolveSender(
         wrapping builders: [ExtrinsicBuilderProtocol],
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> ExtrinsicSenderBuilderResolution {
-        let graph = ProxyResolution.Graph.build(from: wallets, chain: chain)
+        let graph = DelegationResolution.Graph.build(from: wallets, chain: chain)
 
         let context = codingFactory.createRuntimeJsonContext()
 
@@ -92,9 +97,9 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
             .flatMap { $0.getCalls() }
             .map { try $0.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext()) }
 
-        let pathMerger = ProxyResolution.PathMerger()
+        let pathMerger = DelegationResolution.PathMerger()
 
-        var resolutionFailures: [ExtrinsicSenderResolution.ResolutionProxyFailure] = []
+        var resolutionFailures: [ExtrinsicSenderResolution.ResolutionDelegateFailure] = []
 
         allCalls.forEach { call in
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
@@ -102,25 +107,24 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
                 return
             }
 
-            let proxyTypes = ProxyCallFilter.getProxyTypes(for: callPath)
-            let paths = graph.resolveProxies(
-                for: proxiedAccount.accountId,
-                possibleProxyTypes: proxyTypes
+            let paths = graph.resolveDelegations(
+                for: delegatedAccount.accountId,
+                callPath: callPath
             ).filter { path in
-                path.components.first?.proxyAccountId == proxyAccountId
+                path.components.first?.delegateId == delegateAccountId
             }
 
             do {
                 try pathMerger.combine(callPath: callPath, paths: paths)
             } catch {
-                resolutionFailures.append(.init(callPath: callPath, possibleTypes: proxyTypes, paths: paths))
+                resolutionFailures.append(.init(callPath: callPath, paths: paths))
             }
         }
 
         let allAccounts = buildAllAccounts()
 
         if
-            let solution = try? ProxyResolution.PathFinder(
+            let solution = try? DelegationResolution.PathFinder(
                 accounts: allAccounts
             ).find(from: pathMerger.availablePaths) {
             return try createResult(
@@ -130,20 +134,23 @@ extension ExtrinsicProxySenderResolver: ExtrinsicSenderResolving {
                 context: context
             )
         } else {
-            // if proxy resolution fails we still want to calculate fee and notify about failures
+            // if delegate resolution fails we still want to calculate fee and notify about failures
 
-            let resolvedProxy = ExtrinsicSenderResolution.ResolvedProxy(
-                proxyAccount: nil,
-                proxiedAccount: proxiedAccount,
+            let resolvedDelegate = ExtrinsicSenderResolution.ResolvedDelegate(
+                delegateAccount: nil,
+                delegatedAccount: delegatedAccount,
                 paths: nil,
                 allWallets: wallets,
                 chain: chain,
                 failures: resolutionFailures
             )
 
-            return ExtrinsicSenderBuilderResolution(sender: .proxy(resolvedProxy), builders: builders)
+            return ExtrinsicSenderBuilderResolution(
+                sender: .delegate(resolvedDelegate),
+                builders: builders
+            )
         }
     }
 }
 
-extension ExtrinsicProxySenderResolver {}
+extension ExtrinsicDelegateSenderResolver {}

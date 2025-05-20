@@ -61,6 +61,10 @@ extension MetaChainAccountResponse {
 }
 
 extension ChainAccountResponse {
+    var delegated: Bool {
+        type == .proxied || type == .multisig
+    }
+    
     var chainFormat: ChainFormat {
         isEthereumBased
             ? .ethereum

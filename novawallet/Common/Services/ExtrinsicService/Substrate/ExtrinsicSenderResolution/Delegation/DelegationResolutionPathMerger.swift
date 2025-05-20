@@ -1,33 +1,36 @@
 import Foundation
 
-extension ProxyResolution {
+extension DelegationResolution {
     enum PathMergerError: Error {
         case empthPaths(CallCodingPath)
         case disjointPaths(CallCodingPath)
     }
 
     final class PathMerger {
-        private var availableProxies: Set<AccountId> = []
-        private(set) var availablePaths: [CallCodingPath: ProxyResolution.GraphResult] = [:]
+        private var availableDelegateAccounts: Set<AccountId> = []
+        private(set) var availablePaths: [CallCodingPath: DelegationResolution.GraphResult] = [:]
 
         func hasPaths(for call: CallCodingPath) -> Bool {
             availablePaths[call] != nil
         }
 
-        func combine(callPath: CallCodingPath, paths: ProxyResolution.GraphResult) throws {
+        func combine(
+            callPath: CallCodingPath,
+            paths: DelegationResolution.GraphResult
+        ) throws {
             guard !paths.isEmpty else {
                 throw PathMergerError.empthPaths(callPath)
             }
 
-            let newProxies = Set(paths.compactMap(\.accountIds.last))
+            let newDelegateAccounts = Set(paths.compactMap(\.accountIds.last))
 
-            if !availableProxies.isEmpty {
-                availableProxies = availableProxies.intersection(newProxies)
+            if !availableDelegateAccounts.isEmpty {
+                availableDelegateAccounts = availableDelegateAccounts.intersection(newDelegateAccounts)
             } else {
-                availableProxies = newProxies
+                availableDelegateAccounts = newDelegateAccounts
             }
 
-            guard !availableProxies.isEmpty else {
+            guard !availableDelegateAccounts.isEmpty else {
                 throw PathMergerError.disjointPaths(callPath)
             }
 
@@ -35,10 +38,11 @@ extension ProxyResolution {
 
             availablePaths = availablePaths.mapValues { paths in
                 paths.filter { path in
-                    if let proxy = path.components.last?.proxyAccountId, availableProxies.contains(proxy) {
-                        return true
+                    if let delegateAccount = path.components.last?.delegateId,
+                       availableDelegateAccounts.contains(delegateAccount) {
+                        true
                     } else {
-                        return false
+                        false
                     }
                 }
             }

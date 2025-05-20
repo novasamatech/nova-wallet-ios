@@ -45,9 +45,9 @@ final class ExtrinsicSenderResolutionFactory {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
-            return ExtrinsicProxySenderResolver(
-                proxiedAccount: proxiedAccount,
-                proxyAccountId: proxy.accountId,
+            return ExtrinsicDelegateSenderResolver(
+                delegatedAccount: proxiedAccount,
+                delegateAccountId: proxy.accountId,
                 wallets: wallets,
                 chain: chain
             )
