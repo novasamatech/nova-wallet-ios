@@ -183,7 +183,7 @@ extension DelegationResolution {
 extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
         let proxyType: Proxy.ProxyType
-        
+
         func wrapCall(
             _ call: JSON,
             delegation: DelegationKey,
@@ -198,19 +198,19 @@ extension DelegationResolution.PathFinder {
             .toScaleCompatibleJSON(with: context.toRawContext())
         }
     }
-    
+
     struct MultisigDelegationValue: AccountDelegationPathValue {
         let threshold: UInt16
         let signatories: [AccountId]
-        
+
         func wrapCall(
             _ call: JSON,
-            delegation: DelegationKey,
-            context: RuntimeJsonContext
+            delegation _: DelegationKey,
+            context _: RuntimeJsonContext
         ) throws -> JSON {
             // TODO: - Implement call wrapping
-            
-            return call
+
+            call
         }
     }
 }

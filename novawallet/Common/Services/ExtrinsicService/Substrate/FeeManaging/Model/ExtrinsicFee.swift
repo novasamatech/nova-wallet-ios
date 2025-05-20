@@ -3,7 +3,7 @@ import BigInt
 
 struct ExtrinsicFeePayer: Equatable {
     enum Reason: Equatable {
-        case proxy
+        case delegate
     }
 
     let accountId: AccountId?
@@ -16,9 +16,9 @@ struct ExtrinsicFeePayer: Equatable {
 
     init?(senderResolution: ExtrinsicSenderResolution) {
         switch senderResolution {
-        case let .proxy(resolvedProxy):
-            accountId = resolvedProxy.proxyAccount?.chainAccount.accountId
-            reason = .proxy
+        case let .delegate(resolvedDelegate):
+            accountId = resolvedDelegate.delegateAccount?.chainAccount.accountId
+            reason = .delegate
         case .current:
             return nil
         }

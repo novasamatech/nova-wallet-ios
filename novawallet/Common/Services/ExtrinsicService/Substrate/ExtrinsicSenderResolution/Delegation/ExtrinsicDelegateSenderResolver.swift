@@ -54,7 +54,7 @@ final class ExtrinsicDelegateSenderResolver {
                         delegate: component.account.chainAccount.accountId,
                         delegated: delegatedAccountId
                     )
-                    
+
                     let newCall = try component.delegationValue.wrapCall(
                         call,
                         delegation: delegationKey,

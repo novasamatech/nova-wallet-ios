@@ -57,10 +57,10 @@ final class ProxySigningWrapper {
     private func sign(
         _ originalData: Data,
         proxiedId: MetaAccountModel.Id,
-        proxy: ExtrinsicSenderResolution.ResolvedProxy,
+        proxy: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
-        if proxy.failures.isEmpty, proxy.proxyAccount != nil {
+        if proxy.failures.isEmpty, proxy.delegateAccount != nil {
             return try signWithUiFlow { completionClosure in
                 self.uiPresenter.presentProxyFlow(
                     for: originalData,
@@ -87,11 +87,11 @@ final class ProxySigningWrapper {
         substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
         switch sender {
-        case let .proxy(resolvedProxy):
+        case let .delegate(resolvedDelegate):
             return try sign(
                 originalData,
                 proxiedId: metaId,
-                proxy: resolvedProxy,
+                proxy: resolvedDelegate,
                 substrateContext: substrateContext
             )
         case .current:

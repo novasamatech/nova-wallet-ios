@@ -278,7 +278,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         locale: Locale
     ) -> WalletsListViewModel? {
         guard
-            let multisigAccountType = wallet.info.multisigAccount(),
+            let multisigAccountType = wallet.info.multisigAccount,
             let multisig = multisigAccountType.multisig,
             let signatoryWallet = wallets.first(where: { $0.info.isSignatory(for: multisigAccountType) })
         else { return nil }

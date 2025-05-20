@@ -27,9 +27,10 @@ final class ExtrinsicSenderResolutionFactory {
         return CompoundOperationWrapper.createWithResult(resolver)
     }
 
-    private func createProxyResolver(
+    private func createDelegateResolver(
         for proxiedAccount: ChainAccountResponse,
-        chain: ChainModel
+        chain: ChainModel,
+        delegateKeyPath: KeyPath<MetaAccountModel, AccountId?>
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         let repository = AccountRepositoryFactory(storageFacade: userStorageFacade).createMetaAccountRepository(
             for: nil,
@@ -41,13 +42,16 @@ final class ExtrinsicSenderResolutionFactory {
         let mappingOperation = ClosureOperation<ExtrinsicSenderResolving> {
             let wallets = try fetchOperation.extractNoCancellableResultData()
 
-            guard let proxy = wallets.first(where: { $0.metaId == proxiedAccount.metaId })?.proxy() else {
+            guard let delegateAccountId = wallets.first(
+                where: { $0.metaId == proxiedAccount.metaId }
+            )?[keyPath: delegateKeyPath]
+            else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
             return ExtrinsicDelegateSenderResolver(
                 delegatedAccount: proxiedAccount,
-                delegateAccountId: proxy.accountId,
+                delegateAccountId: delegateAccountId,
                 wallets: wallets,
                 chain: chain
             )
@@ -63,10 +67,20 @@ extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProt
     func createWrapper() -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         switch chainAccount.type {
         // TODO: Add multisig resolver
-        case .secrets, .paritySigner, .polkadotVault, .ledger, .watchOnly, .genericLedger, .multisig:
-            return createCurrentResolver(for: chainAccount)
+        case .secrets, .paritySigner, .polkadotVault, .ledger, .watchOnly, .genericLedger:
+            createCurrentResolver(for: chainAccount)
         case .proxied:
-            return createProxyResolver(for: chainAccount, chain: chain)
+            createDelegateResolver(
+                for: chainAccount,
+                chain: chain,
+                delegateKeyPath: \.proxy?.accountId
+            )
+        case .multisig:
+            createDelegateResolver(
+                for: chainAccount,
+                chain: chain,
+                delegateKeyPath: \.multisigAccount?.multisig?.accountId
+            )
         }
     }
 }

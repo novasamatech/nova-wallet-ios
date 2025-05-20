@@ -1,6 +1,26 @@
 import Foundation
 
 extension MetaAccountModel {
+    var multisigAccount: MultisigAccountType? {
+        if let multisig {
+            .universal(multisig: multisig)
+        } else if let chainAccount = chainAccounts.first(where: { $0.multisig != nil }),
+                  chainAccount.multisig != nil {
+            .singleChain(chainAccount: chainAccount)
+        } else {
+            nil
+        }
+    }
+
+    var proxy: DelegatedAccount.ProxyAccountModel? {
+        guard type == .proxied,
+              let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
+            return nil
+        }
+
+        return chainAccount.proxy
+    }
+
     func isProxied(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
         type == .proxied && has(accountId: accountId, chainId: chainId)
     }
@@ -26,26 +46,6 @@ extension MetaAccountModel {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
 
-    func multisigAccount() -> MultisigAccountType? {
-        if let multisig {
-            .universal(multisig: multisig)
-        } else if let chainAccount = chainAccounts.first(where: { $0.multisig != nil }),
-                  let multisig = chainAccount.multisig {
-            .singleChain(chainAccount: chainAccount)
-        } else {
-            nil
-        }
-    }
-
-    func proxy() -> DelegatedAccount.ProxyAccountModel? {
-        guard type == .proxied,
-              let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
-            return nil
-        }
-
-        return chainAccount.proxy
-    }
-
     func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
         let request = chainAsset.chain.accountRequest()
         return fetch(for: request)?.toAddress()
@@ -57,7 +57,7 @@ extension MetaAccountModel {
             var multisigModel: DelegatedAccount.MultisigAccountModel?
             var chainId: ChainModel.Id?
 
-            switch multisigAccount() {
+            switch multisigAccount {
             case let .universal(multisig):
                 multisigModel = multisig
             case let .singleChain(chainAccount):
@@ -77,7 +77,7 @@ extension MetaAccountModel {
             )
         case .proxied:
             guard
-                let proxyAccountId = proxy()?.accountId,
+                let proxyAccountId = proxy?.accountId,
                 let proxiedAccount = chainAccounts.first(where: { $0.proxy?.accountId == proxyAccountId }),
                 let proxy = proxiedAccount.proxy
             else { return nil }
@@ -94,9 +94,9 @@ extension MetaAccountModel {
     }
 
     func delegatedAccountStatus() -> DelegatedAccount.Status? {
-        if let proxyAccount = proxy() {
+        if let proxyAccount = proxy {
             proxyAccount.status
-        } else if let multisigAccount = multisigAccount()?.multisig {
+        } else if let multisigAccount = multisigAccount?.multisig {
             multisigAccount.status
         } else {
             nil

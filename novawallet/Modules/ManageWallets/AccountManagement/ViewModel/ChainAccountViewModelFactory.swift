@@ -222,7 +222,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         let iconViewModel = optIcon.map {
             DrawableIconViewModel(icon: $0)
         }
-        let type = proxiedWallet.proxy()?.type.title(locale: locale) ?? ""
+        let type = proxiedWallet.proxy?.type.title(locale: locale) ?? ""
 
         return .init(
             name: proxyWallet.name,

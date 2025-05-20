@@ -5,7 +5,7 @@ import Foundation_iOS
 struct ProxySignValidationViewFactory {
     static func createView(
         from viewController: UIViewController,
-        resolvedProxy: ExtrinsicSenderResolution.ResolvedProxy,
+        resolvedProxy: ExtrinsicSenderResolution.ResolvedDelegate,
         calls: [JSON],
         completionClosure: @escaping ProxySignValidationCompletion
     ) -> ProxySignValidationPresenterProtocol? {
@@ -35,7 +35,7 @@ struct ProxySignValidationViewFactory {
             view: view,
             interactor: interactor,
             wireframe: wireframe,
-            proxyName: resolvedProxy.proxyAccount?.chainAccount.name ?? "",
+            proxyName: resolvedProxy.delegateAccount?.chainAccount.name ?? "",
             dataValidationFactory: dataValidatorFactory,
             chainAsset: utilityChainAsset,
             completionClosure: completionClosure,
@@ -49,14 +49,14 @@ struct ProxySignValidationViewFactory {
     }
 
     static func createInteractor(
-        resolvedProxy: ExtrinsicSenderResolution.ResolvedProxy,
+        resolvedProxy: ExtrinsicSenderResolution.ResolvedDelegate,
         calls: [JSON]
     ) -> ProxySignValidationInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = resolvedProxy.chain
 
         guard
-            let proxyAccount = resolvedProxy.proxyAccount,
+            let proxyAccount = resolvedProxy.delegateAccount,
             let chainAsset = chain.utilityChainAsset(),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
