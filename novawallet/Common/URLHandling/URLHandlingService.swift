@@ -1,17 +1,11 @@
 import Foundation
 
 protocol URLHandlingServiceProtocol: AnyObject {
-    var validators: [URLActivityValidator] { get }
-
     func handle(url: URL) -> Bool
 }
 
 protocol URLActivityValidator {
     func validate(_ url: URL) -> Bool
-}
-
-extension URLHandlingServiceProtocol {
-    var validators: [URLActivityValidator] { [] }
 }
 
 protocol URLServiceHandlingFinding: URLHandlingServiceProtocol {
