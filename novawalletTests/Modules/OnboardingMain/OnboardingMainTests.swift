@@ -130,9 +130,16 @@ class OnboardingMainTests: XCTestCase {
     private func setupPresenterForWireframe(_ wireframe: MockOnboardingMainWireframeProtocol,
                                             view: MockOnboardingMainViewProtocol,
                                             legal: LegalData,
-                                            keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared))
+                                            keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared),
+                                            migrationService: WalletMigrationServiceProtocol = WalletMigrationService(logger: Logger.shared),
+                                            eventCenter: EventCenterProtocol = EventCenter.shared
+    )
         -> OnboardingMainPresenter {
-        let interactor = OnboardingMainInteractor(keystoreImportService: keystoreImportService)
+        let interactor = OnboardingMainInteractor(
+            keystoreImportService: keystoreImportService,
+            walletMigrationService: migrationService,
+            eventCenter: eventCenter
+        )
 
         let presenter = OnboardingMainPresenter(
             interactor: interactor,
@@ -154,6 +161,7 @@ class OnboardingMainTests: XCTestCase {
             when(stub).showSignup(from: any()).thenDoNothing()
             when(stub).showWeb(url: any(), from: any(), style: any()).thenDoNothing()
             when(stub).showAccountSecretImport(from: any(), source: any()).thenDoNothing()
+            when(stub).showWalletMigration(from: any(), message: any()).thenDoNothing()
         }
 
         return presenter
