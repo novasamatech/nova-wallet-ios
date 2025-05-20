@@ -18,4 +18,10 @@ extension WalletMigrateAcceptPresenter: WalletMigrateAcceptPresenterProtocol {
     func setup() {}
 }
 
-extension WalletMigrateAcceptPresenter: WalletMigrateAcceptInteractorOutputProtocol {}
+extension WalletMigrateAcceptPresenter: WalletMigrateAcceptInteractorOutputProtocol {
+    func didRequestMigration(from _: String) {}
+
+    func didCompleteMigration() {}
+
+    func didFailMigration(with _: Error) {}
+}

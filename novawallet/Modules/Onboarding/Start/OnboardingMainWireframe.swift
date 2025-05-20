@@ -31,14 +31,20 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
         presentAccountRestore(from: view, secretSource: source)
     }
 
-    func showWalletMigration(from view: OnboardingMainViewProtocol?, message _: WalletMigrationMessage.Start) {
+    func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start) {
         guard
             let navigationController = view?.controller.navigationController,
             !hasPendingFlow(in: navigationController) else {
             return
         }
 
-        // TODO: show migration view
+        guard let migrateView = WalletMigrateAcceptViewFactory.createView(from: message) else {
+            return
+        }
+
+        let nextNavigationController = NovaNavigationController(rootViewController: migrateView.controller)
+
+        view?.controller.present(nextNavigationController, animated: true)
     }
 
     private func hasPendingFlow(in navigationController: UINavigationController) -> Bool {

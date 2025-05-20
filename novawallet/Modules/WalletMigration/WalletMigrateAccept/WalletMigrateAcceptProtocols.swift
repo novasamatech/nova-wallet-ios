@@ -1,4 +1,4 @@
-protocol WalletMigrateAcceptViewProtocol: AnyObject {}
+protocol WalletMigrateAcceptViewProtocol: ControllerBackedProtocol {}
 
 protocol WalletMigrateAcceptPresenterProtocol: AnyObject {
     func setup()
@@ -12,6 +12,7 @@ protocol WalletMigrateAcceptInteractorInputProtocol: AnyObject {
 protocol WalletMigrateAcceptInteractorOutputProtocol: AnyObject {
     func didRequestMigration(from appScheme: String)
     func didCompleteMigration()
+    func didFailMigration(with error: Error)
 }
 
 protocol WalletMigrateAcceptWireframeProtocol: AnyObject {}
