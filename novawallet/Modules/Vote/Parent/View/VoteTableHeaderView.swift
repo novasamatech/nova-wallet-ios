@@ -3,11 +3,7 @@ import UIKit_iOS
 
 final class VoteTableHeaderView: UIView {
     let votingTypeSwitch: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
+        view.applyPageSwitchStyle()
     }
 
     let chainSelectionView: DetailsTriangularedView = {
@@ -47,7 +43,7 @@ final class VoteTableHeaderView: UIView {
         votingTypeSwitch.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40.0)
+            make.height.equalTo(UIConstants.segmentedControlHeight)
         }
 
         let chainBlur = BlockBackgroundView()

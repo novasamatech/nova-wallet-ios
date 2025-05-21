@@ -166,6 +166,11 @@ extension UILabel.Style {
         font: .semiBoldCaps1
     )
 
+    static let semiboldCaps1Primary = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldCaps1
+    )
+
     static let semiboldCaps2Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .semiBoldCaps2

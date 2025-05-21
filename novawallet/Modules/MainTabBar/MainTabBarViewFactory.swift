@@ -82,7 +82,10 @@ private extension MainTabBarViewFactory {
                 for: localizationManager,
                 serviceCoordinator: serviceCoordinator
             ),
-            let payController = createPayController(for: localizationManager),
+            let payController = createPayController(
+                for: localizationManager,
+                serviceCoordinator: serviceCoordinator
+            ),
             let voteController = createVoteController(
                 for: localizationManager,
                 serviceCoordinator: serviceCoordinator
@@ -280,12 +283,21 @@ private extension MainTabBarViewFactory {
         return navigationController
     }
 
-    static func createPayController(for localizationManager: LocalizationManagerProtocol) -> UIViewController? {
-        guard let payView = PayRootViewFactory.createView() else {
+    static func createPayController(
+        for localizationManager: LocalizationManagerProtocol,
+        serviceCoordinator: ServiceCoordinatorProtocol
+    ) -> UIViewController? {
+        guard
+            let payView = PayRootViewFactory.createView(),
+            let rootView = NavigationRootViewFactory.createView(
+                with: payView,
+                serviceCoordinator: serviceCoordinator,
+                decorationProvider: payView
+            ) else {
             return nil
         }
 
-        let navigationController = NovaNavigationController(rootViewController: payView.controller)
+        let navigationController = NovaNavigationController(rootViewController: rootView.controller)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarPayTitle(preferredLanguages: locale.rLanguages)

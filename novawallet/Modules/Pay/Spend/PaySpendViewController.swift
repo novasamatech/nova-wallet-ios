@@ -1,11 +1,11 @@
 import UIKit
 
-final class PayRootViewController: UIViewController {
-    typealias RootViewType = PayRootViewLayout
+final class PaySpendViewController: UIViewController {
+    typealias RootViewType = PaySpendViewLayout
 
-    let presenter: PayRootPresenterProtocol
+    let presenter: PaySpendPresenterProtocol
 
-    init(presenter: PayRootPresenterProtocol) {
+    init(presenter: PaySpendPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -16,7 +16,7 @@ final class PayRootViewController: UIViewController {
     }
 
     override func loadView() {
-        view = PayRootViewLayout()
+        view = PaySpendViewLayout()
     }
 
     override func viewDidLoad() {
@@ -26,4 +26,4 @@ final class PayRootViewController: UIViewController {
     }
 }
 
-extension PayRootViewController: PayRootViewProtocol {}
+extension PaySpendViewController: PaySpendViewProtocol {}

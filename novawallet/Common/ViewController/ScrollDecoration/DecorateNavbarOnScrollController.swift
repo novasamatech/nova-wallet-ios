@@ -10,11 +10,20 @@ class DecorateNavbarOnScrollController: ScrollDecorationController {
     private let animator = BlockViewAnimator()
     private let threshold: CGFloat = 0.0
     private var isDecorationActive = false
+    private let decorationProvider: ScrollDecorationProviding?
+
+    init(scrollHost: ScrollViewHostControlling, decorationProvider: ScrollDecorationProviding? = nil) {
+        self.decorationProvider = decorationProvider
+
+        super.init(scrollHost: scrollHost)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupDecorationView()
+        let barExtendingView = decorationProvider?.provideTopBarExtensionDecoration()
+
+        setupDecorationView(with: barExtendingView)
     }
 
     override func handleContentOffsetChange(_ newOffset: CGPoint) {
@@ -42,12 +51,26 @@ private extension DecorateNavbarOnScrollController {
 }
 
 private extension DecorateNavbarOnScrollController {
-    func setupDecorationView() {
+    func setupDecorationView(with barExtendingView: UIView?) {
         view.addSubview(decorationView)
+
+        if let barExtendingView {
+            view.addSubview(barExtendingView)
+        }
+
+        barExtendingView?.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+        }
 
         decorationView.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
+
+            if let barExtendingView {
+                make.bottom.equalTo(barExtendingView.snp.bottom)
+            } else {
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
+            }
         }
     }
 }

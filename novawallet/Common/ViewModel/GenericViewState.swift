@@ -14,3 +14,5 @@ enum GenericViewState<T> {
         }
     }
 }
+
+extension GenericViewState: Hashable, Equatable where T: Hashable & Equatable {}

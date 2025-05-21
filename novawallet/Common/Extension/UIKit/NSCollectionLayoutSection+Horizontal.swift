@@ -1,20 +1,17 @@
 import UIKit
 
 extension NSCollectionLayoutSection {
-    struct Settings {
-        let estimatedRowHeight: CGFloat
-        let absoluteHeaderHeight: CGFloat?
-        let estimatedHeaderHeight: CGFloat
+    struct HorizontalSectionSettings {
+        let estimatedRowWidth: CGFloat
+        let rowHeight: CGFloat
         let sectionContentInsets: NSDirectionalEdgeInsets
         let sectionInterGroupSpacing: CGFloat
-        let header: Header?
-
-        struct Header {
-            let pinToVisibleBounds: Bool
-        }
+        let header: SectionHeader?
     }
 
-    static func createSectionLayoutWithFullWidthRow(settings: Settings) -> NSCollectionLayoutSection {
+    static func createOrthogonalHorizontalSection(
+        settings: HorizontalSectionSettings
+    ) -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
             heightDimension: .fractionalHeight(1)
@@ -22,25 +19,25 @@ extension NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(settings.estimatedRowHeight)
+            widthDimension: .estimated(settings.estimatedRowWidth),
+            heightDimension: .absolute(settings.rowHeight)
         )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension:
-            settings.absoluteHeaderHeight.map {
-                .absolute($0)
-            } ?? .estimated(settings.estimatedHeaderHeight)
-        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, repeatingSubitem: item, count: 1)
+
         let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .groupPaging
         section.contentInsets = settings.sectionContentInsets
         section.interGroupSpacing = settings.sectionInterGroupSpacing
 
         guard let headerSettings = settings.header else {
             return section
         }
+
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: headerSettings.height
+        )
 
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: headerSize,

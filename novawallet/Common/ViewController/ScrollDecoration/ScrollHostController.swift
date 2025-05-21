@@ -11,3 +11,6 @@ protocol ScrollViewHostProtocol: AnyObject {
 }
 
 typealias ScrollViewHostControlling = ControllerBackedProtocol & ScrollViewHostProtocol
+
+typealias ScrollViewHostAndDecoratorControlling = ControllerBackedProtocol & ScrollViewHostProtocol
+    & ScrollDecorationProviding

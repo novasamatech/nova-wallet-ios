@@ -1848,3 +1848,11 @@
 "polkadot.vault.qr.type.legacy" = "Legacy";
 "parity.signer.scan.title_9_7_0" = "Sign with %@";
 "tabbar.pay.title" = "Pay";
+"common.polkadot.pay" = "polkadot pay";
+"pay.shop.title" = "Shop";
+"pay.spend.title" = "Spend";
+"shop.merchants.cashback.format" = "Get up to %@ cashback";
+"shop.merchants.availability.title" = "Available at US merchants, Online or In-Store";
+"shop.merchants.search" = "Merchants";
+"common.cashback" = "cashback";
+"shop.merchants.loading.more" = "Searching for merchants...";

@@ -9,4 +9,12 @@ enum RaiseModel {
             nil
         #endif
     }
+
+    static var chainId: ChainModel.Id {
+        #if F_RELEASE
+            KnowChainId.polkadot
+        #else
+            KnowChainId.westend
+        #endif
+    }
 }

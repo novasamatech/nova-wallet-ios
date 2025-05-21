@@ -5,10 +5,14 @@ final class NavigationRootViewController: DecorateNavbarOnScrollController, View
 
     let presenter: NavigationRootPresenterProtocol
 
-    init(scrollHost: ScrollViewHostControlling, presenter: NavigationRootPresenterProtocol) {
+    init(
+        scrollHost: ScrollViewHostControlling,
+        presenter: NavigationRootPresenterProtocol,
+        decorationProvider: ScrollDecorationProviding? = nil
+    ) {
         self.presenter = presenter
 
-        super.init(scrollHost: scrollHost)
+        super.init(scrollHost: scrollHost, decorationProvider: decorationProvider)
     }
 
     @available(*, unavailable)

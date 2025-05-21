@@ -6,4 +6,9 @@ extension RoundedButton {
         imageWithTitleView?.title = title
         invalidateLayout()
     }
+
+    func setIcon(_ icon: UIImage?) {
+        imageWithTitleView?.iconImage = icon
+        invalidateLayout()
+    }
 }

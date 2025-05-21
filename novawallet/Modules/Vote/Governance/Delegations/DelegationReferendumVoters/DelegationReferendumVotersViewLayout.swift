@@ -53,11 +53,12 @@ final class DelegationReferendumVotersViewLayout: UIView, AdaptiveDesignable {
         .createSectionLayoutWithFullWidthRow(settings:
             .init(
                 estimatedRowHeight: settings.estimatedRowHeight,
-                absoluteHeaderHeight: settings.absoluteHeaderHeight,
-                estimatedHeaderHeight: settings.estimatedSectionHeaderHeight,
                 sectionContentInsets: settings.sectionContentInsets,
                 sectionInterGroupSpacing: settings.interGroupSpacing,
-                header: .init(pinToVisibleBounds: false)
+                header: .init(
+                    pinToVisibleBounds: false,
+                    height: settings.headerHeight
+                )
             ))
     }
 }

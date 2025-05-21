@@ -160,16 +160,6 @@ extension VoteViewController: VoteViewProtocol {
     }
 }
 
-extension VoteViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(
-        _: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer
-    ) -> Bool {
-        // Prevent swipe from interfering with scroll
-        false
-    }
-}
-
 extension VoteViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
