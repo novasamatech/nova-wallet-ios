@@ -25,6 +25,10 @@ enum MetaAccountModelType: UInt8 {
             false
         }
     }
+
+    var isDelegated: Bool {
+        self == .proxied || self == .multisig
+    }
 }
 
 extension MetaAccountModelType {

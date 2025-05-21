@@ -47,10 +47,10 @@ final class ExtrinsicDelegateSenderResolver {
 
                 let (resultCall, _) = try delegatePath.components.reduce(
                     (callJson, delegatedAccount.accountId)
-                ) { callAndProxied, component in
-                    let call = callAndProxied.0
-                    let delegatedAccountId = callAndProxied.1
-                    let delegationKey = DelegationKey(
+                ) { callAndDelegatedAccount, component in
+                    let call = callAndDelegatedAccount.0
+                    let delegatedAccountId = callAndDelegatedAccount.1
+                    let delegationKey = DelegationResolution.DelegationKey(
                         delegate: component.account.chainAccount.accountId,
                         delegated: delegatedAccountId
                     )

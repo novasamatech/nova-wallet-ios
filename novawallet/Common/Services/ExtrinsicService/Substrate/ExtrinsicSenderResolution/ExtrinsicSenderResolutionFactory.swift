@@ -66,20 +66,13 @@ final class ExtrinsicSenderResolutionFactory {
 extension ExtrinsicSenderResolutionFactory: ExtrinsicSenderResolutionFactoryProtocol {
     func createWrapper() -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
         switch chainAccount.type {
-        // TODO: Add multisig resolver
         case .secrets, .paritySigner, .polkadotVault, .ledger, .watchOnly, .genericLedger:
             createCurrentResolver(for: chainAccount)
-        case .proxied:
+        case .proxied, .multisig:
             createDelegateResolver(
                 for: chainAccount,
                 chain: chain,
-                delegateKeyPath: \.proxy?.accountId
-            )
-        case .multisig:
-            createDelegateResolver(
-                for: chainAccount,
-                chain: chain,
-                delegateKeyPath: \.multisigAccount?.multisig?.accountId
+                delegateKeyPath: \.delegationId?.delegateAccountId
             )
         }
     }

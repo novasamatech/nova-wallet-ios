@@ -4,7 +4,7 @@ import SubstrateSdk
 protocol AccountDelegationPathValue {
     func wrapCall(
         _ call: JSON,
-        delegation: DelegationKey,
+        delegation: DelegationResolution.DelegationKey,
         context: RuntimeJsonContext
     ) throws -> JSON
 }
@@ -162,7 +162,7 @@ extension DelegationResolution {
                 return secretBasedResult
             } else if let notWatchOnlyResult = find(
                 callPaths: paths,
-                walletTypeFilter: { $0 != .watchOnly && $0 != .proxied && $0 != .multisig }
+                walletTypeFilter: { $0 != .watchOnly && !$0.isDelegated }
             ) {
                 return notWatchOnlyResult
             } else {
@@ -186,7 +186,7 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation: DelegationKey,
+            delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
             try Proxy.ProxyCall(
@@ -205,7 +205,7 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation _: DelegationKey,
+            delegation _: DelegationResolution.DelegationKey,
             context _: RuntimeJsonContext
         ) throws -> JSON {
             // TODO: - Implement call wrapping

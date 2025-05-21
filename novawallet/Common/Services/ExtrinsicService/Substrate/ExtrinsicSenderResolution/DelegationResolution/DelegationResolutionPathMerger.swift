@@ -2,7 +2,7 @@ import Foundation
 
 extension DelegationResolution {
     enum PathMergerError: Error {
-        case empthPaths(CallCodingPath)
+        case emptyPaths(CallCodingPath)
         case disjointPaths(CallCodingPath)
     }
 
@@ -19,7 +19,7 @@ extension DelegationResolution {
             paths: DelegationResolution.GraphResult
         ) throws {
             guard !paths.isEmpty else {
-                throw PathMergerError.empthPaths(callPath)
+                throw PathMergerError.emptyPaths(callPath)
             }
 
             let newDelegateAccounts = Set(paths.compactMap(\.accountIds.last))
