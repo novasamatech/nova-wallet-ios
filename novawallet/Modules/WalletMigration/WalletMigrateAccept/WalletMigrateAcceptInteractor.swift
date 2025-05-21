@@ -13,7 +13,7 @@ final class WalletMigrateAcceptInteractor {
     let settings: SelectedWalletSettings
     let logger: LoggerProtocol
 
-    private var originScheme: String
+    private var channel: WalletMigrationDestination
 
     init(
         startMessage: WalletMigrationMessage.Start,
@@ -31,21 +31,21 @@ final class WalletMigrateAcceptInteractor {
         self.metaAccountOperationFactory = metaAccountOperationFactory
         self.mnemonicFactory = mnemonicFactory
         self.operationQueue = operationQueue
-        originScheme = startMessage.originScheme
+        channel = WalletMigrationDestination(originScheme: startMessage.originScheme)
         self.logger = logger
     }
 }
 
 private extension WalletMigrateAcceptInteractor {
     func initiateSession() {
-        presenter?.didRequestMigration(from: originScheme)
+        presenter?.didRequestMigration(from: channel.originScheme)
     }
 
     func acceptSession() {
         do {
             let publicKey = try sessionManager.startSession()
 
-            // TODO: send public key to destination
+            try channel.accept(with: .init(destinationPublicKey: publicKey))
         } catch {
             logger.error("Can't start session")
         }
@@ -57,8 +57,10 @@ private extension WalletMigrateAcceptInteractor {
 
             let entropy = try decryptor.decrypt(model.encryptedData)
 
+            let walletName = model.name ?? "\(channel.originScheme.capitalized) Wallet"
+
             let request = MetaAccountCreationRequest(
-                username: model.name ?? "\(originScheme.capitalized) Wallet",
+                username: walletName,
                 derivationPath: "",
                 ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
                 cryptoType: .sr25519
@@ -113,7 +115,7 @@ private extension WalletMigrateAcceptInteractor {
     func handle(message: WalletMigrationMessage) {
         switch message {
         case let .start(model):
-            originScheme = model.originScheme
+            channel = WalletMigrationDestination(originScheme: model.originScheme)
 
             initiateSession()
         case let .complete(model):

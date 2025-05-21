@@ -8,7 +8,7 @@ struct WalletMigrationKeypair {
     let privateKey: PrivateKey
 }
 
-enum WalletMigrationAction: String {
+enum WalletMigrationAction: String, Equatable {
     case migrate
     case migrateAccepted = "migrate-accepted"
     case migrateComplete = "migrate-complete"
@@ -21,16 +21,16 @@ enum WalletMigrationQueryKey: String {
     case name
 }
 
-enum WalletMigrationMessage {
-    struct Start {
+enum WalletMigrationMessage: Equatable {
+    struct Start: Equatable {
         let originScheme: String
     }
 
-    struct Accepted {
+    struct Accepted: Equatable {
         let destinationPublicKey: WalletMigrationKeypair.PublicKey
     }
 
-    struct Complete {
+    struct Complete: Equatable {
         let originPublicKey: WalletMigrationKeypair.PublicKey
         let encryptedData: Data
         let name: String?
