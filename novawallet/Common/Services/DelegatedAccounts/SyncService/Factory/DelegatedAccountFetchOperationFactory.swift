@@ -53,7 +53,7 @@ private extension DelegatedAccountFetchOperationFactory {
             .flatMap(\.newOrUpdatedItems)
             .reduce(into: [:]) { acc, managedMetaAccount in
                 guard
-                    let delegationId = managedMetaAccount.info.delegationId(),
+                    let delegationId = managedMetaAccount.info.delegationId,
                     let status = managedMetaAccount.info.delegatedAccountStatus()
                 else { return }
 

@@ -2,30 +2,29 @@ import Foundation
 import SubstrateSdk
 
 enum ExtrinsicSenderResolution {
-    struct ResolutionProxyFailure {
+    struct ResolutionDelegateFailure {
         let callPath: CallCodingPath
-        let possibleTypes: Set<Proxy.ProxyType>
-        let paths: ProxyResolution.GraphResult
+        let paths: DelegationResolution.GraphResult
     }
 
-    struct ResolvedProxy {
-        let proxyAccount: MetaChainAccountResponse?
-        let proxiedAccount: ChainAccountResponse
-        let paths: [CallCodingPath: ProxyResolution.PathFinderPath]?
+    struct ResolvedDelegate {
+        let delegateAccount: MetaChainAccountResponse?
+        let delegatedAccount: ChainAccountResponse
+        let paths: [CallCodingPath: DelegationResolution.PathFinderPath]?
         let allWallets: [MetaAccountModel]
         let chain: ChainModel
-        let failures: [ResolutionProxyFailure]
+        let failures: [ResolutionDelegateFailure]
     }
 
     case current(ChainAccountResponse)
-    case proxy(ResolvedProxy)
+    case delegate(ResolvedDelegate)
 
     var account: ChainAccountResponse {
         switch self {
         case let .current(account):
             return account
-        case let .proxy(proxy):
-            return proxy.proxyAccount?.chainAccount ?? proxy.proxiedAccount
+        case let .delegate(delegate):
+            return delegate.delegateAccount?.chainAccount ?? delegate.delegatedAccount
         }
     }
 }

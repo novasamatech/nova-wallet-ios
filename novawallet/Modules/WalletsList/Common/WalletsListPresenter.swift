@@ -52,7 +52,7 @@ class WalletsListPresenter {
         changes.map { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                if newItem.info.type == .proxied, newItem.info.proxy()?.status == .revoked {
+                if newItem.info.type == .proxied, newItem.info.proxy?.status == .revoked {
                     return DataProviderChange<ManagedMetaAccountModel>.delete(
                         deletedIdentifier: newItem.identifier
                     )

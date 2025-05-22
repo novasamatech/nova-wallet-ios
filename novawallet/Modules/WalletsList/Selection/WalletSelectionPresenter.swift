@@ -35,17 +35,17 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         return changes.compactMap { change in
             switch change {
             case let .insert(newWallet):
-                guard let proxy = newWallet.info.proxy() else {
+                guard let proxy = newWallet.info.proxy else {
                     return nil
                 }
 
                 return newWallet.info.type == .proxied && proxy.isNotActive ? newWallet : nil
             case let .update(newWallet):
-                guard newWallet.info.type == .proxied, let newProxy = newWallet.info.proxy() else {
+                guard newWallet.info.type == .proxied, let newProxy = newWallet.info.proxy else {
                     return nil
                 }
 
-                let oldProxy = oldWallets[newWallet.identifier]?.info.proxy()
+                let oldProxy = oldWallets[newWallet.identifier]?.info.proxy
 
                 return newProxy.isNotActive && oldProxy?.status != newProxy.status ? newWallet : nil
             case .delete:

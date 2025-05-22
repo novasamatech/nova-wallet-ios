@@ -125,13 +125,13 @@ private extension DelegatedAccountsChangesCalculator {
         let relevantLocalAccounts: [MetaAccountDelegationId: ManagedMetaAccountModel] = localDelegatedAccounts
             .reduce(into: [:]) { acc, metaAccount in
                 guard
-                    let delegationId = metaAccount.info.delegationId(),
+                    let delegationId = metaAccount.info.delegationId,
                     delegationId.delegatorId == delegatorAccountId
                 else { return }
 
                 acc[delegationId] = metaAccount
             }
-        let updatedDelegationIds = updatedDelegatedAccounts.compactMap { $0.info.delegationId() }
+        let updatedDelegationIds = updatedDelegatedAccounts.compactMap(\.info.delegationId)
 
         let revokedAccounts: [ManagedMetaAccountModel] = Set(relevantLocalAccounts.keys)
             .subtracting(Set(updatedDelegationIds))

@@ -127,7 +127,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
     func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
-            let multisigAccountType = metaAccount.info.multisigAccount(),
+            let multisigAccountType = metaAccount.info.multisigAccount,
             multisigAccountType.multisig?.status == .revoked
         else {
             return metaAccount
@@ -140,7 +140,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
     func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
-            let multisigType = metaAccount.info.multisigAccount(),
+            let multisigType = metaAccount.info.multisigAccount,
             let oldStatus = multisigType.multisig?.status
         else { return metaAccount }
 
@@ -153,7 +153,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         _ metaAccount: ManagedMetaAccountModel,
         delegatedAccount: DiscoveredDelegatedAccountProtocol
     ) -> Bool {
-        guard let localMultisigAccountType = metaAccount.info.multisigAccount() else { return false }
+        guard let localMultisigAccountType = metaAccount.info.multisigAccount else { return false }
 
         switch localMultisigAccountType {
         case let .singleChain(chainAccount):
@@ -169,7 +169,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier? {
-        guard let multisig = metaAccount.info.multisigAccount()?.multisig else {
+        guard let multisig = metaAccount.info.multisigAccount?.multisig else {
             return nil
         }
 
@@ -181,7 +181,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool {
-        metaAccount.info.multisigAccount() != nil
+        metaAccount.info.multisigAccount != nil
     }
 
     func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {

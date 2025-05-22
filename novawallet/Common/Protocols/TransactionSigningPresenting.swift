@@ -28,14 +28,14 @@ protocol TransactionSigningPresenting: AnyObject {
     func presentProxyFlow(
         for data: Data,
         proxiedId: MetaAccountModel.Id,
-        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     )
 
     func presentNotEnoughProxyPermissionsFlow(
         for metaId: String,
-        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     )
 }
@@ -155,7 +155,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     }
 
     private func createProxyValidationClosure(
-        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         extrinsicMemo: ExtrinsicBuilderMemoProtocol
     ) -> (@escaping ProxySignValidationCompletion) -> Void {
         { [weak self] completionClosure in
@@ -184,11 +184,11 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     func presentProxyFlow(
         for data: Data,
         proxiedId: MetaAccountModel.Id,
-        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     ) {
-        guard let proxy = resolution.proxyAccount else {
+        guard let proxy = resolution.delegateAccount else {
             completion(.failure(CommonError.dataCorruption))
             return
         }
@@ -246,7 +246,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
     func presentNotEnoughProxyPermissionsFlow(
         for metaId: String,
-        resolution: ExtrinsicSenderResolution.ResolvedProxy,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     ) {
         let completionClosure: () -> Void = {
@@ -257,7 +257,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
         guard
             let proxiedWallet = resolution.allWallets.first(where: { $0.metaId == metaId }),
-            let proxyModel = proxiedWallet.proxy(),
+            let proxyModel = proxiedWallet.proxy,
             let proxyWallet = resolution.allWallets.first(
                 where: { $0.fetch(for: accountRequest)?.accountId == proxyModel.accountId }
             ) else {
@@ -270,7 +270,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
         guard
             let notEnoughProxyPermissionView = ProxyMessageSheetViewFactory.createNotEnoughPermissionsView(
-                proxiedName: resolution.proxiedAccount.name,
+                proxiedName: resolution.delegatedAccount.name,
                 proxyName: proxyWallet.name,
                 type: type,
                 completionCallback: completionClosure
