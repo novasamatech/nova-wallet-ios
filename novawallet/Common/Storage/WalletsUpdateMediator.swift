@@ -51,7 +51,7 @@ final class WalletUpdateMediator {
             let newReachableWallets: [ManagedMetaAccountModel] = currentDelegatedSet.flatMap { delegatedId in
                 guard
                     let delegated = foundWallets[delegatedId],
-                    let delegationId = delegated.info.delegationId() else {
+                    let delegationId = delegated.info.delegationId else {
                     return [ManagedMetaAccountModel]()
                 }
 
