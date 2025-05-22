@@ -3,6 +3,7 @@ import XCTest
 
 final class WalletMigrationServiceTests: XCTestCase {
     let originScheme = "polkadotapp"
+    let destinationScheme = "novawallet"
     
     func testCanStorePendingMessageIfNoDelegate() throws {
         // given
@@ -17,7 +18,7 @@ final class WalletMigrationServiceTests: XCTestCase {
         
         let expectedMessageContent = WalletMigrationMessage.Start(originScheme: originScheme)
         
-        let destService = WalletMigrationService(logger: Logger.shared)
+        let destService = WalletMigrationService(localDeepLinkScheme: destinationScheme, logger: Logger.shared)
         
         // when
         
@@ -51,7 +52,7 @@ final class WalletMigrationServiceTests: XCTestCase {
         
         let expectedMessageContent = WalletMigrationMessage.Start(originScheme: originScheme)
         
-        let destService = WalletMigrationService(logger: Logger.shared)
+        let destService = WalletMigrationService(localDeepLinkScheme: destinationScheme, logger: Logger.shared)
         let delegate = MockWalletMigrationDelegate()
         destService.delegate = delegate
         

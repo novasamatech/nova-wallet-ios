@@ -131,7 +131,10 @@ class OnboardingMainTests: XCTestCase {
                                             view: MockOnboardingMainViewProtocol,
                                             legal: LegalData,
                                             keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared),
-                                            migrationService: WalletMigrationServiceProtocol = WalletMigrationService(logger: Logger.shared),
+                                            migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
+                                                localDeepLinkScheme: "novawallet",
+                                                logger: Logger.shared
+                                            ),
                                             eventCenter: EventCenterProtocol = EventCenter.shared
     )
         -> OnboardingMainPresenter {

@@ -22,6 +22,15 @@ enum WalletMigrationQueryKey: String {
     case name
 }
 
+enum WalletMigrationDomain: String {
+    case origin = "polkadot"
+    case destination = "nova"
+}
+
+enum WalletMigrationScheme {
+    static let allowedAppLinkSchemes: Set<String> = ["https", "http"]
+}
+
 enum WalletMigrationMessage: Equatable {
     struct Start: Equatable {
         let originScheme: String

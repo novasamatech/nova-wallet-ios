@@ -26,7 +26,8 @@ final class WalletMigrationProtocolTests: XCTestCase {
         let originEntropy = Data.random(of: 32)!
         let walletName = "Migrate Me"
         
-        let messageParser = WalletMigrationMessageParser()
+        let originMessageParser = WalletMigrationMessageParser(localDeepLinkScheme: originScheme)
+        let destinationMessageParser = WalletMigrationMessageParser(localDeepLinkScheme: destinationScheme)
         
         // start
         
@@ -40,14 +41,14 @@ final class WalletMigrationProtocolTests: XCTestCase {
             return
         }
         
-        guard let startAction = messageParser.parseAction(from: startUrl) else {
+        guard let startAction = destinationMessageParser.parseAction(from: startUrl) else {
             XCTFail("Unexpected start message for \(startUrl)")
             return
         }
         
         XCTAssertEqual(startAction, .migrate)
         
-        let startMessage = try messageParser.parseMessage(for: startAction, from: startUrl)
+        let startMessage = try destinationMessageParser.parseMessage(for: startAction, from: startUrl)
         
         XCTAssertEqual(startMessage, .start(startMessageContent))
         
@@ -63,14 +64,14 @@ final class WalletMigrationProtocolTests: XCTestCase {
             return
         }
         
-        guard let acceptAction = messageParser.parseAction(from: acceptUrl) else {
+        guard let acceptAction = originMessageParser.parseAction(from: acceptUrl) else {
             XCTFail("Unexpected accept message for \(acceptUrl)")
             return
         }
         
         XCTAssertEqual(acceptAction, .migrateAccepted)
         
-        let acceptedMessage = try messageParser.parseMessage(for: acceptAction, from: acceptUrl)
+        let acceptedMessage = try originMessageParser.parseMessage(for: acceptAction, from: acceptUrl)
         
         XCTAssertEqual(acceptedMessage, .accepted(acceptMessageContent))
         
@@ -92,14 +93,14 @@ final class WalletMigrationProtocolTests: XCTestCase {
             return
         }
         
-        guard let completeAction = messageParser.parseAction(from: compleUrl) else {
+        guard let completeAction = destinationMessageParser.parseAction(from: compleUrl) else {
             XCTFail("Unexpected complete message for \(compleUrl)")
             return
         }
         
         XCTAssertEqual(completeAction, .migrateComplete)
         
-        let completedMessage = try messageParser.parseMessage(for: completeAction, from: compleUrl)
+        let completedMessage = try destinationMessageParser.parseMessage(for: completeAction, from: compleUrl)
         
         XCTAssertEqual(completedMessage, .complete(completeMessageContent))
         

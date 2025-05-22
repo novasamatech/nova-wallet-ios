@@ -18,12 +18,13 @@ private extension WalletMigrationDestination {
     func createAcceptedDeepLink(from message: WalletMigrationMessage.Accepted) throws -> URL {
         var components = URLComponents()
         components.scheme = originScheme
-        components.host = WalletMigrationAction.migrateAccepted.rawValue
+        components.host = WalletMigrationDomain.origin.rawValue
+        components.path = "/" + WalletMigrationAction.migrateAccepted.rawValue
 
         components.queryItems = [
             URLQueryItem(
                 name: WalletMigrationQueryKey.key.rawValue,
-                value: message.destinationPublicKey.base64EncodedString()
+                value: message.destinationPublicKey.toHex()
             )
         ]
 

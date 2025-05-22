@@ -53,7 +53,10 @@ final class RootInteractor {
             logger: logger
         )
 
-        let walletMigrationService = WalletMigrationService(logger: logger)
+        let walletMigrationService = WalletMigrationService(
+            localDeepLinkScheme: applicationConfig.deepLinkScheme,
+            logger: logger
+        )
 
         let callbackUrl = applicationConfig.purchaseRedirect
         let purchaseHandler = PurchaseCompletionHandler(

@@ -43,7 +43,8 @@ private extension WalletMigrationOrigin {
     func createStartDeepLink(for message: WalletMigrationMessage.Start) throws -> URL {
         var components = URLComponents()
         components.scheme = destinationScheme
-        components.host = WalletMigrationAction.migrate.rawValue
+        components.host = WalletMigrationDomain.destination.rawValue
+        components.path = "/" + WalletMigrationAction.migrate.rawValue
 
         components.queryItems = [
             URLQueryItem(name: WalletMigrationQueryKey.scheme.rawValue, value: message.originScheme)
@@ -59,16 +60,17 @@ private extension WalletMigrationOrigin {
     func createCompleteDeepLink(for message: WalletMigrationMessage.Complete) throws -> URL {
         var components = URLComponents()
         components.scheme = destinationScheme
-        components.host = WalletMigrationAction.migrateComplete.rawValue
+        components.host = WalletMigrationDomain.destination.rawValue
+        components.path = "/" + WalletMigrationAction.migrateComplete.rawValue
 
         var queryItems = [
             URLQueryItem(
                 name: WalletMigrationQueryKey.key.rawValue,
-                value: message.originPublicKey.base64EncodedString()
+                value: message.originPublicKey.toHex()
             ),
             URLQueryItem(
                 name: WalletMigrationQueryKey.encryptedData.rawValue,
-                value: message.encryptedData.base64EncodedString()
+                value: message.encryptedData.toHex()
             )
         ]
 

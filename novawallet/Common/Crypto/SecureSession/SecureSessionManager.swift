@@ -4,9 +4,13 @@ import CryptoKit
 
 enum SecureSessionManagerError: Error {
     case sessionNotStarted
+    case invalidSalt
 }
 
 final class SecureSessionManager {
+    // as we have random keypair the salt can be static
+    static let salt = "ephemeral-salt"
+
     private var currentPrivateKey: P256.KeyAgreement.PrivateKey?
     let sharedSecretKeySize: Int
 
@@ -33,9 +37,13 @@ extension SecureSessionManager: SecureSessionManaging {
 
         let sharedSecret = try privateKey.sharedSecretFromKeyAgreement(with: peerPublicKey)
 
+        guard let saltData = Self.salt.data(using: .utf8) else {
+            throw SecureSessionManagerError.invalidSalt
+        }
+
         let symmetricKey = sharedSecret.hkdfDerivedSymmetricKey(
             using: SHA256.self,
-            salt: Data(),
+            salt: saltData,
             sharedInfo: Data(),
             outputByteCount: sharedSecretKeySize
         )

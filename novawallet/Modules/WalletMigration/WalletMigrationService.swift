@@ -17,9 +17,10 @@ final class WalletMigrationService {
 
     private var pendingMessage: WalletMigrationMessage?
 
-    private let parser = WalletMigrationMessageParser()
+    private let parser: WalletMigrationMessageParser
 
-    init(logger: LoggerProtocol) {
+    init(localDeepLinkScheme: String, logger: LoggerProtocol) {
+        parser = WalletMigrationMessageParser(localDeepLinkScheme: localDeepLinkScheme)
         self.logger = logger
     }
 }
