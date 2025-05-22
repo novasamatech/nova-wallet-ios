@@ -33,7 +33,7 @@ final class ChainProxyAccountsRepository {
         _ proxiedList: [ProxiedAccountId: [ProxiedAccount]],
         by proxyIds: Set<AccountId>
     ) -> [ProxiedAccountId: [ProxiedAccount]] {
-        guard !proxyIds.isEmpty else { return proxiedList }
+        guard !proxyIds.isEmpty else { return [:] }
 
         return proxiedList.compactMapValues { accounts in
             accounts.filter {
