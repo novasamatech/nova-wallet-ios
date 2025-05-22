@@ -29,7 +29,7 @@ private extension WalletMigrationOrigin {
         }
 
         components.queryItems = [
-            URLQueryItem(name: ExternalUniversalLink.actionKey, value: WalletMigrationAction.migrate.rawValue),
+            URLQueryItem(name: WalletMigrationQueryKey.action.rawValue, value: WalletMigrationAction.migrate.rawValue),
             URLQueryItem(name: WalletMigrationQueryKey.scheme.rawValue, value: message.originScheme)
         ]
 

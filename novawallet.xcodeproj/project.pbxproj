@@ -12937,14 +12937,14 @@
 			path = WalletMigration;
 			sourceTree = "<group>";
 		};
-		0C3B12842DDCB04A00A61597 /* SessionEncryption */ = {
+		0C3B12842DDCB04A00A61597 /* SecureSession */ = {
 			isa = PBXGroup;
 			children = (
 				0C3B12302DDC63EA00A61597 /* SecureSessionManager.swift */,
 				0C3B12862DDCB0A000A61597 /* SecureSessionProtocols.swift */,
 				0C3B12882DDCB17300A61597 /* SecureSessionEncryption.swift */,
 			);
-			path = SessionEncryption;
+			path = SecureSession;
 			sourceTree = "<group>";
 		};
 		0C3B12982DDE7D3C00A61597 /* WalletMigration */ = {
@@ -21521,7 +21521,7 @@
 		8490147C24AA14AF008F705E /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
-				0C3B12842DDCB04A00A61597 /* SessionEncryption */,
+				0C3B12842DDCB04A00A61597 /* SecureSession */,
 				84C74364251E4D60009576C6 /* SigningWrapperProtocol.swift */,
 				8467FD2924EA6C62005D486C /* SigningWrapper.swift */,
 				84C74362251E4C2F009576C6 /* DummySigner.swift */,

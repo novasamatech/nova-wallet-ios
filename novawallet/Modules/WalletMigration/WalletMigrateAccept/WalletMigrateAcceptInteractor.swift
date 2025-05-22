@@ -129,6 +129,8 @@ private extension WalletMigrateAcceptInteractor {
 extension WalletMigrateAcceptInteractor: WalletMigrateAcceptInteractorInputProtocol {
     func setup() {
         initiateSession()
+
+        eventCenter.add(observer: self, dispatchIn: .main)
     }
 
     func accept() {

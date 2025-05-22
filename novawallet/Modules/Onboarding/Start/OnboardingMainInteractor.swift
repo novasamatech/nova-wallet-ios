@@ -35,9 +35,10 @@ final class OnboardingMainInteractor {
         case let .start(model):
             presenter?.didSuggestWalletMigration(with: model)
         default:
-            // post other messages to
-            eventCenter.notify(with: WalletMigrationEvent(message: message))
+            break
         }
+
+        eventCenter.notify(with: WalletMigrationEvent(message: message))
     }
 
     private func suggestSecretImportIfNeeded() {

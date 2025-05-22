@@ -15,6 +15,7 @@ enum WalletMigrationAction: String, Equatable {
 }
 
 enum WalletMigrationQueryKey: String {
+    case action
     case key
     case encryptedData = "mnemonic"
     case scheme

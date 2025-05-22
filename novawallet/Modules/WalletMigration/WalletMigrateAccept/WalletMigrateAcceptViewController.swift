@@ -25,6 +25,7 @@ final class WalletMigrateAcceptViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
@@ -54,7 +55,9 @@ private extension WalletMigrateAcceptViewController {
         ))
     }
 
-    @objc func actionAccept() {}
+    @objc func actionAccept() {
+        presenter.accept()
+    }
 }
 
 extension WalletMigrateAcceptViewController: WalletMigrateAcceptViewProtocol {}
