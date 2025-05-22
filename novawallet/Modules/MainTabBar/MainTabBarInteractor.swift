@@ -207,7 +207,9 @@ extension MainTabBarInteractor: KeystoreImportObserver {
 
 extension MainTabBarInteractor: WalletMigrationObserver {
     func didReceiveMigration(message: WalletMigrationMessage) {
-        handleWalletMigration(message: message)
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.handleWalletMigration(message: message)
+        }
     }
 }
 
