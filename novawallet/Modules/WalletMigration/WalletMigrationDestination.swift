@@ -21,7 +21,10 @@ private extension WalletMigrationDestination {
         components.host = WalletMigrationAction.migrateAccepted.rawValue
 
         components.queryItems = [
-            URLQueryItem(name: WalletMigrationQueryKey.key.rawValue, value: message.destinationPublicKey.toHex())
+            URLQueryItem(
+                name: WalletMigrationQueryKey.key.rawValue,
+                value: message.destinationPublicKey.base64EncodedString()
+            )
         ]
 
         guard let url = components.url else {

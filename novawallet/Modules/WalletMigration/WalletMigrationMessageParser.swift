@@ -2,7 +2,7 @@ import Foundation
 
 enum WalletMigrationMessageParsingError: Error {
     case invalidURL(URL)
-    case expectedQueryParam(String)
+    case expectedQueryParam(WalletMigrationQueryKey)
 }
 
 protocol WalletMigrationMessageParsing {
@@ -32,7 +32,7 @@ private extension WalletMigrationMessageParser {
         guard
             let item = items.first(where: { $0.name == queryKey.rawValue }),
             let value = item.value else {
-            throw WalletMigrationMessageParsingError.expectedQueryParam(queryKey.rawValue)
+            throw WalletMigrationMessageParsingError.expectedQueryParam(queryKey)
         }
 
         return try mappingClosure(value)
@@ -60,7 +60,11 @@ private extension WalletMigrationMessageParser {
             by: .key,
             from: queryItems
         ) { value in
-            try WalletMigrationKeypair.PublicKey(hexString: value)
+            guard let data = Data(base64Encoded: value) else {
+                throw WalletMigrationMessageParsingError.expectedQueryParam(.key)
+            }
+
+            return data
         }
 
         return .accepted(.init(destinationPublicKey: pubKey))
@@ -73,14 +77,22 @@ private extension WalletMigrationMessageParser {
             by: .key,
             from: queryItems
         ) { value in
-            try WalletMigrationKeypair.PublicKey(hexString: value)
+            guard let data = Data(base64Encoded: value) else {
+                throw WalletMigrationMessageParsingError.expectedQueryParam(.key)
+            }
+
+            return data
         }
 
         let encryptedData: Data = try parseQueryItem(
             by: .encryptedData,
             from: queryItems
         ) { value in
-            try Data(hexString: value)
+            guard let data = Data(base64Encoded: value) else {
+                throw WalletMigrationMessageParsingError.expectedQueryParam(.encryptedData)
+            }
+
+            return data
         }
 
         let name = try? parseQueryItemString(by: .name, from: queryItems)

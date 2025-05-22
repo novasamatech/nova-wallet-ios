@@ -62,8 +62,14 @@ private extension WalletMigrationOrigin {
         components.host = WalletMigrationAction.migrateComplete.rawValue
 
         var queryItems = [
-            URLQueryItem(name: WalletMigrationQueryKey.key.rawValue, value: message.originPublicKey.toHex()),
-            URLQueryItem(name: WalletMigrationQueryKey.encryptedData.rawValue, value: message.encryptedData.toHex()),
+            URLQueryItem(
+                name: WalletMigrationQueryKey.key.rawValue,
+                value: message.originPublicKey.base64EncodedString()
+            ),
+            URLQueryItem(
+                name: WalletMigrationQueryKey.encryptedData.rawValue,
+                value: message.encryptedData.base64EncodedString()
+            )
         ]
 
         if let name = message.name {
