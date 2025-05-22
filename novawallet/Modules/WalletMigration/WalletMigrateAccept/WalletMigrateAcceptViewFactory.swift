@@ -1,15 +1,24 @@
 import Foundation
 import Keystore_iOS
 import NovaCrypto
+import Foundation_iOS
 
 struct WalletMigrateAcceptViewFactory {
     static func createView(from message: WalletMigrationMessage.Start) -> WalletMigrateAcceptViewProtocol? {
         let interactor = createInteractor(from: message)
         let wireframe = WalletMigrateAcceptWireframe()
 
-        let presenter = WalletMigrateAcceptPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = WalletMigrateAcceptPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
-        let view = WalletMigrateAcceptViewController(presenter: presenter)
+        let view = WalletMigrateAcceptViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
