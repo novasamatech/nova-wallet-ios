@@ -452,6 +452,7 @@
 		0C3976AF2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */; };
 		0C3976B12C33ABA600998DD6 /* HydraXYKFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */; };
 		0C3976B32C33BFB700998DD6 /* HydraPoolAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */; };
+		0C3B128F2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B128E2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift */; };
 		0C3C49D32AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */; };
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C4169202D77047C000514EE /* ParitySignerPayloadWithProofTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41691F2D77047C000514EE /* ParitySignerPayloadWithProofTests.swift */; };
@@ -6280,6 +6281,7 @@
 		0C3976AE2C33A6C400998DD6 /* HydraXYKQuoteRemoteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKQuoteRemoteState.swift; sourceTree = "<group>"; };
 		0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKFlowState.swift; sourceTree = "<group>"; };
 		0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraPoolAccountTests.swift; sourceTree = "<group>"; };
+		0C3B128E2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallbackBatchStorageSubscription+Alias.swift"; sourceTree = "<group>"; };
 		0C3C49D22AAF3D9900F0F274 /* NSPredicate+StakingDashboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+StakingDashboardItem.swift"; sourceTree = "<group>"; };
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C41691F2D77047C000514EE /* ParitySignerPayloadWithProofTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerPayloadWithProofTests.swift; sourceTree = "<group>"; };
@@ -20274,6 +20276,7 @@
 				0C6941C52B1F51FE00A7CF6D /* RawDataStorageSubscription.swift */,
 				0C1998E52C49B38C000EBFB8 /* HoldsSubscription.swift */,
 				0C0F6D622D38077B00943A7C /* FreezesSubscription.swift */,
+				0C3B128E2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -29933,6 +29936,7 @@
 				84D1111326B932C40016D962 /* ChainNodeModel.swift in Sources */,
 				84C6801224D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift in Sources */,
 				845C407B27027AA000BFA50B /* SubscriptionStorageKeys.swift in Sources */,
+				0C3B128F2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift in Sources */,
 				84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */,
 				84E0C52229CA421A000B65C8 /* OperationDetailsContractView.swift in Sources */,
 				844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */,
