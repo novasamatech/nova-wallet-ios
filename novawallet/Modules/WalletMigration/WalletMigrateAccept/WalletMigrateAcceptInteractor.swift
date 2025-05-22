@@ -6,17 +6,19 @@ final class WalletMigrateAcceptInteractor {
     weak var presenter: WalletMigrateAcceptInteractorOutputProtocol?
 
     let sessionManager: SecureSessionManaging
-    let eventCenter: EventCenterProtocol
+    let walletMigrationService: WalletMigrationServiceProtocol
     let metaAccountOperationFactory: MetaAccountOperationFactoryProtocol
     let mnemonicFactory: IRMnemonicCreatorProtocol
     let operationQueue: OperationQueue
     let settings: SelectedWalletSettings
+    let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
     private var channel: WalletMigrationDestination
 
     init(
         startMessage: WalletMigrationMessage.Start,
+        walletMigrationService: WalletMigrationServiceProtocol,
         sessionManager: SecureSessionManaging,
         settings: SelectedWalletSettings,
         metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
@@ -26,12 +28,13 @@ final class WalletMigrateAcceptInteractor {
         logger: LoggerProtocol
     ) {
         self.sessionManager = sessionManager
-        self.eventCenter = eventCenter
+        self.walletMigrationService = walletMigrationService
         self.settings = settings
         self.metaAccountOperationFactory = metaAccountOperationFactory
         self.mnemonicFactory = mnemonicFactory
         self.operationQueue = operationQueue
         channel = WalletMigrationDestination(originScheme: startMessage.originScheme)
+        self.eventCenter = eventCenter
         self.logger = logger
     }
 }
@@ -130,7 +133,7 @@ extension WalletMigrateAcceptInteractor: WalletMigrateAcceptInteractorInputProto
     func setup() {
         initiateSession()
 
-        eventCenter.add(observer: self, dispatchIn: .main)
+        walletMigrationService.addObserver(self)
     }
 
     func accept() {
@@ -138,8 +141,8 @@ extension WalletMigrateAcceptInteractor: WalletMigrateAcceptInteractorInputProto
     }
 }
 
-extension WalletMigrateAcceptInteractor: EventVisitorProtocol {
-    func processWalletMigration(event: WalletMigrationEvent) {
-        handle(message: event.message)
+extension WalletMigrateAcceptInteractor: WalletMigrationObserver {
+    func didReceiveMigration(message: WalletMigrationMessage) {
+        handle(message: message)
     }
 }

@@ -39,8 +39,7 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
 
         let interactor = OnboardingMainInteractor(
             keystoreImportService: kestoreImportService,
-            walletMigrationService: walletMigrationService,
-            eventCenter: EventCenter.shared
+            walletMigrationService: walletMigrationService
         )
 
         let presenter = OnboardingMainPresenter(

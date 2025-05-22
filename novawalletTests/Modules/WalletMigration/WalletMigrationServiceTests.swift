@@ -54,7 +54,7 @@ final class WalletMigrationServiceTests: XCTestCase {
         
         let destService = WalletMigrationService(localDeepLinkScheme: destinationScheme, logger: Logger.shared)
         let delegate = MockWalletMigrationDelegate()
-        destService.delegate = delegate
+        destService.addObserver(delegate)
         
         // when
         

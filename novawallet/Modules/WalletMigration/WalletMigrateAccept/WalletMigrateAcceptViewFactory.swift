@@ -5,7 +5,10 @@ import Foundation_iOS
 
 struct WalletMigrateAcceptViewFactory {
     static func createView(from message: WalletMigrationMessage.Start) -> WalletMigrateAcceptViewProtocol? {
-        let interactor = createInteractor(from: message)
+        guard let interactor = createInteractor(from: message) else {
+            return nil
+        }
+
         let wireframe = WalletMigrateAcceptWireframe()
 
         let presenter = WalletMigrateAcceptPresenter(
@@ -28,9 +31,16 @@ struct WalletMigrateAcceptViewFactory {
 }
 
 private extension WalletMigrateAcceptViewFactory {
-    static func createInteractor(from startMessage: WalletMigrationMessage.Start) -> WalletMigrateAcceptInteractor {
-        WalletMigrateAcceptInteractor(
+    static func createInteractor(from startMessage: WalletMigrationMessage.Start) -> WalletMigrateAcceptInteractor? {
+        guard
+            let urlFacade = URLHandlingServiceFacade.shared,
+            let walletMigrateService: WalletMigrationServiceProtocol = urlFacade.findInternalService() else {
+            return nil
+        }
+
+        return WalletMigrateAcceptInteractor(
             startMessage: startMessage,
+            walletMigrationService: walletMigrateService,
             sessionManager: SecureSessionManager(),
             settings: SelectedWalletSettings.shared,
             metaAccountOperationFactory: MetaAccountOperationFactory(keystore: Keychain()),

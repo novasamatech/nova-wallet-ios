@@ -8,6 +8,7 @@ final class MainTabBarInteractor {
 
     let eventCenter: EventCenterProtocol
     let keystoreImportService: KeystoreImportServiceProtocol
+    let walletMigrationService: WalletMigrationServiceProtocol
     let screenOpenService: ScreenOpenServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
@@ -32,6 +33,7 @@ final class MainTabBarInteractor {
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
+        walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
         cloudBackupMediator: CloudBackupSyncMediating,
@@ -43,6 +45,7 @@ final class MainTabBarInteractor {
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
+        self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
         self.pushScreenOpenService = pushScreenOpenService
         self.cloudBackupMediator = cloudBackupMediator
@@ -112,12 +115,22 @@ final class MainTabBarInteractor {
             cloudBackupMediator.sync(for: .unknown)
         }
     }
+
+    private func handleWalletMigration(message: WalletMigrationMessage) {
+        switch message {
+        case let .start(content):
+            presenter?.didRequestWalletMigration(with: content)
+        default:
+            break
+        }
+    }
 }
 
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
         keystoreImportService.add(observer: self)
+        walletMigrationService.addObserver(self)
 
         suggestSecretImportIfNeeded()
 
@@ -130,7 +143,11 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
         onLaunchQueue.delegate = self
 
-        if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
+        if
+            let message = walletMigrationService.consumePendingMessage(),
+            case let .start(content) = message {
+            presenter?.didRequestWalletMigration(with: content)
+        } else if let pendingScreen = screenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestScreenOpen(pendingScreen)
         } else if let pushPendingScreen = pushScreenOpenService.consumePendingScreenOpen() {
             presenter?.didRequestPushScreenOpen(pushPendingScreen)
@@ -185,6 +202,12 @@ extension MainTabBarInteractor: KeystoreImportObserver {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.presenter?.didRequestScreenOpen(.error(.content(error)))
         }
+    }
+}
+
+extension MainTabBarInteractor: WalletMigrationObserver {
+    func didReceiveMigration(message: WalletMigrationMessage) {
+        handleWalletMigration(message: message)
     }
 }
 

@@ -6,20 +6,17 @@ final class OnboardingMainInteractor {
 
     let keystoreImportService: KeystoreImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
-    let eventCenter: EventCenterProtocol
 
     init(
         keystoreImportService: KeystoreImportServiceProtocol,
-        walletMigrationService: WalletMigrationServiceProtocol,
-        eventCenter: EventCenterProtocol
+        walletMigrationService: WalletMigrationServiceProtocol
     ) {
         self.keystoreImportService = keystoreImportService
         self.walletMigrationService = walletMigrationService
-        self.eventCenter = eventCenter
     }
 
     private func setupWalletMigration() {
-        walletMigrationService.delegate = self
+        walletMigrationService.addObserver(self)
     }
 
     private func checkPendingWalletMigration() {
@@ -37,8 +34,6 @@ final class OnboardingMainInteractor {
         default:
             break
         }
-
-        eventCenter.notify(with: WalletMigrationEvent(message: message))
     }
 
     private func suggestSecretImportIfNeeded() {
@@ -75,7 +70,7 @@ extension OnboardingMainInteractor: KeystoreImportObserver {
     }
 }
 
-extension OnboardingMainInteractor: WalletMigrationDelegate {
+extension OnboardingMainInteractor: WalletMigrationObserver {
     func didReceiveMigration(message: WalletMigrationMessage) {
         handleMigration(message: message)
     }

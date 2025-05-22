@@ -35,8 +35,6 @@ protocol EventVisitorProtocol: AnyObject {
     func processWalletNameChanged(event: WalletNameChanged)
     func processSelectedWalletChanged(event: SelectedWalletSwitched)
     func processNetworkEnableChanged(event: NetworkEnabledChanged)
-
-    func processWalletMigration(event: WalletMigrationEvent)
 }
 
 extension EventVisitorProtocol {
@@ -73,6 +71,4 @@ extension EventVisitorProtocol {
     func processWalletNameChanged(event _: WalletNameChanged) {}
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {}
     func processNetworkEnableChanged(event _: NetworkEnabledChanged) {}
-
-    func processWalletMigration(event _: WalletMigrationEvent) {}
 }

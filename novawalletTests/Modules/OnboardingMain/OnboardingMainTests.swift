@@ -134,14 +134,12 @@ class OnboardingMainTests: XCTestCase {
                                             migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
                                                 localDeepLinkScheme: "novawallet",
                                                 logger: Logger.shared
-                                            ),
-                                            eventCenter: EventCenterProtocol = EventCenter.shared
+                                            )
     )
         -> OnboardingMainPresenter {
         let interactor = OnboardingMainInteractor(
             keystoreImportService: keystoreImportService,
-            walletMigrationService: migrationService,
-            eventCenter: eventCenter
+            walletMigrationService: migrationService
         )
 
         let presenter = OnboardingMainPresenter(
