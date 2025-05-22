@@ -1424,7 +1424,7 @@ PODS:
   - Sourcery (1.4.1)
   - sr25519.c (0.1.0)
   - Starscream (4.0.12)
-  - SubstrateSdk (3.7.0):
+  - SubstrateSdk (3.7.2):
     - BigInt (~> 5.0)
     - keccak.c (~> 0.1.0)
     - NovaCrypto/ed25519 (~> 0.1.0)
@@ -1563,7 +1563,7 @@ DEPENDENCIES:
   - Sourcery (~> 1.4)
   - sr25519.c (from `https://github.com/novasamatech/sr25519.c`, tag `0.1.0`)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.7.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `3.7.2`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1670,7 +1670,7 @@ EXTERNAL SOURCES:
     :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.7.0
+    :tag: 3.7.2
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   UIKit-iOS:
@@ -1725,7 +1725,7 @@ CHECKOUT OPTIONS:
     :tag: 4.0.12
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 3.7.0
+    :tag: 3.7.2
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1791,7 +1791,7 @@ SPEC CHECKSUMS:
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   sr25519.c: 6c5d747682f45fd081c1e34d54cd322acee321b5
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: c434ebab9612d4d2b3ce9d55800eca04a04cfea4
+  SubstrateSdk: c7205ad049a346226fff1e4df462c017d2380d72
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftDraw: f63484562ddd30d9682b5576acc1d98acc2bec8f
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1809,6 +1809,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 8f7c3c2b5e28aae74665d0b7f6d5db935c8e0801
+PODFILE CHECKSUM: 750f4695ac09cab33f2c7db5c3afc2f8e916de18
 
 COCOAPODS: 1.15.2
