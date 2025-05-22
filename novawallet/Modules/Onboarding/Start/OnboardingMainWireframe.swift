@@ -38,7 +38,7 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
             return
         }
 
-        guard let migrateView = WalletMigrateAcceptViewFactory.createView(from: message) else {
+        guard let migrateView = WalletMigrateAcceptViewFactory.createViewForOnboarding(from: message) else {
             return
         }
 

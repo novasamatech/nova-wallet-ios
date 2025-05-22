@@ -1,6 +1,6 @@
 import Foundation
 
-final class WalletMigrateAcceptWireframe: WalletMigrateAcceptWireframeProtocol {
+final class WalletMigrateAcceptWhenOnboardWireframe: WalletMigrateAcceptWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
 
     func completeMigration(on view: WalletMigrateAcceptViewProtocol?) {
@@ -11,5 +11,18 @@ final class WalletMigrateAcceptWireframe: WalletMigrateAcceptWireframeProtocol {
 
             self.rootAnimator.animateTransition(to: pincodeViewController)
         }
+    }
+}
+
+final class WalletMigrateAcceptWhenAddWireframe: WalletMigrateAcceptWireframeProtocol {
+    func completeMigration(on view: WalletMigrateAcceptViewProtocol?) {
+        guard let navigationController = view?.controller.navigationController else {
+            return
+        }
+
+        MainTransitionHelper.transitToMainTabBarController(
+            closing: navigationController,
+            animated: true
+        )
     }
 }

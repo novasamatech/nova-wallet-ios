@@ -4,12 +4,23 @@ import NovaCrypto
 import Foundation_iOS
 
 struct WalletMigrateAcceptViewFactory {
-    static func createView(from message: WalletMigrationMessage.Start) -> WalletMigrateAcceptViewProtocol? {
+    static func createViewForOnboarding(from message: WalletMigrationMessage.Start) -> WalletMigrateAcceptViewProtocol? {
+        createView(from: message, wireframe: WalletMigrateAcceptWhenOnboardWireframe())
+    }
+
+    static func createViewForAdding(from message: WalletMigrationMessage.Start) -> WalletMigrateAcceptViewProtocol? {
+        createView(from: message, wireframe: WalletMigrateAcceptWhenAddWireframe())
+    }
+}
+
+private extension WalletMigrateAcceptViewFactory {
+    static func createView(
+        from message: WalletMigrationMessage.Start,
+        wireframe: WalletMigrateAcceptWireframeProtocol
+    ) -> WalletMigrateAcceptViewProtocol? {
         guard let interactor = createInteractor(from: message) else {
             return nil
         }
-
-        let wireframe = WalletMigrateAcceptWireframe()
 
         let presenter = WalletMigrateAcceptPresenter(
             interactor: interactor,
@@ -28,9 +39,7 @@ struct WalletMigrateAcceptViewFactory {
 
         return view
     }
-}
 
-private extension WalletMigrateAcceptViewFactory {
     static func createInteractor(from startMessage: WalletMigrationMessage.Start) -> WalletMigrateAcceptInteractor? {
         guard
             let urlFacade = URLHandlingServiceFacade.shared,

@@ -37,7 +37,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             return
         }
 
-        guard let acceptView = WalletMigrateAcceptViewFactory.createView(from: message) else {
+        guard let acceptView = WalletMigrateAcceptViewFactory.createViewForAdding(from: message) else {
             return
         }
 
