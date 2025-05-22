@@ -87,8 +87,8 @@ extension MetaAccountModel {
         chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
     }
 
-    func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
-        let request = chainAsset.chain.accountRequest()
+    func address(for chain: ChainModel) throws -> AccountAddress? {
+        let request = chain.accountRequest()
         return fetch(for: request)?.toAddress()
     }
 
