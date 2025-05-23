@@ -1157,6 +1157,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.36):
     - BoringSSL-GRPC/Interface (= 0.0.36)
   - BoringSSL-GRPC/Interface (0.0.36)
+  - BranchSDK (3.10.0)
   - CDMarkdownKit (2.5.2)
   - CryptoSwift (1.5.1)
   - Cuckoo (1.7.1):
@@ -1538,6 +1539,7 @@ PODS:
 
 DEPENDENCIES:
   - blake2.c (from `https://github.com/novasamatech/blake2.c`, tag `0.1.0`)
+  - BranchSDK (~> 3.10.0)
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - Cuckoo
   - DGCharts (~> 5.1.0)
@@ -1581,6 +1583,7 @@ SPEC REPOS:
     - AppCheckCore
     - BigInt
     - BoringSSL-GRPC
+    - BranchSDK
     - CryptoSwift
     - Cuckoo
     - DGCharts
@@ -1745,6 +1748,7 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   blake2.c: 49d32e8c358161437c30a04d325be708233d221e
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
+  BranchSDK: 5678ea6de1b289812e99b55e828e826b00688f06
   CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
@@ -1809,6 +1813,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 8f7c3c2b5e28aae74665d0b7f6d5db935c8e0801
+PODFILE CHECKSUM: a50af1bb1def21baee63d71a7fe9ba611fcf0fd3
 
 COCOAPODS: 1.15.2

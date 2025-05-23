@@ -12,7 +12,7 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
         for wireframe: OnboardingMainWireframeProtocol
     ) -> OnboardingMainViewProtocol? {
         guard let kestoreImportService: KeystoreImportServiceProtocol =
-            URLHandlingService.shared.findService()
+            URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Can't find required keystore import service")
             return nil

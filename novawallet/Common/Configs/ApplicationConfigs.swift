@@ -7,6 +7,10 @@ protocol ApplicationConfigProtocol {
     var supportEmail: String { get }
     var websiteURL: URL { get }
     var appStoreURL: URL { get }
+    var externalUniversalLinkURL: URL { get }
+    var internalUniversalLinkURL: URL { get }
+    var deepLinkScheme: String { get }
+    var deepLinkHost: String { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
@@ -46,6 +50,12 @@ protocol ApplicationConfigProtocol {
     var wikiURL: URL { get }
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
+}
+
+extension ApplicationConfigProtocol {
+    var deepLinkURL: URL {
+        URL(string: "\(deepLinkScheme)://\(deepLinkHost)")!
+    }
 }
 
 final class ApplicationConfig {
@@ -322,12 +332,34 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
     }
 
-    var universalLinkURL: URL {
+    var externalUniversalLinkURL: URL {
+        // TODO: Change production one
+        #if F_RELEASE
+            URL(string: "https://wdeqe.app.link")!
+        #else
+            URL(string: "https://wdeqe.test-app.link")!
+        #endif
+    }
+
+    var internalUniversalLinkURL: URL {
         #if F_RELEASE
             URL(string: "https://app.novawallet.io")!
         #else
             URL(string: "https://dev.novawallet.io")!
         #endif
+    }
+
+    var deepLinkScheme: String {
+        // TODO: Consider different deep links
+        #if F_RELEASE
+            "novawallet"
+        #else
+            "novawallet"
+        #endif
+    }
+
+    var deepLinkHost: String {
+        "nova"
     }
 
     var whiteAppearanceIconsPath: String {
