@@ -3,6 +3,7 @@ import CryptoKit
 
 enum SecureSessionAesCryptorError: Error {
     case cipherGenerationFailed
+    case randomizerFailed
 }
 
 final class SecureSessionAesCryptor {
@@ -17,7 +18,11 @@ final class SecureSessionAesCryptor {
 
 extension SecureSessionAesCryptor: SecureSessionCrypting {
     func encrypt(_ message: SecureSession.Message) throws -> SecureSession.Cipher {
-        let nonce = try AES.GCM.Nonce(data: Data((0 ..< nonceSize).map { _ in UInt8.random(in: 0 ... 255) }))
+        guard let data = Data.random(of: nonceSize) else {
+            throw SecureSessionAesCryptorError.randomizerFailed
+        }
+
+        let nonce = try AES.GCM.Nonce(data: data)
         let sealedBox = try AES.GCM.seal(message, using: key, nonce: nonce)
 
         guard let combinedData = sealedBox.combined else {

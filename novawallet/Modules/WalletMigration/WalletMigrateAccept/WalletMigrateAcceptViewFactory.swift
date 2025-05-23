@@ -50,7 +50,7 @@ private extension WalletMigrateAcceptViewFactory {
         return WalletMigrateAcceptInteractor(
             startMessage: startMessage,
             walletMigrationService: walletMigrateService,
-            sessionManager: SecureSessionManager(),
+            sessionManager: SecureSessionManager.createForWalletMigration(),
             settings: SelectedWalletSettings.shared,
             metaAccountOperationFactory: MetaAccountOperationFactory(keystore: Keychain()),
             mnemonicFactory: IRMnemonicCreator(),

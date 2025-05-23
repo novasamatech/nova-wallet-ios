@@ -27,8 +27,10 @@ enum WalletMigrationDomain: String {
     case destination = "nova"
 }
 
-enum WalletMigrationScheme {
+enum WalletMigrationParams {
     static let allowedAppLinkSchemes: Set<String> = ["https", "http"]
+    static let encryptionSalt = "ephemeral-salt".data(using: .utf8)!
+    static let encryptionAuth = Data([1])
 }
 
 enum WalletMigrationMessage: Equatable {

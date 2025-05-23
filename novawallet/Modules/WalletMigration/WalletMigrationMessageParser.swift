@@ -73,7 +73,7 @@ private extension WalletMigrationMessageParser {
             return try parseStartDeepLinkMessage(from: url)
         } else if
             let scheme = url.scheme,
-            WalletMigrationScheme.allowedAppLinkSchemes.contains(scheme) {
+            WalletMigrationParams.allowedAppLinkSchemes.contains(scheme) {
             return try parseStartAppLinkMessage(from: url)
         } else {
             throw WalletMigrationMessageParsingError.schemeMismatch(url.scheme)
@@ -148,7 +148,7 @@ private extension WalletMigrationMessageParser {
             return extractRawActionFromDeepLink(url: url)
         } else if
             let scheme = url.scheme,
-            WalletMigrationScheme.allowedAppLinkSchemes.contains(scheme) {
+            WalletMigrationParams.allowedAppLinkSchemes.contains(scheme) {
             return extractRawActionFromAppLink(url: url)
         } else {
             return nil

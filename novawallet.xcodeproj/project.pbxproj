@@ -471,6 +471,7 @@
 		0C40520C2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */; };
 		0C4169202D77047C000514EE /* ParitySignerPayloadWithProofTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41691F2D77047C000514EE /* ParitySignerPayloadWithProofTests.swift */; };
 		0C4169222D7892ED000514EE /* StakingRewardInfoChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4169212D7892ED000514EE /* StakingRewardInfoChanged.swift */; };
+		0C4178832DE06C5300BB0D5D /* SecureSessionManager+WalletMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4178822DE06C5300BB0D5D /* SecureSessionManager+WalletMigration.swift */; };
 		0C41D20E2BF77F85000950EE /* CloudBackupSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */; };
 		0C41D2102BF7814A000950EE /* MockCloudBackupServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */; };
 		0C41D2122BF78389000950EE /* MockCloudBackupFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */; };
@@ -6304,6 +6305,7 @@
 		0C40520B2A53DC4100B3E6EC /* OverlayBlurBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayBlurBackgroundView.swift; sourceTree = "<group>"; };
 		0C41691F2D77047C000514EE /* ParitySignerPayloadWithProofTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerPayloadWithProofTests.swift; sourceTree = "<group>"; };
 		0C4169212D7892ED000514EE /* StakingRewardInfoChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardInfoChanged.swift; sourceTree = "<group>"; };
+		0C4178822DE06C5300BB0D5D /* SecureSessionManager+WalletMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SecureSessionManager+WalletMigration.swift"; sourceTree = "<group>"; };
 		0C41D20D2BF77F85000950EE /* CloudBackupSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSyncTests.swift; sourceTree = "<group>"; };
 		0C41D20F2BF7814A000950EE /* MockCloudBackupServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupServiceFactory.swift; sourceTree = "<group>"; };
 		0C41D2112BF78389000950EE /* MockCloudBackupFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCloudBackupFileManager.swift; sourceTree = "<group>"; };
@@ -12931,6 +12933,7 @@
 				0C3B12922DDE763100A61597 /* WalletMigrationLinkNavigator.swift */,
 				0C3B12942DDE770C00A61597 /* WalletMigrationDestination.swift */,
 				0C3B12962DDE78CD00A61597 /* WalletMigrationChannelError.swift */,
+				0C4178822DE06C5300BB0D5D /* SecureSessionManager+WalletMigration.swift */,
 			);
 			path = WalletMigration;
 			sourceTree = "<group>";
@@ -32072,6 +32075,7 @@
 				846AACED28BF94B9009F3D42 /* AccountManagementFilter.swift in Sources */,
 				0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */,
 				8425D0E628FE82CB003B782A /* ReferendumVoteInteractor.swift in Sources */,
+				0C4178832DE06C5300BB0D5D /* SecureSessionManager+WalletMigration.swift in Sources */,
 				766FE2FAB8509BF0F56EA3C0 /* CollatorStakingInfoProtocols.swift in Sources */,
 				7791076E2AB96425000A4B17 /* SendAssetOperationProtocols.swift in Sources */,
 				4097A50CF5E5794092354758 /* CollatorStakingInfoWireframe.swift in Sources */,

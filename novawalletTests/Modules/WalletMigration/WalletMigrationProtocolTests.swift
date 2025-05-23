@@ -10,14 +10,14 @@ final class WalletMigrationProtocolTests: XCTestCase {
         
         let sharedNavigator = MockWalletMigrationLinkNavigator()
         
-        let originSession = SecureSessionManager()
+        let originSession = SecureSessionManager.createForWalletMigration()
         let originChannel = WalletMigrationOrigin(
             destinationAppLinkURL: ApplicationConfig.shared.externalUniversalLinkURL,
             destinationScheme: destinationScheme,
             navigator: sharedNavigator
         )
         
-        let destinationSession = SecureSessionManager()
+        let destinationSession = SecureSessionManager.createForWalletMigration()
         let destinationChannel = WalletMigrationDestination(
             originScheme: originScheme,
             navigator: sharedNavigator
