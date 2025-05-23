@@ -35,7 +35,7 @@ private extension BranchLinkService {
 
         Branch.getInstance().initSession(
             launchOptions: [:]
-        ) { [weak self] (params: ExternalUniversalLink.Params?, _: Error?) in
+        ) { [weak self] (params: ExternalUniversalLinkParams?, _: Error?) in
             // Branch sdk delivers callback in the main queue
 
             guard let self else {
@@ -53,11 +53,11 @@ private extension BranchLinkService {
 
             logger.debug("Handling branch link")
 
-            handleDeepLink(params: branchParams)
+            handleDeepLinkByParams(branchParams)
         }
     }
 
-    func handleDeepLink(url: URL) {
+    func handleDeepLinkByURL(_ url: URL) {
         let handled = Branch.getInstance().handleDeepLink(url)
 
         if handled {
@@ -67,7 +67,7 @@ private extension BranchLinkService {
         }
     }
 
-    func handleDeepLink(params: ExternalUniversalLink.Params) {
+    func handleDeepLinkByParams(_ params: ExternalUniversalLinkParams) {
         guard let url = deepLinkFactory.createDeepLink(from: params) else {
             return
         }
@@ -106,6 +106,6 @@ extension BranchLinkService {
             return
         }
 
-        handleDeepLink(url: url)
+        handleDeepLinkByURL(url)
     }
 }

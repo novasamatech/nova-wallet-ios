@@ -1,9 +1,9 @@
 import Foundation
 
-enum ExternalUniversalLink {
-    typealias Params = [AnyHashable: Any]
+typealias ExternalUniversalLinkParams = [AnyHashable: Any]
 
-    static let actionKey = "action"
-    static let screenKey = "screen"
-    static let entityKey = "entity"
+enum ExternalUniversalLinkKey: String, CaseIterable {
+    case action
+    case screen
+    case entity
 }
