@@ -25,10 +25,6 @@ private extension BranchLinkService {
             Branch.enableLogging()
         #endif
 
-        #if F_DEV
-            Branch.setUseTestBranchKey(true)
-        #endif
-
         Branch.getInstance().initSession(
             launchOptions: launchOptions
         ) { [weak self] (params: ExternalUniversalLink.Params?, _: Error?) in
