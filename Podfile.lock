@@ -1556,7 +1556,7 @@ DEPENDENCIES:
   - FirebaseFirestore (~> 11.3.0)
   - FirebaseMessaging (~> 11.3.0)
   - FireMock
-  - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, commit `f4b3042c28421be6b965a9c5b8d79344daca8c9e`)
+  - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, commit `7aae7c585f113850ac157e57181a547c18a3c642`)
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.2`)
   - Keystore-iOS (from `https://github.com/novasamatech/Keystore-iOS.git`, tag `1.0.0`)
   - Kingfisher
@@ -1650,7 +1650,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   Foundation-iOS:
-    :commit: f4b3042c28421be6b965a9c5b8d79344daca8c9e
+    :commit: 7aae7c585f113850ac157e57181a547c18a3c642
     :git: https://github.com/novasamatech/Foundation-iOS.git
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
@@ -1705,7 +1705,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   Foundation-iOS:
-    :commit: f4b3042c28421be6b965a9c5b8d79344daca8c9e
+    :commit: 7aae7c585f113850ac157e57181a547c18a3c642
     :git: https://github.com/novasamatech/Foundation-iOS.git
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
@@ -1774,7 +1774,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: ed3f874c733f1d20e32b82a3428f6a9f01ef9270
   FirebaseSharedSwift: d39c2ad64a11a8d936ce25a42b00df47078bb59c
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
-  Foundation-iOS: 5882c807000253d941907cac05095b999b12d73d
+  Foundation-iOS: 2b4267fc2273edb5b3360d303ebdcdf498ebb263
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
@@ -1818,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: b6d70b2d44746bf6608e265c171e0814ef4fdf5c
+PODFILE CHECKSUM: 341dfad01f74d2897e6092b3b45b7845403f56b0
 
 COCOAPODS: 1.15.2

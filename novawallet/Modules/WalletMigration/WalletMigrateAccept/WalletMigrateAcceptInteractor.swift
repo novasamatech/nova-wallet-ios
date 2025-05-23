@@ -1,6 +1,7 @@
 import UIKit
 import NovaCrypto
 import Operation_iOS
+import Foundation_iOS
 
 final class WalletMigrateAcceptInteractor {
     weak var presenter: WalletMigrateAcceptInteractorOutputProtocol?
@@ -33,7 +34,7 @@ final class WalletMigrateAcceptInteractor {
         self.metaAccountOperationFactory = metaAccountOperationFactory
         self.mnemonicFactory = mnemonicFactory
         self.operationQueue = operationQueue
-        channel = WalletMigrationDestination(originScheme: startMessage.originScheme)
+        channel = WalletMigrationDestination.createFrom(originScheme: startMessage.originScheme)
         self.eventCenter = eventCenter
         self.logger = logger
     }
@@ -118,7 +119,7 @@ private extension WalletMigrateAcceptInteractor {
     func handle(message: WalletMigrationMessage) {
         switch message {
         case let .start(model):
-            channel = WalletMigrationDestination(originScheme: model.originScheme)
+            channel = WalletMigrationDestination.createFrom(originScheme: model.originScheme)
 
             initiateSession()
         case let .complete(model):

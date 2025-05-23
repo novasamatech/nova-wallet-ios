@@ -25,17 +25,19 @@ final class URLHandlingServiceFacade {
     private var delayedLaunchOptions: AppLaunchOptions?
 
     static func setup(with urlHandlingService: URLServiceHandlingFinding) {
+        let appConfig = ApplicationConfig.shared
+
         let branchLinkService = BranchLinkService(
             deepLinkHandler: urlHandlingService,
             deepLinkFactory: BranchDeepLinkFactory(config: appConfig),
             appLinkURL: appConfig.externalUniversalLinkURL,
             deepLinkScheme: appConfig.deepLinkScheme,
-            logger: logger
+            logger: Logger.shared
         )
-        
+
         setup(with: urlHandlingService, branchService: branchLinkService)
     }
-    
+
     static func setup(
         with urlHandlingService: URLServiceHandlingFinding,
         branchService: BranchLinkServiceProtocol
@@ -60,7 +62,7 @@ final class URLHandlingServiceFacade {
         self.branchLinkService = branchLinkService
         self.settingsManager = settingsManager
         self.appConfig = appConfig
-        self.logger = logger        
+        self.logger = logger
     }
 }
 

@@ -2,6 +2,8 @@ import Foundation
 import BranchSDK
 
 protocol BranchLinkServiceProtocol {
+    var isActive: Bool { get }
+
     func canHandle(url: URL) -> Bool
     func setup()
     func handle(url: URL)

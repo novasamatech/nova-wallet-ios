@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 protocol OnboardingMainViewProtocol: ControllerBackedProtocol {}
 

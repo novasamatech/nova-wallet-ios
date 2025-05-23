@@ -1,7 +1,7 @@
 import Foundation
 import Keystore_iOS
-
 import SubstrateSdk
+import Foundation_iOS
 
 final class MainTabBarInteractor {
     weak var presenter: MainTabBarInteractorOutputProtocol?

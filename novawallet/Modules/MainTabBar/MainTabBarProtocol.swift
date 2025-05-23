@@ -1,4 +1,5 @@
 import UIKit
+import Foundation_iOS
 
 protocol MainTabBarProtocol {
     var view: UIView! { get set }

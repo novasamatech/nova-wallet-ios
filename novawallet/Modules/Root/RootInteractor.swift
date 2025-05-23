@@ -2,6 +2,7 @@ import Foundation
 import Keystore_iOS
 import NovaCrypto
 import Operation_iOS
+import Foundation_iOS
 
 final class RootInteractor {
     weak var presenter: RootInteractorOutputProtocol?
@@ -53,10 +54,7 @@ final class RootInteractor {
             logger: logger
         )
 
-        let walletMigrationService = WalletMigrationService(
-            localDeepLinkScheme: applicationConfig.deepLinkScheme,
-            logger: logger
-        )
+        let walletMigrationService = WalletMigrationService(localDeepLinkScheme: applicationConfig.deepLinkScheme)
 
         let callbackUrl = applicationConfig.purchaseRedirect
         let purchaseHandler = PurchaseCompletionHandler(

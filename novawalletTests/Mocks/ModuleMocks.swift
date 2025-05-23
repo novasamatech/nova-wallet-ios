@@ -17818,6 +17818,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Foundation_iOS
 
 
  class MockOnboardingMainViewProtocol: OnboardingMainViewProtocol, Cuckoo.ProtocolMock {

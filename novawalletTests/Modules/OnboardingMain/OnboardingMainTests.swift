@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import SubstrateSdk
 import Cuckoo
+import Foundation_iOS
 
 class OnboardingMainTests: XCTestCase {
 
@@ -132,8 +133,7 @@ class OnboardingMainTests: XCTestCase {
                                             legal: LegalData,
                                             keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared),
                                             migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
-                                                localDeepLinkScheme: "novawallet",
-                                                logger: Logger.shared
+                                                localDeepLinkScheme: "novawallet"
                                             )
     )
         -> OnboardingMainPresenter {
