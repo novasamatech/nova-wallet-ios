@@ -1,6 +1,8 @@
 import Foundation
 
-final class BranchToDeepLinkConversionFactory: BaseInternalLinkFactory {}
+final class BranchToDeepLinkConversionFactory: BaseInternalLinkFactory {
+    static let branchSpecials = ["~", "$", "+"]
+}
 
 private extension BranchToDeepLinkConversionFactory {
     func getAction(from externalParams: ExternalUniversalLinkParams) -> String? {
@@ -13,7 +15,6 @@ private extension BranchToDeepLinkConversionFactory {
     }
 
     func queryItems(externalParams: ExternalUniversalLinkParams) -> [URLQueryItem] {
-        let branchSpecials = ["~", "$", "+"]
         let externalKeys = Set(ExternalUniversalLinkKey.allCases.map(\.rawValue))
 
         return externalParams.compactMap { keyValue in
@@ -22,7 +23,7 @@ private extension BranchToDeepLinkConversionFactory {
             }
 
             guard
-                branchSpecials.allSatisfy({ !keyString.hasPrefix($0) }),
+                Self.branchSpecials.allSatisfy({ !keyString.hasPrefix($0) }),
                 !externalKeys.contains(keyString) else {
                 return nil
             }
@@ -34,15 +35,7 @@ private extension BranchToDeepLinkConversionFactory {
 
 extension BranchToDeepLinkConversionFactory: InternalLinkFactoryProtocol {
     func createInternalLink(from externalParams: ExternalUniversalLinkParams) -> URL? {
-        guard var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false) else {
-            return nil
-        }
-
-        components.queryItems = queryItems(externalParams: externalParams)
-
-        guard var url = components.url else {
-            return nil
-        }
+        var url = baseUrl
 
         if let action = getAction(from: externalParams) {
             url = url.appendingPathComponent(action)
@@ -52,6 +45,6 @@ extension BranchToDeepLinkConversionFactory: InternalLinkFactoryProtocol {
             url = url.appendingPathComponent(actionObject)
         }
 
-        return components.url
+        return url.appending(queryItems: queryItems(externalParams: externalParams))
     }
 }
