@@ -43,8 +43,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationCenter.delegate = self
     }
 
-    func setupUrlHandling(with launchOptions: AppLaunchOptions?) {
-        urlHandlingFacade.configure(launchOptions: launchOptions)
+    func setupUrlHandling(with _: AppLaunchOptions?) {
+        urlHandlingFacade.configure()
     }
 
     func markAppFirstTimeLaunchIfNeeded() {
@@ -87,9 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
 
-        urlHandlingFacade.handle(url: url)
-
-        return true
+        return urlHandlingFacade.handle(url: url)
     }
 }
 

@@ -8,25 +8,33 @@ final class BranchLinkService {
     let deepLinkHandler: URLHandlingServiceProtocol
     let deepLinkFactory: BranchDeepLinkFactoryProtocol
 
+    let externalDeepLinkHost: String = "open"
+    let deepLinkScheme: String
+    let appLinkURL: URL
+
     init(
         deepLinkHandler: URLHandlingServiceProtocol,
         deepLinkFactory: BranchDeepLinkFactoryProtocol,
+        appLinkURL: URL,
+        deepLinkScheme: String,
         logger: LoggerProtocol
     ) {
         self.deepLinkHandler = deepLinkHandler
         self.deepLinkFactory = deepLinkFactory
+        self.appLinkURL = appLinkURL
+        self.deepLinkScheme = deepLinkScheme
         self.logger = logger
     }
 }
 
 private extension BranchLinkService {
-    func setupSdk(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    func setupSdk() {
         #if DEBUG
             Branch.enableLogging()
         #endif
 
         Branch.getInstance().initSession(
-            launchOptions: launchOptions
+            launchOptions: [:]
         ) { [weak self] (params: ExternalUniversalLink.Params?, _: Error?) in
             // Branch sdk delivers callback in the main queue
 
@@ -49,6 +57,16 @@ private extension BranchLinkService {
         }
     }
 
+    func handleDeepLink(url: URL) {
+        let handled = Branch.getInstance().handleDeepLink(url)
+
+        if handled {
+            logger.debug("Branch link was handled")
+        } else {
+            logger.warning("Not branch link")
+        }
+    }
+
     func handleDeepLink(params: ExternalUniversalLink.Params) {
         guard let url = deepLinkFactory.createDeepLink(from: params) else {
             return
@@ -63,7 +81,15 @@ private extension BranchLinkService {
 }
 
 extension BranchLinkService {
-    func setup(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    func canHandle(url: URL) -> Bool {
+        if url.scheme == deepLinkScheme {
+            return url.host(percentEncoded: false) == externalDeepLinkHost
+        } else {
+            return url.isSameUniversalLinkDomain(appLinkURL)
+        }
+    }
+
+    func setup() {
         guard !isActive else {
             logger.warning("Service already setup")
             return
@@ -71,6 +97,15 @@ extension BranchLinkService {
 
         isActive = true
 
-        setupSdk(with: launchOptions)
+        setupSdk()
+    }
+
+    func handle(url: URL) {
+        guard isActive else {
+            logger.warning("Service must be setup first")
+            return
+        }
+
+        handleDeepLink(url: url)
     }
 }
