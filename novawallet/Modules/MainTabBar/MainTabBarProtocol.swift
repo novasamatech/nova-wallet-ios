@@ -26,6 +26,7 @@ protocol MainTabBarInteractorInputProtocol: AnyObject {
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didRequestImportAccount(source: SecretSource)
+    func didRequestWalletMigration(with message: WalletMigrationMessage.Start)
     func didRequestScreenOpen(_ screen: UrlHandlingScreen)
     func didRequestPushScreenOpen(_ screen: PushNotification.OpenScreen)
     func didRequestReviewCloud(changes: CloudBackupSyncResult.Changes)
@@ -40,6 +41,9 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     ModalAlertPresenting,
     BrowserOpening {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
+
+    func presentWalletMigration(on view: MainTabBarViewProtocol?, message: WalletMigrationMessage.Start)
+
     func presentScreenIfNeeded(
         on view: MainTabBarViewProtocol?,
         screen: UrlHandlingScreen,

@@ -47,9 +47,9 @@ private extension MainTabBarViewFactory {
         guard
             let keystoreImportService: KeystoreImportServiceProtocol = urlServiceFacade.findInternalService(),
             let screenOpenService: ScreenOpenServiceProtocol = urlServiceFacade.findInternalService(),
-            let pushScreenOpenService = PushNotificationHandlingService.shared.service
-        else {
-            Logger.shared.error("Can't find required keystore import service")
+            let walletMigrateService: WalletMigrationServiceProtocol = urlServiceFacade.findInternalService(),
+            let pushScreenOpenService = PushNotificationHandlingService.shared.service else {
+            Logger.shared.error("Can't find required service")
             return nil
         }
 
@@ -60,6 +60,7 @@ private extension MainTabBarViewFactory {
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
             keystoreImportService: keystoreImportService,
+            walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,
             pushScreenOpenService: pushScreenOpenService,
             cloudBackupMediator: CloudBackupSyncMediatorFacade.sharedMediator,

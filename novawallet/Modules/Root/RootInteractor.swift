@@ -14,7 +14,7 @@ final class RootInteractor {
     let securityLayerInteractor: SecurityLayerInteractorInputProtocol
     let eventCenter: EventCenterProtocol
     let migrators: [Migrating]
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -25,7 +25,7 @@ final class RootInteractor {
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         eventCenter: EventCenterProtocol,
         migrators: [Migrating],
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.walletSettings = walletSettings
         self.settings = settings
@@ -44,13 +44,18 @@ final class RootInteractor {
         let screenOpenService = ScreenOpenService(
             parsingFactory: parsingFactory,
             pendingLinkStore: URLHandlingPersistentStore(settings: settings),
-            logger: Logger.shared,
+            logger: logger,
             validators: screenOpenURLActivityValidators
         )
 
         let keystoreImportService = KeystoreImportService(
             validators: screenOpenURLActivityValidators,
-            logger: Logger.shared
+            logger: logger
+        )
+
+        let walletMigrationService = WalletMigrationService(
+            localDeepLinkScheme: applicationConfig.deepLinkScheme,
+            logger: logger
         )
 
         let callbackUrl = applicationConfig.purchaseRedirect
@@ -69,6 +74,7 @@ final class RootInteractor {
         let urlHandlingService = URLHandlingService(
             children: [
                 screenOpenService,
+                walletMigrationService,
                 purchaseHandler,
                 wcHandlingService,
                 keystoreImportService
@@ -82,7 +88,7 @@ final class RootInteractor {
         let handlingFactory = PushNotificationsHandlerFactory(chainRegistryClosure: chainRegistryClosure)
         let screenOpenService = PushNotificationOpenScreenFacade(
             handlingFactory: handlingFactory,
-            logger: Logger.shared
+            logger: logger
         )
 
         PushNotificationHandlingService.shared.setup(service: screenOpenService)
@@ -93,7 +99,7 @@ final class RootInteractor {
             do {
                 try migrator.migrate()
             } catch {
-                logger?.error(error.localizedDescription)
+                logger.error(error.localizedDescription)
             }
         }
     }
@@ -142,12 +148,12 @@ extension RootInteractor: RootInteractorInputProtocol {
             switch result {
             case let .success(maybeMetaAccount):
                 if let metaAccount = maybeMetaAccount {
-                    self.logger?.debug("Selected account: \(metaAccount.metaId)")
+                    self.logger.debug("Selected account: \(metaAccount.metaId)")
                 } else {
-                    self.logger?.debug("No selected account")
+                    self.logger.debug("No selected account")
                 }
             case let .failure(error):
-                self.logger?.error("Selected account setup failed: \(error)")
+                self.logger.error("Selected account setup failed: \(error)")
             }
         }
 
