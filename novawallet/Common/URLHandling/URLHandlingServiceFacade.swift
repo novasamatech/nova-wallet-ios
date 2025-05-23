@@ -16,7 +16,7 @@ protocol URLHandlingServiceFacadeProtocol {
 final class URLHandlingServiceFacade {
     private(set) static var shared: URLHandlingServiceFacade!
 
-    let branchLinkService: BranchLinkService
+    let branchLinkService: BranchLinkServiceProtocol
     let settingsManager: SettingsManagerProtocol
     let urlHandlingService: URLServiceHandlingFinding
     let appConfig: ApplicationConfigProtocol
@@ -25,8 +25,24 @@ final class URLHandlingServiceFacade {
     private var delayedLaunchOptions: AppLaunchOptions?
 
     static func setup(with urlHandlingService: URLServiceHandlingFinding) {
+        let branchLinkService = BranchLinkService(
+            deepLinkHandler: urlHandlingService,
+            deepLinkFactory: BranchDeepLinkFactory(config: appConfig),
+            appLinkURL: appConfig.externalUniversalLinkURL,
+            deepLinkScheme: appConfig.deepLinkScheme,
+            logger: logger
+        )
+        
+        setup(with: urlHandlingService, branchService: branchLinkService)
+    }
+    
+    static func setup(
+        with urlHandlingService: URLServiceHandlingFinding,
+        branchService: BranchLinkServiceProtocol
+    ) {
         shared = URLHandlingServiceFacade(
             urlHandlingService: urlHandlingService,
+            branchLinkService: branchService,
             settingsManager: SettingsManager.shared,
             appConfig: ApplicationConfig.shared,
             logger: Logger.shared
@@ -35,22 +51,16 @@ final class URLHandlingServiceFacade {
 
     init(
         urlHandlingService: URLServiceHandlingFinding,
+        branchLinkService: BranchLinkServiceProtocol,
         settingsManager: SettingsManagerProtocol,
         appConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
         self.urlHandlingService = urlHandlingService
+        self.branchLinkService = branchLinkService
         self.settingsManager = settingsManager
         self.appConfig = appConfig
-        self.logger = logger
-
-        branchLinkService = BranchLinkService(
-            deepLinkHandler: urlHandlingService,
-            deepLinkFactory: BranchDeepLinkFactory(config: appConfig),
-            appLinkURL: appConfig.externalUniversalLinkURL,
-            deepLinkScheme: appConfig.deepLinkScheme,
-            logger: logger
-        )
+        self.logger = logger        
     }
 }
 

@@ -1,6 +1,12 @@
 import Foundation
 import BranchSDK
 
+protocol BranchLinkServiceProtocol {
+    func canHandle(url: URL) -> Bool
+    func setup()
+    func handle(url: URL)
+}
+
 final class BranchLinkService {
     private(set) var isActive = false
 
@@ -80,7 +86,7 @@ private extension BranchLinkService {
     }
 }
 
-extension BranchLinkService {
+extension BranchLinkService: BranchLinkServiceProtocol {
     func canHandle(url: URL) -> Bool {
         if url.scheme == deepLinkScheme {
             return url.host(percentEncoded: false) == externalDeepLinkHost
