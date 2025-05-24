@@ -10,16 +10,13 @@ final class BranchDeepLinkInternalFactory {
 
 extension BranchDeepLinkInternalFactory: InternalLinkFactoryProtocol {
     func createInternalLink(from externalParams: ExternalUniversalLinkParams) -> URL? {
-        let optPath = externalParams[BranchParamKey.deepLink] ?? externalParams[BranchParamKey.iosDeepLink]
+        let optPath = externalParams[BranchParamKey.deepLinkPath] ??
+            externalParams[BranchParamKey.iosDeepLinkPath]
 
         guard let path = optPath as? String else {
             return nil
         }
 
-        var components = URLComponents(string: path)
-
-        components?.scheme = scheme
-
-        return components?.url
+        return URL(string: scheme + "://" + path)
     }
 }

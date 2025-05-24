@@ -8,11 +8,9 @@ final class BranchDeepLinkFactory {
     let children: [InternalLinkFactoryProtocol]
 
     init(config: ApplicationConfigProtocol) {
-        let baseUrl = config.deepLinkURL
-
         children = [
             BranchDeepLinkInternalFactory(scheme: config.deepLinkScheme),
-            BranchToDeepLinkConversionFactory(baseUrl: baseUrl)
+            BranchToDeepLinkConversionFactory(baseUrl: config.deepLinkURL)
         ]
     }
 }
