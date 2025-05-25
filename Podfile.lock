@@ -1556,7 +1556,7 @@ DEPENDENCIES:
   - FirebaseFirestore (~> 11.3.0)
   - FirebaseMessaging (~> 11.3.0)
   - FireMock
-  - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, commit `7aae7c585f113850ac157e57181a547c18a3c642`)
+  - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, commit `07e94e9411f5b166bcfd8fffc8d1374afaae5aae`)
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.2`)
   - Keystore-iOS (from `https://github.com/novasamatech/Keystore-iOS.git`, tag `1.0.0`)
   - Kingfisher
@@ -1650,7 +1650,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   Foundation-iOS:
-    :commit: 7aae7c585f113850ac157e57181a547c18a3c642
+    :commit: 07e94e9411f5b166bcfd8fffc8d1374afaae5aae
     :git: https://github.com/novasamatech/Foundation-iOS.git
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
@@ -1705,7 +1705,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/EthereumSignTypedDataUtil.git
     :tag: 0.1.3
   Foundation-iOS:
-    :commit: 7aae7c585f113850ac157e57181a547c18a3c642
+    :commit: 07e94e9411f5b166bcfd8fffc8d1374afaae5aae
     :git: https://github.com/novasamatech/Foundation-iOS.git
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
@@ -1818,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 341dfad01f74d2897e6092b3b45b7845403f56b0
+PODFILE CHECKSUM: eef9fad93a3deae08f79f8bfe9b15a3a8728aa3c
 
 COCOAPODS: 1.15.2

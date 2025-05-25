@@ -12,7 +12,7 @@ abstract_target 'novawalletAll' do
   pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
   pod 'UIKit-iOS', :git => 'https://github.com/novasamatech/UIKit-iOS.git', :tag => '1.1.2'
   pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
-  pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :commit => '7aae7c585f113850ac157e57181a547c18a3c642'
+  pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :commit => '07e94e9411f5b166bcfd8fffc8d1374afaae5aae'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift', '~> 5.2.4'
   pod 'SnapKit', '~> 5.0.0'
@@ -46,7 +46,7 @@ abstract_target 'novawalletAll' do
 
     pod 'Cuckoo'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.7.0'
-    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :commit => '7aae7c585f113850ac157e57181a547c18a3c642'
+    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :commit => '07e94e9411f5b166bcfd8fffc8d1374afaae5aae'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
@@ -71,7 +71,7 @@ abstract_target 'novawalletAll' do
 
     pod 'SwiftLint'
     pod 'R.swift', :inhibit_warnings => true
-    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :commit => '7aae7c585f113850ac157e57181a547c18a3c642'
+    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :commit => '07e94e9411f5b166bcfd8fffc8d1374afaae5aae'
     pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
     pod 'Sourcery', '~> 1.4'
