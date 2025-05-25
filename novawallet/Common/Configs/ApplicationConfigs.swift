@@ -346,12 +346,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var deepLinkScheme: String {
-        // TODO: Consider different deep links
-        #if F_RELEASE
-            "novawallet"
-        #else
-            "novawallet"
-        #endif
+        "novawallet"
     }
 
     var deepLinkHost: String {
