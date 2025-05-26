@@ -333,8 +333,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var externalUniversalLinkURL: URL {
-        // TODO: Change production one
-        URL(string: "https://wdeqe.app.link")!
+        URL(string: "https://nova-wallet.app.link")!
     }
 
     var internalUniversalLinkURL: URL {

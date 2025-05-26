@@ -145,7 +145,7 @@
 	<key>branch_universal_link_domains</key>
 	<array>
 		<string>wdeqe.test-app.link</string>
-		<string>wdeqe.app.link</string>
+		<string>nova-wallet.app.link</string>
 	</array>
 </dict>
 </plist>
