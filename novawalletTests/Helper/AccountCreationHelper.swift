@@ -240,7 +240,7 @@ final class AccountCreationHelper {
         let accountId = AccountId.random(of: 32)!
         
         let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
-            coin: GenericLedgerSubstrateApplication.coin,
+            coin: GenericLedgerPolkadotApplication.coin,
             accountIndex: accountIndex
         ).build()
         

@@ -8,7 +8,7 @@ final class GenericLedgerAccountSelectionInteractor {
     let requestFactory: StorageRequestFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let deviceId: UUID
-    let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
+    let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
     let operationQueue: OperationQueue
 
     let cancellableStore = CancellableCallStore()
@@ -16,7 +16,7 @@ final class GenericLedgerAccountSelectionInteractor {
     init(
         chainRegistry: ChainRegistryProtocol,
         deviceId: UUID,
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
+        ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
         requestFactory: StorageRequestFactoryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -54,7 +54,7 @@ final class GenericLedgerAccountSelectionInteractor {
             operationQueue: operationQueue
         )
 
-        let accountFetchWrapper = ledgerApplication.getAccountWrapper(
+        let accountFetchWrapper = ledgerApplication.getGenericSubstrateAccountWrapper(
             for: deviceId,
             index: index,
             addressPrefix: SubstrateConstants.genericAddressPrefix,

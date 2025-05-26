@@ -39,7 +39,7 @@ class LedgerBaseAccountConfirmationInteractor {
         assertionFailure("Child interactor must override this method")
     }
 
-    private func verify(response: LedgerAccountResponse, expectedAddress: AccountAddress, index: UInt32) {
+    private func verify(response: LedgerSubstrateAccountResponse, expectedAddress: AccountAddress, index: UInt32) {
         let responseAccount = response.account
 
         if
@@ -48,7 +48,7 @@ class LedgerBaseAccountConfirmationInteractor {
             let info = LedgerChainAccount.Info(
                 accountId: accountId,
                 publicKey: responseAccount.publicKey,
-                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType
+                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType
             )
 
             addAccount(for: info, chain: chain, derivationPath: response.derivationPath, index: index)

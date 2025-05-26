@@ -62,7 +62,7 @@ struct LedgerDiscoverViewFactory {
     static func createGenericLedgerView(for flow: WalletCreationFlow) -> ControllerBackedProtocol? {
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
-        let ledgerApplication = GenericLedgerSubstrateApplication(connectionManager: ledgerConnection)
+        let ledgerApplication = GenericLedgerPolkadotApplication(connectionManager: ledgerConnection)
 
         let interactor = GenericLedgerDiscoverInteractor(
             ledgerApplication: ledgerApplication,
@@ -108,7 +108,7 @@ struct LedgerDiscoverViewFactory {
         connection: LedgerConnectionManagerProtocol
     ) -> LedgerAccountRetrievable {
         if chain.supportsGenericLedgerApp {
-            return MigrationLedgerSubstrateApplication(
+            return MigrationLedgerPolkadotApplication(
                 connectionManager: connection,
                 chainRegistry: ChainRegistryFacade.sharedRegistry,
                 supportedApps: SupportedLedgerApp.substrate()

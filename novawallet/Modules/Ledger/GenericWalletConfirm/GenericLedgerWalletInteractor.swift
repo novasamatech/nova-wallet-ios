@@ -6,12 +6,12 @@ final class GenericLedgerWalletInteractor {
 
     let chainRegistry: ChainRegistryProtocol
     let deviceId: UUID
-    let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
+    let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
     let index: UInt32
     let operationQueue: OperationQueue
 
     init(
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
+        ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
         deviceId: UUID,
         index: UInt32,
         chainRegistry: ChainRegistryProtocol,
@@ -46,14 +46,14 @@ final class GenericLedgerWalletInteractor {
         }
     }
 
-    private func provideWalletModel(from response: LedgerAccountResponse) {
+    private func provideWalletModel(from response: LedgerSubstrateAccountResponse) {
         do {
             let accountId = try response.account.address.toAccountId()
 
             let model = SubstrateLedgerWalletModel(
                 accountId: accountId,
                 publicKey: response.account.publicKey,
-                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType,
+                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
                 derivationPath: response.derivationPath
             )
 
@@ -71,7 +71,7 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func fetchAccount() {
-        let wrapper = ledgerApplication.getUniversalAccountWrapper(for: deviceId, index: index)
+        let wrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(deviceId: deviceId, index: index)
 
         execute(
             wrapper: wrapper,
@@ -88,8 +88,8 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func confirmAccount() {
-        let wrapper = ledgerApplication.getUniversalAccountWrapper(
-            for: deviceId,
+        let wrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(
+            deviceId: deviceId,
             index: index,
             displayVerificationDialog: true
         )

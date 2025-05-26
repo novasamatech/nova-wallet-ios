@@ -4,7 +4,7 @@ import Foundation_iOS
 
 struct GenericLedgerAccountSelectionViewFactory {
     static func createView(
-        application: GenericLedgerSubstrateApplicationProtocol,
+        application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol,
         flow: WalletCreationFlow
     ) -> GenericLedgerAccountSelectionViewProtocol? {
@@ -32,7 +32,7 @@ struct GenericLedgerAccountSelectionViewFactory {
     }
 
     private static func createInteractor(
-        application: GenericLedgerSubstrateApplicationProtocol,
+        application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol
     ) -> GenericLedgerAccountSelectionInteractor {
         let requestFactory = StorageRequestFactory(

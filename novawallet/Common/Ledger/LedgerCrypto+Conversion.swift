@@ -7,6 +7,8 @@ extension LedgerCryptoScheme {
             return .ed25519
         case .sr25519:
             return .sr25519
+        case .ecdsa:
+            return .substrateEcdsa
         }
     }
 }
