@@ -43,11 +43,11 @@ extension Error {
     }
 
     var isDelegatedSigningClosed: Bool {
-        guard let proxySigningError = self as? DelegatedSigningWrapperError else {
+        guard let delegatedSigningError = self as? DelegatedSigningWrapperError else {
             return false
         }
 
-        switch proxySigningError {
+        switch delegatedSigningError {
         case .closed:
             return true
         default:
@@ -56,11 +56,11 @@ extension Error {
     }
 
     var isDelegatedSigningCancelled: Bool {
-        guard let proxySigningError = self as? DelegatedSigningWrapperError else {
+        guard let delegatedSigningError = self as? DelegatedSigningWrapperError else {
             return false
         }
 
-        switch proxySigningError {
+        switch delegatedSigningError {
         case .canceled:
             return true
         default:
