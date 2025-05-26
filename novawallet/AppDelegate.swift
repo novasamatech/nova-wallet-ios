@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: AppLaunchOptions?
+        didFinishLaunchingWithOptions _: AppLaunchOptions?
     ) -> Bool {
         guard !isUnitTesting else { return true }
 
@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rootWindow.makeKeyAndVisible()
 
         // setup the facade after dependencies are proper initialized by Root module
-        setupUrlHandling(with: launchOptions)
+        setupUrlHandling()
 
         markAppFirstTimeLaunchIfNeeded()
 
@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationCenter.delegate = self
     }
 
-    func setupUrlHandling(with _: AppLaunchOptions?) {
+    func setupUrlHandling() {
         urlHandlingFacade.configure()
     }
 
