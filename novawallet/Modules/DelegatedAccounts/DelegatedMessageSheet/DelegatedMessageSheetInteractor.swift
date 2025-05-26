@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class ProxyMessageSheetInteractor {
+final class DelegatedMessageSheetInteractor {
     let repository: AnyDataProviderRepository<ProxiedSettings>
     let operationQueue: OperationQueue
     let metaId: MetaAccountModel.Id
@@ -41,7 +41,7 @@ final class ProxyMessageSheetInteractor {
     }
 }
 
-extension ProxyMessageSheetInteractor: ProxyMessageSheetInteractorInputProtocol {
+extension DelegatedMessageSheetInteractor: DelegatedMessageSheetInteractorInputProtocol {
     func saveNoConfirmation(for completion: @escaping () -> Void) {
         performSave(for: metaId, completion: completion)
     }

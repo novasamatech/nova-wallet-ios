@@ -1,21 +1,21 @@
 import Foundation
 import Operation_iOS
 
-final class ProxySignConfirmationInteractor {
-    weak var presenter: ProxySignConfirmationInteractorOutputProtocol?
+final class DelegatedSignConfirmationInteractor {
+    weak var presenter: DelegatedSignConfirmationInteractorOutputProtocol?
 
-    let proxiedId: MetaAccountModel.Id
+    let delegatedAccountId: MetaAccountModel.Id
     let repository: AnyDataProviderRepository<ProxiedSettings>
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        proxiedId: MetaAccountModel.Id,
+        delegatedAccountId: MetaAccountModel.Id,
         repository: AnyDataProviderRepository<ProxiedSettings>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.proxiedId = proxiedId
+        self.delegatedAccountId = delegatedAccountId
         self.repository = repository
         self.operationQueue = operationQueue
         self.logger = logger
@@ -42,8 +42,8 @@ final class ProxySignConfirmationInteractor {
     }
 }
 
-extension ProxySignConfirmationInteractor: ProxySignConfirmationInteractorInputProtocol {
+extension DelegatedSignConfirmationInteractor: DelegatedSignConfirmationInteractorInputProtocol {
     func setup() {
-        provideSettings(for: proxiedId)
+        provideSettings(for: delegatedAccountId)
     }
 }

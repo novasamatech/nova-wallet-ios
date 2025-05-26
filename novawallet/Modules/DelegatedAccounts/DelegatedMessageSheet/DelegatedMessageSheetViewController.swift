@@ -1,21 +1,21 @@
 import Foundation_iOS
 
-typealias ProxyMessageSheetViewModel = MessageSheetViewModel<
+typealias DelegatedMessageSheetViewModel = MessageSheetViewModel<
     MessageSheetImageView.GraphicsViewModel,
     MessageSheetCheckmarkContentView.ContentViewModel
 >
 
-final class ProxyMessageSheetViewController: MessageSheetViewController<
+final class DelegatedMessageSheetViewController: MessageSheetViewController<
     MessageSheetImageView,
     MessageSheetCheckmarkContentView
 > {
-    var presenter: ProxyMessageSheetPresenterProtocol? {
-        basePresenter as? ProxyMessageSheetPresenterProtocol
+    var presenter: DelegatedMessageSheetPresenterProtocol? {
+        basePresenter as? DelegatedMessageSheetPresenterProtocol
     }
 
     init(
-        presenter: ProxyMessageSheetPresenterProtocol,
-        viewModel: ProxyMessageSheetViewModel,
+        presenter: DelegatedMessageSheetPresenterProtocol,
+        viewModel: DelegatedMessageSheetViewModel,
         localizationManager: LocalizationManagerProtocol
     ) {
         super.init(

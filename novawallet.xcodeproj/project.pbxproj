@@ -306,7 +306,7 @@
 		0C23529E2BCCDFC2004D2548 /* CloudBackupFileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C23529D2BCCDFC2004D2548 /* CloudBackupFileModel.swift */; };
 		0C2352A02BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C23529F2BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift */; };
 		0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */; };
-		0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */; };
+		0C259EA42B46721B00CB86E4 /* DelegatedMessageSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA32B46721B00CB86E4 /* DelegatedMessageSheetViewFactory.swift */; };
 		0C259EA82B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */; };
 		0C277D982D80779B004FF053 /* KodadotMediaViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */; };
 		0C277D9A2D814CB1004FF053 /* XcmTransferType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C277D992D814CB1004FF053 /* XcmTransferType.swift */; };
@@ -416,12 +416,12 @@
 		0C37AFC32B5796DD00009ECA /* StateCallRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFC22B5796DD00009ECA /* StateCallRequestFactory.swift */; };
 		0C37AFC82B59815500009ECA /* ProxiedSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFC72B59815500009ECA /* ProxiedSettings.swift */; };
 		0C37AFCA2B5981B900009ECA /* ProxiedSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */; };
-		0C37AFCC2B59839A00009ECA /* ProxyMessageSheetInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFCB2B59839A00009ECA /* ProxyMessageSheetInteractor.swift */; };
-		0C37AFCF2B598C5200009ECA /* ProxySignConfirmationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFCE2B598C5200009ECA /* ProxySignConfirmationProtocols.swift */; };
-		0C37AFD12B598D7D00009ECA /* ProxySignConfirmationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD02B598D7D00009ECA /* ProxySignConfirmationPresenter.swift */; };
-		0C37AFD32B598D8C00009ECA /* ProxySignConfirmationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD22B598D8C00009ECA /* ProxySignConfirmationInteractor.swift */; };
-		0C37AFD52B598DB100009ECA /* ProxySignConfirmationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD42B598DB100009ECA /* ProxySignConfirmationWireframe.swift */; };
-		0C37AFD72B5A2D9000009ECA /* ProxySignConfirmationViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD62B5A2D9000009ECA /* ProxySignConfirmationViewFactory.swift */; };
+		0C37AFCC2B59839A00009ECA /* DelegatedMessageSheetInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFCB2B59839A00009ECA /* DelegatedMessageSheetInteractor.swift */; };
+		0C37AFCF2B598C5200009ECA /* DelegatedSignConfirmationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFCE2B598C5200009ECA /* DelegatedSignConfirmationProtocols.swift */; };
+		0C37AFD12B598D7D00009ECA /* DelegatedSignConfirmationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD02B598D7D00009ECA /* DelegatedSignConfirmationPresenter.swift */; };
+		0C37AFD32B598D8C00009ECA /* DelegatedSignConfirmationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD22B598D8C00009ECA /* DelegatedSignConfirmationInteractor.swift */; };
+		0C37AFD52B598DB100009ECA /* DelegatedSignConfirmationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD42B598DB100009ECA /* DelegatedSignConfirmationWireframe.swift */; };
+		0C37AFD72B5A2D9000009ECA /* DelegatedSignConfirmationViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C37AFD62B5A2D9000009ECA /* DelegatedSignConfirmationViewFactory.swift */; };
 		0C38B4FB2B7A5DB500882A8B /* ExtrinsicProcessor+HydraSwapMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B4FA2B7A5DB500882A8B /* ExtrinsicProcessor+HydraSwapMatching.swift */; };
 		0C38B4FD2B7A652B00882A8B /* HydraRouter+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B4FC2B7A652B00882A8B /* HydraRouter+Event.swift */; };
 		0C38B5002B7A82F100882A8B /* TransactionPaymentPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38B4FF2B7A82F100882A8B /* TransactionPaymentPallet.swift */; };
@@ -2156,9 +2156,9 @@
 		7738FB6A2A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */; };
 		773A37542B398CEB006AC4AA /* WalletNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37532B398CEB006AC4AA /* WalletNotificationService.swift */; };
 		773A37562B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */; };
-		773A375A2B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */; };
-		773A375C2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */; };
-		773A375E2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */; };
+		773A375A2B3B58DE006AC4AA /* DelegatedMessageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A37592B3B58DE006AC4AA /* DelegatedMessageSheetViewController.swift */; };
+		773A375C2B3B5901006AC4AA /* DelegatedMessageSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375B2B3B5901006AC4AA /* DelegatedMessageSheetPresenter.swift */; };
+		773A375E2B3B595E006AC4AA /* DelegatedMessageSheetProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773A375D2B3B595E006AC4AA /* DelegatedMessageSheetProtocols.swift */; };
 		773B2E3F2B74DCB500A3BC11 /* PushNotificationsTopicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E3E2B74DCB500A3BC11 /* PushNotificationsTopicService.swift */; };
 		773B2E412B752FD300A3BC11 /* AlertSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */; };
 		773B2E432B756F8600A3BC11 /* Web3AlertLocalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B2E422B756F8600A3BC11 /* Web3AlertLocalModel.swift */; };
@@ -6129,7 +6129,7 @@
 		0C23529F2BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupFileModelConverter.swift; sourceTree = "<group>"; };
 		0C2437D345C3D9B12AEE1E28 /* ParaStkYieldBoostSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupProtocols.swift; sourceTree = "<group>"; };
 		0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TypeRegistry+Node.swift"; sourceTree = "<group>"; };
-		0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewFactory.swift; sourceTree = "<group>"; };
+		0C259EA32B46721B00CB86E4 /* DelegatedMessageSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedMessageSheetViewFactory.swift; sourceTree = "<group>"; };
 		0C259EA72B46C55C00CB86E4 /* ExtrinsicSigningErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSigningErrorHandling.swift; sourceTree = "<group>"; };
 		0C277D972D80779B004FF053 /* KodadotMediaViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KodadotMediaViewModelFactory.swift; sourceTree = "<group>"; };
 		0C277D992D814CB1004FF053 /* XcmTransferType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferType.swift; sourceTree = "<group>"; };
@@ -6247,12 +6247,12 @@
 		0C37AFC62B597FB500009ECA /* MultiassetUserDataModel11.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel11.xcdatamodel; sourceTree = "<group>"; };
 		0C37AFC72B59815500009ECA /* ProxiedSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxiedSettings.swift; sourceTree = "<group>"; };
 		0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxiedSettingsMapper.swift; sourceTree = "<group>"; };
-		0C37AFCB2B59839A00009ECA /* ProxyMessageSheetInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetInteractor.swift; sourceTree = "<group>"; };
-		0C37AFCE2B598C5200009ECA /* ProxySignConfirmationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignConfirmationProtocols.swift; sourceTree = "<group>"; };
-		0C37AFD02B598D7D00009ECA /* ProxySignConfirmationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignConfirmationPresenter.swift; sourceTree = "<group>"; };
-		0C37AFD22B598D8C00009ECA /* ProxySignConfirmationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignConfirmationInteractor.swift; sourceTree = "<group>"; };
-		0C37AFD42B598DB100009ECA /* ProxySignConfirmationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignConfirmationWireframe.swift; sourceTree = "<group>"; };
-		0C37AFD62B5A2D9000009ECA /* ProxySignConfirmationViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySignConfirmationViewFactory.swift; sourceTree = "<group>"; };
+		0C37AFCB2B59839A00009ECA /* DelegatedMessageSheetInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedMessageSheetInteractor.swift; sourceTree = "<group>"; };
+		0C37AFCE2B598C5200009ECA /* DelegatedSignConfirmationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSignConfirmationProtocols.swift; sourceTree = "<group>"; };
+		0C37AFD02B598D7D00009ECA /* DelegatedSignConfirmationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSignConfirmationPresenter.swift; sourceTree = "<group>"; };
+		0C37AFD22B598D8C00009ECA /* DelegatedSignConfirmationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSignConfirmationInteractor.swift; sourceTree = "<group>"; };
+		0C37AFD42B598DB100009ECA /* DelegatedSignConfirmationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSignConfirmationWireframe.swift; sourceTree = "<group>"; };
+		0C37AFD62B5A2D9000009ECA /* DelegatedSignConfirmationViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSignConfirmationViewFactory.swift; sourceTree = "<group>"; };
 		0C38B4FA2B7A5DB500882A8B /* ExtrinsicProcessor+HydraSwapMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+HydraSwapMatching.swift"; sourceTree = "<group>"; };
 		0C38B4FC2B7A652B00882A8B /* HydraRouter+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraRouter+Event.swift"; sourceTree = "<group>"; };
 		0C38B4FF2B7A82F100882A8B /* TransactionPaymentPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionPaymentPallet.swift; sourceTree = "<group>"; };
@@ -8014,9 +8014,9 @@
 		7738FB692A4C5D1A00797439 /* StartStakingRelaychainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingRelaychainInteractor.swift; sourceTree = "<group>"; };
 		773A37532B398CEB006AC4AA /* WalletNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNotificationService.swift; sourceTree = "<group>"; };
 		773A37552B3A0C5D006AC4AA /* MessageSheetCheckmarkContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSheetCheckmarkContentView.swift; sourceTree = "<group>"; };
-		773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetViewController.swift; sourceTree = "<group>"; };
-		773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetPresenter.swift; sourceTree = "<group>"; };
-		773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyMessageSheetProtocols.swift; sourceTree = "<group>"; };
+		773A37592B3B58DE006AC4AA /* DelegatedMessageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedMessageSheetViewController.swift; sourceTree = "<group>"; };
+		773A375B2B3B5901006AC4AA /* DelegatedMessageSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedMessageSheetPresenter.swift; sourceTree = "<group>"; };
+		773A375D2B3B595E006AC4AA /* DelegatedMessageSheetProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelegatedMessageSheetProtocols.swift; sourceTree = "<group>"; };
 		773B2E3E2B74DCB500A3BC11 /* PushNotificationsTopicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsTopicService.swift; sourceTree = "<group>"; };
 		773B2E402B752FD300A3BC11 /* AlertSettingsMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertSettingsMapper.swift; sourceTree = "<group>"; };
 		773B2E422B756F8600A3BC11 /* Web3AlertLocalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3AlertLocalModel.swift; sourceTree = "<group>"; };
@@ -12855,16 +12855,16 @@
 			path = ValidatorsExposure;
 			sourceTree = "<group>";
 		};
-		0C37AFCD2B598BAB00009ECA /* ProxySignConfirmation */ = {
+		0C37AFCD2B598BAB00009ECA /* DelegatedSignConfirmation */ = {
 			isa = PBXGroup;
 			children = (
-				0C37AFCE2B598C5200009ECA /* ProxySignConfirmationProtocols.swift */,
-				0C37AFD02B598D7D00009ECA /* ProxySignConfirmationPresenter.swift */,
-				0C37AFD22B598D8C00009ECA /* ProxySignConfirmationInteractor.swift */,
-				0C37AFD42B598DB100009ECA /* ProxySignConfirmationWireframe.swift */,
-				0C37AFD62B5A2D9000009ECA /* ProxySignConfirmationViewFactory.swift */,
+				0C37AFCE2B598C5200009ECA /* DelegatedSignConfirmationProtocols.swift */,
+				0C37AFD02B598D7D00009ECA /* DelegatedSignConfirmationPresenter.swift */,
+				0C37AFD22B598D8C00009ECA /* DelegatedSignConfirmationInteractor.swift */,
+				0C37AFD42B598DB100009ECA /* DelegatedSignConfirmationWireframe.swift */,
+				0C37AFD62B5A2D9000009ECA /* DelegatedSignConfirmationViewFactory.swift */,
 			);
-			path = ProxySignConfirmation;
+			path = DelegatedSignConfirmation;
 			sourceTree = "<group>";
 		};
 		0C38B4FE2B7A82E000882A8B /* TransactionPaymentPallet */ = {
@@ -15686,6 +15686,16 @@
 			path = DelegatedSigningWrapper;
 			sourceTree = "<group>";
 		};
+		2D6CE43A2DE4C3FD00B94DBA /* DelegatedAccounts */ = {
+			isa = PBXGroup;
+			children = (
+				77FF02672B21DCB300B655BC /* Proxy */,
+				0C37AFCD2B598BAB00009ECA /* DelegatedSignConfirmation */,
+				773A37582B3B589F006AC4AA /* DelegatedMessageSheet */,
+			);
+			path = DelegatedAccounts;
+			sourceTree = "<group>";
+		};
 		2D6F51A32CDBCF9B00564C00 /* AssetListStyleSwitcher */ = {
 			isa = PBXGroup;
 			children = (
@@ -17127,16 +17137,16 @@
 			path = RelaychainStaking;
 			sourceTree = "<group>";
 		};
-		773A37582B3B589F006AC4AA /* ProxyMessageSheet */ = {
+		773A37582B3B589F006AC4AA /* DelegatedMessageSheet */ = {
 			isa = PBXGroup;
 			children = (
-				773A37592B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift */,
-				773A375B2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift */,
-				773A375D2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift */,
-				0C259EA32B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift */,
-				0C37AFCB2B59839A00009ECA /* ProxyMessageSheetInteractor.swift */,
+				773A37592B3B58DE006AC4AA /* DelegatedMessageSheetViewController.swift */,
+				773A375B2B3B5901006AC4AA /* DelegatedMessageSheetPresenter.swift */,
+				773A375D2B3B595E006AC4AA /* DelegatedMessageSheetProtocols.swift */,
+				0C259EA32B46721B00CB86E4 /* DelegatedMessageSheetViewFactory.swift */,
+				0C37AFCB2B59839A00009ECA /* DelegatedMessageSheetInteractor.swift */,
 			);
-			path = ProxyMessageSheet;
+			path = DelegatedMessageSheet;
 			sourceTree = "<group>";
 		};
 		773BA0762B15F50700929BD4 /* Proxy */ = {
@@ -17810,9 +17820,7 @@
 			isa = PBXGroup;
 			children = (
 				773090542B5591AC002577AE /* Validation */,
-				0C37AFCD2B598BAB00009ECA /* ProxySignConfirmation */,
 				AC6B93411E3444BFB71691BE /* ProxySignValidation */,
-				773A37582B3B589F006AC4AA /* ProxyMessageSheet */,
 				B084A3FDB5B12737B254252D /* ProxiedsUpdate */,
 			);
 			path = Proxy;
@@ -21002,6 +21010,7 @@
 		849013D224A9268D008F705E /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				2D6CE43A2DE4C3FD00B94DBA /* DelegatedAccounts */,
 				0C028E5C2DC910520060A0E8 /* Ramp */,
 				0C028E6D2DC910520060A0E8 /* SelectRampProvider */,
 				2DD0909F2C2F507300632A5F /* NetworkManagement */,
@@ -21043,7 +21052,6 @@
 				EC1A579A3747EB16688DAEBF /* AssetReceive */,
 				C9850B4B70AEFEABB96269FF /* TransactionHistory */,
 				77C9BCBF2ACD2E0300022EA2 /* Swaps */,
-				77FF02672B21DCB300B655BC /* Proxy */,
 				85D192A683920D50BCD10893 /* Notifications */,
 				3C6913D315CA586B8DBC28EC /* AppearanceSettings */,
 				F3B54B5A951ACB53FBE9A9EF /* NovaMainAppContainer */,
@@ -28358,7 +28366,7 @@
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
 				844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */,
 				84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */,
-				0C37AFCF2B598C5200009ECA /* ProxySignConfirmationProtocols.swift in Sources */,
+				0C37AFCF2B598C5200009ECA /* DelegatedSignConfirmationProtocols.swift in Sources */,
 				848CCB4C2833979700A1FD00 /* ParaStkStateViewModelFactory+Alert.swift in Sources */,
 				8444407528AA628300446D22 /* LedgerAccount.swift in Sources */,
 				84C74361251E4B5E009576C6 /* FeeType.swift in Sources */,
@@ -28577,7 +28585,7 @@
 				848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */,
 				843CE3A327D1FB8A00436F4E /* NftDetailsPriceView.swift in Sources */,
 				8442002D28E9ADB500C49C4A /* VoteInteractor.swift in Sources */,
-				773A375E2B3B595E006AC4AA /* ProxyMessageSheetProtocols.swift in Sources */,
+				773A375E2B3B595E006AC4AA /* DelegatedMessageSheetProtocols.swift in Sources */,
 				84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */,
 				8456C08227CF9DC9001282DE /* RemoteNftModel.swift in Sources */,
 				849F144F29445A4600D9F9BA /* EvmInputViewModel+Handler.swift in Sources */,
@@ -29127,7 +29135,7 @@
 				843E9B3427C8B804009C143A /* FileDownloadOperationFactory.swift in Sources */,
 				844ADE7528CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift in Sources */,
 				773B2E412B752FD300A3BC11 /* AlertSettingsMapper.swift in Sources */,
-				0C37AFD12B598D7D00009ECA /* ProxySignConfirmationPresenter.swift in Sources */,
+				0C37AFD12B598D7D00009ECA /* DelegatedSignConfirmationPresenter.swift in Sources */,
 				2D6CC2722DD3BC6B00FF5FA8 /* DelegatedAccountFetchOperationFactory.swift in Sources */,
 				841E5549282D88FC00C8438F /* StakingParachainInteractor.swift in Sources */,
 				0C3976AB2C33A08900998DD6 /* HydraDx+PoolAccount.swift in Sources */,
@@ -29933,7 +29941,7 @@
 				84FF267E28494B2B003EC78D /* ParaStkStateSetupPresenter+StakeMore.swift in Sources */,
 				77FFB2B32B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift in Sources */,
 				84F4386125D9A83100AEDA56 /* TimeInterval+Time.swift in Sources */,
-				0C37AFCC2B59839A00009ECA /* ProxyMessageSheetInteractor.swift in Sources */,
+				0C37AFCC2B59839A00009ECA /* DelegatedMessageSheetInteractor.swift in Sources */,
 				0CB06E732A6800F500C7EC99 /* NominationPools+Functions.swift in Sources */,
 				844EFB5F265FCE180090ACB1 /* CrowdloanContributionInteractor.swift in Sources */,
 				8499FE6627BD15C800712589 /* DistributedUrlParser.swift in Sources */,
@@ -30328,7 +30336,7 @@
 				7719019B2AE670AE00D9C918 /* ShortTextInfoPresentable.swift in Sources */,
 				840E59B72A187A9200BA6ADD /* GladingPatternView.swift in Sources */,
 				AEA2C1B82681E9BD0069492E /* ValidatorSearchWireframe.swift in Sources */,
-				0C37AFD72B5A2D9000009ECA /* ProxySignConfirmationViewFactory.swift in Sources */,
+				0C37AFD72B5A2D9000009ECA /* DelegatedSignConfirmationViewFactory.swift in Sources */,
 				846952A62852A1E60083E0B4 /* AuraStakingDurationFactory.swift in Sources */,
 				849F1445294360BB00D9F9BA /* EvmTokenAddRequest.swift in Sources */,
 				F40966DB26B29839008CD244 /* SubqueryRewardData.swift in Sources */,
@@ -30446,7 +30454,7 @@
 				8436B6DA2848119C00F24360 /* AccountDetailsSelectionCell.swift in Sources */,
 				501347BEA67CD30FE484358E /* AccountImportViewFactory.swift in Sources */,
 				84EBC55124F660A700459D15 /* EventVisitor.swift in Sources */,
-				0C37AFD32B598D8C00009ECA /* ProxySignConfirmationInteractor.swift in Sources */,
+				0C37AFD32B598D8C00009ECA /* DelegatedSignConfirmationInteractor.swift in Sources */,
 				842B2FCF2947352A002829B6 /* UITextField+Attributes.swift in Sources */,
 				2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */,
 				0C8AF7BA2B3806B700005AC9 /* ChainModel+Pdc20.swift in Sources */,
@@ -30655,7 +30663,7 @@
 				849F14492944443500D9F9BA /* CoingeckoUrlParser.swift in Sources */,
 				84E25BE427E5F71900290BF1 /* AccountFieldStateViewModel.swift in Sources */,
 				84452F4E25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift in Sources */,
-				773A375C2B3B5901006AC4AA /* ProxyMessageSheetPresenter.swift in Sources */,
+				773A375C2B3B5901006AC4AA /* DelegatedMessageSheetPresenter.swift in Sources */,
 				84BC703F289DBE6C008A9758 /* QRWithLogoCreationOperation.swift in Sources */,
 				84452A6025D037AE00F47EC5 /* ChainStorage+Decodable.swift in Sources */,
 				8849AD6E29C4690F00F4F7FF /* String+CheckLength.swift in Sources */,
@@ -30954,7 +30962,7 @@
 				84A59166292B601600BCCF8F /* EvmOnChainTransferInteractor.swift in Sources */,
 				84038FF626FFDF4E00C73F3F /* CrowdloanSharedState.swift in Sources */,
 				0C0F6D7F2D3A6F4100943A7C /* RemoteSubscriptionService+GlobalData.swift in Sources */,
-				773A375A2B3B58DE006AC4AA /* ProxyMessageSheetViewController.swift in Sources */,
+				773A375A2B3B58DE006AC4AA /* DelegatedMessageSheetViewController.swift in Sources */,
 				054C4BCDEC29ED5F74A36E8B /* ExportMnemonicPresenter.swift in Sources */,
 				39218CF5AA701518BD3B0103 /* ExportMnemonicInteractor.swift in Sources */,
 				0C13D3182A8216A10054BB6F /* NominationPoolsIconFactory.swift in Sources */,
@@ -32315,7 +32323,7 @@
 				0CD3A6802AEAC3C90059BBEC /* CompoundOperationWrapper+Add.swift in Sources */,
 				844C3E5C2A0615A200C4305F /* SettingsAccessoryTableViewCell.swift in Sources */,
 				0C9C643A2A8DF97E004DC078 /* StakingNPoolsError.swift in Sources */,
-				0C259EA42B46721B00CB86E4 /* ProxyMessageSheetViewFactory.swift in Sources */,
+				0C259EA42B46721B00CB86E4 /* DelegatedMessageSheetViewFactory.swift in Sources */,
 				87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */,
 				84770F2C291F893200852A33 /* GovernanceUnlockConfirmInitData.swift in Sources */,
 				84B24FAC2A2F25FF00F9BF59 /* StakingDashboardActiveDetailsView.swift in Sources */,
@@ -32411,7 +32419,7 @@
 				7772EB342B726670000D7E21 /* Web3AlertsSyncService.swift in Sources */,
 				72EA1D180E99C6C78B87B820 /* LedgerInstructionsViewLayout.swift in Sources */,
 				846A835428B8A36D00D92892 /* WalletCreationFlow.swift in Sources */,
-				0C37AFD52B598DB100009ECA /* ProxySignConfirmationWireframe.swift in Sources */,
+				0C37AFD52B598DB100009ECA /* DelegatedSignConfirmationWireframe.swift in Sources */,
 				3349B35F5D5DDD2D46FF2E48 /* LedgerInstructionsViewFactory.swift in Sources */,
 				1C8D1041448B8FB9DD9BBCF1 /* YourWalletsProtocols.swift in Sources */,
 				7F5B03517FD0144F7EDE1015 /* YourWalletsPresenter.swift in Sources */,

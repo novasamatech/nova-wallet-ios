@@ -1,10 +1,13 @@
 import Foundation_iOS
 import Keystore_iOS
 
-final class ProxyMessageSheetPresenter: MessageSheetPresenter, ProxyMessageSheetPresenterProtocol {
-    let interactor: ProxyMessageSheetInteractorInputProtocol
+final class DelegatedMessageSheetPresenter: MessageSheetPresenter, DelegatedMessageSheetPresenterProtocol {
+    let interactor: DelegatedMessageSheetInteractorInputProtocol
 
-    init(interactor: ProxyMessageSheetInteractorInputProtocol, wireframe: MessageSheetWireframeProtocol) {
+    init(
+        interactor: DelegatedMessageSheetInteractorInputProtocol,
+        wireframe: MessageSheetWireframeProtocol
+    ) {
         self.interactor = interactor
         super.init(wireframe: wireframe)
     }

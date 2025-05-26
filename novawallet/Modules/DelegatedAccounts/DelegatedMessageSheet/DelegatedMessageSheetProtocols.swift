@@ -1,9 +1,9 @@
 import Foundation
 
-protocol ProxyMessageSheetPresenterProtocol: MessageSheetPresenterProtocol {
+protocol DelegatedMessageSheetPresenterProtocol: MessageSheetPresenterProtocol {
     func proceed(skipInfoNextTime: Bool, action: MessageSheetAction?)
 }
 
-protocol ProxyMessageSheetInteractorInputProtocol {
+protocol DelegatedMessageSheetInteractorInputProtocol {
     func saveNoConfirmation(for completion: @escaping () -> Void)
 }
