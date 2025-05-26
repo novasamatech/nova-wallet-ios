@@ -78,4 +78,6 @@ protocol UniversalLinkFactoryProtocol {
         referendumId: ReferendumIdLocal,
         type: GovernanceType
     ) -> URL?
+
+    func createUrlForStaking() -> URL?
 }

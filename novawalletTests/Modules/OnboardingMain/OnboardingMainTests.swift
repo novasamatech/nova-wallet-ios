@@ -133,7 +133,8 @@ class OnboardingMainTests: XCTestCase {
                                             legal: LegalData,
                                             keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared),
                                             migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
-                                                localDeepLinkScheme: "novawallet"
+                                                localDeepLinkScheme: "novawallet",
+                                                queryFactory: WalletMigrationQueryFactory()
                                             )
     )
         -> OnboardingMainPresenter {

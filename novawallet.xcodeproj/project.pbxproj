@@ -110,6 +110,8 @@
 		0C08977F2DE124F000F06A0E /* WalletMigrationQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */; };
 		0C0897812DE1256200F06A0E /* WalletMigrationDestination+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0897802DE1256200F06A0E /* WalletMigrationDestination+Init.swift */; };
 		0C08978A2DE13E0A00F06A0E /* BranchDeepLinkInternalFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0897892DE13E0A00F06A0E /* BranchDeepLinkInternalFactoryTests.swift */; };
+		0C0AE4052DE459DD00D506F3 /* BranchInitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4042DE459DD00D506F3 /* BranchInitTests.swift */; };
+		0C0AE4072DE45A9000D506F3 /* MockBranchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4062DE45A9000D506F3 /* MockBranchService.swift */; };
 		0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */; };
 		0C0CB3852AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */; };
 		0C0CB3882AC5688100EAC516 /* AssetConversionPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */; };
@@ -5921,6 +5923,8 @@
 		0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletMigrationQueryFactory.swift; sourceTree = "<group>"; };
 		0C0897802DE1256200F06A0E /* WalletMigrationDestination+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletMigrationDestination+Init.swift"; sourceTree = "<group>"; };
 		0C0897892DE13E0A00F06A0E /* BranchDeepLinkInternalFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchDeepLinkInternalFactoryTests.swift; sourceTree = "<group>"; };
+		0C0AE4042DE459DD00D506F3 /* BranchInitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchInitTests.swift; sourceTree = "<group>"; };
+		0C0AE4062DE45A9000D506F3 /* MockBranchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBranchService.swift; sourceTree = "<group>"; };
 		0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversion.swift; sourceTree = "<group>"; };
 		0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapOperationFactory.swift; sourceTree = "<group>"; };
 		0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionPallet.swift; sourceTree = "<group>"; };
@@ -12081,6 +12085,15 @@
 				0C0897802DE1256200F06A0E /* WalletMigrationDestination+Init.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		0C0AE4032DE459BF00D506F3 /* WalletMigration */ = {
+			isa = PBXGroup;
+			children = (
+				0C0AE4042DE459DD00D506F3 /* BranchInitTests.swift */,
+				0C0AE4062DE45A9000D506F3 /* MockBranchService.swift */,
+			);
+			path = WalletMigration;
 			sourceTree = "<group>";
 		};
 		0C0CB37C2AC5408000EAC516 /* AssetConversion */ = {
@@ -22530,6 +22543,7 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				0C0AE4032DE459BF00D506F3 /* WalletMigration */,
 				771901912AE2425400D9C918 /* Swaps */,
 				8440F4A3295AB4C200CAFBF9 /* SecurityLayer */,
 				843461F8290E55BE00379936 /* Governance */,
@@ -33524,6 +33538,7 @@
 				84893BFC24D9B0F1008F6A3F /* PredicateTests.swift in Sources */,
 				84B7C73A289BFA79001A3566 /* StakingRewardDestConfirmTests.swift in Sources */,
 				844D229925EE5E8400C022F7 /* SingleValueProviderStub.swift in Sources */,
+				0C0AE4052DE459DD00D506F3 /* BranchInitTests.swift in Sources */,
 				84B7C732289BFA79001A3566 /* SelectedValidatorListTests.swift in Sources */,
 				842D1E8D24D2091A00C30A7A /* ModuleMocks.swift in Sources */,
 				84B7C739289BFA79001A3566 /* StakingRewardDestinationSetupTests.swift in Sources */,
@@ -33564,6 +33579,7 @@
 				8434C9EA2540AE51009E4191 /* ExtrinsicEraTests.swift in Sources */,
 				84B7C749289BFA79001A3566 /* ControllerAccountTests.swift in Sources */,
 				84B7C719289BFA79001A3566 /* DAppSearchTests.swift in Sources */,
+				0C0AE4072DE45A9000D506F3 /* MockBranchService.swift in Sources */,
 				84B66A1226FDF0230038B963 /* CrowdloanLocalSubscriptionFactoryStub.swift in Sources */,
 				84B7C740289BFA79001A3566 /* RootTests.swift in Sources */,
 				84B7C712289BFA79001A3566 /* ExtrinsicDetailsTests.swift in Sources */,

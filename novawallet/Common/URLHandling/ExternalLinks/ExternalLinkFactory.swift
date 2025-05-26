@@ -54,4 +54,23 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
 
         return urlComponents?.url
     }
+
+    func createUrlForStaking() -> URL? {
+        var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
+
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.action.rawValue,
+                value: UniversalLink.Action.open.rawValue
+            ),
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.screen.rawValue,
+                value: UniversalLink.Screen.staking.rawValue
+            )
+        ]
+
+        urlComponents?.queryItems = queryItems
+
+        return urlComponents?.url
+    }
 }
