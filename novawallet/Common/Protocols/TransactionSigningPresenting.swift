@@ -83,7 +83,7 @@ private extension TransactionSigningPresenter {
 
         controller.presentWithCardLayout(navigationController, animated: true)
     }
-    
+
     func presentDelegatedFlow(
         for data: Data,
         delegatedMetaId: MetaAccountModel.Id,
@@ -148,7 +148,7 @@ private extension TransactionSigningPresenter {
 
         confirmationPresenter.setup()
     }
-    
+
     func createDelegateSigningClosure(
         for data: Data,
         delegate: MetaChainAccountResponse,
@@ -261,7 +261,7 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
 
         present(signingView: ledgerView, completion: completion)
     }
-    
+
     func presentProxyFlow(
         for data: Data,
         proxiedId: MetaAccountModel.Id,
@@ -292,7 +292,7 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
         completion: @escaping TransactionSigningClosure
     ) {
         // TODO: Implement validation
-        
+
         presentDelegatedFlow(
             for: data,
             delegatedMetaId: multisigAccountId,
