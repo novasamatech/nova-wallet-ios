@@ -104,7 +104,10 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
 
     private func handleKeystore(url: URL) -> Bool {
         do {
-            // TODO: Check first for local file
+            guard url.isFileURL else {
+                return false
+            }
+
             let data = try Data(contentsOf: url)
 
             let oldDefinition = definition

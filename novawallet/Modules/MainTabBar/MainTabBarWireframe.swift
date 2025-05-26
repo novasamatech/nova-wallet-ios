@@ -1,5 +1,6 @@
 import UIKit
 import UIKit_iOS
+import Foundation_iOS
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {

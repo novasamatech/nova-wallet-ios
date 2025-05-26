@@ -1,4 +1,5 @@
 import UIKit
+import Foundation_iOS
 
 final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMainWireframeProtocol {
     func showSignup(from view: OnboardingMainViewProtocol?) {

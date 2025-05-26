@@ -1,7 +1,7 @@
 import Foundation
 
 protocol InternalLinkFactoryProtocol {
-    func createInternalLink(from externalParams: ExternalUniversalLink.Params) -> URL?
+    func createInternalLink(from externalParams: ExternalUniversalLinkParams) -> URL?
 }
 
 class BaseInternalLinkFactory {

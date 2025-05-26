@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import Foundation_iOS
 
 final class OnboardingMainInteractor {
     weak var presenter: OnboardingMainInteractorOutputProtocol?

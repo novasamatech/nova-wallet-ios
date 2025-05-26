@@ -15,8 +15,14 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
         var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
 
         var queryItems: [URLQueryItem] = [
-            URLQueryItem(name: ExternalUniversalLink.actionKey, value: UniversalLink.Action.open.rawValue),
-            URLQueryItem(name: ExternalUniversalLink.screenKey, value: UniversalLink.Screen.governance.rawValue)
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.action.rawValue,
+                value: UniversalLink.Action.open.rawValue
+            ),
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.screen.rawValue,
+                value: UniversalLink.Screen.governance.rawValue
+            )
         ]
 
         if chainModel.chainId != UniversalLink.GovScreen.defaultChainId {
@@ -43,6 +49,25 @@ final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
 
             queryItems.append(typeQueryItem)
         }
+
+        urlComponents?.queryItems = queryItems
+
+        return urlComponents?.url
+    }
+
+    func createUrlForStaking() -> URL? {
+        var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
+
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.action.rawValue,
+                value: UniversalLink.Action.open.rawValue
+            ),
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.screen.rawValue,
+                value: UniversalLink.Screen.staking.rawValue
+            )
+        ]
 
         urlComponents?.queryItems = queryItems
 

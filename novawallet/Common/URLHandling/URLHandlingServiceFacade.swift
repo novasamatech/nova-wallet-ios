@@ -2,7 +2,7 @@ import Foundation
 import Keystore_iOS
 
 protocol URLHandlingServiceFacadeProtocol {
-    func configure(launchOptions: AppLaunchOptions?)
+    func configure()
     func handle(url: URL) -> Bool
     func findInternalService<T>() -> T?
 }
@@ -16,7 +16,7 @@ protocol URLHandlingServiceFacadeProtocol {
 final class URLHandlingServiceFacade {
     private(set) static var shared: URLHandlingServiceFacade!
 
-    let branchLinkService: BranchLinkService
+    let branchLinkService: BranchLinkServiceProtocol
     let settingsManager: SettingsManagerProtocol
     let urlHandlingService: URLServiceHandlingFinding
     let appConfig: ApplicationConfigProtocol
@@ -25,8 +25,26 @@ final class URLHandlingServiceFacade {
     private var delayedLaunchOptions: AppLaunchOptions?
 
     static func setup(with urlHandlingService: URLServiceHandlingFinding) {
+        let appConfig = ApplicationConfig.shared
+
+        let branchLinkService = BranchLinkService(
+            deepLinkHandler: urlHandlingService,
+            deepLinkFactory: BranchDeepLinkFactory(config: appConfig),
+            appLinkURL: appConfig.externalUniversalLinkURL,
+            deepLinkScheme: appConfig.deepLinkScheme,
+            logger: Logger.shared
+        )
+
+        setup(with: urlHandlingService, branchService: branchLinkService)
+    }
+
+    static func setup(
+        with urlHandlingService: URLServiceHandlingFinding,
+        branchService: BranchLinkServiceProtocol
+    ) {
         shared = URLHandlingServiceFacade(
             urlHandlingService: urlHandlingService,
+            branchLinkService: branchService,
             settingsManager: SettingsManager.shared,
             appConfig: ApplicationConfig.shared,
             logger: Logger.shared
@@ -35,58 +53,62 @@ final class URLHandlingServiceFacade {
 
     init(
         urlHandlingService: URLServiceHandlingFinding,
+        branchLinkService: BranchLinkServiceProtocol,
         settingsManager: SettingsManagerProtocol,
         appConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
         self.urlHandlingService = urlHandlingService
+        self.branchLinkService = branchLinkService
         self.settingsManager = settingsManager
         self.appConfig = appConfig
         self.logger = logger
-
-        branchLinkService = BranchLinkService(
-            deepLinkHandler: urlHandlingService,
-            deepLinkFactory: BranchDeepLinkFactory(config: appConfig),
-            logger: logger
-        )
     }
 }
 
 private extension URLHandlingServiceFacade {
-    func setupBranchIfNeeded(for launchOptions: AppLaunchOptions?) {
+    func setupBranchIfNeeded() {
         guard !branchLinkService.isActive else {
             return
         }
 
         logger.debug("Setup branch service")
 
-        branchLinkService.setup(with: launchOptions)
+        branchLinkService.setup()
+    }
+
+    func handleBranch(url: URL) -> Bool {
+        setupBranchIfNeeded()
+        branchLinkService.handle(url: url)
+        return true
+    }
+
+    func handleInternal(url: URL) -> Bool {
+        if urlHandlingService.handle(url: url) {
+            logger.debug("Link has been handled")
+            return true
+        } else {
+            logger.warning("No link handler found")
+            return false
+        }
     }
 }
 
 extension URLHandlingServiceFacade: URLHandlingServiceFacadeProtocol {
-    func configure(launchOptions: AppLaunchOptions?) {
+    func configure() {
         if settingsManager.isAppFirstLaunch {
-            setupBranchIfNeeded(for: launchOptions)
+            setupBranchIfNeeded()
         } else {
             logger.debug("No need to init branch for now")
-            delayedLaunchOptions = launchOptions
         }
     }
 
     @discardableResult
     func handle(url: URL) -> Bool {
-        if appConfig.externalUniversalLinkURL.isSameUniversalLinkDomain(url) {
-            setupBranchIfNeeded(for: delayedLaunchOptions)
-            return true
+        if branchLinkService.canHandle(url: url) {
+            handleBranch(url: url)
         } else {
-            if urlHandlingService.handle(url: url) {
-                logger.debug("Link has been handled")
-                return true
-            } else {
-                logger.warning("No link handler found")
-                return false
-            }
+            handleInternal(url: url)
         }
     }
 

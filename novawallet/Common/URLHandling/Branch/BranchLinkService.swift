@@ -1,6 +1,14 @@
 import Foundation
 import BranchSDK
 
+protocol BranchLinkServiceProtocol {
+    var isActive: Bool { get }
+
+    func canHandle(url: URL) -> Bool
+    func setup()
+    func handle(url: URL)
+}
+
 final class BranchLinkService {
     private(set) var isActive = false
 
@@ -8,30 +16,34 @@ final class BranchLinkService {
     let deepLinkHandler: URLHandlingServiceProtocol
     let deepLinkFactory: BranchDeepLinkFactoryProtocol
 
+    let externalDeepLinkHost: String = "open"
+    let deepLinkScheme: String
+    let appLinkURL: URL
+
     init(
         deepLinkHandler: URLHandlingServiceProtocol,
         deepLinkFactory: BranchDeepLinkFactoryProtocol,
+        appLinkURL: URL,
+        deepLinkScheme: String,
         logger: LoggerProtocol
     ) {
         self.deepLinkHandler = deepLinkHandler
         self.deepLinkFactory = deepLinkFactory
+        self.appLinkURL = appLinkURL
+        self.deepLinkScheme = deepLinkScheme
         self.logger = logger
     }
 }
 
 private extension BranchLinkService {
-    func setupSdk(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    func setupSdk() {
         #if DEBUG
             Branch.enableLogging()
         #endif
 
-        #if F_DEV
-            Branch.setUseTestBranchKey(true)
-        #endif
-
         Branch.getInstance().initSession(
-            launchOptions: launchOptions
-        ) { [weak self] (params: ExternalUniversalLink.Params?, _: Error?) in
+            launchOptions: [:]
+        ) { [weak self] (params: ExternalUniversalLinkParams?, _: Error?) in
             // Branch sdk delivers callback in the main queue
 
             guard let self else {
@@ -49,11 +61,21 @@ private extension BranchLinkService {
 
             logger.debug("Handling branch link")
 
-            handleDeepLink(params: branchParams)
+            handleDeepLinkByParams(branchParams)
         }
     }
 
-    func handleDeepLink(params: ExternalUniversalLink.Params) {
+    func handleDeepLinkByURL(_ url: URL) {
+        let handled = Branch.getInstance().handleDeepLink(url)
+
+        if handled {
+            logger.debug("Branch link was handled")
+        } else {
+            logger.warning("Not branch link")
+        }
+    }
+
+    func handleDeepLinkByParams(_ params: ExternalUniversalLinkParams) {
         guard let url = deepLinkFactory.createDeepLink(from: params) else {
             return
         }
@@ -66,8 +88,16 @@ private extension BranchLinkService {
     }
 }
 
-extension BranchLinkService {
-    func setup(with launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+extension BranchLinkService: BranchLinkServiceProtocol {
+    func canHandle(url: URL) -> Bool {
+        if url.scheme == deepLinkScheme {
+            return url.host(percentEncoded: false) == externalDeepLinkHost
+        } else {
+            return url.isSameUniversalLinkDomain(appLinkURL)
+        }
+    }
+
+    func setup() {
         guard !isActive else {
             logger.warning("Service already setup")
             return
@@ -75,6 +105,15 @@ extension BranchLinkService {
 
         isActive = true
 
-        setupSdk(with: launchOptions)
+        setupSdk()
+    }
+
+    func handle(url: URL) {
+        guard isActive else {
+            logger.warning("Service must be setup first")
+            return
+        }
+
+        handleDeepLinkByURL(url)
     }
 }
