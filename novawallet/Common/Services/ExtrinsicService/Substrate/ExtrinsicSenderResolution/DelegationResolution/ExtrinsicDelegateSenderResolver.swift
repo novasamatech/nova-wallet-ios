@@ -34,8 +34,7 @@ final class ExtrinsicDelegateSenderResolver {
         from solution: DelegationResolution.PathFinderResult,
         builders: [ExtrinsicBuilderProtocol],
         resolutionFailures: [ExtrinsicSenderResolution.ResolutionDelegateFailure],
-        context: RuntimeJsonContext,
-        encoder: DynamicScaleEncoding
+        context: RuntimeJsonContext
     ) throws -> ExtrinsicSenderBuilderResolution {
         let newBuilders = try builders.map { builder in
             try builder.wrappingCalls { callJson in
@@ -56,13 +55,8 @@ final class ExtrinsicDelegateSenderResolver {
                         delegated: delegatedAccountId
                     )
 
-                    try encoder.append(call, ofType: KnownType.call.name)
-
-                    let callHash = try encoder.encode().blake2b32()
-
                     let newCall = try component.delegationValue.wrapCall(
                         call,
-                        callHash: callHash,
                         delegation: delegationKey,
                         context: context
                     )
@@ -98,7 +92,6 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
         let graph = DelegationResolution.Graph.build(from: wallets, chain: chain)
 
         let context = codingFactory.createRuntimeJsonContext()
-        let encoder = codingFactory.createEncoder()
 
         let allCalls = try builders
             .flatMap { $0.getCalls() }
@@ -138,8 +131,7 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
                 from: solution,
                 builders: builders,
                 resolutionFailures: resolutionFailures,
-                context: context,
-                encoder: encoder
+                context: context
             )
         } else {
             // if delegate resolution fails we still want to calculate fee and notify about failures

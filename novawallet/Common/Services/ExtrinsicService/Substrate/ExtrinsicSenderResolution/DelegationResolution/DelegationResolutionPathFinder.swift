@@ -5,7 +5,6 @@ import BigInt
 protocol AccountDelegationPathValue {
     func wrapCall(
         _ call: JSON,
-        callHash: Data?,
         delegation: DelegationResolution.DelegationKey,
         context: RuntimeJsonContext
     ) throws -> JSON
@@ -188,7 +187,6 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            callHash _: Data?,
             delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
@@ -207,20 +205,17 @@ extension DelegationResolution.PathFinder {
         let signatories: [AccountId]
 
         func wrapCall(
-            _: JSON,
-            callHash: Data?,
+            _ call: JSON,
             delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
-            guard let callHash else { throw DelegatedAccountError.callHashNotFound }
-
             // TODO: Add weight support if call is not final and timepoint support if call is not the first one
-            return try Multisig.ApproveAsMultiCall<BigUInt>(
+            try Multisig.AsMultiCall<Substrate.WeightV2>(
                 threshold: threshold,
                 otherSignatories: signatories.filter { $0 != delegation.delegate },
                 maybeTimepoint: nil,
-                callHash: callHash,
-                maxWeight: nil
+                call: call,
+                maxWeight: .zero
             )
             .runtimeCall()
             .toScaleCompatibleJSON(with: context.toRawContext())

@@ -38,6 +38,14 @@ protocol TransactionSigningPresenting: AnyObject {
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     )
+
+    func presentMultisigFlow(
+        for data: Data,
+        multisigAccountId: MetaAccountModel.Id,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        substrateContext: ExtrinsicSigningContext.Substrate,
+        completion: @escaping TransactionSigningClosure
+    )
 }
 
 final class TransactionSigningPresenter: TransactionSigningPresenting {
@@ -206,7 +214,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         )
 
         let cancelClosure: () -> Void = {
-            completion(.failure(ProxySigningWrapperError.canceled))
+            completion(.failure(DelegatedSigningWrapperError.canceled))
         }
 
         let confirmSuccessClosure: () -> Void = {
@@ -244,13 +252,23 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         confirmationPresenter.setup()
     }
 
+    func presentMultisigFlow(
+        for _: Data,
+        multisigAccountId _: MetaAccountModel.Id,
+        resolution _: ExtrinsicSenderResolution.ResolvedDelegate,
+        substrateContext _: ExtrinsicSigningContext.Substrate,
+        completion _: @escaping TransactionSigningClosure
+    ) {
+        // TODO: Implement multisig flow presentation logic
+    }
+
     func presentNotEnoughProxyPermissionsFlow(
         for metaId: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     ) {
         let completionClosure: () -> Void = {
-            completion(.failure(ProxySigningWrapperError.closed))
+            completion(.failure(DelegatedSigningWrapperError.closed))
         }
 
         let accountRequest = resolution.chain.accountRequest()

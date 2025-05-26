@@ -21,6 +21,6 @@ enum Multisig {
 
     struct MultisigTimepoint: Codable, Equatable {
         let height: BlockNumber
-        let index: UInt32
+        @StringCodable var index: UInt32
     }
 }

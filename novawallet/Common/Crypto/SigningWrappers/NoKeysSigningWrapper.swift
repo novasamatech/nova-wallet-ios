@@ -24,11 +24,11 @@ extension Error {
     }
 
     var isSigningCancelled: Bool {
-        isHardwareWalletSigningCancelled || isProxySigningCancelled
+        isHardwareWalletSigningCancelled || isDelegatedSigningCancelled
     }
 
     var isSigningClosed: Bool {
-        isProxySigningClosed
+        isDelegatedSigningClosed
     }
 
     var isHardwareWalletSigningCancelled: Bool {
@@ -42,8 +42,8 @@ extension Error {
         }
     }
 
-    var isProxySigningClosed: Bool {
-        guard let proxySigningError = self as? ProxySigningWrapperError else {
+    var isDelegatedSigningClosed: Bool {
+        guard let proxySigningError = self as? DelegatedSigningWrapperError else {
             return false
         }
 
@@ -55,8 +55,8 @@ extension Error {
         }
     }
 
-    var isProxySigningCancelled: Bool {
-        guard let proxySigningError = self as? ProxySigningWrapperError else {
+    var isDelegatedSigningCancelled: Bool {
+        guard let proxySigningError = self as? DelegatedSigningWrapperError else {
             return false
         }
 

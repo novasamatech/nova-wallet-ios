@@ -3,30 +3,44 @@ import SubstrateSdk
 import NovaCrypto
 import Keystore_iOS
 
-enum ProxySigningWrapperError: Error {
+enum DelegatedSigningWrapperError: Error {
     case canceled
     case closed
 }
 
-final class ProxySigningWrapper {
-    let signingWrapperFactory: SigningWrapperFactoryProtocol
-    let settingsManager: SettingsManagerProtocol
+class DelegatedSigningWrapper {
     let uiPresenter: TransactionSigningPresenting
     let metaId: String
 
     init(
         metaId: String,
-        signingWrapperFactory: SigningWrapperFactoryProtocol,
-        settingsManager: SettingsManagerProtocol,
         uiPresenter: TransactionSigningPresenting
     ) {
         self.metaId = metaId
-        self.signingWrapperFactory = signingWrapperFactory
-        self.settingsManager = settingsManager
         self.uiPresenter = uiPresenter
     }
 
-    private func signWithUiFlow(
+    func presentFlow(
+        for _: Data,
+        delegatedMetaId _: MetaAccountModel.Id,
+        resolution _: ExtrinsicSenderResolution.ResolvedDelegate,
+        substrateContext _: ExtrinsicSigningContext.Substrate,
+        completion _: @escaping TransactionSigningClosure
+    ) {
+        fatalError("This method should be overridden in subclasses")
+    }
+
+    func presentNotEnoughPermissionsFlow(
+        for _: String,
+        resolution _: ExtrinsicSenderResolution.ResolvedDelegate,
+        completion _: @escaping TransactionSigningClosure
+    ) {
+        fatalError("This method should be overridden in subclasses")
+    }
+}
+
+private extension DelegatedSigningWrapper {
+    func signWithUiFlow(
         _ closure: @escaping (@escaping TransactionSigningClosure) -> Void
     ) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
@@ -54,44 +68,44 @@ final class ProxySigningWrapper {
         }
     }
 
-    private func sign(
+    func sign(
         _ originalData: Data,
-        proxiedId: MetaAccountModel.Id,
-        proxy: ExtrinsicSenderResolution.ResolvedDelegate,
+        delegatedMetaId: MetaAccountModel.Id,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
-        if proxy.failures.isEmpty, proxy.delegateAccount != nil {
-            return try signWithUiFlow { completionClosure in
-                self.uiPresenter.presentProxyFlow(
+        if resolution.failures.isEmpty, resolution.delegateAccount != nil {
+            try signWithUiFlow { completionClosure in
+                self.presentFlow(
                     for: originalData,
-                    proxiedId: proxiedId,
-                    resolution: proxy,
+                    delegatedMetaId: delegatedMetaId,
+                    resolution: resolution,
                     substrateContext: substrateContext,
                     completion: completionClosure
                 )
             }
         } else {
-            return try signWithUiFlow { completionClosure in
-                self.uiPresenter.presentNotEnoughProxyPermissionsFlow(
+            try signWithUiFlow { completionClosure in
+                self.presentNotEnoughPermissionsFlow(
                     for: self.metaId,
-                    resolution: proxy,
+                    resolution: resolution,
                     completion: completionClosure
                 )
             }
         }
     }
 
-    private func sign(
+    func sign(
         _ originalData: Data,
         sender: ExtrinsicSenderResolution,
         substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
         switch sender {
         case let .delegate(resolvedDelegate):
-            return try sign(
+            try sign(
                 originalData,
-                proxiedId: metaId,
-                proxy: resolvedDelegate,
+                delegatedMetaId: metaId,
+                resolution: resolvedDelegate,
                 substrateContext: substrateContext
             )
         case .current:
@@ -100,7 +114,7 @@ final class ProxySigningWrapper {
     }
 }
 
-extension ProxySigningWrapper: SigningWrapperProtocol {
+extension DelegatedSigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
         switch context {
         case let .substrateExtrinsic(substrate):

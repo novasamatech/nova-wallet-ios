@@ -1566,6 +1566,7 @@
 		2D6CC26C2DD35CB100FF5FA8 /* DelegateIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC25F2DD212D600FF5FA8 /* DelegateIdentifier.swift */; };
 		2D6CC26E2DD3980900FF5FA8 /* ChainDelegatedAccountFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC26D2DD3980900FF5FA8 /* ChainDelegatedAccountFetchOperationFactory.swift */; };
 		2D6CC2722DD3BC6B00FF5FA8 /* DelegatedAccountFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CC2712DD3BC6B00FF5FA8 /* DelegatedAccountFetchOperationFactory.swift */; };
+		2D6CE4392DE490F900B94DBA /* DelegatedSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CE4382DE490F900B94DBA /* DelegatedSigningWrapper.swift */; };
 		2D6F51A22CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */; };
 		2D6F51A52CDBCFAC00564C00 /* AssetListStyleSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */; };
 		2D6F51A72CDD035900564C00 /* AssetDecorationAttributesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */; };
@@ -7432,6 +7433,7 @@
 		2D6CC2692DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Delegated.swift"; sourceTree = "<group>"; };
 		2D6CC26D2DD3980900FF5FA8 /* ChainDelegatedAccountFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainDelegatedAccountFetchOperationFactory.swift; sourceTree = "<group>"; };
 		2D6CC2712DD3BC6B00FF5FA8 /* DelegatedAccountFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountFetchOperationFactory.swift; sourceTree = "<group>"; };
+		2D6CE4382DE490F900B94DBA /* DelegatedSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSigningWrapper.swift; sourceTree = "<group>"; };
 		2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceChainSelectionViewFactory.swift; sourceTree = "<group>"; };
 		2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcher.swift; sourceTree = "<group>"; };
 		2D6F51A62CDD035900564C00 /* AssetDecorationAttributesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDecorationAttributesFactory.swift; sourceTree = "<group>"; };
@@ -15674,6 +15676,16 @@
 			path = Factory;
 			sourceTree = "<group>";
 		};
+		2D6CE4372DE490E500B94DBA /* DelegatedSigningWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				2D6CE4382DE490F900B94DBA /* DelegatedSigningWrapper.swift */,
+				2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */,
+				0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */,
+			);
+			path = DelegatedSigningWrapper;
+			sourceTree = "<group>";
+		};
 		2D6F51A32CDBCF9B00564C00 /* AssetListStyleSwitcher */ = {
 			isa = PBXGroup;
 			children = (
@@ -15999,14 +16011,13 @@
 		2DB71F2D2DBB8AC200E5A4DD /* SigningWrappers */ = {
 			isa = PBXGroup;
 			children = (
+				2D6CE4372DE490E500B94DBA /* DelegatedSigningWrapper */,
 				843612C82790109100DC739E /* SigningWrapperFactory.swift */,
 				84C74364251E4D60009576C6 /* SigningWrapperProtocol.swift */,
 				8467FD2924EA6C62005D486C /* SigningWrapper.swift */,
 				84ADF6F2288DE99C00C25B40 /* NoKeysSigningWrapper.swift */,
 				84282293289BB79300163031 /* ParitySignerSigningWrapper.swift */,
 				84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */,
-				0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */,
-				2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */,
 			);
 			path = SigningWrappers;
 			sourceTree = "<group>";
@@ -32695,6 +32706,7 @@
 				507AFE76D2D4EF2F739AE799 /* GovernanceDelegateInfoViewLayout.swift in Sources */,
 				0C0F6E592D489C5900943A7C /* MythosStakingStateMachine.swift in Sources */,
 				0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */,
+				2D6CE4392DE490F900B94DBA /* DelegatedSigningWrapper.swift in Sources */,
 				2D74CA4B2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift in Sources */,
 				B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */,
 				0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */,
