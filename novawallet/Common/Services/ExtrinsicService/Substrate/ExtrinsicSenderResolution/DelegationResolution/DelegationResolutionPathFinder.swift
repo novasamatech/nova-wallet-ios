@@ -1,6 +1,5 @@
 import Foundation
 import SubstrateSdk
-import BigInt
 
 protocol AccountDelegationPathValue {
     func wrapCall(
