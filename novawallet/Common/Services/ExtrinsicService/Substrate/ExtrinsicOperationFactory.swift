@@ -353,6 +353,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
 
         let nonceOperation = createNonceOperation(in: chain) {
             let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
+            let senderAccountId = try senderResolution.account.accountId.toAddress(using: self.chain.chainFormat)
+
             return senderResolution.account.accountId
         }
 

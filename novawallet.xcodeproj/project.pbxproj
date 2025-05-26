@@ -1545,6 +1545,7 @@
 		2D65F6D92CD0067500CC6F72 /* AppearanceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6D82CD0067500CC6F72 /* AppearanceFacade.swift */; };
 		2D65F6DE2CD0D77300CC6F72 /* AssetIconURLToStringMigrationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D65F6DD2CD0D77300CC6F72 /* AssetIconURLToStringMigrationPolicy.swift */; };
 		2D6861C82DDE2DE0004DCD2D /* DelegationResolutionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6861C72DDE2DE0004DCD2D /* DelegationResolutionNode.swift */; };
+		2D6861CB2DDEFBFD004DCD2D /* Multisig+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6861CA2DDEFBFD004DCD2D /* Multisig+Call.swift */; };
 		2D6AED592C05A93D001A0A15 /* HiddenMnemonicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */; };
 		2D6AED5B2C05C3BB001A0A15 /* MnemonicFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */; };
 		2D6AED5D2C05E908001A0A15 /* CheckboxListPresenterTrait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */; };
@@ -7414,6 +7415,7 @@
 		2D65F6DA2CD0C2DC00CC6F72 /* SubstrateDataModel33.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel33.xcdatamodel; sourceTree = "<group>"; };
 		2D65F6DD2CD0D77300CC6F72 /* AssetIconURLToStringMigrationPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLToStringMigrationPolicy.swift; sourceTree = "<group>"; };
 		2D6861C72DDE2DE0004DCD2D /* DelegationResolutionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationResolutionNode.swift; sourceTree = "<group>"; };
+		2D6861CA2DDEFBFD004DCD2D /* Multisig+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multisig+Call.swift"; sourceTree = "<group>"; };
 		2D6AED582C05A93D001A0A15 /* HiddenMnemonicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenMnemonicCardView.swift; sourceTree = "<group>"; };
 		2D6AED5A2C05C3BB001A0A15 /* MnemonicFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicFetching.swift; sourceTree = "<group>"; };
 		2D6AED5C2C05E908001A0A15 /* CheckboxListPresenterTrait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxListPresenterTrait.swift; sourceTree = "<group>"; };
@@ -15616,6 +15618,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		2D6861C92DDEFBE8004DCD2D /* Multisig */ = {
+			isa = PBXGroup;
+			children = (
+				2D6861CA2DDEFBFD004DCD2D /* Multisig+Call.swift */,
+			);
+			path = Multisig;
+			sourceTree = "<group>";
+		};
 		2D6AED612C05F1A0001A0A15 /* CheckboxListPresenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -19678,6 +19688,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				2D6861C92DDEFBE8004DCD2D /* Multisig */,
 				0CFF822B2D8B76F000DB17A4 /* OrmlTokensPallet */,
 				0CA8AF372D88C31A00DB4E6A /* BalancesPallet */,
 				0CA8AF1F2D85E5B000DB4E6A /* Builder */,
@@ -29991,6 +30002,7 @@
 				F400A7C2260CE1670061D576 /* StakingRewardStatus.swift in Sources */,
 				843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */,
 				0CED3A082BD12DFD00B1E994 /* CloudBackupSecretsExporting.swift in Sources */,
+				2D6861CB2DDEFBFD004DCD2D /* Multisig+Call.swift in Sources */,
 				F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */,
 				84981EEE29D4608800948306 /* TransactionHistoryFetcherFactory.swift in Sources */,
 				2D62ED322D5CE621001EF17D /* BannersViewController+UICollectionView.swift in Sources */,
