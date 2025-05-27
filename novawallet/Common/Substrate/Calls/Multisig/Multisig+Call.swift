@@ -27,6 +27,24 @@ extension Multisig {
         }
     }
 
+    struct AsMultiThreshold1Call: Codable {
+        enum CodingKeys: String, CodingKey {
+            case otherSignatories = "other_signatories"
+            case call
+        }
+
+        let otherSignatories: [AccountId]
+        let call: JSON
+
+        func runtimeCall() throws -> RuntimeCall<Self> {
+            RuntimeCall(
+                moduleName: "Multisig",
+                callName: "as_multi_threshold_1",
+                args: self
+            )
+        }
+    }
+
     struct ApproveAsMultiCall<Weight: Codable>: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
