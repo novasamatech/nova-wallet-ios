@@ -45,7 +45,8 @@ struct GenericLedgerAccountSelectionViewFactory {
             deviceId: device.identifier,
             ledgerApplication: application,
             requestFactory: requestFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
     }
 }

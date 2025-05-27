@@ -11,10 +11,9 @@ final class GenericLedgerAccountSelectionPresenter {
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
-    private var availableChainAssets: [ChainAsset] = []
+    private var availableSchemes: Set<GenericLedgerAddressScheme> = []
     private var chains: [ChainModel.Id: ChainModel] = [:]
-    private var selectedChainAsset: ChainAsset?
-    private var accounts: [LedgerAccountAmount] = []
+    private var accounts: [GenericLedgerIndexedAccountModel] = []
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -35,21 +34,21 @@ final class GenericLedgerAccountSelectionPresenter {
     private func performLoadNext() {
         let index = accounts.count
 
-        guard index <= UInt32.max, let selectedChainAsset else {
+        guard index <= UInt32.max else {
             return
         }
 
         view?.didStartLoading()
 
-        interactor.loadBalance(for: selectedChainAsset, at: UInt32(index))
+        interactor.loadAccounts(at: index, schemes: availableSchemes)
     }
 
-    private func addAccountViewModel(for account: LedgerAccountAmount) {
-        guard let selectedChainAsset else {
+    private func addAccountViewModel(for account: GenericLedgerIndexedAccountModel) {
+        guard let address = account.accounts.first?.address else {
             return
         }
 
-        let icon = try? iconGenerator.generateFromAddress(account.address)
+        let icon = try? iconGenerator.generateFromAddress(address)
         let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
 
         let assetDisplayInfo = selectedChainAsset.assetDisplayInfo
@@ -65,14 +64,6 @@ final class GenericLedgerAccountSelectionPresenter {
         )
 
         view?.didAddAccount(viewModel: viewModel)
-    }
-
-    private func shouldSwitchSelectedAsset() -> Bool {
-        guard let selectedChainAsset, let chain = chains[selectedChainAsset.chain.chainId] else {
-            return true
-        }
-
-        return selectedChainAsset.asset != chain.utilityAsset()
     }
 }
 
@@ -97,15 +88,31 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
 extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionInteractorOutputProtocol {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>]) {
         chains = changes.mergeToDict(chains)
-        availableChainAssets = Array(chains.values).sortedUsingDefaultComparator().compactMap { $0.utilityChainAsset() }
+        
+        let newSchemes: Set<GenericLedgerAddressScheme> = chains.values.reduce(into: []) { accum, model in
+            if model.isEthereumBased {
+                accum.insert(.evm)
+            } else {
+                accum.insert(.substrate)
+            }
+        }
+        
 
-        if shouldSwitchSelectedAsset() {
+        if availableSchemes != newSchemes {
             view?.didClearAccounts()
 
-            selectedChainAsset = availableChainAssets.first
+            availableSchemes = newSchemes
             accounts = []
 
             performLoadNext()
+        }
+    }
+    
+    func didReceive(indexedAccount: GenericLedgerIndexedAccountModel) {
+        if accountsResult.index == accounts.count {
+            view?.didStopLoading()
+            
+            accounts.append(accountsResult)
         }
     }
 

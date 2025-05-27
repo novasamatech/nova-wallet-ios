@@ -15,19 +15,14 @@ protocol GenericLedgerAccountSelectionPresenterProtocol: AnyObject {
 
 protocol GenericLedgerAccountSelectionInteractorInputProtocol: AnyObject {
     func setup()
-    func loadBalance(for chainAsset: ChainAsset, at index: UInt32)
+    func loadAccounts(at index: UInt32, schemes: Set<GenericLedgerAddressScheme>)
 }
 
 protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>])
-    func didReceive(accountBalance: LedgerAccountAmount, at index: UInt32)
-    func didReceive(error: GenericLedgerAccountInteractorError)
+    func didReceive(indexedAccount: GenericLedgerIndexedAccountModel)
 }
 
-protocol GenericLedgerAccountSelectionWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol GenericLedgerAccountSelectionWireframeProtocol: AnyObject {
     func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32)
-}
-
-enum GenericLedgerAccountInteractorError: Error {
-    case accountBalanceFetch(Error)
 }
