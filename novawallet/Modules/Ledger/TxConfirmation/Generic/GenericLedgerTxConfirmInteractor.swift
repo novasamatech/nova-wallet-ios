@@ -6,7 +6,7 @@ import SubstrateSdk
 final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     let chain: ChainModel
     let extrinsicParams: LedgerTxConfirmationParams
-    let ledgerApplication: NewSubstrateLedgerSigningProtocol
+    let ledgerApplication: NewLedgerPolkadotSigningProtocol
     let proofOperationFactory: ExtrinsicProofOperationFactoryProtocol
     let chainConnection: JSONRPCEngine
 
@@ -16,7 +16,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
         chain: ChainModel,
         extrinsicParams: LedgerTxConfirmationParams,
         ledgerConnection: LedgerConnectionManagerProtocol,
-        ledgerApplication: NewSubstrateLedgerSigningProtocol,
+        ledgerApplication: NewLedgerPolkadotSigningProtocol,
         chainConnection: JSONRPCEngine,
         proofOperationFactory: ExtrinsicProofOperationFactoryProtocol,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
@@ -126,8 +126,8 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     }
 
     private func createSignatureFetchWrapper(
-        dependingOn paramsOperation: BaseOperation<GenericLedgerSubstrateSigningParams>,
-        ledgerApplication: NewSubstrateLedgerSigningProtocol,
+        dependingOn paramsOperation: BaseOperation<GenericLedgerPolkadotSigningParams>,
+        ledgerApplication: NewLedgerPolkadotSigningProtocol,
         signingData: Data,
         deviceId: UUID
     ) -> CompoundOperationWrapper<Data> {
@@ -159,13 +159,14 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
 
         let proofWrapper = createExtrinsicProofWrapper(from: extrinsicParams)
 
-        let signatureParamsOperation = ClosureOperation<GenericLedgerSubstrateSigningParams> {
+        let signatureParamsOperation = ClosureOperation<GenericLedgerPolkadotSigningParams> {
             let derivationPath = try derivationPathOperation.extractNoCancellableResultData()
             let proof = try proofWrapper.targetOperation.extractNoCancellableResultData()
 
-            return GenericLedgerSubstrateSigningParams(
+            return GenericLedgerPolkadotSigningParams(
                 extrinsicProof: proof,
-                derivationPath: derivationPath
+                derivationPath: derivationPath,
+                mode: .substrate
             )
         }
 

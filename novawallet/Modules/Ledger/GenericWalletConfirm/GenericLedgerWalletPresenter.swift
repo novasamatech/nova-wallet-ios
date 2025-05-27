@@ -10,7 +10,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     let deviceModel: LedgerDeviceModel
     let appName: String
 
-    private var account: LedgerAccount?
+    private var account: LedgerSubstrateAccount?
 
     init(
         deviceName: String,
@@ -76,7 +76,7 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
 }
 
 extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProtocol {
-    func didReceive(account: LedgerAccount) {
+    func didReceive(account: LedgerSubstrateAccount) {
         self.account = account
         accountId = try? account.address.toAccountId()
 

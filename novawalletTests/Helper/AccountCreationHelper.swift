@@ -205,7 +205,7 @@ final class AccountCreationHelper {
             chainId: app.chainId,
             accountId: accountId,
             publicKey: accountId,
-            cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType.rawValue,
+            cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType.rawValue,
             proxy: nil
         )
         
@@ -240,7 +240,7 @@ final class AccountCreationHelper {
         let accountId = AccountId.random(of: 32)!
         
         let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
-            coin: GenericLedgerSubstrateApplication.coin,
+            coin: GenericLedgerPolkadotApplication.coin,
             accountIndex: accountIndex
         ).build()
         
@@ -250,7 +250,7 @@ final class AccountCreationHelper {
             for: .init(
                 accountId: accountId,
                 publicKey: accountId,
-                cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType,
+                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
                 derivationPath: derivationPath
             ),
             name: username,

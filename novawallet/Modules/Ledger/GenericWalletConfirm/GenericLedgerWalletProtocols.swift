@@ -8,7 +8,7 @@ protocol GenericLedgerWalletInteractorInputProtocol: AnyObject {
 }
 
 protocol GenericLedgerWalletInteractorOutputProtocol: AnyObject {
-    func didReceive(account: LedgerAccount)
+    func didReceive(account: LedgerSubstrateAccount)
     func didReceiveAccountConfirmation(with model: SubstrateLedgerWalletModel)
     func didReceiveChains(changes: [DataProviderChange<ChainModel>])
     func didReceive(error: GenericWalletConfirmInteractorError)

@@ -2,12 +2,12 @@ import Foundation
 
 final class GenericLedgerAccountSelectionWireframe: GenericLedgerAccountSelectionWireframeProtocol {
     let flow: WalletCreationFlow
-    let application: GenericLedgerSubstrateApplicationProtocol
+    let application: GenericLedgerPolkadotApplicationProtocol
     let device: LedgerDeviceProtocol
 
     init(
         flow: WalletCreationFlow,
-        application: GenericLedgerSubstrateApplicationProtocol,
+        application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol
     ) {
         self.flow = flow

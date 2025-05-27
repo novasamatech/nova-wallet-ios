@@ -4,7 +4,7 @@ import SubstrateSdk
 
 struct GenericLedgerWalletViewFactory {
     static func createView(
-        for application: GenericLedgerSubstrateApplicationProtocol,
+        for application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol,
         index: UInt32,
         flow: WalletCreationFlow
@@ -35,7 +35,7 @@ struct GenericLedgerWalletViewFactory {
     }
 
     private static func createInteractor(
-        for application: GenericLedgerSubstrateApplicationProtocol,
+        for application: GenericLedgerPolkadotApplicationProtocol,
         deviсe: LedgerDeviceProtocol,
         index: UInt32
     ) -> GenericLedgerWalletInteractor {
