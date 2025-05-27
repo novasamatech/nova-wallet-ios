@@ -1,5 +1,6 @@
 import UIKit
 import UIKit_iOS
+import Foundation_iOS
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource) {
@@ -18,6 +19,30 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
 
         let navigationController = NovaNavigationController(rootViewController: importController)
+
+        let presentingController = tabBarController.topModalViewController
+
+        presentingController.presentWithCardLayout(
+            navigationController,
+            animated: true,
+            completion: nil
+        )
+    }
+
+    func presentWalletMigration(on view: MainTabBarViewProtocol?, message: WalletMigrationMessage.Start) {
+        guard let tabBarController = view?.controller else {
+            return
+        }
+
+        guard canPresentImport(on: tabBarController) else {
+            return
+        }
+
+        guard let acceptView = WalletMigrateAcceptViewFactory.createViewForAdding(from: message) else {
+            return
+        }
+
+        let navigationController = NovaNavigationController(rootViewController: acceptView.controller)
 
         let presentingController = tabBarController.topModalViewController
 
@@ -254,7 +279,8 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             if
                 ($0 as? OnboardingMainViewProtocol) != nil ||
                 ($0 as? AccountImportViewProtocol) != nil ||
-                ($0 as? AdvancedWalletViewProtocol) != nil {
+                ($0 as? AdvancedWalletViewProtocol) != nil ||
+                ($0 as? WalletMigrateAcceptViewProtocol) != nil {
                 return true
             } else {
                 return false

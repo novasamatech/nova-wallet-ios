@@ -34,13 +34,6 @@ enum CreateWalletError: Error, ErrorContentConvertible {
 }
 
 final class ImportWalletUrlParsingService {
-    enum Key {
-        static let mnemonic = "mnemonic"
-        static let type = "cryptotype"
-        static let substrateDeriviationPath = "substratedp"
-        static let evmDeriviationPath = "evmdp"
-    }
-
     func parse(url: URL) -> Result<MnemonicDefinition, CreateWalletError> {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let query = urlComponents.queryItems else {
@@ -51,21 +44,21 @@ final class ImportWalletUrlParsingService {
             $0[$1.name.lowercased()] = $1.value ?? ""
         }
 
-        guard let mnemonic = queryItems[Key.mnemonic] else {
+        guard let mnemonic = queryItems[UniversalLink.WalletEntity.QueryKey.mnemonic] else {
             return .failure(.emptyMnemonic)
         }
-        let type = queryItems[Key.type].map { UInt8($0) ?? 0 } ?? 0
+        let type = queryItems[UniversalLink.WalletEntity.QueryKey.type].map { UInt8($0) ?? 0 } ?? 0
         guard let cryptoType = MultiassetCryptoType(rawValue: type),
               MultiassetCryptoType.substrateTypeList.contains(cryptoType) else {
             return .failure(.invalidCryptoType)
         }
 
-        let substrateDeriviationPath = queryItems[Key.substrateDeriviationPath]
+        let substrateDeriviationPath = queryItems[UniversalLink.WalletEntity.QueryKey.substrateDp]
         if !validateDeriviationPath(substrateDeriviationPath, cryptoType: cryptoType) {
             return .failure(.invalidSubstrateDerivationPath)
         }
 
-        let evmDeriviationPath = queryItems[Key.evmDeriviationPath]
+        let evmDeriviationPath = queryItems[UniversalLink.WalletEntity.QueryKey.evmDp]
         if !validateDeriviationPath(evmDeriviationPath, cryptoType: .ethereumEcdsa) {
             return .failure(.invalidEvmDerivationPath)
         }

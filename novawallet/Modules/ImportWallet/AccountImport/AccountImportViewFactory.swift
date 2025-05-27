@@ -93,7 +93,7 @@ final class AccountImportViewFactory {
 
     private static func createAccountImportInteractor() -> BaseAccountImportInteractor? {
         guard let keystoreImportService: KeystoreImportServiceProtocol =
-            URLHandlingService.shared.findService()
+            URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
             return nil
@@ -122,7 +122,7 @@ final class AccountImportViewFactory {
 
     private static func createAddAccountImportInteractor() -> BaseAccountImportInteractor? {
         guard let keystoreImportService: KeystoreImportServiceProtocol =
-            URLHandlingService.shared.findService()
+            URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
             return nil
@@ -152,7 +152,7 @@ final class AccountImportViewFactory {
         isEthereumBased: Bool
     ) -> BaseAccountImportInteractor? {
         guard let keystoreImportService: KeystoreImportServiceProtocol =
-            URLHandlingService.shared.findService()
+            URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
             return nil
