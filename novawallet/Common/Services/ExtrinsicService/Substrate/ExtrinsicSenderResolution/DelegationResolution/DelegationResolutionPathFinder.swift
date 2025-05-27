@@ -209,9 +209,13 @@ extension DelegationResolution.PathFinder {
             context: RuntimeJsonContext
         ) throws -> JSON {
             // TODO: Add weight support if call is not final and timepoint support if call is not the first one
-            try Multisig.AsMultiCall<Substrate.WeightV2>(
+            let othersignatories = signatories
+                .filter { $0 != delegation.delegate }
+                .map { BytesCodable(wrappedValue: $0) }
+
+            return try Multisig.AsMultiCall(
                 threshold: threshold,
-                otherSignatories: signatories.filter { $0 != delegation.delegate },
+                otherSignatories: othersignatories,
                 maybeTimepoint: nil,
                 call: call,
                 maxWeight: .zero
