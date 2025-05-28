@@ -15,8 +15,6 @@ final class GenericLedgerAccountSelectionPresenter {
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var accounts: [GenericLedgerAccountModel] = []
 
-    private lazy var iconGenerator = PolkadotIconGenerator()
-
     init(
         interactor: GenericLedgerAccountSelectionInteractorInputProtocol,
         wireframe: GenericLedgerAccountSelectionWireframeProtocol,

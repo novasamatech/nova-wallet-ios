@@ -18,7 +18,11 @@ final class GenericLedgerAccountVMFactory {
 
 private extension GenericLedgerAccountVMFactory {
     func createIconViewModel(from address: AccountAddress) -> DrawableIconViewModel? {
-        let icon = try? iconGenerator.generateFromAddress(address)
+        guard let accountId = try? address.toAccountId() else {
+            return nil
+        }
+
+        let icon = try? iconGenerator.generateFromAccountId(accountId)
         return icon.map { DrawableIconViewModel(icon: $0) }
     }
 

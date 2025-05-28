@@ -1,9 +1,11 @@
 import UIKit
 
-final class GenericLedgerFoundAddressContentView: GenericTitleValueView<UILabel, IconDetailsGenericView<LoadableIconDetailsView>> {
+final class GenericLedgerFoundAddressContentView: GenericTitleValueView<
+    UILabel, IconDetailsGenericView<LoadableIconDetailsView>
+> {
     var titleLabel: UILabel { titleView }
     var addressLabel: UILabel { valueView.detailsView.detailsLabel }
-    var indicatorView: UIImageView { valueView.detailsView.imageView }
+    var indicatorView: UIImageView { valueView.imageView }
 
     convenience init() {
         self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
@@ -25,6 +27,7 @@ final class GenericLedgerFoundAddressContentView: GenericTitleValueView<UILabel,
     private func configure() {
         titleLabel.apply(style: .footnoteSecondary)
         addressLabel.apply(style: .footnotePrimary)
+        addressLabel.numberOfLines = 1
 
         valueView.mode = .detailsIcon
         valueView.iconWidth = 16
