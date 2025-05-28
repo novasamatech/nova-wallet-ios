@@ -205,12 +205,23 @@ extension DelegationResolution.PathFinder {
 
         func wrapCall(
             _ call: JSON,
-            delegation _: DelegationResolution.DelegationKey,
-            context _: RuntimeJsonContext
+            delegation: DelegationResolution.DelegationKey,
+            context: RuntimeJsonContext
         ) throws -> JSON {
-            // TODO: - Implement call wrapping
+            // TODO: Add weight support if call is not final and timepoint support if call is not the first one
+            let othersignatories = signatories
+                .filter { $0 != delegation.delegate }
+                .map { BytesCodable(wrappedValue: $0) }
 
-            call
+            return try Multisig.AsMultiCall(
+                threshold: threshold,
+                otherSignatories: othersignatories,
+                maybeTimepoint: nil,
+                call: call,
+                maxWeight: .zero
+            )
+            .runtimeCall()
+            .toScaleCompatibleJSON(with: context.toRawContext())
         }
     }
 }

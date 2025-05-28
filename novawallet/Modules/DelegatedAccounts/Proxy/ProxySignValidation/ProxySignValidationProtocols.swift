@@ -1,6 +1,6 @@
 import BigInt
 
-typealias ProxySignValidationCompletion = (Bool) -> Void
+typealias DelegatedSignValidationCompletion = (Bool) -> Void
 
 protocol ProxySignValidationPresenterProtocol: AnyObject {
     func setup()

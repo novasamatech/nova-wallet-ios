@@ -139,4 +139,5 @@ extension ProxyMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
 
 enum DelegatedAccountError: Error {
     case invalidAccountType
+    case callHashNotFound
 }

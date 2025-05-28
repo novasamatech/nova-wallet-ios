@@ -3,10 +3,11 @@ import Foundation_iOS
 import Keystore_iOS
 import UIKit_iOS
 
-enum ProxyMessageSheetViewFactory {
+enum DelegatedMessageSheetViewFactory {
     static func createSigningView(
-        proxiedId: MetaAccountModel.Id,
-        proxyName: String,
+        delegatedId: MetaAccountModel.Id,
+        delegateChainAccountResponse: ChainAccountResponse,
+        delegationType: DelegationType,
         completionClosure: @escaping MessageSheetCallback,
         cancelClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
@@ -15,48 +16,46 @@ enum ProxyMessageSheetViewFactory {
         let repositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let repository = repositoryFactory.createProxiedSettingsRepository()
 
-        let interactor = ProxyMessageSheetInteractor(
-            metaId: proxiedId,
+        let interactor = DelegatedMessageSheetInteractor(
+            metaId: delegatedId,
             repository: repository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
 
-        let presenter = ProxyMessageSheetPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = DelegatedMessageSheetPresenter(
+            interactor: interactor,
+            wireframe: wireframe
+        )
 
-        let title = LocalizableResource { locale in
-            R.string.localizable.proxySigningTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        let message = LocalizableResource { locale in
-            let marker = AttributedReplacementStringDecorator.marker
-            let template = R.string.localizable.proxySigningMessage(marker, preferredLanguages: locale.rLanguages)
-
-            let decorator = AttributedReplacementStringDecorator(
-                pattern: marker,
-                replacements: [proxyName],
-                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+        let sheetContent = switch delegationType {
+        case .proxy:
+            createProxyContent(proxyName: delegateChainAccountResponse.name)
+        case .multisig:
+            createMultisigContent(
+                signatoryName: delegateChainAccountResponse.name,
+                signatoryAddress: (try? delegateChainAccountResponse.accountId.toAddress(
+                    using: delegateChainAccountResponse.chainFormat
+                )) ?? ""
             )
-
-            return decorator.decorate(attributedString: NSAttributedString(string: template))
         }
 
         let text = LocalizableResource { locale in
-            R.string.localizable.proxySigningCheckmarkTitle(
+            R.string.localizable.delegatedSigningCheckmarkTitle(
                 preferredLanguages: locale.rLanguages
             )
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetCheckmarkContentViewModel>(
-            title: title,
-            message: message,
-            graphics: R.image.imageProxy(),
+            title: sheetContent.title,
+            message: sheetContent.message,
+            graphics: sheetContent.graphics,
             content: MessageSheetCheckmarkContentViewModel(checked: false, text: text),
             mainAction: .continueAction(for: completionClosure),
             secondaryAction: .cancelAction(for: cancelClosure)
         )
 
-        let view = ProxyMessageSheetViewController(
+        let view = DelegatedMessageSheetViewController(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
@@ -121,5 +120,70 @@ enum ProxyMessageSheetViewFactory {
         view?.controller.modalPresentationStyle = .custom
 
         return view
+    }
+}
+
+private extension DelegatedMessageSheetViewFactory {
+    struct MessageSheetContent {
+        let title: LocalizableResource<String>
+        let message: LocalizableResource<NSAttributedString>
+        let graphics: UIImage?
+    }
+
+    static func createProxyContent(proxyName: String) -> MessageSheetContent {
+        let title = LocalizableResource { locale in
+            R.string.localizable.proxySigningTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            let marker = AttributedReplacementStringDecorator.marker
+            let template = R.string.localizable.proxySigningMessage(marker, preferredLanguages: locale.rLanguages)
+
+            let decorator = AttributedReplacementStringDecorator(
+                pattern: marker,
+                replacements: [proxyName],
+                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+            )
+
+            return decorator.decorate(attributedString: NSAttributedString(string: template))
+        }
+
+        return MessageSheetContent(
+            title: title,
+            message: message,
+            graphics: R.image.imageProxy()
+        )
+    }
+
+    static func createMultisigContent(
+        signatoryName: String,
+        signatoryAddress: String
+    ) -> MessageSheetContent {
+        let title = LocalizableResource { locale in
+            R.string.localizable.multisigSigningTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            let marker = AttributedReplacementStringDecorator.marker
+            let template = R.string.localizable.multisigSigningMessage(
+                marker,
+                marker,
+                preferredLanguages: locale.rLanguages
+            )
+
+            let decorator = AttributedReplacementStringDecorator(
+                pattern: marker,
+                replacements: [signatoryName, signatoryAddress],
+                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+            )
+
+            return decorator.decorate(attributedString: NSAttributedString(string: template))
+        }
+
+        return MessageSheetContent(
+            title: title,
+            message: message,
+            graphics: R.image.imageMultisig()
+        )
     }
 }

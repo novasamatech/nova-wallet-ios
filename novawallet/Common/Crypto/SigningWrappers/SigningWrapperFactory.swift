@@ -67,8 +67,6 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .proxied:
             ProxySigningWrapper(
                 metaId: metaId,
-                signingWrapperFactory: self,
-                settingsManager: settingsManager,
                 uiPresenter: uiPresenter
             )
         case .genericLedger:
@@ -79,7 +77,10 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 ledgerWalletType: .generic
             )
         case .multisig:
-            MultisigSigningWrapper()
+            MultisigSigningWrapper(
+                metaId: metaId,
+                uiPresenter: uiPresenter
+            )
         }
     }
 

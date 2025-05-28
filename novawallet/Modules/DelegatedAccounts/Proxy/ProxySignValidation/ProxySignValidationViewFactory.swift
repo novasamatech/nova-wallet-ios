@@ -7,7 +7,7 @@ struct ProxySignValidationViewFactory {
         from viewController: UIViewController,
         resolvedProxy: ExtrinsicSenderResolution.ResolvedDelegate,
         calls: [JSON],
-        completionClosure: @escaping ProxySignValidationCompletion
+        completionClosure: @escaping DelegatedSignValidationCompletion
     ) -> ProxySignValidationPresenterProtocol? {
         guard
             let utilityChainAsset = resolvedProxy.chain.utilityChainAsset(),

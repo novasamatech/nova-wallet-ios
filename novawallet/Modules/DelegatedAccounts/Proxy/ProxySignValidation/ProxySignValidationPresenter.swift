@@ -11,7 +11,7 @@ final class ProxySignValidationPresenter {
     let chainAsset: ChainAsset
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
-    let completionClosure: ProxySignValidationCompletion
+    let completionClosure: DelegatedSignValidationCompletion
     let proxyName: String
 
     var balance: AssetBalance?
@@ -25,7 +25,7 @@ final class ProxySignValidationPresenter {
         proxyName: String,
         dataValidationFactory: ProxyDataValidatorFactoryProtocol,
         chainAsset: ChainAsset,
-        completionClosure: @escaping ProxySignValidationCompletion,
+        completionClosure: @escaping DelegatedSignValidationCompletion,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {

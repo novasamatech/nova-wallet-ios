@@ -1452,7 +1452,7 @@
 "proxy.signing.title" = "This is Delegating (Proxied) account";
 "proxy.details.hint" = "This account granted access to perform transactions to the following account:";
 "proxy.fee.error.message" = "Delegated account %@ doesn\'t have enough balance to pay the network fee of %@. Available balance to pay fee: %@";
-"proxy.signing.checkmark.title" = "Automatically continue in the future";
+"delegated.signing.checkmark.title" = "Automatically continue in the future";
 "deeplink.error.invalid.referendum.id.message" = "Referendum is not found";
 "governance.referendum.not.found.message" = "Referendum is not found";
 "staking.alert.switch.to.stash.title" = "Select stash account to setup proxy";
@@ -1851,3 +1851,8 @@
 "common.signer" = "Signer";
 "wallet.list.multisig" = "Shared contol (multisig)";
 "multisig.details.hint" = "Transactions from this wallet require approval from multiple signers. This account is one of the signers:";
+"multisig.signing.title" = "Multisig transaction";
+"multisig.signing.message" = "\“%@\” will sign the transaction and pay the network fee. The transaction will be executed upon final signature and the multisig deposit will be returned to \“%@\”";
+"multisig.transaction.created.title" = "Multisig transaction created";
+"multisig.transaction.created.message" = "Other signers can now confirm the transaction. You can track its status in the Multisig Transactions.";
+
