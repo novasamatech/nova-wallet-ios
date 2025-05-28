@@ -1848,3 +1848,6 @@
 "polkadot.vault.qr.type.v7" = "新しい (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "レガシー";
 "parity.signer.scan.title_9_7_0" = "%@で署名";
+"wallet.migrate.accept.title" = "Migrate your accounts to Nova";
+"wallet.migrate.accept.message" = "Just one tap to access all your accounts in Nova Wallet - manage tokens, stake, vote and explore the Polkadot ecosystem";
+"wallet.migrate.accept.button" = "Accept migration";

@@ -29,6 +29,10 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         wireframe.presentAccountImport(on: view, source: source)
     }
 
+    func didRequestWalletMigration(with message: WalletMigrationMessage.Start) {
+        wireframe.presentWalletMigration(on: view, message: message)
+    }
+
     func didRequestScreenOpen(_ screen: UrlHandlingScreen) {
         wireframe.presentScreenIfNeeded(
             on: view,

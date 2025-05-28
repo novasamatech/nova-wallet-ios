@@ -8,7 +8,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     private var canPayFeeInAssetCall = CancellableCallStore()
 
-    private var remoteSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
+    private var accountInfoRemoteSubscriptions: [ChainModel.Id: CallbackBatchRawStorageSubscription] = [:]
 
     private var requoteChange = Debouncer(delay: 4)
 
@@ -83,7 +83,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
     deinit {
         canPayFeeInAssetCall.cancel()
-        clearRemoteSubscription()
+        clearDestRemoteSubscription()
+        clearOriginRemoteSubscription()
         requoteChange.cancel()
     }
 
@@ -117,13 +118,23 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         }
     }
 
-    private func clearRemoteSubscription() {
-        remoteSubscription?.unsubscribe()
-        remoteSubscription = nil
+    private func clearOriginRemoteSubscription() {
+        if let chainId = payChainAsset?.chain.chainId, chainId != receiveChainAsset?.chain.chainId {
+            accountInfoRemoteSubscriptions[chainId]?.unsubscribe()
+            accountInfoRemoteSubscriptions[chainId] = nil
+        }
+    }
+
+    private func clearDestRemoteSubscription() {
+        if let chainId = receiveChainAsset?.chain.chainId, chainId != payChainAsset?.chain.chainId {
+            accountInfoRemoteSubscriptions[chainId]?.unsubscribe()
+            accountInfoRemoteSubscriptions[chainId] = nil
+        }
     }
 
     private func setupRemoteSubscription(for chain: ChainModel) {
         guard
+            accountInfoRemoteSubscriptions[chain.chainId] == nil,
             let accountId = selectedWallet.fetch(for: chain.accountRequest())?.accountId,
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
@@ -131,6 +142,8 @@ final class SwapSetupInteractor: SwapBaseInteractor {
         }
 
         do {
+            logger.debug("Subscribing to account info remotely for chain \(chain.name)")
+
             let localKeyFactory = LocalStorageKeyFactory()
 
             let accountInfoKey = try localKeyFactory.createFromStoragePath(
@@ -150,7 +163,7 @@ final class SwapSetupInteractor: SwapBaseInteractor {
                 mappingKey: nil
             )
 
-            remoteSubscription = CallbackBatchStorageSubscription(
+            let remoteSubscription = CallbackBatchRawStorageSubscription(
                 requests: [accountInfoRequest],
                 connection: connection,
                 runtimeService: runtimeService,
@@ -162,7 +175,9 @@ final class SwapSetupInteractor: SwapBaseInteractor {
                 }
             )
 
-            remoteSubscription?.subscribe()
+            accountInfoRemoteSubscriptions[chain.chainId] = remoteSubscription
+
+            remoteSubscription.subscribe()
         } catch {
             logger.error("Unexpected error: \(error)")
         }
@@ -191,9 +206,18 @@ final class SwapSetupInteractor: SwapBaseInteractor {
 
 extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
     func update(receiveChainAsset: ChainAsset?) {
+        guard self.receiveChainAsset?.chainAssetId != receiveChainAsset?.chainAssetId else {
+            return
+        }
+
+        clearDestRemoteSubscription()
+
         self.receiveChainAsset = receiveChainAsset
-        receiveChainAsset.map {
-            setReceiveChainAssetSubscriptions($0)
+
+        if let receiveChainAsset {
+            setupRemoteSubscription(for: receiveChainAsset.chain)
+
+            setReceiveChainAssetSubscriptions(receiveChainAsset)
         }
 
         assetsExchangeService.throttleRequoteService()
@@ -204,7 +228,7 @@ extension SwapSetupInteractor: SwapSetupInteractorInputProtocol {
             return
         }
 
-        clearRemoteSubscription()
+        clearOriginRemoteSubscription()
 
         self.payChainAsset = payChainAsset
 

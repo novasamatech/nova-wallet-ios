@@ -8,6 +8,7 @@ class SwapBasePresenter {
     let priceStore: AssetExchangePriceStoring
 
     private(set) var balances: [ChainAssetId: AssetBalance] = [:]
+    private(set) var accountInfoDict: [ChainModel.Id: AccountInfo] = [:]
 
     var payAssetBalance: AssetBalance? {
         getPayChainAsset().flatMap { balances[$0.chainAssetId] }
@@ -61,6 +62,12 @@ class SwapBasePresenter {
         }
     }
 
+    var destUtilityAssetBalanceExistense: AssetBalanceExistence? {
+        getReceiveChainAsset()?.chain.utilityChainAsset().flatMap {
+            assetBalanceExistences[$0.chainAssetId]
+        }
+    }
+
     var fee: AssetExchangeFee?
     var quoteResult: Result<AssetExchangeQuote, Error>?
 
@@ -73,7 +80,17 @@ class SwapBasePresenter {
         }
     }
 
-    var accountInfo: AccountInfo?
+    var originAccountInfo: AccountInfo? {
+        getFeeChainAsset()?.chain.utilityChainAsset().flatMap {
+            accountInfoDict[$0.chain.chainId]
+        }
+    }
+
+    var destAccountInfo: AccountInfo? {
+        getReceiveChainAsset()?.chain.utilityChainAsset().flatMap {
+            accountInfoDict[$0.chain.chainId]
+        }
+    }
 
     init(
         selectedWallet: MetaAccountModel,
@@ -115,7 +132,9 @@ class SwapBasePresenter {
             quoteArgs: quoteArgs,
             quote: quote,
             slippage: getSlippage(),
-            accountInfo: accountInfo
+            accountInfo: originAccountInfo,
+            destAccountInfo: destAccountInfo,
+            destUtilityAssetExistence: destUtilityAssetBalanceExistense
         )
     }
 
@@ -129,7 +148,7 @@ class SwapBasePresenter {
             quote: quote,
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
-            accountInfo: accountInfo
+            accountInfo: originAccountInfo
         )
     }
 
@@ -390,13 +409,13 @@ extension SwapBasePresenter: SwapBaseInteractorOutputProtocol {
     }
 
     func didReceive(accountInfo: AccountInfo?, chainId: ChainModel.Id) {
-        guard self.accountInfo != accountInfo else {
+        guard accountInfoDict[chainId] != accountInfo else {
             return
         }
 
-        logger.debug("New account info: \(String(describing: accountInfo))")
+        logger.debug("New account info \(chainId): \(String(describing: accountInfo))")
 
-        self.accountInfo = accountInfo
+        accountInfoDict[chainId] = accountInfo
 
         handleNewAccountInfo(accountInfo, chainId: chainId)
     }
