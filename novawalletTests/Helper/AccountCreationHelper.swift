@@ -247,11 +247,14 @@ final class AccountCreationHelper {
         let factory = GenericLedgerWalletOperationFactory()
         
         let operation = factory.createSaveOperation(
-            for: .init(
-                accountId: accountId,
-                publicKey: accountId,
-                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
-                derivationPath: derivationPath
+            for: PolkadotLedgerWalletModel(
+                substrate: .init(
+                    accountId: accountId,
+                    publicKey: accountId,
+                    cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
+                    derivationPath: derivationPath
+                ),
+                evm: nil
             ),
             name: username,
             keystore: keychain,

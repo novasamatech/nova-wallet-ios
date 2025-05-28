@@ -77,14 +77,8 @@ class BaseLedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
                 receivedSignature.dropFirst()
             }
 
-            let cryptoType: MultiassetCryptoType? = if chainAccount.isEthereumBased {
-                .substrateEcdsa
-            } else {
-                MultiassetCryptoType(rawValue: chainAccount.cryptoType)
-            }
-
             guard
-                let cryptoType,
+                let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType),
                 let signature = try signatureVerifier.verify(
                     rawSignature: rawSignature,
                     originalData: signaturePayload,
