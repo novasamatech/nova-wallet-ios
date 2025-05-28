@@ -58,12 +58,16 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
         interactor.setup()
     }
 
-    func selectAccount(at index: Int) {
-        guard index < accounts.count else {
+    func selectAccount(in section: Int) {
+        wireframe.showWalletCreate(from: view, index: UInt32(section))
+    }
+
+    func selectAddress(in section: Int, at index: Int) {
+        guard let address = accounts[section].addresses[index].address else {
             return
         }
 
-        wireframe.showWalletCreate(from: view, index: UInt32(index))
+        // TODO: Present address here
     }
 
     func loadNext() {

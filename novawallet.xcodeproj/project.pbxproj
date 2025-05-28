@@ -1085,6 +1085,10 @@
 		0CE94FF42D04969100E31D0C /* SwapInterEDNotMet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */; };
 		0CE94FF62D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */; };
 		0CE94FF82D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */; };
+		0CE9B7102DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B70F2DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift */; };
+		0CE9B7122DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7112DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift */; };
+		0CE9B7142DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7132DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift */; };
+		0CE9B7162DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7152DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6919,6 +6923,10 @@
 		0CE94FF32D04969100E31D0C /* SwapInterEDNotMet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapInterEDNotMet.swift; sourceTree = "<group>"; };
 		0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangePathCostEstimator.swift; sourceTree = "<group>"; };
 		0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeOperationPrototypeFactory.swift; sourceTree = "<group>"; };
+		0CE9B70F2DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountStackCell.swift; sourceTree = "<group>"; };
+		0CE9B7112DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerFoundAddressContentView.swift; sourceTree = "<group>"; };
+		0CE9B7132DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericAddressNotFoundAddressContentView.swift; sourceTree = "<group>"; };
+		0CE9B7152DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAddressStackCell.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -14295,6 +14303,17 @@
 				0C0AE40A2DE5B39200D506F3 /* GenericLedgerAddressModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0CE9B70E2DE6C1E9007C7F5A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0CE9B70F2DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift */,
+				0CE9B7112DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift */,
+				0CE9B7132DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift */,
+				0CE9B7152DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		0CEB6B342CA4507200609DC2 /* V4 */ = {
@@ -26538,6 +26557,7 @@
 		DC8AB99ACF97C911FB73C3EE /* GenericLedgerAccountSelection */ = {
 			isa = PBXGroup;
 			children = (
+				0CE9B70E2DE6C1E9007C7F5A /* View */,
 				0CE9B70D2DE64F85007C7F5A /* Model */,
 				0C0AE40C2DE5C58E00D506F3 /* ViewModel */,
 				EFD6001A7E25497F9E34C017 /* GenericLedgerAccountSelectionProtocols.swift */,
@@ -30635,6 +30655,7 @@
 				8434B608298D4FD500FACF4C /* GovernanceAddDelegationTracksWireframe.swift in Sources */,
 				8886020B29D101B000C6344C /* Web3NameServiceError.swift in Sources */,
 				84EBAB06265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift in Sources */,
+				0CE9B7142DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift in Sources */,
 				84CA68DF26BEAA0F003B9453 /* ChainModelMapper.swift in Sources */,
 				846A682C274693F700D1A47A /* CrowdloanExternalContributionSource.swift in Sources */,
 				0C38B50C2B7DC40600882A8B /* KodaDotNft.swift in Sources */,
@@ -31135,6 +31156,7 @@
 				8487583327F06AF300495306 /* QRScannerViewLayout.swift in Sources */,
 				84AF08DA2941BC7900D0572B /* TokenManageNetworkViewModel.swift in Sources */,
 				8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */,
+				0CE9B7162DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift in Sources */,
 				84CFF1E326526FBC00DB7CF7 /* StakingBondMoreProtocols.swift in Sources */,
 				8448148128E46881007F64FF /* ConvictionVotingLocks.swift in Sources */,
 				0C2F86842A72343800593C01 /* EraNominationPoolsServiceProtocol.swift in Sources */,
@@ -32412,6 +32434,7 @@
 				0C38B5122B7DCB4400882A8B /* KodaDotNftModelConverter.swift in Sources */,
 				0C8FDBD32CB30DDE00775D7F /* PayCardTopupModel.swift in Sources */,
 				D5BB3A36DB9ADD25EE43109F /* GovernanceUnlockConfirmViewFactory.swift in Sources */,
+				0CE9B7102DE6C283007C7F5A /* GenericLedgerAccountStackCell.swift in Sources */,
 				65CD159259A06EC3E92FD4B0 /* AssetDetailsProtocols.swift in Sources */,
 				AE87017F784657CBEBF49C45 /* AssetDetailsWireframe.swift in Sources */,
 				B804BDDC5F3960AA59CE3E5B /* AssetDetailsPresenter.swift in Sources */,
@@ -33333,6 +33356,7 @@
 				AA7FC6E16F442B6C1569C172 /* MythosStakingRedeemInteractor.swift in Sources */,
 				D3A9D51421701B7FA6D4669F /* MythosStakingRedeemViewFactory.swift in Sources */,
 				F7B2FE8C0CE7E140A7C404F0 /* MythosStkYourCollatorsProtocols.swift in Sources */,
+				0CE9B7122DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift in Sources */,
 				E448E23E66026355530D6180 /* MythosStkYourCollatorsWireframe.swift in Sources */,
 				613CCA7EFD69DBC6B96A49F1 /* MythosStkYourCollatorsPresenter.swift in Sources */,
 				4A3830B9705ADD33A1FD5BFA /* MythosStkYourCollatorsInteractor.swift in Sources */,

@@ -9,7 +9,8 @@ protocol GenericLedgerAccountSelectionViewProtocol: ControllerBackedProtocol {
 
 protocol GenericLedgerAccountSelectionPresenterProtocol: AnyObject {
     func setup()
-    func selectAccount(at index: Int)
+    func selectAccount(in section: Int)
+    func selectAddress(in section: Int, at index: Int)
     func loadNext()
 }
 
@@ -23,6 +24,6 @@ protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
     func didReceive(account: GenericLedgerAccountModel)
 }
 
-protocol GenericLedgerAccountSelectionWireframeProtocol: AnyObject {
+protocol GenericLedgerAccountSelectionWireframeProtocol: AddressOptionsPresentable {
     func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32)
 }
