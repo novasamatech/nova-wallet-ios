@@ -2,7 +2,7 @@ import Operation_iOS
 
 protocol GenericLedgerAccountSelectionViewProtocol: ControllerBackedProtocol {
     func didClearAccounts()
-    func didAddAccount(viewModel: LedgerAccountViewModel)
+    func didAddAccount(viewModel: GenericLedgerAccountViewModel)
     func didStartLoading()
     func didStopLoading()
 }
@@ -20,7 +20,7 @@ protocol GenericLedgerAccountSelectionInteractorInputProtocol: AnyObject {
 
 protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>])
-    func didReceive(indexedAccount: GenericLedgerIndexedAccountModel)
+    func didReceive(account: GenericLedgerAccountModel)
 }
 
 protocol GenericLedgerAccountSelectionWireframeProtocol: AnyObject {

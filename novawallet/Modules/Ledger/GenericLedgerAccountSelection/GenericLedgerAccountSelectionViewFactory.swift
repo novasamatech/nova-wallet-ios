@@ -18,7 +18,7 @@ struct GenericLedgerAccountSelectionViewFactory {
         let presenter = GenericLedgerAccountSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            assetTokenFormatter: AssetBalanceFormatterFactory(),
+            viewModelFactory: GenericLedgerAccountVMFactory(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -35,16 +35,10 @@ struct GenericLedgerAccountSelectionViewFactory {
         application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol
     ) -> GenericLedgerAccountSelectionInteractor {
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        return GenericLedgerAccountSelectionInteractor(
+        GenericLedgerAccountSelectionInteractor(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             deviceId: device.identifier,
             ledgerApplication: application,
-            requestFactory: requestFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

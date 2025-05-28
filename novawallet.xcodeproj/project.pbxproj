@@ -14289,6 +14289,14 @@
 			path = Presenters;
 			sourceTree = "<group>";
 		};
+		0CE9B70D2DE64F85007C7F5A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C0AE40A2DE5B39200D506F3 /* GenericLedgerAddressModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		0CEB6B342CA4507200609DC2 /* V4 */ = {
 			isa = PBXGroup;
 			children = (
@@ -20058,7 +20066,6 @@
 				0C71049F2C2C6EED00487E64 /* LedgerSubstrateApp.swift */,
 				0C7104A12C2D0A6200487E64 /* LedgerTxConfirmationParams.swift */,
 				0C2D1E3C2D9708350030E43C /* LedgerDeviceDisplayInfo.swift */,
-				0C0AE40A2DE5B39200D506F3 /* GenericLedgerAddressModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -26531,6 +26538,7 @@
 		DC8AB99ACF97C911FB73C3EE /* GenericLedgerAccountSelection */ = {
 			isa = PBXGroup;
 			children = (
+				0CE9B70D2DE64F85007C7F5A /* Model */,
 				0C0AE40C2DE5C58E00D506F3 /* ViewModel */,
 				EFD6001A7E25497F9E34C017 /* GenericLedgerAccountSelectionProtocols.swift */,
 				3E10B8C50958D0184D89E1BD /* GenericLedgerAccountSelectionWireframe.swift */,

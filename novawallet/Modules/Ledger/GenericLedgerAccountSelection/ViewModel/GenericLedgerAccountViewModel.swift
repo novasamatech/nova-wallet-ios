@@ -1,21 +1,21 @@
 import Foundation
 
 struct GenericLedgerAddressViewModel {
-    struct Address {
+    struct Found {
         let address: String
         let icon: ImageViewModelProtocol?
     }
-    
-    enum AddressExistence {
-        case found(Address)
+
+    enum Existence {
+        case found(Found)
         case notFound
     }
-    
-    let type: String
-    let existence: AddressExistence
+
+    let title: String
+    let existence: Existence
 }
 
-struct GenericIndexedLedgerAccountViewModel {
+struct GenericLedgerAccountViewModel {
     let title: String
     let icon: ImageViewModelProtocol?
     let addresses: [GenericLedgerAddressViewModel]

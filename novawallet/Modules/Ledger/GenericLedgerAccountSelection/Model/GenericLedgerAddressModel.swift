@@ -3,7 +3,7 @@ import Foundation
 enum GenericLedgerAddressScheme: Equatable {
     case substrate
     case evm
-    
+
     var order: Int {
         switch self {
         case .substrate:
@@ -18,10 +18,10 @@ struct GenericLedgerAddressModel {
     enum ModelError: Error {
         case fetchFailed(Error)
     }
-    
+
     let result: Result<AccountAddress, ModelError>
-    let type: GenericLedgerAddressScheme
-    
+    let scheme: GenericLedgerAddressScheme
+
     var address: AccountAddress? {
         switch result {
         case let .success(address):
@@ -32,7 +32,7 @@ struct GenericLedgerAddressModel {
     }
 }
 
-struct GenericLedgerIndexedAccountModel {
+struct GenericLedgerAccountModel {
     let index: UInt32
-    let accounts: [GenericLedgerAddressModel]
+    let addresses: [GenericLedgerAddressModel]
 }

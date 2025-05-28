@@ -65,7 +65,7 @@ extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelection
         rootView.clearCells()
     }
 
-    func didAddAccount(viewModel: LedgerAccountViewModel) {
+    func didAddAccount(viewModel: GenericLedgerAccountViewModel) {
         let cell = rootView.addCell()
         cell.bind(viewModel: viewModel)
 

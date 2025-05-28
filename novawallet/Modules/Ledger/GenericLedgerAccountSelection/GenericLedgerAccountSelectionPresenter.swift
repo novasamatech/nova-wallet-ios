@@ -7,26 +7,26 @@ final class GenericLedgerAccountSelectionPresenter {
     weak var view: GenericLedgerAccountSelectionViewProtocol?
     let wireframe: GenericLedgerAccountSelectionWireframeProtocol
     let interactor: GenericLedgerAccountSelectionInteractorInputProtocol
-    let assetTokenFormatter: AssetBalanceFormatterFactoryProtocol
+    let viewModelFactory: GenericLedgerAccountVMFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
     private var availableSchemes: Set<GenericLedgerAddressScheme> = []
     private var chains: [ChainModel.Id: ChainModel] = [:]
-    private var accounts: [GenericLedgerIndexedAccountModel] = []
+    private var accounts: [GenericLedgerAccountModel] = []
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
         interactor: GenericLedgerAccountSelectionInteractorInputProtocol,
         wireframe: GenericLedgerAccountSelectionWireframeProtocol,
-        assetTokenFormatter: AssetBalanceFormatterFactoryProtocol,
+        viewModelFactory: GenericLedgerAccountVMFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.assetTokenFormatter = assetTokenFormatter
+        self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -40,27 +40,13 @@ final class GenericLedgerAccountSelectionPresenter {
 
         view?.didStartLoading()
 
-        interactor.loadAccounts(at: index, schemes: availableSchemes)
+        interactor.loadAccounts(at: UInt32(index), schemes: availableSchemes)
     }
 
-    private func addAccountViewModel(for account: GenericLedgerIndexedAccountModel) {
-        guard let address = account.accounts.first?.address else {
-            return
-        }
-
-        let icon = try? iconGenerator.generateFromAddress(address)
-        let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
-
-        let assetDisplayInfo = selectedChainAsset.assetDisplayInfo
-        let decimalAmount = account.amount?.decimal(assetInfo: assetDisplayInfo) ?? 0
-
-        let tokenFormatter = assetTokenFormatter.createTokenFormatter(for: assetDisplayInfo)
-        let amount = tokenFormatter.value(for: localizationManager.selectedLocale).stringFromDecimal(decimalAmount)
-
-        let viewModel = LedgerAccountViewModel(
-            address: account.address,
-            icon: iconViewModel,
-            amount: amount ?? ""
+    private func addAccountViewModel(for account: GenericLedgerAccountModel) {
+        let viewModel = viewModelFactory.createViewModel(
+            for: account,
+            locale: localizationManager.selectedLocale
         )
 
         view?.didAddAccount(viewModel: viewModel)
@@ -88,7 +74,7 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
 extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionInteractorOutputProtocol {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>]) {
         chains = changes.mergeToDict(chains)
-        
+
         let newSchemes: Set<GenericLedgerAddressScheme> = chains.values.reduce(into: []) { accum, model in
             if model.isEthereumBased {
                 accum.insert(.evm)
@@ -96,7 +82,6 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
                 accum.insert(.substrate)
             }
         }
-        
 
         if availableSchemes != newSchemes {
             view?.didClearAccounts()
@@ -107,35 +92,16 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
             performLoadNext()
         }
     }
-    
-    func didReceive(indexedAccount: GenericLedgerIndexedAccountModel) {
-        if accountsResult.index == accounts.count {
-            view?.didStopLoading()
-            
-            accounts.append(accountsResult)
-        }
-    }
 
-    func didReceive(accountBalance: LedgerAccountAmount, at index: UInt32) {
-        if index == accounts.count {
+    func didReceive(account: GenericLedgerAccountModel) {
+        logger.debug("Did receive account: \(account)")
+
+        if account.index == accounts.count {
             view?.didStopLoading()
 
-            accounts.append(accountBalance)
-            addAccountViewModel(for: accountBalance)
-        }
-    }
+            accounts.append(account)
 
-    func didReceive(error: GenericLedgerAccountInteractorError) {
-        logger.error("Error: \(error)")
-
-        switch error {
-        case .accountBalanceFetch:
-            wireframe.presentRequestStatus(
-                on: view,
-                locale: localizationManager.selectedLocale
-            ) { [weak self] in
-                self?.performLoadNext()
-            }
+            addAccountViewModel(for: account)
         }
     }
 }

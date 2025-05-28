@@ -3,40 +3,40 @@ import SubstrateSdk
 
 protocol GenericLedgerAccountVMFactoryProtocol {
     func createViewModel(
-        for indexAccount: GenericLedgerIndexedAccountModel,
+        for account: GenericLedgerAccountModel,
         locale: Locale
-    ) -> GenericIndexedLedgerAccountViewModel
+    ) -> GenericLedgerAccountViewModel
 }
 
 final class GenericLedgerAccountVMFactory {
     let iconGenerator: IconGenerating
-    
+
     init(iconGenerator: IconGenerating = PolkadotIconGenerator()) {
         self.iconGenerator = iconGenerator
     }
 }
 
-private extension GenericLedgerAccountVMFactory: GenericLedgerAccountVMFactoryProtocol {
+private extension GenericLedgerAccountVMFactory {
     func createIconViewModel(from address: AccountAddress) -> DrawableIconViewModel? {
         let icon = try? iconGenerator.generateFromAddress(address)
         return icon.map { DrawableIconViewModel(icon: $0) }
     }
-    
+
     func createAddressViewModel(
         from model: GenericLedgerAddressModel,
         locale: Locale
-    ) -> GenericLedgerAccountViewModel {
+    ) -> GenericLedgerAddressViewModel {
         guard let address = model.address else {
-            return GenericLedgerAccountViewModel(
-                type: model.type.createTitle(for: locale),
+            return GenericLedgerAddressViewModel(
+                title: model.scheme.createTitle(for: locale),
                 existence: .notFound
             )
         }
-        
+
         let icon = createIconViewModel(from: address)
-        
+
         return GenericLedgerAddressViewModel(
-            type: model.type.createTitle(for: locale),
+            title: model.scheme.createTitle(for: locale),
             existence: .found(.init(address: address, icon: icon))
         )
     }
@@ -44,23 +44,24 @@ private extension GenericLedgerAccountVMFactory: GenericLedgerAccountVMFactoryPr
 
 extension GenericLedgerAccountVMFactory: GenericLedgerAccountVMFactoryProtocol {
     func createViewModel(
-        for indexAccount: GenericLedgerIndexedAccountModel,
+        for account: GenericLedgerAccountModel,
         locale: Locale
-    ) -> GenericIndexedLedgerAccountViewModel {
-        let sortedAccounts = indexAccount.accounts.sorted { $0.type.order < $1.type.order }
-        
-        let icon: DrawableIconViewModel? = if let address = sortedAccounts.first(where: { $0.address != nil }) {
-            createIconViewModel(from: address)
-        } else {
-            nil
+    ) -> GenericLedgerAccountViewModel {
+        let sortedAddresses = account.addresses.sorted { $0.scheme.order < $1.scheme.order }
+
+        let icon: DrawableIconViewModel? = sortedAddresses.first(where: { $0.address != nil })?.address.flatMap {
+            createIconViewModel(from: $0)
         }
-        
-        let addressViewModels = sortedAccounts.map { account in
-            createAccountViewModel(from: account, locale: locale)
+
+        let addressViewModels = sortedAddresses.map { address in
+            createAddressViewModel(from: address, locale: locale)
         }
-        
-        return GenericIndexedLedgerAccountViewModel(
-            title: "",
+
+        return GenericLedgerAccountViewModel(
+            title: R.string.localizable.commonIndexedAccount(
+                "\(account.index + 1)",
+                preferredLanguages: locale.rLanguages
+            ),
             icon: icon,
             addresses: addressViewModels
         )
