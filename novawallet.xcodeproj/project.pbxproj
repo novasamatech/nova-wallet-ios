@@ -593,7 +593,7 @@
 		0C7104902C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71048F2C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift */; };
 		0C7104922C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104912C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift */; };
 		0C7104962C2C33B300487E64 /* GenericLedgerWalletConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104952C2C33B300487E64 /* GenericLedgerWalletConfirmInteractor.swift */; };
-		0C7104982C2C393A00487E64 /* SubstrateLedgerWalletModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104972C2C393A00487E64 /* SubstrateLedgerWalletModel.swift */; };
+		0C7104982C2C393A00487E64 /* PolkadotLedgerWalletModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104972C2C393A00487E64 /* PolkadotLedgerWalletModel.swift */; };
 		0C71049A2C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104992C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift */; };
 		0C71049C2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71049B2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift */; };
 		0C7104A02C2C6EED00487E64 /* LedgerSubstrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71049F2C2C6EED00487E64 /* LedgerSubstrateApp.swift */; };
@@ -6401,7 +6401,7 @@
 		0C71048F2C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareWalletAddressesPresenter.swift; sourceTree = "<group>"; };
 		0C7104912C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericWalletConfirmInteractorError.swift; sourceTree = "<group>"; };
 		0C7104952C2C33B300487E64 /* GenericLedgerWalletConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletConfirmInteractor.swift; sourceTree = "<group>"; };
-		0C7104972C2C393A00487E64 /* SubstrateLedgerWalletModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLedgerWalletModel.swift; sourceTree = "<group>"; };
+		0C7104972C2C393A00487E64 /* PolkadotLedgerWalletModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotLedgerWalletModel.swift; sourceTree = "<group>"; };
 		0C7104992C2C3E5700487E64 /* GenericLedgerWalletOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletOperationFactory.swift; sourceTree = "<group>"; };
 		0C71049B2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLedgerWalletConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C71049F2C2C6EED00487E64 /* LedgerSubstrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSubstrateApp.swift; sourceTree = "<group>"; };
@@ -24948,7 +24948,7 @@
 				5CCDB2256863350F2236C2C0 /* GenericLedgerWalletInteractor.swift */,
 				C3971167D84B9FABEED47DE4 /* GenericLedgerWalletViewFactory.swift */,
 				0C7104912C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift */,
-				0C7104972C2C393A00487E64 /* SubstrateLedgerWalletModel.swift */,
+				0C7104972C2C393A00487E64 /* PolkadotLedgerWalletModel.swift */,
 			);
 			path = GenericWalletConfirm;
 			sourceTree = "<group>";
@@ -29854,7 +29854,7 @@
 				8804AD83295B7596001C4E09 /* DAppDesktopModeSettingsView.swift in Sources */,
 				8468B86524F59D1D00B76BC6 /* IconTitleHeaderView.swift in Sources */,
 				84FFE505261290830054EA63 /* NetworkInfoView.swift in Sources */,
-				0C7104982C2C393A00487E64 /* SubstrateLedgerWalletModel.swift in Sources */,
+				0C7104982C2C393A00487E64 /* PolkadotLedgerWalletModel.swift in Sources */,
 				8490144F24A93E2E008F705E /* UIImage+Drawing.swift in Sources */,
 				0CE933E22C07671A000F3EFE /* CloudBackupRemindPresentationResult.swift in Sources */,
 				8444D13F267133CF00AF6D8C /* CrowdloanAddMemo.swift in Sources */,

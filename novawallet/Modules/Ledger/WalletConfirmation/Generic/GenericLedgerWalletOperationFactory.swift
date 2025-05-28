@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol GenericLedgerWalletOperationFactoryProtocol {
     func createSaveOperation(
-        for model: SubstrateLedgerWalletModel,
+        for model: PolkadotLedgerWalletModel,
         name: String,
         keystore: KeystoreProtocol,
         settings: SelectedWalletSettings
@@ -13,27 +13,36 @@ protocol GenericLedgerWalletOperationFactoryProtocol {
 
 final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFactoryProtocol {
     func createSaveOperation(
-        for model: SubstrateLedgerWalletModel,
+        for model: PolkadotLedgerWalletModel,
         name: String,
         keystore: KeystoreProtocol,
         settings: SelectedWalletSettings
     ) -> BaseOperation<Void> {
         AsyncClosureOperation { completion in
+            let ethereumAddress = model.evm.flatMap { model in
+                try? model.publicKey.ethereumAddressFromPublicKey()
+            }
+
             let wallet = MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: name,
-                substrateAccountId: model.accountId,
-                substrateCryptoType: model.cryptoType.rawValue,
-                substratePublicKey: model.publicKey,
-                ethereumAddress: nil,
-                ethereumPublicKey: nil,
+                substrateAccountId: model.substrate.accountId,
+                substrateCryptoType: model.substrate.cryptoType.rawValue,
+                substratePublicKey: model.substrate.publicKey,
+                ethereumAddress: ethereumAddress,
+                ethereumPublicKey: model.evm?.publicKey,
                 chainAccounts: [],
                 type: .genericLedger
             )
 
-            let tag = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
+            let substrateTag = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)
 
-            try keystore.saveKey(model.derivationPath, with: tag)
+            try keystore.saveKey(model.substrate.derivationPath, with: substrateTag)
+
+            if let evm = model.evm {
+                let evmTag = KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId)
+                try keystore.saveKey(evm.derivationPath, with: evmTag)
+            }
 
             settings.save(
                 value: wallet,

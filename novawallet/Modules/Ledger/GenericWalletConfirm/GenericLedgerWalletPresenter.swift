@@ -83,7 +83,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
         provideViewModel()
     }
 
-    func didReceiveAccountConfirmation(with model: SubstrateLedgerWalletModel) {
+    func didReceiveAccountConfirmation(with model: PolkadotLedgerWalletModel) {
         guard let view else {
             return
         }

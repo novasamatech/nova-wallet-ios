@@ -44,7 +44,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
         )
     }
 
-    private func createDerivationPathOperation(
+    private func createSubstrateDerivationPathOperation(
         dependingOn walletOperation: BaseOperation<MetaAccountModel?>,
         chainId: ChainModel.Id,
         keystore: KeystoreProtocol
@@ -68,6 +68,47 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
             } else {
                 throw CommonError.dataCorruption
             }
+        }
+    }
+
+    private func createEvmDerivationPathOperation(
+        dependingOn walletOperation: BaseOperation<MetaAccountModel?>,
+        chainId: ChainModel.Id,
+        keystore: KeystoreProtocol
+    ) -> BaseOperation<Data> {
+        ClosureOperation {
+            guard let wallet = try walletOperation.extractNoCancellableResultData() else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            if wallet.ethereumAddress != nil {
+                let keystoreTag: String = KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId)
+
+                return try keystore.fetchKey(for: keystoreTag)
+            } else if let chainAccount = wallet.chainAccounts.first(where: { $0.chainId == chainId }) {
+                let keystoreTag: String = KeystoreTagV2.ethereumDerivationTagForMetaId(
+                    wallet.metaId,
+                    accountId: chainAccount.accountId
+                )
+
+                return try keystore.fetchKey(for: keystoreTag)
+            } else {
+                throw CommonError.dataCorruption
+            }
+        }
+    }
+
+    private func createDerivationPathOperation(
+        dependingOn walletOperation: BaseOperation<MetaAccountModel?>,
+        signingMode: GenericLedgerPolkadotSigningParams.Mode,
+        chainId: ChainModel.Id,
+        keystore: KeystoreProtocol
+    ) -> BaseOperation<Data> {
+        switch signingMode {
+        case .substrate:
+            createSubstrateDerivationPathOperation(dependingOn: walletOperation, chainId: chainId, keystore: keystore)
+        case .evm:
+            createEvmDerivationPathOperation(dependingOn: walletOperation, chainId: chainId, keystore: keystore)
         }
     }
 
@@ -106,22 +147,15 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
-            if
-                let accountId = wallet.substrateAccountId,
-                let publicKey = wallet.substratePublicKey,
-                let cryptoType = wallet.substrateCryptoType {
-                return ChainAccountModel(
-                    chainId: chain.chainId,
-                    accountId: accountId,
-                    publicKey: publicKey,
-                    cryptoType: cryptoType,
-                    proxy: nil
-                )
-            } else if let chainAccount = wallet.chainAccounts.first(where: { $0.chainId == chain.chainId }) {
-                return chainAccount
-            } else {
-                throw ChainAccountFetchingError.accountNotExists
-            }
+            let response = try wallet.fetchOrError(for: chain.accountRequest())
+
+            return ChainAccountModel(
+                chainId: response.chainId,
+                accountId: response.accountId,
+                publicKey: response.publicKey,
+                cryptoType: response.cryptoType.rawValue,
+                proxy: nil
+            )
         }
     }
 
@@ -147,10 +181,13 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     // MARK: Overriden
 
     override func performOperation(using deviceId: UUID) {
+        let signingMode: GenericLedgerPolkadotSigningParams.Mode = chain.isEthereumBased ? .evm : .substrate
+
         let walletOperation = walletRepository.fetchOperation(by: metaId, options: RepositoryFetchOptions())
 
         let derivationPathOperation = createDerivationPathOperation(
             dependingOn: walletOperation,
+            signingMode: signingMode,
             chainId: chainId,
             keystore: keystore
         )
@@ -166,7 +203,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
             return GenericLedgerPolkadotSigningParams(
                 extrinsicProof: proof,
                 derivationPath: derivationPath,
-                mode: .substrate
+                mode: signingMode
             )
         }
 

@@ -9,7 +9,7 @@ protocol GenericLedgerWalletInteractorInputProtocol: AnyObject {
 
 protocol GenericLedgerWalletInteractorOutputProtocol: AnyObject {
     func didReceive(account: LedgerSubstrateAccount)
-    func didReceiveAccountConfirmation(with model: SubstrateLedgerWalletModel)
+    func didReceiveAccountConfirmation(with model: PolkadotLedgerWalletModel)
     func didReceiveChains(changes: [DataProviderChange<ChainModel>])
     func didReceive(error: GenericWalletConfirmInteractorError)
 }
@@ -24,5 +24,5 @@ protocol GenericLedgerWalletWireframeProtocol: AlertPresentable, ErrorPresentabl
         cancelClosure: @escaping () -> Void
     )
 
-    func procced(from view: HardwareWalletAddressesViewProtocol?, walletModel: SubstrateLedgerWalletModel)
+    func procced(from view: HardwareWalletAddressesViewProtocol?, walletModel: PolkadotLedgerWalletModel)
 }

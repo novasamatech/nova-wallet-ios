@@ -43,6 +43,7 @@ struct GenericLedgerWalletViewFactory {
             ledgerApplication: application,
             deviceId: deviсe.identifier,
             index: index,
+            supportsEvmAddresses: true,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

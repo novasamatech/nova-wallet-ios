@@ -8,12 +8,14 @@ final class GenericLedgerWalletInteractor {
     let deviceId: UUID
     let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
     let index: UInt32
+    let supportsEvmAddresses: Bool
     let operationQueue: OperationQueue
 
     init(
         ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
         deviceId: UUID,
         index: UInt32,
+        supportsEvmAddresses: Bool,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -21,6 +23,7 @@ final class GenericLedgerWalletInteractor {
         self.deviceId = deviceId
         self.ledgerApplication = ledgerApplication
         self.index = index
+        self.supportsEvmAddresses = supportsEvmAddresses
         self.operationQueue = operationQueue
     }
 
@@ -43,23 +46,6 @@ final class GenericLedgerWalletInteractor {
             }
 
             self?.presenter?.didReceiveChains(changes: actualChanges)
-        }
-    }
-
-    private func provideWalletModel(from response: LedgerSubstrateAccountResponse) {
-        do {
-            let accountId = try response.account.address.toAccountId()
-
-            let model = SubstrateLedgerWalletModel(
-                accountId: accountId,
-                publicKey: response.account.publicKey,
-                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
-                derivationPath: response.derivationPath
-            )
-
-            presenter?.didReceiveAccountConfirmation(with: model)
-        } catch {
-            presenter?.didReceive(error: .confirmAccount(error))
         }
     }
 }
@@ -88,20 +74,65 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func confirmAccount() {
-        let wrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(
+        let substrateWrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(
             deviceId: deviceId,
             index: index,
             displayVerificationDialog: true
         )
 
+        let evmWrapper: CompoundOperationWrapper<LedgerEvmAccountResponse>? = if supportsEvmAddresses {
+            ledgerApplication.getGenericEvmAccountWrapper(
+                for: deviceId,
+                index: index,
+                displayVerificationDialog: true
+            )
+        } else {
+            nil
+        }
+
+        evmWrapper?.addDependency(wrapper: substrateWrapper)
+
+        let mappingOperation = ClosureOperation<PolkadotLedgerWalletModel> {
+            let substrateModel = try substrateWrapper.targetOperation.extractNoCancellableResultData()
+            let evmModel = try evmWrapper?.targetOperation.extractNoCancellableResultData()
+
+            let substrateAccountId = try substrateModel.account.address.toAccountId()
+
+            let substrate = PolkadotLedgerWalletModel.Substrate(
+                accountId: substrateAccountId,
+                publicKey: substrateModel.account.publicKey,
+                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
+                derivationPath: substrateModel.derivationPath
+            )
+
+            let evm = evmModel.map {
+                PolkadotLedgerWalletModel.EVM(
+                    publicKey: $0.account.publicKey,
+                    derivationPath: $0.derivationPath
+                )
+            }
+
+            return PolkadotLedgerWalletModel(substrate: substrate, evm: evm)
+        }
+
+        mappingOperation.addDependency(substrateWrapper.targetOperation)
+
+        if let evmWrapper {
+            mappingOperation.addDependency(evmWrapper.targetOperation)
+        }
+
+        let totalWrapper = substrateWrapper
+            .insertingHead(operations: evmWrapper?.allOperations ?? [])
+            .insertingTail(operation: mappingOperation)
+
         execute(
-            wrapper: wrapper,
+            wrapper: totalWrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(response):
-                self?.provideWalletModel(from: response)
+                self?.presenter?.didReceiveAccountConfirmation(with: response)
             case let .failure(error):
                 self?.presenter?.didReceive(error: .confirmAccount(error))
             }

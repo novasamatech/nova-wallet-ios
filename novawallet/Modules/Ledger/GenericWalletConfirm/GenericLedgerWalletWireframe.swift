@@ -28,7 +28,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
         transitToMessageSheet(confirmationView, on: view)
     }
 
-    func procced(from view: HardwareWalletAddressesViewProtocol?, walletModel: SubstrateLedgerWalletModel) {
+    func procced(from view: HardwareWalletAddressesViewProtocol?, walletModel: PolkadotLedgerWalletModel) {
         guard
             let createView = LedgerWalletConfirmViewFactory.createGenericView(
                 for: walletModel,

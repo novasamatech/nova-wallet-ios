@@ -40,7 +40,8 @@ struct LedgerTxConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             completion: completion,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = LedgerTxConfirmViewController(
