@@ -1,12 +1,22 @@
 import UIKit
 
 final class WalletMigrateAcceptViewLayout: SCLoadableActionLayoutView {
+    let backgroundView: UIImageView = .create { imageView in
+        imageView.image = R.image.novabgSplash()
+        imageView.contentMode = .scaleAspectFill
+    }
+
+    let illustrationView: UIImageView = .create { imageView in
+        imageView.image = R.image.imageSiriMigration()
+        imageView.contentMode = .scaleAspectFit
+    }
+
     let titleView: MultiValueView = .create { view in
-        view.valueTop.apply(style: .title3Primary)
-        view.valueTop.textAlignment = .left
+        view.valueTop.apply(style: .boldLargePrimary)
+        view.valueTop.textAlignment = .center
         view.valueTop.numberOfLines = 0
-        view.valueBottom.apply(style: .regularSubhedlineSecondary)
-        view.valueBottom.textAlignment = .left
+        view.valueBottom.apply(style: .regularBodySecondary)
+        view.valueBottom.textAlignment = .center
         view.valueBottom.numberOfLines = 0
         view.spacing = 8
     }
@@ -20,6 +30,16 @@ final class WalletMigrateAcceptViewLayout: SCLoadableActionLayoutView {
     override func setupLayout() {
         super.setupLayout()
 
-        addArrangedSubview(titleView, spacingAfter: 24)
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        stackView.layoutMargins = .init(
+            top: stackView.layoutMargins.top,
+            left: 24.0,
+            bottom: stackView.layoutMargins.bottom,
+            right: 24.0
+        )
+        addArrangedSubview(illustrationView, spacingAfter: 8.0)
+        addArrangedSubview(titleView, spacingAfter: 24.0)
     }
 }

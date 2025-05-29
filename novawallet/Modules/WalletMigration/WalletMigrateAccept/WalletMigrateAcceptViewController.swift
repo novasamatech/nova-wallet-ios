@@ -50,7 +50,7 @@ private extension WalletMigrateAcceptViewController {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.genericActionView.actionButton.setTitle(R.string.localizable.walletMigrateAcceptButton(
+        rootView.genericActionView.actionButton.setTitle(R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         ))
     }
