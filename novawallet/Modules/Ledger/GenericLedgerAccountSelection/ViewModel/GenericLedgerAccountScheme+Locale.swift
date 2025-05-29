@@ -1,6 +1,6 @@
 import Foundation
 
-extension GenericLedgerAddressScheme {
+extension HardwareWalletAddressScheme {
     func createTitle(for locale: Locale) -> String {
         switch self {
         case .substrate:

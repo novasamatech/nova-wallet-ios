@@ -11,7 +11,7 @@ final class GenericLedgerAccountSelectionPresenter {
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
-    private var availableSchemes: Set<GenericLedgerAddressScheme> = []
+    private var availableSchemes: Set<HardwareWalletAddressScheme> = []
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var accounts: [GenericLedgerAccountModel] = []
 
@@ -61,11 +61,20 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
     }
 
     func selectAddress(in section: Int, at index: Int) {
-        guard let address = accounts[section].addresses[index].address else {
+        let model = accounts[section].addresses[index]
+
+        guard
+            let view,
+            let address = model.address else {
             return
         }
 
-        // TODO: Present address here
+        wireframe.presentHardwareAddressOptions(
+            from: view,
+            address: address,
+            scheme: model.scheme,
+            locale: localizationManager.selectedLocale
+        )
     }
 
     func loadNext() {
@@ -77,7 +86,7 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>]) {
         chains = changes.mergeToDict(chains)
 
-        let newSchemes: Set<GenericLedgerAddressScheme> = chains.values.reduce(into: []) { accum, model in
+        let newSchemes: Set<HardwareWalletAddressScheme> = chains.values.reduce(into: []) { accum, model in
             if model.isEthereumBased {
                 accum.insert(.evm)
             } else {
@@ -104,6 +113,20 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
             accounts.append(account)
 
             addAccountViewModel(for: account)
+        }
+    }
+
+    func didReceive(error: GenericLedgerAccountInteractorError) {
+        logger.error("Error: \(error)")
+
+        switch error {
+        case .accountFetchFailed:
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.performLoadNext()
+            }
         }
     }
 }

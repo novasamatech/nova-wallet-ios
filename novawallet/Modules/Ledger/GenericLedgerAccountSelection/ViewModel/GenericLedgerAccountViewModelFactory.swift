@@ -27,7 +27,7 @@ private extension GenericLedgerAccountVMFactory {
     }
 
     func createAddressViewModel(
-        from model: GenericLedgerAddressModel,
+        from model: HardwareWalletAddressModel,
         locale: Locale
     ) -> GenericLedgerAddressViewModel {
         guard let address = model.address else {
@@ -51,7 +51,7 @@ extension GenericLedgerAccountVMFactory: GenericLedgerAccountVMFactoryProtocol {
         for account: GenericLedgerAccountModel,
         locale: Locale
     ) -> GenericLedgerAccountViewModel {
-        let sortedAddresses = account.addresses.sorted { $0.scheme.order < $1.scheme.order }
+        let sortedAddresses = account.addresses
 
         let icon: DrawableIconViewModel? = sortedAddresses.first(where: { $0.address != nil })?.address.flatMap {
             createIconViewModel(from: $0)

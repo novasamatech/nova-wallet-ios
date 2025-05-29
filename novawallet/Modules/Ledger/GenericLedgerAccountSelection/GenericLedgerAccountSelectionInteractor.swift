@@ -80,7 +80,7 @@ final class GenericLedgerAccountSelectionInteractor {
 
     private func createAccountWrapper(
         at index: UInt32,
-        scheme: GenericLedgerAddressScheme
+        scheme: HardwareWalletAddressScheme
     ) -> CompoundOperationWrapper<AccountAddress> {
         switch scheme {
         case .substrate:
@@ -96,7 +96,7 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
         subscribeLedgerChains()
     }
 
-    func loadAccounts(at index: UInt32, schemes: Set<GenericLedgerAddressScheme>) {
+    func loadAccounts(at index: UInt32, schemes: Set<HardwareWalletAddressScheme>) {
         cancellableStore.cancel()
 
         let wrappers = schemes.map { scheme in
@@ -108,17 +108,13 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
         }
 
         let mappingOperation = ClosureOperation<GenericLedgerAccountModel> {
-            let addresses = zip(schemes, wrappers).map { scheme, wrapper in
-                do {
-                    let address = try wrapper.targetOperation.extractNoCancellableResultData()
+            let addresses = try zip(schemes, wrappers).map { scheme, wrapper in
+                let address = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                    return GenericLedgerAddressModel(result: .success(address), scheme: scheme)
-                } catch {
-                    return GenericLedgerAddressModel(result: .failure(.fetchFailed(error)), scheme: scheme)
-                }
+                return HardwareWalletAddressModel(address: address, scheme: scheme)
             }
 
-            return GenericLedgerAccountModel(index: index, addresses: addresses)
+            return GenericLedgerAccountModel(index: index, addresses: addresses.sortedBySchemeOrder())
         }
 
         let dependencies = wrappers.flatMap(\.allOperations)

@@ -7,7 +7,7 @@ final class ChainAddressDetailsViewLayout: UIView {
         return view
     }()
 
-    let networkView = AssetListChainView()
+    private var titleView: UIView?
 
     let addressIconView: DAppIconView = {
         let view = DAppIconView()
@@ -38,6 +38,15 @@ final class ChainAddressDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func updateTitle(with titleViewModel: ChainAddressDetailsViewModel.Title, locale: Locale) {
+        switch titleViewModel {
+        case let .network(network):
+            setupNetworkTitleView(for: network)
+        case let .text(textResource):
+            setupTextTitleView(for: textResource.value(for: locale))
+        }
+    }
+
     func addAction(for indicator: ChainAddressDetailsIndicator) -> StackActionCell {
         let cell = StackActionCell()
 
@@ -64,21 +73,38 @@ final class ChainAddressDetailsViewLayout: UIView {
 
         return cell
     }
+}
 
-    private func setupLayout() {
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+private extension ChainAddressDetailsViewLayout {
+    func setupNetworkTitleView(for viewModel: NetworkViewModel) {
+        let networkView = AssetListChainView()
+
+        setupTitleView(networkView, with: ChainAddressDetailsMeasurement.textTitleHeight)
+
+        networkView.bind(viewModel: viewModel)
+    }
+
+    func setupTextTitleView(for text: String) {
+        let titleView: BorderedLabelView = .create { view in
+            view.apply(style: .chipsText)
         }
 
-        let networkContainerView = UIView()
-        networkContainerView.backgroundColor = .clear
+        setupTitleView(titleView, with: ChainAddressDetailsMeasurement.networkTitleHeight)
 
-        containerView.stackView.addArrangedSubview(networkContainerView)
-        networkContainerView.addSubview(networkView)
-        networkView.snp.makeConstraints { make in
+        titleView.titleLabel.text = text
+    }
+
+    func setupTitleView(_ titleView: UIView, with height: CGFloat) {
+        self.titleView?.removeFromSuperview()
+
+        let titleContainerView = UIView()
+        titleContainerView.backgroundColor = .clear
+
+        containerView.stackView.insertArrangedSubview(titleContainerView, at: 0)
+        titleContainerView.addSubview(titleView)
+        titleView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            make.height.equalTo(ChainAddressDetailsMeasurement.networkHeight)
+            make.height.equalTo(height)
             make.centerX.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
@@ -86,8 +112,17 @@ final class ChainAddressDetailsViewLayout: UIView {
 
         containerView.stackView.setCustomSpacing(
             ChainAddressDetailsMeasurement.headerSpacing,
-            after: networkContainerView
+            after: titleContainerView
         )
+
+        self.titleView = titleView
+    }
+
+    func setupLayout() {
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         let addressContainerView = UIView()
         addressContainerView.backgroundColor = .clear

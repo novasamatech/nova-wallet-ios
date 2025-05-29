@@ -106,7 +106,7 @@
 		0C03879C2D0F64F9000A2F24 /* HydraSwapParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */; };
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
 		0C0AE4092DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4082DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift */; };
-		0C0AE40B2DE5B39200D506F3 /* GenericLedgerAddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40A2DE5B39200D506F3 /* GenericLedgerAddressModel.swift */; };
+		0C0AE40B2DE5B39200D506F3 /* GenericLedgerAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */; };
 		0C0AE40E2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */; };
 		0C0AE4102DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */; };
 		0C0AE4122DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */; };
@@ -5906,7 +5906,7 @@
 		0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParams.swift; sourceTree = "<group>"; };
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
 		0C0AE4082DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPolkadotLedgerSigningParams.swift; sourceTree = "<group>"; };
-		0C0AE40A2DE5B39200D506F3 /* GenericLedgerAddressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAddressModel.swift; sourceTree = "<group>"; };
+		0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountModel.swift; sourceTree = "<group>"; };
 		0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountViewModel.swift; sourceTree = "<group>"; };
 		0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenericLedgerAccountScheme+Locale.swift"; sourceTree = "<group>"; };
@@ -14302,7 +14302,7 @@
 		0CE9B70D2DE64F85007C7F5A /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				0C0AE40A2DE5B39200D506F3 /* GenericLedgerAddressModel.swift */,
+				0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -29918,7 +29918,7 @@
 				779107682AB8CA71000A4B17 /* AssetListSearchEmptyCell.swift in Sources */,
 				84E1CCF5260DCB91001E81B5 /* SwitchAccount+WalletManagementWireframe.swift in Sources */,
 				0C0F6D672D394AF800943A7C /* MythosMultistakingUpdateService.swift in Sources */,
-				0C0AE40B2DE5B39200D506F3 /* GenericLedgerAddressModel.swift in Sources */,
+				0C0AE40B2DE5B39200D506F3 /* GenericLedgerAccountModel.swift in Sources */,
 				8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */,
 				849ABE6D2627949E00011A2A /* BatchMapper.swift in Sources */,
 				2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */,

@@ -127,8 +127,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: nil,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -163,8 +162,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: viewModel.address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -270,8 +268,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -307,8 +304,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 

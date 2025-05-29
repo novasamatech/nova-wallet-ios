@@ -25,7 +25,7 @@ final class GenericLedgerAddressStackCell: RowView<UIView> {
                 for: .init(
                     title: viewModel.title,
                     accessoryViewModel: .init(
-                        details: found.address.mediumTruncated,
+                        details: found.address,
                         imageViewModel: found.icon
                     )
                 )

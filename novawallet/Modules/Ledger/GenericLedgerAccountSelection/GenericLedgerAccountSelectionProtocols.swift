@@ -16,14 +16,20 @@ protocol GenericLedgerAccountSelectionPresenterProtocol: AnyObject {
 
 protocol GenericLedgerAccountSelectionInteractorInputProtocol: AnyObject {
     func setup()
-    func loadAccounts(at index: UInt32, schemes: Set<GenericLedgerAddressScheme>)
+    func loadAccounts(at index: UInt32, schemes: Set<HardwareWalletAddressScheme>)
 }
 
 protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>])
     func didReceive(account: GenericLedgerAccountModel)
+    func didReceive(error: GenericLedgerAccountInteractorError)
 }
 
-protocol GenericLedgerAccountSelectionWireframeProtocol: AddressOptionsPresentable {
+protocol GenericLedgerAccountSelectionWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable, AddressOptionsPresentable {
     func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32)
+}
+
+enum GenericLedgerAccountInteractorError {
+    case accountFetchFailed(Error)
 }

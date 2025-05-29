@@ -25,9 +25,17 @@ final class GenericLedgerFoundAddressContentView: GenericTitleValueView<
     }
 
     private func configure() {
+        spacing = 16
+
         titleLabel.apply(style: .footnoteSecondary)
+
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
         addressLabel.apply(style: .footnotePrimary)
         addressLabel.numberOfLines = 1
+        addressLabel.lineBreakMode = .byTruncatingMiddle
+
+        addressLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         valueView.mode = .detailsIcon
         valueView.iconWidth = 16
