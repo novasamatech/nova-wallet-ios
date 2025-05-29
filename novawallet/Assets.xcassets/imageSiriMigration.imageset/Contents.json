@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "imageSiriMigration.pdf",
-      "idiom" : "universal"
+      "filename" : "imageSiriMigration.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "imageSiriMigration2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "imageSiriMigration3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
