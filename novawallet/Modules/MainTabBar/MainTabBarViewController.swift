@@ -166,6 +166,14 @@ extension MainTabBarViewController: SharedStatusPresenterDelegate {
     }
 }
 
+// MARK: RootFlowStatusAlertPresenter
+
+extension MainTabBarViewController: RootFlowStatusAlertPresenter {
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure) {
+        presenter.presentStatusAlert(closure)
+    }
+}
+
 // MARK: Localizable
 
 extension MainTabBarViewController: Localizable {

@@ -7,6 +7,7 @@ final class WalletMigrateAcceptInteractor {
     weak var presenter: WalletMigrateAcceptInteractorOutputProtocol?
 
     let sessionManager: SecureSessionManaging
+    let cloudBackupSyncService: CloudBackupSyncServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
     let metaAccountOperationFactory: MetaAccountOperationFactoryProtocol
     let mnemonicFactory: IRMnemonicCreatorProtocol
@@ -19,6 +20,7 @@ final class WalletMigrateAcceptInteractor {
 
     init(
         startMessage: WalletMigrationMessage.Start,
+        cloudBackupSyncService: CloudBackupSyncServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
         sessionManager: SecureSessionManaging,
         settings: SelectedWalletSettings,
@@ -29,6 +31,7 @@ final class WalletMigrateAcceptInteractor {
         logger: LoggerProtocol
     ) {
         self.sessionManager = sessionManager
+        self.cloudBackupSyncService = cloudBackupSyncService
         self.walletMigrationService = walletMigrationService
         self.settings = settings
         self.metaAccountOperationFactory = metaAccountOperationFactory
@@ -128,10 +131,20 @@ private extension WalletMigrateAcceptInteractor {
             logger.debug("Skipping accept event as we act as destination")
         }
     }
+
+    func subscribeCloudBackupState() {
+        cloudBackupSyncService.subscribeState(
+            self,
+            notifyingIn: .main
+        ) { [weak self] state in
+            self?.presenter?.didReceiveCloudBackup(state: state)
+        }
+    }
 }
 
 extension WalletMigrateAcceptInteractor: WalletMigrateAcceptInteractorInputProtocol {
     func setup() {
+        subscribeCloudBackupState()
         initiateSession()
 
         walletMigrationService.addObserver(self)

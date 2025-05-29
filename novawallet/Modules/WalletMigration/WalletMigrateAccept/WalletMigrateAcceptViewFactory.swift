@@ -53,6 +53,7 @@ private extension WalletMigrateAcceptViewFactory {
 
         return WalletMigrateAcceptInteractor(
             startMessage: startMessage,
+            cloudBackupSyncService: CloudBackupSyncMediatorFacade.sharedMediator.syncService,
             walletMigrationService: walletMigrateService,
             sessionManager: SecureSessionManager.createForWalletMigration(),
             settings: SelectedWalletSettings.shared,
