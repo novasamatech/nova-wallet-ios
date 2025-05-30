@@ -35,10 +35,14 @@ struct GenericLedgerAccountSelectionViewFactory {
         application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol
     ) -> GenericLedgerAccountSelectionInteractor {
-        GenericLedgerAccountSelectionInteractor(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+        let accountFetchFactory = GenericLedgerAccountFetchFactory(
             deviceId: device.identifier,
-            ledgerApplication: application,
+            ledgerApplication: application
+        )
+
+        return GenericLedgerAccountSelectionInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            accountFetchFactory: accountFetchFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

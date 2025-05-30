@@ -23,7 +23,7 @@ struct PolkadotLedgerWalletModel {
 
         init(evmResponse: LedgerEvmAccountResponse) throws {
             address = try evmResponse.account.publicKey.ethereumAddressFromPublicKey()
-            publicKey = try evmResponse.account.publicKey
+            publicKey = evmResponse.account.publicKey
             derivationPath = evmResponse.derivationPath
         }
     }

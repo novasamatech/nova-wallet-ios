@@ -6,8 +6,7 @@ final class GenericLedgerAccountSelectionInteractor {
     weak var presenter: GenericLedgerAccountSelectionInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
-    let deviceId: UUID
-    let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
+    let accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -15,14 +14,12 @@ final class GenericLedgerAccountSelectionInteractor {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        deviceId: UUID,
-        ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
+        accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
-        self.deviceId = deviceId
-        self.ledgerApplication = ledgerApplication
+        self.accountFetchFactory = accountFetchFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -40,55 +37,6 @@ final class GenericLedgerAccountSelectionInteractor {
             self?.presenter?.didReceiveLedgerChain(changes: changes)
         }
     }
-
-    private func createSubstrateAccountWrapper(at index: UInt32) -> CompoundOperationWrapper<AccountAddress> {
-        let fetchWrapper = ledgerApplication.getGenericSubstrateAccountWrapper(
-            for: deviceId,
-            index: index,
-            addressPrefix: SubstrateConstants.genericAddressPrefix,
-            displayVerificationDialog: false
-        )
-
-        let mappingOperation = ClosureOperation<AccountAddress> {
-            let response = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-
-            return response.account.address
-        }
-
-        mappingOperation.addDependency(fetchWrapper.targetOperation)
-
-        return fetchWrapper.insertingTail(operation: mappingOperation)
-    }
-
-    private func createEvmAccountWrapper(at index: UInt32) -> CompoundOperationWrapper<AccountAddress> {
-        let fetchWrapper = ledgerApplication.getGenericEvmAccountWrapper(
-            for: deviceId,
-            index: index,
-            displayVerificationDialog: false
-        )
-
-        let mappingOperation = ClosureOperation<AccountAddress> {
-            let response = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-
-            return response.account.address
-        }
-
-        mappingOperation.addDependency(fetchWrapper.targetOperation)
-
-        return fetchWrapper.insertingTail(operation: mappingOperation)
-    }
-
-    private func createAccountWrapper(
-        at index: UInt32,
-        scheme: HardwareWalletAddressScheme
-    ) -> CompoundOperationWrapper<AccountAddress> {
-        switch scheme {
-        case .substrate:
-            createSubstrateAccountWrapper(at: index)
-        case .evm:
-            createEvmAccountWrapper(at: index)
-        }
-    }
 }
 
 extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelectionInteractorInputProtocol {
@@ -99,37 +47,14 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
     func loadAccounts(at index: UInt32, schemes: Set<HardwareWalletAddressScheme>) {
         cancellableStore.cancel()
 
-        let wrappers = schemes.map { scheme in
-            createAccountWrapper(at: index, scheme: scheme)
-        }
-
-        for (wrapperIndex, wrapper) in wrappers.enumerated() where wrapperIndex > 0 {
-            wrapper.addDependency(wrapper: wrappers[wrapperIndex - 1])
-        }
-
-        let mappingOperation = ClosureOperation<GenericLedgerAccountModel> {
-            let addresses = try zip(schemes, wrappers).map { scheme, wrapper in
-                do {
-                    let accountId = try wrapper.targetOperation.extractNoCancellableResultData().toAccountId()
-
-                    return HardwareWalletAddressModel(accountId: accountId, scheme: scheme)
-                } catch LedgerError.response where scheme == .evm {
-                    // evm might not be supported
-                    return HardwareWalletAddressModel(accountId: nil, scheme: scheme)
-                }
-            }
-
-            return GenericLedgerAccountModel(index: index, addresses: addresses.sortedBySchemeOrder())
-        }
-
-        let dependencies = wrappers.flatMap(\.allOperations)
-
-        wrappers.forEach { mappingOperation.addDependency($0.targetOperation) }
-
-        let totalWrapper = CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+        let wrapper = accountFetchFactory.createAccountModel(
+            for: schemes,
+            index: index,
+            shouldConfirm: false
+        )
 
         executeCancellable(
-            wrapper: totalWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: cancellableStore,
             runningCallbackIn: .main

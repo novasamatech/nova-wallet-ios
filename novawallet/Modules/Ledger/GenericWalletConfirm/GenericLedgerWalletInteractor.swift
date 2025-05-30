@@ -6,21 +6,18 @@ final class GenericLedgerWalletInteractor {
     weak var presenter: GenericLedgerWalletInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
-    let deviceId: UUID
-    let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
+    let accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol
     let model: GenericLedgerWalletConfirmModel
     let operationQueue: OperationQueue
 
     init(
-        ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
-        deviceId: UUID,
         model: GenericLedgerWalletConfirmModel,
+        accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.deviceId = deviceId
-        self.ledgerApplication = ledgerApplication
+        self.accountFetchFactory = accountFetchFactory
         self.model = model
         self.operationQueue = operationQueue
     }
@@ -48,64 +45,6 @@ final class GenericLedgerWalletInteractor {
     }
 }
 
-private extension GenericLedgerWalletInteractor {
-    func createSubstrateWrapper(_ shouldConfirm: Bool) -> CompoundOperationWrapper<LedgerSubstrateAccountResponse> {
-        ledgerApplication.getGenericSubstrateAccountWrapperBy(
-            deviceId: deviceId,
-            index: model.index,
-            displayVerificationDialog: shouldConfirm
-        )
-    }
-
-    func createEvmWrapper(_ shouldConfirm: Bool) -> CompoundOperationWrapper<LedgerEvmAccountResponse?> {
-        guard model.schemes.contains(.evm) else {
-            return .createWithResult(nil)
-        }
-
-        let wrapper = ledgerApplication.getGenericEvmAccountWrapperBy(
-            deviceId: deviceId,
-            index: model.index,
-            displayVerificationDialog: shouldConfirm
-        )
-
-        let mappingOperation = ClosureOperation<LedgerEvmAccountResponse?> {
-            try wrapper.targetOperation.extractNoCancellableResultData()
-        }
-
-        mappingOperation.addDependency(wrapper.targetOperation)
-
-        return wrapper.insertingTail(operation: mappingOperation)
-    }
-
-    func createModelWrapper(_ shouldConfirm: Bool) -> CompoundOperationWrapper<PolkadotLedgerWalletModel> {
-        let substrateWrapper = createSubstrateWrapper(shouldConfirm)
-        let evmWrapper = createEvmWrapper(shouldConfirm)
-
-        evmWrapper.addDependency(wrapper: substrateWrapper)
-
-        let mappingOperation = ClosureOperation<PolkadotLedgerWalletModel> {
-            let substrateResponse = try substrateWrapper.targetOperation.extractNoCancellableResultData()
-            let evmModel = try evmWrapper.targetOperation.extractNoCancellableResultData()
-
-            let substrate = try PolkadotLedgerWalletModel.Substrate(
-                substrateResponse: substrateResponse
-            )
-
-            let evm = try evmModel.map { model in
-                try PolkadotLedgerWalletModel.EVM(evmResponse: model)
-            }
-
-            return PolkadotLedgerWalletModel(substrate: substrate, evm: evm)
-        }
-
-        mappingOperation.addDependency(evmWrapper.targetOperation)
-
-        return evmWrapper
-            .insertingHead(operations: substrateWrapper.allOperations)
-            .insertingTail(operation: mappingOperation)
-    }
-}
-
 extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProtocol {
     func setup() {
         subscribeChains()
@@ -113,7 +52,11 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func fetchAccount() {
-        let wrapper = createModelWrapper(false)
+        let wrapper = accountFetchFactory.createConfirmModel(
+            for: model.schemes,
+            index: model.index,
+            shouldConfirm: false
+        )
 
         execute(
             wrapper: wrapper,
@@ -130,7 +73,11 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func confirmAccount() {
-        let wrapper = createModelWrapper(true)
+        let wrapper = accountFetchFactory.createConfirmModel(
+            for: model.schemes,
+            index: model.index,
+            shouldConfirm: true
+        )
 
         execute(
             wrapper: wrapper,
@@ -147,6 +94,6 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func cancelRequest() {
-        ledgerApplication.connectionManager.cancelRequest(for: deviceId)
+        accountFetchFactory.cancelConfirmationRequests()
     }
 }

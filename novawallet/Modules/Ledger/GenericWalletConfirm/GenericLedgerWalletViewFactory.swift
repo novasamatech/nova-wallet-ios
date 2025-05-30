@@ -39,10 +39,14 @@ struct GenericLedgerWalletViewFactory {
         deviсe: LedgerDeviceProtocol,
         model: GenericLedgerWalletConfirmModel
     ) -> GenericLedgerWalletInteractor {
-        GenericLedgerWalletInteractor(
-            ledgerApplication: application,
+        let accountFetchFactory = GenericLedgerAccountFetchFactory(
             deviceId: deviсe.identifier,
+            ledgerApplication: application
+        )
+
+        return GenericLedgerWalletInteractor(
             model: model,
+            accountFetchFactory: accountFetchFactory,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
