@@ -229,7 +229,7 @@ private extension TransactionSigningPresenter {
                 .values
                 .flatMap(\.components) ?? []
 
-            guard allPathComponents.isEmpty else {
+            guard !allPathComponents.isEmpty else {
                 finalCompletionClosure(true)
                 return
             }
