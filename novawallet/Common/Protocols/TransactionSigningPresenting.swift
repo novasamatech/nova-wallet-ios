@@ -214,6 +214,93 @@ private extension TransactionSigningPresenter {
             presenter.setup()
         }
     }
+
+    func createChainedValidationClosure(
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol
+    ) -> (@escaping DelegatedSignValidationCompletion) -> Void {
+        { [weak self] finalCompletionClosure in
+            guard let self else {
+                finalCompletionClosure(false)
+                return
+            }
+
+            let allPathComponents = resolution.paths?
+                .values
+                .flatMap(\.components) ?? []
+
+            guard allPathComponents.isEmpty else {
+                finalCompletionClosure(true)
+                return
+            }
+
+            executeChainedValidations(
+                components: allPathComponents,
+                resolution: resolution,
+                extrinsicMemo: extrinsicMemo,
+                currentIndex: 0,
+                completion: finalCompletionClosure
+            )
+        }
+    }
+
+    func executeChainedValidations(
+        components: [DelegationResolution.PathFinderPath.Component],
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol,
+        currentIndex: Int,
+        completion: @escaping DelegatedSignValidationCompletion
+    ) {
+        guard currentIndex < components.count else {
+            completion(true)
+            return
+        }
+
+        guard let presentationController = self.presentationController else {
+            completion(false)
+            return
+        }
+
+        let currentComponent = components[currentIndex]
+
+        let componentResolution = ExtrinsicSenderResolution.ResolvedDelegate(
+            delegateAccount: currentComponent.account,
+            delegatedAccount: resolution.delegatedAccount,
+            paths: resolution.paths,
+            allWallets: resolution.allWallets,
+            chain: resolution.chain,
+            failures: resolution.failures
+        )
+
+        guard let presenter = ProxySignValidationViewFactory.createView(
+            from: presentationController,
+            resolvedProxy: componentResolution,
+            calls: extrinsicMemo.restoreBuilder().getCalls(),
+            completionClosure: { [weak self] result in
+                self?.flowHolder = nil
+
+                if result {
+                    // Current validation passed, proceed to next
+                    self?.executeChainedValidations(
+                        components: components,
+                        resolution: resolution,
+                        extrinsicMemo: extrinsicMemo,
+                        currentIndex: currentIndex + 1,
+                        completion: completion
+                    )
+                } else {
+                    // Current validation failed, fail the entire chain
+                    completion(false)
+                }
+            }
+        ) else {
+            completion(false)
+            return
+        }
+
+        flowHolder = presenter
+        presenter.setup()
+    }
 }
 
 // MARK: - TransactionSigningPresenting
@@ -291,14 +378,17 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
         substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     ) {
-        // TODO: Implement validation
+        let validationChainClosure = createChainedValidationClosure(
+            resolution: resolution,
+            extrinsicMemo: substrateContext.extrinsicMemo
+        )
 
         presentDelegatedFlow(
             for: data,
             delegatedMetaId: multisigAccountId,
             resolution: resolution,
             substrateContext: substrateContext,
-            validationClosure: { $0(true) },
+            validationClosure: validationChainClosure,
             completion: completion
         )
     }
