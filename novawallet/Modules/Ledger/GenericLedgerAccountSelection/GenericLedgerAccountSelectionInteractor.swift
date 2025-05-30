@@ -109,13 +109,13 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
 
         let mappingOperation = ClosureOperation<GenericLedgerAccountModel> {
             let addresses = try zip(schemes, wrappers).map { scheme, wrapper in
-                let accountId = try wrapper.targetOperation.extractNoCancellableResultData().toAccountId()
+                do {
+                    let accountId = try wrapper.targetOperation.extractNoCancellableResultData().toAccountId()
 
-                // TODO: Proper handle case when the address doesn't exist
-                if scheme == .evm {
-                    return HardwareWalletAddressModel(accountId: nil, scheme: scheme)
-                } else {
                     return HardwareWalletAddressModel(accountId: accountId, scheme: scheme)
+                } catch LedgerError.response where scheme == .evm {
+                    // evm might not be supported
+                    return HardwareWalletAddressModel(accountId: nil, scheme: scheme)
                 }
             }
 
@@ -138,7 +138,7 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
             case let .success(model):
                 self?.presenter?.didReceive(account: model)
             case let .failure(error):
-                self?.logger.error("Unexpected Ledger account fetch error \(error)")
+                self?.presenter?.didReceive(error: .accountFetchFailed(error))
             }
         }
     }

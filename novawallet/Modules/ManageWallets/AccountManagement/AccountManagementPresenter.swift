@@ -569,7 +569,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             return
         }
 
-        // we currently have only one case for sections with actions
+        // generic ledger currently the only case for the sections with action
 
         switch wallet.type {
         case .genericLedger:
@@ -577,7 +577,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
                 guard let self else {
                     return
                 }
-                
+
                 wireframe.showAddGenericLedgerEvmAccounts(
                     from: view,
                     wallet: wallet
