@@ -573,10 +573,16 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
 
         switch wallet.type {
         case .genericLedger:
-            wireframe.showAddGenericLedgerEvmAccounts(
-                from: view,
-                wallet: wallet
-            )
+            presentCloudRemindIfNeededBefore { [weak self] in
+                guard let self else {
+                    return
+                }
+                
+                wireframe.showAddGenericLedgerEvmAccounts(
+                    from: view,
+                    wallet: wallet
+                )
+            }
         case .secrets,
              .watchOnly,
              .paritySigner,
