@@ -15,8 +15,32 @@ enum HardwareWalletAddressScheme: Equatable {
 }
 
 struct HardwareWalletAddressModel {
-    let address: AccountAddress?
+    let accountId: AccountId?
     let scheme: HardwareWalletAddressScheme
+
+    var address: AccountAddress? {
+        guard let accountId else {
+            return nil
+        }
+
+        return try? accountId.toAddressForHWScheme(scheme)
+    }
+}
+
+extension AccountId {
+    func toAddressForHWScheme(_ scheme: HardwareWalletAddressScheme) throws -> AccountAddress {
+        switch scheme {
+        case .substrate:
+            try toAddress(
+                using: .substrate(
+                    SubstrateConstants.genericAddressPrefix,
+                    legacyPrefix: nil
+                )
+            )
+        case .evm:
+            try toAddress(using: .ethereum)
+        }
+    }
 }
 
 extension Array where Element == HardwareWalletAddressModel {

@@ -57,7 +57,14 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionP
     }
 
     func selectAccount(in section: Int) {
-        wireframe.showWalletCreate(from: view, index: UInt32(section))
+        let account = accounts[section]
+
+        let model = GenericLedgerWalletConfirmModel(
+            index: account.index,
+            schemes: account.addresses.map(\.scheme)
+        )
+
+        wireframe.showWalletCreate(from: view, model: model)
     }
 
     func selectAddress(in section: Int, at index: Int) {

@@ -19,17 +19,13 @@ final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFac
         settings: SelectedWalletSettings
     ) -> BaseOperation<Void> {
         AsyncClosureOperation { completion in
-            let ethereumAddress = model.evm.flatMap { model in
-                try? model.publicKey.ethereumAddressFromPublicKey()
-            }
-
             let wallet = MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: name,
                 substrateAccountId: model.substrate.accountId,
                 substrateCryptoType: model.substrate.cryptoType.rawValue,
                 substratePublicKey: model.substrate.publicKey,
-                ethereumAddress: ethereumAddress,
+                ethereumAddress: model.evm?.address,
                 ethereumPublicKey: model.evm?.publicKey,
                 chainAccounts: [],
                 type: .genericLedger

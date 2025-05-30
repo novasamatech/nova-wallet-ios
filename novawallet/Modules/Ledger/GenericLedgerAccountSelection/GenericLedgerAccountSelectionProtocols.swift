@@ -27,7 +27,10 @@ protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
 
 protocol GenericLedgerAccountSelectionWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, AddressOptionsPresentable {
-    func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32)
+    func showWalletCreate(
+        from view: GenericLedgerAccountSelectionViewProtocol?,
+        model: GenericLedgerWalletConfirmModel
+    )
 }
 
 enum GenericLedgerAccountInteractorError {

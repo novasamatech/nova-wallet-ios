@@ -17,11 +17,7 @@ final class GenericLedgerAccountVMFactory {
 }
 
 private extension GenericLedgerAccountVMFactory {
-    func createIconViewModel(from address: AccountAddress) -> DrawableIconViewModel? {
-        guard let accountId = try? address.toAccountId() else {
-            return nil
-        }
-
+    func createIconViewModel(from accountId: AccountId) -> DrawableIconViewModel? {
         let icon = try? iconGenerator.generateFromAccountId(accountId)
         return icon.map { DrawableIconViewModel(icon: $0) }
     }
@@ -30,18 +26,20 @@ private extension GenericLedgerAccountVMFactory {
         from model: HardwareWalletAddressModel,
         locale: Locale
     ) -> GenericLedgerAddressViewModel {
-        guard let address = model.address else {
+        guard let accountId = model.accountId else {
             return GenericLedgerAddressViewModel(
                 title: model.scheme.createTitle(for: locale),
                 existence: .notFound
             )
         }
 
-        let icon = createIconViewModel(from: address)
+        let icon = createIconViewModel(from: accountId)
+
+        let address = model.address ?? ""
 
         return GenericLedgerAddressViewModel(
             title: model.scheme.createTitle(for: locale),
-            existence: .found(.init(address: address, icon: icon))
+            existence: .found(.init(address: address ?? "", icon: icon))
         )
     }
 }
@@ -53,7 +51,7 @@ extension GenericLedgerAccountVMFactory: GenericLedgerAccountVMFactoryProtocol {
     ) -> GenericLedgerAccountViewModel {
         let sortedAddresses = account.addresses
 
-        let icon: DrawableIconViewModel? = sortedAddresses.first(where: { $0.address != nil })?.address.flatMap {
+        let icon: DrawableIconViewModel? = sortedAddresses.first(where: { $0.accountId != nil })?.accountId.flatMap {
             createIconViewModel(from: $0)
         }
 

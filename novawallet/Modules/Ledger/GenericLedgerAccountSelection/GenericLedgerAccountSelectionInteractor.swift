@@ -109,9 +109,9 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
 
         let mappingOperation = ClosureOperation<GenericLedgerAccountModel> {
             let addresses = try zip(schemes, wrappers).map { scheme, wrapper in
-                let address = try wrapper.targetOperation.extractNoCancellableResultData()
+                let accountId = try wrapper.targetOperation.extractNoCancellableResultData().toAccountId()
 
-                return HardwareWalletAddressModel(address: address, scheme: scheme)
+                return HardwareWalletAddressModel(accountId: accountId, scheme: scheme)
             }
 
             return GenericLedgerAccountModel(index: index, addresses: addresses.sortedBySchemeOrder())

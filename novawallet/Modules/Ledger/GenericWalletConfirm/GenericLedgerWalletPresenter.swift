@@ -10,7 +10,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     let deviceModel: LedgerDeviceModel
     let appName: String
 
-    private var account: LedgerSubstrateAccount?
+    private var model: PolkadotLedgerWalletModel?
 
     init(
         deviceName: String,
@@ -19,7 +19,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
         interactor: GenericLedgerWalletInteractorInputProtocol,
         wireframe: GenericLedgerWalletWireframeProtocol,
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
-        localizationManager _: LocalizationManagerProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.deviceName = deviceName
@@ -30,6 +30,30 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
         self.logger = logger
 
         super.init(viewModelFactory: viewModelFactory)
+
+        self.localizationManager = localizationManager
+    }
+
+    func getAddressesToConfirm() -> [HardwareWalletAddressScheme: AccountAddress]? {
+        guard let model else {
+            return nil
+        }
+
+        var result: [HardwareWalletAddressScheme: AccountAddress] = [:]
+
+        if let address = try? model.substrate.accountId.toAddressForHWScheme(.substrate) {
+            result[.substrate] = address
+        }
+
+        if let evm = model.evm, let address = try? evm.address.toAddressForHWScheme(.evm) {
+            result[.evm] = address
+        }
+
+        guard !result.isEmpty else {
+            return nil
+        }
+
+        return result
     }
 
     private func provideDescriptionViewModel() {
@@ -43,7 +67,8 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     }
 
     private func confirmAccount() {
-        guard let address = account?.address else {
+        // TODO: Provide dictionary here
+        guard let address = getAddressesToConfirm()?.first?.value else {
             return
         }
 
@@ -76,15 +101,30 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
 }
 
 extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProtocol {
-    func didReceive(account: LedgerSubstrateAccount) {
-        self.account = account
-        accountId = try? account.address.toAccountId()
+    func didReceive(model: PolkadotLedgerWalletModel) {
+        self.model = model
+
+        var newAddresses: [HardwareWalletAddressModel] = [
+            HardwareWalletAddressModel(
+                accountId: model.substrate.accountId,
+                scheme: .substrate
+            )
+        ]
+
+        if let evm = model.evm {
+            newAddresses.append(
+                HardwareWalletAddressModel(
+                    accountId: evm.address,
+                    scheme: .evm
+                )
+            )
+        }
 
         provideViewModel()
     }
 
-    func didReceiveAccountConfirmation(with model: PolkadotLedgerWalletModel) {
-        guard let view else {
+    func didReceiveAccountConfirmation() {
+        guard let view, let model else {
             return
         }
 
@@ -109,7 +149,7 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
         let internalError: Error
 
         switch error {
-        case let .fetAccount(fetchError):
+        case let .fetchAccount(fetchError):
             internalError = fetchError
 
             retryClosure = { [weak self] in

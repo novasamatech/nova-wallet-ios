@@ -11,7 +11,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
         on view: HardwareWalletAddressesViewProtocol?,
         deviceName: String,
         deviceModel: LedgerDeviceModel,
-        address: AccountAddress,
+        addresses: [HardwareWalletAddressScheme: AccountAddress],
         cancelClosure: @escaping () -> Void
     ) {
         guard

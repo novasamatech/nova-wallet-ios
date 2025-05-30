@@ -6,7 +6,7 @@ class HardwareWalletAddressesPresenter {
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
 
     let chainList: ListDifferenceCalculator<ChainModel>
-    var accountId: AccountId?
+    var addresses: [HardwareWalletAddressModel] = []
 
     init(viewModelFactory: ChainAccountViewModelFactoryProtocol) {
         self.viewModelFactory = viewModelFactory
@@ -17,19 +17,12 @@ class HardwareWalletAddressesPresenter {
     }
 
     func provideViewModel() {
-        if let accountId = accountId {
-            let viewModels: [ChainAccountViewModelItem] = chainList.allItems.compactMap { chain in
-                guard !chain.isEthereumBased else {
-                    return nil
-                }
-
-                return viewModelFactory.createDefinedViewModelItem(for: accountId, chain: chain)
-            }
-
-            view?.didReceive(viewModels: viewModels)
-        } else {
-            view?.didReceive(viewModels: [])
+        let sections = addresses.compactMap { address in
+            createSectionViewModel(for: address)
         }
+
+        let viewModel = HardwareWalletAddressesViewModel(sections: sections)
+        view?.didReceive(viewModel: viewModel)
     }
 
     func performSelection(
@@ -39,11 +32,43 @@ class HardwareWalletAddressesPresenter {
     ) {
         guard
             let chain = chainList.allItems.first(where: { $0.chainId == viewModel.chainId }),
-            let address = try? accountId?.toAddress(using: chain.chainFormat),
+            let address = viewModel.address,
             let view = view else {
             return
         }
 
         wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+    }
+}
+
+private extension HardwareWalletAddressesPresenter {
+    func createSectionViewModel(
+        for model: HardwareWalletAddressModel
+    ) -> HardwareWalletAddressesViewModel.Section? {
+        guard let accountId = model.accountId else {
+            return nil
+        }
+
+        let chains = getChains(for: model.scheme)
+
+        let items = chains.map { chain in
+            viewModelFactory.createDefinedViewModelItem(for: accountId, chain: chain)
+        }
+
+        return HardwareWalletAddressesViewModel.Section(
+            scheme: model.scheme,
+            items: items
+        )
+    }
+
+    func getChains(for scheme: HardwareWalletAddressScheme) -> [ChainModel] {
+        chainList.allItems.filter { chain in
+            switch scheme {
+            case .substrate:
+                return !chain.isEthereumBased
+            case .evm:
+                return chain.isEthereumBased
+            }
+        }
     }
 }

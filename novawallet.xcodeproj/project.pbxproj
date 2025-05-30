@@ -1090,6 +1090,9 @@
 		0CE9B7142DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7132DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift */; };
 		0CE9B7162DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7152DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift */; };
 		0CE9B71A2DE74165007C7F5A /* LedgerEvmSignatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7192DE74165007C7F5A /* LedgerEvmSignatureTest.swift */; };
+		0CE9B71C2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71B2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift */; };
+		0CE9B71E2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71D2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift */; };
+		0CE9B7202DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6929,6 +6932,9 @@
 		0CE9B7132DE6C90A007C7F5A /* GenericAddressNotFoundAddressContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericAddressNotFoundAddressContentView.swift; sourceTree = "<group>"; };
 		0CE9B7152DE6C9F0007C7F5A /* GenericLedgerAddressStackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAddressStackCell.swift; sourceTree = "<group>"; };
 		0CE9B7192DE74165007C7F5A /* LedgerEvmSignatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerEvmSignatureTest.swift; sourceTree = "<group>"; };
+		0CE9B71B2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletConfirmModel.swift; sourceTree = "<group>"; };
+		0CE9B71D2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareWalletAddressesViewModel.swift; sourceTree = "<group>"; };
+		0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetHWAddressContent.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -13180,6 +13186,7 @@
 				3280014154DCC105757E317C /* HardwareWalletAddressesViewController.swift */,
 				E20124142C4011901EF55AAA /* HardwareWalletAddressesViewLayout.swift */,
 				0C71048F2C2BCD1F00487E64 /* HardwareWalletAddressesPresenter.swift */,
+				0CE9B71D2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift */,
 			);
 			path = HardwareWalletAddresses;
 			sourceTree = "<group>";
@@ -20026,6 +20033,7 @@
 				0C39765D2C2DABD100998DD6 /* LedgerMigrationBannerView.swift */,
 				0C3976612C2E6AAC00998DD6 /* MessageSheetMigrationBannerView.swift */,
 				0C3976632C2E722100998DD6 /* MessageSheetTimerWithBannerView.swift */,
+				0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -24952,6 +24960,7 @@
 				C3971167D84B9FABEED47DE4 /* GenericLedgerWalletViewFactory.swift */,
 				0C7104912C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift */,
 				0C7104972C2C393A00487E64 /* PolkadotLedgerWalletModel.swift */,
+				0CE9B71B2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift */,
 			);
 			path = GenericWalletConfirm;
 			sourceTree = "<group>";
@@ -29611,6 +29620,7 @@
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
 				880059E328EF128000E87B9B /* ReferendumInfoView.swift in Sources */,
 				84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */,
+				0CE9B7202DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift in Sources */,
 				840874DA2978291900ACFA55 /* GovernanceDelegateLocal.swift in Sources */,
 				840874DC29782C2B00ACFA55 /* GovernanceDelegateListOperationFactory.swift in Sources */,
 				8468B87424F63D4B00B76BC6 /* AddAccount+AccountConfirmWireframe.swift in Sources */,
@@ -32573,6 +32583,7 @@
 				0B65DAE0327678679CACE0B1 /* GovernanceDelegateInfoViewFactory.swift in Sources */,
 				2D74CA4B2CF87D4F004EAD8C /* DAppBrowserTabTransition.swift in Sources */,
 				B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */,
+				0CE9B71C2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift in Sources */,
 				0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */,
 				4CBA0A25DB544214C4A02F0B /* InAppUpdatesWireframe.swift in Sources */,
 				D6A2790F5C9E2AAA137E52CC /* InAppUpdatesPresenter.swift in Sources */,
@@ -33134,6 +33145,7 @@
 				2CB0411DAB3CE25911B6B64A /* BackupMnemonicCardInteractor.swift in Sources */,
 				03CC0C112F3AD216E224F6EC /* BackupMnemonicCardViewController.swift in Sources */,
 				607DA34F14C0A894D4D16216 /* BackupMnemonicCardViewLayout.swift in Sources */,
+				0CE9B71E2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift in Sources */,
 				2D4431E52D02F9CE00017951 /* DAppFavoriteItemView.swift in Sources */,
 				F59DC6AC6A890ED86C939847 /* BackupMnemonicCardViewFactory.swift in Sources */,
 				082CFE82CCE17D81CFD5EB25 /* ExportProtocols.swift in Sources */,

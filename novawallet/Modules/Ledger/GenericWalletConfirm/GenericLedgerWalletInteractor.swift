@@ -1,5 +1,6 @@
 import UIKit
 import Operation_iOS
+import SubstrateSdk
 
 final class GenericLedgerWalletInteractor {
     weak var presenter: GenericLedgerWalletInteractorOutputProtocol?
@@ -7,23 +8,20 @@ final class GenericLedgerWalletInteractor {
     let chainRegistry: ChainRegistryProtocol
     let deviceId: UUID
     let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
-    let index: UInt32
-    let supportsEvmAddresses: Bool
+    let model: GenericLedgerWalletConfirmModel
     let operationQueue: OperationQueue
 
     init(
         ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
         deviceId: UUID,
-        index: UInt32,
-        supportsEvmAddresses: Bool,
+        model: GenericLedgerWalletConfirmModel,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.deviceId = deviceId
         self.ledgerApplication = ledgerApplication
-        self.index = index
-        self.supportsEvmAddresses = supportsEvmAddresses
+        self.model = model
         self.operationQueue = operationQueue
     }
 
@@ -50,6 +48,64 @@ final class GenericLedgerWalletInteractor {
     }
 }
 
+private extension GenericLedgerWalletInteractor {
+    func createSubstrateWrapper(_ shouldConfirm: Bool) -> CompoundOperationWrapper<LedgerSubstrateAccountResponse> {
+        ledgerApplication.getGenericSubstrateAccountWrapperBy(
+            deviceId: deviceId,
+            index: model.index,
+            displayVerificationDialog: shouldConfirm
+        )
+    }
+
+    func createEvmWrapper(_ shouldConfirm: Bool) -> CompoundOperationWrapper<LedgerEvmAccountResponse?> {
+        guard model.schemes.contains(.evm) else {
+            return .createWithResult(nil)
+        }
+
+        let wrapper = ledgerApplication.getGenericEvmAccountWrapperBy(
+            deviceId: deviceId,
+            index: model.index,
+            displayVerificationDialog: shouldConfirm
+        )
+
+        let mappingOperation = ClosureOperation<LedgerEvmAccountResponse?> {
+            try wrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: mappingOperation)
+    }
+
+    func createModelWrapper(_ shouldConfirm: Bool) -> CompoundOperationWrapper<PolkadotLedgerWalletModel> {
+        let substrateWrapper = createSubstrateWrapper(shouldConfirm)
+        let evmWrapper = createEvmWrapper(shouldConfirm)
+
+        evmWrapper.addDependency(wrapper: substrateWrapper)
+
+        let mappingOperation = ClosureOperation<PolkadotLedgerWalletModel> {
+            let substrateResponse = try substrateWrapper.targetOperation.extractNoCancellableResultData()
+            let evmModel = try evmWrapper.targetOperation.extractNoCancellableResultData()
+
+            let substrate = try PolkadotLedgerWalletModel.Substrate(
+                substrateResponse: substrateResponse
+            )
+
+            let evm = try evmModel.map { model in
+                try PolkadotLedgerWalletModel.EVM(evmResponse: model)
+            }
+
+            return PolkadotLedgerWalletModel(substrate: substrate, evm: evm)
+        }
+
+        mappingOperation.addDependency(evmWrapper.targetOperation)
+
+        return evmWrapper
+            .insertingHead(operations: substrateWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
+    }
+}
+
 extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProtocol {
     func setup() {
         subscribeChains()
@@ -57,7 +113,7 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
     }
 
     func fetchAccount() {
-        let wrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(deviceId: deviceId, index: index)
+        let wrapper = createModelWrapper(false)
 
         execute(
             wrapper: wrapper,
@@ -65,74 +121,25 @@ extension GenericLedgerWalletInteractor: GenericLedgerWalletInteractorInputProto
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(response):
-                self?.presenter?.didReceive(account: response.account)
+            case let .success(model):
+                self?.presenter?.didReceive(model: model)
             case let .failure(error):
-                self?.presenter?.didReceive(error: .fetAccount(error))
+                self?.presenter?.didReceive(error: .fetchAccount(error))
             }
         }
     }
 
     func confirmAccount() {
-        let substrateWrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(
-            deviceId: deviceId,
-            index: index,
-            displayVerificationDialog: true
-        )
-
-        let evmWrapper: CompoundOperationWrapper<LedgerEvmAccountResponse>? = if supportsEvmAddresses {
-            ledgerApplication.getGenericEvmAccountWrapper(
-                for: deviceId,
-                index: index,
-                displayVerificationDialog: true
-            )
-        } else {
-            nil
-        }
-
-        evmWrapper?.addDependency(wrapper: substrateWrapper)
-
-        let mappingOperation = ClosureOperation<PolkadotLedgerWalletModel> {
-            let substrateModel = try substrateWrapper.targetOperation.extractNoCancellableResultData()
-            let evmModel = try evmWrapper?.targetOperation.extractNoCancellableResultData()
-
-            let substrateAccountId = try substrateModel.account.address.toAccountId()
-
-            let substrate = PolkadotLedgerWalletModel.Substrate(
-                accountId: substrateAccountId,
-                publicKey: substrateModel.account.publicKey,
-                cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
-                derivationPath: substrateModel.derivationPath
-            )
-
-            let evm = evmModel.map {
-                PolkadotLedgerWalletModel.EVM(
-                    publicKey: $0.account.publicKey,
-                    derivationPath: $0.derivationPath
-                )
-            }
-
-            return PolkadotLedgerWalletModel(substrate: substrate, evm: evm)
-        }
-
-        mappingOperation.addDependency(substrateWrapper.targetOperation)
-
-        if let evmWrapper {
-            mappingOperation.addDependency(evmWrapper.targetOperation)
-        }
-
-        let totalWrapper = substrateWrapper
-            .insertingHead(operations: evmWrapper?.allOperations ?? [])
-            .insertingTail(operation: mappingOperation)
+        let wrapper = createModelWrapper(true)
 
         execute(
-            wrapper: totalWrapper,
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(response):
-                self?.presenter?.didReceiveAccountConfirmation(with: response)
+            case .success:
+                self?.presenter?.didReceiveAccountConfirmation()
             case let .failure(error):
                 self?.presenter?.didReceive(error: .confirmAccount(error))
             }
