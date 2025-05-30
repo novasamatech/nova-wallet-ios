@@ -518,6 +518,10 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         viewModel[section].section.title
     }
 
+    func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>? {
+        viewModel[section].section.action
+    }
+
     func activateDetails(at indexPath: IndexPath) {
         selectItem(at: indexPath)
     }
@@ -557,6 +561,29 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             }
         case .genericLedger:
             displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
+        }
+    }
+
+    func activateActionInSection(_: Int) {
+        guard let wallet else {
+            return
+        }
+
+        // we currently have only one case for sections with actions
+
+        switch wallet.type {
+        case .genericLedger:
+            wireframe.showAddGenericLedgerEvmAccounts(
+                from: view,
+                wallet: wallet
+            )
+        case .secrets,
+             .watchOnly,
+             .paritySigner,
+             .ledger,
+             .polkadotVault,
+             .proxied:
+            break
         }
     }
 

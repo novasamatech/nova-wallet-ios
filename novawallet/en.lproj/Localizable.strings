@@ -1850,3 +1850,4 @@
 "common.indexed.account" = "Account %@";
 "accounts.substrate" = "Substrate accounts";
 "accounts.evm" = "Evm accounts";
+"add.addresses" = "Add addresses";

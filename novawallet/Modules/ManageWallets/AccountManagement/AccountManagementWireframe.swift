@@ -102,6 +102,13 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         view?.controller.navigationController?.pushViewController(ledgerView.controller, animated: true)
     }
 
+    func showAddGenericLedgerEvmAccounts(
+        from _: AccountManagementViewProtocol?,
+        wallet _: MetaAccountModel
+    ) {
+        // TODO: Add navigation
+    }
+
     // MARK: Private
 
     private func performExportPresentation(

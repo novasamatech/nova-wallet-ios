@@ -111,7 +111,12 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
             let addresses = try zip(schemes, wrappers).map { scheme, wrapper in
                 let accountId = try wrapper.targetOperation.extractNoCancellableResultData().toAccountId()
 
-                return HardwareWalletAddressModel(accountId: accountId, scheme: scheme)
+                // TODO: Proper handle case when the address doesn't exist
+                if scheme == .evm {
+                    return HardwareWalletAddressModel(accountId: nil, scheme: scheme)
+                } else {
+                    return HardwareWalletAddressModel(accountId: accountId, scheme: scheme)
+                }
             }
 
             return GenericLedgerAccountModel(index: index, addresses: addresses.sortedBySchemeOrder())

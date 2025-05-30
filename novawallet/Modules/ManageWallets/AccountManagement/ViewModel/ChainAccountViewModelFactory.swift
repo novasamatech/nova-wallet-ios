@@ -219,13 +219,32 @@ final class ChainAccountViewModelFactory {
             R.string.localizable.accountsEvm(preferredLanguages: locale.rLanguages)
         }
 
+        let evmAction = LocalizableResource { locale in
+            IconWithTitleViewModel(
+                icon: R.image.iconBlueAdd(),
+                title: R.string.localizable.addAddresses(
+                    preferredLanguages: locale.rLanguages
+                )
+            )
+        }
+
         return [
             ChainAccountListSectionViewModel(
-                section: .custom(evmTitle),
+                section: .custom(
+                    ChainAccountSectionType.Custom(
+                        title: evmTitle,
+                        action: evmAction
+                    )
+                ),
                 chainAccounts: evmItems
             ),
             ChainAccountListSectionViewModel(
-                section: .custom(substrateTitle),
+                section: .custom(
+                    ChainAccountSectionType.Custom(
+                        title: substrateTitle,
+                        action: nil
+                    )
+                ),
                 chainAccounts: substrateItems
             )
         ]
