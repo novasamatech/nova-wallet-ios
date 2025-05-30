@@ -1848,6 +1848,6 @@
 "polkadot.vault.qr.type.v7" = "Новый (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Устаревший";
 "parity.signer.scan.title_9_7_0" = "Подписать с %@";
-"wallet.migrate.accept.title" = "Migrate your accounts to Nova";
-"wallet.migrate.accept.message" = "Just one tap to access all your accounts in Nova Wallet - manage tokens, stake, vote and explore the Polkadot ecosystem";
-"wallet.migrate.accept.button" = "Accept migration";
+"wallet.migrate.accept.title" = "Добро пожаловать в Nova!";
+"wallet.migrate.accept.message" = "Почти готово! 🎉\n Просто нажмите ниже, чтобы завершить настройку и начать использовать свои учетные записи без проблем как в Polkadot App, так и в Nova Wallet";
+"wallet.migration.successful.alert.title" = "Учетные записи успешно мигрированы";
