@@ -67,8 +67,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
     }
 
     private func confirmAccount() {
-        // TODO: Provide dictionary here
-        guard let address = getAddressesToConfirm()?.first?.value else {
+        guard let addresses = getAddressesToConfirm() else {
             return
         }
 
@@ -78,7 +77,7 @@ final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
             on: view,
             deviceName: deviceName,
             deviceModel: deviceModel,
-            address: address
+            addresses: addresses
         ) { [weak self] in
             self?.interactor.cancelRequest()
         }
@@ -102,8 +101,6 @@ extension GenericLedgerWalletPresenter: HardwareWalletAddressesPresenterProtocol
 
 extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProtocol {
     func didReceive(model: PolkadotLedgerWalletModel) {
-        self.model = model
-
         var newAddresses: [HardwareWalletAddressModel] = [
             HardwareWalletAddressModel(
                 accountId: model.substrate.accountId,
@@ -119,6 +116,9 @@ extension GenericLedgerWalletPresenter: GenericLedgerWalletInteractorOutputProto
                 )
             )
         }
+
+        self.model = model
+        addresses = newAddresses
 
         provideViewModel()
     }

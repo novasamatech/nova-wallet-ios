@@ -1093,6 +1093,7 @@
 		0CE9B71C2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71B2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift */; };
 		0CE9B71E2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71D2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift */; };
 		0CE9B7202DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */; };
+		0CE9B7222DE9F1C9007C7F5A /* MessageSheetViewController + LedgerMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7212DE9F1C9007C7F5A /* MessageSheetViewController + LedgerMeasurement.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6935,6 +6936,7 @@
 		0CE9B71B2DE9AF97007C7F5A /* GenericLedgerWalletConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerWalletConfirmModel.swift; sourceTree = "<group>"; };
 		0CE9B71D2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareWalletAddressesViewModel.swift; sourceTree = "<group>"; };
 		0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetHWAddressContent.swift; sourceTree = "<group>"; };
+		0CE9B7212DE9F1C9007C7F5A /* MessageSheetViewController + LedgerMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSheetViewController + LedgerMeasurement.swift"; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -20034,6 +20036,7 @@
 				0C3976612C2E6AAC00998DD6 /* MessageSheetMigrationBannerView.swift */,
 				0C3976632C2E722100998DD6 /* MessageSheetTimerWithBannerView.swift */,
 				0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */,
+				0CE9B7212DE9F1C9007C7F5A /* MessageSheetViewController + LedgerMeasurement.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -32134,6 +32137,7 @@
 				4B4189889DEFAF917332D41C /* ChangeWatchOnlyViewController.swift in Sources */,
 				99781C3020E07C022DBF5280 /* ChangeWatchOnlyViewLayout.swift in Sources */,
 				832B616B89972C96D98023DB /* ChangeWatchOnlyViewFactory.swift in Sources */,
+				0CE9B7222DE9F1C9007C7F5A /* MessageSheetViewController + LedgerMeasurement.swift in Sources */,
 				2D7C8A932C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift in Sources */,
 				0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */,
 				884A7532299CB22F00FEFC30 /* TrackTableViewCell.swift in Sources */,

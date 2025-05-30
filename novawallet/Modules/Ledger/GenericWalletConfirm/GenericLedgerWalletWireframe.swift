@@ -19,7 +19,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
             let confirmationView = LedgerMessageSheetViewFactory.createVerifyLedgerView(
                 for: deviceName,
                 deviceModel: deviceModel,
-                address: address,
+                addresses: addresses,
                 cancelClosure: cancelClosure
             ) else {
             return

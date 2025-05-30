@@ -88,7 +88,7 @@ private extension HardwareWalletAddressesViewController {
 // MARK: - UITableViewDataSource
 
 extension HardwareWalletAddressesViewController: UITableViewDataSource {
-    func tableView(_: UITableView, numberOfSections _: Int) -> Int {
+    func numberOfSections(in _: UITableView) -> Int {
         viewModel.sections.count
     }
 
@@ -122,6 +122,7 @@ extension HardwareWalletAddressesViewController: UITableViewDelegate {
 
         let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
         headerView.titleView.detailsLabel.apply(style: .semiboldCaps2Secondary)
+        headerView.backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         let title = getSectionTitle(for: viewModel.sections[section].scheme, locale: selectedLocale)
         headerView.titleView.bind(viewModel: .init(title: title, icon: nil))
