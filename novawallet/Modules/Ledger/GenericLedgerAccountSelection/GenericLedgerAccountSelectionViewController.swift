@@ -90,6 +90,10 @@ extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelection
     func didStopLoading() {
         rootView.loadMoreView.stopLoading()
     }
+
+    func didReceive(warningViewModel: TitleWithSubtitleViewModel) {
+        rootView.setWarning(with: warningViewModel)
+    }
 }
 
 extension GenericLedgerAccountSelectionController: Localizable {

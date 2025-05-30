@@ -1851,3 +1851,5 @@
 "accounts.substrate" = "Substrate accounts";
 "accounts.evm" = "Evm accounts";
 "add.addresses" = "Add addresses";
+"generic.ledger.update.title" = "Update Ledger Generic App";
+"generic.ledger.no.evm.message" = "Your Ledger device is using an outdated Generic app that doesn’t support EVM addresses. Update it via Ledger Live.";

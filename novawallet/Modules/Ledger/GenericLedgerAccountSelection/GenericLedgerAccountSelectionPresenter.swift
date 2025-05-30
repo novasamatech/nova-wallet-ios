@@ -28,6 +28,25 @@ final class GenericLedgerAccountSelectionPresenter {
         self.localizationManager = localizationManager
         self.logger = logger
     }
+}
+
+private extension GenericLedgerAccountSelectionPresenter {
+    private func provideWarningIfNeeded(for account: GenericLedgerAccountModel) {
+        let hasMissingEvm = account.addresses.contains(where: { $0.scheme == .evm && $0.accountId == nil })
+
+        if hasMissingEvm {
+            let viewModel = TitleWithSubtitleViewModel(
+                title: R.string.localizable.genericLedgerUpdateTitle(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                ),
+                subtitle: R.string.localizable.genericLedgerNoEvmMessage(
+                    preferredLanguages: localizationManager.selectedLocale.rLanguages
+                )
+            )
+
+            view?.didReceive(warningViewModel: viewModel)
+        }
+    }
 
     private func performLoadNext() {
         let index = accounts.count
@@ -120,6 +139,10 @@ extension GenericLedgerAccountSelectionPresenter: GenericLedgerAccountSelectionI
 
         if account.index == accounts.count {
             view?.didStopLoading()
+
+            if accounts.isEmpty {
+                provideWarningIfNeeded(for: account)
+            }
 
             accounts.append(account)
 
