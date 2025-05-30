@@ -144,7 +144,7 @@ extension GenericLedgerAddEvmPresenter: GenericLedgerAddEvmInteractorOutputProto
         guard let view else {
             return
         }
-        
+
         wireframe.closeMessageSheet(on: view)
         wireframe.proceed(on: view)
     }

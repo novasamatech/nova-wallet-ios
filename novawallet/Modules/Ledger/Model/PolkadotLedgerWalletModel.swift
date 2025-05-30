@@ -8,6 +8,18 @@ struct PolkadotLedgerWalletModel {
         let cryptoType: MultiassetCryptoType
         let derivationPath: Data
 
+        init(
+            accountId: AccountId,
+            publicKey: Data,
+            cryptoType: MultiassetCryptoType,
+            derivationPath: Data
+        ) {
+            self.accountId = accountId
+            self.publicKey = publicKey
+            self.cryptoType = cryptoType
+            self.derivationPath = derivationPath
+        }
+
         init(substrateResponse: LedgerSubstrateAccountResponse) throws {
             accountId = try substrateResponse.account.address.toAccountId()
             publicKey = substrateResponse.account.publicKey
@@ -20,6 +32,16 @@ struct PolkadotLedgerWalletModel {
         let publicKey: Data
         let address: AccountId
         let derivationPath: Data
+
+        init(
+            address: AccountId,
+            publicKey: Data,
+            derivationPath: Data
+        ) {
+            self.address = address
+            self.publicKey = publicKey
+            self.derivationPath = derivationPath
+        }
 
         init(evmResponse: LedgerEvmAccountResponse) throws {
             address = try evmResponse.account.publicKey.ethereumAddressFromPublicKey()
