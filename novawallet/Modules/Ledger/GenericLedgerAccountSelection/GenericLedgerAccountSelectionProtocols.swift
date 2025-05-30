@@ -5,7 +5,7 @@ protocol GenericLedgerAccountSelectionViewProtocol: ControllerBackedProtocol {
     func didAddAccount(viewModel: GenericLedgerAccountViewModel)
     func didStartLoading()
     func didStopLoading()
-    func didReceive(warningViewModel: TitleWithSubtitleViewModel)
+    func didReceive(warningViewModel: TitleWithSubtitleViewModel, canLoadMore: Bool)
 }
 
 protocol GenericLedgerAccountSelectionPresenterProtocol: AnyObject {

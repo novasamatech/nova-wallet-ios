@@ -1,7 +1,7 @@
 protocol GenericLedgerAddEvmInteractorInputProtocol: AnyObject {
-    func setup()
     func loadAccounts(at index: UInt32)
-    func confirm()
+    func confirm(index: UInt32)
+    func cancelConfirmation()
 }
 
 protocol GenericLedgerAddEvmInteractorOutputProtocol: AnyObject {
@@ -10,9 +10,20 @@ protocol GenericLedgerAddEvmInteractorOutputProtocol: AnyObject {
     func didReceive(error: GenericLedgerAddEvmInteractorError)
 }
 
-protocol GenericLedgerAddEvmWireframeProtocol: AnyObject {}
+protocol GenericLedgerAddEvmWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable, AddressOptionsPresentable, MessageSheetPresentable {
+    func showAddressVerification(
+        on view: ControllerBackedProtocol?,
+        deviceName: String,
+        deviceModel: LedgerDeviceModel,
+        address: AccountAddress,
+        cancelClosure: @escaping () -> Void
+    )
+
+    func proceed(on view: ControllerBackedProtocol?)
+}
 
 enum GenericLedgerAddEvmInteractorError: Error {
     case accountFailed(Error)
-    case updateFailed(Error)
+    case updateFailed(Error, UInt32)
 }

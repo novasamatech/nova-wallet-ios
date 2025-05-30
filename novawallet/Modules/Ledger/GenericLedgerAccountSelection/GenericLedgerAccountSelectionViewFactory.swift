@@ -43,8 +43,7 @@ struct GenericLedgerAccountSelectionViewFactory {
         return GenericLedgerAccountSelectionInteractor(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             accountFetchFactory: accountFetchFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

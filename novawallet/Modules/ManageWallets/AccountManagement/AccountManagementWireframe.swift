@@ -103,10 +103,14 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     }
 
     func showAddGenericLedgerEvmAccounts(
-        from _: AccountManagementViewProtocol?,
-        wallet _: MetaAccountModel
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel
     ) {
-        // TODO: Add navigation
+        guard let ledgerView = LedgerDiscoverViewFactory.createAddEvmGenericLedgerView(to: wallet) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(ledgerView.controller, animated: true)
     }
 
     // MARK: Private

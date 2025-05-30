@@ -91,8 +91,9 @@ extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelection
         rootView.loadMoreView.stopLoading()
     }
 
-    func didReceive(warningViewModel: TitleWithSubtitleViewModel) {
+    func didReceive(warningViewModel: TitleWithSubtitleViewModel, canLoadMore: Bool) {
         rootView.setWarning(with: warningViewModel)
+        rootView.loadMoreView.isHidden = !canLoadMore
     }
 }
 

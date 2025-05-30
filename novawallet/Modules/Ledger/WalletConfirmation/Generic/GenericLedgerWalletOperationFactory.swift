@@ -9,6 +9,13 @@ protocol GenericLedgerWalletOperationFactoryProtocol {
         keystore: KeystoreProtocol,
         settings: SelectedWalletSettings
     ) -> BaseOperation<Void>
+
+    func createUpdateEvmWrapper(
+        for model: LedgerEvmAccountResponse,
+        wallet: MetaAccountModel,
+        keystore: KeystoreProtocol,
+        repository: AnyDataProviderRepository<MetaAccountModel>
+    ) -> CompoundOperationWrapper<Void>
 }
 
 final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFactoryProtocol {
@@ -52,5 +59,40 @@ final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFac
                 }
             }
         }
+    }
+
+    func createUpdateEvmWrapper(
+        for model: LedgerEvmAccountResponse,
+        wallet: MetaAccountModel,
+        keystore: KeystoreProtocol,
+        repository: AnyDataProviderRepository<MetaAccountModel>
+    ) -> CompoundOperationWrapper<Void> {
+        let updateWalletOperation = ClosureOperation<MetaAccountModel> {
+            let accountId = try model.account.address.toAccountId(using: .ethereum)
+
+            let newWallet = wallet
+                .replacingEthereumAddress(accountId)
+                .replacingEthereumPublicKey(model.account.publicKey)
+
+            let evmTag = KeystoreTagV2.ethereumDerivationTagForMetaId(wallet.metaId)
+            try keystore.saveKey(model.derivationPath, with: evmTag)
+
+            return newWallet
+        }
+
+        let saveOperation = repository.saveOperation({
+            let updatedWallet = try updateWalletOperation.extractNoCancellableResultData()
+
+            return [updatedWallet]
+        }, {
+            []
+        })
+
+        saveOperation.addDependency(updateWalletOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: saveOperation,
+            dependencies: [updateWalletOperation]
+        )
     }
 }

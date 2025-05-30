@@ -44,7 +44,7 @@ private extension GenericLedgerAccountSelectionPresenter {
                 )
             )
 
-            view?.didReceive(warningViewModel: viewModel)
+            view?.didReceive(warningViewModel: viewModel, canLoadMore: true)
         }
     }
 

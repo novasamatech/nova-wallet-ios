@@ -1095,6 +1095,7 @@
 		0CE9B7202DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */; };
 		0CE9B7222DE9F1C9007C7F5A /* MessageSheetViewController+LedgerMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7212DE9F1C9007C7F5A /* MessageSheetViewController+LedgerMeasurement.swift */; };
 		0CE9B7262DEA2BC6007C7F5A /* GenericLedgerAccountWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7252DEA2BC6007C7F5A /* GenericLedgerAccountWrapperFactory.swift */; };
+		0CE9B72A2DEA48AB007C7F5A /* GenericLedgerAddEvmDiscoverWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE9B7292DEA48AB007C7F5A /* GenericLedgerAddEvmDiscoverWireframe.swift */; };
 		0CEAEBBE2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */; };
 		0CEB4ED12AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */; };
 		0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */; };
@@ -6944,6 +6945,7 @@
 		0CE9B71F2DE9EC8E007C7F5A /* MessageSheetHWAddressContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetHWAddressContent.swift; sourceTree = "<group>"; };
 		0CE9B7212DE9F1C9007C7F5A /* MessageSheetViewController+LedgerMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSheetViewController+LedgerMeasurement.swift"; sourceTree = "<group>"; };
 		0CE9B7252DEA2BC6007C7F5A /* GenericLedgerAccountWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountWrapperFactory.swift; sourceTree = "<group>"; };
+		0CE9B7292DEA48AB007C7F5A /* GenericLedgerAddEvmDiscoverWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAddEvmDiscoverWireframe.swift; sourceTree = "<group>"; };
 		0CEAEBBD2BEDDD230019778F /* CloudBackupSettingsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		0CEB4ED02AF14B8B0048FD84 /* SubmoduleNavigationStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmoduleNavigationStrategy.swift; sourceTree = "<group>"; };
 		0CEB4ED42AF20EB90048FD84 /* CancellableCallHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellableCallHelper.swift; sourceTree = "<group>"; };
@@ -13189,6 +13191,7 @@
 			children = (
 				0C71047E2C2B0C2C00487E64 /* GenericLedgerDiscoverWireframe.swift */,
 				0C7104882C2BBF8700487E64 /* GenericLedgerDiscoverInteractor.swift */,
+				0CE9B7292DEA48AB007C7F5A /* GenericLedgerAddEvmDiscoverWireframe.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -33174,6 +33177,7 @@
 				C3D21C269EC7B9A2C8A5E5BE /* BackupMnemonicCardWireframe.swift in Sources */,
 				4896066C362CF3530CB75627 /* BackupMnemonicCardPresenter.swift in Sources */,
 				2CB0411DAB3CE25911B6B64A /* BackupMnemonicCardInteractor.swift in Sources */,
+				0CE9B72A2DEA48AB007C7F5A /* GenericLedgerAddEvmDiscoverWireframe.swift in Sources */,
 				03CC0C112F3AD216E224F6EC /* BackupMnemonicCardViewController.swift in Sources */,
 				607DA34F14C0A894D4D16216 /* BackupMnemonicCardViewLayout.swift in Sources */,
 				0CE9B71E2DE9B81C007C7F5A /* HardwareWalletAddressesViewModel.swift in Sources */,

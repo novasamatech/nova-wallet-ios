@@ -14,6 +14,11 @@ protocol GenericLedgerAccountFetchFactoryProtocol {
         shouldConfirm: Bool
     ) -> CompoundOperationWrapper<PolkadotLedgerWalletModel>
 
+    func createEvmModel(
+        index: UInt32,
+        shouldConfirm: Bool
+    ) -> CompoundOperationWrapper<LedgerEvmAccountResponse>
+
     func cancelConfirmationRequests()
 }
 
@@ -171,6 +176,17 @@ extension GenericLedgerAccountFetchFactory: GenericLedgerAccountFetchFactoryProt
         return evmWrapper
             .insertingHead(operations: substrateWrapper.allOperations)
             .insertingTail(operation: mappingOperation)
+    }
+
+    func createEvmModel(
+        index: UInt32,
+        shouldConfirm: Bool
+    ) -> CompoundOperationWrapper<LedgerEvmAccountResponse> {
+        ledgerApplication.getGenericEvmAccountWrapperBy(
+            deviceId: deviceId,
+            index: index,
+            displayVerificationDialog: shouldConfirm
+        )
     }
 
     func cancelConfirmationRequests() {

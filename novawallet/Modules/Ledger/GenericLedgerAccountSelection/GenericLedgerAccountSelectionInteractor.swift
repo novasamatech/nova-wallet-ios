@@ -8,20 +8,17 @@ final class GenericLedgerAccountSelectionInteractor {
     let chainRegistry: ChainRegistryProtocol
     let accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol
     let operationQueue: OperationQueue
-    let logger: LoggerProtocol
 
     let cancellableStore = CancellableCallStore()
 
     init(
         chainRegistry: ChainRegistryProtocol,
         accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.accountFetchFactory = accountFetchFactory
         self.operationQueue = operationQueue
-        self.logger = logger
     }
 
     deinit {
