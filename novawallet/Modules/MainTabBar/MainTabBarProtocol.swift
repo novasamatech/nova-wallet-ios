@@ -17,6 +17,7 @@ protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
     func activateStatusAction()
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
@@ -75,4 +76,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {
     static func createView() -> MainTabBarViewProtocol?
+}
+
+protocol RootFlowStatusAlertPresenter: AnyObject {
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
 }

@@ -2,6 +2,11 @@ import UIKit
 
 class PinSetupWireframe: PinSetupWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
+    let initialFlowStatusPresentingClosure: FlowStatusPresentingClosure?
+
+    init(initialFlowStatusPresentingClosure: FlowStatusPresentingClosure? = nil) {
+        self.initialFlowStatusPresentingClosure = initialFlowStatusPresentingClosure
+    }
 
     func showMain(from _: PinSetupViewProtocol?) {
         guard
@@ -16,6 +21,10 @@ class PinSetupWireframe: PinSetupWireframeProtocol {
         }
 
         rootAnimator.animateTransition(to: container)
+
+        if let initialFlowStatusPresentingClosure {
+            tabBarController.presentStatusAlert(initialFlowStatusPresentingClosure)
+        }
     }
 
     func showSignup(from _: PinSetupViewProtocol?) {

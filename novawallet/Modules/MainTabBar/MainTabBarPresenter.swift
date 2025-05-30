@@ -22,6 +22,10 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     func activateStatusAction() {
         wireframe.presentCloudBackupSettings(from: view)
     }
+
+    func presentStatusAlert(_ closure: FlowStatusPresentingClosure) {
+        closure(wireframe, view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {

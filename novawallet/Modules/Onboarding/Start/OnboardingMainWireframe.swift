@@ -1,5 +1,6 @@
 import UIKit
 import Foundation_iOS
+import UIKit_iOS
 
 final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMainWireframeProtocol {
     func showSignup(from view: OnboardingMainViewProtocol?) {
@@ -44,8 +45,12 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
         }
 
         let nextNavigationController = NovaNavigationController(rootViewController: migrateView.controller)
+        nextNavigationController.barSettings = nextNavigationController.barSettings.bySettingCloseButton(false)
 
-        view?.controller.present(nextNavigationController, animated: true)
+        nextNavigationController.modalPresentationStyle = .fullScreen
+        nextNavigationController.modalTransitionStyle = .crossDissolve
+
+        view?.controller.present(nextNavigationController, animated: false)
     }
 
     private func hasPendingFlow(in navigationController: UINavigationController) -> Bool {
