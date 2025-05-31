@@ -28,9 +28,20 @@ enum SettingsKey: String {
     case closedBanners
     case mythosRestakeEnabled
     case hideUnifiedAddressPopup
+    case isAppFirstLaunch
 }
 
 extension SettingsManagerProtocol {
+    var isAppFirstLaunch: Bool {
+        get {
+            bool(for: SettingsKey.isAppFirstLaunch.rawValue) ?? true
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.isAppFirstLaunch.rawValue)
+        }
+    }
+
     var biometryEnabled: Bool? {
         get {
             bool(for: SettingsKey.biometryEnabled.rawValue)

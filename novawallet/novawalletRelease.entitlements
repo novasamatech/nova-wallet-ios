@@ -7,7 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>webcredentials:app.novawallet.io</string>
-		<string>applinks:app.novawallet.io</string>
+		<string>applinks:nova-wallet.app.link</string>
 	</array>
 	<key>com.apple.developer.devicecheck.appattest-environment</key>
 	<string>production</string>

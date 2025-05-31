@@ -17914,6 +17914,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import Foundation_iOS
 
 
  class MockOnboardingMainViewProtocol: OnboardingMainViewProtocol, Cuckoo.ProtocolMock {
@@ -18334,6 +18335,21 @@ import Foundation
     
     
     
+     func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)  {
+        
+    return cuckoo_manager.call("showWalletMigration(from: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)",
+            parameters: (view, message),
+            escapingParameters: (view, message),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showWalletMigration(from: view, message: message))
+        
+    }
+    
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
         
     return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
@@ -18401,6 +18417,11 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showAccountSecretImport(from: OnboardingMainViewProtocol?, source: SecretSource)", parameterMatchers: matchers))
 	    }
 	    
+	    func showWalletMigration<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, message: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start)> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: message) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWalletMigration(from: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)", parameterMatchers: matchers))
+	    }
+	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
@@ -18451,6 +18472,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func showWalletMigration<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, message: M2) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol, M2.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?, WalletMigrationMessage.Start)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: message) { $0.1 }]
+	        return cuckoo_manager.verify("showWalletMigration(from: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -18492,6 +18519,12 @@ import Foundation
     
     
      func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -18650,6 +18683,21 @@ import Foundation
     
     
     
+     func didSuggestWalletMigration(with message: WalletMigrationMessage.Start)  {
+        
+    return cuckoo_manager.call("didSuggestWalletMigration(with: WalletMigrationMessage.Start)",
+            parameters: (message),
+            escapingParameters: (message),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didSuggestWalletMigration(with: message))
+        
+    }
+    
+    
+    
      func didReceiveError(_ error: Error)  {
         
     return cuckoo_manager.call("didReceiveError(_: Error)",
@@ -18675,6 +18723,11 @@ import Foundation
 	    func didSuggestSecretImport<M1: Cuckoo.Matchable>(source: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SecretSource)> where M1.MatchedType == SecretSource {
 	        let matchers: [Cuckoo.ParameterMatcher<(SecretSource)>] = [wrap(matchable: source) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didSuggestSecretImport(source: SecretSource)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSuggestWalletMigration<M1: Cuckoo.Matchable>(with message: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(WalletMigrationMessage.Start)> where M1.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletMigrationMessage.Start)>] = [wrap(matchable: message) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainInteractorOutputProtocol.self, method: "didSuggestWalletMigration(with: WalletMigrationMessage.Start)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
@@ -18705,6 +18758,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func didSuggestWalletMigration<M1: Cuckoo.Matchable>(with message: M1) -> Cuckoo.__DoNotUse<(WalletMigrationMessage.Start), Void> where M1.MatchedType == WalletMigrationMessage.Start {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletMigrationMessage.Start)>] = [wrap(matchable: message) { $0 }]
+	        return cuckoo_manager.verify("didSuggestWalletMigration(with: WalletMigrationMessage.Start)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveError<M1: Cuckoo.Matchable>(_ error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
 	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
 	        return cuckoo_manager.verify("didReceiveError(_: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -18722,6 +18781,12 @@ import Foundation
     
     
      func didSuggestSecretImport(source: SecretSource)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didSuggestWalletMigration(with message: WalletMigrationMessage.Start)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

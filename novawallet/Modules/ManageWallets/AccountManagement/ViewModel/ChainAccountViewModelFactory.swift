@@ -222,7 +222,7 @@ final class ChainAccountViewModelFactory {
         let evmAction = LocalizableResource { locale in
             IconWithTitleViewModel(
                 icon: R.image.iconBlueAdd(),
-                title: R.string.localizable.addAddresses(
+                title: R.string.localizable.commonAddAddress(
                     preferredLanguages: locale.rLanguages
                 )
             )
