@@ -1848,3 +1848,6 @@
 "polkadot.vault.qr.type.v7" = "Yeni (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Eski";
 "parity.signer.scan.title_9_7_0" = "%@ ile imzala";
+"wallet.migrate.accept.title" = "Nova'ya Hoş Geldiniz!";
+"wallet.migrate.accept.message" = "Neredeyse geldiniz! 🎉\n Kurulumu tamamlamak ve hesaplarınızı hem Polkadot Uygulaması'nda hem de Nova Cüzdan'da sorunsuz bir şekilde kullanmaya başlamak için aşağıya dokunmanız yeterli";
+"wallet.migration.successful.alert.title" = "Hesaplar başarıyla taşındı";

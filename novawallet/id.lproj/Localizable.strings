@@ -1848,3 +1848,6 @@
 "polkadot.vault.qr.type.v7" = "Baru (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Legacy";
 "parity.signer.scan.title_9_7_0" = "Tanda tangani dengan %@";
+"wallet.migrate.accept.title" = "Selamat datang di Nova!";
+"wallet.migrate.accept.message" = "Anda hampir selesai! 🎉\n Cukup ketuk di bawah untuk menyelesaikan pengaturan dan mulai menggunakan akun Anda dengan lancar di Aplikasi Polkadot dan Nova Wallet";
+"wallet.migration.successful.alert.title" = "Akun berhasil dimigrasikan";

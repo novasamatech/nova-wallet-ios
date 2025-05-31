@@ -1847,3 +1847,6 @@
 "polkadot.vault.qr.type.v7" = "New (Vault v7+)";
 "polkadot.vault.qr.type.legacy" = "Legacy";
 "parity.signer.scan.title_9_7_0" = "Sign with %@";
+"wallet.migrate.accept.title" = "Welcome to Nova!";
+"wallet.migrate.accept.message" = "You’re almost there! 🎉\n Just tap below to complete the setup and start using your accounts seamlessly in both the Polkadot App and Nova Wallet";
+"wallet.migration.successful.alert.title" = "Accounts migrated successfully";
