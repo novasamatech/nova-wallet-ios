@@ -1631,6 +1631,9 @@
 		2D95DF5F2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */; };
 		2D95DF612C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */; };
 		2D966B432D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */; };
+		2D96D8482DECBA5100159E91 /* PayCardNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D8472DECBA5100159E91 /* PayCardNavigation.swift */; };
+		2D96D84A2DECBC2300159E91 /* OpenCardUrlParsingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */; };
+		2D96D84C2DECBE9200159E91 /* CardScreenNavigationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D96D84B2DECBE9200159E91 /* CardScreenNavigationFactory.swift */; };
 		2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */; };
 		2DA85A652C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */; };
 		2DA85A672C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */; };
@@ -7495,6 +7498,9 @@
 		2D95DF5E2C6FAFF6009BB063 /* ExtrinsicFeeEstimatingWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimatingWrapperFactory.swift; sourceTree = "<group>"; };
 		2D95DF602C74B79A009BB063 /* AssetConversionFeeSharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionFeeSharedStateStore.swift; sourceTree = "<group>"; };
 		2D966B422D22A53000BC4336 /* ModalCardPresentationTransformFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationTransformFactory.swift; sourceTree = "<group>"; };
+		2D96D8472DECBA5100159E91 /* PayCardNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardNavigation.swift; sourceTree = "<group>"; };
+		2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCardUrlParsingService.swift; sourceTree = "<group>"; };
+		2D96D84B2DECBE9200159E91 /* CardScreenNavigationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScreenNavigationFactory.swift; sourceTree = "<group>"; };
 		2DA549972DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBytesConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		2DA85A642C7D9B8B00591900 /* CardTopUpTransferSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewController.swift; sourceTree = "<group>"; };
 		2DA85A662C7DD75300591900 /* CardTopUpTransferSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTopUpTransferSetupViewLayout.swift; sourceTree = "<group>"; };
@@ -15863,6 +15869,7 @@
 				0C8FDBCC2CB10E5800775D7F /* PayCardModel.swift */,
 				0C8FDBD22CB30DDE00775D7F /* PayCardTopupModel.swift */,
 				2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */,
+				2D96D8472DECBA5100159E91 /* PayCardNavigation.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -17096,6 +17103,7 @@
 				774A980E2B0D08A6009146CA /* OpenScreenUrlParsingServiceFactory.swift */,
 				774A980C2B0D0873009146CA /* OpenScreenUrlParsingService.swift */,
 				77FFB2B02B0D392A00C7C879 /* OpenStakingUrlParsingService.swift */,
+				2D96D8492DECBC2300159E91 /* OpenCardUrlParsingService.swift */,
 				77FFB2B22B0D394700C7C879 /* OpenGovernanceUrlParsingService.swift */,
 				77FDFC452B0DEB34005A3569 /* OpenDAppUrlParsingService.swift */,
 				77FDFC472B0E1CBD005A3569 /* ImportWalletUrlParsingService.swift */,
@@ -26306,6 +26314,7 @@
 				1C6CA74395730B3676CC5124 /* PayCardViewController.swift */,
 				70C037C70EFB78932175FAE1 /* PayCardViewLayout.swift */,
 				731F3692859677E2B67AE629 /* PayCardViewFactory.swift */,
+				2D96D84B2DECBE9200159E91 /* CardScreenNavigationFactory.swift */,
 			);
 			path = PayCard;
 			sourceTree = "<group>";
@@ -28566,6 +28575,7 @@
 				0C1CCC452B60CAE800A6EA17 /* XcmMessageSerializer.swift in Sources */,
 				77A0B2F52A3CA39D00CBF653 /* StakingMoreOptionCollectionViewCell.swift in Sources */,
 				88F34FDB28FFE6AA00712BDE /* RequestedAmountRow.swift in Sources */,
+				2D96D84C2DECBE9200159E91 /* CardScreenNavigationFactory.swift in Sources */,
 				880CC0AA29E7F151008C7F65 /* EquilibriumLocksSubscription.swift in Sources */,
 				0C03878A2D0A2785000A2F24 /* SwapRouteDetailsViewModelFactory.swift in Sources */,
 				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
@@ -30066,6 +30076,7 @@
 				84113B91255B2CA0009BD21A /* MainTransitionHelper.swift in Sources */,
 				84B6349D28F4A06D00503306 /* Preimage.swift in Sources */,
 				8428768524AE046300D91AD8 /* LanguageSelectionProtocols.swift in Sources */,
+				2D96D8482DECBA5100159E91 /* PayCardNavigation.swift in Sources */,
 				AEA0C8A4267B6B1900F9666F /* SelectedValidatorListProtocols.swift in Sources */,
 				0CB64E652B01E0CC008F268F /* TransferNetworkSelectionCell.swift in Sources */,
 				0C3205EC2A8A122D002EB914 /* FeeOutputModel.swift in Sources */,
@@ -30633,6 +30644,7 @@
 				84644A0725670B03004EAA4B /* BlockBackgroundView.swift in Sources */,
 				84D1ABD827E0A0600073C631 /* AssetStorageInfo.swift in Sources */,
 				AEA0C8B0267B82BA00F9666F /* SelectedValidatorListHeaderView.swift in Sources */,
+				2D96D84A2DECBC2300159E91 /* OpenCardUrlParsingService.swift in Sources */,
 				0CA8AF232D85E8E800DB4E6A /* RuntimeCallOrigin.swift in Sources */,
 				AEA2C1BE2681E9DD0069492E /* ValidatorSearchViewController.swift in Sources */,
 				84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */,

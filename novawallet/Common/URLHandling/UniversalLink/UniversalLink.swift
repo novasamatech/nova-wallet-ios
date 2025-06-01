@@ -14,6 +14,7 @@ enum UniversalLink {
         case staking
         case governance = "gov"
         case dApp = "dapp"
+        case card
     }
 
     enum GovScreen {

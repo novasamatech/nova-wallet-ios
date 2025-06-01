@@ -9,6 +9,7 @@ enum UrlHandlingScreen {
     case staking
     case gov(Referenda.ReferendumIndex)
     case dApp(DAppNavigation)
+    case card(PayCardNavigation?)
     case error(UrlHandlingScreenError)
 }
 
@@ -21,6 +22,8 @@ extension UrlHandlingScreen {
             self = .gov(referendumIndex)
         case let .dApp(url):
             self = .dApp(.init(url: url))
+        case let .card(provider):
+            self = .card(.init(rawValue: provider ?? ""))
         }
     }
 
@@ -32,6 +35,8 @@ extension UrlHandlingScreen {
             .governance(referendumIndex)
         case let .dApp(navigation):
             .dApp(navigation.url)
+        case let .card(navigation):
+            .card(navigation?.rawValue)
         case .error:
             nil
         }
