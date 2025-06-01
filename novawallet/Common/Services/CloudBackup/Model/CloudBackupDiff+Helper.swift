@@ -6,7 +6,7 @@ extension CloudBackupDiff {
             switch change {
             case let .new(remote):
                 return remote
-            case .delete, .updatedChainAccounts, .updatedMetadata:
+            case .delete, .updatedChainAccounts, .updatedMainAccounts, .updatedMetadata:
                 return nil
             }
         }

@@ -62,22 +62,26 @@ class BaseLedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         ClosureOperation {
             let chainAccount = try chainAccountOperation.extractNoCancellableResultData()
 
-            // drop signature type
-            let rawSignature = try signatureFetchOperation.extractNoCancellableResultData().dropFirst()
+            let receivedSignature = try signatureFetchOperation.extractNoCancellableResultData()
 
-            let originalData: Data
-
-            if !chainAccount.isEthereumBased {
-                originalData = try ExtrinsicSignatureConverter.convertExtrinsicPayloadToRegular(signingData)
+            let signaturePayload = if chainAccount.isEthereumBased {
+                signingData
             } else {
-                originalData = signingData
+                try ExtrinsicSignatureConverter.convertExtrinsicPayloadToRegular(signingData)
+            }
+
+            let rawSignature = if chainAccount.isEthereumBased {
+                receivedSignature
+            } else {
+                // for substrate the result is multi signature
+                receivedSignature.dropFirst()
             }
 
             guard
                 let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType),
                 let signature = try signatureVerifier.verify(
                     rawSignature: rawSignature,
-                    originalData: originalData,
+                    originalData: signaturePayload,
                     rawPublicKey: chainAccount.publicKey,
                     cryptoType: cryptoType
                 ) else {

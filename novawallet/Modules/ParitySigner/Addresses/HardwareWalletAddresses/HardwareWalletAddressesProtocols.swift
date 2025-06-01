@@ -1,7 +1,7 @@
 import Foundation
 
 protocol HardwareWalletAddressesViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModels: [ChainAccountViewModelItem])
+    func didReceive(viewModel: HardwareWalletAddressesViewModel)
     func didReceive(descriptionViewModel: TitleWithSubtitleViewModel)
 }
 

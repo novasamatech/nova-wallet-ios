@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class MigrationLedgerSubstrateApplication: NewSubstrateLedgerApplication {
+final class MigrationLedgerPolkadotApplication: NewLedgerPolkadotApplication {
     let chainRegistry: ChainRegistryProtocol
     let supportedApps: [SupportedLedgerApp]
 
@@ -17,22 +17,22 @@ final class MigrationLedgerSubstrateApplication: NewSubstrateLedgerApplication {
     }
 }
 
-extension MigrationLedgerSubstrateApplication: NewSubstrateLedgerSigningProtocol {}
+extension MigrationLedgerPolkadotApplication: NewLedgerPolkadotSigningProtocol {}
 
-extension MigrationLedgerSubstrateApplication: LedgerAccountRetrievable {
+extension MigrationLedgerPolkadotApplication: LedgerAccountRetrievable {
     func getAccountWrapper(
         for deviceId: UUID,
         chainId: ChainModel.Id,
         index: UInt32,
         displayVerificationDialog: Bool
-    ) -> CompoundOperationWrapper<LedgerAccountResponse> {
+    ) -> CompoundOperationWrapper<LedgerSubstrateAccountResponse> {
         guard
             let chain = chainRegistry.getChain(for: chainId),
             let application = supportedApps.first(where: { $0.chainId == chainId }) else {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
 
-        return getAccountWrapper(
+        return getSubstrateAccountWrapper(
             for: deviceId,
             coin: application.coin,
             index: index,
