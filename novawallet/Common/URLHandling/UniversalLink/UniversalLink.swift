@@ -71,6 +71,12 @@ enum UniversalLink {
             static let url = "url"
         }
     }
+
+    enum CardScreen {
+        enum QueryKey {
+            static let provider = "provider"
+        }
+    }
 }
 
 protocol UniversalLinkFactoryProtocol {
