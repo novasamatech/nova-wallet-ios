@@ -23,7 +23,10 @@ struct GenericLedgerAccountSelectionViewFactory {
             logger: Logger.shared
         )
 
-        let view = GenericLedgerAccountSelectionController(presenter: presenter)
+        let view = GenericLedgerAccountSelectionController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

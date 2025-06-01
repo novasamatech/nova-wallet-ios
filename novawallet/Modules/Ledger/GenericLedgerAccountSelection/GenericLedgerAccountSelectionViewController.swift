@@ -6,11 +6,14 @@ final class GenericLedgerAccountSelectionController: UIViewController, ViewHolde
 
     let presenter: GenericLedgerAccountSelectionPresenterProtocol
 
-    init(presenter: GenericLedgerAccountSelectionPresenterProtocol) {
+    init(
+        presenter: GenericLedgerAccountSelectionPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
-        localizationManager = localizationManager
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
