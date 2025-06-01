@@ -6,11 +6,14 @@ final class GenericLedgerAccountSelectionController: UIViewController, ViewHolde
 
     let presenter: GenericLedgerAccountSelectionPresenterProtocol
 
-    init(presenter: GenericLedgerAccountSelectionPresenterProtocol) {
+    init(
+        presenter: GenericLedgerAccountSelectionPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
-        localizationManager = localizationManager
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -48,28 +51,39 @@ final class GenericLedgerAccountSelectionController: UIViewController, ViewHolde
     @objc private func actionLoadNext() {
         presenter.loadNext()
     }
-
-    @objc private func actionCell(_ cell: UIControl) {
-        guard
-            let accountCell = cell as? LedgerAccountStackCell,
-            let index = rootView.cells.firstIndex(of: accountCell) else {
-            return
-        }
-
-        presenter.selectAccount(at: index)
-    }
 }
 
 extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelectionViewProtocol {
     func didClearAccounts() {
-        rootView.clearCells()
+        rootView.clearSections()
     }
 
-    func didAddAccount(viewModel: LedgerAccountViewModel) {
-        let cell = rootView.addCell()
-        cell.bind(viewModel: viewModel)
+    func didAddAccount(viewModel: GenericLedgerAccountViewModel) {
+        let sectionIndex = rootView.sections.count
 
-        cell.addTarget(self, action: #selector(actionCell(_:)), for: .touchUpInside)
+        let section = rootView.addAccountSection()
+
+        let headerCell = rootView.addAccountHeader(to: section)
+
+        headerCell.bind(viewModel: .init(details: viewModel.title, imageViewModel: viewModel.icon))
+
+        let headerAction = UIAction { [weak self] _ in
+            self?.presenter.selectAccount(in: sectionIndex)
+        }
+
+        headerCell.addAction(headerAction, for: .touchUpInside)
+
+        viewModel.addresses.enumerated().forEach { index, addressViewModel in
+            let addressCell = rootView.addAddressCell(to: section)
+
+            let addressAction = UIAction { [weak self] _ in
+                self?.presenter.selectAddress(in: sectionIndex, at: index)
+            }
+
+            addressCell.bind(viewModel: addressViewModel, locale: selectedLocale)
+
+            addressCell.addAction(addressAction, for: .touchUpInside)
+        }
     }
 
     func didStartLoading() {
@@ -78,6 +92,11 @@ extension GenericLedgerAccountSelectionController: GenericLedgerAccountSelection
 
     func didStopLoading() {
         rootView.loadMoreView.stopLoading()
+    }
+
+    func didReceive(warningViewModel: TitleWithSubtitleViewModel, canLoadMore: Bool) {
+        rootView.setWarning(with: warningViewModel)
+        rootView.loadMoreView.isHidden = !canLoadMore
     }
 }
 

@@ -2,12 +2,12 @@ import Foundation
 
 final class GenericLedgerAccountSelectionWireframe: GenericLedgerAccountSelectionWireframeProtocol {
     let flow: WalletCreationFlow
-    let application: GenericLedgerSubstrateApplicationProtocol
+    let application: GenericLedgerPolkadotApplicationProtocol
     let device: LedgerDeviceProtocol
 
     init(
         flow: WalletCreationFlow,
-        application: GenericLedgerSubstrateApplicationProtocol,
+        application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol
     ) {
         self.flow = flow
@@ -15,11 +15,14 @@ final class GenericLedgerAccountSelectionWireframe: GenericLedgerAccountSelectio
         self.device = device
     }
 
-    func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32) {
+    func showWalletCreate(
+        from view: GenericLedgerAccountSelectionViewProtocol?,
+        model: GenericLedgerWalletConfirmModel
+    ) {
         guard let accountsView = GenericLedgerWalletViewFactory.createView(
             for: application,
             device: device,
-            index: index,
+            model: model,
             flow: flow
         ) else {
             return

@@ -76,6 +76,10 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             withClass: ChainAccountListSectionView.self
         )
 
+        tableView.registerHeaderFooterView(
+            withClass: ChainAccountListSectionWithActionView.self
+        )
+
         tableView.register(R.nib.accountTableViewCell)
         tableView.rowHeight = Constants.cellHeight
 
@@ -242,10 +246,22 @@ extension AccountManagementViewController: UITableViewDelegate {
             return nil
         }
 
-        let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
-        headerView.bind(description: title.uppercased())
+        if let action = presenter.actionForSection(section)?.value(for: selectedLocale) {
+            let headerView: ChainAccountListSectionWithActionView = tableView.dequeueReusableHeaderFooterView()
+            headerView.bind(
+                title: title,
+                action: action
+            ) { [weak self] in
+                self?.presenter.activateActionInSection(section)
+            }
 
-        return headerView
+            return headerView
+        } else {
+            let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
+            headerView.bind(description: title)
+
+            return headerView
+        }
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

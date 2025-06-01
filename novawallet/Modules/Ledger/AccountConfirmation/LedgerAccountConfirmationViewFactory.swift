@@ -92,7 +92,9 @@ struct LedgerAccountConfirmationViewFactory {
             wireframe: wireframe
         )
     }
+}
 
+private extension LedgerAccountConfirmationViewFactory {
     static func createView(
         chain: ChainModel,
         device: LedgerDeviceProtocol,

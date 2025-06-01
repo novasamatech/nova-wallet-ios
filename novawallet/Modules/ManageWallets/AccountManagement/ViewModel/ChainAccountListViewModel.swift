@@ -9,12 +9,20 @@ struct ChainAccountListSectionViewModel {
 }
 
 enum ChainAccountSectionType {
+    struct Custom {
+        let title: LocalizableResource<String>
+        let action: LocalizableResource<IconWithTitleViewModel>?
+    }
+
     case sharedSecret
     case customSecret
     case noSection
+    case custom(Custom)
 
     var title: LocalizableResource<String>? {
         switch self {
+        case let .custom(model):
+            return model.title
         case .customSecret:
             return LocalizableResource { locale in
                 R.string.localizable.chainAccountsSectionTitleCustomSecret(preferredLanguages: locale.rLanguages)
@@ -24,6 +32,15 @@ enum ChainAccountSectionType {
                 R.string.localizable.chainAccountsSectionTitleSharedSecret(preferredLanguages: locale.rLanguages)
             }
         case .noSection:
+            return nil
+        }
+    }
+
+    var action: LocalizableResource<IconWithTitleViewModel>? {
+        switch self {
+        case let .custom(model):
+            return model.action
+        case .customSecret, .sharedSecret, .noSection:
             return nil
         }
     }
