@@ -412,6 +412,73 @@ final class CloudBackupSyncTests: XCTestCase {
         try performBackupGenericLedgerWallet(includesEvm: true)
     }
     
+    func testBackSubstrateAndEvmAndSyncWithNoEvmGenericLedgerWallet() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                try? AccountCreationHelper.createGenericLedgerWallet(
+                    keychain: params.keystore,
+                    settings: params.walletSettings,
+                    includesEvm: true
+                )
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                
+                let newWallet = wallet
+                    .replacingEthereumAddress(nil)
+                    .replacingEthereumPublicKey(nil)
+                
+                params.walletSettings.save(value: newWallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            },
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                do {
+                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
+                    
+                    let properUpdate = try updateLocal.changes.contains { change in
+                        switch change {
+                        case let .updatedMainAccounts(_, remote):
+                            let hasSubstrateDerivPath = try KeystoreValidationHelper.validateMainSubstrateDerivationPath(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            let hasEvmDerivPath = try KeystoreValidationHelper.validateMainEthereumDerivationPath(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            return afterBackupWallets.contains(remote) &&
+                                hasSubstrateDerivPath &&
+                                hasEvmDerivPath
+                        default:
+                            return false
+                        }
+                    }
+                    
+                    XCTAssertTrue(properUpdate)
+                    
+                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
+                    XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                    XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+                } catch {
+                    XCTFail("Error: \(error)")
+                }
+            }
+        )
+    }
+    
     func testBackupSubstrateGenericLedgerAndThenAddEvm() throws {
         try performSyncTest(
             configuringLocal: { params in
