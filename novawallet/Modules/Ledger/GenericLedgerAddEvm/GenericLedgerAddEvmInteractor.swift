@@ -68,8 +68,9 @@ private extension GenericLedgerAddEvmInteractor {
             if isCurrentWallet {
                 self.walletSettings.setup()
                 self.eventCenter.notify(with: SelectedWalletSwitched())
-                self.eventCenter.notify(with: ChainAccountChanged())
             }
+
+            self.eventCenter.notify(with: ChainAccountChanged())
         }
 
         settingsSaveOperation.addDependency(updateWrapper.targetOperation)
