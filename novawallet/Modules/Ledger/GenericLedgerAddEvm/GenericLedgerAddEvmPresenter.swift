@@ -34,9 +34,7 @@ final class GenericLedgerAddEvmPresenter {
 
 private extension GenericLedgerAddEvmPresenter {
     private func provideWarningIfNeeded(for account: GenericLedgerAccountModel) {
-        let hasMissingEvm = account.addresses.contains(where: { $0.scheme == .evm && $0.accountId == nil })
-
-        if hasMissingEvm {
+        if account.hasMissingEvmAddress {
             let viewModel = TitleWithSubtitleViewModel(
                 title: R.string.localizable.genericLedgerUpdateTitle(
                     preferredLanguages: localizationManager.selectedLocale.rLanguages
@@ -134,9 +132,11 @@ extension GenericLedgerAddEvmPresenter: GenericLedgerAddEvmInteractorOutputProto
                 provideWarningIfNeeded(for: account)
             }
 
-            accounts.append(account)
+            if !account.hasMissingEvmAddress {
+                accounts.append(account)
 
-            addAccountViewModel(for: account)
+                addAccountViewModel(for: account)
+            }
         }
     }
 

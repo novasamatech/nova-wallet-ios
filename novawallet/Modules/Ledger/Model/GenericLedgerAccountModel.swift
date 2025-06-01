@@ -52,4 +52,8 @@ extension Array where Element == HardwareWalletAddressModel {
 struct GenericLedgerAccountModel {
     let index: UInt32
     let addresses: [HardwareWalletAddressModel]
+
+    var hasMissingEvmAddress: Bool {
+        addresses.contains(where: { $0.scheme == .evm && $0.accountId == nil })
+    }
 }
