@@ -231,9 +231,10 @@ final class AccountCreationHelper {
         try selectMetaAccount(metaAccount, settings: settings)
     }
     
-    static func createSubstrateGenericLedgerWallet(
+    static func createGenericLedgerWallet(
         keychain: KeystoreProtocol,
         settings: SelectedWalletSettings,
+        includesEvm: Bool,
         username: String = "username",
         accountIndex: UInt32 = 0
     ) throws {
@@ -246,15 +247,31 @@ final class AccountCreationHelper {
         
         let factory = GenericLedgerWalletOperationFactory()
         
+        let substrate = PolkadotLedgerWalletModel.Substrate(
+            accountId: accountId,
+            publicKey: accountId,
+            cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
+            derivationPath: derivationPath
+        )
+        
+        let evm: PolkadotLedgerWalletModel.EVM?
+        
+        if includesEvm {
+            let evmPublicKey = Data.random(of: 33)!
+            let evmAddress = Data.random(of: 20)!
+            evm = PolkadotLedgerWalletModel.EVM(
+                address: evmAddress,
+                publicKey: evmPublicKey,
+                derivationPath: derivationPath
+            )
+        } else {
+            evm = nil
+        }
+        
         let operation = factory.createSaveOperation(
             for: PolkadotLedgerWalletModel(
-                substrate: .init(
-                    accountId: accountId,
-                    publicKey: accountId,
-                    cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType,
-                    derivationPath: derivationPath
-                ),
-                evm: nil
+                substrate: substrate,
+                evm: evm
             ),
             name: username,
             keystore: keychain,

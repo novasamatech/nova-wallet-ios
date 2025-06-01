@@ -135,17 +135,48 @@ final class CloudBackupSyncTests: XCTestCase {
         XCTAssertEqual(optIssue, .internalFailure)
     }
     
-    func testPreventApplyChangesIfGenericLedgerWalletHasNoDPath() throws {
+    func testPreventApplyChangesIfGenericLedgerWalletHasNoSubstrateDPath() throws {
         let optIssue = performDetectIssueTest { params in
-            try? AccountCreationHelper.createSubstrateGenericLedgerWallet(
+            try? AccountCreationHelper.createGenericLedgerWallet(
                 keychain: params.keystore,
-                settings: params.walletSettings
+                settings: params.walletSettings,
+                includesEvm: false
             )
             
-            // and then remove secrets before syncing
-            try? KeystoreValidationHelper.clearKeystore(
-                for: params.walletSettings.value,
-                keystore: params.keystore
+            guard let wallet = params.walletSettings.value else {
+                XCTFail("Generic Ledger Wallet expected")
+                return
+            }
+            
+            // and then substrate deriv path
+            try? params.keystore.deleteKeyIfExists(
+                for: KeystoreTagV2.substrateDerivationTagForMetaId(
+                    wallet.metaId
+                )
+            )
+        }
+        
+        XCTAssertEqual(optIssue, .internalFailure)
+    }
+    
+    func testPreventApplyChangesIfGenericLedgerWalletHasNoEvmDPath() throws {
+        let optIssue = performDetectIssueTest { params in
+            try? AccountCreationHelper.createGenericLedgerWallet(
+                keychain: params.keystore,
+                settings: params.walletSettings,
+                includesEvm: true
+            )
+            
+            guard let wallet = params.walletSettings.value else {
+                XCTFail("Generic Ledger Wallet expected")
+                return
+            }
+            
+            // and then evm deriva path
+            try? params.keystore.deleteKeyIfExists(
+                for: KeystoreTagV2.ethereumDerivationTagForMetaId(
+                    wallet.metaId
+                )
             )
         }
         
@@ -372,57 +403,12 @@ final class CloudBackupSyncTests: XCTestCase {
         )
     }
     
-    func testBackupGenericLedgerWallet() throws {
-        try performSyncTest(
-            configuringLocal: { params in
-                try? AccountCreationHelper.createSubstrateGenericLedgerWallet(
-                    keychain: params.keystore,
-                    settings: params.walletSettings)
-            },
-            changingAfterBackup: { params in
-                params.syncMetadataManager.saveLastSyncTimestamp(0)
-                
-                let wallet = params.walletSettings.value!
-                params.walletSettings.remove(value: wallet)
-                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
-                
-            },
-            validateClosure: { params in
-                guard case let .updateLocal(updateLocal) = params.changes else {
-                    XCTFail("Expected local update")
-                    return
-                }
-                
-                XCTAssertEqual(updateLocal.changes.count, 1)
-                
-                do {
-                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
-                    
-                    let properInsert = try updateLocal.changes.contains { change in
-                        switch change {
-                        case let .new(remote):
-                            let hasDerivPath = try KeystoreValidationHelper.validateMainSubstrateDerivationPath(
-                                for: remote,
-                                keystore: params.keystoreAfterSync
-                            )
-                            
-                            return afterBackupWallets.contains(remote) && hasDerivPath
-                        default:
-                            return false
-                        }
-                    }
-                    
-                    XCTAssertTrue(properInsert)
-                    
-                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
-                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
-                    XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
-                    XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
-                } catch {
-                    XCTFail("Error: \(error)")
-                }
-            }
-        )
+    func testBackupSubstrateGenericLedgerWallet() throws {
+        try performBackupGenericLedgerWallet(includesEvm: false)
+    }
+    
+    func testBackupSubstrateAndEvmGenericLedgerWallet() throws {
+        try performBackupGenericLedgerWallet(includesEvm: true)
     }
     
     func testBackupSecretsDerivationPath() throws {
@@ -681,6 +667,70 @@ final class CloudBackupSyncTests: XCTestCase {
                 XCTAssertEqual(Self.defaultPassword, try? params.syncMetadataManager.getPassword())
                 XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
                 XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+            }
+        )
+    }
+    
+    private func performBackupGenericLedgerWallet(includesEvm: Bool) throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                try? AccountCreationHelper.createGenericLedgerWallet(
+                    keychain: params.keystore,
+                    settings: params.walletSettings,
+                    includesEvm: includesEvm
+                )
+            },
+            changingAfterBackup: { params in
+                params.syncMetadataManager.saveLastSyncTimestamp(0)
+                
+                let wallet = params.walletSettings.value!
+                params.walletSettings.remove(value: wallet)
+                try? KeystoreValidationHelper.clearKeystore(for: wallet, keystore: params.keystore)
+                
+            },
+            validateClosure: { params in
+                guard case let .updateLocal(updateLocal) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateLocal.changes.count, 1)
+                
+                do {
+                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
+                    
+                    let properInsert = try updateLocal.changes.contains { change in
+                        switch change {
+                        case let .new(remote):
+                            let hasSubstrateDerivPath = try KeystoreValidationHelper.validateMainSubstrateDerivationPath(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            let hasEvmDerivPath = try KeystoreValidationHelper.validateMainEthereumDerivationPath(
+                                for: remote,
+                                keystore: params.keystoreAfterSync
+                            )
+                            
+                            let isEvmDPValid = includesEvm ? hasEvmDerivPath : !hasEvmDerivPath
+                            
+                            return afterBackupWallets.contains(remote) &&
+                                hasSubstrateDerivPath &&
+                                isEvmDPValid
+                        default:
+                            return false
+                        }
+                    }
+                    
+                    XCTAssertTrue(properInsert)
+                    
+                    XCTAssertEqual(updateLocal.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
+                    XCTAssertEqual(params.backupBeforeSync, params.backupAfterSync)
+                    XCTAssertEqual(params.keystoreAfterSetup.getRawStore(), params.keystoreAfterSync.getRawStore())
+                } catch {
+                    XCTFail("Error: \(error)")
+                }
             }
         )
     }

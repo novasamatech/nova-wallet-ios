@@ -70,7 +70,7 @@ extension CloudBackup {
 
         struct EthereumSecrets: Codable, Equatable, Hashable {
             let seed: String?
-            let keypair: KeypairSecrets
+            let keypair: KeypairSecrets?
             let derivationPath: String?
         }
 
