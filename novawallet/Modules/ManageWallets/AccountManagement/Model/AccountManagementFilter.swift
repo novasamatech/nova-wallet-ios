@@ -20,7 +20,7 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
         case .ledger:
             return supportedLedgerChains.contains(chain.chainId)
         case .genericLedger:
-            return chain.supportsGenericLedgerApp && (wallet.fetch(for: chain.accountRequest()) != nil)
+            return chain.supportsGenericLedgerApp
         }
     }
 

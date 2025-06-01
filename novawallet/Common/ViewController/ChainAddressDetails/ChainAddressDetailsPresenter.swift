@@ -15,12 +15,25 @@ final class ChainAddressDetailsPresenter {
         self.wireframe = wireframe
         self.model = model
     }
+}
+
+private extension ChainAddressDetailsPresenter {
+    private func createTitleViewModel() -> ChainAddressDetailsViewModel.Title {
+        switch model.title {
+        case let .network(network):
+            let viewModel = NetworkViewModel(
+                name: network.chainName,
+                icon: ImageViewModelFactory.createChainIconOrDefault(from: network.chainIcon)
+            )
+
+            return .network(viewModel)
+        case let .text(text):
+            return .text(text)
+        }
+    }
 
     private func provideViewModel() {
-        let networkViewModel = NetworkViewModel(
-            name: model.chainName,
-            icon: ImageViewModelFactory.createChainIconOrDefault(from: model.chainIcon)
-        )
+        let titleViewModel = createTitleViewModel()
 
         let actions = model.actions.map { action in
             ChainAddressDetailsViewModel.Action(
@@ -33,8 +46,8 @@ final class ChainAddressDetailsPresenter {
         let addressViewModel = model.address.map { displayAddressFactory.createViewModel(from: $0) }
 
         let viewModel = ChainAddressDetailsViewModel(
+            title: titleViewModel,
             address: addressViewModel,
-            network: networkViewModel,
             actions: actions
         )
 

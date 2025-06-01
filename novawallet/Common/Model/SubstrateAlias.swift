@@ -85,14 +85,26 @@ extension Moment {
 
 extension AccountAddress {
     var truncated: String {
-        guard count > 9 else {
+        truncated(prefix: 4, suffix: 5)
+    }
+
+    var shortTruncated: String {
+        truncated
+    }
+
+    var mediumTruncated: String {
+        truncated(prefix: 6, suffix: 7)
+    }
+
+    func truncated(prefix: Int, suffix: Int) -> String {
+        guard count > prefix + suffix else {
             return self
         }
 
-        let prefix = self.prefix(4)
-        let suffix = self.suffix(5)
+        let prefixString = self.prefix(prefix)
+        let suffixString = self.suffix(suffix)
 
-        return "\(prefix)...\(suffix)"
+        return "\(prefixString)...\(suffixString)"
     }
 }
 

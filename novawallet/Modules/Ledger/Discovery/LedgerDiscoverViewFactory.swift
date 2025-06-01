@@ -80,6 +80,27 @@ struct LedgerDiscoverViewFactory {
         )
     }
 
+    static func createAddEvmGenericLedgerView(to wallet: MetaAccountModel) -> ControllerBackedProtocol? {
+        let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
+
+        let ledgerApplication = GenericLedgerPolkadotApplication(connectionManager: ledgerConnection)
+
+        let interactor = GenericLedgerDiscoverInteractor(
+            ledgerApplication: ledgerApplication,
+            ledgerConnection: ledgerConnection,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        let wireframe = GenericLedgerAddEvmDiscoverWireframe(application: ledgerApplication, wallet: wallet)
+
+        return createView(
+            interactor: interactor,
+            wireframe: wireframe,
+            appName: LedgerSubstrateApp.generic.displayName(for: nil)
+        )
+    }
+
     private static func createView(
         interactor: LedgerPerformOperationInteractor,
         wireframe: LedgerDiscoverWireframeProtocol,

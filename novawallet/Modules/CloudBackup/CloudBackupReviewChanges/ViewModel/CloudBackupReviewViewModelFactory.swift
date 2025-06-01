@@ -25,6 +25,8 @@ final class CloudBackupReviewViewModelFactory {
             return local
         case let .updatedChainAccounts(_, remote, _):
             return remote
+        case let .updatedMainAccounts(_, remote):
+            return remote
         case let .updatedMetadata(_, remote):
             return remote
         }
@@ -36,7 +38,7 @@ final class CloudBackupReviewViewModelFactory {
             return .new
         case .delete:
             return .removed
-        case .updatedChainAccounts, .updatedMetadata:
+        case .updatedChainAccounts, .updatedMainAccounts, .updatedMetadata:
             return .modified
         }
     }

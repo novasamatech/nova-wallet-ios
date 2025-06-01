@@ -46,6 +46,68 @@ enum LedgerMessageSheetViewFactory {
         return view
     }
 
+    static func createVerifyLedgerView(
+        for deviceName: String,
+        deviceModel: LedgerDeviceModel,
+        addresses: [HardwareWalletAddressScheme: AccountAddress],
+        cancelClosure: @escaping () -> Void
+    ) -> MessageSheetViewProtocol? {
+        guard addresses.count > 1 else {
+            return addresses.first.flatMap { keyValue in
+                createVerifyLedgerView(
+                    for: deviceName,
+                    deviceModel: deviceModel,
+                    address: keyValue.value,
+                    cancelClosure: cancelClosure
+                )
+            }
+        }
+
+        let wireframe = MessageSheetWireframe()
+
+        let presenter = MessageSheetPresenter(wireframe: wireframe)
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.ledgerReviewApprove(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            deviceModel.approveAddressText(for: deviceName, locale: locale)
+        }
+
+        let content = addresses.map { keyValue in
+            MessageSheetHWAddressContent.ViewModelItem(
+                scheme: keyValue.key,
+                address: keyValue.value
+            )
+        }.sorted { $0.scheme.order < $1.scheme.order }
+
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetHWAddressContent.ContentViewModel>(
+            title: title,
+            message: message,
+            graphics: deviceModel.approveAddressImage,
+            content: content,
+            mainAction: nil,
+            secondaryAction: nil
+        )
+
+        let view = MultiAddressMessageSheetViewController(
+            presenter: presenter,
+            viewModel: viewModel,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.allowsSwipeDown = true
+        view.closeOnSwipeDownClosure = cancelClosure
+
+        let height = MultiAddressMessageSheetViewController.measureHeight(for: content)
+        view.controller.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        presenter.view = view
+
+        return view
+    }
+
     static func createReviewLedgerTransactionView(
         for timerMediator: CountdownTimerMediator,
         deviceName: String,
