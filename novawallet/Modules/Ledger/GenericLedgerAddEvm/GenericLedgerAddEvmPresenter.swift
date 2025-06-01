@@ -8,6 +8,7 @@ final class GenericLedgerAddEvmPresenter {
     let viewModelFactory: GenericLedgerAccountVMFactoryProtocol
     let deviceName: String
     let deviceModel: LedgerDeviceModel
+    let appName: String
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
@@ -18,6 +19,7 @@ final class GenericLedgerAddEvmPresenter {
         wireframe: GenericLedgerAddEvmWireframeProtocol,
         deviceName: String,
         deviceModel: LedgerDeviceModel,
+        appName: String,
         viewModelFactory: GenericLedgerAccountVMFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -26,6 +28,7 @@ final class GenericLedgerAddEvmPresenter {
         self.wireframe = wireframe
         self.deviceName = deviceName
         self.deviceModel = deviceModel
+        self.appName = appName
         self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
         self.logger = logger
@@ -152,21 +155,48 @@ extension GenericLedgerAddEvmPresenter: GenericLedgerAddEvmInteractorOutputProto
     func didReceive(error: GenericLedgerAddEvmInteractorError) {
         logger.error("Error: \(error)")
 
+        guard let view else {
+            return
+        }
+
+        let retryClosure: () -> Void
+        let internalError: Error
+
         switch error {
-        case .accountFailed:
-            wireframe.presentRequestStatus(
-                on: view,
-                locale: localizationManager.selectedLocale
-            ) { [weak self] in
+        case let .accountFailed(fetchError):
+            internalError = fetchError
+
+            retryClosure = { [weak self] in
                 self?.performLoadNext()
             }
-        case let .updateFailed(_, index):
-            wireframe.presentRequestStatus(
-                on: view,
-                locale: localizationManager.selectedLocale
-            ) { [weak self] in
+        case let .updateFailed(updateError, index):
+            internalError = updateError
+
+            retryClosure = { [weak self] in
                 self?.performConfirmation(at: index)
             }
+        }
+
+        if let ledgerError = internalError as? LedgerError {
+            wireframe.presentLedgerError(
+                on: view,
+                error: ledgerError,
+                context: LedgerErrorPresentableContext(
+                    networkName: appName,
+                    deviceModel: deviceModel,
+                    migrationViewModel: nil
+                ),
+                callbacks: LedgerErrorPresentableCallbacks(
+                    cancelClosure: {},
+                    retryClosure: retryClosure
+                )
+            )
+        } else {
+            wireframe.presentRequestStatus(
+                on: view,
+                locale: localizationManager.selectedLocale,
+                retryAction: retryClosure
+            )
         }
     }
 }

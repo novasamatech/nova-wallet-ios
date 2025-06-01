@@ -11,7 +11,7 @@ protocol GenericLedgerAddEvmInteractorOutputProtocol: AnyObject {
 }
 
 protocol GenericLedgerAddEvmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CommonRetryable, AddressOptionsPresentable, MessageSheetPresentable {
+    CommonRetryable, LedgerErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable {
     func showAddressVerification(
         on view: ControllerBackedProtocol?,
         deviceName: String,

@@ -21,6 +21,7 @@ struct GenericLedgerAddEvmViewFactory {
             wireframe: wireframe,
             deviceName: device.name,
             deviceModel: device.model,
+            appName: LedgerSubstrateApp.generic.displayName(for: nil),
             viewModelFactory: GenericLedgerAccountVMFactory(),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
