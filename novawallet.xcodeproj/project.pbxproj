@@ -105,11 +105,6 @@
 		0C03879A2D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0387992D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift */; };
 		0C03879C2D0F64F9000A2F24 /* HydraSwapParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */; };
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
-		0C0AE4092DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4082DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift */; };
-		0C0AE40B2DE5B39200D506F3 /* GenericLedgerAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */; };
-		0C0AE40E2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */; };
-		0C0AE4102DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */; };
-		0C0AE4122DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */; };
 		0C0897682DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0897672DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift */; };
 		0C08976D2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08976C2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift */; };
 		0C08977F2DE124F000F06A0E /* WalletMigrationQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */; };
@@ -117,6 +112,11 @@
 		0C08978A2DE13E0A00F06A0E /* BranchDeepLinkInternalFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0897892DE13E0A00F06A0E /* BranchDeepLinkInternalFactoryTests.swift */; };
 		0C0AE4052DE459DD00D506F3 /* BranchInitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4042DE459DD00D506F3 /* BranchInitTests.swift */; };
 		0C0AE4072DE45A9000D506F3 /* MockBranchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4062DE45A9000D506F3 /* MockBranchService.swift */; };
+		0C0AE4092DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4082DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift */; };
+		0C0AE40B2DE5B39200D506F3 /* GenericLedgerAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */; };
+		0C0AE40E2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */; };
+		0C0AE4102DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */; };
+		0C0AE4122DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */; };
 		0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */; };
 		0C0CB3852AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */; };
 		0C0CB3882AC5688100EAC516 /* AssetConversionPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */; };
@@ -5940,11 +5940,6 @@
 		0C0387992D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapFeeDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParams.swift; sourceTree = "<group>"; };
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
-		0C0AE4082DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPolkadotLedgerSigningParams.swift; sourceTree = "<group>"; };
-		0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountModel.swift; sourceTree = "<group>"; };
-		0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountViewModel.swift; sourceTree = "<group>"; };
-		0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountViewModelFactory.swift; sourceTree = "<group>"; };
-		0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenericLedgerAccountScheme+Locale.swift"; sourceTree = "<group>"; };
 		0C0897672DE0B85400F06A0E /* BranchToDeepLinkConversionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchToDeepLinkConversionFactory.swift; sourceTree = "<group>"; };
 		0C08976C2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchToInternalConvertionTests.swift; sourceTree = "<group>"; };
 		0C08977E2DE124F000F06A0E /* WalletMigrationQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletMigrationQueryFactory.swift; sourceTree = "<group>"; };
@@ -5952,6 +5947,11 @@
 		0C0897892DE13E0A00F06A0E /* BranchDeepLinkInternalFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchDeepLinkInternalFactoryTests.swift; sourceTree = "<group>"; };
 		0C0AE4042DE459DD00D506F3 /* BranchInitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchInitTests.swift; sourceTree = "<group>"; };
 		0C0AE4062DE45A9000D506F3 /* MockBranchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBranchService.swift; sourceTree = "<group>"; };
+		0C0AE4082DE5076800D506F3 /* NewPolkadotLedgerSigningParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPolkadotLedgerSigningParams.swift; sourceTree = "<group>"; };
+		0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountModel.swift; sourceTree = "<group>"; };
+		0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountViewModel.swift; sourceTree = "<group>"; };
+		0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerAccountViewModelFactory.swift; sourceTree = "<group>"; };
+		0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenericLedgerAccountScheme+Locale.swift"; sourceTree = "<group>"; };
 		0C0CB37E2AC540B200EAC516 /* AssetConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversion.swift; sourceTree = "<group>"; };
 		0C0CB3842AC561FB00EAC516 /* AssetHubSwapOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapOperationFactory.swift; sourceTree = "<group>"; };
 		0C0CB3872AC5688100EAC516 /* AssetConversionPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionPallet.swift; sourceTree = "<group>"; };
@@ -12112,16 +12112,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		0C0AE40C2DE5C58E00D506F3 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */,
-				0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */,
-				0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		0C0897692DE0C3EE00F06A0E /* Branch */ = {
 			isa = PBXGroup;
 			children = (
@@ -12148,6 +12138,16 @@
 				0C0AE4062DE45A9000D506F3 /* MockBranchService.swift */,
 			);
 			path = WalletMigration;
+			sourceTree = "<group>";
+		};
+		0C0AE40C2DE5C58E00D506F3 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0C0AE40D2DE5C5B200D506F3 /* GenericLedgerAccountViewModel.swift */,
+				0C0AE40F2DE5C5DC00D506F3 /* GenericLedgerAccountViewModelFactory.swift */,
+				0C0AE4112DE5CFE100D506F3 /* GenericLedgerAccountScheme+Locale.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		0C0CB37C2AC5408000EAC516 /* AssetConversion */ = {
@@ -14432,13 +14432,6 @@
 				0CE933BF2C068BF2000F3EFE /* AddAccount+ImportOptionsPresenter.swift */,
 			);
 			path = Presenters;
-			sourceTree = "<group>";
-		};
-		0CE9B70D2DE64F85007C7F5A /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		0CE9B70E2DE6C1E9007C7F5A /* View */ = {
@@ -26709,7 +26702,6 @@
 			isa = PBXGroup;
 			children = (
 				0CE9B70E2DE6C1E9007C7F5A /* View */,
-				0CE9B70D2DE64F85007C7F5A /* Model */,
 				0C0AE40C2DE5C58E00D506F3 /* ViewModel */,
 				EFD6001A7E25497F9E34C017 /* GenericLedgerAccountSelectionProtocols.swift */,
 				3E10B8C50958D0184D89E1BD /* GenericLedgerAccountSelectionWireframe.swift */,

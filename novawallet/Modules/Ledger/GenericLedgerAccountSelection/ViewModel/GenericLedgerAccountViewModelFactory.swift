@@ -39,7 +39,7 @@ private extension GenericLedgerAccountVMFactory {
 
         return GenericLedgerAddressViewModel(
             title: model.scheme.createTitle(for: locale),
-            existence: .found(.init(address: address ?? "", icon: icon))
+            existence: .found(.init(address: address, icon: icon))
         )
     }
 }
