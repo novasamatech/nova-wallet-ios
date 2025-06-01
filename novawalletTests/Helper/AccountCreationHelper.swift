@@ -257,8 +257,8 @@ final class AccountCreationHelper {
         let evm: PolkadotLedgerWalletModel.EVM?
         
         if includesEvm {
-            let evmPublicKey = Data.random(of: 33)!
-            let evmAddress = Data.random(of: 20)!
+            let evmPublicKey = try SECKeyFactory().createRandomKeypair().publicKey().rawData()
+            let evmAddress = try evmPublicKey.ethereumAddressFromPublicKey()
             evm = PolkadotLedgerWalletModel.EVM(
                 address: evmAddress,
                 publicKey: evmPublicKey,
@@ -283,6 +283,44 @@ final class AccountCreationHelper {
         operationQueue.addOperations([operation], waitUntilFinished: true)
         
         _ = try operation.extractNoCancellableResultData()
+    }
+    
+    static func addGenericLedgerEvmAccountsInWallet(
+        wallet: MetaAccountModel,
+        keychain: KeystoreProtocol,
+        settings: SelectedWalletSettings,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
+        accountIndex: UInt32 = 0
+    ) throws {
+        let factory = GenericLedgerWalletOperationFactory()
+        
+        let publicKey = try SECKeyFactory().createRandomKeypair().publicKey().rawData()
+        
+        let derivationPath = LedgerPathBuilder().appendingStandardJunctions(
+            coin: GenericLedgerPolkadotApplication.coin,
+            accountIndex: accountIndex
+        ).build()
+        
+        let ledgerAccount = try LedgerEvmAccount(ledgerData: publicKey)
+        
+        let response = LedgerEvmAccountResponse(account: ledgerAccount, derivationPath: derivationPath)
+        
+        let wrapper = factory.createUpdateEvmWrapper(
+            for: response,
+            wallet: wallet,
+            keystore: keychain,
+            repository: repository
+        )
+        
+        let operationQueue = OperationQueue()
+        
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        
+        _ = try wrapper.targetOperation.extractNoCancellableResultData()
+        
+        if wallet.metaId == settings.value?.metaId {
+            settings.setup()
+        }
     }
     
     static func createWatchOnlyMetaAccount(

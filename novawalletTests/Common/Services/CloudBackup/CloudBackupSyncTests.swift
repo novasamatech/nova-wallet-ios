@@ -14,6 +14,7 @@ final class CloudBackupSyncTests: XCTestCase {
     struct LocalWalletsChangeParams {
         let walletSettings: SelectedWalletSettings
         let keystore: MockKeychain
+        let accountRepositoryFactory: AccountRepositoryFactoryProtocol
         let syncMetadataManager: CloudBackupSyncMetadataManaging
     }
     
@@ -50,7 +51,7 @@ final class CloudBackupSyncTests: XCTestCase {
         let syncMetadataManager: CloudBackupSyncMetadataManaging
         let serviceFactory: CloudBackupServiceFactoryProtocol
         let selectedWalletSettings: SelectedWalletSettings
-        let accountRepository: AccountRepositoryFactoryProtocol
+        let accountRepositoryFactory: AccountRepositoryFactoryProtocol
         let keystore: MockKeychain
     }
     
@@ -409,6 +410,74 @@ final class CloudBackupSyncTests: XCTestCase {
     
     func testBackupSubstrateAndEvmGenericLedgerWallet() throws {
         try performBackupGenericLedgerWallet(includesEvm: true)
+    }
+    
+    func testBackupSubstrateGenericLedgerAndThenAddEvm() throws {
+        try performSyncTest(
+            configuringLocal: { params in
+                try? AccountCreationHelper.createGenericLedgerWallet(
+                    keychain: params.keystore,
+                    settings: params.walletSettings,
+                    includesEvm: false
+                )
+            },
+            changingAfterBackup: { params in
+                let wallet = params.walletSettings.value!
+
+                let repository = params.accountRepositoryFactory.createMetaAccountRepository(
+                    for: nil,
+                    sortDescriptors: []
+                )
+                
+                try? AccountCreationHelper.addGenericLedgerEvmAccountsInWallet(
+                    wallet: wallet,
+                    keychain: params.keystore,
+                    settings: params.walletSettings,
+                    repository: repository
+                )
+                
+            },
+            validateClosure: { params in
+                guard case let .updateRemote(updateRemote) = params.changes else {
+                    XCTFail("Expected local update")
+                    return
+                }
+                
+                XCTAssertEqual(updateRemote.localWallets.count, 1)
+                
+                do {
+                    let afterBackupWallets = Set(params.localWalletsAfterSync.map({ $0.info }))
+                    
+                    guard
+                        let localWallet = afterBackupWallets.first,
+                        let remoteWallet = updateRemote.localWallets.first?.info else {
+                        XCTFail("Expected one wallet to update")
+                        return
+                    }
+                    
+                    XCTAssertEqual(localWallet, remoteWallet)
+                    
+                    let hasSubstrateDerivPath = try KeystoreValidationHelper.validateMainSubstrateDerivationPath(
+                        for: remoteWallet,
+                        keystore: params.keystoreAfterSync
+                    )
+                    
+                    let hasEvmDerivPath = try KeystoreValidationHelper.validateMainEthereumDerivationPath(
+                        for: remoteWallet,
+                        keystore: params.keystoreAfterSync
+                    )
+                    
+                    let isEvmDPValid = hasSubstrateDerivPath && hasEvmDerivPath
+                    
+                    XCTAssert(isEvmDPValid)
+                    
+                    XCTAssertEqual(updateRemote.syncTime, params.syncMetadataManager.getLastSyncTimestamp())
+                    XCTAssertEqual(Self.defaultPassword, try params.syncMetadataManager.getPassword())
+                } catch {
+                    XCTFail("Error: \(error)")
+                }
+            }
+        )
     }
     
     func testBackupSecretsDerivationPath() throws {
@@ -795,11 +864,12 @@ final class CloudBackupSyncTests: XCTestCase {
             .init(
                 walletSettings: setupResult.selectedWalletSettings,
                 keystore: keystoreAfterSync,
+                accountRepositoryFactory: setupResult.accountRepositoryFactory,
                 syncMetadataManager: setupResult.syncMetadataManager
             )
         )
         
-        let walletsBeforeSync = try WalletsFetchHelper.fetchWallets(using: setupResult.accountRepository)
+        let walletsBeforeSync = try WalletsFetchHelper.fetchWallets(using: setupResult.accountRepositoryFactory)
         let backupBeforeSync = try CloudBackupFetchHelper.fetchBackup(
             using: setupResult.serviceFactory,
             password: Self.defaultPassword
@@ -821,7 +891,7 @@ final class CloudBackupSyncTests: XCTestCase {
         
         applyChangesAndConfirm(for: setupResult.syncService)
         
-        let walletsAfterSync = try WalletsFetchHelper.fetchWallets(using: setupResult.accountRepository)
+        let walletsAfterSync = try WalletsFetchHelper.fetchWallets(using: setupResult.accountRepositoryFactory)
         let backupAfterSync = try CloudBackupFetchHelper.fetchBackup(
             using: setupResult.serviceFactory,
             password: Self.defaultPassword
@@ -946,11 +1016,18 @@ final class CloudBackupSyncTests: XCTestCase {
         )
         
         configuringLocal(
-            .init(walletSettings: walletSettingsManager, keystore: keystore)
+            .init(
+                walletSettings: walletSettingsManager,
+                keystore: keystore
+            )
         )
         
         configuringBackup(
-            .init(serviceFactory: serviceFactory, keystore: keystore, syncMetadataManager: syncMetadataManager)
+            .init(
+                serviceFactory: serviceFactory,
+                keystore: keystore,
+                syncMetadataManager: syncMetadataManager
+            )
         )
         
         return SyncSetupResult(
@@ -958,7 +1035,7 @@ final class CloudBackupSyncTests: XCTestCase {
             syncMetadataManager: syncMetadataManager,
             serviceFactory: serviceFactory,
             selectedWalletSettings: walletSettingsManager,
-            accountRepository: accountsRepositoryFactory,
+            accountRepositoryFactory: accountsRepositoryFactory,
             keystore: keystore
         )
     }
