@@ -155,7 +155,7 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
                 publicKey: response.publicKey,
                 cryptoType: response.cryptoType.rawValue,
                 proxy: nil,
-				multisig: nil
+                multisig: nil
             )
         }
     }
