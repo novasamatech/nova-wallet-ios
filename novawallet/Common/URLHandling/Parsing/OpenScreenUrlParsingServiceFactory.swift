@@ -28,6 +28,8 @@ final class OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFacto
             return OpenGovernanceUrlParsingService(chainRegistry: chainRegistry, settings: settings)
         case .dApp:
             return OpenDAppUrlParsingService()
+        case .card:
+            return OpenCardUrlParsingService()
         default:
             return nil
         }

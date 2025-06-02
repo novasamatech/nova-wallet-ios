@@ -4,12 +4,18 @@ import Foundation_iOS
 
 typealias FlowStatusPresentingClosure = (ModalAlertPresenting, ControllerBackedProtocol?) -> Void
 
-final class MainTabBarWireframe {}
+final class MainTabBarWireframe {
+    private let cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol
+
+    init(cardScreenNavigationFactory: CardScreenNavigationFactoryProtocol) {
+        self.cardScreenNavigationFactory = cardScreenNavigationFactory
+    }
+}
 
 // MARK: - Private
 
 private extension MainTabBarWireframe {
-    private func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
+    func getSettingsNavigationController(from view: MainTabBarViewProtocol?) -> UINavigationController? {
         guard let tabBarController = view?.controller as? UITabBarController else {
             return nil
         }
@@ -19,7 +25,7 @@ private extension MainTabBarWireframe {
         return settingsViewController as? UINavigationController
     }
 
-    private func openGovernanceScreen(
+    func openGovernanceScreen(
         in controller: UITabBarController,
         rederendumIndex: Referenda.ReferendumIndex
     ) {
@@ -31,7 +37,26 @@ private extension MainTabBarWireframe {
         }
     }
 
-    private func openAssetDetailsScreen(
+    func openCardScreen(
+        in controller: UITabBarController,
+        cardNavigation: PayCardNavigation?
+    ) {
+        controller.selectedIndex = MainTabBarIndex.wallet
+        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        guard let cardView = cardScreenNavigationFactory.createCardScreen(using: cardNavigation) else {
+            return
+        }
+
+        navigationController?.pushViewController(
+            cardView.controller,
+            animated: true
+        )
+    }
+
+    func openAssetDetailsScreen(
         in controller: UITabBarController,
         chainAsset: ChainAsset
     ) {
@@ -60,7 +85,7 @@ private extension MainTabBarWireframe {
         )
     }
 
-    private func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
+    func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
         guard let tabBarController = view.topModalViewController as? UITabBarController else {
             // some flow is currently presented modally
             return false
@@ -76,7 +101,7 @@ private extension MainTabBarWireframe {
         return true
     }
 
-    private func canPresentImport(on view: UIViewController) -> Bool {
+    func canPresentImport(on view: UIViewController) -> Bool {
         if isAuthorizing || isAlreadyImporting(on: view) {
             return false
         }
@@ -84,7 +109,7 @@ private extension MainTabBarWireframe {
         return true
     }
 
-    private func isAlreadyImporting(on view: UIViewController) -> Bool {
+    func isAlreadyImporting(on view: UIViewController) -> Bool {
         let topViewController = view.topModalViewController
         let topNavigationController: UINavigationController?
 
@@ -195,6 +220,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                 controller.selectedIndex = MainTabBarIndex.staking
             case let .gov(rederendumIndex):
                 openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
+            case let .card(cardNavigation):
+                openCardScreen(in: controller, cardNavigation: cardNavigation)
             default:
                 break
             }
