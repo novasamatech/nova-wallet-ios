@@ -22,7 +22,7 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
         case .ledger:
             supportedLedgerChains.contains(chain.chainId)
         case .genericLedger:
-            return chain.supportsGenericLedgerApp
+            chain.supportsGenericLedgerApp
         }
     }
 

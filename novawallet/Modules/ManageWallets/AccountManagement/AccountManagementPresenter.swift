@@ -600,7 +600,8 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
              .paritySigner,
              .ledger,
              .polkadotVault,
-             .proxied:
+             .proxied,
+             .multisig:
             break
         }
     }
