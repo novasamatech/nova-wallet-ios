@@ -114,8 +114,12 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
                 switch result {
                 case let .success(result):
+                    guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
+                        submitionPresenter?.didCompleteSubmition()
+                        return
+                    }
+
                     if
-                        persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                         let txHashData = try? Data(hexString: result.txHash) {
                         let details = PersistExtrinsicDetails(
                             sender: sender,

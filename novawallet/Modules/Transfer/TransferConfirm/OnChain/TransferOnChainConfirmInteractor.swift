@@ -109,8 +109,12 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
 
                     switch result {
                     case let .success(txHash):
+                        guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
+                            submitionPresenter?.didCompleteSubmition()
+                            return
+                        }
+
                         if
-                            persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                             let callCodingPath = callCodingPath,
                             let txHashData = try? Data(hexString: txHash) {
                             let details = PersistTransferDetails(
