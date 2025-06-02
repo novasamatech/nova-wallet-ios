@@ -127,8 +127,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: nil,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -163,8 +162,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: viewModel.address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -270,8 +268,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -317,8 +314,7 @@ final class AccountManagementPresenter {
 
         let model = ChainAddressDetailsModel(
             address: address,
-            chainName: chain.name,
-            chainIcon: chain.icon,
+            title: .init(chain: chain),
             actions: actions
         )
 
@@ -532,6 +528,10 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         viewModel[section].section.title
     }
 
+    func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>? {
+        viewModel[section].section.action
+    }
+
     func activateDetails(at indexPath: IndexPath) {
         selectItem(at: indexPath)
     }
@@ -573,6 +573,35 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
         case .multisig:
             displayMultisigAddressAction(for: chainModel, viewModel: chainViewModel)
+        }
+    }
+
+    func activateActionInSection(_: Int) {
+        guard let wallet else {
+            return
+        }
+
+        // generic ledger currently the only case for the sections with action
+
+        switch wallet.type {
+        case .genericLedger:
+            presentCloudRemindIfNeededBefore { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                wireframe.showAddGenericLedgerEvmAccounts(
+                    from: view,
+                    wallet: wallet
+                )
+            }
+        case .secrets,
+             .watchOnly,
+             .paritySigner,
+             .ledger,
+             .polkadotVault,
+             .proxied:
+            break
         }
     }
 

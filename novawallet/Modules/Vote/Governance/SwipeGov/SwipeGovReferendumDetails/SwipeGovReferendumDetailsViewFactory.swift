@@ -65,7 +65,7 @@ struct SwipeGovReferendumDetailsViewFactory {
         )
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
 
-        let universalLinkFactory = UniversalLinkFactory(baseUrl: ApplicationConfig.shared.universalLinkURL)
+        let universalLinkFactory = ExternalLinkFactory(baseUrl: ApplicationConfig.shared.externalUniversalLinkURL)
 
         return SwipeGovReferendumDetailsPresenter(
             chain: chain,

@@ -1,6 +1,6 @@
 import Foundation
 
 enum GenericWalletConfirmInteractorError: Error {
-    case fetAccount(Error)
+    case fetchAccount(Error)
     case confirmAccount(Error)
 }

@@ -74,7 +74,7 @@ extension MythosStkDurationOperationFactory: MythosStkDurationOperationFactoryPr
                     session: sessionDuration,
                     unstaking: unstakingDuration,
                     sessionInfo: ChainSessionInfo(
-                        offset: 0, // TODO: Check whether we need to fetch for production
+                        offset: 0,
                         length: SessionIndex(blocksInSession)
                     )
                 )

@@ -4,12 +4,12 @@ import SubstrateSdk
 
 struct GenericLedgerWalletViewFactory {
     static func createView(
-        for application: GenericLedgerSubstrateApplicationProtocol,
+        for application: GenericLedgerPolkadotApplicationProtocol,
         device: LedgerDeviceProtocol,
-        index: UInt32,
+        model: GenericLedgerWalletConfirmModel,
         flow: WalletCreationFlow
     ) -> HardwareWalletAddressesViewProtocol? {
-        let interactor = createInteractor(for: application, deviсe: device, index: index)
+        let interactor = createInteractor(for: application, deviсe: device, model: model)
         let wireframe = GenericLedgerWalletWireframe(flow: flow)
 
         let presenter = GenericLedgerWalletPresenter(
@@ -35,14 +35,18 @@ struct GenericLedgerWalletViewFactory {
     }
 
     private static func createInteractor(
-        for application: GenericLedgerSubstrateApplicationProtocol,
+        for application: GenericLedgerPolkadotApplicationProtocol,
         deviсe: LedgerDeviceProtocol,
-        index: UInt32
+        model: GenericLedgerWalletConfirmModel
     ) -> GenericLedgerWalletInteractor {
-        GenericLedgerWalletInteractor(
-            ledgerApplication: application,
+        let accountFetchFactory = GenericLedgerAccountFetchFactory(
             deviceId: deviсe.identifier,
-            index: index,
+            ledgerApplication: application
+        )
+
+        return GenericLedgerWalletInteractor(
+            model: model,
+            accountFetchFactory: accountFetchFactory,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

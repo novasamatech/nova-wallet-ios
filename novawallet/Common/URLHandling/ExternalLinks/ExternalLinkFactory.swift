@@ -1,14 +1,6 @@
 import Foundation
 
-protocol UniversalLinkFactoryProtocol {
-    func createUrl(
-        for chainModel: ChainModel,
-        referendumId: ReferendumIdLocal,
-        type: GovernanceType
-    ) -> URL?
-}
-
-final class UniversalLinkFactory: UniversalLinkFactoryProtocol {
+final class ExternalLinkFactory: UniversalLinkFactoryProtocol {
     let baseUrl: URL
 
     init(baseUrl: URL) {
@@ -21,10 +13,17 @@ final class UniversalLinkFactory: UniversalLinkFactoryProtocol {
         type: GovernanceType
     ) -> URL? {
         var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
-        let govScreen = UniversalLink.Screen.governance.rawValue
-        urlComponents?.path = UrlHandlingAction.open(screen: govScreen).path
 
-        var queryItems: [URLQueryItem] = []
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.action.rawValue,
+                value: UniversalLink.Action.open.rawValue
+            ),
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.screen.rawValue,
+                value: UniversalLink.Screen.governance.rawValue
+            )
+        ]
 
         if chainModel.chainId != UniversalLink.GovScreen.defaultChainId {
             let queryItem = URLQueryItem(
@@ -50,6 +49,25 @@ final class UniversalLinkFactory: UniversalLinkFactoryProtocol {
 
             queryItems.append(typeQueryItem)
         }
+
+        urlComponents?.queryItems = queryItems
+
+        return urlComponents?.url
+    }
+
+    func createUrlForStaking() -> URL? {
+        var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false)
+
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.action.rawValue,
+                value: UniversalLink.Action.open.rawValue
+            ),
+            URLQueryItem(
+                name: ExternalUniversalLinkKey.screen.rawValue,
+                value: UniversalLink.Screen.staking.rawValue
+            )
+        ]
 
         urlComponents?.queryItems = queryItems
 

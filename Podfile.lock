@@ -1157,6 +1157,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.36):
     - BoringSSL-GRPC/Interface (= 0.0.36)
   - BoringSSL-GRPC/Interface (0.0.36)
+  - BranchSDK (3.10.0)
   - CDMarkdownKit (2.5.2)
   - CryptoSwift (1.5.1)
   - Cuckoo (1.7.1):
@@ -1233,24 +1234,29 @@ PODS:
     - nanopb (~> 3.30910.0)
   - FirebaseSharedSwift (11.3.0)
   - FireMock (3.1)
-  - Foundation-iOS (1.0.1):
-    - Foundation-iOS/DateProcessing (= 1.0.1)
-    - Foundation-iOS/Localization (= 1.0.1)
-    - Foundation-iOS/NotificationHandlers (= 1.0.1)
-    - Foundation-iOS/NumberProcessing (= 1.0.1)
-    - Foundation-iOS/QueryProcessing (= 1.0.1)
-    - Foundation-iOS/Timer (= 1.0.1)
-    - Foundation-iOS/ViewModel (= 1.0.1)
-  - Foundation-iOS/DateProcessing (1.0.1):
+  - Foundation-iOS (1.1.0):
+    - Foundation-iOS/DateProcessing (= 1.1.0)
+    - Foundation-iOS/Localization (= 1.1.0)
+    - Foundation-iOS/NotificationHandlers (= 1.1.0)
+    - Foundation-iOS/NumberProcessing (= 1.1.0)
+    - Foundation-iOS/QueryProcessing (= 1.1.0)
+    - Foundation-iOS/SecureSession (= 1.1.0)
+    - Foundation-iOS/Timer (= 1.1.0)
+    - Foundation-iOS/ViewModel (= 1.1.0)
+    - Foundation-iOS/WalletMigration (= 1.1.0)
+  - Foundation-iOS/DateProcessing (1.1.0):
     - Foundation-iOS/Localization
-  - Foundation-iOS/Localization (1.0.1):
+  - Foundation-iOS/Localization (1.1.0):
     - Keystore-iOS (~> 1.0.0)
-  - Foundation-iOS/NotificationHandlers (1.0.1)
-  - Foundation-iOS/NumberProcessing (1.0.1)
-  - Foundation-iOS/QueryProcessing (1.0.1)
-  - Foundation-iOS/Timer (1.0.1):
+  - Foundation-iOS/NotificationHandlers (1.1.0)
+  - Foundation-iOS/NumberProcessing (1.1.0)
+  - Foundation-iOS/QueryProcessing (1.1.0)
+  - Foundation-iOS/SecureSession (1.1.0)
+  - Foundation-iOS/Timer (1.1.0):
     - Foundation-iOS/NotificationHandlers
-  - Foundation-iOS/ViewModel (1.0.1)
+  - Foundation-iOS/ViewModel (1.1.0)
+  - Foundation-iOS/WalletMigration (1.1.0):
+    - Foundation-iOS/SecureSession
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
@@ -1538,6 +1544,7 @@ PODS:
 
 DEPENDENCIES:
   - blake2.c (from `https://github.com/novasamatech/blake2.c`, tag `0.1.0`)
+  - BranchSDK (~> 3.10.0)
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - Cuckoo
   - DGCharts (~> 5.1.0)
@@ -1549,7 +1556,7 @@ DEPENDENCIES:
   - FirebaseFirestore (~> 11.3.0)
   - FirebaseMessaging (~> 11.3.0)
   - FireMock
-  - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, tag `1.0.1`)
+  - Foundation-iOS (from `https://github.com/novasamatech/Foundation-iOS.git`, tag `1.1.0`)
   - HydraMath (from `https://github.com/novasamatech/hydra-math-swift.git`, tag `0.2`)
   - Keystore-iOS (from `https://github.com/novasamatech/Keystore-iOS.git`, tag `1.0.0`)
   - Kingfisher
@@ -1581,6 +1588,7 @@ SPEC REPOS:
     - AppCheckCore
     - BigInt
     - BoringSSL-GRPC
+    - BranchSDK
     - CryptoSwift
     - Cuckoo
     - DGCharts
@@ -1643,7 +1651,7 @@ EXTERNAL SOURCES:
     :tag: 0.1.3
   Foundation-iOS:
     :git: https://github.com/novasamatech/Foundation-iOS.git
-    :tag: 1.0.1
+    :tag: 1.1.0
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.2'
@@ -1698,7 +1706,7 @@ CHECKOUT OPTIONS:
     :tag: 0.1.3
   Foundation-iOS:
     :git: https://github.com/novasamatech/Foundation-iOS.git
-    :tag: 1.0.1
+    :tag: 1.1.0
   HydraMath:
     :git: https://github.com/novasamatech/hydra-math-swift.git
     :tag: '0.2'
@@ -1745,6 +1753,7 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   blake2.c: 49d32e8c358161437c30a04d325be708233d221e
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
+  BranchSDK: 5678ea6de1b289812e99b55e828e826b00688f06
   CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
@@ -1765,7 +1774,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: ed3f874c733f1d20e32b82a3428f6a9f01ef9270
   FirebaseSharedSwift: d39c2ad64a11a8d936ce25a42b00df47078bb59c
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
-  Foundation-iOS: 654d1ed4e36824e07bdb987c0becf5888e1f3ba6
+  Foundation-iOS: 2b4267fc2273edb5b3360d303ebdcdf498ebb263
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
@@ -1809,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: 750f4695ac09cab33f2c7db5c3afc2f8e916de18
+PODFILE CHECKSUM: d4290d1b21c6e37dd8dfcbfde11db1ca43066d71
 
 COCOAPODS: 1.15.2
