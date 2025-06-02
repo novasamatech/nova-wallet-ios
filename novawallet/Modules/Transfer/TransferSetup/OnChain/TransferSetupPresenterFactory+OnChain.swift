@@ -152,6 +152,7 @@ extension TransferSetupPresenterFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
+            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
@@ -204,6 +205,7 @@ extension TransferSetupPresenterFactory {
             validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

@@ -16,6 +16,7 @@ class OnChainTransferBaseInteractor {
     let asset: AssetModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let operationQueue: OperationQueue
 
     private var sendingAssetProvider: StreamableProvider<AssetBalance>?
@@ -31,6 +32,7 @@ class OnChainTransferBaseInteractor {
         asset: AssetModel,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -38,6 +40,7 @@ class OnChainTransferBaseInteractor {
         self.asset = asset
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.persistenceFilter = persistenceFilter
         self.operationQueue = operationQueue
     }
 

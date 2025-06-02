@@ -22,6 +22,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
@@ -39,6 +40,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            persistenceFilter: persistenceFilter,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -104,9 +106,12 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in
+                guard let self else { return }
+
                 switch result {
                 case let .success(txHash):
                     if
+                        persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                         let callCodingPath = callCodingPath,
                         let txHashData = try? Data(hexString: txHash) {
                         let details = PersistTransferDetails(
@@ -119,13 +124,13 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                             feeAssetId: nil
                         )
 
-                        self?.persistExtrinsicAndComplete(details: details, type: transferType)
+                        persistExtrinsicAndComplete(details: details, type: transferType)
                     } else {
-                        self?.presenter?.didCompleteSetup()
+                        presenter?.didCompleteSetup()
                     }
 
                 case let .failure(error):
-                    self?.presenter?.didReceiveError(error)
+                    presenter?.didReceiveError(error)
                 }
             }
         } catch {

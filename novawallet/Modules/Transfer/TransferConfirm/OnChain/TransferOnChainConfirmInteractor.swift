@@ -27,6 +27,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -47,6 +48,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             substrateStorageFacade: substrateStorageFacade,
             transferAggregationWrapperFactory: transferAggregationWrapperFactory,
+            persistenceFilter: persistenceFilter,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -103,9 +105,12 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { [weak self] result in
+                    guard let self else { return }
+
                     switch result {
                     case let .success(txHash):
                         if
+                            persistenceFilter.canPersistExtrinsic(for: selectedAccount),
                             let callCodingPath = callCodingPath,
                             let txHashData = try? Data(hexString: txHash) {
                             let details = PersistTransferDetails(
@@ -115,16 +120,16 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                                 txHash: txHashData,
                                 callPath: callCodingPath,
                                 fee: lastFee,
-                                feeAssetId: self?.feeAsset?.asset.assetId
+                                feeAssetId: feeAsset?.asset.assetId
                             )
 
-                            self?.persistExtrinsicAndComplete(details: details)
+                            persistExtrinsicAndComplete(details: details)
                         } else {
-                            self?.presenter?.didCompleteSetup()
+                            presenter?.didCompleteSetup()
                         }
 
                     case let .failure(error):
-                        self?.presenter?.didReceiveError(error)
+                        presenter?.didReceiveError(error)
                     }
                 }
             )

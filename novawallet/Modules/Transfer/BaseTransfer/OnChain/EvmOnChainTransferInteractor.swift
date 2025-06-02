@@ -33,6 +33,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -46,6 +47,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
             asset: asset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            persistenceFilter: persistenceFilter,
             operationQueue: operationQueue
         )
 
