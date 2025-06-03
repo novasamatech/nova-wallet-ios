@@ -1035,6 +1035,7 @@
 		0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
 		0CE150542A70EA2200B61CC1 /* NominationPoolsSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */; };
+		0CE164F82DEF1BFB0099FC28 /* DAppBrowserSigningChainResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE164F72DEF1BFB0099FC28 /* DAppBrowserSigningChainResolver.swift */; };
 		0CE1A0522BE9E995008206ED /* CloudBackupSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */; };
 		0CE1A0572BEBCC46008206ED /* CloudBackupSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */; };
 		0CE360212C33F398006A6CE4 /* GraphModel+Dijkstra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */; };
@@ -6914,6 +6915,7 @@
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
 		0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsPoolSubscriptionService.swift; sourceTree = "<group>"; };
 		0CE150532A70EA2200B61CC1 /* NominationPoolsSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPoolsSyncTests.swift; sourceTree = "<group>"; };
+		0CE164F72DEF1BFB0099FC28 /* DAppBrowserSigningChainResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserSigningChainResolver.swift; sourceTree = "<group>"; };
 		0CE1A0512BE9E995008206ED /* CloudBackupSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsView.swift; sourceTree = "<group>"; };
 		0CE1A0562BEBCC46008206ED /* CloudBackupSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewModel.swift; sourceTree = "<group>"; };
 		0CE360202C33F398006A6CE4 /* GraphModel+Dijkstra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GraphModel+Dijkstra.swift"; sourceTree = "<group>"; };
@@ -18539,6 +18541,7 @@
 				842BDB26278C46EE00AB4B5A /* PolkadotExtensionStates */,
 				842BDB22278C229D00AB4B5A /* DAppBrowserStateDataSource.swift */,
 				840D92A0278D8D6F0007B979 /* DAppBrowserStateError.swift */,
+				0CE164F72DEF1BFB0099FC28 /* DAppBrowserSigningChainResolver.swift */,
 			);
 			path = StateMachine;
 			sourceTree = "<group>";
@@ -32855,6 +32858,7 @@
 				4C4142B4CB2DBCA1F06DC046 /* GovernanceDelegateSetupViewLayout.swift in Sources */,
 				6789ED94EFF73E5B47956462 /* GovernanceDelegateSetupViewFactory.swift in Sources */,
 				4F406ED92AAE2C77E358F49C /* GovernanceDelegateConfirmProtocols.swift in Sources */,
+				0CE164F82DEF1BFB0099FC28 /* DAppBrowserSigningChainResolver.swift in Sources */,
 				0CA7CEF62CE0D35B004328F2 /* PalletAssets+Events.swift in Sources */,
 				0C3205C42A877172002EB914 /* EthereumReducedBlockObject.swift in Sources */,
 				1C9EA26D4E4BA6BAE147B374 /* GovernanceDelegateConfirmWireframe.swift in Sources */,

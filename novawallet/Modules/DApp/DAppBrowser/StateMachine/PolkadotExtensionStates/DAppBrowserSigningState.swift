@@ -20,10 +20,6 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
         modifiedTransaction: Data?,
         nextState: DAppBrowserStateProtocol
     ) throws {
-        guard let msgType = signingType.msgType else {
-            return
-        }
-
         let identifier = (0 ... UInt32.max).randomElement() ?? 0
         let result = PolkadotExtensionSignerResult(
             identifier: UInt(identifier),
@@ -38,10 +34,6 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
         _ error: PolkadotExtensionError,
         nextState: DAppBrowserStateProtocol
     ) {
-        guard let msgType = signingType.msgType else {
-            return
-        }
-
         provideError(for: requestId, errorMessage: error.rawValue, nextState: nextState)
     }
 }
