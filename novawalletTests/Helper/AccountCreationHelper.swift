@@ -205,7 +205,7 @@ final class AccountCreationHelper {
             chainId: app.chainId,
             accountId: accountId,
             publicKey: accountId,
-            cryptoType: LedgerConstants.defaultCryptoScheme.walletCryptoType.rawValue,
+            cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType.rawValue,
             proxy: nil,
             multisig: nil
         )
