@@ -27,7 +27,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         view.viewControllers = indexedControllers.map(\.1)
 
-        let wireframe = MainTabBarWireframe()
+        let wireframe = MainTabBarWireframe(cardScreenNavigationFactory: CardScreenNavigationFactory())
 
         presenter.view = view
         presenter.interactor = interactor

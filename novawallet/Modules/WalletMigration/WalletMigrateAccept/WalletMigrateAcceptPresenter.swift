@@ -10,6 +10,8 @@ final class WalletMigrateAcceptPresenter {
 
     let logger: LoggerProtocol
 
+    private var cloudBackupState: CloudBackupSyncState?
+
     init(
         interactor: WalletMigrateAcceptInteractorInputProtocol,
         wireframe: WalletMigrateAcceptWireframeProtocol,
@@ -29,7 +31,17 @@ extension WalletMigrateAcceptPresenter: WalletMigrateAcceptPresenterProtocol {
     }
 
     func accept() {
-        interactor.accept()
+        if let cloudBackupState, cloudBackupState.canAutoSync {
+            wireframe.showCloudBackupRemind(from: view) { [weak self] in
+                self?.interactor.accept()
+            }
+        } else {
+            interactor.accept()
+        }
+    }
+
+    func skip() {
+        wireframe.skipMigration(on: view)
     }
 }
 
@@ -40,12 +52,19 @@ extension WalletMigrateAcceptPresenter: WalletMigrateAcceptInteractorOutputProto
     }
 
     func didCompleteMigration() {
-        wireframe.completeMigration(on: view)
+        wireframe.completeMigration(
+            on: view,
+            locale: localizationManager.selectedLocale
+        )
     }
 
     func didFailMigration(with error: Error) {
         logger.error("Did receive error \(error)")
 
         wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
+    }
+
+    func didReceiveCloudBackup(state: CloudBackupSyncState) {
+        cloudBackupState = state
     }
 }

@@ -288,21 +288,41 @@ final class CloudBackupSecretsExporter {
     private func createPrivateInfoFromGenericWalletType(
         _ wallet: MetaAccountModel
     ) throws -> CloudBackup.DecryptedFileModel.WalletPrivateInfo {
-        let derivationPath = try fetchDerivationPath(
+        let substrateDerivationPath = try fetchDerivationPath(
             for: wallet,
             chainAccount: nil,
             isEthereumBased: false
         )
 
+        let substrateSecrets = CloudBackup.DecryptedFileModel.SubstrateSecrets(
+            seed: nil,
+            keypair: nil,
+            derivationPath: substrateDerivationPath
+        )
+
+        let ethereumSecrets: CloudBackup.DecryptedFileModel.EthereumSecrets?
+
+        if wallet.ethereumAddress != nil {
+            let evmDerivationPath = try fetchDerivationPath(
+                for: wallet,
+                chainAccount: nil,
+                isEthereumBased: true
+            )
+
+            ethereumSecrets = CloudBackup.DecryptedFileModel.EthereumSecrets(
+                seed: nil,
+                keypair: nil,
+                derivationPath: evmDerivationPath
+            )
+        } else {
+            ethereumSecrets = nil
+        }
+
         return .init(
             walletId: wallet.metaId,
             entropy: nil,
-            substrate: .init(
-                seed: nil,
-                keypair: nil,
-                derivationPath: derivationPath
-            ),
-            ethereum: nil,
+            substrate: substrateSecrets,
+            ethereum: ethereumSecrets,
             chainAccounts: []
         )
     }

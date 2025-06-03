@@ -11,12 +11,12 @@ final class GenericLedgerDiscoverInteractor: LedgerPerformOperationInteractor {
         }
     }
 
-    let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
+    let ledgerApplication: GenericLedgerPolkadotApplicationProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
+        ledgerApplication: GenericLedgerPolkadotApplicationProtocol,
         ledgerConnection: LedgerConnectionManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -29,7 +29,7 @@ final class GenericLedgerDiscoverInteractor: LedgerPerformOperationInteractor {
     }
 
     override func performOperation(using deviceId: UUID) {
-        let wrapper = ledgerApplication.getUniversalAccountWrapper(for: deviceId)
+        let wrapper = ledgerApplication.getGenericSubstrateAccountWrapperBy(deviceId: deviceId)
 
         execute(
             wrapper: wrapper,

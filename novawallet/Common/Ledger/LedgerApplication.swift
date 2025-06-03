@@ -9,7 +9,7 @@ protocol LedgerAccountRetrievable {
         chainId: ChainModel.Id,
         index: UInt32,
         displayVerificationDialog: Bool
-    ) -> CompoundOperationWrapper<LedgerAccountResponse>
+    ) -> CompoundOperationWrapper<LedgerSubstrateAccountResponse>
 }
 
 extension LedgerAccountRetrievable {
@@ -17,7 +17,7 @@ extension LedgerAccountRetrievable {
         for deviceId: UUID,
         chainId: ChainModel.Id,
         index: UInt32
-    ) -> CompoundOperationWrapper<LedgerAccountResponse> {
+    ) -> CompoundOperationWrapper<LedgerSubstrateAccountResponse> {
         getAccountWrapper(for: deviceId, chainId: chainId, index: index, displayVerificationDialog: false)
     }
 }
@@ -35,7 +35,7 @@ enum LedgerApplicationError: Error {
     case unsupportedApp(chainId: ChainModel.Id)
 }
 
-final class LedgerApplication: SubstrateLedgerCommonApplication {
+final class LedgerApplication: PolkadotLedgerCommonApplication {
     let supportedApps: [SupportedLedgerApp]
 
     init(connectionManager: LedgerConnectionManagerProtocol, supportedApps: [SupportedLedgerApp]) {
@@ -52,7 +52,7 @@ extension LedgerApplication: LedgerApplicationProtocol {
         chainId: ChainModel.Id,
         index: UInt32,
         displayVerificationDialog: Bool
-    ) -> CompoundOperationWrapper<LedgerAccountResponse> {
+    ) -> CompoundOperationWrapper<LedgerSubstrateAccountResponse> {
         guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
@@ -66,6 +66,7 @@ extension LedgerApplication: LedgerApplicationProtocol {
             cla: application.cla,
             derivationPath: path,
             payloadClosure: { path },
+            cryptoScheme: LedgerConstants.defaultSubstrateCryptoScheme,
             displayVerificationDialog: displayVerificationDialog
         )
     }
@@ -87,6 +88,11 @@ extension LedgerApplication: LedgerApplicationProtocol {
 
         let chunks = [derivationPathClosure] + payloadChunkClosures
 
-        return prepareSignatureWrapper(for: deviceId, cla: application.cla, chunks: chunks)
+        return prepareSignatureWrapper(
+            for: deviceId,
+            cla: application.cla,
+            cryptoScheme: LedgerConstants.defaultSubstrateCryptoScheme,
+            chunks: chunks
+        )
     }
 }

@@ -25,6 +25,7 @@ final class WalletMigrateAcceptViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigation()
         setupHandlers()
         setupLocalization()
 
@@ -33,15 +34,30 @@ final class WalletMigrateAcceptViewController: UIViewController, ViewHolder {
 }
 
 private extension WalletMigrateAcceptViewController {
+    func setupNavigation() {
+        let rightBarButtonItem = UIBarButtonItem(customView: rootView.skipButton)
+        navigationItem.rightBarButtonItem = rightBarButtonItem
+    }
+
     func setupHandlers() {
         rootView.genericActionView.actionButton.addTarget(
             self,
             action: #selector(actionAccept),
             for: .touchUpInside
         )
+
+        rootView.skipButton.addTarget(
+            self,
+            action: #selector(actionSkip),
+            for: .touchUpInside
+        )
     }
 
     func setupLocalization() {
+        rootView.skipButton.imageWithTitleView?.title = R.string.localizable.commonSkip(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
         rootView.titleView.valueTop.text = R.string.localizable.walletMigrateAcceptTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -50,13 +66,17 @@ private extension WalletMigrateAcceptViewController {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.genericActionView.actionButton.setTitle(R.string.localizable.walletMigrateAcceptButton(
+        rootView.genericActionView.actionButton.setTitle(R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         ))
     }
 
     @objc func actionAccept() {
         presenter.accept()
+    }
+
+    @objc func actionSkip() {
+        presenter.skip()
     }
 }
 

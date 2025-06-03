@@ -20,7 +20,7 @@ struct LedgerWalletConfirmViewFactory {
     }
 
     static func createGenericView(
-        for model: SubstrateLedgerWalletModel,
+        for model: PolkadotLedgerWalletModel,
         flow: WalletCreationFlow
     ) -> ControllerBackedProtocol? {
         let interactor = GenericLedgerWalletConfirmInteractor(

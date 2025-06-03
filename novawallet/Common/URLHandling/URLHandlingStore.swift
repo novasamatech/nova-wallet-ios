@@ -5,6 +5,7 @@ enum URLHandlingPendingLink: Codable {
     case staking
     case governance(Referenda.ReferendumIndex)
     case dApp(URL)
+    case card(String?)
 }
 
 protocol URLHandlingStoreProtocol {
