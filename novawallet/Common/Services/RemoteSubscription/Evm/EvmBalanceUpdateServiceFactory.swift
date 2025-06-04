@@ -65,10 +65,14 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
             holder: holder,
             assetContracts: assetContracts,
             connection: connection,
-            repository: AnyDataProviderRepository(repository),
+            updateHandler: EvmBalanceUpdatePersistentHandler(
+                repository: AnyDataProviderRepository(repository),
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue,
             blockNumber: blockNumber,
             queryMessageFactory: EvmQueryContractMessageFactory(),
+            workQueue: .global(),
             logger: logger,
             completion: completionClosure
         )
@@ -103,8 +107,12 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
             holder: holder,
             chainAssetId: chainAssetId,
             connection: connection,
-            repository: AnyDataProviderRepository(repository),
+            updateHandler: EvmBalanceUpdatePersistentHandler(
+                repository: AnyDataProviderRepository(repository),
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue,
+            workQueue: .global(),
             blockNumber: blockNumber,
             logger: logger,
             completion: completionClosure

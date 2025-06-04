@@ -466,6 +466,8 @@
 		0C3976B32C33BFB700998DD6 /* HydraPoolAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */; };
 		0C3AD3082DF04D3500387C0E /* AssetTypeExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */; };
 		0C3AD3092DF04D3500387C0E /* AssetTypeExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */; };
+		0C3AD30B2DF0767900387C0E /* EvmBalanceUpdateHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD30A2DF0767900387C0E /* EvmBalanceUpdateHandling.swift */; };
+		0C3AD30D2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AD30C2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift */; };
 		0C3B122B2DDB0C8D00A61597 /* URLHandlingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B122A2DDB0C8D00A61597 /* URLHandlingStore.swift */; };
 		0C3B12712DDC663400A61597 /* WalletMigrationService+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B126D2DDC663400A61597 /* WalletMigrationService+Protocol.swift */; };
 		0C3B128F2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B128E2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift */; };
@@ -6315,6 +6317,8 @@
 		0C3976B02C33ABA600998DD6 /* HydraXYKFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKFlowState.swift; sourceTree = "<group>"; };
 		0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraPoolAccountTests.swift; sourceTree = "<group>"; };
 		0C3AD3072DF04D3500387C0E /* AssetTypeExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTypeExtras.swift; sourceTree = "<group>"; };
+		0C3AD30A2DF0767900387C0E /* EvmBalanceUpdateHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdateHandling.swift; sourceTree = "<group>"; };
+		0C3AD30C2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdatePersistentHandler.swift; sourceTree = "<group>"; };
 		0C3B122A2DDB0C8D00A61597 /* URLHandlingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLHandlingStore.swift; sourceTree = "<group>"; };
 		0C3B126D2DDC663400A61597 /* WalletMigrationService+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletMigrationService+Protocol.swift"; sourceTree = "<group>"; };
 		0C3B128E2DDE315900A61597 /* CallbackBatchStorageSubscription+Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallbackBatchStorageSubscription+Alias.swift"; sourceTree = "<group>"; };
@@ -23289,6 +23293,8 @@
 				84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */,
 				84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */,
 				84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */,
+				0C3AD30A2DF0767900387C0E /* EvmBalanceUpdateHandling.swift */,
+				0C3AD30C2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -28744,6 +28750,7 @@
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
 				84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */,
 				849DEC6125EE13CE00C64C19 /* AddressOptionsPresentable.swift in Sources */,
+				0C3AD30B2DF0767900387C0E /* EvmBalanceUpdateHandling.swift in Sources */,
 				0CB4334E2CC1196400F2CB59 /* WeightableEdge.swift in Sources */,
 				84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */,
 				84F30EF1260001A600039D09 /* DataProviderChange+Helper.swift in Sources */,
@@ -29703,6 +29710,7 @@
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
 				2D8EFB282C0728BC00866F90 /* AccountConfirmViewLayout.swift in Sources */,
+				0C3AD30D2DF0772F00387C0E /* EvmBalanceUpdatePersistentHandler.swift in Sources */,
 				0CB313622C0F09B800353724 /* BaseBackupEnterPasswordInteractor.swift in Sources */,
 				842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */,
 				848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */,

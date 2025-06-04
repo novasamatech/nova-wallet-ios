@@ -44,8 +44,10 @@ final class WalletRemoteSubscription {
         unsubscribeClosure?()
         unsubscribeClosure = nil
     }
+}
 
-    private func subscribeNativeBalance(
+private extension WalletRemoteSubscription {
+    func subscribeNativeBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset,
         callbackQueue: DispatchQueue,
@@ -93,7 +95,7 @@ final class WalletRemoteSubscription {
         }
     }
 
-    private func prepareAssetsBalanceRequests(
+    func prepareAssetsBalanceRequests(
         accountId: AccountId,
         extras: StatemineAssetExtras
     ) -> [BatchStorageSubscriptionRequest] {
@@ -128,7 +130,7 @@ final class WalletRemoteSubscription {
         ]
     }
 
-    private func subscribeAssetsAccountBalance(
+    func subscribeAssetsAccountBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset,
         extras: StatemineAssetExtras,
@@ -170,7 +172,7 @@ final class WalletRemoteSubscription {
         subscription.subscribe()
     }
 
-    private func subscribeOrmlAccountBalance(
+    func subscribeOrmlAccountBalance(
         for accountId: AccountId,
         chainAsset: ChainAsset,
         currencyId: Data,
@@ -220,6 +222,13 @@ final class WalletRemoteSubscription {
             subscription.unsubscribe()
         }
     }
+
+    func subscribeERC20Balance(
+        for _: AccountId,
+        chainAsset _: ChainAsset,
+        callbackQueue _: DispatchQueue,
+        callbackClosure _: @escaping WalletRemoteSubscriptionClosure
+    ) {}
 }
 
 extension WalletRemoteSubscription: WalletRemoteSubscriptionProtocol {
@@ -265,10 +274,13 @@ extension WalletRemoteSubscription: WalletRemoteSubscriptionProtocol {
                         callbackQueue.async { callbackClosure(.failure(error)) }
                     }
                 },
-                evmHandler: { _ in
-                    callbackQueue.async {
-                        callbackClosure(.failure(WalletRemoteQueryWrapperFactoryError.unsupported))
-                    }
+                evmHandler: { contractAddress in
+                    self.subscribeERC20Balance(
+                        for: contractAddress,
+                        chainAsset: chainAsset,
+                        callbackQueue: callbackQueue,
+                        callbackClosure: callbackClosure
+                    )
                 },
                 evmNativeHandler: {
                     callbackQueue.async {

@@ -10,7 +10,7 @@ final class ERC20SubscriptionManager {
     let connection: JSONRPCEngine
     let logger: LoggerProtocol?
     let serviceFactory: EvmBalanceUpdateServiceFactoryProtocol
-    let eventCenter: EventCenterProtocol
+    let eventCenter: EventCenterProtocol?
 
     private var syncService: SyncServiceProtocol?
 
@@ -27,7 +27,7 @@ final class ERC20SubscriptionManager {
         params: ERC20BalanceSubscriptionRequest,
         serviceFactory: EvmBalanceUpdateServiceFactoryProtocol,
         connection: JSONRPCEngine,
-        eventCenter: EventCenterProtocol,
+        eventCenter: EventCenterProtocol?,
         logger: LoggerProtocol?
     ) {
         self.chainId = chainId
@@ -42,11 +42,15 @@ final class ERC20SubscriptionManager {
         unsubscribe()
     }
 
-    private func handleTransaction(for event: EventLog) {
+    private func handleTransactionIfNeeded(for event: EventLog) {
         params.transactionHistoryUpdater?.processERC20Transfer(event: event)
     }
 
-    private func notifyBalanceUpdate(for log: EventLog) {
+    private func notifyBalanceUpdateIfNeeded(for log: EventLog) {
+        guard let eventCenter else {
+            return
+        }
+
         let optAssetContract = params.contracts.first {
             let addressData = try? $0.contract.toEthereumAccountId()
             return addressData == log.address.addressData
@@ -75,7 +79,7 @@ final class ERC20SubscriptionManager {
             logProcessMutex.unlock()
         }
 
-        handleTransaction(for: eventLog)
+        handleTransactionIfNeeded(for: eventLog)
 
         guard eventLog.blockHash != processingBlockHash else {
             // we are already updating balance for current block
@@ -106,7 +110,7 @@ final class ERC20SubscriptionManager {
                 self?.processingBlockHash = nil
                 self?.syncService = nil
 
-                self?.notifyBalanceUpdate(for: eventLog)
+                self?.notifyBalanceUpdateIfNeeded(for: eventLog)
             }
 
             syncService?.setup()

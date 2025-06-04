@@ -71,7 +71,7 @@ extension EvmSubscriptionMessage {
         let blockNumber: BigUInt
 
         public init(from decoder: Decoder) throws {
-            var container = try decoder.container(keyedBy: CodingKeys.self)
+            let container = try decoder.container(keyedBy: CodingKeys.self)
 
             blockNumber = try container.decodeHex(BigUInt.self, forKey: .blockNumber)
         }
