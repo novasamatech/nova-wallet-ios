@@ -33,7 +33,7 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         from view: ControllerBackedProtocol?,
         initWallets: [ManagedMetaAccountModel]
     ) {
-        guard let proxiedsUpdatesView = ProxiedsUpdateViewFactory.createView(
+        guard let proxiedsUpdatesView = DelegatedAccountsUpdateViewFactory.createView(
             initWallets: initWallets
         ) else {
             return

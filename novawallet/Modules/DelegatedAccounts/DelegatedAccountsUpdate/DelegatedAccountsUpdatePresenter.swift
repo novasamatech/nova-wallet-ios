@@ -2,11 +2,11 @@ import Foundation
 import Operation_iOS
 import Foundation_iOS
 
-final class ProxiedsUpdatePresenter {
-    weak var view: ProxiedsUpdateViewProtocol?
-    let wireframe: ProxiedsUpdateWireframeProtocol
-    let interactor: ProxiedsUpdateInteractorInputProtocol
-    let viewModelsFactory: ProxiedsUpdateFactoryProtocol
+final class DelegatedAccountsUpdatePresenter {
+    weak var view: DelegatedAccountsUpdateViewProtocol?
+    let wireframe: DelegatedAccountsUpdateWireframeProtocol
+    let interactor: DelegatedAccountsUpdateInteractorInputProtocol
+    let viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol
     let logger: LoggerProtocol
     let applicationConfig: ApplicationConfigProtocol
 
@@ -18,10 +18,12 @@ final class ProxiedsUpdatePresenter {
         item1.order < item2.order
     }
 
+    private var currentMode: DelegatedAccountsUpdateMode = .proxied
+
     init(
-        interactor: ProxiedsUpdateInteractorInputProtocol,
-        wireframe: ProxiedsUpdateWireframeProtocol,
-        viewModelsFactory: ProxiedsUpdateFactoryProtocol,
+        interactor: DelegatedAccountsUpdateInteractorInputProtocol,
+        wireframe: DelegatedAccountsUpdateWireframeProtocol,
+        viewModelsFactory: DelegatedAccountsUpdateFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         initWallets: [ManagedMetaAccountModel],
@@ -47,20 +49,32 @@ final class ProxiedsUpdatePresenter {
         _ statuses: [DelegatedAccount.Status],
         wallets: [ManagedMetaAccountModel]
     ) -> [WalletView.ViewModel] {
-        viewModelsFactory.createViewModels(
-            for: wallets,
-            statuses: statuses,
-            chains: chains,
-            locale: selectedLocale
-        )
+        if currentMode == .proxied {
+            viewModelsFactory.createProxiedViewModels(
+                for: wallets,
+                statuses: statuses,
+                chains: chains,
+                locale: selectedLocale
+            )
+        } else {
+            viewModelsFactory.createMultisigViewModels(
+                for: wallets,
+                statuses: statuses,
+                chains: chains,
+                locale: selectedLocale
+            )
+        }
     }
 
     func preferredContentHeight() -> CGFloat {
-        let proxies = initWallets.compactMap {
-            $0.info.chainAccounts.first(where: { $0.proxy != nil })
+        let delegatedAccounts: [any DelegatedAccountProtocol] = if currentMode == .proxied {
+            initWallets.compactMap(\.info.proxy)
+        } else {
+            initWallets.compactMap(\.info.multisig)
         }
-        let newModelsCount = proxies.filter { $0.proxy?.status == .new }.count
-        let revokedModelsCount = proxies.filter { $0.proxy?.status == .revoked }.count
+
+        let newModelsCount = delegatedAccounts.filter { $0.status == .new }.count
+        let revokedModelsCount = delegatedAccounts.filter { $0.status == .revoked }.count
 
         return view?.preferredContentHeight(
             delegatedModelsCount: newModelsCount,
@@ -69,7 +83,7 @@ final class ProxiedsUpdatePresenter {
     }
 }
 
-extension ProxiedsUpdatePresenter: ProxiedsUpdatePresenterProtocol {
+extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProtocol {
     func setup() {
         interactor.setup()
     }
@@ -83,11 +97,20 @@ extension ProxiedsUpdatePresenter: ProxiedsUpdatePresenterProtocol {
             return
         }
 
-        wireframe.close(from: view, andPresent: applicationConfig.proxyWikiURL)
+        let url = currentMode == .proxied ?
+            applicationConfig.proxyWikiURL :
+            applicationConfig.proxyWikiURL
+
+        wireframe.close(from: view, andPresent: url)
+    }
+
+    func didSelectMode(_ mode: DelegatedAccountsUpdateMode) {
+        currentMode = mode
+        updateView()
     }
 }
 
-extension ProxiedsUpdatePresenter: ProxiedsUpdateInteractorOutputProtocol {
+extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdateInteractorOutputProtocol {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         walletsList.apply(changes: changes)
         updateView()
@@ -107,12 +130,12 @@ extension ProxiedsUpdatePresenter: ProxiedsUpdateInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceiveError(_ error: ProxiedsUpdateError) {
+    func didReceiveError(_ error: DelegatedAccountsUpdateError) {
         logger.error(error.localizedDescription)
     }
 }
 
-extension ProxiedsUpdatePresenter: Localizable {
+extension DelegatedAccountsUpdatePresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateView()

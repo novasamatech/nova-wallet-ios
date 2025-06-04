@@ -1,6 +1,11 @@
 import Operation_iOS
 
-protocol ProxiedsUpdateViewProtocol: ControllerBackedProtocol {
+enum DelegatedAccountsUpdateMode {
+    case proxied
+    case multisig
+}
+
+protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
     func didReceive(
         delegatedModels: [WalletView.ViewModel],
         revokedModels: [WalletView.ViewModel]
@@ -9,29 +14,32 @@ protocol ProxiedsUpdateViewProtocol: ControllerBackedProtocol {
         delegatedModelsCount: Int,
         revokedModelsCount: Int
     ) -> CGFloat
+
+    func switchMode(_ mode: DelegatedAccountsUpdateMode)
 }
 
-protocol ProxiedsUpdatePresenterProtocol: AnyObject {
+protocol DelegatedAccountsUpdatePresenterProtocol: AnyObject {
     func setup()
     func done()
     func showInfo()
+    func didSelectMode(_ mode: DelegatedAccountsUpdateMode)
 }
 
-protocol ProxiedsUpdateInteractorInputProtocol: AnyObject {
+protocol DelegatedAccountsUpdateInteractorInputProtocol: AnyObject {
     func setup()
 }
 
-protocol ProxiedsUpdateInteractorOutputProtocol: AnyObject {
+protocol DelegatedAccountsUpdateInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>])
     func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>])
-    func didReceiveError(_ error: ProxiedsUpdateError)
+    func didReceiveError(_ error: DelegatedAccountsUpdateError)
 }
 
-protocol ProxiedsUpdateWireframeProtocol: AnyObject, WebPresentable {
+protocol DelegatedAccountsUpdateWireframeProtocol: AnyObject, WebPresentable {
     func close(from view: ControllerBackedProtocol?)
     func close(from view: ControllerBackedProtocol?, andPresent url: URL)
 }
 
-enum ProxiedsUpdateError: Error {
+enum DelegatedAccountsUpdateError: Error {
     case subscription(Error)
 }
