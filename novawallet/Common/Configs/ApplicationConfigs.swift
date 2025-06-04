@@ -153,7 +153,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/feature/erc20-assets/chains/v22/chains_dev.json")!
         #endif
     }
 
@@ -178,7 +178,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v3/assets.json")!
         #else
             URL(
-                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/assets/evm/v3/assets_dev.json"
+                string: "https://raw.githubusercontent.com/novasamatech/nova-utils/refs/heads/feature/erc20-assets/assets/evm/v3/assets_dev.json"
             )!
         #endif
     }
