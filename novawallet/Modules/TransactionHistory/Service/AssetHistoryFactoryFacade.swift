@@ -59,7 +59,7 @@ final class AssetHistoryFacade {
             return nil
         }
 
-        guard let contractAddress = chainAsset.asset.typeExtras?.stringValue else {
+        guard let contractAddress = chainAsset.asset.evmContractAddress else {
             return nil
         }
 

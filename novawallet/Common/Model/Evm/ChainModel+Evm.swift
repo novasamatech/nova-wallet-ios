@@ -19,7 +19,7 @@ extension AssetModel {
             return nil
         }
 
-        return typeExtras?.stringValue
+        return typeExtras?.evmContractAddress
     }
 }
 
