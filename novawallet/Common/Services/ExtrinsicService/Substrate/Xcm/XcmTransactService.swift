@@ -39,15 +39,10 @@ extension XcmTransactService: XcmTransactServiceProtocol {
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Balance> {
         do {
-            let destinationChainId = destinationChainAsset.chain.chainId
-            let connection = try chainRegistry.getConnectionOrError(for: destinationChainId)
-            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: destinationChainId)
-
             let monitoringService = XcmDepositMonitoringService(
                 accountId: transferRequest.unweighted.destination.accountId,
                 chainAsset: destinationChainAsset,
-                connection: connection,
-                runtimeProvider: runtimeProvider,
+                chainRegistry: chainRegistry,
                 operationQueue: operationQueue,
                 workingQueue: workingQueue,
                 logger: logger

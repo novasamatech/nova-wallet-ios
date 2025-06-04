@@ -61,10 +61,10 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
         ) { [weak self] result in
             switch result {
             case let .success(hasChanges):
-                self?.complete(nil)
+                self?.completeImmediate(nil)
                 self?.completion?(hasChanges)
             case let .failure(error):
-                self?.complete(error)
+                self?.completeImmediate(error)
             }
         }
     }

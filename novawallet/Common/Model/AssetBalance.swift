@@ -179,4 +179,17 @@ extension AssetBalance {
             blocked: false
         )
     }
+
+    init(evmBalance: Balance, accountId: AccountId, chainAssetId: ChainAssetId) {
+        self.init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: evmBalance,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .regular,
+            blocked: false
+        )
+    }
 }

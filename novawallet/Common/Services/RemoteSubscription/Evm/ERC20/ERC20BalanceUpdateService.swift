@@ -64,10 +64,10 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.complete(nil)
+                self?.completeImmediate(nil)
                 self?.completion?()
             case let .failure(error):
-                self?.complete(error)
+                self?.completeImmediate(error)
             }
         }
     }

@@ -46,7 +46,7 @@ final class EvmNativeSubscriptionManager {
         guard let eventCenter else {
             return
         }
-        
+
         guard let accountId = try? params.holder.toAccountId(using: .ethereum) else {
             return
         }
@@ -159,5 +159,9 @@ final class EvmNativeSubscriptionManager {
 extension EvmNativeSubscriptionManager: EvmRemoteSubscriptionProtocol {
     func start() throws {
         try subscribe()
+    }
+
+    func stop() throws {
+        unsubscribe()
     }
 }

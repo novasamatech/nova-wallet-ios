@@ -35,14 +35,9 @@ private extension EvmBalanceUpdatePersistentHandler {
                 }
 
                 return AssetBalance(
-                    chainAssetId: chainAssetId,
+                    evmBalance: newBalance,
                     accountId: accountId,
-                    freeInPlank: newBalance,
-                    reservedInPlank: 0,
-                    frozenInPlank: 0,
-                    edCountMode: .basedOnFree,
-                    transferrableMode: .regular,
-                    blocked: false
+                    chainAssetId: chainAssetId
                 )
             }
         }, {

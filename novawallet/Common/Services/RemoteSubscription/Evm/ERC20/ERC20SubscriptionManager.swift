@@ -91,11 +91,13 @@ final class ERC20SubscriptionManager {
         syncService = nil
 
         do {
+            logger?.debug("Processing balance for log: \(eventLog)")
+
             syncService = try serviceFactory.createERC20BalanceUpdateService(
                 for: params.holder,
                 chainId: chainId,
                 assetContracts: params.contracts,
-                blockNumber: .latest
+                blockNumber: .exact(eventLog.blockNumber) // TODO: revert to last
             ) { [weak self] in
                 self?.logProcessMutex.lock()
 
@@ -195,5 +197,9 @@ final class ERC20SubscriptionManager {
 extension ERC20SubscriptionManager: EvmRemoteSubscriptionProtocol {
     func start() throws {
         try subscribe()
+    }
+
+    func stop() throws {
+        unsubscribe()
     }
 }
