@@ -297,8 +297,8 @@ extension AccountManagementViewController: AccountManagementViewProtocol {
         self.nameViewModel = nameViewModel
     }
 
-    func setProxy(viewModel: AccountProxyViewModel) {
-        rootView.headerView.hintView?.bindProxy(viewModel: viewModel)
+    func setDelegate(viewModel: AccountDelegateViewModel) {
+        rootView.headerView.hintView?.bindDelegate(viewModel: viewModel)
     }
 
     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel) {
