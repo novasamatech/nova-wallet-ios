@@ -2,9 +2,6 @@ import UIKit
 import Foundation_iOS
 
 final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder {
-    typealias RootViewType = DelegatedAccountsUpdateViewLayout
-    typealias DataSource = UITableViewDiffableDataSource<Section, Row>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
     private var currentMode: DelegatedAccountsUpdateMode = .proxied
 
@@ -32,29 +29,35 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setup()
+    }
+}
+
+// MARK: - Private
+
+private extension DelegatedAccountsUpdateViewController {
+    func setup() {
         setupTableView()
         setupDoneButton()
         setupSegmentedControl()
+        setupInfoContent()
         setupLocalization()
         presenter.setup()
     }
 
-    private func createDataSource() -> DataSource {
+    func setupInfoContent() {
+        let text = R.string.localizable.delegateUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
+        let link = R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.infoView.bind(text: text, link: link)
+        rootView.infoView.linkView.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
+    }
+
+    func createDataSource() -> DataSource {
         let dataSource = DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, model in
             guard let self else { return UITableViewCell() }
 
             switch model {
-            case .info:
-                let cell: ProxyInfoTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-
-                let text = R.string.localizable.delegateUpdatesHint(preferredLanguages: self.selectedLocale.rLanguages)
-                let link = R.string.localizable.commonLearnMore(preferredLanguages: self.selectedLocale.rLanguages)
-
-                cell.bind(text: text, link: link)
-                cell.actionButton.addTarget(self, action: #selector(self.didTapOnInfoButton), for: .touchUpInside)
-
-                return cell
-
             case let .delegated(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.bind(viewModel: viewModel)
@@ -73,20 +76,20 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
         return dataSource
     }
 
-    private func setupTableView() {
+    func setupTableView() {
         dataSource = createDataSource()
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
     }
 
-    private func setupDoneButton() {
+    func setupDoneButton() {
         let preferredLanguages = selectedLocale.rLanguages
         rootView.doneButton.imageWithTitleView?.title = R.string.localizable.commonDone(
             preferredLanguages: preferredLanguages)
         rootView.doneButton.addTarget(self, action: #selector(didTapOnDoneButton), for: .touchUpInside)
     }
 
-    private func setupSegmentedControl() {
+    func setupSegmentedControl() {
         rootView.segmentedControl.titles = [
             R.string.localizable.commonProxied(
                 preferredLanguages: selectedLocale.rLanguages
@@ -103,23 +106,26 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
         )
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         rootView.titleLabel.text = R.string.localizable.delegateUpdatesTitle(
             preferredLanguages: selectedLocale.rLanguages)
         rootView.doneButton.imageWithTitleView?.title = R.string.localizable.commonDone(
             preferredLanguages: selectedLocale.rLanguages)
-        rootView.tableView.reloadData()
+
+        let text = R.string.localizable.delegateUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
+        let link = R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages)
+        rootView.infoView.bind(text: text, link: link)
     }
 
-    @objc private func didTapOnDoneButton() {
+    @objc func didTapOnDoneButton() {
         presenter.done()
     }
 
-    @objc private func didTapOnInfoButton() {
+    @objc func didTapOnInfoButton() {
         presenter.showInfo()
     }
 
-    @objc private func segmentedControlValueChanged() {
+    @objc func segmentedControlValueChanged() {
         let selectedIndex = rootView.segmentedControl.selectedSegmentIndex
         let mode: DelegatedAccountsUpdateMode = selectedIndex == 0 ? .proxied : .multisig
         currentMode = mode
@@ -127,20 +133,21 @@ final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder 
     }
 }
 
+// MARK: - DelegatedAccountsUpdateViewProtocol
+
 extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProtocol {
     func didReceive(
         delegatedModels: [WalletView.ViewModel],
         revokedModels: [WalletView.ViewModel]
     ) {
         var snapshot = Snapshot()
-        snapshot.appendSections([.delegated, .revoked, .info])
+        snapshot.appendSections([.delegated, .revoked])
 
         let delegatedRows = delegatedModels.map { Row.delegated($0) }
         let revokedRows = revokedModels.map { Row.revoked($0) }
 
         snapshot.appendItems(delegatedRows, toSection: .delegated)
         snapshot.appendItems(revokedRows, toSection: .revoked)
-        snapshot.appendItems([.info], toSection: .info)
 
         dataSource?.apply(snapshot, animatingDifferences: false)
     }
@@ -149,15 +156,31 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
         delegatedModelsCount: Int,
         revokedModelsCount: Int
     ) -> CGFloat {
-        let tableViewTop = rootView.tableView.frame.origin.y
-        let doneButtonHeight = UIConstants.actionHeight
-        let doneButtonInset = UIConstants.actionBottomInset
+        let titleTopOffset = DelegatedAccountsUpdateViewLayout.Constants.titleTopOffset
+        let titleHeight: CGFloat = DelegatedAccountsUpdateViewLayout.Constants.titleHeight
+        let titleToInfoSpacing = DelegatedAccountsUpdateViewLayout.Constants.titleToInfoSpacing
+        let infoViewHeight: CGFloat = DelegatedAccountsUpdateViewLayout.Constants.infoHeight
+        let infoToSegmentedSpacing = DelegatedAccountsUpdateViewLayout.Constants.infoToSegmentedSpacing
+        let segmentControlHeight = DelegatedAccountsUpdateViewLayout.Constants.segmentedControlHeight
+        let segmentToTableViewSpacing = DelegatedAccountsUpdateViewLayout.Constants.segmentToListSpacing
+        let tableViewBottomOffset = DelegatedAccountsUpdateViewLayout.Constants.tableViewBottomOffset
+        let doneButtonHeight = DelegatedAccountsUpdateViewLayout.Constants.doneButtonHeight
+        let doneButtonBottomOffset = DelegatedAccountsUpdateViewLayout.Constants.doneButtonBottomOffset
         let tableCellHeight = Constants.tableCellHeight
+        let sectionHeaderHeight = Constants.sectionHeaderHeight
 
-        let rowsCount = max(delegatedModelsCount + revokedModelsCount + 1, 1) // add info row
-        let tableViewHeight = CGFloat(rowsCount) * tableCellHeight
+        var sectionsWithHeaders = 0
+        if delegatedModelsCount > 0 { sectionsWithHeaders += 1 }
+        if revokedModelsCount > 0 { sectionsWithHeaders += 1 }
 
-        return tableViewTop + tableViewHeight + doneButtonHeight + doneButtonInset
+        let rowsCount = delegatedModelsCount + revokedModelsCount
+        let tableViewHeight = CGFloat(rowsCount) * tableCellHeight + CGFloat(sectionsWithHeaders) * sectionHeaderHeight
+
+        let totalHeight = titleTopOffset + titleHeight + titleToInfoSpacing + infoViewHeight +
+            infoToSegmentedSpacing + segmentControlHeight + segmentToTableViewSpacing + tableViewHeight +
+            tableViewBottomOffset + doneButtonHeight + doneButtonBottomOffset + 40
+
+        return totalHeight
     }
 
     func switchMode(_ mode: DelegatedAccountsUpdateMode) {
@@ -166,37 +189,38 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
     }
 }
 
+// MARK: - UITableViewDelegate
+
 extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let sectionType = Section.allCases[section]
-        switch sectionType {
+    func tableView(
+        _: UITableView,
+        heightForHeaderInSection section: Int
+    ) -> CGFloat {
+        switch Section.allCases[section] {
         case .delegated where dataSource?.snapshot().itemIdentifiers(inSection: .delegated).isEmpty == true:
-            return 0
+            .zero
         case .revoked where dataSource?.snapshot().itemIdentifiers(inSection: .revoked).isEmpty == true:
-            return 0
-        case .info:
-            return 0
+            .zero
         default:
-            return Constants.sectionHeaderHeight
+            Constants.sectionHeaderHeight
         }
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(
+        _ tableView: UITableView,
+        viewForHeaderInSection section: Int
+    ) -> UIView? {
         let sectionType = Section.allCases[section]
 
-        let title: String
-
-        switch sectionType {
+        let title: String = switch sectionType {
         case .delegated:
-            title = R.string.localizable.delegateUpdatesWalletTypeMultisig(
+            R.string.localizable.delegateUpdatesWalletTypeMultisig(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .revoked:
-            title = R.string.localizable.delegateUpdatesRevoked(
+            R.string.localizable.delegateUpdatesRevoked(
                 preferredLanguages: selectedLocale.rLanguages
             )
-        case .info:
-            return nil
         }
 
         let headerView: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
@@ -204,7 +228,20 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
 
         return headerView
     }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        rootView.updateStickyContent(with: scrollView.contentOffset.y)
+    }
+
+    func tableView(
+        _: UITableView,
+        heightForRowAt _: IndexPath
+    ) -> CGFloat {
+        Constants.tableCellHeight
+    }
 }
+
+// MARK: - Localizable
 
 extension DelegatedAccountsUpdateViewController: Localizable {
     func applyLocalization() {
@@ -214,15 +251,19 @@ extension DelegatedAccountsUpdateViewController: Localizable {
     }
 }
 
+// MARK: - Types
+
 extension DelegatedAccountsUpdateViewController {
+    typealias RootViewType = DelegatedAccountsUpdateViewLayout
+    typealias DataSource = UITableViewDiffableDataSource<Section, Row>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
+
     enum Section: CaseIterable {
         case delegated
         case revoked
-        case info
     }
 
     enum Row: Hashable {
-        case info
         case delegated(WalletView.ViewModel)
         case revoked(WalletView.ViewModel)
     }

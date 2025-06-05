@@ -1,4 +1,5 @@
 import UIKit
+import UIKit_iOS
 import Foundation_iOS
 
 final class DelegatedAccountsUpdateViewFactory {
@@ -11,8 +12,6 @@ final class DelegatedAccountsUpdateViewFactory {
         )
 
         let wireframe = DelegatedAccountsUpdateWireframe()
-
-        let walletViewModelFactory = WalletAccountViewModelFactory()
 
         let viewModelsFactory = DelegatedAccountsUpdateFactory()
 
@@ -33,8 +32,11 @@ final class DelegatedAccountsUpdateViewFactory {
         presenter.view = view
         interactor.presenter = presenter
 
-        let preferredHeight = view.preferredContentHeight(delegatedModelsCount: 0, revokedModelsCount: 0)
-        view.preferredContentSize = CGSize(width: 0.0, height: preferredHeight)
+        let maxHeight = UIScreen.main.bounds.height * 0.925
+        let contentHeight = presenter.preferredContentHeight()
+        let preferredContentHeight = max(0, min(contentHeight, maxHeight))
+
+        view.preferredContentSize = CGSize(width: 0.0, height: preferredContentHeight)
 
         return view
     }

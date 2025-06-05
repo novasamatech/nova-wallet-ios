@@ -1,17 +1,23 @@
 import UIKit
+import SnapKit
 
 final class DelegatedAccountsUpdateViewLayout: UIView {
+    private var isSegmentedControlSticky = false
+
     let titleLabel: UILabel = .create {
         $0.apply(style: .bottomSheetTitle)
         $0.numberOfLines = 0
     }
 
+    let infoView = ProxyInfoView()
+
     var segmentedControl: RoundedSegmentedControl = .create { view in
         view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
         view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
+        view.titleFont = .regularSubheadline
         view.selectedTitleColor = R.color.colorTextPrimary()!
         view.titleColor = R.color.colorTextSecondary()!
+        view.backgroundView.cornerRadius = 12
     }
 
     lazy var tableView: UITableView = {
@@ -27,8 +33,14 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         view.sectionHeaderHeight = 0
         view.sectionFooterHeight = 0
         view.registerClassForCell(ProxyTableViewCell.self)
-        view.registerClassForCell(ProxyInfoTableViewCell.self)
         view.registerHeaderFooterView(withClass: SectionTextHeaderView.self)
+        view.contentInsetAdjustmentBehavior = .never
+        view.contentInset = .init(
+            top: Constants.tableViewContentInset,
+            left: .zero,
+            bottom: .zero,
+            right: .zero
+        )
         return view
     }()
 
@@ -36,28 +48,18 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         $0.applyDefaultStyle()
     }
 
-    // Container for sticky behavior
-    private let stickyContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = R.color.colorBottomSheetBackground()
-        return view
-    }()
+    let nonScrollableContainer: UIView = .create {
+        $0.backgroundColor = R.color.colorBottomSheetBackground()
+    }
 
-    // Header view that will be added to table view
-    private let tableHeaderView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
-
-    private var isSegmentedControlSticky = false
-    private var originalSegmentedControlFrame: CGRect = .zero
+    let clippingContainer: UIView = .create {
+        $0.clipsToBounds = true
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = R.color.colorBottomSheetBackground()
         setupLayout()
-        setupTableView()
     }
 
     @available(*, unavailable)
@@ -66,140 +68,86 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
     }
 
     private func setupLayout() {
-        // Add main components
-        addSubview(titleLabel)
-        addSubview(stickyContainer)
-        addSubview(tableView)
-        addSubview(doneButton)
+        addSubview(clippingContainer)
 
-        // Add segmented control to sticky container
-        stickyContainer.addSubview(segmentedControl)
+        clippingContainer.addSubview(tableView)
+        clippingContainer.addSubview(doneButton)
+        clippingContainer.addSubview(nonScrollableContainer)
 
-        // Title label constraints
+        nonScrollableContainer.addSubview(segmentedControl)
+        nonScrollableContainer.addSubview(titleLabel)
+        nonScrollableContainer.addSubview(infoView)
+
+        clippingContainer.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        nonScrollableContainer.snp.makeConstraints {
+            $0.leading.trailing.top.equalToSuperview()
+            $0.top.equalToSuperview().inset(0.0)
+        }
+
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(Constants.titleTopOffset)
             $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
-        // Sticky container constraints (initially below title)
-        stickyContainer.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(Constants.segmentedControlTopOffset)
-            $0.leading.trailing.equalToSuperview()
+        infoView.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(Constants.titleToInfoSpacing)
+            $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+        }
+
+        segmentedControl.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            $0.top.equalTo(infoView.snp.bottom).offset(Constants.infoToSegmentedSpacing)
+            $0.bottom.equalToSuperview()
             $0.height.equalTo(Constants.segmentedControlHeight)
         }
 
-        // Segmented control constraints within sticky container
-        segmentedControl.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            $0.height.equalTo(Constants.segmentedControlInnerHeight)
-        }
-
-        // Table view constraints (starts below segmented control)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(stickyContainer.snp.bottom)
-            $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(doneButton.snp.top)
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(doneButton.snp.top).offset(-Constants.tableViewBottomOffset)
         }
 
-        // Done button constraints
         doneButton.snp.makeConstraints {
-            $0.height.equalTo(UIConstants.actionHeight)
+            $0.height.equalTo(Constants.doneButtonHeight)
             $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(Constants.doneButtonBottomOffset)
         }
     }
 
-    private func setupTableView() {
-        // Create a header view that provides space for the segmented control
-        // when it's in sticky mode
-        tableHeaderView.frame = CGRect(x: 0, y: 0, width: 0, height: Constants.tableHeaderHeight)
-        tableView.tableHeaderView = tableHeaderView
+    func calculateTopContentBehavior(with scrollViewOffset: CGFloat) -> TopContentBehavior {
+        let containerInitialBottomY = nonScrollableContainer.bounds.height
 
-        // Set up scroll view delegate to handle sticky behavior
-        tableView.delegate = self
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        // Store the original frame for calculations
-        if originalSegmentedControlFrame == .zero {
-            originalSegmentedControlFrame = stickyContainer.frame
+        guard scrollViewOffset <= containerInitialBottomY else {
+            return .fixed
         }
-    }
 
-    private func updateStickyBehavior() {
-        let scrollOffset = tableView.contentOffset.y
-        let headerHeight = Constants.tableHeaderHeight
+        let topContentOffsetValue = containerInitialBottomY - scrollViewOffset
 
-        // Calculate when segmented control should become sticky
-        // This happens when the user scrolls past the header area
-        let shouldBeSticky = scrollOffset > -headerHeight
+        let maxY = containerInitialBottomY - Constants.segmentedControlHeight
+        let canMoveContent = (topContentOffsetValue <= maxY)
 
-        if shouldBeSticky != isSegmentedControlSticky {
-            isSegmentedControlSticky = shouldBeSticky
-            updateStickyConstraints()
-        }
-    }
-
-    private func updateStickyConstraints() {
-        if isSegmentedControlSticky {
-            // Make segmented control stick to safe area top
-            stickyContainer.snp.remakeConstraints {
-                $0.top.equalTo(safeAreaLayoutGuide.snp.top)
-                $0.leading.trailing.equalToSuperview()
-                $0.height.equalTo(Constants.segmentedControlHeight)
-            }
-
-            // Add shadow to indicate sticky state
-            stickyContainer.layer.shadowColor = UIColor.black.cgColor
-            stickyContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
-            stickyContainer.layer.shadowRadius = 4
-            stickyContainer.layer.shadowOpacity = 0.1
-
-            // Adjust table view top constraint to account for sticky segmented control
-            tableView.snp.remakeConstraints {
-                $0.top.equalTo(stickyContainer.snp.bottom)
-                $0.leading.trailing.equalToSuperview()
-                $0.bottom.equalTo(doneButton.snp.top)
-            }
-
+        if canMoveContent {
+            return .moving(minY: topContentOffsetValue)
         } else {
-            // Return to normal position
-            stickyContainer.snp.remakeConstraints {
-                $0.top.equalTo(titleLabel.snp.bottom).offset(Constants.segmentedControlTopOffset)
-                $0.leading.trailing.equalToSuperview()
-                $0.height.equalTo(Constants.segmentedControlHeight)
-            }
-
-            // Remove shadow
-            stickyContainer.layer.shadowOpacity = 0
-
-            // Return table view to original position
-            tableView.snp.remakeConstraints {
-                $0.top.equalTo(stickyContainer.snp.bottom)
-                $0.leading.trailing.equalToSuperview()
-                $0.bottom.equalTo(doneButton.snp.top)
-            }
-        }
-
-        UIView.animate(withDuration: 0.2) {
-            self.layoutIfNeeded()
+            return .fixed
         }
     }
-}
 
-// MARK: - UITableViewDelegate
+    func updateStickyContent(with scrollViewOffset: CGFloat) {
+        let realOffset = -scrollViewOffset
 
-extension DelegatedAccountsUpdateViewLayout: UITableViewDelegate {
-    func scrollViewDidScroll(_: UIScrollView) {
-        updateStickyBehavior()
-    }
+        let topContentBehavior = calculateTopContentBehavior(with: realOffset)
 
-    func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
-        // This will be implemented by the view controller
-        UITableView.automaticDimension
+        switch topContentBehavior {
+        case let .moving(minY):
+            nonScrollableContainer.snp.updateConstraints {
+                $0.top.equalToSuperview().inset(-minY)
+            }
+        case .fixed:
+            return
+        }
     }
 }
 
@@ -207,10 +155,23 @@ extension DelegatedAccountsUpdateViewLayout: UITableViewDelegate {
 
 extension DelegatedAccountsUpdateViewLayout {
     enum Constants {
-        static let titleTopOffset: CGFloat = 16
-        static let segmentedControlTopOffset: CGFloat = 20
-        static let segmentedControlHeight: CGFloat = 56
-        static let segmentedControlInnerHeight: CGFloat = 32
-        static let tableHeaderHeight: CGFloat = 8 // Small space for the table header
+        static let titleTopOffset: CGFloat = 10
+        static let titleToInfoSpacing: CGFloat = 10
+        static let infoToSegmentedSpacing: CGFloat = 8
+        static let segmentToListSpacing: CGFloat = 8
+        static let infoHeight: CGFloat = 94
+        static let titleHeight: CGFloat = 22
+        static let segmentedControlHeight: CGFloat = 40
+        static let tableViewBottomOffset: CGFloat = 16
+        static let doneButtonHeight: CGFloat = 52
+        static let doneButtonBottomOffset: CGFloat = 16
+        static let tableViewContentInset: CGFloat = 165
+    }
+}
+
+extension DelegatedAccountsUpdateViewLayout {
+    enum TopContentBehavior {
+        case fixed
+        case moving(minY: CGFloat)
     }
 }
