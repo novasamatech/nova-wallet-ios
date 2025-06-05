@@ -8,11 +8,13 @@ enum DelegatedAccountsUpdateMode {
 protocol DelegatedAccountsUpdateViewProtocol: ControllerBackedProtocol {
     func didReceive(
         delegatedModels: [WalletView.ViewModel],
-        revokedModels: [WalletView.ViewModel]
+        revokedModels: [WalletView.ViewModel],
+        shouldShowSegmentedControl: Bool
     )
     func preferredContentHeight(
         delegatedModelsCount: Int,
-        revokedModelsCount: Int
+        revokedModelsCount: Int,
+        shouldShowSegmentedControl: Bool
     ) -> CGFloat
 
     func switchMode(_ mode: DelegatedAccountsUpdateMode)

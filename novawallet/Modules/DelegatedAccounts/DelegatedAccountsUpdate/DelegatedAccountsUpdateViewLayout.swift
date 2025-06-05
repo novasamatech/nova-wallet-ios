@@ -33,12 +33,7 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         view.registerClassForCell(ProxyTableViewCell.self)
         view.registerHeaderFooterView(withClass: SectionTextHeaderView.self)
         view.contentInsetAdjustmentBehavior = .never
-        view.contentInset = .init(
-            top: Constants.tableViewContentInset,
-            left: .zero,
-            bottom: .zero,
-            right: .zero
-        )
+
         return view
     }()
 
@@ -53,6 +48,8 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
     let clippingContainer: UIView = .create {
         $0.clipsToBounds = true
     }
+
+    var segmentedControlVisible: Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -114,16 +111,59 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         }
     }
 
-    func calculateTopContentBehavior(with scrollViewOffset: CGFloat) -> TopContentBehavior {
-        let containerInitialBottomY = nonScrollableContainer.bounds.height
+    func updateSegmentedControlVisibility(_ shouldShow: Bool) {
+        segmentedControlVisible = shouldShow
+        segmentedControl.isHidden = !shouldShow
 
-        guard scrollViewOffset <= containerInitialBottomY else {
+        if shouldShow {
+            segmentedControl.snp.remakeConstraints {
+                $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+                $0.top.equalTo(infoView.snp.bottom).offset(Constants.infoToSegmentedSpacing)
+                $0.bottom.equalToSuperview()
+                $0.height.equalTo(Constants.segmentedControlHeight)
+            }
+        } else {
+            nonScrollableContainer.snp.remakeConstraints {
+                $0.leading.trailing.top.equalToSuperview()
+                $0.bottom.equalTo(infoView.snp.bottom)
+            }
+        }
+
+        updateTableViewContentInset()
+
+        layoutIfNeeded()
+    }
+
+    private func updateTableViewContentInset() {
+        let contentInset = segmentedControlVisible
+            ? Constants.tableViewContentInset
+            : Constants.tableViewContentInsetWithoutSegmented
+
+        tableView.contentInset = .init(
+            top: contentInset,
+            left: .zero,
+            bottom: .zero,
+            right: .zero
+        )
+        tableView.reloadData()
+    }
+
+    func calculateTopContentBehavior(
+        with scrollViewOffset: CGFloat,
+        _ segmentedControlVisibile: Bool
+    ) -> TopContentBehavior {
+        let containerHeight = nonScrollableContainer.bounds.height
+
+        guard scrollViewOffset <= containerHeight else {
             return .fixed
         }
 
-        let topContentOffsetValue = containerInitialBottomY - scrollViewOffset
+        let topContentOffsetValue = containerHeight - scrollViewOffset
 
-        let maxY = containerInitialBottomY - Constants.segmentedControlHeight
+        let maxY = segmentedControlVisibile
+            ? containerHeight - Constants.segmentedControlHeight
+            : containerHeight
+
         let canMoveContent = (topContentOffsetValue <= maxY)
 
         if canMoveContent {
@@ -133,10 +173,16 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         }
     }
 
-    func updateStickyContent(with scrollViewOffset: CGFloat) {
+    func updateStickyContent(
+        with scrollViewOffset: CGFloat,
+        segmentedControlVisibile: Bool
+    ) {
         let realOffset = -scrollViewOffset
 
-        let topContentBehavior = calculateTopContentBehavior(with: realOffset)
+        let topContentBehavior = calculateTopContentBehavior(
+            with: realOffset,
+            segmentedControlVisibile
+        )
 
         switch topContentBehavior {
         case let .moving(minY):
@@ -164,6 +210,7 @@ extension DelegatedAccountsUpdateViewLayout {
         static let doneButtonHeight: CGFloat = 52
         static let doneButtonBottomOffset: CGFloat = 16
         static let tableViewContentInset: CGFloat = 165
+        static let tableViewContentInsetWithoutSegmented: CGFloat = 115
     }
 }
 

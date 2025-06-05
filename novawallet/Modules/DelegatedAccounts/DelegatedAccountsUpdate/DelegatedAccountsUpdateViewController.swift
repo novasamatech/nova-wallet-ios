@@ -4,6 +4,7 @@ import Foundation_iOS
 final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder {
     private var dataSource: DataSource?
     private var currentMode: DelegatedAccountsUpdateMode = .proxied
+    private var isSegmentedControlVisible: Bool = false
 
     let presenter: DelegatedAccountsUpdatePresenterProtocol
 
@@ -123,6 +124,11 @@ private extension DelegatedAccountsUpdateViewController {
         rootView.infoView.bind(text: text, link: link)
     }
 
+    func updateSegmentedControlVisibility(_ shouldShow: Bool) {
+        isSegmentedControlVisible = shouldShow
+        rootView.updateSegmentedControlVisibility(shouldShow)
+    }
+
     @objc func didTapOnDoneButton() {
         presenter.done()
     }
@@ -144,8 +150,11 @@ private extension DelegatedAccountsUpdateViewController {
 extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProtocol {
     func didReceive(
         delegatedModels: [WalletView.ViewModel],
-        revokedModels: [WalletView.ViewModel]
+        revokedModels: [WalletView.ViewModel],
+        shouldShowSegmentedControl: Bool
     ) {
+        updateSegmentedControlVisibility(shouldShowSegmentedControl)
+
         var snapshot = Snapshot()
         snapshot.appendSections([.delegated, .revoked])
 
@@ -160,7 +169,8 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
 
     func preferredContentHeight(
         delegatedModelsCount: Int,
-        revokedModelsCount: Int
+        revokedModelsCount: Int,
+        shouldShowSegmentedControl: Bool
     ) -> CGFloat {
         let titleTopOffset = DelegatedAccountsUpdateViewLayout.Constants.titleTopOffset
         let titleHeight: CGFloat = DelegatedAccountsUpdateViewLayout.Constants.titleHeight
@@ -182,9 +192,14 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
         let rowsCount = delegatedModelsCount + revokedModelsCount
         let tableViewHeight = CGFloat(rowsCount) * tableCellHeight + CGFloat(sectionsWithHeaders) * sectionHeaderHeight
 
-        let totalHeight = titleTopOffset + titleHeight + titleToInfoSpacing + infoViewHeight +
-            infoToSegmentedSpacing + segmentControlHeight + segmentToTableViewSpacing + tableViewHeight +
+        var totalHeight = titleTopOffset + titleHeight + titleToInfoSpacing + infoViewHeight + tableViewHeight +
             tableViewBottomOffset + doneButtonHeight + doneButtonBottomOffset + 40
+
+        if shouldShowSegmentedControl {
+            totalHeight += infoToSegmentedSpacing + segmentControlHeight + segmentToTableViewSpacing
+        } else {
+            totalHeight += segmentToTableViewSpacing
+        }
 
         return totalHeight
     }
@@ -236,7 +251,10 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        rootView.updateStickyContent(with: scrollView.contentOffset.y)
+        rootView.updateStickyContent(
+            with: scrollView.contentOffset.y,
+            segmentedControlVisibile: isSegmentedControlVisible
+        )
     }
 
     func tableView(

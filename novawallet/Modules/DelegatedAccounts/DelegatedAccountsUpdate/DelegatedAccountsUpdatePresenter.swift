@@ -49,9 +49,14 @@ final class DelegatedAccountsUpdatePresenter {
         let newModelsCount = delegatedAccounts.filter { $0.status == .new }.count
         let revokedModelsCount = delegatedAccounts.filter { $0.status == .revoked }.count
 
+        let hasProxied = !proxieds.isEmpty
+        let hasMultisig = !multisigs.isEmpty
+        let shouldShowSegmentedControl = hasProxied && hasMultisig
+
         return view?.preferredContentHeight(
             delegatedModelsCount: newModelsCount,
-            revokedModelsCount: revokedModelsCount
+            revokedModelsCount: revokedModelsCount,
+            shouldShowSegmentedControl: shouldShowSegmentedControl
         ) ?? 0
     }
 }
@@ -63,7 +68,24 @@ private extension DelegatedAccountsUpdatePresenter {
         let delegatedViewModels = viewModels([.new], wallets: walletsList.allItems)
         let revokedViewModels = viewModels([.revoked], wallets: walletsList.allItems)
 
-        view?.didReceive(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels)
+        let hasProxied = !initWallets.filter { $0.info.type == .proxied }.isEmpty
+        let hasMultisig = !initWallets.filter { $0.info.type == .multisig }.isEmpty
+        let shouldShowSegmentedControl = hasProxied && hasMultisig
+
+        if !shouldShowSegmentedControl {
+            if hasProxied {
+                currentMode = .proxied
+            } else if hasMultisig {
+                currentMode = .multisig
+            }
+            view?.switchMode(currentMode)
+        }
+
+        view?.didReceive(
+            delegatedModels: delegatedViewModels,
+            revokedModels: revokedViewModels,
+            shouldShowSegmentedControl: shouldShowSegmentedControl
+        )
     }
 
     func viewModels(
