@@ -8,14 +8,14 @@ protocol EvmBalanceUpdateServiceFactoryProtocol {
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 }
@@ -44,7 +44,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
@@ -70,7 +70,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
                 operationQueue: operationQueue
             ),
             operationQueue: operationQueue,
-            blockNumber: blockNumber,
+            block: block,
             queryMessageFactory: EvmQueryContractMessageFactory(),
             workQueue: .global(),
             logger: logger,
@@ -81,7 +81,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
@@ -113,7 +113,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
             ),
             operationQueue: operationQueue,
             workQueue: .global(),
-            blockNumber: blockNumber,
+            block: block,
             logger: logger,
             completion: completionClosure
         )

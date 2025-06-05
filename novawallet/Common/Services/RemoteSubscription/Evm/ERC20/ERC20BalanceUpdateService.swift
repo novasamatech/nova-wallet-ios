@@ -13,7 +13,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     let connection: JSONRPCEngine
     let updateHandler: EvmBalanceUpdateHandling
     let operationQueue: OperationQueue
-    let blockNumber: Core.BlockNumber
+    let block: EvmBalanceUpdateBlock
     let queryMessageFactory: EvmQueryContractMessageFactoryProtocol
     let completion: ERC20UpdateServiceCompletionClosure?
     let workQueue: DispatchQueue
@@ -27,7 +27,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         connection: JSONRPCEngine,
         updateHandler: EvmBalanceUpdateHandling,
         operationQueue: OperationQueue,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         queryMessageFactory: EvmQueryContractMessageFactoryProtocol,
         workQueue: DispatchQueue,
         logger: LoggerProtocol,
@@ -39,7 +39,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         self.updateHandler = updateHandler
         self.operationQueue = operationQueue
         self.workQueue = workQueue
-        self.blockNumber = blockNumber
+        self.block = block
         self.queryMessageFactory = queryMessageFactory
         self.completion = completion
 
@@ -52,7 +52,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         let wrapper = updateHandler.onBalanceUpdateWrapper(
             balances: balances,
             holder: holder,
-            block: blockNumber
+            block: block.updateDetectedAt
         )
 
         executeCancellable(
@@ -111,7 +111,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                     contractAddress: assetContract.contract
                 )
 
-                let params = EvmQueryMessage.Params(call: call, block: blockNumber)
+                let params = EvmQueryMessage.Params(call: call, block: block.fetchRequestedAt)
                 try connection.addBatchCallMethod(EvmQueryMessage.method, params: params, batchId: batchId)
             }
 

@@ -93,11 +93,16 @@ final class ERC20SubscriptionManager {
         do {
             logger?.debug("Processing balance for log: \(eventLog)")
 
+            let block = EvmBalanceUpdateBlock(
+                updateDetectedAt: .exact(eventLog.blockNumber),
+                fetchRequestedAt: .latest
+            )
+
             syncService = try serviceFactory.createERC20BalanceUpdateService(
                 for: params.holder,
                 chainId: chainId,
                 assetContracts: params.contracts,
-                blockNumber: .exact(eventLog.blockNumber) // TODO: revert to last
+                block: block
             ) { [weak self] in
                 self?.logProcessMutex.lock()
 
@@ -180,11 +185,16 @@ final class ERC20SubscriptionManager {
             return
         }
 
+        let block = EvmBalanceUpdateBlock(
+            updateDetectedAt: nil,
+            fetchRequestedAt: .latest
+        )
+
         syncService = try serviceFactory.createERC20BalanceUpdateService(
             for: params.holder,
             chainId: chainId,
             assetContracts: params.contracts,
-            blockNumber: .latest
+            block: block
         ) { [weak self] in
             self?.syncService = nil
             self?.performSubscription()

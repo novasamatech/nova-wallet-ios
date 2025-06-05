@@ -73,10 +73,15 @@ final class EvmNativeSubscriptionManager {
         syncService = nil
 
         do {
+            let block = EvmBalanceUpdateBlock(
+                updateDetectedAt: .exact(blockNumber),
+                fetchRequestedAt: .latest
+            )
+
             syncService = try serviceFactory.createNativeBalanceUpdateService(
                 for: params.holder,
                 chainAssetId: .init(chainId: chainId, assetId: params.assetId),
-                blockNumber: .latest
+                block: block
             ) { [weak self] hasChanges in
                 self?.logProcessMutex.lock()
 
@@ -143,10 +148,11 @@ final class EvmNativeSubscriptionManager {
     }
 
     private func subscribe() throws {
+        let block = EvmBalanceUpdateBlock(updateDetectedAt: nil, fetchRequestedAt: .latest)
         syncService = try serviceFactory.createNativeBalanceUpdateService(
             for: params.holder,
             chainAssetId: .init(chainId: chainId, assetId: params.assetId),
-            blockNumber: .latest
+            block: block
         ) { [weak self] _ in
             self?.syncService = nil
             self?.performSubscription()

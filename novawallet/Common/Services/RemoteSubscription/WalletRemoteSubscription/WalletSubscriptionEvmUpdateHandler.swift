@@ -23,7 +23,7 @@ final class WalletSubscriptionEvmUpdateHandler {
 }
 
 private extension WalletSubscriptionEvmUpdateHandler {
-    func createBlockHashWrapper(for block: Core.BlockNumber) -> CompoundOperationWrapper<Data?> {
+    func createBlockHashWrapper(for block: Core.BlockNumber?) -> CompoundOperationWrapper<Data?> {
         guard
             let blockNumberMapper,
             case let .exact(number) = block, let blockNumber = BlockNumber(exactly: number) else {
@@ -38,7 +38,7 @@ extension WalletSubscriptionEvmUpdateHandler: EvmBalanceUpdateHandling {
     func onBalanceUpdateWrapper(
         balances: [ChainAssetId: Balance],
         holder: AccountAddress,
-        block: Core.BlockNumber
+        block: Core.BlockNumber?
     ) -> CompoundOperationWrapper<Bool> {
         let blockHashWrapper = createBlockHashWrapper(for: block)
 

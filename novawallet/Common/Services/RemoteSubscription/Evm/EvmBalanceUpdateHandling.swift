@@ -6,6 +6,6 @@ protocol EvmBalanceUpdateHandling {
     func onBalanceUpdateWrapper(
         balances: [ChainAssetId: Balance],
         holder: AccountAddress,
-        block: Core.BlockNumber
+        block: Core.BlockNumber?
     ) -> CompoundOperationWrapper<Bool>
 }

@@ -25,7 +25,7 @@ extension WalletSubscriptionEvmBalanceServiceFactory: EvmBalanceUpdateServiceFac
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         let connection = try chainRegistry.getOneShotConnectionOrError(for: chainId)
@@ -36,7 +36,7 @@ extension WalletSubscriptionEvmBalanceServiceFactory: EvmBalanceUpdateServiceFac
             connection: connection,
             updateHandler: updateHandler,
             operationQueue: operationQueue,
-            blockNumber: blockNumber,
+            block: block,
             queryMessageFactory: EvmQueryContractMessageFactory(),
             workQueue: .global(),
             logger: logger,
@@ -47,7 +47,7 @@ extension WalletSubscriptionEvmBalanceServiceFactory: EvmBalanceUpdateServiceFac
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         let connection = try chainRegistry.getOneShotConnectionOrError(for: chainAssetId.chainId)
@@ -59,7 +59,7 @@ extension WalletSubscriptionEvmBalanceServiceFactory: EvmBalanceUpdateServiceFac
             updateHandler: updateHandler,
             operationQueue: operationQueue,
             workQueue: .global(),
-            blockNumber: blockNumber,
+            block: block,
             logger: logger,
             completion: completionClosure
         )

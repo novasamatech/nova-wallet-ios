@@ -14,7 +14,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
     let updateHandler: EvmBalanceUpdateHandling
     let operationQueue: OperationQueue
     let workQueue: DispatchQueue
-    let blockNumber: Core.BlockNumber
+    let block: EvmBalanceUpdateBlock
     let completion: EvmNativeUpdateServiceCompletionClosure?
 
     private var queryId: UInt16?
@@ -27,7 +27,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
         updateHandler: EvmBalanceUpdateHandling,
         operationQueue: OperationQueue,
         workQueue: DispatchQueue,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         logger: LoggerProtocol,
         completion: EvmNativeUpdateServiceCompletionClosure?
     ) {
@@ -37,7 +37,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
         self.updateHandler = updateHandler
         self.operationQueue = operationQueue
         self.workQueue = workQueue
-        self.blockNumber = blockNumber
+        self.block = block
         self.completion = completion
 
         super.init(logger: logger)
@@ -49,7 +49,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
         let wrapper = updateHandler.onBalanceUpdateWrapper(
             balances: [chainAssetId: balance],
             holder: holder,
-            block: blockNumber
+            block: block.updateDetectedAt
         )
 
         executeCancellable(
@@ -87,7 +87,7 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
 
     private func fetchBalance(for holder: AccountAddress) {
         do {
-            let params = EvmBalanceMessage.Params(holder: holder, block: blockNumber)
+            let params = EvmBalanceMessage.Params(holder: holder, block: block.fetchRequestedAt)
             queryId = try connection.callMethod(
                 EvmBalanceMessage.method,
                 params: params,
