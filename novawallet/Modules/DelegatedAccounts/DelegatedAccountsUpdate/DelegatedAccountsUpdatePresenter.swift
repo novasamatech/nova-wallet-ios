@@ -126,6 +126,7 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProt
             return
         }
 
+        // TODO: - Update to use the correct URL for multisig when wiki url is available
         let url = currentMode == .proxied ?
             applicationConfig.proxyWikiURL :
             applicationConfig.proxyWikiURL
