@@ -193,7 +193,7 @@ extension DelegatedAccountsUpdateViewController: DelegatedAccountsUpdateViewProt
         let tableViewHeight = CGFloat(rowsCount) * tableCellHeight + CGFloat(sectionsWithHeaders) * sectionHeaderHeight
 
         var totalHeight = titleTopOffset + titleHeight + titleToInfoSpacing + infoViewHeight + tableViewHeight +
-            tableViewBottomOffset + doneButtonHeight + doneButtonBottomOffset + 40
+            tableViewBottomOffset + doneButtonHeight + doneButtonBottomOffset
 
         if shouldShowSegmentedControl {
             totalHeight += infoToSegmentedSpacing + segmentControlHeight + segmentToTableViewSpacing
