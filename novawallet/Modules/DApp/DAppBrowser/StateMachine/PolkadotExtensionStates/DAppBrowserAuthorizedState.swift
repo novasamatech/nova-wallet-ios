@@ -100,23 +100,13 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             return
         }
 
-        guard
-            let accountId = try? payload.address.toAccountId(),
-            let addressPrefix = try? SS58AddressFactory().type(fromAddress: payload.address).uint16Value else {
+        guard let accountId = try? payload.address.toAccountId() else {
             let error = DAppBrowserStateError.unexpected(reason: "address format")
             stateMachine?.emit(error: error, nextState: self)
             return
         }
 
-        let chains = dataSource.chainStore.values.filter {
-            $0.addressPrefix == addressPrefix
-        }.sorted { $0.order < $1.order }
-
-        let maybeChain = chains.first { chain in
-            dataSource.wallet.fetch(for: chain.accountRequest())?.accountId == accountId
-        }
-
-        guard let chain = maybeChain else {
+        guard let chain = try? dataSource.resolveSignBytesChain(for: payload.address) else {
             let error = DAppBrowserStateError.unexpected(reason: "raw payload chain")
             stateMachine?.emit(error: error, nextState: self)
             return

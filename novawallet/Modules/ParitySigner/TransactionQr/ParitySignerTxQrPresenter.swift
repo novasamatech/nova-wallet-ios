@@ -84,7 +84,7 @@ final class ParitySignerTxQrPresenter {
                 view?.didReceiveQrFormat(viewModel: .new)
             case .extrinsicWithoutProof:
                 view?.didReceiveQrFormat(viewModel: .legacy)
-            case nil, .rawBytes:
+            case .rawBytes:
                 view?.didReceiveQrFormat(viewModel: .none)
             }
         } else {
