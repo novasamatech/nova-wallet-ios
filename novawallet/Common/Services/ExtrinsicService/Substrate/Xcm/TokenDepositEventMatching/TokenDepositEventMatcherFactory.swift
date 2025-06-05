@@ -25,12 +25,8 @@ enum TokenDepositEventMatcherFactory {
                     TokensPalletDepositEventMatcher(extras: extras, logger: logger)
                 ]
             }, evmHandler: { contractAccountId in
-                guard !chainAsset.chain.isPureEvm else {
-                    return nil
-                }
-
-                return [
-                    MoonbeamEvmMintedEventMatching(
+                [
+                    MoonbeamEvmMintedEventMatcher(
                         contractAccountId: contractAccountId,
                         logger: logger
                     )

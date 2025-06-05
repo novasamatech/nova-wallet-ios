@@ -3,7 +3,7 @@ import SubstrateSdk
 import web3swift
 import Core
 
-final class MoonbeamEvmMintedEventMatching: TokenDepositEventMatching {
+final class MoonbeamEvmMintedEventMatcher: TokenDepositEventMatching {
     let logger: LoggerProtocol
     let contractAccountId: AccountId
 

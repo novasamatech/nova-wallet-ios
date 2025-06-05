@@ -615,7 +615,7 @@
 		0C7104A82C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */; };
 		0C71D3EF2DF0D9820042134B /* WalletSubscriptionEvmBalanceServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3EE2DF0D9820042134B /* WalletSubscriptionEvmBalanceServiceFactory.swift */; };
 		0C71D3F12DF0DF310042134B /* EvmBlockToSubstrateHashMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F02DF0DF310042134B /* EvmBlockToSubstrateHashMapper.swift */; };
-		0C71D3F32DF0E9430042134B /* MoonbeamEvmMintedEventMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F22DF0E9430042134B /* MoonbeamEvmMintedEventMatching.swift */; };
+		0C71D3F32DF0E9430042134B /* MoonbeamEvmMintedEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F22DF0E9430042134B /* MoonbeamEvmMintedEventMatcher.swift */; };
 		0C71D3F62DF0E9AD0042134B /* MoonbeamEvmPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F52DF0E9AD0042134B /* MoonbeamEvmPallet.swift */; };
 		0C71D3F82DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F72DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift */; };
 		0C71D3FA2DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F92DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift */; };
@@ -6473,7 +6473,7 @@
 		0C7104A72C2D11EB00487E64 /* GenericLedgerTxConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericLedgerTxConfirmInteractor.swift; sourceTree = "<group>"; };
 		0C71D3EE2DF0D9820042134B /* WalletSubscriptionEvmBalanceServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSubscriptionEvmBalanceServiceFactory.swift; sourceTree = "<group>"; };
 		0C71D3F02DF0DF310042134B /* EvmBlockToSubstrateHashMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBlockToSubstrateHashMapper.swift; sourceTree = "<group>"; };
-		0C71D3F22DF0E9430042134B /* MoonbeamEvmMintedEventMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamEvmMintedEventMatching.swift; sourceTree = "<group>"; };
+		0C71D3F22DF0E9430042134B /* MoonbeamEvmMintedEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamEvmMintedEventMatcher.swift; sourceTree = "<group>"; };
 		0C71D3F52DF0E9AD0042134B /* MoonbeamEvmPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamEvmPallet.swift; sourceTree = "<group>"; };
 		0C71D3F72DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoonbeamEvmPallet+EventCodingPath.swift"; sourceTree = "<group>"; };
 		0C71D3F92DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoonbeamEvmPallet+Events.swift"; sourceTree = "<group>"; };
@@ -13782,7 +13782,7 @@
 				0CA7CEF72CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift */,
 				0CA7CEF92CE13126004328F2 /* TokenDepositEventMatcherFactory.swift */,
 				0C28DF262D22B90D0016DB8E /* NativeTokenDepositedEventMatcher.swift */,
-				0C71D3F22DF0E9430042134B /* MoonbeamEvmMintedEventMatching.swift */,
+				0C71D3F22DF0E9430042134B /* MoonbeamEvmMintedEventMatcher.swift */,
 			);
 			path = TokenDepositEventMatching;
 			sourceTree = "<group>";
@@ -28774,7 +28774,7 @@
 				84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */,
 				777DC2E12B2368EC0060CB2C /* ProxyType+title.swift in Sources */,
 				8460E71A284D3AF5002896E9 /* ParaStkMinDelegationParams.swift in Sources */,
-				0C71D3F32DF0E9430042134B /* MoonbeamEvmMintedEventMatching.swift in Sources */,
+				0C71D3F32DF0E9430042134B /* MoonbeamEvmMintedEventMatcher.swift in Sources */,
 				88C5F078297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift in Sources */,
 				84532D5D28E41D8500EF4ADC /* ConvictionVoting+StoragePath.swift in Sources */,
 				0C7CF4CA2BD36E480015DD45 /* CloudBackupServiceFacade.swift in Sources */,
