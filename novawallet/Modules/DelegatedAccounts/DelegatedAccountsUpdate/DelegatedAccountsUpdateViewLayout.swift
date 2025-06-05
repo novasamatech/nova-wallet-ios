@@ -61,8 +61,10 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func setupLayout() {
+private extension DelegatedAccountsUpdateViewLayout {
+    func setupLayout() {
         addSubview(clippingContainer)
 
         clippingContainer.addSubview(tableView)
@@ -111,30 +113,7 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         }
     }
 
-    func updateSegmentedControlVisibility(_ shouldShow: Bool) {
-        segmentedControlVisible = shouldShow
-        segmentedControl.isHidden = !shouldShow
-
-        if shouldShow {
-            segmentedControl.snp.remakeConstraints {
-                $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-                $0.top.equalTo(infoView.snp.bottom).offset(Constants.infoToSegmentedSpacing)
-                $0.bottom.equalToSuperview()
-                $0.height.equalTo(Constants.segmentedControlHeight)
-            }
-        } else {
-            nonScrollableContainer.snp.remakeConstraints {
-                $0.leading.trailing.top.equalToSuperview()
-                $0.bottom.equalTo(infoView.snp.bottom)
-            }
-        }
-
-        updateTableViewContentInset()
-
-        layoutIfNeeded()
-    }
-
-    private func updateTableViewContentInset() {
+    func updateTableViewContentInset() {
         let contentInset = segmentedControlVisible
             ? Constants.tableViewContentInset
             : Constants.tableViewContentInsetWithoutSegmented
@@ -171,6 +150,31 @@ final class DelegatedAccountsUpdateViewLayout: UIView {
         } else {
             return .fixed
         }
+    }
+}
+
+extension DelegatedAccountsUpdateViewLayout {
+    func updateSegmentedControlVisibility(_ shouldShow: Bool) {
+        segmentedControlVisible = shouldShow
+        segmentedControl.isHidden = !shouldShow
+
+        if shouldShow {
+            segmentedControl.snp.remakeConstraints {
+                $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+                $0.top.equalTo(infoView.snp.bottom).offset(Constants.infoToSegmentedSpacing)
+                $0.bottom.equalToSuperview()
+                $0.height.equalTo(Constants.segmentedControlHeight)
+            }
+        } else {
+            nonScrollableContainer.snp.remakeConstraints {
+                $0.leading.trailing.top.equalToSuperview()
+                $0.bottom.equalTo(infoView.snp.bottom)
+            }
+        }
+
+        updateTableViewContentInset()
+
+        layoutIfNeeded()
     }
 
     func updateStickyContent(
