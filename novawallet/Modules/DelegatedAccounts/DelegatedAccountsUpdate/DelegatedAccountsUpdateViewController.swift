@@ -233,8 +233,12 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
     ) -> UIView? {
         let sectionType = Section.allCases[section]
 
-        let title: String = switch sectionType {
-        case .delegated:
+        let title: String? = switch sectionType {
+        case .delegated where currentMode == .proxied:
+            R.string.localizable.delegateUpdatesWalletTypeProxied(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .delegated where currentMode == .multisig:
             R.string.localizable.delegateUpdatesWalletTypeMultisig(
                 preferredLanguages: selectedLocale.rLanguages
             )
@@ -242,7 +246,11 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
             R.string.localizable.delegateUpdatesRevoked(
                 preferredLanguages: selectedLocale.rLanguages
             )
+        default:
+            nil
         }
+
+        guard let title else { return nil }
 
         let headerView: SectionTextHeaderView = tableView.dequeueReusableHeaderFooterView()
         headerView.bind(text: title)
