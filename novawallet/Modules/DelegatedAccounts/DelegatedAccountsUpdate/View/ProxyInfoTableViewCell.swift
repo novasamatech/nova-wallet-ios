@@ -44,7 +44,7 @@ final class ProxyInfoView: GenericPairValueView<UILabel, GenericPairValueView<Li
         let textHeight = height(for: .regularFootnote, with: text)
         let linkHeight = height(for: .caption1, with: link)
 
-        return textHeight + 8 + linkHeight
+        return textHeight + 16 + linkHeight
     }
 
     private static func height(for font: UIFont?, with text: String) -> CGFloat {

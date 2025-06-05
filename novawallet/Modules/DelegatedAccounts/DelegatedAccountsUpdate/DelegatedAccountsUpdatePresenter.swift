@@ -38,14 +38,35 @@ final class DelegatedAccountsUpdatePresenter {
         self.localizationManager = localizationManager
     }
 
-    private func updateView() {
+    func preferredContentHeight() -> CGFloat {
+        let proxieds = initWallets.compactMap(\.info.proxy)
+        let multisigs = initWallets.compactMap(\.info.multisig)
+
+        let delegatedAccounts: [any DelegatedAccountProtocol] = proxieds.count > multisigs.count
+            ? proxieds
+            : multisigs
+
+        let newModelsCount = delegatedAccounts.filter { $0.status == .new }.count
+        let revokedModelsCount = delegatedAccounts.filter { $0.status == .revoked }.count
+
+        return view?.preferredContentHeight(
+            delegatedModelsCount: newModelsCount,
+            revokedModelsCount: revokedModelsCount
+        ) ?? 0
+    }
+}
+
+// MARK: - Private
+
+private extension DelegatedAccountsUpdatePresenter {
+    func updateView() {
         let delegatedViewModels = viewModels([.new], wallets: walletsList.allItems)
         let revokedViewModels = viewModels([.revoked], wallets: walletsList.allItems)
 
         view?.didReceive(delegatedModels: delegatedViewModels, revokedModels: revokedViewModels)
     }
 
-    private func viewModels(
+    func viewModels(
         _ statuses: [DelegatedAccount.Status],
         wallets: [ManagedMetaAccountModel]
     ) -> [WalletView.ViewModel] {
@@ -65,24 +86,9 @@ final class DelegatedAccountsUpdatePresenter {
             )
         }
     }
-
-    func preferredContentHeight() -> CGFloat {
-        let proxieds = initWallets.compactMap(\.info.proxy)
-        let multisigs = initWallets.compactMap(\.info.multisig)
-        
-        let delegatedAccounts: [any DelegatedAccountProtocol] = proxieds.count > multisigs.count
-            ? proxieds
-            : multisigs
-
-        let newModelsCount = delegatedAccounts.filter { $0.status == .new }.count
-        let revokedModelsCount = delegatedAccounts.filter { $0.status == .revoked }.count
-
-        return view?.preferredContentHeight(
-            delegatedModelsCount: newModelsCount,
-            revokedModelsCount: revokedModelsCount
-        ) ?? 0
-    }
 }
+
+// MARK: - DelegatedAccountsUpdatePresenterProtocol
 
 extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProtocol {
     func setup() {
@@ -111,6 +117,8 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdatePresenterProt
     }
 }
 
+// MARK: - DelegatedAccountsUpdateInteractorOutputProtocol
+
 extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdateInteractorOutputProtocol {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         walletsList.apply(changes: changes)
@@ -135,6 +143,8 @@ extension DelegatedAccountsUpdatePresenter: DelegatedAccountsUpdateInteractorOut
         logger.error(error.localizedDescription)
     }
 }
+
+// MARK: - Localizable
 
 extension DelegatedAccountsUpdatePresenter: Localizable {
     func applyLocalization() {

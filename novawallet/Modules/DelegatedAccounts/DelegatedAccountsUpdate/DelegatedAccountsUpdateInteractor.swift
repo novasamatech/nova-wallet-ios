@@ -15,8 +15,12 @@ final class DelegatedAccountsUpdateInteractor {
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.chainRegistry = chainRegistry
     }
+}
 
-    private func subscribeWallets() {
+// MARK: - Private
+
+private extension DelegatedAccountsUpdateInteractor {
+    func subscribeWallets() {
         walletsSubscription = subscribeAllWalletsProvider()
     }
 
@@ -27,12 +31,16 @@ final class DelegatedAccountsUpdateInteractor {
     }
 }
 
+// MARK: - DelegatedAccountsUpdateInteractorInputProtocol
+
 extension DelegatedAccountsUpdateInteractor: DelegatedAccountsUpdateInteractorInputProtocol {
     func setup() {
         subscribeWallets()
         subscribeChains()
     }
 }
+
+// MARK: - WalletListLocalStorageSubscriber
 
 extension DelegatedAccountsUpdateInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {

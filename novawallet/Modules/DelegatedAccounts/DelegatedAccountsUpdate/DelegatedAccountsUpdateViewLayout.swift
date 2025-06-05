@@ -157,7 +157,7 @@ extension DelegatedAccountsUpdateViewLayout {
     enum Constants {
         static let titleTopOffset: CGFloat = 10
         static let titleToInfoSpacing: CGFloat = 10
-        static let infoToSegmentedSpacing: CGFloat = 8
+        static let infoToSegmentedSpacing: CGFloat = 16
         static let segmentToListSpacing: CGFloat = 8
         static let infoHeight: CGFloat = 94
         static let titleHeight: CGFloat = 22

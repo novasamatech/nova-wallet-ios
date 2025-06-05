@@ -27,7 +27,7 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         )
     }
 
-    private func getProxiedUpdates(
+    private func getDelegatedAccountsUpdates(
         for changes: [DataProviderChange<ManagedMetaAccountModel>]
     ) -> [ManagedMetaAccountModel] {
         let oldWallets = walletsList.allItems.reduceToDict()
@@ -35,19 +35,20 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         return changes.compactMap { change in
             switch change {
             case let .insert(newWallet):
-                guard let proxy = newWallet.info.proxy else {
+                guard let delegationStatus = newWallet.info.delegatedAccountStatus() else {
                     return nil
                 }
 
-                return newWallet.info.type == .proxied && proxy.isNotActive ? newWallet : nil
+                return delegationStatus != .active ? newWallet : nil
             case let .update(newWallet):
-                guard newWallet.info.type == .proxied, let newProxy = newWallet.info.proxy else {
+                guard
+                    let oldStatus = oldWallets[newWallet.identifier]?.info.delegatedAccountStatus(),
+                    let newStatus = newWallet.info.delegatedAccountStatus()
+                else {
                     return nil
                 }
 
-                let oldProxy = oldWallets[newWallet.identifier]?.info.proxy
-
-                return newProxy.isNotActive && oldProxy?.status != newProxy.status ? newWallet : nil
+                return newStatus != .active && oldStatus != newStatus ? newWallet : nil
             case .delete:
                 return nil
             }
@@ -55,7 +56,7 @@ final class WalletSelectionPresenter: WalletsListPresenter {
     }
 
     override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
-        let proxiedUpdates = getProxiedUpdates(for: changes)
+        let delegatedAccountsUpdates = getDelegatedAccountsUpdates(for: changes)
 
         super.updateWallets(changes: changes)
 
@@ -63,8 +64,8 @@ final class WalletSelectionPresenter: WalletsListPresenter {
             return
         }
 
-        if !proxiedUpdates.isEmpty {
-            wireframe?.showProxiedsUpdates(from: baseView, initWallets: proxiedUpdates)
+        if !delegatedAccountsUpdates.isEmpty {
+            wireframe?.showDelegatesUpdates(from: baseView, initWallets: delegatedAccountsUpdates)
         }
     }
 }

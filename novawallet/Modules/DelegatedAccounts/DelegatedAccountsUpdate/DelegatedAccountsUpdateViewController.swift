@@ -49,14 +49,20 @@ private extension DelegatedAccountsUpdateViewController {
         let text = R.string.localizable.delegateUpdatesHint(preferredLanguages: selectedLocale.rLanguages)
         let link = R.string.localizable.commonLearnMore(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.infoView.bind(text: text, link: link)
-        rootView.infoView.linkView.actionButton.addTarget(self, action: #selector(didTapOnInfoButton), for: .touchUpInside)
+        rootView.infoView.bind(
+            text: text,
+            link: link
+        )
+
+        rootView.infoView.linkView.actionButton.addTarget(
+            self,
+            action: #selector(didTapOnInfoButton),
+            for: .touchUpInside
+        )
     }
 
     func createDataSource() -> DataSource {
-        let dataSource = DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, model in
-            guard let self else { return UITableViewCell() }
-
+        let dataSource = DataSource(tableView: rootView.tableView) { tableView, indexPath, model in
             switch model {
             case let .delegated(viewModel):
                 let cell: ProxyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
