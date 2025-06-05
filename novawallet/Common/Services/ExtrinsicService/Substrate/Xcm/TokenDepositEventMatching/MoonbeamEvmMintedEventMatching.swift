@@ -34,9 +34,7 @@ final class MoonbeamEvmMintedEventMatching: TokenDepositEventMatching {
 
             let topics = eventLog.topics.map(\.wrappedValue)
 
-            guard
-                eventLog.topics.count == 3,
-                contractAccountId == eventLog.address else {
+            guard contractAccountId == eventLog.address else {
                 return nil
             }
 
