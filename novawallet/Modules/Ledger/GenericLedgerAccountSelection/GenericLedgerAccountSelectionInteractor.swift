@@ -5,25 +5,19 @@ import SubstrateSdk
 final class GenericLedgerAccountSelectionInteractor {
     weak var presenter: GenericLedgerAccountSelectionInteractorOutputProtocol?
 
-    let requestFactory: StorageRequestFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
-    let deviceId: UUID
-    let ledgerApplication: GenericLedgerSubstrateApplicationProtocol
+    let accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol
     let operationQueue: OperationQueue
 
     let cancellableStore = CancellableCallStore()
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        deviceId: UUID,
-        ledgerApplication: GenericLedgerSubstrateApplicationProtocol,
-        requestFactory: StorageRequestFactoryProtocol,
+        accountFetchFactory: GenericLedgerAccountFetchFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.deviceId = deviceId
-        self.requestFactory = requestFactory
-        self.ledgerApplication = ledgerApplication
+        self.accountFetchFactory = accountFetchFactory
         self.operationQueue = operationQueue
     }
 
@@ -40,52 +34,6 @@ final class GenericLedgerAccountSelectionInteractor {
             self?.presenter?.didReceiveLedgerChain(changes: changes)
         }
     }
-
-    private func createAccountBalanceWrapper(
-        for chainAsset: ChainAsset,
-        index: UInt32,
-        runtimeProvider: RuntimeProviderProtocol,
-        connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<LedgerAccountAmount> {
-        let queryFactory = WalletRemoteQueryWrapperFactory(
-            requestFactory: requestFactory,
-            runtimeProvider: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
-        )
-
-        let accountFetchWrapper = ledgerApplication.getAccountWrapper(
-            for: deviceId,
-            index: index,
-            addressPrefix: SubstrateConstants.genericAddressPrefix,
-            displayVerificationDialog: false
-        )
-
-        let balanceFetchWrapper: CompoundOperationWrapper<AssetBalance>
-        balanceFetchWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let response = try accountFetchWrapper.targetOperation.extractNoCancellableResultData()
-            let accountId = try response.account.address.toAccountId()
-
-            return queryFactory.queryBalance(for: accountId, chainAsset: chainAsset)
-        }
-
-        balanceFetchWrapper.addDependency(wrapper: accountFetchWrapper)
-
-        let mappingOperation = ClosureOperation<LedgerAccountAmount> {
-            let balance = try balanceFetchWrapper.targetOperation.extractNoCancellableResultData()
-            let address = try accountFetchWrapper.targetOperation.extractNoCancellableResultData().account.address
-
-            return LedgerAccountAmount(address: address, amount: balance.totalInPlank)
-        }
-
-        mappingOperation.addDependency(balanceFetchWrapper.targetOperation)
-
-        return balanceFetchWrapper
-            .insertingHead(operations: accountFetchWrapper.allOperations)
-            .insertingTail(operation: mappingOperation)
-    }
 }
 
 extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelectionInteractorInputProtocol {
@@ -93,26 +41,13 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
         subscribeLedgerChains()
     }
 
-    func loadBalance(for chainAsset: ChainAsset, at index: UInt32) {
+    func loadAccounts(at index: UInt32, schemes: Set<HardwareWalletAddressScheme>) {
         cancellableStore.cancel()
 
-        let chain = chainAsset.chain
-
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            presenter?.didReceive(error: .accountBalanceFetch(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceive(error: .accountBalanceFetch(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        let wrapper = createAccountBalanceWrapper(
-            for: chainAsset,
+        let wrapper = accountFetchFactory.createAccountModel(
+            for: schemes,
             index: index,
-            runtimeProvider: runtimeProvider,
-            connection: connection
+            shouldConfirm: false
         )
 
         executeCancellable(
@@ -122,10 +57,10 @@ extension GenericLedgerAccountSelectionInteractor: GenericLedgerAccountSelection
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(accountBalance):
-                self?.presenter?.didReceive(accountBalance: accountBalance, at: index)
+            case let .success(model):
+                self?.presenter?.didReceive(account: model)
             case let .failure(error):
-                self?.presenter?.didReceive(error: .accountBalanceFetch(error))
+                self?.presenter?.didReceive(error: .accountFetchFailed(error))
             }
         }
     }

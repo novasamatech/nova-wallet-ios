@@ -2,32 +2,38 @@ import Operation_iOS
 
 protocol GenericLedgerAccountSelectionViewProtocol: ControllerBackedProtocol {
     func didClearAccounts()
-    func didAddAccount(viewModel: LedgerAccountViewModel)
+    func didAddAccount(viewModel: GenericLedgerAccountViewModel)
     func didStartLoading()
     func didStopLoading()
+    func didReceive(warningViewModel: TitleWithSubtitleViewModel, canLoadMore: Bool)
 }
 
 protocol GenericLedgerAccountSelectionPresenterProtocol: AnyObject {
     func setup()
-    func selectAccount(at index: Int)
+    func selectAccount(in section: Int)
+    func selectAddress(in section: Int, at index: Int)
     func loadNext()
 }
 
 protocol GenericLedgerAccountSelectionInteractorInputProtocol: AnyObject {
     func setup()
-    func loadBalance(for chainAsset: ChainAsset, at index: UInt32)
+    func loadAccounts(at index: UInt32, schemes: Set<HardwareWalletAddressScheme>)
 }
 
 protocol GenericLedgerAccountSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveLedgerChain(changes: [DataProviderChange<ChainModel>])
-    func didReceive(accountBalance: LedgerAccountAmount, at index: UInt32)
+    func didReceive(account: GenericLedgerAccountModel)
     func didReceive(error: GenericLedgerAccountInteractorError)
 }
 
-protocol GenericLedgerAccountSelectionWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
-    func showWalletCreate(from view: GenericLedgerAccountSelectionViewProtocol?, index: UInt32)
+protocol GenericLedgerAccountSelectionWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable, AddressOptionsPresentable {
+    func showWalletCreate(
+        from view: GenericLedgerAccountSelectionViewProtocol?,
+        model: GenericLedgerWalletConfirmModel
+    )
 }
 
-enum GenericLedgerAccountInteractorError: Error {
-    case accountBalanceFetch(Error)
+enum GenericLedgerAccountInteractorError {
+    case accountFetchFailed(Error)
 }

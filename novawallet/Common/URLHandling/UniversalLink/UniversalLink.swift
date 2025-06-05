@@ -14,6 +14,7 @@ enum UniversalLink {
         case staking
         case governance = "gov"
         case dApp = "dapp"
+        case card
     }
 
     enum GovScreen {
@@ -68,6 +69,12 @@ enum UniversalLink {
     enum DAppScreen {
         enum QueryKey {
             static let url = "url"
+        }
+    }
+
+    enum CardScreen {
+        enum QueryKey {
+            static let provider = "provider"
         }
     }
 }

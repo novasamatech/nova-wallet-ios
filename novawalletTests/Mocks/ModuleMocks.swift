@@ -14633,6 +14633,21 @@ import Operation_iOS
     
     
     
+     func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>? {
+        
+    return cuckoo_manager.call("actionForSection(_: Int) -> LocalizableResource<IconWithTitleViewModel>?",
+            parameters: (section),
+            escapingParameters: (section),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.actionForSection(section))
+        
+    }
+    
+    
+    
      func activateDetails(at indexPath: IndexPath)  {
         
     return cuckoo_manager.call("activateDetails(at: IndexPath)",
@@ -14658,6 +14673,21 @@ import Operation_iOS
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.selectItem(at: indexPath))
+        
+    }
+    
+    
+    
+     func activateActionInSection(_ section: Int)  {
+        
+    return cuckoo_manager.call("activateActionInSection(_: Int)",
+            parameters: (section),
+            escapingParameters: (section),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateActionInSection(section))
         
     }
     
@@ -14710,6 +14740,11 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "titleForSection(_: Int) -> LocalizableResource<String>?", parameterMatchers: matchers))
 	    }
 	    
+	    func actionForSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.ProtocolStubFunction<(Int), LocalizableResource<IconWithTitleViewModel>?> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "actionForSection(_: Int) -> LocalizableResource<IconWithTitleViewModel>?", parameterMatchers: matchers))
+	    }
+	    
 	    func activateDetails<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(IndexPath)> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "activateDetails(at: IndexPath)", parameterMatchers: matchers))
@@ -14718,6 +14753,11 @@ import Operation_iOS
 	    func selectItem<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(IndexPath)> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "selectItem(at: IndexPath)", parameterMatchers: matchers))
+	    }
+	    
+	    func activateActionInSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementPresenterProtocol.self, method: "activateActionInSection(_: Int)", parameterMatchers: matchers))
 	    }
 	    
 	    func finalizeName() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -14772,6 +14812,12 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
+	    func actionForSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.__DoNotUse<(Int), LocalizableResource<IconWithTitleViewModel>?> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return cuckoo_manager.verify("actionForSection(_: Int) -> LocalizableResource<IconWithTitleViewModel>?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func activateDetails<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.__DoNotUse<(IndexPath), Void> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return cuckoo_manager.verify("activateDetails(at: IndexPath)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -14781,6 +14827,12 @@ import Operation_iOS
 	    func selectItem<M1: Cuckoo.Matchable>(at indexPath: M1) -> Cuckoo.__DoNotUse<(IndexPath), Void> where M1.MatchedType == IndexPath {
 	        let matchers: [Cuckoo.ParameterMatcher<(IndexPath)>] = [wrap(matchable: indexPath) { $0 }]
 	        return cuckoo_manager.verify("selectItem(at: IndexPath)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func activateActionInSection<M1: Cuckoo.Matchable>(_ section: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: section) { $0 }]
+	        return cuckoo_manager.verify("activateActionInSection(_: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14830,6 +14882,12 @@ import Operation_iOS
     
     
     
+     func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>?  {
+        return DefaultValueRegistry.defaultValue(for: (LocalizableResource<IconWithTitleViewModel>?).self)
+    }
+    
+    
+    
      func activateDetails(at indexPath: IndexPath)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -14837,6 +14895,12 @@ import Operation_iOS
     
     
      func selectItem(at indexPath: IndexPath)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func activateActionInSection(_ section: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15456,6 +15520,21 @@ import Operation_iOS
     
     
     
+     func showAddGenericLedgerEvmAccounts(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)  {
+        
+    return cuckoo_manager.call("showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)",
+            parameters: (view, wallet),
+            escapingParameters: (view, wallet),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAddGenericLedgerEvmAccounts(from: view, wallet: wallet))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -15563,6 +15642,11 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddLedgerAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
+	    func showAddGenericLedgerEvmAccounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManagementViewProtocol?, MetaAccountModel)> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -15635,6 +15719,12 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
+	    func showAddGenericLedgerEvmAccounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.__DoNotUse<(AccountManagementViewProtocol?, MetaAccountModel), Void> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
+	        return cuckoo_manager.verify("showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -15700,6 +15790,12 @@ import Operation_iOS
     
     
      func showAddLedgerAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showAddGenericLedgerEvmAccounts(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

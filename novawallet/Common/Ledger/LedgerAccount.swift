@@ -1,15 +1,22 @@
 import Foundation
+import SubstrateSdk
 
-struct LedgerAccount: LedgerDecodable {
+protocol LedgerAccountProtocol: LedgerDecodable {
+    var address: AccountAddress { get }
+    var publicKey: Data { get }
+}
+
+struct LedgerSubstrateAccount: LedgerAccountProtocol {
+    static let publicKeySize = 32
+
     let address: AccountAddress
     let publicKey: Data
 
     init(ledgerData: Data) throws {
-        let publicKeySize = 32
-        publicKey = ledgerData.prefix(publicKeySize)
+        publicKey = ledgerData.prefix(Self.publicKeySize)
 
-        guard publicKey.count == publicKeySize else {
-            throw LedgerError.unexpectedData("No public key")
+        guard publicKey.count == Self.publicKeySize else {
+            throw LedgerError.unexpectedData("No substrate public key")
         }
 
         let accountAddressData = ledgerData.suffix(ledgerData.count - publicKey.count)
@@ -24,7 +31,27 @@ struct LedgerAccount: LedgerDecodable {
     }
 }
 
-struct LedgerAccountResponse {
-    let account: LedgerAccount
+struct LedgerEvmAccount: LedgerAccountProtocol, LedgerDecodable {
+    static let publicKeySize = 33
+
+    let address: AccountAddress
+    let publicKey: Data
+
+    init(ledgerData: Data) throws {
+        publicKey = ledgerData.prefix(Self.publicKeySize)
+
+        guard publicKey.count == Self.publicKeySize else {
+            throw LedgerError.unexpectedData("No evm public key")
+        }
+
+        address = try publicKey.ethereumAddressFromPublicKey().toAddress(using: .ethereum)
+    }
+}
+
+struct LedgerAccountResponse<A: LedgerAccountProtocol> {
+    let account: A
     let derivationPath: Data
 }
+
+typealias LedgerSubstrateAccountResponse = LedgerAccountResponse<LedgerSubstrateAccount>
+typealias LedgerEvmAccountResponse = LedgerAccountResponse<LedgerEvmAccount>
