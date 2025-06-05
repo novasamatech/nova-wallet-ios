@@ -2,8 +2,6 @@ import UIKit
 import SnapKit
 
 final class DelegatedAccountsUpdateViewLayout: UIView {
-    private var isSegmentedControlSticky = false
-
     let titleLabel: UILabel = .create {
         $0.apply(style: .bottomSheetTitle)
         $0.numberOfLines = 0
