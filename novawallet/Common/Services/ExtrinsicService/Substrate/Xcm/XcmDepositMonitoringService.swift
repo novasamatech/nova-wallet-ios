@@ -13,8 +13,7 @@ enum XcmDepositMonitoringServiceError: Error {
 }
 
 final class XcmDepositMonitoringService {
-    let connection: JSONRPCEngine
-    let runtimeProvider: RuntimeProviderProtocol
+    let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
@@ -35,8 +34,7 @@ final class XcmDepositMonitoringService {
         accountId: AccountId,
         chainAsset: ChainAsset,
         timeout: TimeInterval = 90,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
@@ -44,8 +42,7 @@ final class XcmDepositMonitoringService {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.timeout = timeout
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
+        self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
@@ -96,18 +93,40 @@ final class XcmDepositMonitoringService {
         scheduler?.notifyAfter(timeout)
     }
 
+    private func createCodingFactoryOperation() -> BaseOperation<RuntimeCoderFactoryProtocol> {
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainAsset.chain.chainId)
+
+            return runtimeProvider.fetchCoderFactoryOperation()
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    private func createBlockDetailsWrapper(for hash: Data) -> CompoundOperationWrapper<SubstrateBlockDetails> {
+        do {
+            let chainId = chainAsset.chain.chainId
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+            return blockEventsQueryFactory.queryBlockDetailsWrapper(
+                from: connection,
+                runtimeProvider: runtimeProvider,
+                blockHash: hash
+            )
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
     private func fetchBlockAndDetectDeposit(
         for hash: Data,
         accountId: AccountId,
         tokensDetector: XcmTokensArrivalDetecting
     ) {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        let codingFactoryOperation = createCodingFactoryOperation()
 
-        let blockDetailsWrapper = blockEventsQueryFactory.queryBlockDetailsWrapper(
-            from: connection,
-            runtimeProvider: runtimeProvider,
-            blockHash: hash
-        )
+        let blockDetailsWrapper = createBlockDetailsWrapper(for: hash)
 
         let matchingOperation = ClosureOperation<TokenDepositEvent?> {
             let blockDetails = try blockDetailsWrapper.targetOperation.extractNoCancellableResultData()
@@ -207,9 +226,9 @@ final class XcmDepositMonitoringService {
         }
 
         subscription = WalletRemoteSubscription(
-            runtimeProvider: runtimeProvider,
-            connection: connection,
-            operationQueue: operationQueue
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         subscription?.subscribeBalance(
