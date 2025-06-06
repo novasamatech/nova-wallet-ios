@@ -179,6 +179,7 @@ struct TransferConfirmOnChainViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             signingWrapper: signingWrapper,
             persistExtrinsicService: persistentExtrinsicService,
+            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue
@@ -252,6 +253,7 @@ struct TransferConfirmOnChainViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
+            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

@@ -159,6 +159,7 @@ struct TransferConfirmCrossChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
