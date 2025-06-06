@@ -33,7 +33,6 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         validationProviderFactory: EvmValidationProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -47,7 +46,6 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
             asset: asset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            persistenceFilter: persistenceFilter,
             operationQueue: operationQueue
         )
 
@@ -128,7 +126,7 @@ extension EvmOnChainTransferInteractor {
             transferType = .native
 
             continueSetup()
-        } else if let address = asset.typeExtras?.stringValue, (try? address.toEthereumAccountId()) != nil {
+        } else if let address = asset.evmContractAddress, (try? address.toEthereumAccountId()) != nil {
             transferType = .erc20(address)
 
             continueSetup()

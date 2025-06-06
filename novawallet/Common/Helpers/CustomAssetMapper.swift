@@ -8,7 +8,7 @@ struct CustomAssetMapper {
     }
 
     let type: String?
-    let typeExtras: JSON?
+    let typeExtras: AssetTypeExtras?
 
     func mapAssetWithExtras<T>(
         nativeHandler: () -> T,
@@ -40,7 +40,7 @@ struct CustomAssetMapper {
 
             return ormlHandler(wrappedExtras)
         case .evmAsset:
-            guard let contractAddress = typeExtras?.stringValue else {
+            guard let contractAddress = typeExtras?.evmContractAddress else {
                 throw MapperError.invalidJson(type)
             }
 

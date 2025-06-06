@@ -5,6 +5,7 @@ import Operation_iOS
 final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
 
     var submitionPresenter: TransferConfirmOnChainInteractorOutputProtocol? {
@@ -29,6 +30,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     ) {
         self.signingWrapper = signingWrapper
         self.persistExtrinsicService = persistExtrinsicService
+        self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
 
         super.init(
@@ -40,7 +42,6 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             validationProviderFactory: validationProviderFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            persistenceFilter: persistenceFilter,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

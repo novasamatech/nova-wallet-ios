@@ -48,7 +48,6 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         transferAggregationWrapperFactory: AssetTransferAggregationFactoryProtocol,
-        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -66,7 +65,6 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
             asset: asset,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            persistenceFilter: persistenceFilter,
             operationQueue: operationQueue
         )
 
