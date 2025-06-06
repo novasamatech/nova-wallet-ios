@@ -9,7 +9,7 @@ protocol ProxyOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         at blockHash: Data?
-    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxiedAccount]]>
+    ) -> CompoundOperationWrapper<[AccountId: [ProxiedAccount]]>
 }
 
 final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
@@ -18,7 +18,7 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         at blockHash: Data?
-    ) -> CompoundOperationWrapper<[ProxiedAccountId: [ProxiedAccount]]> {
+    ) -> CompoundOperationWrapper<[AccountId: [ProxiedAccount]]> {
         let request = UnkeyedRemoteStorageRequest(storagePath: Proxy.proxyList)
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -35,18 +35,28 @@ final class ProxyOperationFactory: ProxyOperationFactoryProtocol {
                 options: options
             )
 
-        let mapper = ClosureOperation<[ProxiedAccountId: [ProxiedAccount]]> {
+        let mapper = ClosureOperation<[AccountId: [ProxiedAccount]]> {
             let proxyResult = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
             return proxyResult.reduce(into: [AccountId: [ProxiedAccount]]()) { result, nextPart in
-                result[nextPart.key.accountId] = nextPart.value.definition.map {
-                    let proxyModel = ProxyAccount(
+                let proxies = nextPart.value.definition.map {
+                    ProxyAccount(
                         accountId: $0.proxy,
                         type: $0.proxyType,
                         delay: $0.delay
                     )
+                }
 
-                    return ProxiedAccount(accountId: nextPart.key.accountId, proxyAccount: proxyModel)
+                proxies.forEach { proxy in
+                    let proxied = ProxiedAccount(
+                        accountId: nextPart.key.accountId,
+                        proxyAccount: proxy
+                    )
+                    if let currentProxieds = result[proxy.accountId] {
+                        result[proxy.accountId] = currentProxieds + [proxied]
+                    } else {
+                        result[proxy.accountId] = [proxied]
+                    }
                 }
             }
         }

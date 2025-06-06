@@ -27,7 +27,9 @@ private extension MultisigMetaAccountFactory {
             wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId
         }
 
-        guard let signatoryWallet else { return nil }
+        guard let signatoryWallet else {
+            return nil
+        }
 
         let multisigModel = DelegatedAccount.MultisigAccountModel(
             accountId: discoveredMultisig.accountId,

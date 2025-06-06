@@ -9,8 +9,8 @@ protocol DelegatedAccountFetchOperationFactoryProtocol {
 }
 
 private struct DiscoveringAccountIds {
-    let possibleAccountIds: Set<AccountId>
-    let discoveredAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]]
+    let possibleAccountIds: [AccountId]
+    let discoveredAccounts: DelegatedAccountsByDelegate
 }
 
 final class ChainDelegatedAccountFetchOperationFactory {
@@ -64,29 +64,27 @@ private extension ChainDelegatedAccountFetchOperationFactory {
     func createDelegatedAccountsListWrapper(
         metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel],
         blockHash: Data?
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
+    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
         let source = accountSourceFactory.createSource(for: blockHash)
 
-        let accountsListWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
+        let accountsListWrapper: CompoundOperationWrapper<DelegatedAccountsByDelegate>
         accountsListWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-
+        ) {
             let metaAccounts = try metaAccountsClosure()
 
-            let possibleDelegatorAccountsList: [AccountId] = metaAccounts.compactMap { wallet in
+            let possibleDelegateAccountsList: [AccountId] = metaAccounts.compactMap { wallet in
                 guard !wallet.info.isDelegated() else { return nil }
 
                 return wallet.info.fetch(for: self.chainModel.accountRequest())?.accountId
             }
 
             let discoveringAccountIds = DiscoveringAccountIds(
-                possibleAccountIds: Set(possibleDelegatorAccountsList),
-                discoveredAccounts: [:]
+                possibleAccountIds: possibleDelegateAccountsList,
+                discoveredAccounts: []
             )
 
-            return createDiscoverAccountsWrapper(
+            return self.createDiscoverAccountsWrapper(
                 delegatedAccountsSource: source,
                 discoveringAccountIds: discoveringAccountIds
             )
@@ -96,14 +94,14 @@ private extension ChainDelegatedAccountFetchOperationFactory {
     }
 
     func createDiscoverAccountsWrapper(
-        delegatedAccountsSource: DelegatedAccountsRepositoryProtocol,
+        delegatedAccountsSource: DelegatedAccountsAggregatorProtocol,
         discoveringAccountIds: DiscoveringAccountIds
-    ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
+    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
         let accountsFetchWrapper = delegatedAccountsSource.fetchDelegatedAccountsWrapper(
             for: discoveringAccountIds.possibleAccountIds
         )
 
-        let resultWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
+        let resultWrapper: CompoundOperationWrapper<DelegatedAccountsByDelegate>
         resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -113,17 +111,20 @@ private extension ChainDelegatedAccountFetchOperationFactory {
                 .targetOperation
                 .extractNoCancellableResultData()
 
-            let discoveredAccountIds: Set<AccountId> = delegatedAccounts
-                .values
-                .reduce(into: []) { acc, accounts in
-                    accounts.forEach {
-                        acc.insert($0.accountId)
-                        acc.insert($0.delegateAccountId)
+            var discoveredAccountIds: [AccountId] = discoveringAccountIds.possibleAccountIds
+            var checkedAccountIds: Set<AccountId> = Set(discoveredAccountIds)
+
+            delegatedAccounts
+                .flatMap(\.accounts)
+                .forEach { account in
+                    if !checkedAccountIds.contains(account.accountId) {
+                        checkedAccountIds.insert(account.accountId)
+                        discoveredAccountIds.append(account.accountId)
                     }
                 }
 
             let updatedDiscoveringIds = DiscoveringAccountIds(
-                possibleAccountIds: discoveringAccountIds.possibleAccountIds.union(discoveredAccountIds),
+                possibleAccountIds: discoveredAccountIds,
                 discoveredAccounts: delegatedAccounts
             )
 
@@ -143,26 +144,22 @@ private extension ChainDelegatedAccountFetchOperationFactory {
     }
 
     func createChangesWrapper(
-        delegatedAccountsListWrapper: CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>,
+        delegatedAccountsListWrapper: CompoundOperationWrapper<DelegatedAccountsByDelegate>,
         metaAccountsClosure: @escaping () throws -> [ManagedMetaAccountModel],
         identityProxyFactory: IdentityProxyFactoryProtocol
     ) -> CompoundOperationWrapper<SyncChanges<ManagedMetaAccountModel>> {
         let identityWrapper = identityProxyFactory.createIdentityWrapperByAccountId(
             for: {
-                let discoveredAccounts = try delegatedAccountsListWrapper
-                    .targetOperation
-                    .extractNoCancellableResultData()
-
-                let allDiscoveredIds = discoveredAccounts
-                    .values
-                    .reduce(into: Set<AccountId>()) { acc, accounts in
-                        accounts.forEach {
-                            acc.insert($0.accountId)
-                            acc.insert($0.delegateAccountId)
+                Array(
+                    try delegatedAccountsListWrapper
+                        .targetOperation
+                        .extractNoCancellableResultData()
+                        .flatMap(\.accounts)
+                        .reduce(into: Set<AccountId>()) {
+                            $0.insert($1.accountId)
+                            $0.insert($1.delegateAccountId)
                         }
-                    }
-
-                return Array(allDiscoveredIds)
+                )
             }
         )
 

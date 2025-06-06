@@ -2,7 +2,7 @@ import Foundation
 
 protocol DelegatedAccountsChangesCalcualtorProtocol {
     func calculateUpdates(
-        from remoteDelegatedAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]],
+        from remoteDelegatedAccounts: DelegatedAccountsByDelegate,
         chainMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel>
@@ -47,7 +47,7 @@ private extension DelegatedAccountsChangesCalculator {
     }
 
     func calculateUpdates(
-        for delegatorAccountId: AccountId,
+        for delegateAccountId: AccountId,
         remoteDelegatedAccounts: [DiscoveredDelegatedAccountProtocol],
         localDelegatedAccounts: [DelegateIdentifier: ManagedMetaAccountModel],
         localMetaAccounts: [ManagedMetaAccountModel],
@@ -61,7 +61,7 @@ private extension DelegatedAccountsChangesCalculator {
         )
 
         let revokedAccounts = findRevokedAccounts(
-            for: delegatorAccountId,
+            for: delegateAccountId,
             updatedDelegatedAccounts: updatedMetaAccounts,
             localDelegatedAccounts: Array(localDelegatedAccounts.values)
         )
@@ -118,7 +118,7 @@ private extension DelegatedAccountsChangesCalculator {
     }
 
     func findRevokedAccounts(
-        for delegatorAccountId: AccountId,
+        for delegateAccountId: AccountId,
         updatedDelegatedAccounts: [ManagedMetaAccountModel],
         localDelegatedAccounts: [ManagedMetaAccountModel]
     ) -> [ManagedMetaAccountModel] {
@@ -126,7 +126,7 @@ private extension DelegatedAccountsChangesCalculator {
             .reduce(into: [:]) { acc, metaAccount in
                 guard
                     let delegationId = metaAccount.info.delegationId,
-                    delegationId.delegatorId == delegatorAccountId
+                    delegationId.delegateAccountId == delegateAccountId
                 else { return }
 
                 acc[delegationId] = metaAccount
@@ -164,28 +164,36 @@ private extension DelegatedAccountsChangesCalculator {
 
 extension DelegatedAccountsChangesCalculator: DelegatedAccountsChangesCalcualtorProtocol {
     func calculateUpdates(
-        from remoteDelegatedAccounts: [AccountId: [DiscoveredDelegatedAccountProtocol]],
+        from remoteDelegatedAccounts: DelegatedAccountsByDelegate,
         chainMetaAccounts: [ManagedMetaAccountModel],
         identities: [AccountId: AccountIdentity]
     ) throws -> SyncChanges<ManagedMetaAccountModel> {
         let localDelegatedAccounts = buildLocalDelegatedAccountsMap(from: chainMetaAccounts)
 
-        let delegatorAccountIds = Set(remoteDelegatedAccounts.keys)
-            .union(localDelegatedAccounts.keys.map(\.delegatorAccountId))
-
-        let changes = try delegatorAccountIds.map { delegatorAccountId in
-            try calculateUpdates(
-                for: delegatorAccountId,
-                remoteDelegatedAccounts: remoteDelegatedAccounts[delegatorAccountId] ?? [],
+        let updatedMetaAccounts = try remoteDelegatedAccounts.reduce(
+            chainMetaAccounts
+        ) { nextMetaAccounts, delegatedAccounts in
+            try processRemoteDelegatedAccounts(
+                delegatedAccounts.accounts,
                 localDelegatedAccounts: localDelegatedAccounts,
-                localMetaAccounts: chainMetaAccounts,
+                localMetaAccounts: nextMetaAccounts,
                 identities: identities
             )
         }
 
+        let revokedAccounts = remoteDelegatedAccounts
+            .map {
+                findRevokedAccounts(
+                    for: $0.delegate,
+                    updatedDelegatedAccounts: updatedMetaAccounts,
+                    localDelegatedAccounts: Array(localDelegatedAccounts.values)
+                )
+            }
+            .flatMap { $0 }
+
         return SyncChanges(
-            newOrUpdatedItems: changes.flatMap(\.newOrUpdatedItems),
-            removedItems: changes.flatMap(\.removedItems)
+            newOrUpdatedItems: updatedMetaAccounts + revokedAccounts,
+            removedItems: []
         )
     }
 }
