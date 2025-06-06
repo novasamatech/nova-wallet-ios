@@ -43,6 +43,7 @@ protocol ApplicationConfigProtocol {
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
     var proxyWikiURL: URL { get }
+    var multisigWikiURL: URL { get }
     var unifiedAddressWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
@@ -325,6 +326,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var proxyWikiURL: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
+    }
+
+    var multisigWikiURL: URL {
+        // TODO: - Update to use the correct URL for multisig when wiki url is available
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
