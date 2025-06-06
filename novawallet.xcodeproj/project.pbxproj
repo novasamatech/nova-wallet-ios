@@ -1750,6 +1750,10 @@
 		2DC08BE72DCCF9C600C690D4 /* Ethereum+Checksum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */; };
 		2DC304EC2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */; };
 		2DC694482DF2EEC7004F4584 /* AccountId+Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF26852849530E003EC78D /* AccountId+Dummy.swift */; };
+		2DC6944B2DF2EFEA004F4584 /* MultisigListLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC6944A2DF2EFEA004F4584 /* MultisigListLocalSubscriptionFactory.swift */; };
+		2DC6944D2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC6944C2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift */; };
+		2DC6944F2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC6944E2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift */; };
+		2DC694512DF2F0DB004F4584 /* MultisigAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC694502DF2F0DB004F4584 /* MultisigAccountMapper.swift */; };
 		2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		2DCC875D2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */; };
 		2DCC87602C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */; };
@@ -7673,6 +7677,10 @@
 		2DC075E22BF24AB400868563 /* CheckBoxIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxIconDetailsView.swift; sourceTree = "<group>"; };
 		2DC075E82BF4B97900868563 /* BackupAttentionTableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttentionTableTitleView.swift; sourceTree = "<group>"; };
 		2DC304EB2D2BF27A0020B0E6 /* ModalCardPresentationControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationControllerDelegate.swift; sourceTree = "<group>"; };
+		2DC6944A2DF2EFEA004F4584 /* MultisigListLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigListLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		2DC6944C2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigListLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
+		2DC6944E2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigListLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		2DC694502DF2F0DB004F4584 /* MultisigAccountMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigAccountMapper.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
 		2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTotalVotesFactory.swift; sourceTree = "<group>"; };
 		2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
@@ -16323,6 +16331,16 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2DC694492DF2EFDA004F4584 /* Multisig */ = {
+			isa = PBXGroup;
+			children = (
+				2DC6944A2DF2EFEA004F4584 /* MultisigListLocalSubscriptionFactory.swift */,
+				2DC6944C2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift */,
+				2DC6944E2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift */,
+			);
+			path = Multisig;
+			sourceTree = "<group>";
+		};
 		2DCC875E2C596C380028C3CA /* CloudBackupCreatePresenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -19816,6 +19834,7 @@
 				84CA68DE26BEAA0F003B9453 /* ChainModelMapper.swift */,
 				845B822026EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift */,
 				77DAFF6C2B297DB500D4220C /* ProxyAccountMapper.swift */,
+				2DC694502DF2F0DB004F4584 /* MultisigAccountMapper.swift */,
 				849A4EF9279ABC8800AB6709 /* AssetBalanceMapper.swift */,
 				88C017E528C60A65003B2D28 /* AssetLockMapper.swift */,
 				0C1998E12C49AD19000EBFB8 /* AssetHoldMapper.swift */,
@@ -23821,6 +23840,7 @@
 			isa = PBXGroup;
 			children = (
 				77DAFF692B297CF000D4220C /* Proxy */,
+				2DC694492DF2EFDA004F4584 /* Multisig */,
 				844CB56926F9C57D00396E13 /* WalletLocalStorageSubscriber.swift */,
 				844CB56B26F9C5C900396E13 /* WalletLocalSubscriptionHandler.swift */,
 				844CB56D26F9CB1500396E13 /* CrowdloanLocalStorageSubscriber.swift */,
@@ -29159,6 +29179,7 @@
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
 				84CFF1E826526FBC00DB7CF7 /* StakingBondMoreViewFactory.swift in Sources */,
 				8490147524A94A37008F705E /* RootWireframe.swift in Sources */,
+				2DC6944F2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift in Sources */,
 				778D979D2A24D21B002BA681 /* AssetsOperationViewLayout.swift in Sources */,
 				84F1CB3C27CF42B80095D523 /* NftListItemWithPriceCell.swift in Sources */,
 				84EE2FAB289120AF00A98816 /* WalletManageInteractor.swift in Sources */,
@@ -30477,6 +30498,7 @@
 				84D331AF2519E8080078D044 /* TriangularedView+Style.swift in Sources */,
 				0C13D2F52A7D2B440054BB6F /* DirectStakingRecommendationMediator.swift in Sources */,
 				0C93FB2A2B85E26A009EE2DD /* NFTClearService.swift in Sources */,
+				2DC6944D2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift in Sources */,
 				84C74365251E4D60009576C6 /* SigningWrapperProtocol.swift in Sources */,
 				88AF35DE28C21D28003730DA /* LocksSubscription.swift in Sources */,
 				8434B5FE298D2CC900FACF4C /* GovernanceBaseEditDelegationProtocols.swift in Sources */,
@@ -30799,6 +30821,7 @@
 				0C0F6E4C2D488E3800943A7C /* MythosStakingBaseState.swift in Sources */,
 				84953F682934C8A70033F47D /* EtherscanERC20HistoryInfo.swift in Sources */,
 				84CFF1EF26526FBC00DB7CF7 /* StakingBondMoreConfirmationPresenter.swift in Sources */,
+				2DC6944B2DF2EFEA004F4584 /* MultisigListLocalSubscriptionFactory.swift in Sources */,
 				0C21D7802AB432B100EB2DBD /* MainTabBarIndex.swift in Sources */,
 				8828F4F528AD2763009E0B7C /* BalanceViewModelFactoryFacade.swift in Sources */,
 				F4CE0FEE273452BF0094CD8A /* AcalaContributionConfirmViewFactory.swift in Sources */,
@@ -32341,6 +32364,7 @@
 				0C8FDBC02CB1001A00775D7F /* PayCardHook.swift in Sources */,
 				77C9BCCC2ACD576B00022EA2 /* SwapAssetsOperationProtocols.swift in Sources */,
 				F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */,
+				2DC694512DF2F0DB004F4584 /* MultisigAccountMapper.swift in Sources */,
 				77C9F7612B8455E10099A465 /* GovernanceNotificationsModel.swift in Sources */,
 				AC904E313DC15AE40C927946 /* DAppAddFavoriteInteractor.swift in Sources */,
 				006BEDBD2F98FF54DB993D8C /* DAppAddFavoriteViewController.swift in Sources */,
