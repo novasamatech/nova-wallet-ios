@@ -47,7 +47,7 @@ extension DelegatedAccountSourceFactory: DelegatedAccountSourceFactoryProtocol {
         let multisigRepository = MultisigAccountsRepository(chain: chain)
         sources.append(multisigRepository)
 
-        let repository = DelegatedAccountsRepository(
+        let repository = DelegatedAccountsAggregator(
             sources: sources,
             operationQueue: operationQueue
         )

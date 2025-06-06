@@ -15,7 +15,7 @@ protocol DelegatedAccountsAggregatorProtocol {
     ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate>
 }
 
-final class DelegatedAccountsRepository {
+final class DelegatedAccountsAggregator {
     private let sources: [DelegatedAccountsRepositoryProtocol]
     private let operationQueue: OperationQueue
 
@@ -28,7 +28,7 @@ final class DelegatedAccountsRepository {
     }
 }
 
-extension DelegatedAccountsRepository: DelegatedAccountsAggregatorProtocol {
+extension DelegatedAccountsAggregator: DelegatedAccountsAggregatorProtocol {
     func fetchDelegatedAccountsWrapper(
         for accountIds: [AccountId]
     ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
