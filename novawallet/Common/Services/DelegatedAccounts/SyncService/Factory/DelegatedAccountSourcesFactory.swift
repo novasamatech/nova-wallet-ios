@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 protocol DelegatedAccountSourceFactoryProtocol {
-    func createSource(for blockHash: Data?) -> DelegatedAccountsRepositoryProtocol
+    func createSource(for blockHash: Data?) -> DelegatedAccountsAggregatorProtocol
 }
 
 class DelegatedAccountSourceFactory {
@@ -27,7 +27,7 @@ class DelegatedAccountSourceFactory {
 // MARK: - DelegatedAccountSourceFactoryProtocol
 
 extension DelegatedAccountSourceFactory: DelegatedAccountSourceFactoryProtocol {
-    func createSource(for blockHash: Data?) -> DelegatedAccountsRepositoryProtocol {
+    func createSource(for blockHash: Data?) -> DelegatedAccountsAggregatorProtocol {
         var sources: [DelegatedAccountsRepositoryProtocol] = []
 
         let chainId = chain.chainId
@@ -47,7 +47,7 @@ extension DelegatedAccountSourceFactory: DelegatedAccountSourceFactoryProtocol {
         let multisigRepository = MultisigAccountsRepository(chain: chain)
         sources.append(multisigRepository)
 
-        let repository = DelegatedAccountsRepository(
+        let repository = DelegatedAccountsAggregator(
             sources: sources,
             operationQueue: operationQueue
         )

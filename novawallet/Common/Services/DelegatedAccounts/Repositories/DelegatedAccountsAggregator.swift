@@ -1,12 +1,21 @@
 import Operation_iOS
 
+// Type used to represent ordered collection of accounts grouped by their delegate
+typealias DelegatedAccountsByDelegate = [(delegate: AccountId, accounts: [DiscoveredDelegatedAccountProtocol])]
+
 protocol DelegatedAccountsRepositoryProtocol {
     func fetchDelegatedAccountsWrapper(
         for accountIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]>
 }
 
-final class DelegatedAccountsRepository {
+protocol DelegatedAccountsAggregatorProtocol {
+    func fetchDelegatedAccountsWrapper(
+        for accountIds: [AccountId]
+    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate>
+}
+
+final class DelegatedAccountsAggregator {
     private let sources: [DelegatedAccountsRepositoryProtocol]
     private let operationQueue: OperationQueue
 
@@ -19,20 +28,26 @@ final class DelegatedAccountsRepository {
     }
 }
 
-extension DelegatedAccountsRepository: DelegatedAccountsRepositoryProtocol {
+extension DelegatedAccountsAggregator: DelegatedAccountsAggregatorProtocol {
     func fetchDelegatedAccountsWrapper(
-        for accountIds: Set<AccountId>
-    ) -> CompoundOperationWrapper<[AccountId: [any DiscoveredDelegatedAccountProtocol]]> {
+        for accountIds: [AccountId]
+    ) -> CompoundOperationWrapper<DelegatedAccountsByDelegate> {
+        let accountIdsSet = Set(accountIds)
+
         let fetchWrappers = sources.map {
-            $0.fetchDelegatedAccountsWrapper(for: accountIds)
+            $0.fetchDelegatedAccountsWrapper(for: accountIdsSet)
         }
 
-        let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
+        let mapOperation = ClosureOperation<DelegatedAccountsByDelegate> {
             let fetchResult = try fetchWrappers
                 .map { try $0.targetOperation.extractNoCancellableResultData() }
                 .reduce(into: [:]) { $0.merge($1, uniquingKeysWith: { $0 + $1 }) }
 
-            return fetchResult
+            return accountIds.compactMap {
+                guard let delegatedAccounts = fetchResult[$0] else { return nil }
+
+                return ($0, delegatedAccounts)
+            }
         }
 
         fetchWrappers.forEach { mapOperation.addDependency($0.targetOperation) }
