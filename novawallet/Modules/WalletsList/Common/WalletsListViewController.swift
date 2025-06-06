@@ -113,7 +113,10 @@ class WalletsListViewController<
             ).uppercased()
         }
 
-        guard let title, let icon else { return nil }
+        guard
+            let title,
+            let icon = icon?.tinted(with: R.color.colorIconChip()!)
+        else { return nil }
 
         let view = dequeueCommonHeader(from: tableView)
         view.bind(title: title, icon: icon)

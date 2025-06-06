@@ -1,8 +1,8 @@
 import UIKit
 import Operation_iOS
 
-final class ProxiedsUpdateInteractor {
-    weak var presenter: ProxiedsUpdateInteractorOutputProtocol?
+final class DelegatedAccountsUpdateInteractor {
+    weak var presenter: DelegatedAccountsUpdateInteractorOutputProtocol?
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
 
@@ -15,8 +15,12 @@ final class ProxiedsUpdateInteractor {
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.chainRegistry = chainRegistry
     }
+}
 
-    private func subscribeWallets() {
+// MARK: - Private
+
+private extension DelegatedAccountsUpdateInteractor {
+    func subscribeWallets() {
         walletsSubscription = subscribeAllWalletsProvider()
     }
 
@@ -27,14 +31,18 @@ final class ProxiedsUpdateInteractor {
     }
 }
 
-extension ProxiedsUpdateInteractor: ProxiedsUpdateInteractorInputProtocol {
+// MARK: - DelegatedAccountsUpdateInteractorInputProtocol
+
+extension DelegatedAccountsUpdateInteractor: DelegatedAccountsUpdateInteractorInputProtocol {
     func setup() {
         subscribeWallets()
         subscribeChains()
     }
 }
 
-extension ProxiedsUpdateInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+// MARK: - WalletListLocalStorageSubscriber
+
+extension DelegatedAccountsUpdateInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
         switch result {
         case let .success(changes):

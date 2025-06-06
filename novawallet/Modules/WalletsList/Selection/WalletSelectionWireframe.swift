@@ -29,11 +29,11 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         navigationController?.pushViewController(manageView.controller, animated: true)
     }
 
-    func showProxiedsUpdates(
+    func showDelegatesUpdates(
         from view: ControllerBackedProtocol?,
         initWallets: [ManagedMetaAccountModel]
     ) {
-        guard let proxiedsUpdatesView = ProxiedsUpdateViewFactory.createView(
+        guard let proxiedsUpdatesView = DelegatedAccountsUpdateViewFactory.createView(
             initWallets: initWallets
         ) else {
             return

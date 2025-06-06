@@ -1441,10 +1441,11 @@
 "proxy.non.transfer.type.title" = "Non Transfer";
 "proxy.any.type.title" = "Any";
 "proxy.updates.other.type.title" = "%@ proxy";
-"proxy.updates.proxy.revoked" = "No longer valid";
-"proxy.updates.hint.link" = "What is a Proxy?";
-"proxy.updates.hint" = "Nova Wallet automatically adds delegated authorities (Proxy) to a separate category for you. You can always manage wallets in Settings.";
-"proxy.updates.title" = "Delegated accounts update";
+"delegate.updates.revoked" = "No longer valid";
+"delegate.updates.hint" = "Proxy and Multisig accounts auto-detected and organized for you. Manage anytime in Settings.";
+"delegate.updates.title" = "Wallet list has been updated";
+"delegate.updates.wallet.type.proxied" = "Delegated to you";
+"delegate.updates.wallet.type.multisig" = "Shared control";
 "proxy.signing.is.not.supported.message" = "Proxied wallets do not support signing arbitrary messages — only transactions";
 "proxy.signing.not.enough.permissions.message" = "%1$@ delegated %2$@ only for %3$@";
 "proxy.signing.not.enough.permissions.title" = "Oops! Not enough permission";
@@ -1857,8 +1858,9 @@
 "wallet.migrate.accept.message" = "You’re almost there! 🎉\n Just tap below to complete the setup and start using your accounts seamlessly in both the Polkadot App and Nova Wallet";
 "wallet.migration.successful.alert.title" = "Accounts migrated successfully";
 "common.multisig" = "Multisig";
+"common.proxied" = "Proxied";
 "common.signer" = "Signer";
-"wallet.list.multisig" = "Shared contol (multisig)";
+"wallet.list.multisig" = "Shared control (multisig)";
 "multisig.details.hint" = "Transactions from this wallet require approval from multiple signers. This account is one of the signers:";
 "multisig.signing.title" = "Multisig transaction";
 "multisig.signing.message" = "\“%@\” will sign the transaction and pay the network fee. The transaction will be executed upon final signature and the multisig deposit will be returned to \“%@\”";

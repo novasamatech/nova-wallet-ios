@@ -1,8 +1,8 @@
-import Foundation
+import UIKit
 
-final class ProxiedsUpdateWireframe: ProxiedsUpdateWireframeProtocol {
+final class DelegatedAccountsUpdateWireframe: DelegatedAccountsUpdateWireframeProtocol {
     func close(from view: ControllerBackedProtocol?) {
-        view?.controller.dismiss(animated: true, completion: nil)
+        view?.controller.dismiss(animated: true)
     }
 
     func close(from view: ControllerBackedProtocol?, andPresent url: URL) {
