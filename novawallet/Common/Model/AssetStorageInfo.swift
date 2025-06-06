@@ -69,7 +69,7 @@ extension AssetStorageInfo {
 
             return .statemine(info: info)
         case .evmAsset:
-            guard let contractAddress = asset.typeExtras?.stringValue else {
+            guard let contractAddress = asset.evmContractAddress else {
                 throw AssetStorageInfoError.unexpectedTypeExtras
             }
 
