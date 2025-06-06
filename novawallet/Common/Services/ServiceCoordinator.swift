@@ -208,6 +208,7 @@ extension ServiceCoordinator {
 
         let walletNotificationService = WalletNotificationService(
             proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
+            multisigListLocalSubscriptionFactory: MultisigListLocalSubscriptionFactory.shared,
             logger: logger
         )
 
