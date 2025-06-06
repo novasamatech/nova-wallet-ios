@@ -14053,16 +14053,16 @@ import Operation_iOS
     
     
     
-     func setProxy(viewModel: AccountProxyViewModel)  {
+     func setDelegate(viewModel: AccountDelegateViewModel)  {
         
-    return cuckoo_manager.call("setProxy(viewModel: AccountProxyViewModel)",
+    return cuckoo_manager.call("setDelegate(viewModel: AccountDelegateViewModel)",
             parameters: (viewModel),
             escapingParameters: (viewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.setProxy(viewModel: viewModel))
+            defaultCall: __defaultImplStub!.setDelegate(viewModel: viewModel))
         
     }
     
@@ -14115,9 +14115,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(walletType: WalletsListSectionViewModel.SectionType)", parameterMatchers: matchers))
 	    }
 	    
-	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountProxyViewModel)> where M1.MatchedType == AccountProxyViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setProxy(viewModel: AccountProxyViewModel)", parameterMatchers: matchers))
+	    func setDelegate<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountDelegateViewModel)> where M1.MatchedType == AccountDelegateViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountDelegateViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setDelegate(viewModel: AccountDelegateViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LedgerMigrationBannerView.ViewModel)> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
@@ -14170,9 +14170,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func setProxy<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AccountProxyViewModel), Void> where M1.MatchedType == AccountProxyViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountProxyViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("setProxy(viewModel: AccountProxyViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func setDelegate<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AccountDelegateViewModel), Void> where M1.MatchedType == AccountDelegateViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountDelegateViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("setDelegate(viewModel: AccountDelegateViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14228,7 +14228,7 @@ import Operation_iOS
     
     
     
-     func setProxy(viewModel: AccountProxyViewModel)   {
+     func setDelegate(viewModel: AccountDelegateViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14929,16 +14929,16 @@ import Operation_iOS
     
     
     
-     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)  {
+     func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)  {
         
-    return cuckoo_manager.call("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)",
+    return cuckoo_manager.call("didReceiveDelegateWallet(_: Result<MetaAccountModel?, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveProxyWallet(result))
+            defaultCall: __defaultImplStub!.didReceiveDelegateWallet(result))
         
     }
     
@@ -15001,9 +15001,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceive(exportOptionsResult: Result<[SecretSource], Error>, metaAccount: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaAccountModel?, Error>)> where M1.MatchedType == Result<MetaAccountModel?, Error> {
+	    func didReceiveDelegateWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaAccountModel?, Error>)> where M1.MatchedType == Result<MetaAccountModel?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementInteractorOutputProtocol.self, method: "didReceiveDelegateWallet(_: Result<MetaAccountModel?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveCloudBackup<M1: Cuckoo.Matchable>(state: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CloudBackupSyncState)> where M1.MatchedType == CloudBackupSyncState {
@@ -15057,9 +15057,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceiveProxyWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.__DoNotUse<(Result<MetaAccountModel?, Error>), Void> where M1.MatchedType == Result<MetaAccountModel?, Error> {
+	    func didReceiveDelegateWallet<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.__DoNotUse<(Result<MetaAccountModel?, Error>), Void> where M1.MatchedType == Result<MetaAccountModel?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaAccountModel?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveProxyWallet(_: Result<MetaAccountModel?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("didReceiveDelegateWallet(_: Result<MetaAccountModel?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15109,7 +15109,7 @@ import Operation_iOS
     
     
     
-     func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)   {
+     func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
