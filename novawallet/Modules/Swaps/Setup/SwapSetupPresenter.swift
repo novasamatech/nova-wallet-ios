@@ -644,6 +644,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
         interactor.setup()
         interactor.update(payChainAsset: payChainAsset)
         interactor.update(feeChainAsset: feeChainAsset)
+        interactor.update(receiveChainAsset: receiveChainAsset)
 
         if let amount = initState.amount, let direction = initState.direction {
             switch direction {

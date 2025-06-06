@@ -49,7 +49,8 @@ private extension DAppSignBytesChainResolver {
              .paritySigner,
              .ledger,
              .genericLedger,
-             .proxied:
+             .proxied,
+             .multisig:
             let prefixMatchingChains = chains.filter { $0.addressPrefix == addressPrefix }
 
             return prefixMatchingChains

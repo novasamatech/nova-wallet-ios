@@ -8,14 +8,14 @@ protocol EvmBalanceUpdateServiceFactoryProtocol {
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 }
@@ -44,7 +44,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         for holder: AccountAddress,
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
@@ -65,10 +65,14 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
             holder: holder,
             assetContracts: assetContracts,
             connection: connection,
-            repository: AnyDataProviderRepository(repository),
+            updateHandler: EvmBalanceUpdatePersistentHandler(
+                repository: AnyDataProviderRepository(repository),
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue,
-            blockNumber: blockNumber,
+            block: block,
             queryMessageFactory: EvmQueryContractMessageFactory(),
+            workQueue: .global(),
             logger: logger,
             completion: completionClosure
         )
@@ -77,7 +81,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
     func createNativeBalanceUpdateService(
         for holder: AccountAddress,
         chainAssetId: ChainAssetId,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
@@ -103,9 +107,13 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
             holder: holder,
             chainAssetId: chainAssetId,
             connection: connection,
-            repository: AnyDataProviderRepository(repository),
+            updateHandler: EvmBalanceUpdatePersistentHandler(
+                repository: AnyDataProviderRepository(repository),
+                operationQueue: operationQueue
+            ),
             operationQueue: operationQueue,
-            blockNumber: blockNumber,
+            workQueue: .global(),
+            block: block,
             logger: logger,
             completion: completionClosure
         )
