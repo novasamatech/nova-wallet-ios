@@ -11,123 +11,62 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
     let chainAssetId: ChainAssetId
     let holder: AccountAddress
     let connection: JSONRPCEngine
-    let repository: AnyDataProviderRepository<AssetBalance>
+    let updateHandler: EvmBalanceUpdateHandling
     let operationQueue: OperationQueue
-    let blockNumber: Core.BlockNumber
+    let workQueue: DispatchQueue
+    let block: EvmBalanceUpdateBlock
     let completion: EvmNativeUpdateServiceCompletionClosure?
 
-    @Atomic(defaultValue: nil) private var queryId: UInt16?
-    @Atomic(defaultValue: nil) private var cancellable: CancellableCall?
+    private var queryId: UInt16?
+    private let callStore = CancellableCallStore()
 
     init(
         holder: AccountAddress,
         chainAssetId: ChainAssetId,
         connection: JSONRPCEngine,
-        repository: AnyDataProviderRepository<AssetBalance>,
+        updateHandler: EvmBalanceUpdateHandling,
         operationQueue: OperationQueue,
-        blockNumber: Core.BlockNumber,
+        workQueue: DispatchQueue,
+        block: EvmBalanceUpdateBlock,
         logger: LoggerProtocol,
         completion: EvmNativeUpdateServiceCompletionClosure?
     ) {
         self.holder = holder
         self.chainAssetId = chainAssetId
         self.connection = connection
-        self.repository = repository
+        self.updateHandler = updateHandler
         self.operationQueue = operationQueue
-        self.blockNumber = blockNumber
+        self.workQueue = workQueue
+        self.block = block
         self.completion = completion
 
         super.init(logger: logger)
     }
 
-    private func createSaveOperation(
-        dependingOn localBalancesOperation: BaseOperation<AssetBalance?>,
-        chainAssetId: ChainAssetId,
-        newBalance: BigUInt,
-        holder: AccountAddress
-    ) -> BaseOperation<Void> {
-        repository.saveOperation({
-            let oldBalance = try localBalancesOperation.extractNoCancellableResultData()?.totalInPlank
+    private func handleAndComplete(balance: Balance, holder: AccountAddress) {
+        callStore.cancel()
 
-            let accountId = try holder.toEthereumAccountId()
-
-            guard newBalance > 0, newBalance != oldBalance else {
-                return []
-            }
-
-            let assetBalance = AssetBalance(
-                chainAssetId: chainAssetId,
-                accountId: accountId,
-                freeInPlank: newBalance,
-                reservedInPlank: 0,
-                frozenInPlank: 0,
-                edCountMode: .basedOnFree,
-                transferrableMode: .regular,
-                blocked: false
-            )
-
-            return [assetBalance]
-        }, {
-            // remove zero balances
-
-            let optBalanceId = try localBalancesOperation.extractNoCancellableResultData()?.identifier
-
-            guard newBalance == 0, let balanceId = optBalanceId else {
-                return []
-            }
-
-            return [balanceId]
-        })
-    }
-
-    private func saveAndComplete(balance: BigUInt, holder: AccountAddress) {
-        let localBalanceFetchOperation = repository.fetchAllOperation(
-            with: RepositoryFetchOptions()
+        let wrapper = updateHandler.onBalanceUpdateWrapper(
+            balances: [chainAssetId: balance],
+            holder: holder,
+            block: block.updateDetectedAt
         )
 
-        let localBalanceMapOperation = ClosureOperation<AssetBalance?> {
-            try localBalanceFetchOperation.extractNoCancellableResultData().first
-        }
-
-        localBalanceMapOperation.addDependency(localBalanceFetchOperation)
-
-        let saveOperation = createSaveOperation(
-            dependingOn: localBalanceMapOperation,
-            chainAssetId: chainAssetId,
-            newBalance: balance,
-            holder: holder
-        )
-
-        saveOperation.addDependency(localBalanceMapOperation)
-
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: [localBalanceFetchOperation, localBalanceMapOperation]
-        )
-
-        saveOperation.completionBlock = { [weak self] in
-            guard self?.cancellable === wrapper else {
-                return
-            }
-
-            self?.cancellable = nil
-
-            do {
-                try saveOperation.extractNoCancellableResultData()
-                self?.complete(nil)
-
-                let oldBalance = try localBalanceMapOperation.extractNoCancellableResultData()?.totalInPlank ?? 0
-
-                let hasChanges = balance != oldBalance
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case let .success(hasChanges):
+                self?.completeImmediate(nil)
                 self?.completion?(hasChanges)
-            } catch {
-                self?.complete(error)
+            case let .failure(error):
+                self?.completeImmediate(error)
             }
         }
-
-        cancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func extractBalance(from result: Result<String, Error>) -> BigUInt? {
@@ -148,17 +87,27 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
 
     private func fetchBalance(for holder: AccountAddress) {
         do {
-            let params = EvmBalanceMessage.Params(holder: holder, block: blockNumber)
+            let params = EvmBalanceMessage.Params(holder: holder, block: block.fetchRequestedAt)
             queryId = try connection.callMethod(
                 EvmBalanceMessage.method,
                 params: params,
                 options: .init(resendOnReconnect: true)
             ) { [weak self] (result: Result<String, Error>) in
-                guard let balance = self?.extractBalance(from: result) else {
+                guard let self else {
                     return
                 }
 
-                self?.saveAndComplete(balance: balance, holder: holder)
+                dispatchInQueueWhenPossible(workQueue, locking: mutex) { [weak self] in
+                    guard let self else {
+                        return
+                    }
+
+                    guard let balance = extractBalance(from: result) else {
+                        return
+                    }
+
+                    handleAndComplete(balance: balance, holder: holder)
+                }
             }
         } catch {
             complete(error)
@@ -174,6 +123,6 @@ final class EvmNativeBalanceUpdateService: BaseSyncService, AnyCancellableCleani
             connection.cancelForIdentifier(queryId)
         }
 
-        clear(cancellable: &cancellable)
+        callStore.cancel()
     }
 }
