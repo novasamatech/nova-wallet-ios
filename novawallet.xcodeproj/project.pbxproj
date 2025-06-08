@@ -1754,6 +1754,7 @@
 		2DC6944D2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC6944C2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift */; };
 		2DC6944F2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC6944E2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift */; };
 		2DC694512DF2F0DB004F4584 /* MultisigAccountMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC694502DF2F0DB004F4584 /* MultisigAccountMapper.swift */; };
+		2DC694532DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */; };
 		2DCC875B2C5820BA0028C3CA /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849013D424A927E2008F705E /* Logger.swift */; };
 		2DCC875D2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */; };
 		2DCC87602C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */; };
@@ -7681,6 +7682,7 @@
 		2DC6944C2DF2EFF9004F4584 /* MultisigListLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigListLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		2DC6944E2DF2F00B004F4584 /* MultisigListLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigListLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		2DC694502DF2F0DB004F4584 /* MultisigAccountMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigAccountMapper.swift; sourceTree = "<group>"; };
+		2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsSubscription.swift; sourceTree = "<group>"; };
 		2DC70DB97D2E9350022A899B /* TokensManagePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensManagePresenter.swift; sourceTree = "<group>"; };
 		2DCC875C2C58D0D00028C3CA /* GovernanceTotalVotesFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTotalVotesFactory.swift; sourceTree = "<group>"; };
 		2DCC875F2C596C560028C3CA /* BaseCloudBackupCreatePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCloudBackupCreatePresenter.swift; sourceTree = "<group>"; };
@@ -23531,6 +23533,7 @@
 				0CAC02FC2B4BFB9400DDEC3A /* WalletRemoteQueryWrapperFactory.swift */,
 				77FE763F2B67682A00ADA73F /* ProxyAccountUpdatingService.swift */,
 				77A502F02B63E3830062FA51 /* ProxyAccountSubscription.swift */,
+				2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */,
 				0CA5BDE62C414574000A4CDD /* BalanceRemoteSubscriptionService.swift */,
 				0CA5BDE82C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift */,
 				0CA5BDEA2C4171D9000A4CDD /* BalanceRemoteSubscriptionHandlingProxy.swift */,
@@ -29403,6 +29406,7 @@
 				0C38B4FD2B7A652B00882A8B /* HydraRouter+Event.swift in Sources */,
 				84C479BF29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift in Sources */,
 				AEE5FAFD26415DE2002B8FDC /* StakingRebondSetupViewController.swift in Sources */,
+				2DC694532DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift in Sources */,
 				84CAC1CE298A7A4800F78169 /* GovernanceDelegationAdditions.swift in Sources */,
 				F47F5A7A2626E91A009BCFF4 /* StakingRewardHistoryViewModel.swift in Sources */,
 				77F033A82A86136D006BC67E /* StakingSelectPoolViewModelFactory.swift in Sources */,
