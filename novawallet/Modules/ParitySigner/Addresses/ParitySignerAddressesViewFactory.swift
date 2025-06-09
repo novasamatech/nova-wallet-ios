@@ -4,50 +4,50 @@ import Foundation_iOS
 
 struct ParitySignerAddressesViewFactory {
     static func createOnboardingView(
-        with addressScan: ParitySignerAddressScan,
+        with walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
-            with: addressScan,
+            with: walletFormat,
             type: type,
             wireframe: ParitySignerAddressesWireframe()
         )
     }
 
     static func createAddAccountView(
-        with addressScan: ParitySignerAddressScan,
+        with walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
-            with: addressScan,
+            with: walletFormat,
             type: type,
             wireframe: AddAccount.ParitySignerAddressesWireframe()
         )
     }
 
     static func createSwitchAccountView(
-        with addressScan: ParitySignerAddressScan,
+        with walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
-            with: addressScan,
+            with: walletFormat,
             type: type,
             wireframe: SwitchAccount.ParitySignerAddressesWireframe()
         )
     }
 
     private static func createView(
-        with addressScan: ParitySignerAddressScan,
+        with walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType,
         wireframe: ParitySignerAddressesWireframeProtocol
     ) -> HardwareWalletAddressesViewProtocol? {
         let interactor = ParitySignerAddressesInteractor(
-            addressScan: addressScan,
             chainRegistry: ChainRegistryFacade.sharedRegistry
         )
 
         let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: PolkadotIconGenerator())
         let presenter = ParitySignerAddressesPresenter(
+            walletFormat: walletFormat,
             type: type,
             interactor: interactor,
             wireframe: wireframe,

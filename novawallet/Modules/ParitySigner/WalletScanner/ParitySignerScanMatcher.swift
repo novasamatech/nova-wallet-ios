@@ -1,16 +1,17 @@
 import Foundation
+import SubstrateSdk
 
 protocol ParitySignerScanMatcherProtocol {
-    func match(code: String) -> ParitySignerAddressScan?
+    func match(code: QRCodeData) -> ParitySignerWalletScan?
 }
 
-final class ParitySignerScanMatcher: ParitySignerScanMatcherProtocol {
+final class ParitySignerScanMatcher {
     private enum Constants {
         static let type: String = "substrate"
         static let separator: String = ":"
     }
 
-    func match(code: String) -> ParitySignerAddressScan? {
+    private func match(code: String) -> ParitySignerWalletScan? {
         let components = code.components(separatedBy: Constants.separator)
 
         guard components.count >= 3 else {
@@ -25,6 +26,34 @@ final class ParitySignerScanMatcher: ParitySignerScanMatcherProtocol {
             return nil
         }
 
-        return ParitySignerAddressScan(address: components[1], genesisHash: genesisHash)
+        let singleAddress = ParitySignerWalletScan.SingleAddress(
+            address: components[1],
+            genesisHash: genesisHash
+        )
+
+        return .singleAddress(singleAddress)
+    }
+
+    private func match(rawData: Data) -> ParitySignerWalletScan? {
+        do {
+            let decoder = try ScaleDecoder(data: rawData)
+
+            let rootKeys = try [ParitySignerWalletScan.RootPublicKey](scaleDecoder: decoder)
+
+            return .rootKeys(rootKeys)
+        } catch {
+            return nil
+        }
+    }
+}
+
+extension ParitySignerScanMatcher: ParitySignerScanMatcherProtocol {
+    func match(code: QRCodeData) -> ParitySignerWalletScan? {
+        switch code {
+        case let .plain(plainText):
+            match(code: plainText)
+        case let .raw(rawData):
+            match(rawData: rawData)
+        }
     }
 }

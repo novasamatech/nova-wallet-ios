@@ -1,6 +1,7 @@
 import Foundation
+import SubstrateSdk
 
 struct ParitySignerWallet {
-    let substrateAccountId: AccountId
     let name: String
+    let format: ParitySignerWalletFormat
 }

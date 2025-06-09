@@ -4,7 +4,7 @@ import Operation_iOS
 final class ParitySignerAddConfirmInteractor {
     weak var presenter: ParitySignerAddConfirmInteractorOutputProtocol?
 
-    let substrateAccountId: AccountId
+    let walletFormat: ParitySignerWalletFormat
     let type: ParitySignerType
     let walletOperationFactory: ParitySignerWalletOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -12,14 +12,14 @@ final class ParitySignerAddConfirmInteractor {
     let eventCenter: EventCenterProtocol
 
     init(
-        substrateAccountId: AccountId,
+        walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType,
         settings: SelectedWalletSettings,
         walletOperationFactory: ParitySignerWalletOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue
     ) {
-        self.substrateAccountId = substrateAccountId
+        self.walletFormat = walletFormat
         self.type = type
         self.settings = settings
         self.walletOperationFactory = walletOperationFactory
@@ -30,7 +30,7 @@ final class ParitySignerAddConfirmInteractor {
 
 extension ParitySignerAddConfirmInteractor: ParitySignerAddConfirmInteractorInputProtocol {
     func save(with walletName: String) {
-        let request = ParitySignerWallet(substrateAccountId: substrateAccountId, name: walletName)
+        let request = ParitySignerWallet(name: walletName, format: walletFormat)
         let walletCreateOperation = walletOperationFactory.newHardwareWallet(for: request, type: type)
         let saveOperation = ClosureOperation { [weak self] in
             let metaAccount = try walletCreateOperation.extractNoCancellableResultData()

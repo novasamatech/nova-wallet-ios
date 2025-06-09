@@ -93,15 +93,15 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
         updateTimerViewModel()
     }
 
-    override func handle(code: String) {
+    override func handle(plainTextCode: String) {
         guard getLastCode() == nil else {
             return
         }
 
-        setLastCode(code)
+        setLastCode(plainTextCode)
 
         DispatchQueue.main.async { [weak self] in
-            self?.interactor.process(scannedSignature: code)
+            self?.interactor.process(scannedSignature: plainTextCode)
         }
     }
 }

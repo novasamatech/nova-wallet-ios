@@ -3,12 +3,12 @@ import Foundation
 final class ParitySignerScanWireframe: ParitySignerScanWireframeProtocol {
     func completeScan(
         on view: ControllerBackedProtocol?,
-        addressScan: ParitySignerAddressScan,
+        walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType
     ) {
         guard
             let addressesView = ParitySignerAddressesViewFactory.createOnboardingView(
-                with: addressScan,
+                with: walletFormat,
                 type: type
             ) else {
             return

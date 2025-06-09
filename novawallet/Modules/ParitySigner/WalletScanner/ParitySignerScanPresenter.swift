@@ -13,7 +13,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
     let type: ParitySignerType
 
-    private var lastHandledCode: String?
+    private var lastHandledCode: QRCodeData?
 
     private var mutex = NSLock()
 
@@ -44,7 +44,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         )
     }
 
-    private func getLastCode() -> String? {
+    private func getLastCode() -> QRCodeData? {
         mutex.lock()
 
         defer {
@@ -54,7 +54,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         return lastHandledCode
     }
 
-    private func setLastCode(_ newCode: String?) {
+    private func setLastCode(_ newCode: QRCodeData?) {
         mutex.lock()
 
         defer {
@@ -70,22 +70,30 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         view?.present(message: message, animated: true)
     }
 
-    override func handle(code: String) {
+    private func handle(code: QRCodeData) {
         guard getLastCode() != code else {
             return
         }
 
         setLastCode(code)
 
-        if let addressScan = matcher.match(code: code) {
+        if let walletScan = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.interactor.process(addressScan: addressScan)
+                self?.interactor.process(walletScan: walletScan)
             }
         } else {
             DispatchQueue.main.async { [weak self] in
                 self?.handleFailure()
             }
         }
+    }
+
+    override func handle(plainTextCode: String) {
+        handle(code: QRCodeData.plain(plainTextCode))
+    }
+
+    override func handle(rawDataCode: Data) {
+        handle(code: QRCodeData.raw(rawDataCode))
     }
 
     override func viewWillAppear() {
@@ -96,10 +104,10 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 }
 
 extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
-    func didReceiveValidation(result: Result<ParitySignerAddressScan, Error>) {
+    func didReceiveValidation(result: Result<ParitySignerWalletFormat, Error>) {
         switch result {
-        case let .success(addressScan):
-            scanWireframe.completeScan(on: view, addressScan: addressScan, type: type)
+        case let .success(walletFormat):
+            scanWireframe.completeScan(on: view, walletFormat: walletFormat, type: type)
         case .failure:
             handleFailure()
             setLastCode(nil)

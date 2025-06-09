@@ -3,15 +3,15 @@ import Foundation
 protocol ParitySignerScanWireframeProtocol: AnyObject {
     func completeScan(
         on view: ControllerBackedProtocol?,
-        addressScan: ParitySignerAddressScan,
+        walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType
     )
 }
 
 protocol ParitySignerScanInteractorInputProtocol: AnyObject {
-    func process(addressScan: ParitySignerAddressScan)
+    func process(walletScan: ParitySignerWalletScan)
 }
 
 protocol ParitySignerScanInteractorOutputProtocol: AnyObject {
-    func didReceiveValidation(result: Result<ParitySignerAddressScan, Error>)
+    func didReceiveValidation(result: Result<ParitySignerWalletFormat, Error>)
 }

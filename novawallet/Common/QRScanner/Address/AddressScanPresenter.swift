@@ -43,14 +43,14 @@ final class TransferScanPresenter: QRScannerPresenter {
         view?.present(message: message, animated: true)
     }
 
-    override func handle(code: String) {
-        guard lastHandledCode != code else {
+    override func handle(plainTextCode: String) {
+        guard lastHandledCode != plainTextCode else {
             return
         }
 
-        lastHandledCode = code
+        lastHandledCode = plainTextCode
 
-        if let address = matcher.match(code: code) {
+        if let address = matcher.match(code: plainTextCode) {
             DispatchQueue.main.async { [weak self] in
                 self?.delegate?.addressScanDidReceiveRecepient(address: address, context: self?.context)
             }

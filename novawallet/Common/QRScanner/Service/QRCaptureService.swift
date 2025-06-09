@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import CoreImage
 
 protocol QRCaptureServiceProtocol: AnyObject {
     var delegate: QRCaptureServiceDelegate? { get set }
@@ -18,7 +19,7 @@ enum QRCaptureServiceError: Error {
 
 protocol QRCaptureServiceDelegate: AnyObject {
     func qrCapture(service: QRCaptureServiceProtocol, didSetup captureSession: AVCaptureSession)
-    func qrCapture(service: QRCaptureServiceProtocol, didReceive code: String)
+    func qrCapture(service: QRCaptureServiceProtocol, didReceive data: QRCodeData)
     func qrCapture(service: QRCaptureServiceProtocol, didFailure error: Error)
 }
 
@@ -95,7 +96,7 @@ final class QRCaptureService: NSObject {
         }
     }
 
-    private func notifyDelegateWithCode(_ code: String) {
+    private func notifyDelegateWithCode(_ code: QRCodeData) {
         run(in: delegateQueue) {
             self.delegate?.qrCapture(service: self, didReceive: code)
         }
@@ -151,11 +152,12 @@ extension QRCaptureService: AVCaptureMetadataOutputObjectsDelegate {
             return
         }
 
-        guard let possibleCode = metadata.stringValue else {
+        if let possibleCode = metadata.stringValue {
+            notifyDelegateWithCode(.plain(possibleCode))
+        } else if let descriptor = metadata.descriptor as? CIQRCodeDescriptor {
+            notifyDelegateWithCode(.raw(descriptor.errorCorrectedPayload))
+        } else {
             notifyDelegate(with: QRCaptureServiceError.unsupportedFormat)
-            return
         }
-
-        notifyDelegateWithCode(possibleCode)
     }
 }

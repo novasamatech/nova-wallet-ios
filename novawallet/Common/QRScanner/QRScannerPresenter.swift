@@ -141,8 +141,12 @@ class QRScannerPresenter: QRScannerPresenterProtocol {
         }
     }
 
-    func handle(code _: String) {
-        fatalError("Child presenter must override")
+    func handle(plainTextCode: String) {
+        logger?.warning("Plain data recieved but not handled: \(plainTextCode)")
+    }
+
+    func handle(rawDataCode: Data) {
+        logger?.warning("Raw data recieved but not handled: \(rawDataCode.base64EncodedString())")
     }
 
     func setup() {
@@ -169,8 +173,13 @@ extension QRScannerPresenter: QRCaptureServiceDelegate {
         }
     }
 
-    func qrCapture(service _: QRCaptureServiceProtocol, didReceive code: String) {
-        handle(code: code)
+    func qrCapture(service _: QRCaptureServiceProtocol, didReceive data: QRCodeData) {
+        switch data {
+        case let .plain(plainText):
+            handle(plainTextCode: plainText)
+        case let .raw(rawData):
+            handle(rawDataCode: rawData)
+        }
     }
 
     func qrCapture(service _: QRCaptureServiceProtocol, didFailure error: Error) {
@@ -192,7 +201,7 @@ extension QRScannerPresenter: ImageGalleryDelegate {
             ) { [weak self] result in
                 switch result {
                 case let .success(code):
-                    self?.handle(code: code)
+                    self?.handle(plainTextCode: code)
                 case let .failure(error):
                     DispatchQueue.main.async {
                         self?.handleQRService(error: error)

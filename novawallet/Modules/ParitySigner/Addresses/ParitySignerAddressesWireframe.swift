@@ -3,12 +3,12 @@ import Foundation
 final class ParitySignerAddressesWireframe: ParitySignerAddressesWireframeProtocol {
     func showConfirmation(
         on view: HardwareWalletAddressesViewProtocol?,
-        accountId: AccountId,
+        walletFormat: ParitySignerWalletFormat,
         type: ParitySignerType
     ) {
         guard
             let confirmationView = ParitySignerAddConfirmViewFactory.createOnboardingView(
-                with: accountId,
+                with: walletFormat,
                 type: type
             ) else {
             return

@@ -620,6 +620,8 @@
 		0C71D3F82DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F72DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift */; };
 		0C71D3FA2DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3F92DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift */; };
 		0C71D3FC2DF182720042134B /* EvmBalanceUpdateBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3FB2DF182720042134B /* EvmBalanceUpdateBlock.swift */; };
+		0C71D3FE2DF7820D0042134B /* QRCodeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3FD2DF7820D0042134B /* QRCodeData.swift */; };
+		0C71D4002DF78FD60042134B /* ParitySignerWalletFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */; };
 		0C746DBC2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */; };
 		0C746DBE2CCF440800E9178B /* AssetExchangeAtomicOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */; };
 		0C75E2962C3F9263005A6232 /* DelegatedStakingPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C75E2952C3F9263005A6232 /* DelegatedStakingPallet.swift */; };
@@ -6479,6 +6481,8 @@
 		0C71D3F72DF0EA050042134B /* MoonbeamEvmPallet+EventCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoonbeamEvmPallet+EventCodingPath.swift"; sourceTree = "<group>"; };
 		0C71D3F92DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoonbeamEvmPallet+Events.swift"; sourceTree = "<group>"; };
 		0C71D3FB2DF182720042134B /* EvmBalanceUpdateBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdateBlock.swift; sourceTree = "<group>"; };
+		0C71D3FD2DF7820D0042134B /* QRCodeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeData.swift; sourceTree = "<group>"; };
+		0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerWalletFormat.swift; sourceTree = "<group>"; };
 		0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeExecutionManager.swift; sourceTree = "<group>"; };
 		0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeAtomicOperation.swift; sourceTree = "<group>"; };
 		0C75E2952C3F9263005A6232 /* DelegatedStakingPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedStakingPallet.swift; sourceTree = "<group>"; };
@@ -18115,6 +18119,7 @@
 				0C8C8F872D6F11BB00441FB3 /* ParitySignerConfirmationParams.swift */,
 				0C8C8F892D6F168A00441FB3 /* ParitySignerMode.swift */,
 				0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */,
+				0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -20702,6 +20707,7 @@
 			children = (
 				8487584627F1816200495306 /* QRExtractionService.swift */,
 				8487583027F06AF300495306 /* QRCaptureService.swift */,
+				0C71D3FD2DF7820D0042134B /* QRCodeData.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -29692,6 +29698,7 @@
 				841E5542282D525F00C8438F /* ParastakingLocalStorageHandler.swift in Sources */,
 				F4A12BF7260B61E900392C33 /* StakingManageOption.swift in Sources */,
 				843A2C7726A86FD000266F53 /* TitleStatusView.swift in Sources */,
+				0C71D3FE2DF7820D0042134B /* QRCodeData.swift in Sources */,
 				84BAD20D293A1B6E00C55C49 /* TopCustomSearchView.swift in Sources */,
 				84A58FD928A10ABD003F6ABF /* MultipartQrOperationFactory.swift in Sources */,
 				84E2589D2892B41500DC8A51 /* WalletSwitchViewModelFactory.swift in Sources */,
@@ -33648,6 +33655,7 @@
 				CC8E2564D41575ABE3C43882 /* UnifiedAddressPopupViewLayout.swift in Sources */,
 				FED75BD7C31275BD40CCEE30 /* UnifiedAddressPopupViewFactory.swift in Sources */,
 				156498CB6CB4702FC139683B /* GenericLedgerAddEvmProtocols.swift in Sources */,
+				0C71D4002DF78FD60042134B /* ParitySignerWalletFormat.swift in Sources */,
 				1C601EB98E9DA39FA808D83B /* GenericLedgerAddEvmWireframe.swift in Sources */,
 				520808D271471385FF7E3FDA /* GenericLedgerAddEvmPresenter.swift in Sources */,
 				7DB5323EFE92E535C5641C54 /* GenericLedgerAddEvmInteractor.swift in Sources */,

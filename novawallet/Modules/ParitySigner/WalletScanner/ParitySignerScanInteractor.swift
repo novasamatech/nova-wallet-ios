@@ -4,6 +4,8 @@ import Operation_iOS
 enum ParitySignerScanInteratorError: Error {
     case invalidAddress
     case invalidChain
+    case substrateKeysNotFound
+    case ethereumKeysNotFound
 }
 
 final class ParitySignerScanInterator {
@@ -16,10 +18,10 @@ final class ParitySignerScanInterator {
     }
 }
 
-extension ParitySignerScanInterator: ParitySignerScanInteractorInputProtocol {
-    func process(addressScan: ParitySignerAddressScan) {
+private extension ParitySignerScanInterator {
+    func proccess(singleAddress: ParitySignerWalletScan.SingleAddress) {
         do {
-            let chainId = addressScan.genesisHash.toHex()
+            let chainId = singleAddress.genesisHash.toHex()
 
             // make sure that genesis hash is from valid chain
 
@@ -29,15 +31,51 @@ extension ParitySignerScanInterator: ParitySignerScanInteractorInputProtocol {
 
             // make sure address matches chain
 
-            let accountId = try? addressScan.address.toAccountId(using: chain.chainFormat)
+            let accountId = try? singleAddress.address.toAccountId(using: chain.chainFormat)
 
-            guard accountId != nil else {
+            guard let accountId else {
                 throw ParitySignerScanInteratorError.invalidAddress
             }
 
-            presenter?.didReceiveValidation(result: .success(addressScan))
+            let model = ParitySignerWalletFormat.Single(
+                substrateAccountId: accountId
+            )
+
+            presenter?.didReceiveValidation(result: .success(.single(model)))
         } catch {
             presenter?.didReceiveValidation(result: .failure(error))
+        }
+    }
+
+    func process(rootKeys: [ParitySignerWalletScan.RootPublicKey]) {
+        do {
+            guard let substrateKey = rootKeys.first(where: { $0.type != .ethereumEcdsa }) else {
+                throw ParitySignerScanInteratorError.substrateKeysNotFound
+            }
+
+            guard let ethereumKey = rootKeys.first(where: { $0.type == .ethereumEcdsa }) else {
+                throw ParitySignerScanInteratorError.ethereumKeysNotFound
+            }
+
+            let model = ParitySignerWalletFormat.RootKeys(
+                substrate: substrateKey,
+                ethereum: ethereumKey
+            )
+
+            presenter?.didReceiveValidation(result: .success(.rootKeys(model)))
+        } catch {
+            presenter?.didReceiveValidation(result: .failure(error))
+        }
+    }
+}
+
+extension ParitySignerScanInterator: ParitySignerScanInteractorInputProtocol {
+    func process(walletScan: ParitySignerWalletScan) {
+        switch walletScan {
+        case let .singleAddress(singleAddress):
+            proccess(singleAddress: singleAddress)
+        case let .rootKeys(rootKeys):
+            process(rootKeys: rootKeys)
         }
     }
 }
