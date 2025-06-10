@@ -38,7 +38,6 @@ class MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpdatin
         callHashes: Set<CallHash>,
         chainId: ChainModel.Id
     ) throws {
-        
         multisigOperationsSubscription = MultisigPendingOperationsSubscription(
             accountId: accountId,
             chainId: chainId,

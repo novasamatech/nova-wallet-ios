@@ -203,7 +203,7 @@ struct ChainModel: Equatable, Hashable {
     var hasProxy: Bool {
         options?.contains(where: { $0 == .proxy }) ?? false
     }
-    
+
     var hasMultisig: Bool {
         options?.contains(where: { $0 == .multisig }) ?? false
     }

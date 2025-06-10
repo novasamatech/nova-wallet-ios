@@ -49,7 +49,6 @@ final class StakingSharedStateFactory {
         let localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
         let proxySubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol
         let proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?
-        let multisigSubscriptionService: MultisigPendingOperationsUpdatingServiceProtocol?
     }
 
     struct NominationPoolsServices {
@@ -186,15 +185,6 @@ final class StakingSharedStateFactory {
                 logger: logger
             )
         }
-        let multisigSubscriptionService = delegatedAccountSyncService.map {
-            MultisigPendingOperationsUpdatingService(
-                chainRegistry: chainRegistry,
-                delegatedAccountSyncService: $0,
-                storageFacade: storageFacade,
-                operationQueue: syncOperationQueue,
-                logger: logger
-            )
-        }
 
         return .init(
             globalRemoteSubscriptionService: globalServices.globalRemoteSubscriptionService,
@@ -204,8 +194,7 @@ final class StakingSharedStateFactory {
             timeModel: globalServices.timeModel,
             localSubscriptionFactory: globalServices.localSubscriptionFactory,
             proxySubscriptionFactory: ProxyListLocalSubscriptionFactory.shared,
-            proxyRemoteSubscriptionService: proxyRemoteSubscriptionService,
-            multisigSubscriptionService: multisigSubscriptionService
+            proxyRemoteSubscriptionService: proxyRemoteSubscriptionService
         )
     }
 
