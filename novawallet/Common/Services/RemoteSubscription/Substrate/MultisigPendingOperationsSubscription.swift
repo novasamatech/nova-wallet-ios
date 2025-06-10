@@ -10,14 +10,13 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     let chainId: ChainModel.Id
     let callHashes: Set<CallHash>
     let chainRegistry: ChainRegistryProtocol
-    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
 
     private let mutex = NSLock()
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
-    private var subscription: CallbackStorageSubscription<[CallHash: Multisig.MultisigDefinition]>?
+    private var subscription: CallbackBatchStorageSubscription<SubscriptionResult>?
 
     private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
         let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
@@ -30,7 +29,6 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         chainId: ChainModel.Id,
         callHashes: Set<CallHash>,
         chainRegistry: ChainRegistryProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -40,7 +38,6 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         self.chainId = chainId
         self.callHashes = callHashes
         self.chainRegistry = chainRegistry
-        self.delegatedAccountSyncService = delegatedAccountSyncService
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
@@ -86,18 +83,23 @@ private extension MultisigPendingOperationsSubscription {
             chainId: chainId
         )
 
-        let request = DoubleMapSubscriptionRequest(
-            storagePath: Multisig.multisigList,
-            localKey: localKey
-        ) {
-            (
-                BytesCodable(wrappedValue: accountId),
-                callHashes.map { BytesCodable(wrappedValue: $0) }
+        let requests = callHashes.map { callHash in
+            BatchStorageSubscriptionRequest(
+                innerRequest: DoubleMapSubscriptionRequest(
+                    storagePath: Multisig.multisigList,
+                    localKey: localKey
+                ) {
+                    (
+                        BytesCodable(wrappedValue: accountId),
+                        BytesCodable(wrappedValue: callHash)
+                    )
+                },
+                mappingKey: SubscriptionResult.Key.pendingOperation(with: callHash)
             )
         }
 
-        subscription = CallbackStorageSubscription(
-            request: request,
+        subscription = CallbackBatchStorageSubscription(
+            requests: requests,
             connection: connection,
             runtimeService: runtimeService,
             repository: repository,
@@ -106,19 +108,53 @@ private extension MultisigPendingOperationsSubscription {
         ) { [weak self] result in
             self?.mutex.lock()
 
-            self?.handleSubscription(result)
+            self?.handleSubscription(result, callHashes: callHashes)
 
             self?.mutex.unlock()
         }
     }
 
-    func handleSubscription(_ result: Result<[CallHash: Multisig.MultisigDefinition]?, Error>) {
+    func handleSubscription(
+        _ result: Result<SubscriptionResult, Error>,
+        callHashes: Set<CallHash>
+    ) {
         switch result {
         case let .success(state):
-            guard let state else { return }
-            logger?.debug(state.debugDescription)
+            let multisigDefinitions: [Multisig.MultisigDefinition] = callHashes.compactMap {
+                let key = SubscriptionResult.Key.pendingOperation(with: $0)
+                let json = state.values[key]
+
+                return try? json?.map(
+                    to: Multisig.MultisigDefinition.self,
+                    with: state.context
+                )
+            }
         case let .failure(error):
             logger?.error(error.localizedDescription)
+        }
+    }
+}
+
+private struct SubscriptionResult: BatchStorageSubscriptionResult {
+    enum Key {
+        static func pendingOperation(with callHash: CallHash) -> String {
+            "pendingOperation:" + callHash.toHexString()
+        }
+    }
+
+    let context: [CodingUserInfoKey: Any]?
+    let values: [String: JSON]
+
+    init(
+        values: [BatchStorageSubscriptionResultValue],
+        blockHashJson _: JSON,
+        context: [CodingUserInfoKey: Any]?
+    ) throws {
+        self.context = context
+        self.values = values.reduce(into: [String: JSON]()) {
+            if let mappingKey = $1.mappingKey {
+                $0[mappingKey] = $1.value
+            }
         }
     }
 }

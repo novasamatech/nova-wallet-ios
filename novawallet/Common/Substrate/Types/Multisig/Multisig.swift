@@ -5,9 +5,12 @@ import BigInt
 enum Multisig {
     static var name: String { "Multisig" }
 
-    struct MultisigOperation: Codable, Equatable {
+    struct PendingOperation: Codable, Equatable {
+        let call: JSON?
         let callHash: CallHash
-        let multisigInfo: MultisigDefinition
+        let signatory: AccountId
+        let chainId: ChainModel.Id
+        let multisigDefinition: MultisigDefinition
     }
 
     struct MultisigDefinition: Codable, Equatable {

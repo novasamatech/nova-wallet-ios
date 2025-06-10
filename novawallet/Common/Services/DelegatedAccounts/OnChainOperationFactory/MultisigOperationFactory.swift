@@ -3,13 +3,11 @@ import Operation_iOS
 
 protocol MultisigStorageOperationFactoryProtocol {
     func fetchPendingOperations(
-        for accountId: AccountId,
+        for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[CallHash]>
+    ) -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]>
 }
-
-typealias OnChainMultisigs = (accountId: AccountId, multisigs: [Multisig.MultisigOperation])
 
 final class MultisigStorageOperationFactory {
     private let storageRequestFactory: StorageRequestFactoryProtocol
@@ -21,26 +19,26 @@ final class MultisigStorageOperationFactory {
 
 extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtocol {
     func fetchPendingOperations(
-        for accountId: AccountId,
+        for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[CallHash]> {
+    ) -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<Multisig.MultisigOperation>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Multisig.MultisigDefinition>]> = storageRequestFactory.queryItems(
             engine: connection,
-            keyParams: { [BytesCodable(wrappedValue: accountId)] },
+            keyParams: { [BytesCodable(wrappedValue: multisigAccountId)] },
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
             storagePath: Multisig.multisigList
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<[CallHash]> {
+        let mapOperation = ClosureOperation<[CallHash: Multisig.MultisigDefinition]> {
             try wrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-                .compactMap(\.key)
+                .reduce(into: [:]) { $0[$1.key] = $1.value }
         }
 
         mapOperation.addDependency(wrapper.targetOperation)
