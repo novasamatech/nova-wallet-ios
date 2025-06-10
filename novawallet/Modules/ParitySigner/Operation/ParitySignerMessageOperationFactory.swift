@@ -12,6 +12,7 @@ enum ParitySignerNetworkType: UInt8 {
 enum ParitySignerMessageType: UInt8 {
     case transaction = 2
     case message = 3
+    case ddTransactionWithProof = 5
     case transactionWithProof = 6
 
     var bytes: Data {
@@ -23,6 +24,7 @@ enum ParitySignerCryptoType: UInt8 {
     case ed25519 = 0
     case sr25519 = 1
     case ecdsa = 2
+    case ethereum = 3
 
     init?(cryptoType: MultiassetCryptoType) {
         switch cryptoType {
@@ -33,7 +35,7 @@ enum ParitySignerCryptoType: UInt8 {
         case .substrateEcdsa:
             self = .ecdsa
         case .ethereumEcdsa:
-            return nil
+            self = .ethereum
         }
     }
 
@@ -118,11 +120,12 @@ extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFacto
                 throw ParitySignerMessageOperationFactoryError.unsupportedCryptoType
             }
 
-            let messageTypeBytes = ParitySignerMessageType.transactionWithProof.bytes
+            let messageTypeBytes = ParitySignerMessageType.ddTransactionWithProof.bytes
 
             let genesisHashData = try Data(hexString: genesisHash)
 
-            let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
+            let derivationPath = try "".scaleEncoded()
+            let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId + derivationPath
 
             let metadataProof = try metadataProofClosure()
 

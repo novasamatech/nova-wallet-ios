@@ -17,6 +17,7 @@ final class ParitySignerTxQrInteractor {
     let mortalityPeriodMilliseconds: TimeInterval
     let operationQueue: OperationQueue
 
+    private var rootKey: AccountId?
     private var derivedAccount: ChainAccountResponse?
     private var cancellableStore = CancellableCallStore()
 
@@ -121,7 +122,7 @@ private extension ParitySignerTxQrInteractor {
                 metadataProofClosure: {
                     try metadataProofWrapper.targetOperation.extractNoCancellableResultData()
                 },
-                accountId: account.accountId,
+                accountId: rootKey ?? account.accountId,
                 cryptoType: account.cryptoType,
                 genesisHash: chainId
             )
@@ -292,6 +293,7 @@ private extension ParitySignerTxQrInteractor {
             )
 
             derivedAccount = account.chainAccount
+            rootKey = account.substrateAccountId
 
             let txExpirationTime: TimeInterval? = switch params.mode {
             case .extrinsic:

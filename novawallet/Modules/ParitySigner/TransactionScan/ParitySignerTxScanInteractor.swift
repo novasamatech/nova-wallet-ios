@@ -62,14 +62,20 @@ extension ParitySignerTxScanInteractor: ParitySignerTxScanInteractorInputProtoco
             }
 
             let rawSignatureCandidate = try getRawSignature(from: scannedSignature)
-            let signatureCandidate = try SNSignature(rawData: rawSignatureCandidate)
-            let publicKey = try SNPublicKey(rawData: accountId)
-            let verifier = SNSignatureVerifier()
 
-            if verifier.verify(signatureCandidate, forOriginalData: signaturePayload, using: publicKey) {
+            if rawSignatureCandidate.count == 65 {
+                let signatureCandidate = try SECSignature(rawData: rawSignatureCandidate)
                 presenter?.didReceiveSignature(signatureCandidate)
             } else {
-                presenter?.didReceiveError(ParitySignerTxScanInteractorError.invalidSignature)
+                let signatureCandidate = try SNSignature(rawData: rawSignatureCandidate)
+                let publicKey = try SNPublicKey(rawData: accountId)
+                let verifier = SNSignatureVerifier()
+
+                if verifier.verify(signatureCandidate, forOriginalData: signaturePayload, using: publicKey) {
+                    presenter?.didReceiveSignature(signatureCandidate)
+                } else {
+                    presenter?.didReceiveError(ParitySignerTxScanInteractorError.invalidSignature)
+                }
             }
         } catch {
             presenter?.didReceiveError(error)

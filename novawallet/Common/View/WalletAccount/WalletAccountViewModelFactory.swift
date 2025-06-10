@@ -22,7 +22,8 @@ final class WalletAccountViewModelFactory {
     }
 
     func createViewModel(from walletAddress: WalletDisplayAddress) throws -> WalletAccountViewModel {
-        let addressIcon = try addressIconGenerator.generateFromAddress(walletAddress.address)
+        let iconAccountId = try walletAddress.address.toAccountId()
+        let addressIcon = try addressIconGenerator.generateFromAccountId(iconAccountId)
         let addressIconViewModel = DrawableIconViewModel(icon: addressIcon)
 
         let walletIconViewModel: DrawableIconViewModel? = try walletAddress.walletIconData.map { data in
@@ -39,7 +40,8 @@ final class WalletAccountViewModelFactory {
     }
 
     func createViewModel(from address: AccountAddress) throws -> WalletAccountViewModel {
-        let addressIcon = try addressIconGenerator.generateFromAddress(address)
+        let iconAccountId = try address.toAccountId()
+        let addressIcon = try addressIconGenerator.generateFromAccountId(iconAccountId)
         let addressIconViewModel = DrawableIconViewModel(icon: addressIcon)
 
         return WalletAccountViewModel(
