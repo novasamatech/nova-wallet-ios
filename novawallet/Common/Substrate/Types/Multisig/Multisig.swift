@@ -6,6 +6,11 @@ enum Multisig {
     static var name: String { "Multisig" }
 
     struct MultisigOperation: Codable, Equatable {
+        let callHash: CallHash
+        let multisigInfo: MultisigDefinition
+    }
+    
+    struct MultisigDefinition: Codable, Equatable {
         enum CodingKeys: String, CodingKey {
             case timepoint = "when"
             case deposit

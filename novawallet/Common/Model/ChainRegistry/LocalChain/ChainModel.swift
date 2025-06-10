@@ -203,6 +203,10 @@ struct ChainModel: Equatable, Hashable {
     var hasProxy: Bool {
         options?.contains(where: { $0 == .proxy }) ?? false
     }
+    
+    var hasMultisig: Bool {
+        options?.contains(where: { $0 == .multisig }) ?? false
+    }
 
     var noSubstrateRuntime: Bool {
         options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
@@ -385,6 +389,7 @@ enum LocalChainOptions: String, Codable, Equatable {
     case swapHub = "swap-hub"
     case swapHydra = "hydradx-swaps"
     case proxy
+    case multisig
     case pushNotifications = "pushSupport"
     case assetHubFees = "assethub-fees"
     case hydrationFees = "hydration-fees"

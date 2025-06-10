@@ -2,11 +2,11 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol MultisigStorageOperationFactoryProtocol {
-    func fetchMultisigStateWrapper(
+    func fetchPendingOperations(
         for accountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<OnChainMultisigs?>
+    ) -> CompoundOperationWrapper<[CallHash]>
 }
 
 typealias OnChainMultisigs = (accountId: AccountId, multisigs: [Multisig.MultisigOperation])
@@ -20,14 +20,14 @@ final class MultisigStorageOperationFactory {
 }
 
 extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtocol {
-    func fetchMultisigStateWrapper(
+    func fetchPendingOperations(
         for accountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<OnChainMultisigs?> {
+    ) -> CompoundOperationWrapper<[CallHash]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<[Multisig.MultisigOperation]>]> = storageRequestFactory.queryItems(
+        let wrapper: CompoundOperationWrapper<[StorageResponse<Multisig.MultisigOperation>]> = storageRequestFactory.queryItems(
             engine: connection,
             keyParams: { [BytesCodable(wrappedValue: accountId)] },
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
@@ -36,12 +36,11 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<OnChainMultisigs?> {
-            let result = try wrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let values = result.first?.value else { return nil }
-
-            return (accountId, values.compactMap { $0 })
+        let mapOperation = ClosureOperation<[CallHash]> {
+            try wrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .compactMap(\.key)
         }
 
         mapOperation.addDependency(wrapper.targetOperation)

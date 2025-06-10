@@ -39,6 +39,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     let preferredValidatorsProvider: PreferredValidatorsProviding
     let logger: LoggerProtocol
     let proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?
+    let multisigPendingOperationsSubscriptionService: MultisigPendingOperationsUpdatingServiceProtocol?
 
     private var globalSubscriptionId: UUID?
 
@@ -52,6 +53,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
         proxyRemoteSubscriptionService: ProxyAccountUpdatingServiceProtocol?,
+        multisigPendingOperationsSubscriptionService: MultisigPendingOperationsUpdatingServiceProtocol?,
         localSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         stakingRewardsLocalSubscriptionFactory: StakingRewardsLocalSubscriptionFactoryProtocol,
         proxyLocalSubscriptionFactory: ProxyListLocalSubscriptionFactoryProtocol,
@@ -66,6 +68,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.globalRemoteSubscriptionService = globalRemoteSubscriptionService
         self.accountRemoteSubscriptionService = accountRemoteSubscriptionService
         self.proxyRemoteSubscriptionService = proxyRemoteSubscriptionService
+        self.multisigPendingOperationsSubscriptionService = multisigPendingOperationsSubscriptionService
         self.localSubscriptionFactory = localSubscriptionFactory
         self.stakingRewardsLocalSubscriptionFactory = stakingRewardsLocalSubscriptionFactory
         self.proxyLocalSubscriptionFactory = proxyLocalSubscriptionFactory
@@ -102,6 +105,13 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
             if chain.hasProxy {
                 try proxyRemoteSubscriptionService?.setupSubscription(
                     for: accountId,
+                    chainId: chain.chainId
+                )
+            }
+            if chain.hasMultisig {
+                try multisigPendingOperationsSubscriptionService?.setupSubscription(
+                    for: accountId,
+                    callHashes: <#T##Set<CallHash>#>,
                     chainId: chain.chainId
                 )
             }

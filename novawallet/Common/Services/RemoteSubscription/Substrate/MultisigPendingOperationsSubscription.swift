@@ -3,9 +3,12 @@ import Operation_iOS
 import NovaCrypto
 import SubstrateSdk
 
+typealias CallHash = Data
+
 final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     let accountId: AccountId
     let chainId: ChainModel.Id
+    let callHashes: Set<CallHash>
     let chainRegistry: ChainRegistryProtocol
     let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     let storageFacade: StorageFacadeProtocol
@@ -14,8 +17,7 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     private let mutex = NSLock()
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
-    private var subscription: CallbackBatchStorageSubscription<BatchSubscriptionHandler>?
-    private var storageSubscriptionHandler: StorageChildSubscribing?
+    private var subscription: CallbackStorageSubscription<[CallHash: Multisig.MultisigDefinition]>?
 
     private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
         let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
@@ -26,6 +28,7 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     init(
         accountId: AccountId,
         chainId: ChainModel.Id,
+        callHashes: Set<CallHash>,
         chainRegistry: ChainRegistryProtocol,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         storageFacade: StorageFacadeProtocol,
@@ -35,6 +38,7 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     ) {
         self.accountId = accountId
         self.chainId = chainId
+        self.callHashes = callHashes
         self.chainRegistry = chainRegistry
         self.delegatedAccountSyncService = delegatedAccountSyncService
         self.operationQueue = operationQueue
@@ -43,7 +47,10 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         self.storageFacade = storageFacade
 
         do {
-            try subscribeRemote(for: accountId)
+            try subscribeRemote(
+                for: accountId,
+                callHashes: callHashes
+            )
         } catch {
             logger?.error(error.localizedDescription)
         }
@@ -52,13 +59,20 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     deinit {
         unsubscribeRemote()
     }
+}
 
-    private func unsubscribeRemote() {
+// MARK: - Private
+
+private extension MultisigPendingOperationsSubscription {
+    func unsubscribeRemote() {
         subscription?.unsubscribe()
         subscription = nil
     }
 
-    private func subscribeRemote(for accountId: AccountId) throws {
+    func subscribeRemote(
+        for accountId: AccountId,
+        callHashes: Set<CallHash>
+    ) throws {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
@@ -72,18 +86,18 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
             chainId: chainId
         )
 
-        let request = BatchStorageSubscriptionRequest(
-            innerRequest: MapSubscriptionRequest(
-                storagePath: Multisig.multisigList,
-                localKey: localKey
-            ) {
-                BytesCodable(wrappedValue: accountId)
-            },
-            mappingKey: nil
-        )
+        let request = DoubleMapSubscriptionRequest(
+            storagePath: Multisig.multisigList,
+            localKey: localKey
+        ) {
+            (
+                BytesCodable(wrappedValue: accountId),
+                callHashes.map { BytesCodable(wrappedValue: $0) }
+            )
+        }
 
-        subscription = CallbackBatchStorageSubscription(
-            requests: [request],
+        subscription = CallbackStorageSubscription(
+            request: request,
             connection: connection,
             runtimeService: runtimeService,
             repository: repository,
@@ -96,16 +110,13 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
 
             self?.mutex.unlock()
         }
-
-        subscription?.subscribe()
     }
 
-    private func handleSubscription(_ result: Result<BatchSubscriptionHandler, Error>) {
+    func handleSubscription(_ result: Result<[CallHash: Multisig.MultisigDefinition]?, Error>) {
         switch result {
-        case let .success(handler):
-            if let blockHash = handler.blockHash {
-                delegatedAccountSyncService.syncUp(chainId: chainId, at: blockHash)
-            }
+        case let .success(state):
+            guard let state else { return }
+            logger?.debug(state.debugDescription)
         case let .failure(error):
             logger?.error(error.localizedDescription)
         }
