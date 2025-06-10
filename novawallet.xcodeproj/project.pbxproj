@@ -622,6 +622,7 @@
 		0C71D3FC2DF182720042134B /* EvmBalanceUpdateBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3FB2DF182720042134B /* EvmBalanceUpdateBlock.swift */; };
 		0C71D3FE2DF7820D0042134B /* QRCodeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3FD2DF7820D0042134B /* QRCodeData.swift */; };
 		0C71D4002DF78FD60042134B /* ParitySignerWalletFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */; };
+		0C71D4032DF85E6F0042134B /* PolkadotVaultRootKeysImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C71D4022DF85E6F0042134B /* PolkadotVaultRootKeysImportTests.swift */; };
 		0C746DBC2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */; };
 		0C746DBE2CCF440800E9178B /* AssetExchangeAtomicOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */; };
 		0C75E2962C3F9263005A6232 /* DelegatedStakingPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C75E2952C3F9263005A6232 /* DelegatedStakingPallet.swift */; };
@@ -6483,6 +6484,7 @@
 		0C71D3FB2DF182720042134B /* EvmBalanceUpdateBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdateBlock.swift; sourceTree = "<group>"; };
 		0C71D3FD2DF7820D0042134B /* QRCodeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeData.swift; sourceTree = "<group>"; };
 		0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerWalletFormat.swift; sourceTree = "<group>"; };
+		0C71D4022DF85E6F0042134B /* PolkadotVaultRootKeysImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotVaultRootKeysImportTests.swift; sourceTree = "<group>"; };
 		0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeExecutionManager.swift; sourceTree = "<group>"; };
 		0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeAtomicOperation.swift; sourceTree = "<group>"; };
 		0C75E2952C3F9263005A6232 /* DelegatedStakingPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedStakingPallet.swift; sourceTree = "<group>"; };
@@ -13366,6 +13368,14 @@
 				0C71D3F92DF0EA3D0042134B /* MoonbeamEvmPallet+Events.swift */,
 			);
 			path = MoonbeamEvmPallet;
+			sourceTree = "<group>";
+		};
+		0C71D4012DF85E500042134B /* PolkadotVault */ = {
+			isa = PBXGroup;
+			children = (
+				0C71D4022DF85E6F0042134B /* PolkadotVaultRootKeysImportTests.swift */,
+			);
+			path = PolkadotVault;
 			sourceTree = "<group>";
 		};
 		0C75E2942C3F923A005A6232 /* DelegatedStaking */ = {
@@ -22683,6 +22693,7 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				0C71D4012DF85E500042134B /* PolkadotVault */,
 				0C0AE4032DE459BF00D506F3 /* WalletMigration */,
 				771901912AE2425400D9C918 /* Swaps */,
 				8440F4A3295AB4C200CAFBF9 /* SecurityLayer */,
@@ -33675,6 +33686,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
+				0C71D4032DF85E6F0042134B /* PolkadotVaultRootKeysImportTests.swift in Sources */,
 				2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */,
 				8410562E27AF22DA004F5CA3 /* EthereumAddressChecksum.swift in Sources */,
 				84B66A1826FE05B00038B963 /* ChainRegistryStub.swift in Sources */,
