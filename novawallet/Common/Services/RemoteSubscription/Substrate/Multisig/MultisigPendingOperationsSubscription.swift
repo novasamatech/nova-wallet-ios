@@ -138,7 +138,6 @@ private extension MultisigPendingOperationsSubscription {
                 }
                 .forEach {
                     subscriber?.didReceiveUpdate(
-                        for: accountId,
                         callHash: $0.key,
                         multisigDefinition: $0.value
                     )

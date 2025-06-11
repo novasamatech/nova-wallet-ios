@@ -2,7 +2,6 @@ import Foundation
 
 protocol MultisigPendingOperationsSubscriber: AnyObject {
     func didReceiveUpdate(
-        for multisigAccountId: AccountId,
         callHash: CallHash,
         multisigDefinition: Multisig.MultisigDefinition?
     )

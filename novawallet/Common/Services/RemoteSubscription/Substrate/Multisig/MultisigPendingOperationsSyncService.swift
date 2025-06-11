@@ -11,7 +11,6 @@ class MultisigPendingOperationsSyncService {
 
     private let chainRepository: AnyDataProviderRepository<ChainModel>
     private let chainRegistry: ChainRegistryProtocol
-    private let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     private let remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
@@ -34,7 +33,6 @@ class MultisigPendingOperationsSyncService {
     init(
         chainRegistry: ChainRegistryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol,
         pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
         remoteCallDataFactory: SubqueryMultisigsOperationFactoryProtocol,
@@ -45,7 +43,6 @@ class MultisigPendingOperationsSyncService {
     ) {
         self.chainRegistry = chainRegistry
         self.chainRepository = chainRepository
-        self.delegatedAccountSyncService = delegatedAccountSyncService
         self.remoteOperationUpdateService = remoteOperationUpdateService
         self.pendingCallHashesOperationFactory = pendingCallHashesOperationFactory
         self.remoteCallDataFactory = remoteCallDataFactory
@@ -55,6 +52,10 @@ class MultisigPendingOperationsSyncService {
         self.logger = logger
 
         setup()
+    }
+    
+    deinit {
+        cancellableSyncStore.cancel()
     }
 }
 
@@ -66,6 +67,8 @@ private extension MultisigPendingOperationsSyncService {
     }
 
     func updatePendingOperationsList() {
+        cancellableSyncStore.cancel()
+
         let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
 
         let fetchCallHashesOperation = OperationCombiningService(
@@ -297,7 +300,6 @@ private extension MultisigPendingOperationsSyncService {
 
 extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSubscriber {
     func didReceiveUpdate(
-        for _: AccountId,
         callHash: CallHash,
         multisigDefinition: Multisig.MultisigDefinition?
     ) {
