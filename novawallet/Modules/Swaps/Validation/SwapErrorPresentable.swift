@@ -37,6 +37,7 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         from view: ControllerBackedProtocol,
         utilityMinBalance: String,
         token: String,
+        network: String,
         locale: Locale
     )
 
@@ -107,14 +108,18 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         from view: ControllerBackedProtocol,
         utilityMinBalance: String,
         token: String,
+        network: String,
         locale: Locale
     ) {
         let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.commonReceiveNotSufficientNativeAssetError(
+
+        let message = R.string.localizable.swapFailureCannotReceiveInsufficientAssetOut(
             utilityMinBalance,
+            network,
             token,
             preferredLanguages: locale.rLanguages
         )
+
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)

@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "¡Bienvenido a Nova!";
 "wallet.migrate.accept.message" = "¡Ya casi llegas! 🎉\n Solo toca abajo para completar la configuración y comenzar a usar tus cuentas sin problemas tanto en la Polkadot App como en Nova Wallet";
 "wallet.migration.successful.alert.title" = "Cuentas migradas con éxito";
+"swap.failure.cannot.receive.insufficient.asset.out" = "Debes tener al menos %@ en %@ para recibir %@ token";
