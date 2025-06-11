@@ -42,7 +42,7 @@ private extension BranchLinkService {
         #endif
 
         Branch.getInstance().setConsumerProtectionAttributionLevel(.reduced)
-        
+
         Branch.getInstance().initSession(
             launchOptions: [:]
         ) { [weak self] (params: ExternalUniversalLinkParams?, _: Error?) in
