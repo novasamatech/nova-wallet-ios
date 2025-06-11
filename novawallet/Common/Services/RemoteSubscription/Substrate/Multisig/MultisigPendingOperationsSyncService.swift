@@ -1,8 +1,6 @@
 import Foundation
 import Operation_iOS
 
-protocol MultisigPendingOperationsSyncServiceProtocol {}
-
 class MultisigPendingOperationsSyncService {
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
 
@@ -14,14 +12,13 @@ class MultisigPendingOperationsSyncService {
     private let chainRepository: AnyDataProviderRepository<ChainModel>
     private let chainRegistry: ChainRegistryProtocol
     private let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+    private let remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     private let logger: LoggerProtocol?
-    private let storageFacade: StorageFacadeProtocol
 
     private let cancellableSyncStore = CancellableCallStore()
 
-    private var multisigOperationsSubscriptions: [AccountId: MultisigPendingOperationsSubscription] = [:]
     private var pendingOperations: [CallHash: Multisig.PendingOperation] = [:]
 
     private var metaAccountsDataProvider: StreamableProvider<ManagedMetaAccountModel>?
@@ -29,7 +26,7 @@ class MultisigPendingOperationsSyncService {
     private var multisigMetaAccounts: [MetaAccountModel] = [] {
         didSet {
             if multisigMetaAccounts != oldValue {
-                updatePendingOperationsSubscriptions()
+                updatePendingOperationsList()
             }
         }
     }
@@ -38,7 +35,7 @@ class MultisigPendingOperationsSyncService {
         chainRegistry: ChainRegistryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
         delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
-        storageFacade: StorageFacadeProtocol,
+        remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol,
         pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
         remoteCallDataFactory: SubqueryMultisigsOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
@@ -49,7 +46,7 @@ class MultisigPendingOperationsSyncService {
         self.chainRegistry = chainRegistry
         self.chainRepository = chainRepository
         self.delegatedAccountSyncService = delegatedAccountSyncService
-        self.storageFacade = storageFacade
+        self.remoteOperationUpdateService = remoteOperationUpdateService
         self.pendingCallHashesOperationFactory = pendingCallHashesOperationFactory
         self.remoteCallDataFactory = remoteCallDataFactory
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
@@ -58,10 +55,6 @@ class MultisigPendingOperationsSyncService {
         self.logger = logger
 
         setup()
-    }
-
-    deinit {
-        clearAllSubscriptions()
     }
 }
 
@@ -72,7 +65,7 @@ private extension MultisigPendingOperationsSyncService {
         metaAccountsDataProvider = subscribeAllWalletsProvider()
     }
 
-    func updatePendingOperationsSubscriptions() {
+    func updatePendingOperationsList() {
         let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
 
         let fetchCallHashesOperation = OperationCombiningService(
@@ -96,17 +89,24 @@ private extension MultisigPendingOperationsSyncService {
             backingCallIn: cancellableSyncStore,
             runningCallbackIn: workingQueue
         ) { [weak self] result in
+            guard let self else { return }
+
             switch result {
             case let .success(dict):
                 let merged = dict.reduce(into: [:]) { $0.merge($1, uniquingKeysWith: { $1 }) }
 
-                self?.mutex.lock()
+                mutex.lock()
 
-                self?.pendingOperations.merge(merged, uniquingKeysWith: { $1 })
+                let updatedHashes = Set(merged.keys)
+                let oldHashes = Set(pendingOperations.keys)
+                let newHashes = updatedHashes.subtracting(oldHashes)
 
-                self?.mutex.unlock()
+                pendingOperations.merge(merged, uniquingKeysWith: { $1 })
+                subscribe(newHashes)
+
+                mutex.unlock()
             case let .failure(error):
-                self?.logger?.error("Failed to fetch pending operations: \(error)")
+                logger?.error("Failed to fetch pending operations: \(error)")
             }
         }
     }
@@ -115,7 +115,7 @@ private extension MultisigPendingOperationsSyncService {
         for multisigMetaAccount: MetaAccountModel,
         dependingOn chainsFetchOperation: BaseOperation<[ChainModel]>
     ) -> CompoundOperationWrapper<[CallHash: Multisig.PendingOperation]> {
-        guard let signatory = multisigMetaAccount.multisig?.signatory else {
+        guard let multisigContext = multisigMetaAccount.multisig else {
             return .createWithError(MultisigPendingOperationsSyncError.multisigAccountUnavailable)
         }
         let chainIdMatchOperation = createMatchChainOperation(
@@ -150,7 +150,8 @@ private extension MultisigPendingOperationsSyncService {
                 let pendingOperation = Multisig.PendingOperation(
                     call: nil,
                     callHash: keyValue.key,
-                    signatory: signatory,
+                    multisigAccountId: multisigContext.accountId,
+                    signatory: multisigContext.signatory,
                     chainId: chainId,
                     multisigDefinition: keyValue.value
                 )
@@ -241,36 +242,74 @@ private extension MultisigPendingOperationsSyncService {
         }
     }
 
-    func setupSubscription(
-        for multisigAccountId: AccountId,
-        callHashes: Set<CallHash>,
-        chainId: ChainModel.Id
-    ) throws {
-        clearSubscription(for: multisigAccountId)
+    func subscribe(_ callHashes: Set<CallHash>) {
+        let operationsMap: [AccountId: [Multisig.PendingOperation]] = callHashes
+            .reduce(into: [:]) { acc, callHash in
+                guard let pendingOperation = pendingOperations[callHash] else { return }
 
-        multisigOperationsSubscriptions[multisigAccountId] = MultisigPendingOperationsSubscription(
-            accountId: multisigAccountId,
-            chainId: chainId,
-            callHashes: callHashes,
-            chainRegistry: chainRegistry,
-            storageFacade: storageFacade,
-            operationQueue: operationQueue,
-            workingQueue: .init(label: "com.novawallet.multisig.updating", qos: .userInitiated)
-        )
+                if let operations = acc[pendingOperation.multisigAccountId] {
+                    acc[pendingOperation.multisigAccountId] = operations + [pendingOperation]
+                } else {
+                    acc[pendingOperation.multisigAccountId] = [pendingOperation]
+                }
+            }
+
+        do {
+            try operationsMap.forEach { multisigAccountId, pendingOperations in
+                guard let chainId = pendingOperations.first?.chainId else { return }
+
+                let callHashes = pendingOperations.map(\.callHash)
+
+                try remoteOperationUpdateService.setupSubscription(
+                    subscriber: self,
+                    for: multisigAccountId,
+                    callHashes: Set(callHashes),
+                    chainId: chainId
+                )
+            }
+        } catch {
+            logger?.error("Failed to subscribe to remote operations: \(error)")
+        }
     }
 
-    func clearSubscription(for accountId: AccountId) {
-        multisigOperationsSubscriptions[accountId] = nil
-    }
+    func stopSyncing(callHash: CallHash) {
+        mutex.lock()
+        defer { mutex.unlock() }
 
-    func clearAllSubscriptions() {
-        multisigOperationsSubscriptions = [:]
+        guard let pendingOperation = pendingOperations[callHash] else {
+            return
+        }
+
+        pendingOperations[callHash] = nil
+
+        let operationsForAccountId = pendingOperations.filter {
+            $0.value.multisigAccountId == pendingOperation.multisigAccountId
+        }
+        let updatedCallHashes = operationsForAccountId.keys
+
+        remoteOperationUpdateService.clearSubscription(for: pendingOperation.multisigAccountId)
+
+        subscribe(Set(updatedCallHashes))
     }
 }
 
-// MARK: - MultisigPendingOperationsSyncServiceProtocol
+// MARK: - MultisigPendingOperationsSubscriber
 
-extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSyncServiceProtocol {}
+extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSubscriber {
+    func didReceiveUpdate(
+        for _: AccountId,
+        callHash: CallHash,
+        multisigDefinition: Multisig.MultisigDefinition?
+    ) {
+        if let multisigDefinition, let pendingOperation = pendingOperations[callHash] {
+            mutex.lock()
+            pendingOperations[callHash] = pendingOperation.replaicingDefinition(with: multisigDefinition)
+            mutex.unlock()
+        } else {
+            stopSyncing(callHash: callHash)
+        }
+    }
+}
 
 // MARK: - WalletListLocalStorageSubscriber
 

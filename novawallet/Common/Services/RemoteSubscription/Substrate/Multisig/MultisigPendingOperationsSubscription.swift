@@ -16,7 +16,9 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     private let mutex = NSLock()
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
+
     private var subscription: CallbackBatchStorageSubscription<SubscriptionResult>?
+    private weak var subscriber: MultisigPendingOperationsSubscriber?
 
     private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
         let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
@@ -30,6 +32,7 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         callHashes: Set<CallHash>,
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
+        subscriber: MultisigPendingOperationsSubscriber,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol? = nil
@@ -38,10 +41,11 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         self.chainId = chainId
         self.callHashes = callHashes
         self.chainRegistry = chainRegistry
+        self.storageFacade = storageFacade
+        self.subscriber = subscriber
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
-        self.storageFacade = storageFacade
 
         do {
             try subscribeRemote(
@@ -120,20 +124,32 @@ private extension MultisigPendingOperationsSubscription {
     ) {
         switch result {
         case let .success(state):
-            let multisigDefinitions: [Multisig.MultisigDefinition] = callHashes.compactMap {
-                let key = SubscriptionResult.Key.pendingOperation(with: $0)
-                let json = state.values[key]
+            callHashes
+                .reduce(into: [:]) { acc, callHash in
+                    let key = SubscriptionResult.Key.pendingOperation(with: callHash)
+                    let json = state.values[key]
 
-                return try? json?.map(
-                    to: Multisig.MultisigDefinition.self,
-                    with: state.context
-                )
-            }
+                    guard let definition = try? json?.map(
+                        to: Multisig.MultisigDefinition.self,
+                        with: state.context
+                    ) else { return }
+
+                    acc[callHash] = definition
+                }
+                .forEach {
+                    subscriber?.didReceiveUpdate(
+                        for: accountId,
+                        callHash: $0.key,
+                        multisigDefinition: $0.value
+                    )
+                }
         case let .failure(error):
             logger?.error(error.localizedDescription)
         }
     }
 }
+
+// MARK: - SubscriptionResult
 
 private struct SubscriptionResult: BatchStorageSubscriptionResult {
     enum Key {

@@ -8,6 +8,7 @@ enum Multisig {
     struct PendingOperation: Codable, Equatable {
         let call: JSON?
         let callHash: CallHash
+        let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition
@@ -30,5 +31,18 @@ enum Multisig {
     struct MultisigTimepoint: Codable, Equatable {
         let height: BlockNumber
         @StringCodable var index: UInt32
+    }
+}
+
+extension Multisig.PendingOperation {
+    func replaicingDefinition(with definition: Multisig.MultisigDefinition) -> Self {
+        .init(
+            call: call,
+            callHash: callHash,
+            multisigAccountId: multisigAccountId,
+            signatory: signatory,
+            chainId: chainId,
+            multisigDefinition: definition
+        )
     }
 }
