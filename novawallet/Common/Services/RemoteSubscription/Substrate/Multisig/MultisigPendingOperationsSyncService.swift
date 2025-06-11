@@ -83,8 +83,15 @@ private extension MultisigPendingOperationsSyncService {
             }
         }.longrunOperation()
 
-        execute(
-            operation: fetchCallHashesOperation,
+        fetchCallHashesOperation.addDependency(chainsFetchOperation)
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: fetchCallHashesOperation,
+            dependencies: [chainsFetchOperation]
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             backingCallIn: cancellableSyncStore,
             runningCallbackIn: workingQueue
@@ -138,7 +145,6 @@ private extension MultisigPendingOperationsSyncService {
             }
         )
 
-        chainMatchOperation.addDependency(chainsFetchOperation)
         callHashFetchWrapper.addDependency(operations: [chainMatchOperation])
         callDataFetchWrapper.addDependency(operations: [chainMatchOperation])
         callDataFetchWrapper.addDependency(wrapper: callHashFetchWrapper)
@@ -164,11 +170,9 @@ private extension MultisigPendingOperationsSyncService {
             }
         }
 
-        mapOperation.addDependency(chainMatchOperation)
-        mapOperation.addDependency(callHashFetchWrapper.targetOperation)
         mapOperation.addDependency(callDataFetchWrapper.targetOperation)
 
-        let dependencies = [chainsFetchOperation, chainMatchOperation]
+        let dependencies = [chainMatchOperation]
             + callHashFetchWrapper.allOperations
             + callDataFetchWrapper.allOperations
 
@@ -184,11 +188,7 @@ private extension MultisigPendingOperationsSyncService {
     ) -> CompoundOperationWrapper<[CallHash: CallData]> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
+        ) {
             let chain = try chainClosure()
             let callHashes = try callHashesClosure()
 
@@ -243,12 +243,19 @@ private extension MultisigPendingOperationsSyncService {
     ) -> BaseOperation<ChainModel> {
         ClosureOperation {
             let chains: [ChainModel.Id: ChainModel] = try chainsClosure()
-                .reduce(into: [:]) { $0[$1.chainId] = $1 }
+                .reduce(into: [:]) { acc, chain in
+                    guard
+                        let multisigApis = chain.externalApis?.multisig(),
+                        !multisigApis.isEmpty
+                    else { return }
 
-            let accountRequests = chains.map { $0.value.accountRequest() }
-            let accountResponse = accountRequests.compactMap { multisigMetaAccount.fetch(for: $0) }.first
+                    acc[chain.chainId] = chain
+                }
 
-            guard let accountResponse, let chain = chains[accountResponse.chainId] else {
+            guard
+                let detectedOnChain = multisigMetaAccount.multisig?.detectedOnChain,
+                let chain = chains[detectedOnChain]
+            else {
                 throw MultisigPendingOperationsSyncError.noChainMatchingMultisigAccount
             }
 

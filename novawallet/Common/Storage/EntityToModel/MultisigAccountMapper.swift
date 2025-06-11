@@ -18,6 +18,7 @@ extension MultisigAccountMapper: CoreDataMapperProtocol {
         let otherSignatories = try otherSignatoriesHex.map { try Data(hexString: $0) }
 
         return DataProviderModel(
+            detectedOnChain: entity.detectedOnChain ?? "",
             accountId: accountId,
             signatory: signatory,
             otherSignatories: otherSignatories,

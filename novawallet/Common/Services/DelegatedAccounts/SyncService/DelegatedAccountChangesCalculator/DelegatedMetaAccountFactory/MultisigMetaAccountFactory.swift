@@ -32,6 +32,7 @@ private extension MultisigMetaAccountFactory {
         }
 
         let multisigModel = DelegatedAccount.MultisigAccountModel(
+            detectedOnChain: chainModel.chainId,
             accountId: discoveredMultisig.accountId,
             signatory: signatoryAccountId,
             otherSignatories: discoveredMultisig.otherSignatories(than: signatoryAccountId),
