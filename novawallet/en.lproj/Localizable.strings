@@ -1857,6 +1857,7 @@
 "wallet.migrate.accept.title" = "Welcome to Nova!";
 "wallet.migrate.accept.message" = "You’re almost there! 🎉\n Just tap below to complete the setup and start using your accounts seamlessly in both the Polkadot App and Nova Wallet";
 "wallet.migration.successful.alert.title" = "Accounts migrated successfully";
+"swap.failure.cannot.receive.insufficient.asset.out" = "You must have at least %@ on %@ to receive %@ token";
 "common.multisig" = "Multisig";
 "common.proxied" = "Proxied";
 "common.signer" = "Signer";
