@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "Üdvözlünk a Nova-ban!";
 "wallet.migrate.accept.message" = "Már majdnem kész vagy! 🎉\n Csak koppints az alábbi gombra, hogy befejezd a beállítást, és zökkenőmentesen kezdd el használni a fiókjaidat mind a Polkadot App-ban, mind a Nova Walletben";
 "wallet.migration.successful.alert.title" = "A fiókok sikeresen át lettek költöztetve";
+"swap.failure.cannot.receive.insufficient.asset.out" = "Legalább %@ szükséges a %@ hálózaton a %@ token fogadásához";

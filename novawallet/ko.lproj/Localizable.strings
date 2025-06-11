@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "Nova에 오신 것을 환영합니다!";
 "wallet.migrate.accept.message" = "거의 다 왔어요! 🎉\n 아래를 탭하여 설정을 완료하고 Polkadot 앱과 Nova Wallet에서 계정을 원활하게 사용하세요";
 "wallet.migration.successful.alert.title" = "계정 마이그레이션 성공";
+"swap.failure.cannot.receive.insufficient.asset.out" = "%@ 토큰을 받으려면 %@에 최소 %@가 있어야 합니다";
