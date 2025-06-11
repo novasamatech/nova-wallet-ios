@@ -39,15 +39,19 @@ final class DelegatedAccountsUpdatePresenter {
     }
 
     func preferredContentHeight() -> CGFloat {
-        let proxieds = initWallets.compactMap(\.info.proxy)
-        let multisigs = initWallets.compactMap(\.info.multisig)
+        let proxieds = initWallets
+            .map(\.info)
+            .filter { $0.type == .proxied }
+        let multisigs = initWallets
+            .map(\.info)
+            .filter { $0.type == .multisig }
 
-        let delegatedAccounts: [any DelegatedAccountProtocol] = proxieds.count > multisigs.count
+        let delegatedAccounts = proxieds.count > multisigs.count
             ? proxieds
             : multisigs
 
-        let newModelsCount = delegatedAccounts.filter { $0.status == .new }.count
-        let revokedModelsCount = delegatedAccounts.filter { $0.status == .revoked }.count
+        let newModelsCount = delegatedAccounts.filter { $0.delegatedAccountStatus() == .new }.count
+        let revokedModelsCount = delegatedAccounts.filter { $0.delegatedAccountStatus() == .revoked }.count
 
         let hasProxied = !proxieds.isEmpty
         let hasMultisig = !multisigs.isEmpty
