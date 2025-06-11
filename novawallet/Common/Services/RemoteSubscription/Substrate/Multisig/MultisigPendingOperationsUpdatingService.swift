@@ -32,7 +32,7 @@ final class MultisigPendingOperationsUpdatingService {
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue
+        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.updating")
     ) {
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
