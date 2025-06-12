@@ -110,7 +110,7 @@ final class NftListViewModelFactory {
 
     private func createPrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
         switch NftType(rawValue: model.nft.type) {
-        case .rmrkV1, .rmrkV2, .uniques, .kodadot, .none:
+        case .rmrkV1, .rmrkV2, .uniques, .kodadot, .unique, .none:
             return createNonFungiblePrice(from: model, locale: locale)
         case .pdc20:
             return createFungiblePrice(from: model, locale: locale)
@@ -290,6 +290,29 @@ final class NftListViewModelFactory {
         return NftListStaticViewModel(name: name, label: label, media: mediaViewModel)
     }
 
+    private func createUniqueViewModel(
+        from model: NftModel,
+        locale: Locale
+    ) -> NftListMetadataViewModelProtocol {
+        let name = model.name ?? model.instanceId ?? ""
+        let label = createUnlimitedIssuanceLabel(for: locale)
+
+        let mediaViewModel: NftMediaViewModelProtocol?
+        if
+            let imageUrlString = model.media,
+            let imageUrl = URL(string: imageUrlString) {
+            mediaViewModel = NftImageViewModel(url: imageUrl)
+        } else {
+            mediaViewModel = nil
+        }
+
+        return NftListStaticViewModel(
+            name: name,
+            label: label,
+            media: mediaViewModel
+        )
+    }
+
     private func createMedatadaViewModel(
         from model: NftChainModel,
         locale: Locale
@@ -305,6 +328,8 @@ final class NftListViewModelFactory {
             return createPdc20Metadata(from: model.nft, locale: locale)
         case .kodadot:
             return createKodaDotViewModel(from: model.nft, locale: locale)
+        case .unique:
+            return createUniqueViewModel(from: model.nft, locale: locale)
         case .none:
             return createStaticMetadata(from: model.nft)
         }
