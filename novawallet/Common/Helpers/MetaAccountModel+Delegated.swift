@@ -71,9 +71,7 @@ extension MetaAccountModel {
         case let .universal(multisig):
             multisig.signatory == substrateAccountId || multisig.signatory == ethereumAddress
         case let .singleChain(chainAccount):
-            chainAccounts.contains {
-                $0.chainId == chainAccount.chainId && $0.accountId == chainAccount.multisig?.signatory
-            }
+            has(accountId: chainAccount.accountId, chainId: chainAccount.chainId)
         }
     }
 
