@@ -64,7 +64,7 @@ private extension DelegatedAccountFetchOperationFactory {
                 }
             }
 
-        let resultUpdates = delegateStatusMap.map { _, value in
+        let resultUpdates = delegateStatusMap.map { delegationId, value in
             let collectedStatuses = value.0
             let managedMetaAccount = value.1
 
@@ -73,7 +73,14 @@ private extension DelegatedAccountFetchOperationFactory {
                 let currentStatus = managedMetaAccount.info.delegatedAccountStatus()
             else { return managedMetaAccount }
 
-            let resultStatus: DelegatedAccount.Status = if collectedStatuses.contains(.new) {
+            // We don't want to overwrite revoke status for chain-specific delegation
+            // since the only revoke status comes for the delegation's chain
+
+            let chainSpecificRevoke = delegationId.chainId != nil && collectedStatuses.contains(.revoked)
+
+            let resultStatus: DelegatedAccount.Status = if chainSpecificRevoke {
+                .revoked
+            } else if collectedStatuses.contains(.new) {
                 .new
             } else if collectedStatuses.contains(.active) {
                 .active
