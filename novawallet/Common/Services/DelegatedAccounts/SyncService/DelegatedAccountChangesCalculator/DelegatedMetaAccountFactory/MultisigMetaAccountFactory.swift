@@ -183,7 +183,14 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func canHandle(_ metaAccount: ManagedMetaAccountModel) -> Bool {
-        metaAccount.info.multisigAccount != nil
+        guard let localMultisigAccountType = metaAccount.info.multisigAccount else { return false }
+
+        return switch localMultisigAccountType {
+        case let .singleChain(chainAccount):
+            chainAccount.chainId == chainModel.chainId
+        case let .universal(localMultisig):
+            true
+        }
     }
 
     func canHandle(_ delegatedAccount: any DiscoveredDelegatedAccountProtocol) -> Bool {
