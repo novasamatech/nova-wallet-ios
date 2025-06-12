@@ -371,4 +371,8 @@ extension ChainModel {
 
         return accountId
     }
+
+    static func getEvmNullAccountId() -> AccountId {
+        AccountId.zeroAccountId(of: getAccountIdSize(for: .ethereum))
+    }
 }

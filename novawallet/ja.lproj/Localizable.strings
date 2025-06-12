@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "Novaへようこそ！";
 "wallet.migrate.accept.message" = "もう少しです！🎉\n 設定を完了して、Polkadot AppとNova Walletの両方でアカウントをスムーズに使用するには、以下をタップしてください。";
 "wallet.migration.successful.alert.title" = "アカウントの移行に成功しました";
+"swap.failure.cannot.receive.insufficient.asset.out" = "%@トークンを受け取るには、%@上に少なくとも%@が必要です";

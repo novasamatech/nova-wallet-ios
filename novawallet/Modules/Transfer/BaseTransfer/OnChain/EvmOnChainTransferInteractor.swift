@@ -126,7 +126,7 @@ extension EvmOnChainTransferInteractor {
             transferType = .native
 
             continueSetup()
-        } else if let address = asset.typeExtras?.stringValue, (try? address.toEthereumAccountId()) != nil {
+        } else if let address = asset.evmContractAddress, (try? address.toEthereumAccountId()) != nil {
             transferType = .erc20(address)
 
             continueSetup()

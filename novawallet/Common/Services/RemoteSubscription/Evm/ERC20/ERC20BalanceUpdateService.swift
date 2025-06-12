@@ -11,134 +11,65 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     let holder: AccountAddress
     let assetContracts: Set<EvmAssetContractId>
     let connection: JSONRPCEngine
-    let repository: AnyDataProviderRepository<AssetBalance>
+    let updateHandler: EvmBalanceUpdateHandling
     let operationQueue: OperationQueue
-    let blockNumber: Core.BlockNumber
+    let block: EvmBalanceUpdateBlock
     let queryMessageFactory: EvmQueryContractMessageFactoryProtocol
     let completion: ERC20UpdateServiceCompletionClosure?
+    let workQueue: DispatchQueue
 
-    @Atomic(defaultValue: nil) private var queryIds: [UInt16]?
-    @Atomic(defaultValue: nil) private var cancellable: CancellableCall?
+    private var queryIds: [UInt16]?
+    let callStore = CancellableCallStore()
 
     init(
         holder: AccountAddress,
         assetContracts: Set<EvmAssetContractId>,
         connection: JSONRPCEngine,
-        repository: AnyDataProviderRepository<AssetBalance>,
+        updateHandler: EvmBalanceUpdateHandling,
         operationQueue: OperationQueue,
-        blockNumber: Core.BlockNumber,
+        block: EvmBalanceUpdateBlock,
         queryMessageFactory: EvmQueryContractMessageFactoryProtocol,
+        workQueue: DispatchQueue,
         logger: LoggerProtocol,
         completion: ERC20UpdateServiceCompletionClosure?
     ) {
         self.holder = holder
         self.assetContracts = assetContracts
         self.connection = connection
-        self.repository = repository
+        self.updateHandler = updateHandler
         self.operationQueue = operationQueue
-        self.blockNumber = blockNumber
+        self.workQueue = workQueue
+        self.block = block
         self.queryMessageFactory = queryMessageFactory
         self.completion = completion
 
         super.init(logger: logger)
     }
 
-    private func createSaveOperation(
-        dependingOn localBalancesOperation: BaseOperation<[ChainAssetId: AssetBalance]>,
-        balances: [ChainAssetId: BigUInt],
-        holder: AccountAddress
-    ) -> BaseOperation<Void> {
-        repository.saveOperation({
-            let localBalancesDict = try localBalancesOperation.extractNoCancellableResultData()
+    private func handleAndComplete(balances: [ChainAssetId: BigUInt], holder: AccountAddress) {
+        callStore.cancel()
 
-            let accountId = try holder.toEthereumAccountId()
-
-            return balances.compactMap { keyValue in
-                // add new balance or update existing
-
-                let chainAssetId = keyValue.key
-                let newBalance = keyValue.value
-                let oldBalance = localBalancesDict[chainAssetId]?.totalInPlank
-
-                guard newBalance > 0, newBalance != oldBalance else {
-                    return nil
-                }
-
-                return AssetBalance(
-                    chainAssetId: chainAssetId,
-                    accountId: accountId,
-                    freeInPlank: newBalance,
-                    reservedInPlank: 0,
-                    frozenInPlank: 0,
-                    edCountMode: .basedOnFree,
-                    transferrableMode: .regular,
-                    blocked: false
-                )
-            }
-        }, {
-            // remove zero balances
-
-            let localBalancesDict = try localBalancesOperation.extractNoCancellableResultData()
-
-            return balances.compactMap { keyValue in
-                let chainAssetId = keyValue.key
-                let newBalance = keyValue.value
-
-                guard newBalance == 0, let oldBalance = localBalancesDict[chainAssetId] else {
-                    return nil
-                }
-
-                return oldBalance.identifier
-            }
-        })
-    }
-
-    private func saveAndComplete(balances: [ChainAssetId: BigUInt], holder: AccountAddress) {
-        let localBalancesFetchOperation = repository.fetchAllOperation(
-            with: RepositoryFetchOptions()
-        )
-
-        let localBalancesMapOperation = ClosureOperation<[ChainAssetId: AssetBalance]> {
-            let localAssetBalances = try localBalancesFetchOperation.extractNoCancellableResultData()
-            return localAssetBalances.reduce(into: [ChainAssetId: AssetBalance]()) {
-                $0[$1.chainAssetId] = $1
-            }
-        }
-
-        localBalancesMapOperation.addDependency(localBalancesFetchOperation)
-
-        let saveOperation = createSaveOperation(
-            dependingOn: localBalancesMapOperation,
+        let wrapper = updateHandler.onBalanceUpdateWrapper(
             balances: balances,
-            holder: holder
+            holder: holder,
+            block: block.updateDetectedAt
         )
 
-        saveOperation.addDependency(localBalancesMapOperation)
-
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: [localBalancesFetchOperation, localBalancesMapOperation]
-        )
-
-        saveOperation.completionBlock = { [weak self] in
-            guard self?.cancellable === wrapper else {
-                return
-            }
-
-            self?.cancellable = nil
-
-            do {
-                try saveOperation.extractNoCancellableResultData()
-                self?.complete(nil)
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: workQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.completeImmediate(nil)
                 self?.completion?()
-            } catch {
-                self?.complete(error)
+            case let .failure(error):
+                self?.completeImmediate(error)
             }
         }
-
-        cancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func extractBalances(
@@ -180,7 +111,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                     contractAddress: assetContract.contract
                 )
 
-                let params = EvmQueryMessage.Params(call: call, block: blockNumber)
+                let params = EvmQueryMessage.Params(call: call, block: block.fetchRequestedAt)
                 try connection.addBatchCallMethod(EvmQueryMessage.method, params: params, batchId: batchId)
             }
 
@@ -188,14 +119,22 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                 for: batchId,
                 options: JSONRPCOptions(resendOnReconnect: true)
             ) { [weak self] responses in
-                guard let balances = self?.extractBalances(
-                    from: responses,
-                    assetContracts: assetContractList
-                ) else {
+                guard let self else {
                     return
                 }
 
-                self?.saveAndComplete(balances: balances, holder: holder)
+                dispatchInQueueWhenPossible(workQueue, locking: mutex) { [weak self] in
+                    guard let self else {
+                        return
+                    }
+
+                    let balances = extractBalances(
+                        from: responses,
+                        assetContracts: assetContractList
+                    )
+
+                    handleAndComplete(balances: balances, holder: holder)
+                }
             }
         } catch {
             connection.clearBatch(for: batchId)
@@ -212,6 +151,6 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
             connection.cancelForIdentifiers(queryIds)
         }
 
-        clear(cancellable: &cancellable)
+        callStore.cancel()
     }
 }
