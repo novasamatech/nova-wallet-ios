@@ -2628,7 +2628,7 @@
 		840B3D632899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D622899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift */; };
 		840B3D652899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D642899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift */; };
 		840B3D672899BFD200DA1DA9 /* QRScannerViewSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D662899BFD200DA1DA9 /* QRScannerViewSettings.swift */; };
-		840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */; };
+		840B3D6A2899CD2900DA1DA9 /* ParitySignerWalletScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D692899CD2900DA1DA9 /* ParitySignerWalletScan.swift */; };
 		840B3D6C2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6B2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift */; };
 		840B3D6E289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6D289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift */; };
 		840B3D70289A575A00DA1DA9 /* ParitySignerScanProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840B3D6F289A575A00DA1DA9 /* ParitySignerScanProtocols.swift */; };
@@ -8458,7 +8458,7 @@
 		840B3D622899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanPresenter.swift; sourceTree = "<group>"; };
 		840B3D642899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanViewFactory.swift; sourceTree = "<group>"; };
 		840B3D662899BFD200DA1DA9 /* QRScannerViewSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerViewSettings.swift; sourceTree = "<group>"; };
-		840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerAddressScan.swift; sourceTree = "<group>"; };
+		840B3D692899CD2900DA1DA9 /* ParitySignerWalletScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerWalletScan.swift; sourceTree = "<group>"; };
 		840B3D6B2899CD5A00DA1DA9 /* ParitySignerScanMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanMatcher.swift; sourceTree = "<group>"; };
 		840B3D6D289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanWireframe.swift; sourceTree = "<group>"; };
 		840B3D6F289A575A00DA1DA9 /* ParitySignerScanProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerScanProtocols.swift; sourceTree = "<group>"; };
@@ -18122,7 +18122,7 @@
 		840B3D682899CD1600DA1DA9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				840B3D692899CD2900DA1DA9 /* ParitySignerAddressScan.swift */,
+				840B3D692899CD2900DA1DA9 /* ParitySignerWalletScan.swift */,
 				8428228F289BB3C700163031 /* ParitySignerWalletOperationFactory.swift */,
 				84282291289BB45700163031 /* ParitySignerWallet.swift */,
 				84F4B2362A31D2F300113DDD /* ParitySignerType.swift */,
@@ -28753,7 +28753,7 @@
 				8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */,
 				0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */,
 				84EBC55B24F660F500459D15 /* SelectedWalletSwitched.swift in Sources */,
-				840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */,
+				840B3D6A2899CD2900DA1DA9 /* ParitySignerWalletScan.swift in Sources */,
 				883DB178297A411300EFB7D8 /* AddDelegationStyles.swift in Sources */,
 				2D389B082C8616F900256C7B /* SwipeGovGradientFactory.swift in Sources */,
 				0C11D85A2CCA3377003EC46D /* AssetsHydraOmnipoolExchange.swift in Sources */,

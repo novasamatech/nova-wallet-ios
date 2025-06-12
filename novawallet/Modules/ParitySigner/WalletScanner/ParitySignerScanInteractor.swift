@@ -47,8 +47,10 @@ private extension ParitySignerScanInterator {
         }
     }
 
-    func process(rootKeys: [ParitySignerWalletScan.RootPublicKey]) {
+    func process(rootKeysInfo: ParitySignerWalletScan.RootKeysInfo) {
         do {
+            let rootKeys = rootKeysInfo.publicKeys
+
             guard let substrateKey = rootKeys.first(where: { $0.type != .ethereumEcdsa }) else {
                 throw ParitySignerScanInteratorError.substrateKeysNotFound
             }
@@ -74,8 +76,8 @@ extension ParitySignerScanInterator: ParitySignerScanInteractorInputProtocol {
         switch walletScan {
         case let .singleAddress(singleAddress):
             proccess(singleAddress: singleAddress)
-        case let .rootKeys(rootKeys):
-            process(rootKeys: rootKeys)
+        case let .rootKeys(rootKeysInfo):
+            process(rootKeysInfo: rootKeysInfo)
         }
     }
 }

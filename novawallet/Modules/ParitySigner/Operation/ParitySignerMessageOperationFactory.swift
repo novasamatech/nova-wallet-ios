@@ -12,7 +12,7 @@ enum ParitySignerNetworkType: UInt8 {
 enum ParitySignerMessageType: UInt8 {
     case transaction = 2
     case message = 3
-    case ddTransactionWithProof = 5
+    case ddTransactionWithProof = 7
     case transactionWithProof = 6
 
     var bytes: Data {

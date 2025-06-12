@@ -38,9 +38,9 @@ final class ParitySignerScanMatcher {
         do {
             let decoder = try ScaleDecoder(data: rawData)
 
-            let rootKeys = try [ParitySignerWalletScan.RootPublicKey](scaleDecoder: decoder)
+            let rootKeysInfo = try ParitySignerWalletScan.RootKeysInfo(scaleDecoder: decoder)
 
-            return .rootKeys(rootKeys)
+            return .rootKeys(rootKeysInfo)
         } catch {
             return nil
         }

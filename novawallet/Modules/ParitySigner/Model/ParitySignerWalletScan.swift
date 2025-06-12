@@ -31,6 +31,23 @@ enum ParitySignerWalletScan {
         }
     }
 
+    struct RootKeysInfo: ScaleCodable {
+        static let KeyIdSize: Int = 32
+
+        let rootKeyId: Data
+        let publicKeys: [RootPublicKey]
+
+        init(scaleDecoder: ScaleDecoding) throws {
+            rootKeyId = try scaleDecoder.readAndConfirm(count: Self.KeyIdSize)
+            publicKeys = try [RootPublicKey](scaleDecoder: scaleDecoder)
+        }
+
+        func encode(scaleEncoder: ScaleEncoding) throws {
+            scaleEncoder.appendRaw(data: rootKeyId)
+            try publicKeys.encode(scaleEncoder: scaleEncoder)
+        }
+    }
+
     enum RootPublicKey: ScaleCodable {
         case ed25519(Data)
         case sr25519(Data)
@@ -93,5 +110,5 @@ enum ParitySignerWalletScan {
     }
 
     case singleAddress(SingleAddress)
-    case rootKeys([RootPublicKey])
+    case rootKeys(RootKeysInfo)
 }
