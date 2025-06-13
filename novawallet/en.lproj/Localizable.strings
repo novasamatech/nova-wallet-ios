@@ -1431,7 +1431,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Invalid derivation path";
 "nft.issuance.fungible.format" = "%@ units of %@";
 "nft.fungible.price" = "%@ for %@";
-"common.proxieds" = "Delegated to you (Proxieds)";
+"common.proxieds" = "Delegated to you (Proxied)";
 "proxy.nomination.pools.type.title" = "Nomination Pools";
 "proxy.auction.type.title" = "Auction";
 "proxy.cancel.proxy.type.title" = "Cancel Proxy";
@@ -1860,9 +1860,9 @@
 "swap.failure.cannot.receive.insufficient.asset.out" = "You must have at least %@ on %@ to receive %@ token";
 "common.multisig" = "Multisig";
 "common.proxied" = "Proxied";
-"common.signer" = "Signer";
+"common.signatory" = "Signatory";
 "wallet.list.multisig" = "Shared control (multisig)";
-"multisig.details.hint" = "Transactions from this wallet require approval from multiple signers. This account is one of the signers:";
+"multisig.details.hint" = "Transactions from this wallet require approval from multiple signatories. Your account is one of the signatories:";
 "multisig.signing.title" = "Multisig transaction";
 "multisig.signing.message" = "\“%@\” will sign the transaction and pay the network fee. The transaction will be executed upon final signature and the multisig deposit will be returned to \“%@\”";
 "multisig.transaction.created.title" = "Multisig transaction created";

@@ -37,6 +37,7 @@ final class WalletView: GenericTitleValueView<
         valueView.sView.sView.iconWidth = 16
         subtitleDetailsLabel.numberOfLines = 1
         subtitleDetailsLabel.apply(style: .footnotePrimary)
+        subtitleDetailsLabel.lineBreakMode = .byTruncatingMiddle
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4

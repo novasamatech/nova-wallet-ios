@@ -102,7 +102,7 @@ class WalletsListViewController<
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
         case .multisig:
-            icon = R.image.iconMultisig()
+            icon = R.image.iconMultisigWallet()
             title = R.string.localizable.walletListMultisig(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
@@ -113,10 +113,7 @@ class WalletsListViewController<
             ).uppercased()
         }
 
-        guard
-            let title,
-            let icon = icon?.tinted(with: R.color.colorIconChip()!)
-        else { return nil }
+        guard let title, let icon else { return nil }
 
         let view = dequeueCommonHeader(from: tableView)
         view.bind(title: title, icon: icon)
