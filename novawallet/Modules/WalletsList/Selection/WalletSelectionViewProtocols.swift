@@ -23,4 +23,8 @@ protocol WalletSelectionWireframeProtocol: WalletsListWireframeProtocol {
         from view: ControllerBackedProtocol?,
         initWallets: [ManagedMetaAccountModel]
     )
+    func showMultisigUnavailable(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
+    )
 }
