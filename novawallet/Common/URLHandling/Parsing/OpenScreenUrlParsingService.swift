@@ -38,7 +38,7 @@ enum OpenScreenUrlParsingError: Error {
             return govScreenError.message(locale: locale)
         case let .openDAppScreen(dAppError):
             return dAppError.message(locale: locale)
-        case let .cardScreen(cardError):
+        case .cardScreen:
             return nil
         }
     }

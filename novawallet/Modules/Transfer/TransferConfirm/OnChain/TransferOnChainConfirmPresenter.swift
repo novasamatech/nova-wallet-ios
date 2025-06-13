@@ -221,8 +221,6 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
             return
         }
 
-        let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
-
         let validators: [DataValidating] = baseValidators(
             for: amount.value,
             recepientAddress: recepientAccountAddress,

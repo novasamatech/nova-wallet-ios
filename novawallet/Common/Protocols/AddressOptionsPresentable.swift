@@ -218,7 +218,7 @@ enum AddressOptionsPresentableFactory {
             R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
         }
 
-        var builder = ChainAddressDetailsModelBuilder(
+        let builder = ChainAddressDetailsModelBuilder(
             address: address,
             titleText: title
         ).addAction(

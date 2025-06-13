@@ -393,8 +393,6 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
             return
         }
 
-        let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
-
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
