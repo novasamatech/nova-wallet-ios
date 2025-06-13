@@ -3,6 +3,7 @@ import Operation_iOS
 
 extension DelegatedAccount {
     struct MultisigAccountModel: DelegatedAccountProtocol {
+        let detectedOnChain: ChainModel.Id
         let accountId: AccountId
         let signatory: AccountId
         let otherSignatories: [AccountId]
@@ -20,6 +21,7 @@ extension DelegatedAccount.MultisigAccountModel: Identifiable {
 extension DelegatedAccount.MultisigAccountModel {
     func replacingStatus(_ newStatus: DelegatedAccount.Status) -> Self {
         .init(
+            detectedOnChain: detectedOnChain,
             accountId: accountId,
             signatory: signatory,
             otherSignatories: otherSignatories,
