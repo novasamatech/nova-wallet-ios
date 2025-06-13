@@ -8,6 +8,7 @@ protocol WalletViewProtocol: UIView {
     var networkImageView: UIImageView { get }
     var viewModel: ViewModel? { get set }
     func cancelIconsLoading(info: ViewModel.DelegatedAccountInfo?)
+    func setAppearance(for selectionAvailable: Bool)
     func bind(regular viewModel: ViewModel.BalanceInfo)
     func bind(delegatedAccount viewModel: ViewModel.DelegatedAccountInfo)
     func bindNoInfo()

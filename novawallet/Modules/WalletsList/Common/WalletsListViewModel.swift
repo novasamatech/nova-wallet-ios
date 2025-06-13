@@ -5,6 +5,19 @@ struct WalletsListViewModel {
     let identifier: String
     let walletViewModel: WalletView.ViewModel
     let isSelected: Bool
+    let isSelectable: Bool
+
+    init(
+        identifier: String,
+        walletViewModel: WalletView.ViewModel,
+        isSelected: Bool,
+        isSelectable: Bool = true
+    ) {
+        self.identifier = identifier
+        self.walletViewModel = walletViewModel
+        self.isSelected = isSelected
+        self.isSelectable = isSelectable
+    }
 }
 
 struct WalletsListSectionViewModel {

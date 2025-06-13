@@ -24,5 +24,6 @@ class WalletsListTableViewCell<T: WalletViewProtocol, V: UIView>: PlainBaseTable
 
     func bind(viewModel: WalletsListViewModel) {
         infoView.bind(viewModel: viewModel.walletViewModel)
+        infoView.setAppearance(for: viewModel.isSelectable)
     }
 }

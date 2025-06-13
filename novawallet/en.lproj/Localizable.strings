@@ -1867,4 +1867,6 @@
 "multisig.signing.message" = "\“%@\” will sign the transaction and pay the network fee. The transaction will be executed upon final signature and the multisig deposit will be returned to \“%@\”";
 "multisig.transaction.created.title" = "Multisig transaction created";
 "multisig.transaction.created.message" = "Other signers can now confirm the transaction. You can track its status in the Multisig Transactions.";
-
+"multisig.selection.unavailable.title" = "Multisigs coming soon";
+"multisig.selection.unavailable.message" = "Multisig wallet management will be available in an upcoming update.
+Stay tuned!";
