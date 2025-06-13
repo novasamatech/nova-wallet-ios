@@ -70,7 +70,7 @@ extension ICloudBackupValidator: CloudBackupValidating {
                     publicInfo: wallet,
                     privateInfo: privateInfo
                 )
-            case .watchOnly, .paritySigner, .polkadotVault:
+            case .watchOnly, .paritySigner, .polkadotVault, .polkadotVaultRoot:
                 return true
             }
         }

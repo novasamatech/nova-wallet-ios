@@ -9,10 +9,11 @@ enum MetaAccountModelType: UInt8 {
     case polkadotVault
     case proxied
     case genericLedger
+    case polkadotVaultRoot
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner, .polkadotVault, .ledger, .proxied, .genericLedger:
+        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .ledger, .proxied, .genericLedger:
             return true
         case .watchOnly:
             return false
@@ -24,6 +25,7 @@ extension MetaAccountModelType {
     static func getDisplayPriorities() -> [MetaAccountModelType] {
         [
             .secrets,
+            .polkadotVaultRoot,
             .polkadotVault,
             .paritySigner,
             .ledger,

@@ -4,12 +4,17 @@ import Foundation_iOS
 struct ParitySignerTxScanViewFactory {
     static func createView(
         from signingData: Data,
-        accountId: AccountId,
         params: ParitySignerConfirmationParams,
+        verificationModel: ParitySignerSignatureVerificationModel,
         expirationTimer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxScanViewProtocol? {
-        let interactor = ParitySignerTxScanInteractor(signingData: signingData, params: params, accountId: accountId)
+        let interactor = ParitySignerTxScanInteractor(
+            signingData: signingData,
+            params: params,
+            verificationModel: verificationModel,
+            verificationWrapper: SignatureVerificationWrapper()
+        )
 
         let wireframe = ParitySignerTxScanWireframe()
 

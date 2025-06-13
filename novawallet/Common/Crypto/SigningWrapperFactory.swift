@@ -50,7 +50,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 chainId: accountResponse.chainId,
                 type: .legacy
             )
-        case .polkadotVault:
+        case .polkadotVault, .polkadotVaultRoot:
             return ParitySignerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
@@ -95,7 +95,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return NoKeysSigningWrapper()
         case .paritySigner:
             return NoSigningSupportWrapper(type: .paritySigner)
-        case .polkadotVault:
+        case .polkadotVault, .polkadotVaultRoot:
             return NoSigningSupportWrapper(type: .polkadotVault)
         case .ledger, .genericLedger:
             return NoSigningSupportWrapper(type: .ledger)
@@ -114,7 +114,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return NoKeysSigningWrapper()
         case .paritySigner:
             return NoSigningSupportWrapper(type: .paritySigner)
-        case .polkadotVault:
+        case .polkadotVault, .polkadotVaultRoot:
             return NoSigningSupportWrapper(type: .polkadotVault)
         case .ledger, .genericLedger:
             return NoSigningSupportWrapper(type: .ledger)

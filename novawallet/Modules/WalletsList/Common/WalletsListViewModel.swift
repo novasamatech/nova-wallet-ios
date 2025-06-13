@@ -27,7 +27,7 @@ struct WalletsListSectionViewModel {
                 self = .paritySigner
             case .ledger:
                 self = .ledger
-            case .polkadotVault:
+            case .polkadotVault, .polkadotVaultRoot:
                 self = .polkadotVault
             case .proxied:
                 self = .proxied

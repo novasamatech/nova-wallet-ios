@@ -208,13 +208,13 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
     func proceed() {
         guard
             transactionCode != nil,
-            let accountId = try? model?.chainWallet.walletDisplayAddress.address.toAccountId() else {
+            let verificationModel = model?.verificationModel else {
             return
         }
 
         wireframe.proceed(
             from: view,
-            accountId: accountId,
+            verificationModel: verificationModel,
             timer: timer,
             completion: completion
         )

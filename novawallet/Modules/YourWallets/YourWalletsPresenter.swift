@@ -77,7 +77,7 @@ final class YourWalletsPresenter {
         case .paritySigner:
             let type = ParitySignerType.legacy
             return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
-        case .polkadotVault:
+        case .polkadotVault, .polkadotVaultRoot:
             let type = ParitySignerType.vault
             return .init(title: type.getName(for: selectedLocale).uppercased(), icon: type.icon)
         case .ledger:

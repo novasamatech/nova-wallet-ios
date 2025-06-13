@@ -41,7 +41,7 @@ extension NoAccountSupportPresentable where Self: AlertPresentable {
                 chainName,
                 preferredLanguages: locale.rLanguages
             )
-        case .polkadotVault:
+        case .polkadotVault, .polkadotVaultRoot:
             let polkadotVault = R.string.localizable.commonPolkadotVault(preferredLanguages: locale.rLanguages)
             title = R.string.localizable.commonWalletNotSupportChain(
                 polkadotVault,

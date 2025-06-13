@@ -33,8 +33,7 @@ private extension ParitySignerWalletOperationFactory {
 
     func newHardwareWalletRootKeys(
         name: String,
-        format: ParitySignerWalletFormat.RootKeys,
-        type: ParitySignerType
+        format: ParitySignerWalletFormat.RootKeys
     ) -> BaseOperation<MetaAccountModel> {
         ClosureOperation {
             let ethereumAddress = try format.ethereum.publicKeyData.ethereumAddressFromPublicKey()
@@ -49,7 +48,7 @@ private extension ParitySignerWalletOperationFactory {
                 ethereumAddress: ethereumAddress,
                 ethereumPublicKey: format.ethereum.publicKeyData,
                 chainAccounts: [],
-                type: type.walletType
+                type: .polkadotVaultRoot
             )
         }
     }
@@ -68,11 +67,7 @@ extension ParitySignerWalletOperationFactory: ParitySignerWalletOperationFactory
                 type: type
             )
         case let .rootKeys(rootKeys):
-            newHardwareWalletRootKeys(
-                name: request.name,
-                format: rootKeys,
-                type: type
-            )
+            newHardwareWalletRootKeys(name: request.name, format: rootKeys)
         }
     }
 }

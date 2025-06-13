@@ -78,6 +78,8 @@ final class CloudBackupFileModelConverter {
             return .ledger
         case .polkadotVault:
             return .polkadotVault
+        case .polkadotVaultRoot:
+            return .polkadotVaultRoot
         case .genericLedger:
             return .genericLedger
         }
@@ -95,6 +97,8 @@ final class CloudBackupFileModelConverter {
             return .ledger
         case .polkadotVault:
             return .polkadotVault
+        case .polkadotVaultRoot:
+            return .polkadotVaultRoot
         case .genericLedger:
             return .genericLedger
         case .proxied:

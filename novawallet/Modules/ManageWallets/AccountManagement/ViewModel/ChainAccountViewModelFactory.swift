@@ -108,7 +108,7 @@ final class ChainAccountViewModelFactory {
                     preferredLanguages: locale.rLanguages
                 )
                 hasAction = accountAddress != nil
-            case .polkadotVault:
+            case .polkadotVault, .polkadotVaultRoot:
                 warning = R.string.localizable.paritySignerNotSupportedChain(
                     ParitySignerType.vault.getName(for: locale),
                     preferredLanguages: locale.rLanguages
@@ -282,7 +282,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         for locale: Locale
     ) -> ChainAccountListViewModel {
         switch wallet.type {
-        case .secrets, .watchOnly, .paritySigner, .polkadotVault:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .polkadotVaultRoot:
             let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
             let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 

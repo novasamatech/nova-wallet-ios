@@ -232,6 +232,10 @@
 		0C11D85E2CCA470D003EC46D /* AssetsExchangeRouteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */; };
 		0C11D8602CCA486B003EC46D /* AssetExchangeRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */; };
 		0C11F0282CEFD99C008D19D2 /* CountdownLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C11F0272CEFD99C008D19D2 /* CountdownLoadingView.swift */; };
+		0C1290EC2DFC753E002A5E67 /* MetaAccountModel+Vault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290EB2DFC753E002A5E67 /* MetaAccountModel+Vault.swift */; };
+		0C1290EE2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290ED2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift */; };
+		0C1290F02DFC77F5002A5E67 /* ParitySignerSigningAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290EF2DFC77F5002A5E67 /* ParitySignerSigningAccount.swift */; };
+		0C1290F22DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
@@ -6087,6 +6091,10 @@
 		0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManager.swift; sourceTree = "<group>"; };
 		0C11D85F2CCA486B003EC46D /* AssetExchangeRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeRoute.swift; sourceTree = "<group>"; };
 		0C11F0272CEFD99C008D19D2 /* CountdownLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownLoadingView.swift; sourceTree = "<group>"; };
+		0C1290EB2DFC753E002A5E67 /* MetaAccountModel+Vault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Vault.swift"; sourceTree = "<group>"; };
+		0C1290ED2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSigningIdentity.swift; sourceTree = "<group>"; };
+		0C1290EF2DFC77F5002A5E67 /* ParitySignerSigningAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSigningAccount.swift; sourceTree = "<group>"; };
+		0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSignatureVerificationModel.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
@@ -16975,6 +16983,8 @@
 				8B56BDC7E6221DE292498D3A /* ParitySignerTxQrViewFactory.swift */,
 				0C1E331B2D955D0D0070D772 /* ParitySignerTxQrSetupModel.swift */,
 				0C1E331D2D9587420070D772 /* ParitySignerTxFormatViewModel.swift */,
+				0C1290EF2DFC77F5002A5E67 /* ParitySignerSigningAccount.swift */,
+				0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */,
 			);
 			path = TransactionQr;
 			sourceTree = "<group>";
@@ -18130,6 +18140,8 @@
 				0C8C8F892D6F168A00441FB3 /* ParitySignerMode.swift */,
 				0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */,
 				0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */,
+				0C1290EB2DFC753E002A5E67 /* MetaAccountModel+Vault.swift */,
+				0C1290ED2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -29572,6 +29584,7 @@
 				0CD846302BDE61310026B5CA /* WalletImportOptionsWireframe.swift in Sources */,
 				0C9ECB5A2A4A9AB400BDCA73 /* AssetListAccountCell.swift in Sources */,
 				8846F72729D6BAD700B8B776 /* Data+base10.swift in Sources */,
+				0C1290F22DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift in Sources */,
 				849FFFD0298020C900A17471 /* GovernanceDelegationConstants.swift in Sources */,
 				84B66A0B26FDB70F0038B963 /* CrowdloansListInteractor+Protocols.swift in Sources */,
 				2D3EA7E22CFF0D540033AFD2 /* DAppSearchViewModel.swift in Sources */,
@@ -30103,6 +30116,7 @@
 				84EE780427C4CF9E0027357F /* DAppListItemsLoadingView.swift in Sources */,
 				0C8FDBA32CADA61800775D7F /* SwipeGovSummaryOperationFactory.swift in Sources */,
 				84F43BAA25DEB75000AEDA56 /* StakingMainViewModel.swift in Sources */,
+				0C1290F02DFC77F5002A5E67 /* ParitySignerSigningAccount.swift in Sources */,
 				778215BF2B91421C006C7D13 /* CurrencyManager+shared.swift in Sources */,
 				84DD5F35263D86EF00425ACF /* AccountFetching.swift in Sources */,
 				84E172D128BF383B00DC85B6 /* Array+Dictionary.swift in Sources */,
@@ -31389,6 +31403,7 @@
 				8499FEC827BF73F400712589 /* StorageKeyFactory+Size.swift in Sources */,
 				77E304B72AEFC348006FD6F0 /* FeeAssetSelectSheetViewModel.swift in Sources */,
 				0CB0646A2A40572C00BFBA3F /* AmountInputViewModel.swift in Sources */,
+				0C1290EE2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift in Sources */,
 				773A37542B398CEB006AC4AA /* WalletNotificationService.swift in Sources */,
 				0C71D3FC2DF182720042134B /* EvmBalanceUpdateBlock.swift in Sources */,
 				847A25CA28D85204006AC9F5 /* ReferendumInfo.swift in Sources */,
@@ -33274,6 +33289,7 @@
 				0C3272A02CD34CB200FC1B42 /* HydraExchangeExtrinsicParamsFactory.swift in Sources */,
 				C641C8A414F7F4E3B96B16CE /* ProxySignValidationProtocols.swift in Sources */,
 				1DA7B852B65ED2DC69E8A906 /* ProxySignValidationWireframe.swift in Sources */,
+				0C1290EC2DFC753E002A5E67 /* MetaAccountModel+Vault.swift in Sources */,
 				9AA018D4BDEEECF00018F049 /* ProxySignValidationPresenter.swift in Sources */,
 				0C6FE80C2D50C6AC00E5B651 /* HydraFeeRateFactory.swift in Sources */,
 				2DEDF6882C36EAFF007D5F4A /* AddNetworkManuallyTableViewCell.swift in Sources */,

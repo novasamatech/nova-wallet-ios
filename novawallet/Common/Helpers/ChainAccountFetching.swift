@@ -5,6 +5,7 @@ struct ChainAccountRequest {
     let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
+    let hasSubstrateRuntime: Bool
 }
 
 struct ChainAccountResponse {
@@ -162,6 +163,12 @@ extension MetaAccountModel {
         switch type {
         case .genericLedger:
             if request.supportsGenericLedger {
+                return executeFetch(request: request)
+            } else {
+                return nil
+            }
+        case .polkadotVaultRoot:
+            if request.hasSubstrateRuntime {
                 return executeFetch(request: request)
             } else {
                 return nil
@@ -347,7 +354,8 @@ extension ChainModel {
             chainId: chainId,
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased,
-            supportsGenericLedger: supportsGenericLedgerApp
+            supportsGenericLedger: supportsGenericLedgerApp,
+            hasSubstrateRuntime: hasSubstrateRuntime
         )
     }
 

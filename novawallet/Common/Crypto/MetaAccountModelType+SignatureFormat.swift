@@ -6,7 +6,7 @@ extension MetaAccountModelType {
         switch self {
         case .secrets, .watchOnly, .proxied:
             return .regular
-        case .paritySigner, .polkadotVault:
+        case .paritySigner, .polkadotVault, .polkadotVaultRoot:
             return .paritySigner
         case .ledger, .genericLedger:
             return .extrinsicPayload
@@ -15,7 +15,7 @@ extension MetaAccountModelType {
 
     var notSupportedRawBytesSigner: NoSigningSupportType? {
         switch self {
-        case .secrets, .watchOnly, .proxied, .polkadotVault:
+        case .secrets, .watchOnly, .proxied, .polkadotVault, .polkadotVaultRoot:
             return nil
         case .paritySigner:
             return .paritySigner

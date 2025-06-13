@@ -47,6 +47,7 @@ extension CloudBackup {
         case ledger = "LEDGER"
         case polkadotVault = "POLKADOT_VAULT"
         case genericLedger = "LEDGER_GENERIC"
+        case polkadotVaultRoot = "POLKADOT_VAULT_ROOT"
     }
 
     struct DecryptedFileModel: Equatable {

@@ -34,7 +34,7 @@ protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable,
 
     func proceed(
         from view: ParitySignerTxQrViewProtocol?,
-        accountId: AccountId,
+        verificationModel: ParitySignerSignatureVerificationModel,
         timer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     )

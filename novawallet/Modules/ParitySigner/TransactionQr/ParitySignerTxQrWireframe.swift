@@ -16,14 +16,14 @@ final class ParitySignerTxQrWireframe: ParitySignerTxQrWireframeProtocol {
 
     func proceed(
         from view: ParitySignerTxQrViewProtocol?,
-        accountId: AccountId,
+        verificationModel: ParitySignerSignatureVerificationModel,
         timer: CountdownTimerMediating?,
         completion: @escaping TransactionSigningClosure
     ) {
         guard let scanView = ParitySignerTxScanViewFactory.createView(
             from: sharedSigningPayload,
-            accountId: accountId,
             params: params,
+            verificationModel: verificationModel,
             expirationTimer: timer,
             completion: completion
         ) else {

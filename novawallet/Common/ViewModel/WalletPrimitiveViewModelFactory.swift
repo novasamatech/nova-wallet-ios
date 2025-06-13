@@ -14,7 +14,7 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
         switch walletType {
         case .secrets:
             return false
-        case .watchOnly, .polkadotVault, .paritySigner, .ledger, .proxied, .genericLedger:
+        case .watchOnly, .polkadotVault, .polkadotVaultRoot, .paritySigner, .ledger, .proxied, .genericLedger:
             return true
         }
     }
@@ -26,7 +26,7 @@ final class WalletPrimitiveViewModelFactory: WalletPrimitiveViewModelProtocol {
         case .paritySigner:
             let type = ParitySignerType.legacy
             return .init(title: type.getName(for: locale).uppercased(), icon: type.icon)
-        case .polkadotVault:
+        case .polkadotVault, .polkadotVaultRoot:
             let type = ParitySignerType.vault
             return .init(title: type.getName(for: locale).uppercased(), icon: type.icon)
         case .ledger:

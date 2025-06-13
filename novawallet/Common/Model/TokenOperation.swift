@@ -14,7 +14,7 @@ extension TokenOperation {
         chainAsset: ChainAsset
     ) -> ReceiveAvailableCheckResult {
         switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .proxied:
             return .common(.available)
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
@@ -41,7 +41,7 @@ extension TokenOperation {
         }
 
         return switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
+        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .proxied:
             .common(.available)
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {

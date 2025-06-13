@@ -17,8 +17,7 @@ final class ParitySignerTxQrInteractor {
     let mortalityPeriodMilliseconds: TimeInterval
     let operationQueue: OperationQueue
 
-    private var rootKey: AccountId?
-    private var derivedAccount: ChainAccountResponse?
+    private var signingAccount: ParitySignerSigningAccount?
     private var cancellableStore = CancellableCallStore()
 
     init(
@@ -55,7 +54,7 @@ final class ParitySignerTxQrInteractor {
 // Transaction QR generation logic
 private extension ParitySignerTxQrInteractor {
     func provideTransactionCode(
-        for account: ChainAccountResponse,
+        for account: ParitySignerSigningAccount,
         qrFormat: ParitySignerQRFormat,
         qrSize: CGSize
     ) {
@@ -79,7 +78,7 @@ private extension ParitySignerTxQrInteractor {
     }
 
     func createTransactionWrapper(
-        for account: ChainAccountResponse,
+        for account: ParitySignerSigningAccount,
         qrFormat: ParitySignerQRFormat,
         qrSize: CGSize
     ) -> CompoundOperationWrapper<TransactionDisplayCode> {
@@ -88,7 +87,7 @@ private extension ParitySignerTxQrInteractor {
             case .rawBytes:
                 try params.mode.ensureRawBytes()
 
-                return createTransactionWithRawBytesWrapper(for: account, qrSize: qrSize)
+                return createTransactionWithRawBytesWrapper(for: account.accountResponse, qrSize: qrSize)
             case .extrinsicWithoutProof, .extrinsicWithProof:
                 let params = try params.mode.ensureExtrinsic()
 
@@ -107,7 +106,7 @@ private extension ParitySignerTxQrInteractor {
     }
 
     func createTransactionWithExtrinsicWrapper(
-        for account: ChainAccountResponse,
+        for account: ParitySignerSigningAccount,
         extrinsicParams: ParitySignerSigningMode.Extrinsic,
         qrSize: CGSize,
         includesProof: Bool
@@ -122,8 +121,7 @@ private extension ParitySignerTxQrInteractor {
                 metadataProofClosure: {
                     try metadataProofWrapper.targetOperation.extractNoCancellableResultData()
                 },
-                accountId: rootKey ?? account.accountId,
-                cryptoType: account.cryptoType,
+                signingIdentity: account.signingIdentity,
                 genesisHash: chainId
             )
 
@@ -133,8 +131,7 @@ private extension ParitySignerTxQrInteractor {
         } else {
             transactionWrapper = messageOperationFactory.createMetadataBasedTransaction(
                 for: signingData,
-                accountId: account.accountId,
-                cryptoType: account.cryptoType,
+                signingIdentity: account.signingIdentity,
                 genesisHash: chainId
             )
         }
@@ -253,17 +250,16 @@ private extension ParitySignerTxQrInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             do {
-                let wallet = try result.get()
-
                 guard
-                    let accountResponse = wallet?.fetchMetaChainAccount(
+                    let wallet = try result.get(),
+                    let accountResponse = wallet.fetchMetaChainAccount(
                         for: chain.accountRequest()
                     ) else {
                     self?.presenter?.didReceive(error: ChainAccountFetchingError.accountNotExists)
                     return
                 }
 
-                self?.completeSetup(for: chain, account: accountResponse)
+                self?.completeSetup(for: chain, account: accountResponse, rootKeyId: wallet.vaultRootKeyId)
             } catch {
                 self?.presenter?.didReceive(error: error)
             }
@@ -283,7 +279,11 @@ private extension ParitySignerTxQrInteractor {
         }
     }
 
-    func completeSetup(for chain: ChainModel, account: MetaChainAccountResponse) {
+    func completeSetup(
+        for chain: ChainModel,
+        account: MetaChainAccountResponse,
+        rootKeyId: Data?
+    ) {
         do {
             let walletDisplayAddress = try account.toWalletDisplayAddress()
 
@@ -292,8 +292,10 @@ private extension ParitySignerTxQrInteractor {
                 walletDisplayAddress: walletDisplayAddress
             )
 
-            derivedAccount = account.chainAccount
-            rootKey = account.substrateAccountId
+            signingAccount = ParitySignerSigningAccount(
+                rootKeyId: rootKeyId,
+                accountResponse: account.chainAccount
+            )
 
             let txExpirationTime: TimeInterval? = switch params.mode {
             case .extrinsic:
@@ -302,8 +304,14 @@ private extension ParitySignerTxQrInteractor {
                 nil
             }
 
+            let verificationModel = ParitySignerSignatureVerificationModel(
+                publicKey: account.chainAccount.publicKey,
+                cryptoType: account.chainAccount.cryptoType
+            )
+
             let model = ParitySignerTxQrSetupModel(
                 chainWallet: chainWalletModel,
+                verificationModel: verificationModel,
                 preferredFormats: getPreferredFormats(),
                 txExpirationTime: txExpirationTime?.seconds
             )
@@ -326,12 +334,12 @@ extension ParitySignerTxQrInteractor: ParitySignerTxQrInteractorInputProtocol {
     }
 
     func generateQr(with format: ParitySignerQRFormat, qrSize: CGSize) {
-        guard let derivedAccount else {
+        guard let signingAccount else {
             return
         }
 
         provideTransactionCode(
-            for: derivedAccount,
+            for: signingAccount,
             qrFormat: format,
             qrSize: qrSize
         )

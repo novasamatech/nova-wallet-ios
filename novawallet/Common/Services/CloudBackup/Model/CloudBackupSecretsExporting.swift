@@ -74,7 +74,7 @@ final class CloudBackupSecretsExporter {
         isEthereumBased: Bool
     ) throws -> String? {
         switch wallet.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .secrets, .paritySigner, .polkadotVault, .polkadotVaultRoot, .proxied, .watchOnly:
             return try fetchRegularDerivationPath(
                 for: wallet,
                 chainAccount: chainAccount,
@@ -337,7 +337,7 @@ final class CloudBackupSecretsExporter {
             return try createPrivateInfoFromGenericWalletType(wallet)
         case .ledger:
             return try createPrivateInfoFromLedgerWalletType(wallet)
-        case .watchOnly, .polkadotVault, .paritySigner:
+        case .watchOnly, .polkadotVault, .polkadotVaultRoot, .paritySigner:
             return nil
         case .proxied:
             // add backup for generic ledger

@@ -11,15 +11,35 @@ final class ParitySignerTxScanInteractor {
     weak var presenter: ParitySignerTxScanInteractorOutputProtocol?
 
     let signingData: Data
-    let accountId: AccountId
     let params: ParitySignerConfirmationParams
+    let verificationModel: ParitySignerSignatureVerificationModel
+    let verificationWrapper: SignatureVerificationWrapperProtocol
 
     private var signaturePayload: Data?
 
-    init(signingData: Data, params: ParitySignerConfirmationParams, accountId: AccountId) {
+    init(
+        signingData: Data,
+        params: ParitySignerConfirmationParams,
+        verificationModel: ParitySignerSignatureVerificationModel,
+        verificationWrapper: SignatureVerificationWrapperProtocol
+    ) {
         self.signingData = signingData
         self.params = params
-        self.accountId = accountId
+        self.verificationModel = verificationModel
+        self.verificationWrapper = verificationWrapper
+    }
+
+    private func getExtrinsicSignaturePayload() -> Data? {
+        switch verificationModel.cryptoType {
+        case .sr25519, .ed25519:
+            signaturePayload = try? ExtrinsicSignatureConverter.convertParitySignerSignaturePayloadToRegular(
+                signingData
+            )
+
+            return signaturePayload
+        case .ethereumEcdsa, .substrateEcdsa:
+            return signingData
+        }
     }
 
     private func getSignaturePayload() -> Data? {
@@ -28,11 +48,7 @@ final class ParitySignerTxScanInteractor {
         } else {
             switch params.mode {
             case .extrinsic:
-                signaturePayload = try? ExtrinsicSignatureConverter.convertParitySignerSignaturePayloadToRegular(
-                    signingData
-                )
-
-                return signaturePayload
+                return getExtrinsicSignaturePayload()
             case .rawBytes:
                 signaturePayload = signingData
 
@@ -55,27 +71,23 @@ final class ParitySignerTxScanInteractor {
 }
 
 extension ParitySignerTxScanInteractor: ParitySignerTxScanInteractorInputProtocol {
-    func process(scannedSignature: String) {
+    func process(scannedSignature _: String) {
         do {
             guard let signaturePayload = getSignaturePayload() else {
                 throw ParitySignerTxScanInteractorError.invalidSignaturePayload
             }
 
-            let rawSignatureCandidate = try getRawSignature(from: scannedSignature)
+            let optSignature = try verificationWrapper.verify(
+                rawSignature: signaturePayload,
+                originalData: signingData,
+                rawPublicKey: verificationModel.publicKey,
+                cryptoType: verificationModel.cryptoType
+            )
 
-            if rawSignatureCandidate.count == 65 {
-                let signatureCandidate = try SECSignature(rawData: rawSignatureCandidate)
+            if let signatureCandidate = optSignature {
                 presenter?.didReceiveSignature(signatureCandidate)
             } else {
-                let signatureCandidate = try SNSignature(rawData: rawSignatureCandidate)
-                let publicKey = try SNPublicKey(rawData: accountId)
-                let verifier = SNSignatureVerifier()
-
-                if verifier.verify(signatureCandidate, forOriginalData: signaturePayload, using: publicKey) {
-                    presenter?.didReceiveSignature(signatureCandidate)
-                } else {
-                    presenter?.didReceiveError(ParitySignerTxScanInteractorError.invalidSignature)
-                }
+                presenter?.didReceiveError(ParitySignerTxScanInteractorError.invalidSignature)
             }
         } catch {
             presenter?.didReceiveError(error)
