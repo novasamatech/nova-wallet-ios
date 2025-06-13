@@ -304,7 +304,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
 
         let info = WalletView.ViewModel.DelegatedAccountInfo(
             networkIcon: chainIcon,
-            type: R.string.localizable.commonSigner(preferredLanguages: locale.rLanguages),
+            type: R.string.localizable.commonSignatory(preferredLanguages: locale.rLanguages),
             pairedAccountIcon: subtitleDetailsIconViewModel,
             pairedAccountName: signatoryWallet.info.name,
             isNew: multisig.status == .new
