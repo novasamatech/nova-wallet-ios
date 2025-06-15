@@ -228,8 +228,7 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
             metadataProofClosure: {
                 model.proof
             },
-            accountId: accountId,
-            cryptoType: .sr25519,
+            signingIdentity: .regular(.init(accountId: accountId, cryptoType: .sr25519)),
             genesisHash: chainId
         )
         

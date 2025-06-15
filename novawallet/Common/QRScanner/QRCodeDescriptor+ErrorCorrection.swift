@@ -1,9 +1,9 @@
 import Foundation
 import CoreImage
 
-extension CIQRCodeDescriptor {
-    func extractActualDataFromCorrectedPayload() -> Data? {
-        let bytes = [UInt8](errorCorrectedPayload)
+extension Data {
+    func extractActualDataFromErrorCorrectedPayload() -> Data? {
+        let bytes = [UInt8](self)
         guard !bytes.isEmpty else { return nil }
 
         // --- 1. Decode header -------------------------------------------------
