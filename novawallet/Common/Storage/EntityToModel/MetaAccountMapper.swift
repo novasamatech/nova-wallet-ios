@@ -41,7 +41,10 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
     }
 
     func transform(multisigEntity: CDMultisig?) throws -> DelegatedAccount.MultisigAccountModel? {
-        guard let multisigEntity else { return nil }
+        guard
+            let multisigEntity,
+            let detectedOnChain = multisigEntity.detectedOnChain
+        else { return nil }
 
         let threshold = Int(multisigEntity.threshold)
         let multisigAccountId = try Data(hexString: multisigEntity.multisigAccountId!)
@@ -53,6 +56,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         let status = DelegatedAccount.Status(rawValue: multisigEntity.status!)!
 
         return DelegatedAccount.MultisigAccountModel(
+            detectedOnChain: detectedOnChain,
             accountId: multisigAccountId,
             signatory: signatoryAccountId,
             otherSignatories: otherSignatories,
@@ -176,6 +180,7 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
         _ entity: CDMultisig?,
         from model: DelegatedAccount.MultisigAccountModel
     ) throws {
+        entity?.detectedOnChain = model.detectedOnChain
         entity?.multisigAccountId = model.accountId.toHex()
         entity?.signatory = model.signatory.toHex()
         entity?.otherSignatories = model.otherSignatories

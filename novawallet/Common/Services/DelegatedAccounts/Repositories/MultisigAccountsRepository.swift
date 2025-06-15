@@ -42,8 +42,6 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
             let fetchResult = try fetchOperation.extractNoCancellableResultData()
 
-            guard let fetchResult else { return [:] }
-
             let mappedFetchResult: [AccountId: [DiscoveredMultisig]] = fetchResult
                 .reduce(into: [:]) { acc, multisig in
                     nonCachedSignatories.forEach { accountId in
