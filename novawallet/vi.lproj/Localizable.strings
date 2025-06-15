@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "Chào mừng đến với Nova!";
 "wallet.migrate.accept.message" = "Bạn sắp hoàn tất! 🎉\n Chỉ cần nhấn bên dưới để hoàn tất thiết lập và bắt đầu sử dụng tài khoản của bạn một cách liền mạch trong cả Polkadot App và Nova Wallet";
 "wallet.migration.successful.alert.title" = "Tài khoản đã được di chuyển thành công";
+"swap.failure.cannot.receive.insufficient.asset.out" = "Bạn phải có ít nhất %@ trên %@ để nhận %@ token";

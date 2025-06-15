@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "Nova'ya Hoş Geldiniz!";
 "wallet.migrate.accept.message" = "Neredeyse geldiniz! 🎉\n Kurulumu tamamlamak ve hesaplarınızı hem Polkadot Uygulaması'nda hem de Nova Cüzdan'da sorunsuz bir şekilde kullanmaya başlamak için aşağıya dokunmanız yeterli";
 "wallet.migration.successful.alert.title" = "Hesaplar başarıyla taşındı";
+"swap.failure.cannot.receive.insufficient.asset.out" = "%@ tokenini almak için %@ üzerinde en az %@ olmalıdır";

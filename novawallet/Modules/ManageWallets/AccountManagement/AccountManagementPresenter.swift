@@ -40,7 +40,7 @@ final class AccountManagementPresenter {
     // MARK: - Updating functions
 
     private func updateWalletType() {
-        guard let wallet = wallet else {
+        guard let wallet else {
             return
         }
 
@@ -49,7 +49,7 @@ final class AccountManagementPresenter {
     }
 
     private func updateDelegateWallet() {
-        guard let wallet = wallet,
+        guard let wallet,
               let delegateWallet else {
             return
         }
@@ -62,14 +62,14 @@ final class AccountManagementPresenter {
     }
 
     private func updateChainViewModels() {
-        guard let wallet = wallet else { return }
+        guard let wallet else { return }
 
         viewModel = viewModelFactory.createViewModel(from: wallet, chains: chains, for: selectedLocale)
         view?.reload()
     }
 
     private func updateNameViewModel() {
-        guard let wallet = wallet else { return }
+        guard let wallet else { return }
 
         let processor = ByteLengthProcessor.username
         let processedUsername = processor.process(text: wallet.name)
@@ -117,7 +117,7 @@ final class AccountManagementPresenter {
     // MARK: Common bottom sheet
 
     private func displayAddAddress(for chain: ChainModel, walletType: MetaAccountModelType) {
-        guard let view = view else {
+        guard let view else {
             return
         }
 
@@ -144,7 +144,7 @@ final class AccountManagementPresenter {
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let view = view, let address = viewModel.address else {
+        guard let view, let address = viewModel.address else {
             return
         }
 
@@ -172,7 +172,7 @@ final class AccountManagementPresenter {
     // MARK: - Bottom sheet display for secrets type
 
     private func displaySecretsChangeActions(with title: LocalizableResource<String>, chain: ChainModel) {
-        guard let view = view else {
+        guard let view else {
             return
         }
 
@@ -234,7 +234,7 @@ final class AccountManagementPresenter {
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let view = view, let address = viewModel.address else { return }
+        guard let view, let address = viewModel.address else { return }
 
         var actions: [ChainAddressDetailsAction] = []
 
@@ -289,7 +289,7 @@ final class AccountManagementPresenter {
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let view = view, let address = viewModel.address else {
+        guard let view, let address = viewModel.address else {
             return
         }
 
@@ -356,9 +356,7 @@ final class AccountManagementPresenter {
     }
 
     private func activateCreateAccount(for chainModel: ChainModel) {
-        guard let view = view,
-              let wallet = wallet
-        else { return }
+        guard let view, let wallet else { return }
 
         if let cloudBackupSyncState, cloudBackupSyncState.canAutoSync {
             wireframe.showCloudBackupRemind(from: view) { [weak self] in
@@ -375,9 +373,7 @@ final class AccountManagementPresenter {
     }
 
     private func activateImportAccount(for chainModel: ChainModel) {
-        guard let view = view,
-              let wallet = wallet
-        else { return }
+        guard let view, let wallet else { return }
 
         presentCloudRemindIfNeededBefore { [weak self] in
             self?.wireframe.showImportAccount(
@@ -605,7 +601,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     func didReceiveWallet(_ result: Result<MetaAccountModel?, Error>) {
         switch result {
         case let .success(wallet):
-            guard let wallet = wallet else {
+            guard let wallet else {
                 logger?.error("Did find no wallets with Id: \(walletId)")
                 return
             }

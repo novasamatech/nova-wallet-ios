@@ -1856,3 +1856,4 @@
 "wallet.migrate.accept.title" = "欢迎来到 Nova！";
 "wallet.migrate.accept.message" = "您快到了！🎉\n 只需点击下面即可完成设置，并在 Polkadot App 和 Nova Wallet 中无缝使用您的账户";
 "wallet.migration.successful.alert.title" = "账户迁移成功";
+"swap.failure.cannot.receive.insufficient.asset.out" = "要接收 %@ 代币，您必须在 %@ 至少拥有 %@";
