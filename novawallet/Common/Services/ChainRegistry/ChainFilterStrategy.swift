@@ -11,6 +11,7 @@ enum ChainFilterStrategy {
     case hasProxy
     case chainId(ChainModel.Id)
     case genericLedger
+    case hasSubstrateRuntime
 
     private var filter: Filter {
         switch self {
@@ -54,6 +55,16 @@ enum ChainFilterStrategy {
                     false
                 }
             }
+        case .hasSubstrateRuntime: { change in
+                switch change {
+                case .update where change.item?.hasSubstrateRuntime == true,
+                     .insert where change.item?.hasSubstrateRuntime == true,
+                     .delete:
+                    true
+                default:
+                    false
+                }
+            }
         }
     }
 
@@ -85,8 +96,8 @@ enum ChainFilterStrategy {
 
                 var updatedHasProxy: Bool {
                     #if F_RELEASE
-                        changedChain.hasProxy == true
-                            && changedChain.isTestnet == false
+                        changedChain.hasProxy == true &&
+                            changedChain.isTestnet == false
                     #else
                         changedChain.hasProxy == true
                     #endif
@@ -119,6 +130,18 @@ enum ChainFilterStrategy {
 
                 let currentSupport = currentChain?.supportsGenericLedgerApp == true
                 let updatedSupport = changedChain.supportsGenericLedgerApp == true
+
+                return transform(
+                    change,
+                    for: currentSupport,
+                    updatedSupport
+                )
+            }
+        case .hasSubstrateRuntime: { change, currentChain in
+                guard let changedChain = change.item else { return change }
+
+                let currentSupport = currentChain?.hasSubstrateRuntime == true
+                let updatedSupport = changedChain.hasSubstrateRuntime == true
 
                 return transform(
                     change,

@@ -14,7 +14,11 @@ final class ParitySignerAddressesInteractor {
 
 extension ParitySignerAddressesInteractor: ParitySignerAddressesInteractorInputProtocol {
     func setup() {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main,
+            filterStrategy: .hasSubstrateRuntime
+        ) { [weak self] changes in
             self?.presenter?.didReceive(chains: changes)
         }
     }

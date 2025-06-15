@@ -237,6 +237,7 @@
 		0C1290F02DFC77F5002A5E67 /* ParitySignerSigningAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290EF2DFC77F5002A5E67 /* ParitySignerSigningAccount.swift */; };
 		0C1290F22DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */; };
 		0C1290F42DFCD946002A5E67 /* QRCodeDescriptor+ErrorCorrection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F32DFCD946002A5E67 /* QRCodeDescriptor+ErrorCorrection.swift */; };
+		0C1290F62DFF794D002A5E67 /* ParitySignerSignatureConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F52DFF794C002A5E67 /* ParitySignerSignatureConverter.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
@@ -6097,6 +6098,7 @@
 		0C1290EF2DFC77F5002A5E67 /* ParitySignerSigningAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSigningAccount.swift; sourceTree = "<group>"; };
 		0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSignatureVerificationModel.swift; sourceTree = "<group>"; };
 		0C1290F32DFCD946002A5E67 /* QRCodeDescriptor+ErrorCorrection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QRCodeDescriptor+ErrorCorrection.swift"; sourceTree = "<group>"; };
+		0C1290F52DFF794C002A5E67 /* ParitySignerSignatureConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSignatureConverter.swift; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
@@ -18144,6 +18146,7 @@
 				0C71D3FF2DF78FD60042134B /* ParitySignerWalletFormat.swift */,
 				0C1290EB2DFC753E002A5E67 /* MetaAccountModel+Vault.swift */,
 				0C1290ED2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift */,
+				0C1290F52DFF794C002A5E67 /* ParitySignerSignatureConverter.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -31995,6 +31998,7 @@
 				84ED6BDE28688CA500B3C558 /* TransferNetworkContainerView.swift in Sources */,
 				849976CE27B3921800B14A6C /* DAppMetamaskAuthorizedState.swift in Sources */,
 				8445F41328C8C6E0009E61C4 /* ParaStkYieldBoostInitState.swift in Sources */,
+				0C1290F62DFF794D002A5E67 /* ParitySignerSignatureConverter.swift in Sources */,
 				C122F2FE976FEE9A609A1A93 /* DAppOperationConfirmPresenter.swift in Sources */,
 				0CA72A972D4B507D00B3FD02 /* AccountRemoteSubscriptionModel.swift in Sources */,
 				3155B51D1CF150FAFADE88AF /* DAppOperationConfirmInteractor.swift in Sources */,

@@ -38,9 +38,18 @@ final class YourWalletsPresenter {
         self.localizationManager = localizationManager
     }
 
+    private func getGroup(for type: MetaAccountModelType) -> MetaAccountModelType {
+        switch type {
+        case .polkadotVaultRoot:
+            .polkadotVault
+        default:
+            type
+        }
+    }
+
     private func updateView() {
         let metaAccountsGroups = Dictionary(grouping: metaAccounts) {
-            $0.metaAccount.type
+            getGroup(for: $0.metaAccount.type)
         }
 
         sections = sectionTypes.compactMap {

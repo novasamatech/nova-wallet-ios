@@ -30,31 +30,32 @@ final class ParitySignerTxScanInteractor {
     }
 
     private func getExtrinsicSignaturePayload() -> Data? {
-        switch verificationModel.cryptoType {
+        let shouldConvertToRegular = switch verificationModel.cryptoType {
         case .sr25519, .ed25519:
-            signaturePayload = try? ExtrinsicSignatureConverter.convertParitySignerSignaturePayloadToRegular(
-                signingData
-            )
-
-            return signaturePayload
-        case .ethereumEcdsa, .substrateEcdsa:
-            return signingData
+            true
+        case .substrateEcdsa, .ethereumEcdsa:
+            false
         }
+
+        return try? ParitySignerSignatureConverter.convertParitySignerSignaturePayloadToRegular(
+            signingData,
+            shouldConvertToRegular: shouldConvertToRegular
+        )
     }
 
     private func getSignaturePayload() -> Data? {
         if let signaturePayload = signaturePayload {
             return signaturePayload
-        } else {
-            switch params.mode {
-            case .extrinsic:
-                return getExtrinsicSignaturePayload()
-            case .rawBytes:
-                signaturePayload = signingData
-
-                return signaturePayload
-            }
         }
+
+        signaturePayload = switch params.mode {
+        case .extrinsic:
+            getExtrinsicSignaturePayload()
+        case .rawBytes:
+            signingData
+        }
+
+        return signaturePayload
     }
 
     private func getRawSignature(from scannedSignature: String) throws -> Data {
@@ -71,15 +72,17 @@ final class ParitySignerTxScanInteractor {
 }
 
 extension ParitySignerTxScanInteractor: ParitySignerTxScanInteractorInputProtocol {
-    func process(scannedSignature _: String) {
+    func process(scannedSignature: String) {
         do {
             guard let signaturePayload = getSignaturePayload() else {
                 throw ParitySignerTxScanInteractorError.invalidSignaturePayload
             }
 
+            let rawSignature = try getRawSignature(from: scannedSignature)
+
             let optSignature = try verificationWrapper.verify(
-                rawSignature: signaturePayload,
-                originalData: signingData,
+                rawSignature: rawSignature,
+                originalData: signaturePayload,
                 rawPublicKey: verificationModel.publicKey,
                 cryptoType: verificationModel.cryptoType
             )
