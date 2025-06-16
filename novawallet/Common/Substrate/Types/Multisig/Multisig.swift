@@ -1,11 +1,16 @@
 import Foundation
 import SubstrateSdk
+import Operation_iOS
 import BigInt
 
 enum Multisig {
     static var name: String { "Multisig" }
 
-    struct PendingOperation: Codable, Equatable {
+    struct PendingOperation: Codable, Equatable, Identifiable {
+        var identifier: String {
+            callHash.toHexString()
+        }
+        
         let call: JSON?
         let callHash: CallHash
         let multisigAccountId: AccountId

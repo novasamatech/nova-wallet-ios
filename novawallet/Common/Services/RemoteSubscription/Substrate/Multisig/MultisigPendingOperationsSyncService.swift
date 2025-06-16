@@ -8,19 +8,15 @@ class MultisigPendingOperationsSyncService {
 
     private let mutex = NSLock()
 
-    private let pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol
-
     private let chainRepository: AnyDataProviderRepository<ChainModel>
     private let chainRegistry: ChainRegistryProtocol
-    private let remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     private let logger: LoggerProtocol?
 
     private let cancellableSyncStore = CancellableCallStore()
 
-    private var pendingOperations: [CallHash: Multisig.PendingOperation] = [:]
-
+    private var pendingOperationsChainSyncServices: [ChainModel.Id: PendingMultisigChainSyncServiceProtocol] = [:]
     private var metaAccountsDataProvider: StreamableProvider<ManagedMetaAccountModel>?
 
     private var multisigMetaAccounts: [MetaAccountModel] = [] {
@@ -34,8 +30,6 @@ class MultisigPendingOperationsSyncService {
     init(
         chainRegistry: ChainRegistryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
-        remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol,
-        pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.sync"),
@@ -43,8 +37,6 @@ class MultisigPendingOperationsSyncService {
     ) {
         self.chainRegistry = chainRegistry
         self.chainRepository = chainRepository
-        self.remoteOperationUpdateService = remoteOperationUpdateService
-        self.pendingCallHashesOperationFactory = pendingCallHashesOperationFactory
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -375,4 +367,5 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
 enum MultisigPendingOperationsSyncError: Error {
     case noChainMatchingMultisigAccount
     case multisigAccountUnavailable
+    case localPendingOperationUnavailable
 }

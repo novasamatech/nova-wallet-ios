@@ -22,5 +22,4 @@ typealias DecodedRewardPool = ChainStorageDecodedItem<NominationPools.RewardPool
 typealias DecodedSubPools = ChainStorageDecodedItem<NominationPools.SubPools>
 typealias DecodedPoolId = ChainStorageDecodedItem<StringScaleMapper<NominationPools.PoolId>>
 typealias DecodedProxyDefinition = ChainStorageDecodedItem<ProxyDefinition>
-typealias DecodedMultisitOperation = ChainStorageDecodedItem<Multisig.PendingOperation>
 typealias DecodedPercent = ChainStorageDecodedItem<StringScaleMapper<Percent>>
