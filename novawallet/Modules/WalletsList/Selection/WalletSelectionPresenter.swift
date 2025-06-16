@@ -27,7 +27,25 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         )
     }
 
-    private func getDelegatedAccountsUpdates(
+    override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
+        let delegatedAccountsUpdates = getDelegatedAccountsUpdates(for: changes)
+
+        super.updateWallets(changes: changes)
+
+        guard let view = baseView, view.controller.topModalViewController == view.controller else {
+            return
+        }
+
+        if !delegatedAccountsUpdates.isEmpty {
+            wireframe?.showDelegatesUpdates(from: baseView, initWallets: delegatedAccountsUpdates)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension WalletSelectionPresenter {
+    func getDelegatedAccountsUpdates(
         for changes: [DataProviderChange<ManagedMetaAccountModel>]
     ) -> [ManagedMetaAccountModel] {
         let oldWallets = walletsList.allItems.reduceToDict()
@@ -55,28 +73,29 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         }
     }
 
-    override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
-        let delegatedAccountsUpdates = getDelegatedAccountsUpdates(for: changes)
-
-        super.updateWallets(changes: changes)
-
-        guard let view = baseView, view.controller.topModalViewController == view.controller else {
-            return
-        }
-
-        if !delegatedAccountsUpdates.isEmpty {
-            wireframe?.showDelegatesUpdates(from: baseView, initWallets: delegatedAccountsUpdates)
+    func showNotSelectableAlert(for viewModel: WalletsListSectionViewModel) {
+        if viewModel.type == .multisig {
+            wireframe?.showMultisigUnavailable(
+                from: baseView,
+                locale: selectedLocale
+            )
         }
     }
 }
 
 extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
     func selectItem(at index: Int, section: Int) {
-        let identifier = viewModels[section].items[index].identifier
+        let viewModel = viewModels[section].items[index]
+        let identifier = viewModel.identifier
 
         guard
             let item = walletsList.allItems.first(where: { $0.identifier == identifier }),
             !item.isSelected else {
+            return
+        }
+
+        guard viewModel.isSelectable else {
+            showNotSelectableAlert(for: viewModels[section])
             return
         }
 

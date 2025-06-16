@@ -6,36 +6,25 @@ import SubstrateSdk
 protocol WalletsListViewModelFactoryProtocol {
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
-        balancesCalculator: BalancesCalculating,
+        balancesCalculator: BalancesCalculating?,
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletsListSectionViewModel]
+}
 
+extension WalletsListViewModelFactoryProtocol {
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
-    ) -> [WalletsListSectionViewModel]
-
-    func createItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        balancesCalculator: BalancesCalculating,
-        locale: Locale
-    ) -> WalletsListViewModel
-
-    func createProxyItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        wallets: [ManagedMetaAccountModel],
-        chains: [ChainModel.Id: ChainModel],
-        locale: Locale
-    ) -> WalletsListViewModel?
-
-    func createMultisigItemViewModel(
-        for wallet: ManagedMetaAccountModel,
-        wallets: [ManagedMetaAccountModel],
-        chains: [ChainModel.Id: ChainModel],
-        locale: Locale
-    ) -> WalletsListViewModel?
+    ) -> [WalletsListSectionViewModel] {
+        createSectionViewModels(
+            for: wallets,
+            balancesCalculator: nil,
+            chains: chains,
+            locale: locale
+        )
+    }
 }
 
 class WalletsListViewModelFactory {
@@ -318,7 +307,8 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: viewModel,
-            isSelected: isSelected(wallet: wallet)
+            isSelected: isSelected(wallet: wallet),
+            isSelectable: false
         )
     }
 
@@ -374,26 +364,13 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
 
     func createSectionViewModels(
         for wallets: [ManagedMetaAccountModel],
-        balancesCalculator: BalancesCalculating,
+        balancesCalculator: BalancesCalculating?,
         chains: [ChainModel.Id: ChainModel],
         locale: Locale
     ) -> [WalletsListSectionViewModel] {
         internalCreateSectionViewModels(
             for: wallets,
             balancesCalculator: balancesCalculator,
-            chains: chains,
-            locale: locale
-        )
-    }
-
-    func createSectionViewModels(
-        for wallets: [ManagedMetaAccountModel],
-        chains: [ChainModel.Id: ChainModel],
-        locale: Locale
-    ) -> [WalletsListSectionViewModel] {
-        internalCreateSectionViewModels(
-            for: wallets,
-            balancesCalculator: nil,
             chains: chains,
             locale: locale
         )
