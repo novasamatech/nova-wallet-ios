@@ -45,4 +45,18 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
 
         view?.controller.present(proxiedsUpdatesView.controller, animated: true)
     }
+
+    func showMultisigUnavailable(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+
+        present(
+            message: R.string.localizable.multisigSelectionUnavailableMessage(preferredLanguages: languages),
+            title: R.string.localizable.multisigSelectionUnavailableTitle(preferredLanguages: languages),
+            closeAction: R.string.localizable.commonGotIt(preferredLanguages: languages),
+            from: view
+        )
+    }
 }
