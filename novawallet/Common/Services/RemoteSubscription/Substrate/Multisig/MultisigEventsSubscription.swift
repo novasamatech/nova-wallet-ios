@@ -4,13 +4,12 @@ import SubstrateSdk
 
 protocol MultisigEventsSubscriber: AnyObject {
     func didReceive(
-        callHash: CallHash,
+        event: MultisigEvent,
         blockHash: Data
     )
 }
 
 final class MultisigEventsSubscription: WebSocketSubscribing {
-    let accountId: AccountId
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
     let storageFacade: StorageFacadeProtocol
@@ -29,7 +28,6 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
     }()
     
     init(
-        accountId: AccountId,
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
@@ -38,7 +36,6 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
         workingQueue: DispatchQueue,
         logger: LoggerProtocol? = nil
     ) {
-        self.accountId = accountId
         self.chainId = chainId
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
@@ -76,33 +73,6 @@ private extension MultisigEventsSubscription {
             throw ChainRegistryError.connectionUnavailable
         }
         
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        
-        execute(
-            operation: codingFactoryOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
-            switch result {
-            case let .success(codingFactory):
-                self?.subscribeEvents(
-                    using: connection,
-                    runtimeProvider,
-                    decodingWith: codingFactory
-                )
-            case let .failure(error):
-                self?.logger?.error("Failed to fetch coder factory: \(error)")
-            }
-        }
-        
-        
-    }
-    
-    func subscribeEvents(
-        using connection: ChainConnection,
-        _ runtimeProvider: RuntimeProviderProtocol,
-        decodingWith codingFactory: RuntimeCoderFactoryProtocol
-    ) {
         let request = UnkeyedSubscriptionRequest(
             storagePath: SystemPallet.eventsPath,
             localKey: ""
@@ -118,7 +88,7 @@ private extension MultisigEventsSubscription {
         ) { [weak self] result in
             switch result {
             case let .success(eventRecordsWithBlock):
-                self?.handle(eventRecordsWithBlock, using: codingFactory)
+                self?.handle(eventRecordsWithBlock, using: runtimeProvider.fetchCoderFactoryOperation())
             case let .failure(error):
                 self?.logger?.error("Failed to subscribe System.Events: \(error)")
             }
@@ -127,7 +97,7 @@ private extension MultisigEventsSubscription {
     
     func handle(
         _ eventRecordsWithBlock: CallbackStorageSubscriptionResult<[EventRecord]>,
-        using codingFactory: RuntimeCoderFactoryProtocol
+        using codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) {
         guard
             let blockHash = eventRecordsWithBlock.blockHash,
@@ -136,16 +106,28 @@ private extension MultisigEventsSubscription {
             return
         }
         
-        events
-            .compactMap {
-                matchMultisig(
-                    event: $0.event,
-                    using: codingFactory
-                )
+        execute(
+            operation: codingFactoryOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(codingFactory):
+                events.forEach {
+                    guard let multisigEvent = self?.matchMultisig(
+                        event: $0.event,
+                        using: codingFactory
+                    ) else { return }
+                    
+                    self?.subscriber?.didReceive(
+                        event: multisigEvent,
+                        blockHash: blockHash
+                    )
+                }
+            case let .failure(error):
+                self?.logger?.error("Failed to fetch coder factory: \(error)")
             }
-            .filter { $0.accountId == accountId }
-            .map { $0.callHash }
-            .forEach { subscriber?.didReceive(callHash: $0, blockHash: blockHash) }
+        }
     }
     
     func matchMultisig(

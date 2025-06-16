@@ -17,9 +17,6 @@ class MultisigPendingOperationsSyncService {
     private var pendingOperationsChainSyncServices: [ChainModel.Id: PendingMultisigChainSyncServiceProtocol] = [:]
     
     private var selectedMetaAccountProvider: StreamableProvider<ManagedMetaAccountModel>?
-    private var metaAccountsProvider: StreamableProvider<ManagedMetaAccountModel>?
-
-    private var availableMetaAccounts: [MetaAccountModel] = []
     
     private var selectedMetaAccount: MetaAccountModel? {
         didSet {
@@ -53,15 +50,10 @@ private extension MultisigPendingOperationsSyncService {
         mutex.lock()
         defer { mutex.unlock() }
         
-        metaAccountsProvider = subscribeAllWalletsProvider()
         selectedMetaAccountProvider = subscribeSelectedWalletProvider()
     }
     
     func createChainSyncServices() {
-        guard availableMetaAccounts.contains(where: { $0.multisigAccount != nil }) else {
-            return
-        }
-        
         guard let selectedMetaAccount, selectedMetaAccount.multisigAccount != nil else {
             return
         }
@@ -111,37 +103,12 @@ extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSyncSer
         
         pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
         selectedMetaAccountProvider = nil
-        metaAccountsProvider = nil
     }
 }
 
 // MARK: - WalletListLocalStorageSubscriber
 
 extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
-        switch result {
-        case let .success(changes):
-            let mappedChanges: [DataProviderChange<MetaAccountModel>] = changes
-                .compactMap { change in
-                    guard change.isDeletion || change.item?.info.delegationId?.delegationType == .multisig else {
-                        return nil
-                    }
-
-                    return switch change {
-                    case let .insert(newItem): .insert(newItem: newItem.info)
-                    case let .update(newItem): .update(newItem: newItem.info)
-                    case let .delete(deletedIdentifier): .delete(deletedIdentifier: deletedIdentifier)
-                    }
-                }
-
-            mutex.lock()
-            availableMetaAccounts = availableMetaAccounts.applying(changes: mappedChanges)
-            mutex.unlock()
-        case let .failure(error):
-            logger?.error("Failed to fetch all wallets: \(error.localizedDescription)")
-        }
-    }
-    
     func handleSelectedWallet(result: Result<ManagedMetaAccountModel?, any Error>) {
         switch result {
         case let .success(selectedMetaAccount):
