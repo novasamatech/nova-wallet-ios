@@ -49,33 +49,8 @@ final class UniqueNftOperationFactory: UniqueNftOperationFactoryProtocol {
 
         let urlRequest = URLRequest(url: url)
 
-        let requestFactory = BlockNetworkRequestFactory {
-            urlRequest
-        }
-
-        let resultFactory = AnyNetworkResultFactory<UniqueScanNftResponse> { data, response, error in
-            if let networkError = error {
-                if NetworkOperationHelper.isCancellation(error: networkError) {
-                    return .failure(networkError)
-                }
-                return .failure(UniqueNftFactoryError.networkError(networkError))
-            }
-
-            if let httpResponse = response as? HTTPURLResponse, !(200 ... 299).contains(httpResponse.statusCode) {
-                return .failure(UniqueNftFactoryError.httpError(statusCode: httpResponse.statusCode))
-            }
-
-            guard let responseData = data else {
-                return .failure(UniqueNftFactoryError.noData)
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                let parsedResponse = try decoder.decode(UniqueScanNftResponse.self, from: responseData)
-                return .success(parsedResponse)
-            } catch let decodingError {
-                return .failure(UniqueNftFactoryError.decodingError(decodingError))
-            }
+        let resultFactory = AnyNetworkResultFactory<UniqueScanNftResponse> { data in
+            try JSONDecoder().decode(UniqueScanNftResponse.self, from: data)
         }
 
         let networkOperation = NetworkOperation<UniqueScanNftResponse>(
