@@ -11,7 +11,6 @@ protocol UniqueNftOperationFactoryProtocol {
 }
 
 enum UniqueScanApi {
-    //static let opal = URL(string: "https://api-opal.uniquescan.io/v2")!
     static let mainnet = URL(string: "https://api-unique.uniquescan.io/v2")!
 }
 
@@ -33,7 +32,7 @@ final class UniqueNftOperationFactory: UniqueNftOperationFactoryProtocol {
     func fetchNfts(
         for address: AccountAddress,
         offset: Int = 0,
-        limit: Int = 50
+        limit: Int = 1000
     ) -> CompoundOperationWrapper<UniqueScanNftResponse> {
         var comps = URLComponents(url: base.appendingPathComponent("nfts"), resolvingAgainstBaseURL: false)!
         comps.queryItems = [

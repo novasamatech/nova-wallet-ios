@@ -28,7 +28,7 @@ final class UniqueNftSyncService: BaseNftSyncService {
     override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
         do {
             let address = try ownerId.toAddress(using: chain.chainFormat)
-            let fetchWrapper = operationFactory.fetchNfts(for: address, offset: 0, limit: 20)
+            let fetchWrapper = operationFactory.fetchNfts(for: address, offset: 0, limit: 1000)
 
             let chainRef = chain
             let mapOp = ClosureOperation<[RemoteNftModel]> {

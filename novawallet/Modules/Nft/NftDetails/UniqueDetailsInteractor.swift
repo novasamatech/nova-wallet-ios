@@ -7,7 +7,7 @@ final class UniqueDetailsInteractor: NftDetailsInteractor {
 
     init(
         nftChainModel: NftChainModel,
-        nftMetadataService: NftFileDownloadServiceProtocol, // nftMetadataService пока остается, т.к. базовый класс его требует
+        nftMetadataService: NftFileDownloadServiceProtocol,
         operationFactory: UniqueNftOperationFactoryProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationQueue: OperationQueue
