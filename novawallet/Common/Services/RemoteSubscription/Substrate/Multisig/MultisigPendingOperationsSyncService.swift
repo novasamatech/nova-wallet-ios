@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import Operation_iOS
 
 protocol MultisigPendingOperationsSyncServiceProtocol: ApplicationServiceProtocol {}
@@ -9,6 +10,7 @@ class MultisigPendingOperationsSyncService {
     private let mutex = NSLock()
 
     private let chainRepository: AnyDataProviderRepository<ChainModel>
+    private let callDataSyncService: MultisigCallDataSyncServiceProtocol
     private let chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
@@ -28,6 +30,7 @@ class MultisigPendingOperationsSyncService {
 
     init(
         chainRepository: AnyDataProviderRepository<ChainModel>,
+        callDataSyncService: MultisigCallDataSyncServiceProtocol,
         chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
@@ -35,6 +38,7 @@ class MultisigPendingOperationsSyncService {
         logger: LoggerProtocol? = nil
     ) {
         self.chainRepository = chainRepository
+        self.callDataSyncService = callDataSyncService
         self.chainSyncServiceFactory = chainSyncServiceFactory
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.operationQueue = operationQueue
@@ -120,6 +124,16 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
         }
     }
 }
+
+// MARK: - MultisigCallDataObserver
+
+extension MultisigPendingOperationsSyncService: MultisigCallDataObserver {
+    func didReceive(newCallData: [CallHash : JSON]) {
+        
+    }
+}
+
+// MARK: - Errors
 
 enum MultisigPendingOperationsSyncError: Error {
     case noChainMatchingMultisigAccount

@@ -37,6 +37,16 @@ class InMemoryCache<K: Hashable, V> {
 
         return Array(cache.values)
     }
+    
+    func fetchAllKeys() -> [K] {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+        
+        return Array(cache.keys)
+    }
 
     func removeValue(for key: K) {
         mutex.lock()
@@ -83,6 +93,10 @@ struct ObservableInMemoryCache<K: Hashable, V> {
     func fetchAllValues() -> [V] {
         internalCache.value.fetchAllValues()
     }
+    
+    func fetchAllKeys() -> [K] {
+        internalCache.value.fetchAllKeys()
+    }
 
     mutating func removeValue(for key: K) {
         internalCache.value.removeValue(for: key)
@@ -99,5 +113,19 @@ extension ObservableInMemoryCache: Equatable {
         rhs: ObservableInMemoryCache<K, V>
     ) -> Bool {
         lhs.internalCache == rhs.internalCache
+    }
+}
+
+extension ObservableInMemoryCache {
+    func newItems(
+        after olderCache: ObservableInMemoryCache<K, V>
+    ) -> [K:V] {
+        let lhsKeys = Set(self.fetchAllKeys())
+        let rhsKeys = Set(olderCache.fetchAllKeys())
+        
+        let addedKeys = lhsKeys.subtracting(rhsKeys)
+        
+        return addedKeys.reduce(into: [K: V]()) { $0[$1] = self.fetchValue(for: $1) }
+            
     }
 }

@@ -2,8 +2,16 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
+protocol MultisigCallDataObserver: AnyObject {
+    func didReceive(newCallData: [CallHash: JSON])
+}
+
 protocol MultisigCallDataSyncServiceProtocol {
     func setup(with chains: [ChainModel])
+    func addObserver(
+        _ observer: MultisigCallDataObserver,
+        sendOnSubscription: Bool
+    )
 }
 
 private typealias CallDataCache = Observable<ObservableInMemoryCache<CallHash, JSON>>
@@ -84,6 +92,19 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         
         availableChains = chains
         subscribeMetaAccounts()
+    }
+    
+    func addObserver(
+        _ observer: any MultisigCallDataObserver,
+        sendOnSubscription: Bool
+    ) {
+        cachedCallData.addObserver(
+            with: observer,
+            sendStateOnSubscription: sendOnSubscription,
+            queue: workingQueue
+        ) { oldValue, newValue in
+            observer.didReceive(newCallData: newValue.newItems(after: oldValue))
+        }
     }
 }
 
