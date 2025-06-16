@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaCrypto
 import SubstrateSdk
 
 typealias CallHash = Data

@@ -27,4 +27,8 @@ extension EventCodingPath {
     static var ethereumExecuted: EventCodingPath {
         EventCodingPath(moduleName: "Ethereum", eventName: "Executed")
     }
+    
+    static var newMultisig: EventCodingPath {
+        EventCodingPath(moduleName: "Multisig", eventName: "NewMultisig")
+    }
 }
