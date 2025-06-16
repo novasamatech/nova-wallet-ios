@@ -1463,6 +1463,7 @@
 		2D2F6F522C50E52D005020EF /* VotingCurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */; };
 		2D31D3062D149F74004BF46B /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */; };
 		2D3286EE2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */; };
+		2D3286F02E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
 		2D32BE132C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */; };
 		2D32BE152C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */; };
@@ -7411,6 +7412,7 @@
 		2D2F6F512C50E52D005020EF /* VotingCurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingCurveTests.swift; sourceTree = "<group>"; };
 		2D31D3052D149F74004BF46B /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigChainSyncService.swift; sourceTree = "<group>"; };
+		2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigChainSyncServiceFactory.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
 		2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeInstaller.swift; sourceTree = "<group>"; };
 		2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimationProtocol.swift; sourceTree = "<group>"; };
@@ -16091,6 +16093,7 @@
 			children = (
 				2DC694542DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift */,
 				2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */,
+				2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */,
 				2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */,
 				2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */,
 			);
@@ -28792,6 +28795,7 @@
 				844CED2329260737001A7757 /* EvmQueryMessage.swift in Sources */,
 				842876A524AE049B00D91AD8 /* SelectableTitleListViewModel.swift in Sources */,
 				847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */,
+				2D3286F02E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift in Sources */,
 				845B08012918406A005785D3 /* Gov2ActionOperationFactory.swift in Sources */,
 				88B1C34229BA046000DCA101 /* StakingRebagConfirmError.swift in Sources */,
 				84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */,

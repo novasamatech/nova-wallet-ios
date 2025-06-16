@@ -9,42 +9,40 @@ class MultisigPendingOperationsSyncService {
     private let mutex = NSLock()
 
     private let chainRepository: AnyDataProviderRepository<ChainModel>
-    private let chainRegistry: ChainRegistryProtocol
+    private let chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     private let logger: LoggerProtocol?
 
-    private let cancellableSyncStore = CancellableCallStore()
-
     private var pendingOperationsChainSyncServices: [ChainModel.Id: PendingMultisigChainSyncServiceProtocol] = [:]
-    private var metaAccountsDataProvider: StreamableProvider<ManagedMetaAccountModel>?
+    
+    private var selectedMetaAccountProvider: StreamableProvider<ManagedMetaAccountModel>?
+    private var metaAccountsProvider: StreamableProvider<ManagedMetaAccountModel>?
 
-    private var multisigMetaAccounts: [MetaAccountModel] = [] {
+    private var availableMetaAccounts: [MetaAccountModel] = []
+    
+    private var selectedMetaAccount: MetaAccountModel? {
         didSet {
-            if multisigMetaAccounts != oldValue {
-                updatePendingOperationsList()
+            if selectedMetaAccount?.metaId != oldValue?.metaId {
+                createChainSyncServices()
             }
         }
     }
 
     init(
-        chainRegistry: ChainRegistryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
+        chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.sync"),
+        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.sync.service"),
         logger: LoggerProtocol? = nil
     ) {
-        self.chainRegistry = chainRegistry
         self.chainRepository = chainRepository
+        self.chainSyncServiceFactory = chainSyncServiceFactory
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
-    }
-
-    deinit {
-        cancellableSyncStore.cancel()
     }
 }
 
@@ -52,257 +50,51 @@ class MultisigPendingOperationsSyncService {
 
 private extension MultisigPendingOperationsSyncService {
     func performSetup() {
-        metaAccountsDataProvider = subscribeAllWalletsProvider()
+        mutex.lock()
+        defer { mutex.unlock() }
+        
+        metaAccountsProvider = subscribeAllWalletsProvider()
+        selectedMetaAccountProvider = subscribeSelectedWalletProvider()
     }
-
-    func updatePendingOperationsList() {
-        cancellableSyncStore.cancel()
-
+    
+    func createChainSyncServices() {
+        guard availableMetaAccounts.contains(where: { $0.multisigAccount != nil }) else {
+            return
+        }
+        
+        guard let selectedMetaAccount, selectedMetaAccount.multisigAccount != nil else {
+            return
+        }
+        
+        pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
+        
         let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
-
-        let fetchCallHashesOperation = OperationCombiningService(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
-            return multisigMetaAccounts.map { multisig in
-                self.createPendingOperationsWrapper(
-                    for: multisig,
-                    dependingOn: chainsFetchOperation
-                )
-            }
-        }.longrunOperation()
-
-        fetchCallHashesOperation.addDependency(chainsFetchOperation)
-
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: fetchCallHashesOperation,
-            dependencies: [chainsFetchOperation]
-        )
-
-        executeCancellable(
-            wrapper: wrapper,
+        
+        execute(
+            operation: chainsFetchOperation,
             inOperationQueue: operationQueue,
-            backingCallIn: cancellableSyncStore,
             runningCallbackIn: workingQueue
         ) { [weak self] result in
             guard let self else { return }
-
+            
             switch result {
-            case let .success(dict):
-                let merged = dict.reduce(into: [:]) { $0.merge($1, uniquingKeysWith: { $1 }) }
-
+            case let .success(chains):
+                let filteredChains = chains.filter { $0.hasMultisig }
                 mutex.lock()
-
-                let updatedHashes = Set(merged.keys)
-                let oldHashes = Set(pendingOperations.keys)
-                let newHashes = updatedHashes.subtracting(oldHashes)
-
-                pendingOperations.merge(merged, uniquingKeysWith: { $1 })
-                subscribe(newHashes)
-
+                pendingOperationsChainSyncServices = filteredChains.reduce(into: [:]) { acc, chain in
+                    let service = self.chainSyncServiceFactory.createMultisigChainSyncService(
+                        for: chain,
+                        selectedMetaAccount: selectedMetaAccount,
+                        operationQueue: self.operationQueue
+                    )
+                    self.pendingOperationsChainSyncServices[chain.chainId] = service
+                }
+                pendingOperationsChainSyncServices.forEach { $0.value.setup() }
                 mutex.unlock()
             case let .failure(error):
-                logger?.error("Failed to fetch pending operations: \(error)")
+                logger?.error("Failed to fetch chains: \(error)")
             }
         }
-    }
-
-    func createPendingOperationsWrapper(
-        for multisigMetaAccount: MetaAccountModel,
-        dependingOn chainsFetchOperation: BaseOperation<[ChainModel]>
-    ) -> CompoundOperationWrapper<[CallHash: Multisig.PendingOperation]> {
-        guard let multisigContext = multisigMetaAccount.multisig else {
-            return .createWithError(MultisigPendingOperationsSyncError.multisigAccountUnavailable)
-        }
-        let chainMatchOperation = createMatchChainOperation(
-            for: multisigMetaAccount,
-            chainsClosure: { try chainsFetchOperation.extractNoCancellableResultData() }
-        )
-        let callHashFetchWrapper = createCallHashFetchWrapper(
-            for: multisigMetaAccount,
-            chainIdClosure: { try chainMatchOperation.extractNoCancellableResultData().chainId }
-        )
-        let callDataFetchWrapper = createCallDataFetchWrapper(
-            chainClosure: { try chainMatchOperation.extractNoCancellableResultData() },
-            callHashesClosure: {
-                Set(
-                    try callHashFetchWrapper
-                        .targetOperation
-                        .extractNoCancellableResultData()
-                        .keys
-                )
-            }
-        )
-
-        callHashFetchWrapper.addDependency(operations: [chainMatchOperation])
-        callDataFetchWrapper.addDependency(operations: [chainMatchOperation])
-        callDataFetchWrapper.addDependency(wrapper: callHashFetchWrapper)
-
-        let mapOperation = ClosureOperation<[CallHash: Multisig.PendingOperation]> {
-            let chain = try chainMatchOperation.extractNoCancellableResultData()
-            let callHashes = try callHashFetchWrapper.targetOperation.extractNoCancellableResultData()
-            let callData = try callDataFetchWrapper.targetOperation.extractNoCancellableResultData()
-
-            return callHashes.reduce(into: [:]) { acc, keyValue in
-                let matchingCallData = callData[keyValue.key]
-
-                let pendingOperation = Multisig.PendingOperation(
-                    call: nil,
-                    callHash: keyValue.key,
-                    multisigAccountId: multisigContext.accountId,
-                    signatory: multisigContext.signatory,
-                    chainId: chain.chainId,
-                    multisigDefinition: keyValue.value
-                )
-
-                acc[keyValue.key] = pendingOperation
-            }
-        }
-
-        mapOperation.addDependency(callDataFetchWrapper.targetOperation)
-
-        let dependencies = [chainMatchOperation]
-            + callHashFetchWrapper.allOperations
-            + callDataFetchWrapper.allOperations
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: dependencies
-        )
-    }
-
-    func createCallDataFetchWrapper(
-        chainClosure: @escaping () throws -> ChainModel,
-        callHashesClosure: @escaping () throws -> Set<CallHash>
-    ) -> CompoundOperationWrapper<[CallHash: CallData]> {
-        OperationCombiningService.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) {
-            let chain = try chainClosure()
-            let callHashes = try callHashesClosure()
-
-            guard let apiURL = chain.externalApis?.getApis(for: .multisig)?.first?.url else {
-                return .createWithResult([:])
-            }
-
-            let remoteCallDataFetchFactory = SubqueryMultisigsOperationFactory(url: apiURL)
-
-            let callDataFetchOperation = remoteCallDataFetchFactory.createFetchCallDataOperation(for: callHashes)
-
-            return CompoundOperationWrapper(targetOperation: callDataFetchOperation)
-        }
-    }
-
-    func createCallHashFetchWrapper(
-        for multisigMetaAccount: MetaAccountModel,
-        chainIdClosure: @escaping () throws -> ChainModel.Id
-    ) -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]> {
-        OperationCombiningService.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
-            let chainId = try chainIdClosure()
-
-            guard let connection = chainRegistry.getConnection(for: chainId) else {
-                throw ChainRegistryError.connectionUnavailable
-            }
-
-            guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-                throw ChainRegistryError.runtimeMetadaUnavailable
-            }
-
-            guard let multisigAccountId = multisigMetaAccount.multisig?.accountId else {
-                throw MultisigPendingOperationsSyncError.multisigAccountUnavailable
-            }
-
-            return pendingCallHashesOperationFactory.fetchPendingOperations(
-                for: multisigAccountId,
-                connection: connection,
-                runtimeProvider: runtimeProvider
-            )
-        }
-    }
-
-    func createMatchChainOperation(
-        for multisigMetaAccount: MetaAccountModel,
-        chainsClosure: @escaping () throws -> [ChainModel]
-    ) -> BaseOperation<ChainModel> {
-        ClosureOperation {
-            let chains: [ChainModel.Id: ChainModel] = try chainsClosure()
-                .reduce(into: [:]) { acc, chain in
-                    guard
-                        let multisigApis = chain.externalApis?.multisig(),
-                        !multisigApis.isEmpty
-                    else { return }
-
-                    acc[chain.chainId] = chain
-                }
-
-            guard
-                let detectedOnChain = multisigMetaAccount.multisig?.detectedOnChain,
-                let chain = chains[detectedOnChain]
-            else {
-                throw MultisigPendingOperationsSyncError.noChainMatchingMultisigAccount
-            }
-
-            return chain
-        }
-    }
-
-    func subscribe(_ callHashes: Set<CallHash>) {
-        let operationsMap: [AccountId: [Multisig.PendingOperation]] = callHashes
-            .reduce(into: [:]) { acc, callHash in
-                guard let pendingOperation = pendingOperations[callHash] else { return }
-
-                if let operations = acc[pendingOperation.multisigAccountId] {
-                    acc[pendingOperation.multisigAccountId] = operations + [pendingOperation]
-                } else {
-                    acc[pendingOperation.multisigAccountId] = [pendingOperation]
-                }
-            }
-
-        do {
-            try operationsMap.forEach { multisigAccountId, pendingOperations in
-                guard let chainId = pendingOperations.first?.chainId else { return }
-
-                let callHashes = pendingOperations.map(\.callHash)
-
-                try remoteOperationUpdateService.setupSubscription(
-                    subscriber: self,
-                    for: multisigAccountId,
-                    callHashes: Set(callHashes),
-                    chainId: chainId
-                )
-            }
-        } catch {
-            logger?.error("Failed to subscribe to remote operations: \(error)")
-        }
-    }
-
-    func stopSyncing(callHash: CallHash) {
-        mutex.lock()
-        defer { mutex.unlock() }
-
-        guard let pendingOperation = pendingOperations[callHash] else {
-            return
-        }
-
-        pendingOperations[callHash] = nil
-
-        let operationsForAccountId = pendingOperations.filter {
-            $0.value.multisigAccountId == pendingOperation.multisigAccountId
-        }
-        let updatedCallHashes = operationsForAccountId.keys
-
-        remoteOperationUpdateService.clearSubscription(for: pendingOperation.multisigAccountId)
-
-        subscribe(Set(updatedCallHashes))
     }
 }
 
@@ -314,27 +106,12 @@ extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSyncSer
     }
 
     func throttle() {
-        let callHashes = pendingOperations.keys
-
-        callHashes.forEach { stopSyncing(callHash: $0) }
-        metaAccountsDataProvider = nil
-    }
-}
-
-// MARK: - MultisigPendingOperationsSubscriber
-
-extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSubscriber {
-    func didReceiveUpdate(
-        callHash: CallHash,
-        multisigDefinition: Multisig.MultisigDefinition?
-    ) {
-        if let multisigDefinition, let pendingOperation = pendingOperations[callHash] {
-            mutex.lock()
-            pendingOperations[callHash] = pendingOperation.replaicingDefinition(with: multisigDefinition)
-            mutex.unlock()
-        } else {
-            stopSyncing(callHash: callHash)
-        }
+        mutex.lock()
+        defer { mutex.unlock() }
+        
+        pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
+        selectedMetaAccountProvider = nil
+        metaAccountsProvider = nil
     }
 }
 
@@ -357,9 +134,22 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
                     }
                 }
 
-            multisigMetaAccounts = multisigMetaAccounts.applying(changes: mappedChanges)
+            mutex.lock()
+            availableMetaAccounts = availableMetaAccounts.applying(changes: mappedChanges)
+            mutex.unlock()
         case let .failure(error):
-            logger?.error(error.localizedDescription)
+            logger?.error("Failed to fetch all wallets: \(error.localizedDescription)")
+        }
+    }
+    
+    func handleSelectedWallet(result: Result<ManagedMetaAccountModel?, any Error>) {
+        switch result {
+        case let .success(selectedMetaAccount):
+            mutex.lock()
+            self.selectedMetaAccount = selectedMetaAccount?.info
+            mutex.unlock()
+        case let .failure(error):
+            logger?.error("Failed to fetch selected wallet: \(error.localizedDescription)")
         }
     }
 }

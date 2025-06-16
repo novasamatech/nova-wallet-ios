@@ -230,11 +230,13 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             operationQueue: pendingMultisigQueue
         )
-        let pendingMultisigSyncService = MultisigPendingOperationsSyncService(
+        let pendingMultisigChainSyncServiceFactory = PendingMultisigChainSyncServiceFactory(
             chainRegistry: chainRegistry,
+            substrateStorageFacade: substrateStorageFacade
+        )
+        let pendingMultisigSyncService = MultisigPendingOperationsSyncService(
             chainRepository: SubstrateRepositoryFactory().createChainRepository(),
-            remoteOperationUpdateService: pendingMultisigUpdatingService,
-            pendingCallHashesOperationFactory: MultisigStorageOperationFactory(storageRequestFactory: storageRequestFactory),
+            chainSyncServiceFactory: pendingMultisigChainSyncServiceFactory,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             operationQueue: pendingMultisigQueue
         )

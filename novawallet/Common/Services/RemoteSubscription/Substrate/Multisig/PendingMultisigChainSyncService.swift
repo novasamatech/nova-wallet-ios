@@ -21,9 +21,9 @@ final class PendingMultisigChainSyncService: BaseSyncService, PendingMultisigCha
         chainRegistry: ChainRegistryProtocol,
         pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
         remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol,
-        repositoryCachingFactory: InMemoryRepositoryCachingFactory = UserDataStorageFacade.shared,
+        repositoryCachingFactory: InMemoryRepositoryCachingFactory,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue
+        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.chain.sync.service")
     ) {
         self.wallet = wallet
         self.chain = chain
