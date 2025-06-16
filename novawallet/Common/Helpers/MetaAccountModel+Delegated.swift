@@ -69,9 +69,11 @@ extension MetaAccountModel {
     func isSignatory(for multisig: MultisigAccountType) -> Bool {
         switch multisig {
         case let .universal(multisig):
-            multisig.signatory == substrateAccountId || multisig.signatory == ethereumAddress
+            return multisig.signatory == substrateAccountId || multisig.signatory == ethereumAddress
         case let .singleChain(chainAccount):
-            has(accountId: chainAccount.accountId, chainId: chainAccount.chainId)
+            guard let multisig = chainAccount.multisig else { return false }
+
+            return has(accountId: multisig.signatory, chainId: chainAccount.chainId)
         }
     }
 
