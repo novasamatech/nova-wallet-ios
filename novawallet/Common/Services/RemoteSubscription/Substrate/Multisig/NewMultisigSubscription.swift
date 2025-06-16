@@ -3,7 +3,10 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol MultisigEventsSubscriber: AnyObject {
-    func didReceive(callHash: CallHash)
+    func didReceive(
+        callHash: CallHash,
+        blockHash: Data
+    )
 }
 
 final class MultisigEventsSubscription: WebSocketSubscribing {
@@ -13,7 +16,6 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
     let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
 
-    private let mutex = NSLock()
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     
@@ -112,12 +114,11 @@ private extension MultisigEventsSubscription {
             runtimeService: runtimeProvider,
             repository: nil,
             operationQueue: operationQueue,
-            callbackQueue: workingQueue
+            callbackWithBlockQueue: workingQueue
         ) { [weak self] result in
             switch result {
-            case let .success(eventRecords):
-                guard let eventRecords else { return }
-                self?.handle(eventRecords, using: codingFactory)
+            case let .success(eventRecordsWithBlock):
+                self?.handle(eventRecordsWithBlock, using: codingFactory)
             case let .failure(error):
                 self?.logger?.error("Failed to subscribe System.Events: \(error)")
             }
@@ -125,17 +126,26 @@ private extension MultisigEventsSubscription {
     }
     
     func handle(
-        _ eventRecords: [EventRecord],
+        _ eventRecordsWithBlock: CallbackStorageSubscriptionResult<[EventRecord]>,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) {
-        let multisigEvents = eventRecords.compactMap {
-            matchMultisig(
-                event: $0.event,
-                using: codingFactory
-            )
+        guard
+            let blockHash = eventRecordsWithBlock.blockHash,
+            let events = eventRecordsWithBlock.value
+        else {
+            return
         }
         
-        let relevantEvents = multisigEvents.filter { $0.accountId == accountId }
+        events
+            .compactMap {
+                matchMultisig(
+                    event: $0.event,
+                    using: codingFactory
+                )
+            }
+            .filter { $0.accountId == accountId }
+            .map { $0.callHash }
+            .forEach { subscriber?.didReceive(callHash: $0, blockHash: blockHash) }
     }
     
     func matchMultisig(
