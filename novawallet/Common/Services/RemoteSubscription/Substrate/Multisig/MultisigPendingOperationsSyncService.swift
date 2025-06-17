@@ -20,10 +20,18 @@ class MultisigPendingOperationsSyncService {
     
     private var selectedMetaAccountProvider: StreamableProvider<ManagedMetaAccountModel>?
     
+    private var knownCallData: [CallDataKey: JSON] = [:]
+    
     private var selectedMetaAccount: MetaAccountModel? {
         didSet {
-            if selectedMetaAccount?.metaId != oldValue?.metaId {
-                createChainSyncServices()
+            if oldValue == nil, selectedMetaAccount != oldValue {
+                setupCallDataSync()
+            }
+            
+            if let selectedMetaAccount,
+               selectedMetaAccount != oldValue,
+               selectedMetaAccount.multisigAccount != nil {
+                createChainSyncServices(for: selectedMetaAccount)
             }
         }
     }
@@ -57,11 +65,28 @@ private extension MultisigPendingOperationsSyncService {
         selectedMetaAccountProvider = subscribeSelectedWalletProvider()
     }
     
-    func createChainSyncServices() {
-        guard let selectedMetaAccount, selectedMetaAccount.multisigAccount != nil else {
-            return
-        }
+    func setupCallDataSync() {
+        let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
         
+        execute(
+            operation: chainsFetchOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case let .success(chains):
+                let filteredChains = chains.filter { $0.hasMultisig }
+                
+                callDataSyncService.setup(with: filteredChains)
+            case let .failure(error):
+                logger?.error("Failed to fetch chains: \(error)")
+            }
+        }
+    }
+    
+    func createChainSyncServices(for selectedMetaAccount: MetaAccountModel) {
         pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
         
         let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
@@ -128,8 +153,10 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
 // MARK: - MultisigCallDataObserver
 
 extension MultisigPendingOperationsSyncService: MultisigCallDataObserver {
-    func didReceive(newCallData: [CallHash : JSON]) {
-        
+    func didReceive(newCallData: [CallDataKey: JSON]) {
+        mutex.lock()
+        knownCallData.merge(newCallData, uniquingKeysWith: { $1 })
+        mutex.unlock()
     }
 }
 
