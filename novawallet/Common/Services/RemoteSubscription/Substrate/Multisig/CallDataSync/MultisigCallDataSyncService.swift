@@ -38,8 +38,13 @@ final class MultisigCallDataSyncService {
 
     private var availableMetaAccounts: [MetaAccountModel] = [] {
         didSet {
-            guard oldValue.isEmpty, availableMetaAccounts != oldValue else { return }
-            setupCallDataSubscriptions()
+            guard oldValue != availableMetaAccounts else { return }
+            
+            if oldValue.isEmpty, !availableMetaAccounts.isEmpty {
+                setupCallDataSubscriptions()
+            } else if availableMetaAccounts.isEmpty {
+                stopSyncUp()
+            }
         }
     }
 
