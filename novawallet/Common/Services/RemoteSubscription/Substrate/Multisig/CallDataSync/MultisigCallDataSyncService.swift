@@ -2,22 +2,18 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-struct CallDataKey: Hashable {
-    let callHash: CallHash
-    let chainId: ChainModel.Id
-    let accountId: AccountId
-}
-
-protocol MultisigCallDataObserver: AnyObject {
-    func didReceive(newCallData: [CallDataKey: JSON])
-}
-
 protocol MultisigCallDataSyncServiceProtocol {
     func setup(with chains: [ChainModel])
     func addObserver(
         _ observer: MultisigCallDataObserver,
         sendOnSubscription: Bool
     )
+}
+
+struct CallDataKey: Hashable {
+    let callHash: CallHash
+    let chainId: ChainModel.Id
+    let accountId: AccountId
 }
 
 private typealias CallDataCache = Observable<ObservableInMemoryCache<CallDataKey, JSON>>
