@@ -174,12 +174,12 @@ private extension MultisigCallDataSyncService {
     ) throws -> JSON {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let context = codingFactory.createRuntimeJsonContext()
-        let decodedExtrinsic: Extrinsic = try decoder.read(
-            of: GenericType.extrinsic.name,
+        let decodedCall: JSON = try decoder.read(
+            of: GenericType.call.name,
             with: context.toRawContext()
         )
 
-        return decodedExtrinsic.call
+        return decodedCall
     }
 }
 

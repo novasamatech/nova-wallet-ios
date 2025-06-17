@@ -111,7 +111,9 @@ private extension PendingMultisigChainSyncService {
             {
                 try remoteFetchWrapper.targetOperation.extractNoCancellableResultData().map(\.value)
             },
-            { try diffOperation.extractNoCancellableResultData().removedCallHashes.map { $0.toHexString() } }
+            {
+                try diffOperation.extractNoCancellableResultData().removedCallHashes.map { $0.toHexString() }
+            }
         )
 
         saveOperation.addDependency(diffOperation)
@@ -123,8 +125,7 @@ private extension PendingMultisigChainSyncService {
         manageSubscriptionsOperation.addDependency(saveOperation)
 
         let dependencies = remoteFetchWrapper.allOperations
-            + localFetchOperation.allOperations
-            + [diffOperation, saveOperation]
+            + [localFetchOperation, diffOperation, saveOperation]
 
         return CompoundOperationWrapper(
             targetOperation: manageSubscriptionsOperation,
@@ -143,7 +144,7 @@ private extension PendingMultisigChainSyncService {
                 let multisig = wallet.multisigAccount?.multisig
             else { throw BaseOperationError.parentOperationCancelled }
 
-            try remoteOperationUpdateService.setupSubscription(
+            remoteOperationUpdateService.setupSubscription(
                 subscriber: self,
                 for: multisig.accountId,
                 callHashes: callHashes,
@@ -409,12 +410,12 @@ private extension PendingMultisigChainSyncService {
     ) throws -> JSON {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let context = codingFactory.createRuntimeJsonContext()
-        let decodedExtrinsic: Extrinsic = try decoder.read(
-            of: GenericType.extrinsic.name,
+        let decodedCall: JSON = try decoder.read(
+            of: GenericType.call.name,
             with: context.toRawContext()
         )
 
-        return decodedExtrinsic.call
+        return decodedCall
     }
 }
 

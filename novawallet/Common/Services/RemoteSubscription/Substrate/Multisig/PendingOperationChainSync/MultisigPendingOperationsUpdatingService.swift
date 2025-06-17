@@ -13,7 +13,7 @@ protocol MultisigPendingOperationsUpdatingServiceProtocol {
         for multisigAccountId: AccountId,
         callHashes: Set<CallHash>,
         chainId: ChainModel.Id
-    ) throws
+    )
 
     func clearSubscription()
 }
@@ -51,7 +51,9 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
         for multisigAccountId: AccountId,
         callHashes: Set<CallHash>,
         chainId: ChainModel.Id
-    ) throws {
+    ) {
+        guard !callHashes.isEmpty else { return }
+
         clearSubscription()
 
         subscription = MultisigPendingOperationsSubscription(
