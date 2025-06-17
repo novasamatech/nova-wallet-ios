@@ -360,6 +360,10 @@ final class ChainModelMapper {
             options.append(.pushNotifications)
         }
 
+        if entity.hasMultisig {
+            options.append(.multisig)
+        }
+
         return !options.isEmpty ? options : nil
     }
 }
@@ -471,6 +475,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasAssetHubTransferFees = model.hasAssetHubFees
         entity.hasHydrationTransferFees = model.hasHydrationFees
         entity.hasProxy = model.hasProxy
+        entity.hasMultisig = model.hasMultisig
         entity.hasPushNotifications = model.hasPushNotifications
         entity.order = model.order
         entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue

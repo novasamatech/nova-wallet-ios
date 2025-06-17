@@ -38,7 +38,7 @@ final class MultisigCallDataSyncService {
 
     private var availableMetaAccounts: [MetaAccountModel] = [] {
         didSet {
-            guard !oldValue.isEmpty, availableMetaAccounts != oldValue else { return }
+            guard oldValue.isEmpty, availableMetaAccounts != oldValue else { return }
             setupCallDataSubscriptions()
         }
     }
@@ -66,9 +66,6 @@ final class MultisigCallDataSyncService {
 
 private extension MultisigCallDataSyncService {
     func setupCallDataSubscriptions() {
-        mutex.lock()
-        defer { mutex.unlock() }
-
         availableChains.forEach { chain in
             let subscription = MultisigEventsSubscription(
                 chainId: chain.chainId,
