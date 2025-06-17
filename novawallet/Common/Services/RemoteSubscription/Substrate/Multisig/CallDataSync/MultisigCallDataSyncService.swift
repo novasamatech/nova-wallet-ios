@@ -10,13 +10,12 @@ protocol MultisigCallDataSyncServiceProtocol {
     )
 }
 
-struct CallDataKey: Hashable {
-    let callHash: CallHash
-    let chainId: ChainModel.Id
-    let accountId: AccountId
-}
-
-private typealias CallDataCache = Observable<ObservableInMemoryCache<CallDataKey, JSON>>
+private typealias CallDataCache = Observable<
+    ObservableInMemoryCache<
+        Multisig.PendingOperation.Key,
+        JSON
+    >
+>
 
 final class MultisigCallDataSyncService {
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
@@ -118,11 +117,11 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<JSON> {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            return .createWithError(MultisigCallDataSyncServiceError.chainConnectionUnavailable)
+            return .createWithError(MultisigCallDataSyncError.chainConnectionUnavailable)
         }
         
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            return .createWithError(MultisigCallDataSyncServiceError.runtimeUnavailable)
+            return .createWithError(MultisigCallDataSyncError.runtimeUnavailable)
         }
         
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -140,7 +139,7 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
             guard let callData = blockDetails.extrinsicsWithEvents.first(
                 where: { $0.extrinsicHash == event.callHash }
             )?.extrinsicData else {
-                throw MultisigCallDataSyncServiceError.extrinsicParsingFailed
+                throw MultisigCallDataSyncError.extrinsicParsingFailed
             }
             
             let decodedCall = try self.extractDecodedCall(
@@ -177,10 +176,10 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         ) { [weak self] result in
             switch result {
             case let .success(call):
-                let key = CallDataKey(
+                let key = Multisig.PendingOperation.Key(
                     callHash: event.callHash,
                     chainId: chainId,
-                    accountId: event.accountId
+                    multisigAccountId: event.accountId
                 )
                 
                 self?.cachedCallData.state.store(value: call, for: key)
@@ -255,7 +254,7 @@ extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletL
 
 // MARK: - Errors
 
-enum MultisigCallDataSyncServiceError: Error {
+enum MultisigCallDataSyncError: Error {
     case extrinsicParsingFailed
     case chainConnectionUnavailable
     case runtimeUnavailable

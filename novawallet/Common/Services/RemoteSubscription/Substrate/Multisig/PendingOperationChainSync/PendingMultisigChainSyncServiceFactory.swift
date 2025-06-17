@@ -6,6 +6,7 @@ protocol PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
         selectedMetaAccount: MetaAccountModel,
+        knownCallData: [Multisig.PendingOperation.Key: JSON],
         operationQueue: OperationQueue
     ) -> PendingMultisigChainSyncServiceProtocol
 }
@@ -29,6 +30,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
     func createMultisigChainSyncService(
         for chain: ChainModel,
         selectedMetaAccount: MetaAccountModel,
+        knownCallData: [Multisig.PendingOperation.Key: JSON],
         operationQueue: OperationQueue
     ) -> PendingMultisigChainSyncServiceProtocol {
         let assetsSyncOperationQueue = OperationManagerFacade.assetsSyncQueue
@@ -57,6 +59,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,
             remoteOperationUpdateService: remoteOperationUpdateService,
             repositoryCachingFactory: substrateStorageFacade,
+            knownCallData: knownCallData,
             operationQueue: operationQueue
         )
     }

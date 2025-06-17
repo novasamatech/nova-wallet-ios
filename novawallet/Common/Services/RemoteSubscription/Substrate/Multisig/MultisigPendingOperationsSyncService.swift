@@ -20,7 +20,7 @@ class MultisigPendingOperationsSyncService {
     
     private var selectedMetaAccountProvider: StreamableProvider<ManagedMetaAccountModel>?
     
-    private var knownCallData: [CallDataKey: JSON] = [:]
+    private var knownCallData: [Multisig.PendingOperation.Key: JSON] = [:]
     
     private var selectedMetaAccount: MetaAccountModel? {
         didSet {
@@ -106,6 +106,7 @@ private extension MultisigPendingOperationsSyncService {
                     let service = self.chainSyncServiceFactory.createMultisigChainSyncService(
                         for: chain,
                         selectedMetaAccount: selectedMetaAccount,
+                        knownCallData: self.knownCallData,
                         operationQueue: self.operationQueue
                     )
                     self.pendingOperationsChainSyncServices[chain.chainId] = service
@@ -153,7 +154,7 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
 // MARK: - MultisigCallDataObserver
 
 extension MultisigPendingOperationsSyncService: MultisigCallDataObserver {
-    func didReceive(newCallData: [CallDataKey: JSON]) {
+    func didReceive(newCallData: [Multisig.PendingOperation.Key: JSON]) {
         mutex.lock()
         knownCallData.merge(newCallData, uniquingKeysWith: { $1 })
         mutex.unlock()

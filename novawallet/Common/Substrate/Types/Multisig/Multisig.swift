@@ -8,7 +8,27 @@ enum Multisig {
 
     struct PendingOperation: Codable, Equatable, Identifiable {
         var identifier: String {
-            callHash.toHexString()
+            createKey().stringValue()
+        }
+        
+        struct Key: Hashable {
+            let callHash: CallHash
+            let chainId: ChainModel.Id
+            let multisigAccountId: AccountId
+            
+            func stringValue() -> String {
+                func createKey(
+                    using callHash: CallHash,
+                    _ chainId: ChainModel.Id,
+                    _ multisigAccountId: AccountId
+                ) -> String {
+                    [
+                        callHash.toHexString(),
+                        chainId,
+                        multisigAccountId.toHexString()
+                    ].joined(with: .slash)
+                }
+            }
         }
         
         let call: JSON?
@@ -17,6 +37,14 @@ enum Multisig {
         let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition
+        
+        func createKey() -> Key {
+            Key(
+                callHash: callHash,
+                chainId: chainId,
+                multisigAccountId: multisigAccountId
+            )
+        }
     }
 
     struct MultisigDefinition: Codable, Equatable {
@@ -46,6 +74,17 @@ extension Multisig.PendingOperation {
             signatory: signatory,
             chainId: chainId,
             multisigDefinition: definition
+        )
+    }
+    
+    func replacingCall(with newCall: JSON?) -> Self {
+        .init(
+            call: newCall,
+            callHash: callHash,
+            multisigAccountId: multisigAccountId,
+            signatory: signatory,
+            chainId: chainId,
+            multisigDefinition: multisigDefinition
         )
     }
 }

@@ -234,8 +234,17 @@ extension ServiceCoordinator {
             chainRegistry: chainRegistry,
             substrateStorageFacade: substrateStorageFacade
         )
+        let callDataSyncService = MultisigCallDataSyncService(
+            chainRegistry: chainRegistry,
+            substrateStorageFacade: substrateStorageFacade,
+            blockQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            operationQueue: operationQueue,
+            logger: Logger.shared
+        )
         let pendingMultisigSyncService = MultisigPendingOperationsSyncService(
             chainRepository: SubstrateRepositoryFactory().createChainRepository(),
+            callDataSyncService: callDataSyncService,
             chainSyncServiceFactory: pendingMultisigChainSyncServiceFactory,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             operationQueue: pendingMultisigQueue

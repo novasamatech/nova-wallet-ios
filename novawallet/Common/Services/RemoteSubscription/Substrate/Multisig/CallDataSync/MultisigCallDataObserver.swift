@@ -2,5 +2,5 @@ import Foundation
 import SubstrateSdk
 
 protocol MultisigCallDataObserver: AnyObject {
-    func didReceive(newCallData: [CallDataKey: JSON])
+    func didReceive(newCallData: [Multisig.PendingOperation.Key: JSON])
 }
