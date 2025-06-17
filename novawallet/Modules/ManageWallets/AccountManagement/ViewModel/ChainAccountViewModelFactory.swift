@@ -12,11 +12,11 @@ protocol ChainAccountViewModelFactoryProtocol {
 
     func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
 
-    func createProxyViewModel(
-        proxiedWallet: MetaAccountModel,
-        proxyWallet: MetaAccountModel,
+    func createDelegateViewModel(
+        delegatedWallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel,
         locale: Locale
-    ) -> AccountProxyViewModel
+    ) -> AccountDelegateViewModel
 }
 
 final class ChainAccountViewModelFactory {
@@ -99,7 +99,7 @@ final class ChainAccountViewModelFactory {
             let hasAction: Bool
 
             switch wallet.type {
-            case .secrets, .watchOnly, .ledger, .proxied:
+            case .secrets, .watchOnly, .ledger, .proxied, .multisig:
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             case .paritySigner:
@@ -303,7 +303,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger, .proxied:
+        case .ledger, .proxied, .multisig:
             let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
             let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 
@@ -317,21 +317,21 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         }
     }
 
-    func createProxyViewModel(
-        proxiedWallet: MetaAccountModel,
-        proxyWallet: MetaAccountModel,
+    func createDelegateViewModel(
+        delegatedWallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel,
         locale: Locale
-    ) -> AccountProxyViewModel {
-        let optIcon = proxyWallet.walletIdenticonData().flatMap {
+    ) -> AccountDelegateViewModel {
+        let optIcon = delegateWallet.walletIdenticonData().flatMap {
             try? walletIconGenerator.generateFromAccountId($0)
         }
         let iconViewModel = optIcon.map {
             DrawableIconViewModel(icon: $0)
         }
-        let type = proxiedWallet.proxy()?.type.title(locale: locale) ?? ""
+        let type = delegatedWallet.proxy?.type.title(locale: locale) ?? ""
 
         return .init(
-            name: proxyWallet.name,
+            name: delegateWallet.name,
             icon: iconViewModel,
             type: type
         )

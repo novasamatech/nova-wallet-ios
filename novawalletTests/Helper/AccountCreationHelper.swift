@@ -206,7 +206,8 @@ final class AccountCreationHelper {
             accountId: accountId,
             publicKey: accountId,
             cryptoType: LedgerConstants.defaultSubstrateCryptoScheme.walletCryptoType.rawValue,
-            proxy: nil
+            proxy: nil,
+            multisig: nil
         )
         
         let metaAccount = MetaAccountModel(
@@ -218,7 +219,8 @@ final class AccountCreationHelper {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [chainAccount],
-            type: .ledger
+            type: .ledger,
+            multisig: nil
         )
         
         let derivPathTag = KeystoreTagV2.substrateDerivationTagForMetaId(

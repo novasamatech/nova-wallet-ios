@@ -14,18 +14,18 @@ final class WalletSelectionInteractor: WalletsListInteractor {
 
     let settings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
 
     init(
         balancesStore: BalancesStoreProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol
     ) {
         self.settings = settings
         self.eventCenter = eventCenter
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
 
         super.init(
             balancesStore: balancesStore,
@@ -55,6 +55,6 @@ extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
     }
 
     func updateWalletsStatuses() {
-        proxySyncService.updateWalletsStatuses()
+        delegatedAccountSyncService.updateWalletsStatuses()
     }
 }

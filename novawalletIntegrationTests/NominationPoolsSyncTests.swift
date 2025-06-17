@@ -21,7 +21,8 @@ final class NominationPoolsSyncTests: XCTestCase {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: .watchOnly
+            type: .watchOnly,
+            multisig: nil
         )
         
         try performSyncTest(for: wallet, chainAssetId: chainAssetId)

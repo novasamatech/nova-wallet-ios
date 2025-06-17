@@ -220,7 +220,7 @@ enum CloudBackupMessageSheetViewFactory {
         }
 
         let text = LocalizableResource { locale in
-            R.string.localizable.proxySigningCheckmarkTitle(
+            R.string.localizable.delegatedSigningCheckmarkTitle(
                 preferredLanguages: locale.rLanguages
             )
         }

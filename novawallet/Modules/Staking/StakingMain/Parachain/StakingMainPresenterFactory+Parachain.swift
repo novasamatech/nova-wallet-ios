@@ -87,7 +87,7 @@ extension StakingMainPresenterFactory {
             requestFactory: storageRequestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 

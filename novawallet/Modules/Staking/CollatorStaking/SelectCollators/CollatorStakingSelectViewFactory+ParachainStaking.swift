@@ -69,7 +69,7 @@ extension CollatorStakingSelectViewFactory {
             requestFactory: requestFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chain.chainFormat
         )
 

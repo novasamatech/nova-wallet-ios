@@ -184,7 +184,8 @@ final class MetaAccountOperationFactory {
             ethereumAddress: nil,
             ethereumPublicKey: nil,
             chainAccounts: [],
-            type: type
+            type: type,
+            multisig: nil
         )
     }
 }

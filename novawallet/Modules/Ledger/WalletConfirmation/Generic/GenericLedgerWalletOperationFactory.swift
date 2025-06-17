@@ -35,7 +35,8 @@ final class GenericLedgerWalletOperationFactory: GenericLedgerWalletOperationFac
                 ethereumAddress: model.evm?.address,
                 ethereumPublicKey: model.evm?.publicKey,
                 chainAccounts: [],
-                type: .genericLedger
+                type: .genericLedger,
+                multisig: nil
             )
 
             let substrateTag = KeystoreTagV2.substrateDerivationTagForMetaId(wallet.metaId)

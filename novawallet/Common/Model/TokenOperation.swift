@@ -14,17 +14,16 @@ extension TokenOperation {
         chainAsset: ChainAsset
     ) -> ReceiveAvailableCheckResult {
         switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
-            return .common(.available)
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .multisig:
+            .common(.available)
         case .ledger, .genericLedger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                return .common(.ledgerNotSupported)
+                .common(.ledgerNotSupported)
             } else {
-                return .common(.available)
+                .common(.available)
             }
-
         case .watchOnly:
-            return .common(.noSigning)
+            .common(.noSigning)
         }
     }
 
@@ -49,7 +48,7 @@ extension TokenOperation {
             } else {
                 .common(.available)
             }
-        case .watchOnly:
+        case .watchOnly, .multisig:
             .common(.noSigning)
         }
     }

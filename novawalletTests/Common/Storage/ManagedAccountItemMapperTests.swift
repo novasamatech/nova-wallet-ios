@@ -30,7 +30,8 @@ class ManagedAccountItemMapperTests: XCTestCase {
             ethereumAddress: address.asSecretData(),
             ethereumPublicKey: keypair.publicKey().rawData(),
             chainAccounts: [],
-            type: .secrets
+            type: .secrets,
+            multisig: nil
         )
 
         let accountItem = ManagedMetaAccountModel(

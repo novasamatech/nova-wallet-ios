@@ -4,23 +4,25 @@ import SubstrateSdk
 extension MetaAccountModelType {
     var signaturePayloadFormat: ExtrinsicSignaturePayloadFormat {
         switch self {
-        case .secrets, .watchOnly, .proxied:
-            return .regular
+        case .secrets, .watchOnly, .proxied, .multisig:
+            .regular
         case .paritySigner, .polkadotVault:
-            return .paritySigner
+            .paritySigner
         case .ledger, .genericLedger:
-            return .extrinsicPayload
+            .extrinsicPayload
         }
     }
 
     var notSupportedRawBytesSigner: NoSigningSupportType? {
         switch self {
         case .secrets, .watchOnly, .proxied, .polkadotVault:
-            return nil
+            nil
         case .paritySigner:
-            return .paritySigner
+            .paritySigner
         case .ledger, .genericLedger:
-            return .ledger
+            .ledger
+        case .multisig:
+            .multisig
         }
     }
 }
