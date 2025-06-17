@@ -86,7 +86,7 @@ private extension MultisigCallDataSyncService {
     func subscribeMetaAccounts() {
         metaAccountsProvider = subscribeAllWalletsProvider()
     }
-    
+
     func createCallExtractionWrapper(
         for event: MultisigEvent,
         at blockHash: Data,
@@ -191,7 +191,7 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         availableChains = chains
         subscribeMetaAccounts()
     }
-    
+
     func stopSyncUp() {
         metaAccountsProvider = nil
         availableMetaAccounts = []

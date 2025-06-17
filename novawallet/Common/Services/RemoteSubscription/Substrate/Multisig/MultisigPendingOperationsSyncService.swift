@@ -166,9 +166,9 @@ extension MultisigPendingOperationsSyncService: MultisigCallDataObserver {
     func didReceive(newCallData: [Multisig.PendingOperation.Key: JSON]) {
         mutex.lock()
         defer { mutex.unlock() }
-        
+
         knownCallData.merge(newCallData, uniquingKeysWith: { $1 })
-        
+
         pendingOperationsChainSyncServices.forEach {
             $0.value.updatePendingOperationsCallData(using: newCallData)
         }
