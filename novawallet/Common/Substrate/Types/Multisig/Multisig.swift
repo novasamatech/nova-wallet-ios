@@ -10,34 +10,28 @@ enum Multisig {
         var identifier: String {
             createKey().stringValue()
         }
-        
+
         struct Key: Hashable {
             let callHash: CallHash
             let chainId: ChainModel.Id
             let multisigAccountId: AccountId
-            
+
             func stringValue() -> String {
-                func createKey(
-                    using callHash: CallHash,
-                    _ chainId: ChainModel.Id,
-                    _ multisigAccountId: AccountId
-                ) -> String {
-                    [
-                        callHash.toHexString(),
-                        chainId,
-                        multisigAccountId.toHexString()
-                    ].joined(with: .slash)
-                }
+                [
+                    callHash.toHexString(),
+                    chainId,
+                    multisigAccountId.toHexString()
+                ].joined(with: .slash)
             }
         }
-        
+
         let call: JSON?
         let callHash: CallHash
         let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition
-        
+
         func createKey() -> Key {
             Key(
                 callHash: callHash,
@@ -76,7 +70,7 @@ extension Multisig.PendingOperation {
             multisigDefinition: definition
         )
     }
-    
+
     func replacingCall(with newCall: JSON?) -> Self {
         .init(
             call: newCall,

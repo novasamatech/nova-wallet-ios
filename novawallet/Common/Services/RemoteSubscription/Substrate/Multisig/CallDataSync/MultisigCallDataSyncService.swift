@@ -4,6 +4,7 @@ import SubstrateSdk
 
 protocol MultisigCallDataSyncServiceProtocol {
     func setup(with chains: [ChainModel])
+    func stopSyncUp()
     func addObserver(
         _ observer: MultisigCallDataObserver,
         sendOnSubscription: Bool
@@ -19,29 +20,29 @@ private typealias CallDataCache = Observable<
 
 final class MultisigCallDataSyncService {
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
-    
+
     private let mutex = NSLock()
-    
+
     private let chainRegistry: ChainRegistryProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
     private let blockQueryFactory: BlockEventsQueryFactoryProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     private let logger: LoggerProtocol
-    
+
     private var metaAccountsProvider: StreamableProvider<ManagedMetaAccountModel>?
-    
+
     private var availableChains: [ChainModel] = []
     private var eventsSubscriptions: [ChainModel.Id: MultisigEventsSubscription] = [:]
     private var cachedCallData: CallDataCache = .init(state: .init())
-    
+
     private var availableMetaAccounts: [MetaAccountModel] = [] {
         didSet {
             guard !oldValue.isEmpty, availableMetaAccounts != oldValue else { return }
             setupCallDataSubscriptions()
         }
     }
-    
+
     init(
         chainRegistry: ChainRegistryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
@@ -67,7 +68,7 @@ private extension MultisigCallDataSyncService {
     func setupCallDataSubscriptions() {
         mutex.lock()
         defer { mutex.unlock() }
-        
+
         availableChains.forEach { chain in
             let subscription = MultisigEventsSubscription(
                 chainId: chain.chainId,
@@ -77,38 +78,13 @@ private extension MultisigCallDataSyncService {
                 operationQueue: operationQueue,
                 workingQueue: workingQueue
             )
-            
+
             eventsSubscriptions[chain.chainId] = subscription
         }
     }
-    
+
     func subscribeMetaAccounts() {
         metaAccountsProvider = subscribeAllWalletsProvider()
-    }
-}
-
-// MARK: - MultisigCallDataSyncServiceProtocol
-
-extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
-    func setup(with chains: [ChainModel]) {
-        mutex.lock()
-        defer { mutex.unlock() }
-        
-        availableChains = chains
-        subscribeMetaAccounts()
-    }
-    
-    func addObserver(
-        _ observer: any MultisigCallDataObserver,
-        sendOnSubscription: Bool
-    ) {
-        cachedCallData.addObserver(
-            with: observer,
-            sendStateOnSubscription: sendOnSubscription,
-            queue: workingQueue
-        ) { oldValue, newValue in
-            observer.didReceive(newCallData: newValue.newItems(after: oldValue))
-        }
     }
     
     func createCallExtractionWrapper(
@@ -119,45 +95,46 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             return .createWithError(MultisigCallDataSyncError.chainConnectionUnavailable)
         }
-        
+
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             return .createWithError(MultisigCallDataSyncError.runtimeUnavailable)
         }
-        
+
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        
+
         let blockQueryWrapper = blockQueryFactory.queryBlockDetailsWrapper(
             from: connection,
             runtimeProvider: runtimeProvider,
             blockHash: blockHash
         )
-        
+
         let callExtractionOperation = ClosureOperation<JSON> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let blockDetails = try blockQueryWrapper.targetOperation.extractNoCancellableResultData()
-            
+
             guard let callData = blockDetails.extrinsicsWithEvents.first(
                 where: { $0.extrinsicHash == event.callHash }
             )?.extrinsicData else {
                 throw MultisigCallDataSyncError.extrinsicParsingFailed
             }
-            
+
             let decodedCall = try self.extractDecodedCall(
                 from: callData,
                 using: codingFactory
             )
-            
+
             return decodedCall
         }
-        
+
         callExtractionOperation.addDependency(codingFactoryOperation)
         callExtractionOperation.addDependency(blockQueryWrapper.targetOperation)
-        
+
         return CompoundOperationWrapper(
             targetOperation: callExtractionOperation,
-            dependencies: [codingFactoryOperation] + blockQueryWrapper.allOperations)
+            dependencies: [codingFactoryOperation] + blockQueryWrapper.allOperations
+        )
     }
-    
+
     func processEvent(
         _ event: MultisigEvent,
         at blockHash: Data,
@@ -168,7 +145,7 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
             at: blockHash,
             chainId: chainId
         )
-        
+
         execute(
             wrapper: extractionWrapper,
             inOperationQueue: operationQueue,
@@ -181,14 +158,14 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
                     chainId: chainId,
                     multisigAccountId: event.accountId
                 )
-                
+
                 self?.cachedCallData.state.store(value: call, for: key)
             case let .failure(error):
                 self?.logger.error("Failed to fetch block details: \(error.localizedDescription)")
             }
         }
     }
-    
+
     func extractDecodedCall(
         from extrinsicData: Data,
         using codingFactory: RuntimeCoderFactoryProtocol
@@ -199,8 +176,39 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
             of: GenericType.extrinsic.name,
             with: context.toRawContext()
         )
-        
+
         return decodedExtrinsic.call
+    }
+}
+
+// MARK: - MultisigCallDataSyncServiceProtocol
+
+extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
+    func setup(with chains: [ChainModel]) {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        availableChains = chains
+        subscribeMetaAccounts()
+    }
+    
+    func stopSyncUp() {
+        metaAccountsProvider = nil
+        availableMetaAccounts = []
+        eventsSubscriptions = [:]
+    }
+
+    func addObserver(
+        _ observer: any MultisigCallDataObserver,
+        sendOnSubscription: Bool
+    ) {
+        cachedCallData.addObserver(
+            with: observer,
+            sendStateOnSubscription: sendOnSubscription,
+            queue: workingQueue
+        ) { oldValue, newValue in
+            observer.didReceive(newCallData: newValue.newItems(after: oldValue))
+        }
     }
 }
 
@@ -215,7 +223,7 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
         guard availableMetaAccounts.contains(
             where: { $0.multisigAccount?.multisig?.accountId == event.accountId }
         ) else { return }
-        
+
         processEvent(
             event,
             at: blockHash,

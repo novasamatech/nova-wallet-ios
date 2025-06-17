@@ -14,7 +14,7 @@ protocol PendingMultisigChainSyncServiceFactoryProtocol {
 final class PendingMultisigChainSyncServiceFactory {
     private let chainRegistry: ChainRegistryProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
-    
+
     init(
         chainRegistry: ChainRegistryProtocol,
         substrateStorageFacade: StorageFacadeProtocol
@@ -50,8 +50,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             storageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
-            
-        
+
         return PendingMultisigChainSyncService(
             wallet: selectedMetaAccount,
             chain: chain,

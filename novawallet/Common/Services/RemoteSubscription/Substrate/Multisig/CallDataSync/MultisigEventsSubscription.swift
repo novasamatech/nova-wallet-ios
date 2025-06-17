@@ -18,16 +18,16 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
 
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
-    
+
     private var subscription: CallbackStorageSubscription<[EventRecord]>?
     private weak var subscriber: MultisigEventsSubscriber?
-    
+
     private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
         let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
             storageFacade.createRepository()
         return AnyDataProviderRepository(coreDataRepository)
     }()
-    
+
     init(
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
@@ -44,7 +44,7 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
-        
+
         do {
             try subscribeRemote()
         } catch {
@@ -64,21 +64,21 @@ private extension MultisigEventsSubscription {
         subscription?.unsubscribe()
         subscription = nil
     }
-    
+
     func subscribeRemote() throws {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
-        
+
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
-        
+
         let request = UnkeyedSubscriptionRequest(
             storagePath: SystemPallet.eventsPath,
             localKey: ""
         )
-        
+
         subscription = CallbackStorageSubscription(
             request: request,
             connection: connection,
@@ -93,9 +93,9 @@ private extension MultisigEventsSubscription {
             case let .failure(error):
                 self?.logger?.error("Failed to subscribe System.Events: \(error)")
             }
-         }
+        }
     }
-    
+
     func handle(
         _ eventRecordsWithBlock: CallbackStorageSubscriptionResult<[EventRecord]>,
         using codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
@@ -106,7 +106,7 @@ private extension MultisigEventsSubscription {
         else {
             return
         }
-        
+
         execute(
             operation: codingFactoryOperation,
             inOperationQueue: operationQueue,
@@ -120,7 +120,7 @@ private extension MultisigEventsSubscription {
                         event: $0.event,
                         using: codingFactory
                     ) else { return }
-                    
+
                     self.subscriber?.didReceive(
                         event: multisigEvent,
                         blockHash: blockHash,
@@ -132,7 +132,7 @@ private extension MultisigEventsSubscription {
             }
         }
     }
-    
+
     func matchMultisig(
         event: Event,
         using codingFactory: RuntimeCoderFactoryProtocol
