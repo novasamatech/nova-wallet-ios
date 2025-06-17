@@ -33,30 +33,38 @@ final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
 }
 
 private extension ParitySignerAddressesPresenter {
+    func setupSingleFormatAddresses(_ single: ParitySignerWalletFormat.Single) {
+        addresses = [
+            HardwareWalletAddressModel(
+                accountId: single.accountId,
+                scheme: single.scheme
+            )
+        ]
+    }
+
+    func setupRootFormatAddresses(_ rootKeys: ParitySignerWalletFormat.RootKeys) throws {
+        let substrateAccountId = try rootKeys.substrate.publicKeyData.publicKeyToAccountId()
+        let ethereumAccountId = try rootKeys.ethereum.publicKeyData.ethereumAddressFromPublicKey()
+
+        addresses = [
+            HardwareWalletAddressModel(
+                accountId: substrateAccountId,
+                scheme: .substrate
+            ),
+            HardwareWalletAddressModel(
+                accountId: ethereumAccountId,
+                scheme: .evm
+            )
+        ]
+    }
+
     func setupAddresses() {
         do {
             switch walletFormat {
             case let .single(single):
-                addresses = [
-                    HardwareWalletAddressModel(
-                        accountId: single.substrateAccountId,
-                        scheme: .substrate
-                    )
-                ]
+                setupSingleFormatAddresses(single)
             case let .rootKeys(rootKeys):
-                let substrateAccountId = try rootKeys.substrate.publicKeyData.publicKeyToAccountId()
-                let ethereumAccountId = try rootKeys.ethereum.publicKeyData.ethereumAddressFromPublicKey()
-
-                addresses = [
-                    HardwareWalletAddressModel(
-                        accountId: substrateAccountId,
-                        scheme: .substrate
-                    ),
-                    HardwareWalletAddressModel(
-                        accountId: ethereumAccountId,
-                        scheme: .evm
-                    )
-                ]
+                try setupRootFormatAddresses(rootKeys)
             }
         } catch {
             logger.error("Address setup error: \(error)")

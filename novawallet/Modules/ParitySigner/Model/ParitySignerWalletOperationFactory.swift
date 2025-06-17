@@ -9,25 +9,86 @@ protocol ParitySignerWalletOperationFactoryProtocol {
 final class ParitySignerWalletOperationFactory {}
 
 private extension ParitySignerWalletOperationFactory {
-    func newHardwareWalletFromSignle(
+    func newLegacyHardwareWalletFromSingle(
         name: String,
-        format: ParitySignerWalletFormat.Single,
-        type: ParitySignerType
+        format: ParitySignerWalletFormat.Single
     ) -> BaseOperation<MetaAccountModel> {
         ClosureOperation {
-            let cryptoType = MultiassetCryptoType.sr25519.rawValue
+            switch format.scheme {
+            case .substrate:
+                let cryptoType = MultiassetCryptoType.sr25519.rawValue
+
+                return MetaAccountModel(
+                    metaId: UUID().uuidString,
+                    name: name,
+                    substrateAccountId: format.accountId,
+                    substrateCryptoType: cryptoType,
+                    substratePublicKey: format.accountId,
+                    ethereumAddress: nil,
+                    ethereumPublicKey: nil,
+                    chainAccounts: [],
+                    type: .paritySigner
+                )
+            case .evm:
+                return MetaAccountModel(
+                    metaId: UUID().uuidString,
+                    name: name,
+                    substrateAccountId: nil,
+                    substrateCryptoType: nil,
+                    substratePublicKey: nil,
+                    ethereumAddress: format.accountId,
+                    ethereumPublicKey: format.publicKey,
+                    chainAccounts: [],
+                    type: .paritySigner
+                )
+            }
+        }
+    }
+
+    func newConsensusBasedHardwareWalletFromSingle(
+        name: String,
+        format: ParitySignerWalletFormat.Single
+    ) -> BaseOperation<MetaAccountModel> {
+        ClosureOperation {
+            let cryptoType: MultiassetCryptoType = switch format.scheme {
+            case .substrate:
+                MultiassetCryptoType.sr25519
+            case .evm:
+                MultiassetCryptoType.ethereumEcdsa
+            }
+
+            let chainAccount = ChainAccountModel(
+                chainId: format.genesisHash.toHex(),
+                accountId: format.accountId,
+                publicKey: format.publicKey ?? format.accountId, // TODO: Validate public key
+                cryptoType: cryptoType.rawValue,
+                proxy: nil
+            )
 
             return MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: name,
-                substrateAccountId: format.substrateAccountId,
-                substrateCryptoType: cryptoType,
-                substratePublicKey: format.substrateAccountId,
+                substrateAccountId: nil,
+                substrateCryptoType: nil,
+                substratePublicKey: nil,
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
-                chainAccounts: [],
-                type: type.walletType
+                chainAccounts: [chainAccount],
+                type: .polkadotVault
             )
+        }
+    }
+
+    func newHardwareWalletFromSingle(
+        name: String,
+        format: ParitySignerWalletFormat.Single,
+        type: ParitySignerType
+    ) -> BaseOperation<MetaAccountModel> {
+        switch type {
+        case .legacy:
+            return newLegacyHardwareWalletFromSingle(name: name, format: format)
+        case .vault:
+            return newConsensusBasedHardwareWalletFromSingle(name: name, format: format)
         }
     }
 
@@ -61,7 +122,7 @@ extension ParitySignerWalletOperationFactory: ParitySignerWalletOperationFactory
     ) -> BaseOperation<MetaAccountModel> {
         switch request.format {
         case let .single(singleAddress):
-            newHardwareWalletFromSignle(
+            newHardwareWalletFromSingle(
                 name: request.name,
                 format: singleAddress,
                 type: type

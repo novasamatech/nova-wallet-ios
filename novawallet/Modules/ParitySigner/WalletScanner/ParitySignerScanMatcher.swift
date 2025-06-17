@@ -11,6 +11,17 @@ final class ParitySignerScanMatcher {
         static let separator: String = ":"
     }
 
+    private func matchHardwareAddressScheme(for type: String) -> HardwareWalletAddressScheme? {
+        switch type {
+        case "substrate":
+            HardwareWalletAddressScheme.substrate
+        case "ethereum":
+            HardwareWalletAddressScheme.evm
+        default:
+            nil
+        }
+    }
+
     private func match(code: String) -> ParitySignerWalletScan? {
         let components = code.components(separatedBy: Constants.separator)
 
@@ -18,7 +29,7 @@ final class ParitySignerScanMatcher {
             return nil
         }
 
-        guard components[0] == Constants.type else {
+        guard let scheme = matchHardwareAddressScheme(for: components[0]) else {
             return nil
         }
 
@@ -26,9 +37,17 @@ final class ParitySignerScanMatcher {
             return nil
         }
 
+        let publicKey: Data? = if components.count >= 4 {
+            try? Data(hexString: components[3])
+        } else {
+            nil
+        }
+
         let singleAddress = ParitySignerWalletScan.SingleAddress(
             address: components[1],
-            genesisHash: genesisHash
+            genesisHash: genesisHash,
+            scheme: scheme,
+            publicKey: publicKey
         )
 
         return .singleAddress(singleAddress)

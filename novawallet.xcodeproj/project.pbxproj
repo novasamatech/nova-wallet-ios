@@ -238,6 +238,8 @@
 		0C1290F22DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */; };
 		0C1290F42DFCD946002A5E67 /* QRCodeDescriptor+ErrorCorrection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F32DFCD946002A5E67 /* QRCodeDescriptor+ErrorCorrection.swift */; };
 		0C1290F62DFF794D002A5E67 /* ParitySignerSignatureConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290F52DFF794C002A5E67 /* ParitySignerSignatureConverter.swift */; };
+		0C1290FB2E019AB8002A5E67 /* MetaAccountModel+Fetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290FA2E019AB8002A5E67 /* MetaAccountModel+Fetching.swift */; };
+		0C1290FD2E01A48C002A5E67 /* AddressConversion+HardwareAddressScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1290FC2E01A48C002A5E67 /* AddressConversion+HardwareAddressScheme.swift */; };
 		0C12A2472AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */; };
 		0C12A2492AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */; };
 		0C12BC352CE952EF00AB919D /* SwapRouteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */; };
@@ -6099,6 +6101,8 @@
 		0C1290F12DFCCD99002A5E67 /* ParitySignerSignatureVerificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSignatureVerificationModel.swift; sourceTree = "<group>"; };
 		0C1290F32DFCD946002A5E67 /* QRCodeDescriptor+ErrorCorrection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QRCodeDescriptor+ErrorCorrection.swift"; sourceTree = "<group>"; };
 		0C1290F52DFF794C002A5E67 /* ParitySignerSignatureConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSignatureConverter.swift; sourceTree = "<group>"; };
+		0C1290FA2E019AB8002A5E67 /* MetaAccountModel+Fetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Fetching.swift"; sourceTree = "<group>"; };
+		0C1290FC2E01A48C002A5E67 /* AddressConversion+HardwareAddressScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddressConversion+HardwareAddressScheme.swift"; sourceTree = "<group>"; };
 		0C12A2462AA1D96000C7FA49 /* SubqueryMultistakingTypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryMultistakingTypeFactory.swift; sourceTree = "<group>"; };
 		0C12A2482AA35AE300C7FA49 /* RelaychainStakingValidatorFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaychainStakingValidatorFacade.swift; sourceTree = "<group>"; };
 		0C12BC342CE952EF00AB919D /* SwapRouteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRouteViewCell.swift; sourceTree = "<group>"; };
@@ -12573,6 +12577,15 @@
 				0C6FE8012D4CE2BD00E5B651 /* MythosStakingStateViewModelFactory+Alerts.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		0C1290F72E0199E9002A5E67 /* ChainAccountFetching */ = {
+			isa = PBXGroup;
+			children = (
+				841AAC2626F6A2A500F0A25E /* ChainAccountFetching.swift */,
+				0C1290FA2E019AB8002A5E67 /* MetaAccountModel+Fetching.swift */,
+			);
+			path = ChainAccountFetching;
 			sourceTree = "<group>";
 		};
 		0C12BC382CEA7E8500AB919D /* Price */ = {
@@ -20316,6 +20329,7 @@
 				0C0AE40A2DE5B39200D506F3 /* GenericLedgerAccountModel.swift */,
 				0C7104972C2C393A00487E64 /* PolkadotLedgerWalletModel.swift */,
 				0CE9B7252DEA2BC6007C7F5A /* GenericLedgerAccountWrapperFactory.swift */,
+				0C1290FC2E01A48C002A5E67 /* AddressConversion+HardwareAddressScheme.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -21484,6 +21498,7 @@
 		8490145424A9403C008F705E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				0C1290F72E0199E9002A5E67 /* ChainAccountFetching */,
 				0CD846162BDA5B040026B5CA /* AttributedString+Style.swift */,
 				0CCD18C02BA1EF7E0068D73A /* AssetBalance */,
 				849B036E2A15EE07009624D9 /* TransactionHistory */,
@@ -21511,7 +21526,6 @@
 				84EBAB0A265E28590015E446 /* ChainDateCalculator.swift */,
 				84B677D526AED45500863DC6 /* SharedList.swift */,
 				841AAC2426F692EF00F0A25E /* AddressConversion.swift */,
-				841AAC2626F6A2A500F0A25E /* ChainAccountFetching.swift */,
 				844CB57926FA706C00396E13 /* ChainAssetDisplayInfo.swift */,
 				847F2D5027AAB4BC00AFD476 /* GradientModel.swift */,
 				847F2D5227AAB59200AFD476 /* GradientFactory.swift */,
@@ -30875,6 +30889,7 @@
 				84F9D4CF2664CCA500F7AAD2 /* CommonInputView.swift in Sources */,
 				0CA957252B6A566B009AD757 /* HydraDx+Call.swift in Sources */,
 				849DEBDC25ED134A00C64C19 /* SelectValidatorsConfirmViewModelFactory.swift in Sources */,
+				0C1290FB2E019AB8002A5E67 /* MetaAccountModel+Fetching.swift in Sources */,
 				84F1CB2F27CE50B50095D523 /* NftListMetadataViewModel.swift in Sources */,
 				2D57029F2C9E092500673CB7 /* CardStackable.swift in Sources */,
 				8496ADDA276AFF4600306B24 /* DAppBrowserScript.swift in Sources */,
@@ -31519,6 +31534,7 @@
 				84A70DA329CCEDE800C648AD /* BaseSubsquareOperationFactory.swift in Sources */,
 				84D00C6827D6919900662A00 /* WidthScaleFitImageProcessor.swift in Sources */,
 				0FB6781AB0186A1ED474CAD6 /* StakingUnbondConfirmProtocols.swift in Sources */,
+				0C1290FD2E01A48C002A5E67 /* AddressConversion+HardwareAddressScheme.swift in Sources */,
 				8401AEC52642A71D000B03E3 /* StakingRebondConfirmationViewFactory.swift in Sources */,
 				0C63909D2BF34A970015D467 /* ConnectionTransportFactory.swift in Sources */,
 				27FA1D57A06AA3A030D226B6 /* StakingUnbondConfirmWireframe.swift in Sources */,

@@ -2,7 +2,10 @@ import Foundation
 
 enum ParitySignerWalletFormat {
     struct Single {
-        let substrateAccountId: AccountId
+        let accountId: AccountId
+        let genesisHash: Data
+        let scheme: HardwareWalletAddressScheme
+        let publicKey: Data?
     }
 
     struct RootKeys {

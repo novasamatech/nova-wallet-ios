@@ -3,7 +3,7 @@ import Operation_iOS
 
 enum ParitySignerScanInteratorError: Error {
     case invalidAddress
-    case invalidChain
+    case invalidPublicKey
     case substrateKeysNotFound
     case ethereumKeysNotFound
 }
@@ -21,24 +21,18 @@ final class ParitySignerScanInterator {
 private extension ParitySignerScanInterator {
     func proccess(singleAddress: ParitySignerWalletScan.SingleAddress) {
         do {
-            let chainId = singleAddress.genesisHash.toHex()
-
-            // make sure that genesis hash is from valid chain
-
-            guard let chain = chainRegistry.getChain(for: chainId), !chain.isEthereumBased else {
-                throw ParitySignerScanInteratorError.invalidChain
-            }
-
-            // make sure address matches chain
-
-            let accountId = try? singleAddress.address.toAccountId(using: chain.chainFormat)
-
-            guard let accountId else {
+            // TODO: Validate public key
+            guard let accountId = try? singleAddress.address.toAccountIdUsingHardware(
+                scheme: singleAddress.scheme
+            ) else {
                 throw ParitySignerScanInteratorError.invalidAddress
             }
 
             let model = ParitySignerWalletFormat.Single(
-                substrateAccountId: accountId
+                accountId: accountId,
+                genesisHash: singleAddress.genesisHash,
+                scheme: singleAddress.scheme,
+                publicKey: singleAddress.publicKey
             )
 
             presenter?.didReceiveValidation(result: .success(.single(model)))

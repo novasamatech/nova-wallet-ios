@@ -1,156 +1,6 @@
 import Foundation
 
-struct ChainAccountRequest {
-    let chainId: ChainModel.Id
-    let addressPrefix: ChainModel.AddressPrefix
-    let isEthereumBased: Bool
-    let supportsGenericLedger: Bool
-    let hasSubstrateRuntime: Bool
-}
-
-struct ChainAccountResponse {
-    let metaId: String
-    let chainId: ChainModel.Id
-    let accountId: AccountId
-    let publicKey: Data
-    let name: String
-    let cryptoType: MultiassetCryptoType
-    let addressPrefix: ChainModel.AddressPrefix
-    let isEthereumBased: Bool
-    let isChainAccount: Bool
-    let type: MetaAccountModelType
-}
-
-struct MetaEthereumAccountResponse {
-    let metaId: String
-    let address: AccountId
-    let publicKey: Data
-    let name: String
-    let isChainAccount: Bool
-    let type: MetaAccountModelType
-}
-
-struct MetaChainAccountResponse {
-    let metaId: String
-    let substrateAccountId: AccountId?
-    let ethereumAccountId: AccountId?
-    let walletIdenticonData: Data?
-    let chainAccount: ChainAccountResponse
-}
-
-enum ChainAccountFetchingError: Error {
-    case accountNotExists
-}
-
-extension MetaChainAccountResponse {
-    func toWalletDisplayAddress() throws -> WalletDisplayAddress {
-        let displayAddress = try chainAccount.toDisplayAddress()
-
-        return WalletDisplayAddress(
-            address: displayAddress.address,
-            walletName: displayAddress.username,
-            walletIconData: substrateAccountId
-        )
-    }
-}
-
-extension ChainAccountResponse {
-    var chainFormat: ChainFormat {
-        isEthereumBased
-            ? .ethereum
-            : .substrate(addressPrefix.toSubstrateFormat())
-    }
-
-    func toDisplayAddress() throws -> DisplayAddress {
-        let chainFormat: ChainFormat = isEthereumBased
-            ? .ethereum
-            : .substrate(addressPrefix.toSubstrateFormat())
-        let address = try accountId.toAddress(using: chainFormat)
-
-        return DisplayAddress(address: address, username: name)
-    }
-
-    func toAddress() -> AccountAddress? {
-        let chainFormat: ChainFormat = isEthereumBased
-            ? .ethereum
-            : .substrate(addressPrefix.toSubstrateFormat())
-        return try? accountId.toAddress(using: chainFormat)
-    }
-
-    // TODO: Remove when fully migrate to Ethereum checksumed addresses
-    func toChecksumedAddress() -> AccountAddress? {
-        let optAddress = toAddress()
-
-        if isEthereumBased {
-            return optAddress?.toEthereumAddressWithChecksum()
-        } else {
-            return optAddress
-        }
-    }
-}
-
 extension MetaAccountModel {
-    private func executeFetch(request: ChainAccountRequest) -> ChainAccountResponse? {
-        if let chainAccount = chainAccounts.first(where: { $0.chainId == request.chainId }) {
-            guard let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) else {
-                return nil
-            }
-
-            return ChainAccountResponse(
-                metaId: metaId,
-                chainId: request.chainId,
-                accountId: chainAccount.accountId,
-                publicKey: chainAccount.publicKey,
-                name: name,
-                cryptoType: cryptoType,
-                addressPrefix: request.addressPrefix,
-                isEthereumBased: request.isEthereumBased,
-                isChainAccount: true,
-                type: type
-            )
-        }
-
-        if request.isEthereumBased {
-            guard let publicKey = ethereumPublicKey, let accountId = ethereumAddress else {
-                return nil
-            }
-
-            return ChainAccountResponse(
-                metaId: metaId,
-                chainId: request.chainId,
-                accountId: accountId,
-                publicKey: publicKey,
-                name: name,
-                cryptoType: MultiassetCryptoType.ethereumEcdsa,
-                addressPrefix: request.addressPrefix,
-                isEthereumBased: request.isEthereumBased,
-                isChainAccount: false,
-                type: type
-            )
-        }
-
-        guard
-            let substrateCryptoType = substrateCryptoType,
-            let substrateAccountId = substrateAccountId,
-            let substratePublicKey = substratePublicKey,
-            let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) else {
-            return nil
-        }
-
-        return ChainAccountResponse(
-            metaId: metaId,
-            chainId: request.chainId,
-            accountId: substrateAccountId,
-            publicKey: substratePublicKey,
-            name: name,
-            cryptoType: cryptoType,
-            addressPrefix: request.addressPrefix,
-            isEthereumBased: false,
-            isChainAccount: false,
-            type: type
-        )
-    }
-
     func fetchOrError(for request: ChainAccountRequest) throws -> ChainAccountResponse {
         guard let response = fetch(for: request) else {
             throw ChainAccountFetchingError.accountNotExists
@@ -173,7 +23,9 @@ extension MetaAccountModel {
             } else {
                 return nil
             }
-        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .polkadotVault:
+            return executeConsensusBasedFetch(request: request)
+        case .secrets, .ledger, .paritySigner, .proxied, .watchOnly:
             return executeFetch(request: request)
         }
     }
@@ -348,39 +200,99 @@ extension MetaAccountModel {
     }
 }
 
-extension ChainModel {
-    func accountRequest() -> ChainAccountRequest {
-        ChainAccountRequest(
+extension MetaAccountModel {
+    private func getChainAccount(for chainId: ChainModel.Id) -> ChainAccountModel? {
+        chainAccounts.first(where: { $0.chainId == chainId })
+    }
+
+    private func hasChainAccount(for chainId: ChainModel.Id) -> Bool {
+        getChainAccount(for: chainId) != nil
+    }
+
+    private func executeFetchByChainAccount(
+        _ chainId: ChainModel.Id,
+        properties: ChainAccountRequest.Properties
+    ) -> ChainAccountResponse? {
+        guard let chainAccount = getChainAccount(for: chainId) else {
+            return nil
+        }
+
+        guard let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) else {
+            return nil
+        }
+
+        return ChainAccountResponse(
+            metaId: metaId,
             chainId: chainId,
-            addressPrefix: addressPrefix,
-            isEthereumBased: isEthereumBased,
-            supportsGenericLedger: supportsGenericLedgerApp,
-            hasSubstrateRuntime: hasSubstrateRuntime
+            accountId: chainAccount.accountId,
+            publicKey: chainAccount.publicKey,
+            name: name,
+            cryptoType: cryptoType,
+            addressPrefix: properties.addressPrefix,
+            isEthereumBased: properties.isEthereumBased,
+            isChainAccount: true,
+            type: type
         )
     }
 
-    var accountIdSize: Int {
-        Self.getAccountIdSize(for: chainFormat)
-    }
-
-    static func getAccountIdSize(for chainFormat: ChainFormat) -> Int {
-        switch chainFormat {
-        case .substrate:
-            return 32
-        case .ethereum:
-            return 20
-        }
-    }
-
-    func emptyAccountId() throws -> AccountId {
-        guard let accountId = Data.random(of: accountIdSize) else {
-            throw ChainAccountFetchingError.accountNotExists
+    private func executeFetch(request: ChainAccountRequest) -> ChainAccountResponse? {
+        if hasChainAccount(for: request.chainId) {
+            return executeFetchByChainAccount(request.chainId, properties: request.properties)
         }
 
-        return accountId
+        if request.isEthereumBased {
+            guard let publicKey = ethereumPublicKey, let accountId = ethereumAddress else {
+                return nil
+            }
+
+            return ChainAccountResponse(
+                metaId: metaId,
+                chainId: request.chainId,
+                accountId: accountId,
+                publicKey: publicKey,
+                name: name,
+                cryptoType: MultiassetCryptoType.ethereumEcdsa,
+                addressPrefix: request.addressPrefix,
+                isEthereumBased: request.isEthereumBased,
+                isChainAccount: false,
+                type: type
+            )
+        }
+
+        guard
+            let substrateCryptoType = substrateCryptoType,
+            let substrateAccountId = substrateAccountId,
+            let substratePublicKey = substratePublicKey,
+            let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) else {
+            return nil
+        }
+
+        return ChainAccountResponse(
+            metaId: metaId,
+            chainId: request.chainId,
+            accountId: substrateAccountId,
+            publicKey: substratePublicKey,
+            name: name,
+            cryptoType: cryptoType,
+            addressPrefix: request.addressPrefix,
+            isEthereumBased: false,
+            isChainAccount: false,
+            type: type
+        )
     }
 
-    static func getEvmNullAccountId() -> AccountId {
-        AccountId.zeroAccountId(of: getAccountIdSize(for: .ethereum))
+    private func executeConsensusBasedFetch(request: ChainAccountRequest) -> ChainAccountResponse? {
+        if let response = executeFetch(request: request) {
+            return response
+        }
+
+        // use the same account from relay chain if possible
+        if
+            !request.isEthereumBased,
+            let parentId = request.parentId {
+            return executeFetchByChainAccount(parentId, properties: request.properties)
+        }
+
+        return nil
     }
 }

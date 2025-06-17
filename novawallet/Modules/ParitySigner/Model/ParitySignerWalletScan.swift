@@ -9,6 +9,8 @@ enum ParitySignerWalletScan {
     struct SingleAddress {
         let address: AccountAddress
         let genesisHash: Data
+        let scheme: HardwareWalletAddressScheme
+        let publicKey: Data?
     }
 
     enum RootPublicKeyType: UInt8 {
