@@ -25,11 +25,15 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
     ) -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<Multisig.MultisigDefinition>]> = storageRequestFactory.queryItems(
+        let request = MapRemoteStorageRequest(storagePath: Multisig.multisigList) {
+            BytesCodable(wrappedValue: multisigAccountId)
+        }
+        let wrapper: CompoundOperationWrapper<[CallHashKey: Multisig.MultisigDefinition]>
+        wrapper = storageRequestFactory.queryByPrefix(
             engine: connection,
-            keyParams: { [BytesCodable(wrappedValue: multisigAccountId)] },
-            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: Multisig.multisigList
+            request: request,
+            storagePath: Multisig.multisigList,
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() }
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
@@ -38,7 +42,7 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
             try wrapper
                 .targetOperation
                 .extractNoCancellableResultData()
-                .reduce(into: [:]) { $0[$1.key] = $1.value }
+                .reduce(into: [:]) { $0[$1.key.callHash] = $1.value }
         }
 
         mapOperation.addDependency(wrapper.targetOperation)

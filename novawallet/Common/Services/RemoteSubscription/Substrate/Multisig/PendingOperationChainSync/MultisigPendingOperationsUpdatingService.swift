@@ -15,9 +15,7 @@ protocol MultisigPendingOperationsUpdatingServiceProtocol {
         chainId: ChainModel.Id
     ) throws
 
-    func clearSubscription(for accountId: AccountId)
-
-    func clearAllSubscriptions()
+    func clearSubscription()
 }
 
 final class MultisigPendingOperationsUpdatingService {
@@ -26,7 +24,7 @@ final class MultisigPendingOperationsUpdatingService {
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
 
-    private var multisigOperationsSubscriptions: [AccountId: MultisigPendingOperationsSubscription] = [:]
+    private var subscription: MultisigPendingOperationsSubscription?
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -41,7 +39,7 @@ final class MultisigPendingOperationsUpdatingService {
     }
 
     deinit {
-        clearAllSubscriptions()
+        clearSubscription()
     }
 }
 
@@ -54,9 +52,9 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
         callHashes: Set<CallHash>,
         chainId: ChainModel.Id
     ) throws {
-        clearSubscription(for: multisigAccountId)
+        clearSubscription()
 
-        multisigOperationsSubscriptions[multisigAccountId] = MultisigPendingOperationsSubscription(
+        subscription = MultisigPendingOperationsSubscription(
             accountId: multisigAccountId,
             chainId: chainId,
             callHashes: callHashes,
@@ -68,11 +66,7 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
         )
     }
 
-    func clearSubscription(for accountId: AccountId) {
-        multisigOperationsSubscriptions[accountId] = nil
-    }
-
-    func clearAllSubscriptions() {
-        multisigOperationsSubscriptions = [:]
+    func clearSubscription() {
+        subscription = nil
     }
 }

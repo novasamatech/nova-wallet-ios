@@ -73,7 +73,7 @@ final class PendingMultisigChainSyncService: BaseSyncService {
 
     override func stopSyncUp() {
         cancellableSyncStore.cancel()
-        remoteOperationUpdateService.clearAllSubscriptions()
+        remoteOperationUpdateService.clearSubscription()
     }
 }
 

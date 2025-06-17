@@ -33,14 +33,14 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
         knownCallData: [Multisig.PendingOperation.Key: JSON],
         operationQueue: OperationQueue
     ) -> PendingMultisigChainSyncServiceProtocol {
-        let assetsSyncOperationQueue = OperationManagerFacade.assetsSyncQueue
-        let assetsSyncOperationManager = OperationManager(operationQueue: assetsSyncOperationQueue)
+        let pendingMultisigsQueue = OperationManagerFacade.pendingMultisigQueue
+        let multisigSyncOperationManager = OperationManager(operationQueue: pendingMultisigsQueue)
 
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: assetsSyncOperationManager
+            operationManager: multisigSyncOperationManager
         )
         let pendingCallHashesOperationFactory = MultisigStorageOperationFactory(
             storageRequestFactory: storageRequestFactory

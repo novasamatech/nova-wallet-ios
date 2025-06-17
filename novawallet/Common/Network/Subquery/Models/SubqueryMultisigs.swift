@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 enum SubqueryMultisigs {
     struct MultisigsResponseQueryWrapper<T: Decodable>: Decodable {
@@ -33,7 +34,7 @@ enum SubqueryMultisigs {
 
     struct RemoteCallData: Decodable {
         @HexCodable var callHash: CallHash
-        @HexCodable var callData: CallData
+        @OptionHexCodable var callData: CallData?
     }
 }
 

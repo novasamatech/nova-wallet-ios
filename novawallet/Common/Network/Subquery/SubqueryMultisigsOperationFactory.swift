@@ -119,11 +119,13 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
         operation = createOperation(
             for: query
         ) { (response: SubqueryMultisigs.MultisigsResponseQueryWrapper<SubqueryMultisigs.FetchMultisigCallDataResponse>) in
-            callHashes.reduce(into: [:]) { acc, callHash in
+            let callDataMap = callHashes.reduce(into: [:]) { acc, callHash in
                 acc[callHash] = response.query.multisigOperations.nodes
                     .first { $0.callHash == callHash }?
                     .callData
             }
+
+            return callDataMap
         }
 
         return operation

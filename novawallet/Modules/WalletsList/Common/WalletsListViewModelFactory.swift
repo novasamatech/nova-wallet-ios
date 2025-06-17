@@ -307,8 +307,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: viewModel,
-            isSelected: isSelected(wallet: wallet),
-            isSelectable: false
+            isSelected: isSelected(wallet: wallet)
         )
     }
 

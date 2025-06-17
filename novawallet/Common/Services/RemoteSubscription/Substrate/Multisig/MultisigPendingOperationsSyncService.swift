@@ -110,14 +110,14 @@ private extension MultisigPendingOperationsSyncService {
             case let .success(chains):
                 let filteredChains = chains.filter { $0.hasMultisig }
                 mutex.lock()
-                pendingOperationsChainSyncServices = filteredChains.reduce(into: [:]) { _, chain in
+                pendingOperationsChainSyncServices = filteredChains.reduce(into: [:]) { acc, chain in
                     let service = self.chainSyncServiceFactory.createMultisigChainSyncService(
                         for: chain,
                         selectedMetaAccount: selectedMetaAccount,
                         knownCallData: self.knownCallData,
                         operationQueue: self.operationQueue
                     )
-                    self.pendingOperationsChainSyncServices[chain.chainId] = service
+                    acc[chain.chainId] = service
                 }
                 pendingOperationsChainSyncServices.forEach { $0.value.setup() }
                 mutex.unlock()
