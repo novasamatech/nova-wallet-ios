@@ -26,6 +26,14 @@ extension CallCodingPath {
         PalletAssets.possibleTransferCallPaths().contains(self)
     }
 
+    var isMultisig: Bool {
+        moduleName == Multisig.name
+    }
+
+    var isMultisigAsMulti: Bool {
+        self == Self.multisigsAsMulti
+    }
+
     var isTokensTransfer: Bool {
         [
             .tokensTransfer,
@@ -97,6 +105,10 @@ extension CallCodingPath {
 
     static var ethereumTransact: CallCodingPath {
         CallCodingPath(moduleName: "Ethereum", callName: "transact")
+    }
+
+    static var multisigsAsMulti: CallCodingPath {
+        CallCodingPath(moduleName: "Multisig", callName: "as_multi")
     }
 }
 

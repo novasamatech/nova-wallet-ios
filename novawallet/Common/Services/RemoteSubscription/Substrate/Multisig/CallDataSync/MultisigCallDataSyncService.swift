@@ -32,7 +32,7 @@ final class MultisigCallDataSyncService {
 
     private var metaAccountsProvider: StreamableProvider<ManagedMetaAccountModel>?
 
-    private var availableChains: [ChainModel] = []
+    private var availableChains: [ChainModel.Id: ChainModel] = [:]
     private var eventsSubscriptions: [ChainModel.Id: MultisigEventsSubscription] = [:]
     private var cachedCallData: CallDataCache = .init(state: .init())
 
@@ -71,7 +71,7 @@ final class MultisigCallDataSyncService {
 
 private extension MultisigCallDataSyncService {
     func setupCallDataSubscriptions() {
-        availableChains.forEach { chain in
+        availableChains.values.forEach { chain in
             let subscription = MultisigEventsSubscription(
                 chainId: chain.chainId,
                 chainRegistry: chainRegistry,
@@ -90,10 +90,14 @@ private extension MultisigCallDataSyncService {
     }
 
     func createCallExtractionWrapper(
-        for event: MultisigEvent,
+        for events: [MultisigEvent],
         at blockHash: Data,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<JSON> {
+    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: JSON]> {
+        guard let chain = availableChains[chainId] else {
+            return .createWithError(MultisigCallDataSyncError.chainUnavailable)
+        }
+
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             return .createWithError(MultisigCallDataSyncError.chainConnectionUnavailable)
         }
@@ -110,22 +114,20 @@ private extension MultisigCallDataSyncService {
             blockHash: blockHash
         )
 
-        let callExtractionOperation = ClosureOperation<JSON> {
+        let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: JSON]> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let blockDetails = try blockQueryWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let callData = blockDetails.extrinsicsWithEvents.first(
-                where: { $0.extrinsicHash == event.callHash }
-            )?.extrinsicData else {
-                throw MultisigCallDataSyncError.extrinsicParsingFailed
+            return events.reduce(into: [:]) { acc, event in
+                let extractedCallData = self.extractMultisigCallData(
+                    from: blockDetails,
+                    matching: event,
+                    chainId: chainId,
+                    using: codingFactory
+                )
+
+                acc.merge(extractedCallData, uniquingKeysWith: { $1 })
             }
-
-            let decodedCall = try self.extractDecodedCall(
-                from: callData,
-                using: codingFactory
-            )
-
-            return decodedCall
         }
 
         callExtractionOperation.addDependency(codingFactoryOperation)
@@ -137,13 +139,60 @@ private extension MultisigCallDataSyncService {
         )
     }
 
-    func processEvent(
-        _ event: MultisigEvent,
+    func extractMultisigCallData(
+        from blockDetails: SubstrateBlockDetails,
+        matching multisigEvent: MultisigEvent,
+        chainId: ChainModel.Id,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) -> [Multisig.PendingOperation.Key: JSON] {
+        guard let chain = availableChains[chainId] else {
+            return [:]
+        }
+
+        let extrinsicProcessor = ExtrinsicProcessor(
+            accountId: multisigEvent.accountId,
+            chain: chain
+        )
+
+        let context = codingFactory.createRuntimeJsonContext().toRawContext()
+
+        return blockDetails.extrinsicsWithEvents.enumerated().reduce(into: [:]) { acc, indexedExtrinsicsWithEvents in
+            let index = indexedExtrinsicsWithEvents.offset
+            let extrinsicWithEvents = indexedExtrinsicsWithEvents.element
+
+            guard
+                let processingResult = extrinsicProcessor.process(
+                    extrinsicIndex: UInt32(index),
+                    extrinsicData: extrinsicWithEvents.extrinsicData,
+                    eventRecords: extrinsicWithEvents.eventRecords,
+                    coderFactory: codingFactory
+                ),
+                processingResult.callPath.isMultisig
+            else { return }
+
+            guard
+                let encodedCall = try? JSONEncoder.scaleCompatible(with: context).encode(processingResult.call),
+                let callHash = try? StorageHasher.blake256.hash(data: encodedCall),
+                multisigEvent.callHash == callHash
+            else { return }
+
+            let key = Multisig.PendingOperation.Key(
+                callHash: callHash,
+                chainId: chainId,
+                multisigAccountId: multisigEvent.accountId
+            )
+
+            return acc[key] = processingResult.call
+        }
+    }
+
+    func processEvents(
+        _ events: [MultisigEvent],
         at blockHash: Data,
         chainId: ChainModel.Id
     ) {
         let extractionWrapper = createCallExtractionWrapper(
-            for: event,
+            for: events,
             at: blockHash,
             chainId: chainId
         )
@@ -154,16 +203,10 @@ private extension MultisigCallDataSyncService {
             runningCallbackIn: workingQueue
         ) { [weak self] result in
             switch result {
-            case let .success(call):
-                let key = Multisig.PendingOperation.Key(
-                    callHash: event.callHash,
-                    chainId: chainId,
-                    multisigAccountId: event.accountId
-                )
-
-                self?.cachedCallData.state.store(value: call, for: key)
+            case let .success(calls):
+                calls.forEach { self?.cachedCallData.state.store(value: $1, for: $0) }
             case let .failure(error):
-                self?.logger.error("Failed to fetch block details: \(error.localizedDescription)")
+                self?.logger.error("Failed to fetch block details: \(error)")
             }
         }
     }
@@ -190,7 +233,7 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         mutex.lock()
         defer { mutex.unlock() }
 
-        availableChains = chains
+        availableChains = chains.reduce(into: [:]) { $0[$1.chainId] = $1 }
         subscribeMetaAccounts()
     }
 
@@ -218,16 +261,17 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
 
 extension MultisigCallDataSyncService: MultisigEventsSubscriber {
     func didReceive(
-        event: MultisigEvent,
+        events: [MultisigEvent],
         blockHash: Data,
         chainId: ChainModel.Id
     ) {
-        guard availableMetaAccounts.contains(
-            where: { $0.multisigAccount?.multisig?.accountId == event.accountId }
-        ) else { return }
+        let availableAccountIds = Set(availableMetaAccounts.compactMap { $0.multisigAccount?.multisig?.accountId })
+        let relevantEvents = events.filter { availableAccountIds.contains($0.accountId) }
 
-        processEvent(
-            event,
+        guard !relevantEvents.isEmpty else { return }
+
+        processEvents(
+            relevantEvents,
             at: blockHash,
             chainId: chainId
         )
@@ -257,7 +301,7 @@ extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletL
             availableMetaAccounts = availableMetaAccounts.applying(changes: mappedChanges)
             mutex.unlock()
         case let .failure(error):
-            logger.error("Failed to fetch all wallets: \(error.localizedDescription)")
+            logger.error("Failed to fetch all wallets: \(error)")
         }
     }
 }
@@ -266,6 +310,7 @@ extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletL
 
 enum MultisigCallDataSyncError: Error {
     case extrinsicParsingFailed
+    case chainUnavailable
     case chainConnectionUnavailable
     case runtimeUnavailable
 }

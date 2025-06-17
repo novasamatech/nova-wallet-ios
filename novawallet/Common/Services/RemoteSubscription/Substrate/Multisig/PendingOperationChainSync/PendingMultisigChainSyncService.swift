@@ -51,6 +51,10 @@ final class PendingMultisigChainSyncService: BaseSyncService {
         self.workingQueue = workingQueue
     }
 
+    deinit {
+        remoteOperationUpdateService.clearSubscription()
+    }
+
     override func performSyncUp() {
         let syncUpWrapper = createSyncUpWrapper(dependingOn: createPendingOperationsWrapper())
 

@@ -4,7 +4,7 @@ import SubstrateSdk
 
 protocol MultisigEventsSubscriber: AnyObject {
     func didReceive(
-        event: MultisigEvent,
+        events: [MultisigEvent],
         blockHash: Data,
         chainId: ChainModel.Id
     )
@@ -115,18 +115,20 @@ private extension MultisigEventsSubscription {
             guard let self else { return }
             switch result {
             case let .success(codingFactory):
-                events.forEach {
-                    guard let multisigEvent = self.matchMultisig(
+                let multisigEvents = events.compactMap {
+                    self.matchMultisig(
                         event: $0.event,
                         using: codingFactory
-                    ) else { return }
-
-                    self.subscriber?.didReceive(
-                        event: multisigEvent,
-                        blockHash: blockHash,
-                        chainId: self.chainId
                     )
                 }
+
+                guard !multisigEvents.isEmpty else { return }
+
+                self.subscriber?.didReceive(
+                    events: multisigEvents,
+                    blockHash: blockHash,
+                    chainId: self.chainId
+                )
             case let .failure(error):
                 logger?.error("Failed to fetch coder factory: \(error)")
             }
