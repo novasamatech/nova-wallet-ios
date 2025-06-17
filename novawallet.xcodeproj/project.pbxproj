@@ -15405,6 +15405,17 @@
 			path = CallDataSync;
 			sourceTree = "<group>";
 		};
+		2D3286FA2E01331D004D5D24 /* PendingOperationChainSync */ = {
+			isa = PBXGroup;
+			children = (
+				2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */,
+				2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */,
+				2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */,
+				2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */,
+			);
+			path = PendingOperationChainSync;
+			sourceTree = "<group>";
+		};
 		2D32BE112C6A49900047F520 /* FeeManaging */ = {
 			isa = PBXGroup;
 			children = (
@@ -16110,11 +16121,8 @@
 			isa = PBXGroup;
 			children = (
 				2D3286F72E012801004D5D24 /* CallDataSync */,
+				2D3286FA2E01331D004D5D24 /* PendingOperationChainSync */,
 				2DC694542DF81C34004F4584 /* MultisigPendingOperationsSyncService.swift */,
-				2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */,
-				2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */,
-				2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */,
-				2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */,
 			);
 			path = Multisig;
 			sourceTree = "<group>";
