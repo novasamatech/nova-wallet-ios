@@ -49,7 +49,7 @@ final class MultisigCallDataSyncService {
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.calldata.sync.service"),
-        logger: LoggerProtocol
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.substrateStorageFacade = substrateStorageFacade
