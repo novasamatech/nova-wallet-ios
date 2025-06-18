@@ -361,11 +361,11 @@ private extension PendingMultisigChainSyncService {
                     $0.chainId == self?.chain.chainId &&
                         $0.multisigAccountId == multisigContext.accountId
                 }
-                .map { operation in
+                .compactMap { operation in
                     if let call = callData[operation.createKey()] {
                         operation.replacingCall(with: call)
                     } else {
-                        operation
+                        nil
                     }
                 }
         }
