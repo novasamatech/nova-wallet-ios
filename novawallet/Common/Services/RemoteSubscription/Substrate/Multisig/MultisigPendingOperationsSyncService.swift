@@ -24,10 +24,6 @@ class MultisigPendingOperationsSyncService {
 
     private var selectedMetaAccount: MetaAccountModel? {
         didSet {
-            if oldValue == nil, selectedMetaAccount != oldValue {
-                setupCallDataSync()
-            }
-
             if let selectedMetaAccount,
                selectedMetaAccount != oldValue {
                 if selectedMetaAccount.multisigAccount != nil {
@@ -67,6 +63,7 @@ private extension MultisigPendingOperationsSyncService {
         defer { mutex.unlock() }
 
         selectedMetaAccountProvider = subscribeSelectedWalletProvider()
+        setupCallDataSync()
     }
 
     func setupCallDataSync() {
@@ -81,13 +78,13 @@ private extension MultisigPendingOperationsSyncService {
 
             switch result {
             case let .success(chains):
-                let filteredChains = chains.filter { $0.hasMultisig }
+                let relevantChains = matchRelevantChains(from: chains)
 
                 callDataSyncService.addObserver(
                     self,
                     sendOnSubscription: true
                 )
-                callDataSyncService.setup(with: filteredChains)
+                callDataSyncService.setup(with: relevantChains)
             case let .failure(error):
                 logger?.error("Failed to fetch chains: \(error)")
             }
@@ -108,9 +105,10 @@ private extension MultisigPendingOperationsSyncService {
 
             switch result {
             case let .success(chains):
-                let filteredChains = chains.filter { $0.hasMultisig }
+                let relevantChains = matchRelevantChains(from: chains)
+
                 mutex.lock()
-                pendingOperationsChainSyncServices = filteredChains.reduce(into: [:]) { acc, chain in
+                pendingOperationsChainSyncServices = relevantChains.reduce(into: [:]) { acc, chain in
                     let service = self.chainSyncServiceFactory.createMultisigChainSyncService(
                         for: chain,
                         selectedMetaAccount: selectedMetaAccount,
@@ -125,6 +123,10 @@ private extension MultisigPendingOperationsSyncService {
                 logger?.error("Failed to fetch chains: \(error)")
             }
         }
+    }
+
+    func matchRelevantChains(from chains: [ChainModel]) -> [ChainModel] {
+        chains.filter { $0.hasMultisig }
     }
 }
 

@@ -209,8 +209,9 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
 
     func stopSyncUp() {
         metaAccountsProvider = nil
-        availableMetaAccounts = []
         eventsSubscriptions = [:]
+        availableChains = [:]
+        availableMetaAccounts = []
     }
 
     func addObserver(
