@@ -155,7 +155,7 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
             self.selectedMetaAccount = selectedMetaAccount?.info
             mutex.unlock()
         case let .failure(error):
-            logger?.error("Failed to fetch selected wallet: \(error.localizedDescription)")
+            logger?.error("Failed to fetch selected wallet: \(error)")
         }
     }
 }
