@@ -89,13 +89,16 @@ private extension MultisigPendingOperationsSubscription {
             BatchStorageSubscriptionRequest(
                 innerRequest: DoubleMapSubscriptionRequest(
                     storagePath: Multisig.multisigList,
-                    localKey: localKey
-                ) {
-                    (
-                        BytesCodable(wrappedValue: accountId),
-                        BytesCodable(wrappedValue: callHash)
-                    )
-                },
+                    localKey: localKey,
+                    keyParamClosure: {
+                        (
+                            BytesCodable(wrappedValue: accountId),
+                            BytesCodable(wrappedValue: callHash)
+                        )
+                    },
+                    param1Encoder: nil,
+                    param2Encoder: { $0.wrappedValue }
+                ),
                 mappingKey: SubscriptionResult.Key.pendingOperation(with: callHash)
             )
         }
@@ -108,11 +111,7 @@ private extension MultisigPendingOperationsSubscription {
             operationQueue: operationQueue,
             callbackQueue: workingQueue
         ) { [weak self] result in
-            self?.mutex.lock()
-
             self?.handleSubscription(result, callHashes: callHashes)
-
-            self?.mutex.unlock()
         }
     }
 

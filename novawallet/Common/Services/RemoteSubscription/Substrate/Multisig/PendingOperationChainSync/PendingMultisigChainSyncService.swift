@@ -351,23 +351,21 @@ private extension PendingMultisigChainSyncService {
 
     func processNewCallDataWrapper(
         _ callData: [Multisig.PendingOperation.Key: JSON],
-        multisigContext: DelegatedAccount.MultisigAccountModel
+        multisigContext _: DelegatedAccount.MultisigAccountModel
     ) -> CompoundOperationWrapper<Void> {
         let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
 
         let updateOperation = ClosureOperation<[Multisig.PendingOperation]> { [weak self] in
-            try fetchOperation.extractNoCancellableResultData()
-                .filter {
-                    $0.chainId == self?.chain.chainId &&
-                        $0.multisigAccountId == multisigContext.accountId
+            try self?.filterOperations {
+                try fetchOperation.extractNoCancellableResultData()
+            }
+            .compactMap { operation in
+                if let call = callData[operation.createKey()] {
+                    operation.replacingCall(with: call)
+                } else {
+                    nil
                 }
-                .compactMap { operation in
-                    if let call = callData[operation.createKey()] {
-                        operation.replacingCall(with: call)
-                    } else {
-                        nil
-                    }
-                }
+            } ?? []
         }
 
         let saveOperation = pendingOperationsRepository.saveOperation(
@@ -381,7 +379,8 @@ private extension PendingMultisigChainSyncService {
         ) { [weak self] in
             guard let self else { return .createWithResult(()) }
 
-            let knownCallHashes = Set(try fetchOperation.extractNoCancellableResultData().map(\.callHash))
+            let operations = try filterOperations { try fetchOperation.extractNoCancellableResultData() }
+            let knownCallHashes = Set(operations.map(\.callHash))
             let newCallHashes = Set(callData.map(\.key.callHash)).subtracting(knownCallHashes)
 
             guard !newCallHashes.isEmpty else {
@@ -416,6 +415,16 @@ private extension PendingMultisigChainSyncService {
         )
 
         return decodedCall
+    }
+
+    func filterOperations(
+        _ operationsClosure: @escaping () throws -> [Multisig.PendingOperation]
+    ) throws -> [Multisig.PendingOperation] {
+        try operationsClosure()
+            .filter {
+                $0.chainId == chain.chainId &&
+                    $0.multisigAccountId == wallet.multisigAccount?.multisig?.accountId
+            }
     }
 }
 
