@@ -569,8 +569,6 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             return
         }
 
-        // generic ledger currently the only case for the sections with action
-
         switch wallet.type {
         case .genericLedger:
             presentCloudRemindIfNeededBefore { [weak self] in
@@ -583,11 +581,21 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
                     wallet: wallet
                 )
             }
+        case .polkadotVault:
+            presentCloudRemindIfNeededBefore { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                wireframe.showAddVaultAccount(
+                    from: view,
+                    wallet: wallet
+                )
+            }
         case .secrets,
              .watchOnly,
              .paritySigner,
              .ledger,
-             .polkadotVault,
              .polkadotVaultRoot,
              .proxied:
             break

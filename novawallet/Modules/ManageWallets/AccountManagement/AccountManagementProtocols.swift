@@ -89,6 +89,11 @@ protocol AccountManagementWireframeProtocol: AlertPresentable,
         chain: ChainModel
     )
 
+    func showAddVaultAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel
+    )
+
     func showAddGenericLedgerEvmAccounts(
         from view: AccountManagementViewProtocol?,
         wallet: MetaAccountModel

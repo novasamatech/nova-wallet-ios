@@ -185,6 +185,43 @@ final class ChainAccountViewModelFactory {
         }
     }
 
+    private func createPolkadotVaultSections(
+        from wallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
+        for locale: Locale
+    ) -> ChainAccountListViewModel {
+        let supportedChains = chains.values
+            .filter { $0.hasSubstrateRuntime && wallet.fetch(for: $0.accountRequest()) != nil }
+            .sortedUsingDefaultComparator()
+
+        let availableItems = createAccountList(from: wallet, chains: supportedChains, locale: locale)
+
+        let title = LocalizableResource { _ in
+            ""
+        }
+
+        let action = LocalizableResource { locale in
+            IconWithTitleViewModel(
+                icon: R.image.iconBlueAdd(),
+                title: R.string.localizable.commonAddAddress(
+                    preferredLanguages: locale.rLanguages
+                )
+            )
+        }
+
+        return [
+            ChainAccountListSectionViewModel(
+                section: .custom(
+                    ChainAccountSectionType.Custom(
+                        title: title,
+                        action: action
+                    )
+                ),
+                chainAccounts: availableItems
+            )
+        ]
+    }
+
     private func createGenericLedgerSections(
         from wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
@@ -282,7 +319,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         for locale: Locale
     ) -> ChainAccountListViewModel {
         switch wallet.type {
-        case .secrets, .watchOnly, .paritySigner, .polkadotVault, .polkadotVaultRoot:
+        case .secrets, .watchOnly, .paritySigner, .polkadotVaultRoot:
             let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
             let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 
@@ -303,6 +340,8 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
+        case .polkadotVault:
+            return createPolkadotVaultSections(from: wallet, chains: chains, for: locale)
         case .ledger, .proxied:
             let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
             let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)

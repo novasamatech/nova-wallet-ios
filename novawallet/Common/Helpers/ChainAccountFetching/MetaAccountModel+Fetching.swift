@@ -211,7 +211,7 @@ extension MetaAccountModel {
 
     private func executeFetchByChainAccount(
         _ chainId: ChainModel.Id,
-        properties: ChainAccountRequest.Properties
+        request: ChainAccountRequest
     ) -> ChainAccountResponse? {
         guard let chainAccount = getChainAccount(for: chainId) else {
             return nil
@@ -223,13 +223,13 @@ extension MetaAccountModel {
 
         return ChainAccountResponse(
             metaId: metaId,
-            chainId: chainId,
+            chainId: request.chainId,
             accountId: chainAccount.accountId,
             publicKey: chainAccount.publicKey,
             name: name,
             cryptoType: cryptoType,
-            addressPrefix: properties.addressPrefix,
-            isEthereumBased: properties.isEthereumBased,
+            addressPrefix: request.addressPrefix,
+            isEthereumBased: request.isEthereumBased,
             isChainAccount: true,
             type: type
         )
@@ -237,7 +237,7 @@ extension MetaAccountModel {
 
     private func executeFetch(request: ChainAccountRequest) -> ChainAccountResponse? {
         if hasChainAccount(for: request.chainId) {
-            return executeFetchByChainAccount(request.chainId, properties: request.properties)
+            return executeFetchByChainAccount(request.chainId, request: request)
         }
 
         if request.isEthereumBased {
@@ -290,7 +290,7 @@ extension MetaAccountModel {
         if
             !request.isEthereumBased,
             let parentId = request.parentId {
-            return executeFetchByChainAccount(parentId, properties: request.properties)
+            return executeFetchByChainAccount(parentId, request: request)
         }
 
         return nil
