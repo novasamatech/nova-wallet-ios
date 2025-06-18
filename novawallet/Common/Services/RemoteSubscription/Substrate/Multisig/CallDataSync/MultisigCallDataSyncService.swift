@@ -94,10 +94,6 @@ private extension MultisigCallDataSyncService {
         at blockHash: Data,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: JSON]> {
-        guard let chain = availableChains[chainId] else {
-            return .createWithError(MultisigCallDataSyncError.chainUnavailable)
-        }
-
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             return .createWithError(MultisigCallDataSyncError.chainConnectionUnavailable)
         }
@@ -118,16 +114,12 @@ private extension MultisigCallDataSyncService {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let blockDetails = try blockQueryWrapper.targetOperation.extractNoCancellableResultData()
 
-            return events.reduce(into: [:]) { acc, event in
-                let extractedCallData = self.extractMultisigCallData(
-                    from: blockDetails,
-                    matching: event,
-                    chainId: chainId,
-                    using: codingFactory
-                )
-
-                acc.merge(extractedCallData, uniquingKeysWith: { $1 })
-            }
+            return try self.extractMultisigCallData(
+                from: blockDetails,
+                matching: Set(events),
+                chainId: chainId,
+                using: codingFactory
+            )
         }
 
         callExtractionOperation.addDependency(codingFactoryOperation)
@@ -141,48 +133,30 @@ private extension MultisigCallDataSyncService {
 
     func extractMultisigCallData(
         from blockDetails: SubstrateBlockDetails,
-        matching multisigEvent: MultisigEvent,
+        matching multisigEvents: Set<MultisigEvent>,
         chainId: ChainModel.Id,
         using codingFactory: RuntimeCoderFactoryProtocol
-    ) -> [Multisig.PendingOperation.Key: JSON] {
-        guard let chain = availableChains[chainId] else {
-            return [:]
-        }
+    ) throws -> [Multisig.PendingOperation.Key: JSON] {
+        try blockDetails.extrinsicsWithEvents.reduce(into: [:]) { acc, indexedExtrinsicWithEvents in
+            try indexedExtrinsicWithEvents.eventRecords.forEach { eventRecord in
+                let matcher = MultisigEventMatcher(codingFactory: codingFactory)
 
-        let extrinsicProcessor = ExtrinsicProcessor(
-            accountId: multisigEvent.accountId,
-            chain: chain
-        )
+                guard
+                    let blockMultisigEvent = matcher.matchMultisig(event: eventRecord.event),
+                    multisigEvents.contains(blockMultisigEvent)
+                else { return }
 
-        let context = codingFactory.createRuntimeJsonContext().toRawContext()
+                let key = Multisig.PendingOperation.Key(
+                    callHash: blockMultisigEvent.callHash,
+                    chainId: chainId,
+                    multisigAccountId: blockMultisigEvent.accountId
+                )
 
-        return blockDetails.extrinsicsWithEvents.enumerated().reduce(into: [:]) { acc, indexedExtrinsicsWithEvents in
-            let index = indexedExtrinsicsWithEvents.offset
-            let extrinsicWithEvents = indexedExtrinsicsWithEvents.element
-
-            guard
-                let processingResult = extrinsicProcessor.process(
-                    extrinsicIndex: UInt32(index),
-                    extrinsicData: extrinsicWithEvents.extrinsicData,
-                    eventRecords: extrinsicWithEvents.eventRecords,
-                    coderFactory: codingFactory
-                ),
-                processingResult.callPath.isMultisig
-            else { return }
-
-            guard
-                let encodedCall = try? JSONEncoder.scaleCompatible(with: context).encode(processingResult.call),
-                let callHash = try? StorageHasher.blake256.hash(data: encodedCall),
-                multisigEvent.callHash == callHash
-            else { return }
-
-            let key = Multisig.PendingOperation.Key(
-                callHash: callHash,
-                chainId: chainId,
-                multisigAccountId: multisigEvent.accountId
-            )
-
-            return acc[key] = processingResult.call
+                acc[key] = try extractDecodedCall(
+                    from: indexedExtrinsicWithEvents.extrinsicData,
+                    using: codingFactory
+                )
+            }
         }
     }
 
@@ -216,13 +190,9 @@ private extension MultisigCallDataSyncService {
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> JSON {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
-        let context = codingFactory.createRuntimeJsonContext()
-        let decodedCall: JSON = try decoder.read(
-            of: GenericType.call.name,
-            with: context.toRawContext()
-        )
+        let extrinsic: Extrinsic = try decoder.read(of: GenericType.extrinsic.name)
 
-        return decodedCall
+        return extrinsic.call
     }
 }
 

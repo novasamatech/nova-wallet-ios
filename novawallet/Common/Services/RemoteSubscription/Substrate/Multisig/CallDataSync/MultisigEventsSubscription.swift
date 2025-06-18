@@ -116,9 +116,8 @@ private extension MultisigEventsSubscription {
             switch result {
             case let .success(codingFactory):
                 let multisigEvents = events.compactMap {
-                    self.matchMultisig(
-                        event: $0.event,
-                        using: codingFactory
+                    MultisigEventMatcher(codingFactory: codingFactory).matchMultisig(
+                        event: $0.event
                     )
                 }
 
@@ -134,11 +133,16 @@ private extension MultisigEventsSubscription {
             }
         }
     }
+}
 
-    func matchMultisig(
-        event: Event,
-        using codingFactory: RuntimeCoderFactoryProtocol
-    ) -> MultisigEvent? {
+struct MultisigEventMatcher {
+    private let codingFactory: RuntimeCoderFactoryProtocol
+
+    init(codingFactory: RuntimeCoderFactoryProtocol) {
+        self.codingFactory = codingFactory
+    }
+
+    func matchMultisig(event: Event) -> MultisigEvent? {
         guard codingFactory.metadata.eventMatches(event, path: EventCodingPath.newMultisig) else {
             return nil
         }
@@ -165,7 +169,7 @@ private extension MultisigEventsSubscription {
     }
 }
 
-struct MultisigEvent {
+struct MultisigEvent: Hashable {
     let accountId: AccountId
     let callHash: CallHash
 }
