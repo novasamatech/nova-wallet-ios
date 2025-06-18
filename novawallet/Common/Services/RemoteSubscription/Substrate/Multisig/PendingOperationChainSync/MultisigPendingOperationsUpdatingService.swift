@@ -24,6 +24,8 @@ final class MultisigPendingOperationsUpdatingService {
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
 
+    private let mutex = NSLock()
+
     private var subscription: MultisigPendingOperationsSubscription?
 
     init(
@@ -56,6 +58,8 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
 
         clearSubscription()
 
+        mutex.lock()
+
         subscription = MultisigPendingOperationsSubscription(
             accountId: multisigAccountId,
             chainId: chainId,
@@ -66,9 +70,14 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
             operationQueue: operationQueue,
             workingQueue: workingQueue
         )
+
+        mutex.unlock()
     }
 
     func clearSubscription() {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         subscription = nil
     }
 }

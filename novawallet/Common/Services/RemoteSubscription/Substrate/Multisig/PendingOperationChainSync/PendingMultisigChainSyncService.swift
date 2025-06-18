@@ -87,10 +87,11 @@ private extension PendingMultisigChainSyncService {
     func createSyncUpWrapper(
         dependingOn remoteFetchWrapper: CompoundOperationWrapper<[Multisig.PendingOperation]>
     ) -> CompoundOperationWrapper<Void> {
-        let localFetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
+        let localFetchWrapper = createFetchAllWrapper()
 
         let diffOperation = ClosureOperation<CallHashChanges> {
-            let oldCallHashes = try localFetchOperation
+            let oldCallHashes = try localFetchWrapper
+                .targetOperation
                 .extractNoCancellableResultData()
                 .compactMap(\.callHash)
 
@@ -109,7 +110,7 @@ private extension PendingMultisigChainSyncService {
         }
 
         diffOperation.addDependency(remoteFetchWrapper.targetOperation)
-        diffOperation.addDependency(localFetchOperation)
+        diffOperation.addDependency(localFetchWrapper.targetOperation)
 
         let saveOperation = pendingOperationsRepository.saveOperation(
             {
@@ -128,15 +129,12 @@ private extension PendingMultisigChainSyncService {
 
         manageSubscriptionsOperation.addDependency(saveOperation)
 
-        let dependencies = remoteFetchWrapper.allOperations
-            + [localFetchOperation, diffOperation, saveOperation]
-
-        return CompoundOperationWrapper(
-            targetOperation: manageSubscriptionsOperation,
-            dependencies: dependencies
-        )
+        return remoteFetchWrapper
+            .insertingHead(operations: localFetchWrapper.allOperations)
+            .insertingHead(operations: [diffOperation, saveOperation])
+            .insertingTail(operation: manageSubscriptionsOperation)
     }
-    
+
     func createPendingOperationsWrapper() -> CompoundOperationWrapper<[Multisig.PendingOperation]> {
         guard let multisigContext = wallet.multisigAccount?.multisig else {
             return .createWithError(MultisigPendingOperationsSyncError.multisigAccountUnavailable)
@@ -219,7 +217,7 @@ private extension PendingMultisigChainSyncService {
             )
         }
     }
-    
+
     func createCallHashFetchWrapper() -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]> {
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             return .createWithError(ChainRegistryError.connectionUnavailable)
@@ -335,41 +333,40 @@ private extension PendingMultisigChainSyncService {
             { [] },
             { [callHash.toHexString()] }
         )
-        let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
+        let fetchWrapper = createFetchAllWrapper()
 
         let manageSubscriptionsOperation = createManageSubscriptionsOperation { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
-            
-            let operations = try filterOperations { try fetchOperation.extractNoCancellableResultData() }
-            
+
+            let operations = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+
             return Set(operations.compactMap(\.callHash))
         }
 
-        fetchOperation.addDependency(removeOperation)
-        manageSubscriptionsOperation.addDependency(fetchOperation)
+        fetchWrapper.addDependency(operations: [removeOperation])
+        manageSubscriptionsOperation.addDependency(fetchWrapper.targetOperation)
 
-        let operations = [removeOperation, fetchOperation, manageSubscriptionsOperation]
+        let operations = [removeOperation]
+            + fetchWrapper.allOperations
+            + [manageSubscriptionsOperation]
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     func processNewCallDataWrapper(
-        _ callData: [Multisig.PendingOperation.Key: JSON],
-        multisigContext _: DelegatedAccount.MultisigAccountModel
+        _ callData: [Multisig.PendingOperation.Key: JSON]
     ) -> CompoundOperationWrapper<Void> {
-        let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
+        let fetchWrapper = createFetchAllWrapper()
 
-        let updateOperation = ClosureOperation<[Multisig.PendingOperation]> { [weak self] in
-            try self?.filterOperations {
-                try fetchOperation.extractNoCancellableResultData()
-            }
-            .compactMap { operation in
-                if let call = callData[operation.createKey()] {
-                    operation.replacingCall(with: call)
-                } else {
-                    nil
+        let updateOperation = ClosureOperation<[Multisig.PendingOperation]> {
+            try fetchWrapper.targetOperation.extractNoCancellableResultData()
+                .compactMap { operation in
+                    if let call = callData[operation.createKey()] {
+                        operation.replacingCall(with: call)
+                    } else {
+                        nil
+                    }
                 }
-            } ?? []
         }
 
         let saveOperation = pendingOperationsRepository.saveOperation(
@@ -383,7 +380,7 @@ private extension PendingMultisigChainSyncService {
         ) { [weak self] in
             guard let self else { return .createWithResult(()) }
 
-            let operations = try filterOperations { try fetchOperation.extractNoCancellableResultData() }
+            let operations = try fetchWrapper.targetOperation.extractNoCancellableResultData()
             let knownCallHashes = Set(operations.map(\.callHash))
             let newCallHashes = Set(callData.map(\.key.callHash)).subtracting(knownCallHashes)
 
@@ -398,13 +395,13 @@ private extension PendingMultisigChainSyncService {
             return CompoundOperationWrapper(targetOperation: manageSubscriptionsOperation)
         }
 
-        updateOperation.addDependency(fetchOperation)
+        updateOperation.addDependency(fetchWrapper.targetOperation)
         saveOperation.addDependency(updateOperation)
         updateSubscriptionsWrapper.addDependency(operations: [saveOperation])
 
-        return updateSubscriptionsWrapper.insertingHead(
-            operations: [fetchOperation, updateOperation, saveOperation]
-        )
+        return updateSubscriptionsWrapper
+            .insertingHead(operations: fetchWrapper.allOperations)
+            .insertingHead(operations: [updateOperation, saveOperation])
     }
 
     func extractDecodedCall(
@@ -421,14 +418,24 @@ private extension PendingMultisigChainSyncService {
         return decodedCall
     }
 
-    func filterOperations(
-        _ operationsClosure: @escaping () throws -> [Multisig.PendingOperation]
-    ) throws -> [Multisig.PendingOperation] {
-        try operationsClosure()
-            .filter {
-                $0.chainId == chain.chainId &&
-                    $0.multisigAccountId == wallet.multisigAccount?.multisig?.accountId
-            }
+    func createFetchAllWrapper() -> CompoundOperationWrapper<[Multisig.PendingOperation]> {
+        let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
+        let filterOperation = ClosureOperation { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+
+            return try fetchOperation.extractNoCancellableResultData()
+                .filter {
+                    $0.chainId == self.chain.chainId &&
+                        $0.multisigAccountId == self.wallet.multisigAccount?.multisig?.accountId
+                }
+        }
+
+        filterOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: filterOperation,
+            dependencies: [fetchOperation]
+        )
     }
 }
 
@@ -452,10 +459,7 @@ extension PendingMultisigChainSyncService: PendingMultisigChainSyncServiceProtoc
 
         guard !relevantCallData.isEmpty else { return }
 
-        let processCallDataWrapper = processNewCallDataWrapper(
-            realTimeCallData,
-            multisigContext: multisigContext
-        )
+        let processCallDataWrapper = processNewCallDataWrapper(relevantCallData)
 
         operationQueue.addOperations(
             processCallDataWrapper.allOperations,
