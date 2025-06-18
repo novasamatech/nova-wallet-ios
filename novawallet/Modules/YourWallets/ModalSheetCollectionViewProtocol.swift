@@ -1,13 +1,13 @@
 import UIKit_iOS
 import UIKit
 
-protocol ModalSheetCollectionViewProtocol: ModalSheetPresenterDelegate {
-    var collectionView: UICollectionView { get }
+protocol ModalSheetScrollViewProtocol: ModalSheetPresenterDelegate {
+    var scrollView: UIScrollView { get }
 }
 
-extension ModalSheetCollectionViewProtocol {
+extension ModalSheetScrollViewProtocol {
     func presenterCanDrag(_: ModalPresenterProtocol) -> Bool {
-        let offset = collectionView.contentOffset.y + collectionView.contentInset.top
+        let offset = scrollView.contentOffset.y + scrollView.contentInset.top
         return offset == 0
     }
 }

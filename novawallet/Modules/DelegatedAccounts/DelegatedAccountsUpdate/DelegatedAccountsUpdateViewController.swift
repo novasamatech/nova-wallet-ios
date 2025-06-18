@@ -1,7 +1,11 @@
 import UIKit
 import Foundation_iOS
 
-final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder {
+final class DelegatedAccountsUpdateViewController: UIViewController, ViewHolder, ModalSheetScrollViewProtocol {
+    var scrollView: UIScrollView {
+        rootView.tableView
+    }
+
     private var dataSource: DataSource?
     private var currentMode: DelegatedAccountsUpdateMode = .proxied
     private var isSegmentedControlVisible: Bool = false
@@ -270,6 +274,10 @@ extension DelegatedAccountsUpdateViewController: UITableViewDelegate {
         heightForRowAt _: IndexPath
     ) -> CGFloat {
         Constants.tableCellHeight
+    }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        scrollView.bounces = scrollView.contentOffset.y > UIConstants.bouncesOffset
     }
 }
 
