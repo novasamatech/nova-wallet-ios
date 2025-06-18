@@ -147,6 +147,25 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
     }
 
+    private func createUniqueNetworkService(
+        for chain: ChainModel,
+        ownerId: AccountId
+    ) -> NftSyncServiceProtocol {
+        let repository = createSyncRepository(
+            for: chain,
+            ownerId: ownerId,
+            type: .unique
+        )
+
+        return UniqueNftSyncService(
+            api: UniqueScanApi.mainnet,
+            ownerId: ownerId,
+            chain: chain,
+            repository: repository,
+            operationQueue: operationQueue
+        )
+    }
+
     private func createService(
         for chain: ChainModel,
         ownerId: AccountId,
@@ -163,6 +182,8 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             return createPdc20Service(for: chain, ownerId: ownerId)
         case .kodadot:
             return createKodaDotService(for: chain, ownerId: ownerId)
+        case .unique:
+            return createUniqueNetworkService(for: chain, ownerId: ownerId)
         }
     }
 
