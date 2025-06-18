@@ -3,8 +3,8 @@ import Foundation_iOS
 import UIKit_iOS
 import SubstrateSdk
 
-final class YourWalletsViewController: UIViewController, ViewHolder, ModalSheetCollectionViewProtocol {
-    var collectionView: UICollectionView {
+final class YourWalletsViewController: UIViewController, ViewHolder, ModalSheetScrollViewProtocol {
+    var scrollView: UIScrollView {
         rootView.collectionView
     }
 
