@@ -82,7 +82,6 @@ private extension MultisigPendingOperationsSubscription {
 
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             Multisig.multisigList,
-            accountId: accountId,
             chainId: chainId
         )
 
@@ -124,21 +123,21 @@ private extension MultisigPendingOperationsSubscription {
         switch result {
         case let .success(state):
             callHashes
-                .reduce(into: [:]) { acc, callHash in
+                .map { callHash in
                     let key = SubscriptionResult.Key.pendingOperation(with: callHash)
                     let json = state.values[key]
 
-                    guard let definition = try? json?.map(
+                    let definition = try? json?.map(
                         to: Multisig.MultisigDefinition.self,
                         with: state.context
-                    ) else { return }
+                    )
 
-                    acc[callHash] = definition
+                    return (callHash, definition)
                 }
                 .forEach {
                     subscriber?.didReceiveUpdate(
-                        callHash: $0.key,
-                        multisigDefinition: $0.value
+                        callHash: $0.0,
+                        multisigDefinition: $0.1
                     )
                 }
         case let .failure(error):

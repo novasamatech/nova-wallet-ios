@@ -381,7 +381,7 @@ private extension PendingMultisigChainSyncService {
         ) { [weak self] in
             guard let self else { return .createWithResult(()) }
 
-            let knownCallHashes = Set(try updateOperation.extractNoCancellableResultData().map(\.callHash))
+            let knownCallHashes = Set(try fetchOperation.extractNoCancellableResultData().map(\.callHash))
             let newCallHashes = Set(callData.map(\.key.callHash)).subtracting(knownCallHashes)
 
             guard !newCallHashes.isEmpty else {
