@@ -3,8 +3,8 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol PendingMultisigChainSyncServiceProtocol: SyncServiceProtocol {
-    func updatePendingOperationsCallData(
-        using knownCallData: [Multisig.PendingOperation.Key: JSON]
+    func updatePendingOperations(
+        using knownCallData: [Multisig.PendingOperation.Key: MultisigCallOrHash]
     )
 }
 
@@ -354,14 +354,14 @@ private extension PendingMultisigChainSyncService {
     }
 
     func processNewCallDataWrapper(
-        _ callData: [Multisig.PendingOperation.Key: JSON]
+        _ callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]
     ) -> CompoundOperationWrapper<Void> {
         let fetchWrapper = createFetchAllWrapper()
 
         let updateOperation = ClosureOperation<[Multisig.PendingOperation]> {
             try fetchWrapper.targetOperation.extractNoCancellableResultData()
                 .compactMap { operation in
-                    if let call = callData[operation.createKey()] {
+                    if let call = callData[operation.createKey()]?.call {
                         operation.replacingCall(with: call)
                     } else {
                         nil
@@ -442,8 +442,8 @@ private extension PendingMultisigChainSyncService {
 // MARK: - PendingMultisigChainSyncServiceProtocol
 
 extension PendingMultisigChainSyncService: PendingMultisigChainSyncServiceProtocol {
-    func updatePendingOperationsCallData(
-        using knownCallData: [Multisig.PendingOperation.Key: JSON]
+    func updatePendingOperations(
+        using knownCallData: [Multisig.PendingOperation.Key: MultisigCallOrHash]
     ) {
         guard let multisigContext = wallet.multisigAccount?.multisig else {
             return
@@ -454,7 +454,10 @@ extension PendingMultisigChainSyncService: PendingMultisigChainSyncServiceProtoc
             $0.key.chainId == chain.chainId &&
                 $0.key.multisigAccountId == multisigContext.accountId
         }
-        realTimeCallData.merge(relevantCallData, uniquingKeysWith: { $1 })
+        realTimeCallData.merge(
+            relevantCallData.reduce(into: [:]) { $0[$1.key] = $1.value.call },
+            uniquingKeysWith: { $1 }
+        )
         mutex.unlock()
 
         guard !relevantCallData.isEmpty else { return }

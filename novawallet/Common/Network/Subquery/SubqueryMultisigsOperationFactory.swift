@@ -121,7 +121,7 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
         ) { (response: SubqueryMultisigs.MultisigsResponseQueryWrapper<SubqueryMultisigs.FetchMultisigCallDataResponse>) in
             response.query.multisigOperations.nodes.reduce(into: [:]) { acc, node in
                 guard callHashes.contains(node.callHash) else { return }
-                
+
                 acc[node.callHash] = node.callData
             }
         }

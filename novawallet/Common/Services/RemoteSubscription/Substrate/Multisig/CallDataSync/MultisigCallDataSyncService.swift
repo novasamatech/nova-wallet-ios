@@ -11,13 +11,6 @@ protocol MultisigCallDataSyncServiceProtocol {
     )
 }
 
-private typealias CallDataCache = Observable<
-    ObservableInMemoryCache<
-        Multisig.PendingOperation.Key,
-        JSON
-    >
->
-
 final class MultisigCallDataSyncService {
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
 
@@ -93,7 +86,7 @@ private extension MultisigCallDataSyncService {
         for events: [MultisigEvent],
         at blockHash: Data,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: JSON]> {
+    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             return .createWithError(MultisigCallDataSyncError.chainConnectionUnavailable)
         }
@@ -110,11 +103,11 @@ private extension MultisigCallDataSyncService {
             blockHash: blockHash
         )
 
-        let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: JSON]> {
+        let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let blockDetails = try blockQueryWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try self.extractMultisigCallData(
+            return try self.extractMultisigCallDataOrHash(
                 from: blockDetails,
                 matching: Set(events),
                 chainId: chainId,
@@ -131,12 +124,12 @@ private extension MultisigCallDataSyncService {
         )
     }
 
-    func extractMultisigCallData(
+    func extractMultisigCallDataOrHash(
         from blockDetails: SubstrateBlockDetails,
         matching multisigEvents: Set<MultisigEvent>,
         chainId: ChainModel.Id,
         using codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> [Multisig.PendingOperation.Key: JSON] {
+    ) throws -> [Multisig.PendingOperation.Key: MultisigCallOrHash] {
         try blockDetails.extrinsicsWithEvents.reduce(into: [:]) { acc, indexedExtrinsicWithEvents in
             try indexedExtrinsicWithEvents.eventRecords.forEach { eventRecord in
                 let matcher = MultisigEventMatcher(codingFactory: codingFactory)
@@ -152,10 +145,16 @@ private extension MultisigCallDataSyncService {
                     multisigAccountId: blockMultisigEvent.accountId
                 )
 
-                acc[key] = try extractDecodedCall(
+                let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(
                     from: indexedExtrinsicWithEvents.extrinsicData,
                     using: codingFactory
-                )
+                ) {
+                    .call(call)
+                } else {
+                    .callHash(blockMultisigEvent.callHash)
+                }
+
+                acc[key] = callOrHash
             }
         }
     }
@@ -185,14 +184,35 @@ private extension MultisigCallDataSyncService {
         }
     }
 
-    func extractDecodedCall(
+    func matchAsMultiCallData(
         from extrinsicData: Data,
         using codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> JSON {
+    ) throws -> JSON? {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let extrinsic: Extrinsic = try decoder.read(of: GenericType.extrinsic.name)
 
-        return extrinsic.call
+        let context = codingFactory.createRuntimeJsonContext()
+
+        guard let sender = try extrinsic.signature?.address.map(
+            to: MultiAddress.self,
+            with: context.toRawContext()
+        ).accountId else {
+            return nil
+        }
+
+        let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
+
+        let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<Multisig.AsMultiCall>>?
+        maybeCallMappingResult = try? nestedCallMapper.mapRuntimeCall(
+            call: extrinsic.call,
+            context: context
+        )
+
+        guard let callMappingResult = maybeCallMappingResult else { return nil }
+
+        let asMultiCall = try callMappingResult.getFirstCallOrThrow()
+
+        return asMultiCall.args.call
     }
 }
 
@@ -285,3 +305,12 @@ enum MultisigCallDataSyncError: Error {
     case chainConnectionUnavailable
     case runtimeUnavailable
 }
+
+// MARK: - Private types
+
+private typealias CallDataCache = Observable<
+    ObservableInMemoryCache<
+        Multisig.PendingOperation.Key,
+        MultisigCallOrHash
+    >
+>

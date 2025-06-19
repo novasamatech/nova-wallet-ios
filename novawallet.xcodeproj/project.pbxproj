@@ -1468,6 +1468,7 @@
 		2D3286F42E007EA4004D5D24 /* Multisig+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286F32E007EA4004D5D24 /* Multisig+Events.swift */; };
 		2D3286F62E00B70B004D5D24 /* MultisigCallDataSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286F52E00B70B004D5D24 /* MultisigCallDataSyncService.swift */; };
 		2D3286F92E0132B4004D5D24 /* MultisigCallDataObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286F82E0132B4004D5D24 /* MultisigCallDataObserver.swift */; };
+		2D3286FD2E04562E004D5D24 /* MultisigCallOrHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3286FC2E04562E004D5D24 /* MultisigCallOrHash.swift */; };
 		2D32BE122C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */; };
 		2D32BE132C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */; };
 		2D32BE152C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */; };
@@ -7422,6 +7423,7 @@
 		2D3286F52E00B70B004D5D24 /* MultisigCallDataSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCallDataSyncService.swift; sourceTree = "<group>"; };
 		2D3286F82E0132B4004D5D24 /* MultisigCallDataObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCallDataObserver.swift; sourceTree = "<group>"; };
 		2D3286FB2E01838B004D5D24 /* SubstrateDataModel38.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel38.xcdatamodel; sourceTree = "<group>"; };
+		2D3286FC2E04562E004D5D24 /* MultisigCallOrHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCallOrHash.swift; sourceTree = "<group>"; };
 		2D32BE052C6A49900047F520 /* ExtrinsicAssetConversionFeeEstimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeEstimator.swift; sourceTree = "<group>"; };
 		2D32BE062C6A49900047F520 /* ExtrinsicAssetConversionFeeInstaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicAssetConversionFeeInstaller.swift; sourceTree = "<group>"; };
 		2D32BE082C6A49900047F520 /* ExtrinsicFeeEstimationProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeEstimationProtocol.swift; sourceTree = "<group>"; };
@@ -15400,6 +15402,7 @@
 			isa = PBXGroup;
 			children = (
 				2D3286F52E00B70B004D5D24 /* MultisigCallDataSyncService.swift */,
+				2D3286FC2E04562E004D5D24 /* MultisigCallOrHash.swift */,
 				2D3286F82E0132B4004D5D24 /* MultisigCallDataObserver.swift */,
 				2D3286F12E006667004D5D24 /* MultisigEventsSubscription.swift */,
 			);
@@ -30319,6 +30322,7 @@
 				2DD018CA2D63B3F90063F9BB /* AutoScrollable.swift in Sources */,
 				841AAC2726F6A2A500F0A25E /* ChainAccountFetching.swift in Sources */,
 				2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */,
+				2D3286FD2E04562E004D5D24 /* MultisigCallOrHash.swift in Sources */,
 				8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
 				2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */,

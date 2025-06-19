@@ -165,14 +165,17 @@ extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber
 // MARK: - MultisigCallDataObserver
 
 extension MultisigPendingOperationsSyncService: MultisigCallDataObserver {
-    func didReceive(newCallData: [Multisig.PendingOperation.Key: JSON]) {
+    func didReceive(newCallData: [Multisig.PendingOperation.Key: MultisigCallOrHash]) {
         mutex.lock()
         defer { mutex.unlock() }
 
-        knownCallData.merge(newCallData, uniquingKeysWith: { $1 })
+        knownCallData.merge(
+            newCallData.reduce(into: [:]) { $0[$1.key] = $1.value.call },
+            uniquingKeysWith: { $1 }
+        )
 
         pendingOperationsChainSyncServices.forEach {
-            $0.value.updatePendingOperationsCallData(using: newCallData)
+            $0.value.updatePendingOperations(using: newCallData)
         }
     }
 }
