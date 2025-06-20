@@ -37,6 +37,13 @@ struct MetaChainAccountResponse {
     let chainAccount: ChainAccountResponse
 }
 
+struct MetaAccountDelegationId: Hashable {
+    let delegateAccountId: AccountId
+    let delegatorId: AccountId
+    let chainId: ChainModel.Id?
+    let delegationType: DelegationType
+}
+
 enum ChainAccountFetchingError: Error {
     case accountNotExists
 }
@@ -54,6 +61,10 @@ extension MetaChainAccountResponse {
 }
 
 extension ChainAccountResponse {
+    var delegated: Bool {
+        type == .proxied || type == .multisig
+    }
+
     var chainFormat: ChainFormat {
         isEthereumBased
             ? .ethereum
@@ -166,7 +177,7 @@ extension MetaAccountModel {
             } else {
                 return nil
             }
-        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
             return executeFetch(request: request)
         }
     }
@@ -310,34 +321,10 @@ extension MetaAccountModel {
 
     func has(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
         if let chainAccount = chainAccounts.first(where: { $0.chainId == chainId }) {
-            return chainAccount.accountId == accountId
+            chainAccount.accountId == accountId
         } else {
-            return substrateAccountId == accountId || ethereumAddress == accountId
+            substrateAccountId == accountId || ethereumAddress == accountId
         }
-    }
-
-    func isProxied(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
-        type == .proxied && has(accountId: accountId, chainId: chainId)
-    }
-
-    func proxyChainAccount(
-        chainId: ChainModel.Id
-    ) -> ChainAccountModel? {
-        chainAccounts.first { $0.chainId == chainId && $0.proxy != nil }
-    }
-
-    func proxy() -> ProxyAccountModel? {
-        guard type == .proxied,
-              let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
-            return nil
-        }
-
-        return chainAccount.proxy
-    }
-
-    func address(for chainAsset: ChainAsset) throws -> AccountAddress? {
-        let request = chainAsset.chain.accountRequest()
-        return fetch(for: request)?.toAddress()
     }
 }
 

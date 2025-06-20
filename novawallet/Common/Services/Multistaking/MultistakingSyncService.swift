@@ -326,7 +326,7 @@ final class MultistakingSyncService {
             requestFactory: requestFactory,
             connection: connection,
             runtimeProvider: runtimeService,
-            identityProxyFactory: identityProxyFactory,
+            identityFactory: identityProxyFactory,
             chainFormat: chainAsset.chain.chainFormat
         )
 

@@ -130,6 +130,10 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconProxiedWallet()
+        case .multisig:
+            applyCommonStyle(to: controlBackgroundView)
+
+            typeImageView.image = R.image.iconMultisig()
         case .genericLedger:
             applyCommonStyle(to: controlBackgroundView)
 

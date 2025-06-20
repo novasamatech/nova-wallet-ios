@@ -63,7 +63,7 @@ final class StakingRemoveProxyPresenter {
     }
 
     private func provideProxiedAddressViewModel() {
-        guard let address = try? wallet.address(for: chainAsset) else {
+        guard let address = try? wallet.address(for: chainAsset.chain) else {
             return
         }
 
@@ -154,7 +154,7 @@ extension StakingRemoveProxyPresenter: StakingConfirmProxyPresenterProtocol {
         guard let view = view else {
             return
         }
-        guard let address = try? wallet.address(for: chainAsset) else {
+        guard let address = try? wallet.address(for: chainAsset.chain) else {
             return
         }
         wireframe.presentAccountOptions(

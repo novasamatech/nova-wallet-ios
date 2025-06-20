@@ -2,8 +2,8 @@ import Foundation
 import Foundation_iOS
 
 struct WalletSelectionViewFactory {
-    static func createView(proxySyncService: ProxySyncServiceProtocol) -> WalletsListViewProtocol? {
-        guard let interactor = createInteractor(proxySyncService: proxySyncService),
+    static func createView(delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol) -> WalletsListViewProtocol? {
+        guard let interactor = createInteractor(delegatedAccountSyncService: delegatedAccountSyncService),
               let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -35,7 +35,9 @@ struct WalletSelectionViewFactory {
         return view
     }
 
-    private static func createInteractor(proxySyncService: ProxySyncServiceProtocol) -> WalletSelectionInteractor? {
+    private static func createInteractor(
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+    ) -> WalletSelectionInteractor? {
         guard let balancesStore = BalancesStore.createDefault() else {
             return nil
         }
@@ -43,7 +45,7 @@ struct WalletSelectionViewFactory {
         return WalletSelectionInteractor(
             balancesStore: balancesStore,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            proxySyncService: proxySyncService,
+            delegatedAccountSyncService: delegatedAccountSyncService,
             settings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared
         )
