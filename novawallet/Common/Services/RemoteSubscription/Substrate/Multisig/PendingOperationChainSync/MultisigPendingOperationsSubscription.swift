@@ -95,9 +95,7 @@ private extension MultisigPendingOperationsSubscription {
                             BytesCodable(wrappedValue: accountId),
                             BytesCodable(wrappedValue: callHash)
                         )
-                    },
-                    param1Encoder: nil,
-                    param2Encoder: { $0.wrappedValue }
+                    }
                 ),
                 mappingKey: SubscriptionResult.Key.pendingOperation(with: callHash)
             )
@@ -113,6 +111,7 @@ private extension MultisigPendingOperationsSubscription {
         ) { [weak self] result in
             self?.handleSubscription(result, callHashes: callHashes)
         }
+        subscription?.subscribe()
     }
 
     func handleSubscription(
