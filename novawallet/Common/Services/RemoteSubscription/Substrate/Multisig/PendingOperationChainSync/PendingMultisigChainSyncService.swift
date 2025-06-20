@@ -335,9 +335,7 @@ private extension PendingMultisigChainSyncService {
         )
         let fetchWrapper = createFetchAllWrapper()
 
-        let manageSubscriptionsOperation = createManageSubscriptionsOperation { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-
+        let manageSubscriptionsOperation = createManageSubscriptionsOperation {
             let operations = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
             return Set(operations.compactMap(\.callHash))
