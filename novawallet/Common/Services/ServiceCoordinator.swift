@@ -27,6 +27,7 @@ final class ServiceCoordinator {
     let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+    let pendingMultisigSyncService: MultisigPendingOperationsSyncServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -39,7 +40,8 @@ final class ServiceCoordinator {
         dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
-        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        pendingMultisigSyncService: MultisigPendingOperationsSyncServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.substrateBalancesService = substrateBalancesService
@@ -52,6 +54,7 @@ final class ServiceCoordinator {
         self.walletNotificationService = walletNotificationService
         self.syncModeUpdateService = syncModeUpdateService
         self.pushNotificationsFacade = pushNotificationsFacade
+        self.pendingMultisigSyncService = pendingMultisigSyncService
     }
 }
 
@@ -92,6 +95,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         syncModeUpdateService.setup()
         walletNotificationService.setup()
         pushNotificationsFacade.setup()
+        pendingMultisigSyncService.setup()
     }
 
     func throttle() {
@@ -105,6 +109,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         syncModeUpdateService.throttle()
         walletNotificationService.throttle()
         pushNotificationsFacade.throttle()
+        pendingMultisigSyncService.throttle()
     }
 }
 
@@ -218,6 +223,32 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let pendingMultisigQueue = OperationManagerFacade.pendingMultisigQueue
+
+        let pendingMultisigUpdatingService = MultisigPendingOperationsUpdatingService(
+            chainRegistry: chainRegistry,
+            storageFacade: substrateStorageFacade,
+            operationQueue: pendingMultisigQueue
+        )
+        let pendingMultisigChainSyncServiceFactory = PendingMultisigChainSyncServiceFactory(
+            chainRegistry: chainRegistry,
+            substrateStorageFacade: substrateStorageFacade
+        )
+        let callDataSyncService = MultisigCallDataSyncService(
+            chainRegistry: chainRegistry,
+            substrateStorageFacade: substrateStorageFacade,
+            blockQueryFactory: BlockEventsQueryFactory(operationQueue: pendingMultisigQueue),
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            operationQueue: pendingMultisigQueue
+        )
+        let pendingMultisigSyncService = MultisigPendingOperationsSyncService(
+            chainRepository: SubstrateRepositoryFactory().createChainRepository(),
+            callDataSyncService: callDataSyncService,
+            chainSyncServiceFactory: pendingMultisigChainSyncServiceFactory,
+            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
+            operationQueue: pendingMultisigQueue
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             substrateBalancesService: substrateBalancesService,
@@ -229,7 +260,8 @@ extension ServiceCoordinator {
             dappMediator: DAppInteractionFactory.createMediator(for: urlHandlingFacade),
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService,
-            pushNotificationsFacade: PushNotificationsServiceFacade.shared
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            pendingMultisigSyncService: pendingMultisigSyncService
         )
     }
 }
