@@ -66,6 +66,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
             syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
+            pendingMultisigSyncService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
@@ -225,27 +226,26 @@ extension ServiceCoordinator {
 
         let pendingMultisigQueue = OperationManagerFacade.pendingMultisigQueue
 
-        let pendingMultisigUpdatingService = MultisigPendingOperationsUpdatingService(
-            chainRegistry: chainRegistry,
-            storageFacade: substrateStorageFacade,
-            operationQueue: pendingMultisigQueue
-        )
         let pendingMultisigChainSyncServiceFactory = PendingMultisigChainSyncServiceFactory(
             chainRegistry: chainRegistry,
             substrateStorageFacade: substrateStorageFacade
         )
+        let multisigCallFetchFactory = MultisigCallFetchFactory(
+            chainRegistry: chainRegistry,
+            blockQueryFactory: BlockEventsQueryFactory(operationQueue: pendingMultisigQueue)
+        )
+
         let callDataSyncService = MultisigCallDataSyncService(
             chainRegistry: chainRegistry,
-            substrateStorageFacade: substrateStorageFacade,
-            blockQueryFactory: BlockEventsQueryFactory(operationQueue: pendingMultisigQueue),
+            callFetchFactory: multisigCallFetchFactory,
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             operationQueue: pendingMultisigQueue
         )
         let pendingMultisigSyncService = MultisigPendingOperationsSyncService(
-            chainRepository: SubstrateRepositoryFactory().createChainRepository(),
+            selectedMetaAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
             callDataSyncService: callDataSyncService,
             chainSyncServiceFactory: pendingMultisigChainSyncServiceFactory,
-            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             operationQueue: pendingMultisigQueue
         )
 

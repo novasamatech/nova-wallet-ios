@@ -5,7 +5,7 @@ import SubstrateSdk
 protocol PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
-        selectedMetaAccount: MetaAccountModel,
+        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel,
         knownCallData: [Multisig.PendingOperation.Key: JSON],
         operationQueue: OperationQueue
     ) -> PendingMultisigChainSyncServiceProtocol
@@ -29,14 +29,14 @@ final class PendingMultisigChainSyncServiceFactory {
 extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
-        selectedMetaAccount: MetaAccountModel,
+        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel,
         knownCallData: [Multisig.PendingOperation.Key: JSON],
         operationQueue: OperationQueue
     ) -> PendingMultisigChainSyncServiceProtocol {
         let pendingMultisigsQueue = OperationManagerFacade.pendingMultisigQueue
         let multisigSyncOperationManager = OperationManager(operationQueue: pendingMultisigsQueue)
 
-        let substrateStorageFacade = SubstrateDataStorageFacade.shared
+        let storageFacade = UserDataStorageFacade.shared
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -47,17 +47,25 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
         )
         let remoteOperationUpdateService = MultisigPendingOperationsUpdatingService(
             chainRegistry: chainRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
+        )
+        let predicate = NSPredicate.pendingMultisigOperations(
+            for: chain.chainId,
+            multisigAccountId: selectedMultisigAccount.accountId
+        )
+        let repository = storageFacade.createRepository(
+            filter: predicate,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
         )
 
         return PendingMultisigChainSyncService(
-            wallet: selectedMetaAccount,
+            multisigAccount: selectedMultisigAccount,
             chain: chain,
             chainRegistry: chainRegistry,
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,
             remoteOperationUpdateService: remoteOperationUpdateService,
-            repositoryCachingFactory: substrateStorageFacade,
+            pendingOperationsRepository: AnyDataProviderRepository(repository),
             knownCallData: knownCallData,
             operationQueue: operationQueue
         )

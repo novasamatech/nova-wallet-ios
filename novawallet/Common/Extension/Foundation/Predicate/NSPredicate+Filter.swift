@@ -492,4 +492,32 @@ extension NSPredicate {
             andPredicateWithSubpredicates: [chainPredicate, metaAccountPredicate]
         )
     }
+
+    static func pendingMultisigOperations(
+        for chainId: ChainModel.Id,
+        multisigAccountId: AccountId
+    ) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.chainId),
+            chainId
+        )
+        let accountIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.multisigAccountId),
+            multisigAccountId.toHex()
+        )
+
+        return NSCompoundPredicate(
+            andPredicateWithSubpredicates: [chainPredicate, accountIdPredicate]
+        )
+    }
+
+    static func pendingMultisigOperations(multisigAccountId: AccountId) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.multisigAccountId),
+            multisigAccountId.toHex()
+        )
+    }
 }

@@ -213,7 +213,7 @@ extension DelegationResolution.PathFinder {
                 .filter { $0 != delegation.delegate }
                 .map { BytesCodable(wrappedValue: $0) }
 
-            return try Multisig.AsMultiCall(
+            return try MultisigPallet.AsMultiCall(
                 threshold: threshold,
                 otherSignatories: othersignatories,
                 maybeTimepoint: nil,

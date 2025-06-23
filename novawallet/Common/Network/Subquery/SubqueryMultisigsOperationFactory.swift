@@ -5,6 +5,13 @@ import BigInt
 
 typealias CallData = Data
 
+private typealias FindMultisigsResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
+    SubqueryMultisigs.FindMultisigsResponse
+>
+private typealias FetchMultisigCallDataResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
+    SubqueryMultisigs.FetchMultisigCallDataResponse
+>
+
 protocol SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
         for accountIds: Set<AccountId>
@@ -91,7 +98,7 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
 
         operation = createOperation(
             for: query
-        ) { (response: SubqueryMultisigs.MultisigsResponseQueryWrapper<SubqueryMultisigs.FindMultisigsResponse>) in
+        ) { (response: FindMultisigsResponse) in
             accountIds.flatMap { accountId in
                 response.query.accounts.nodes
                     .filter { $0.signatories.nodes.contains { $0.signatory.id == accountId } }
@@ -118,7 +125,7 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
 
         operation = createOperation(
             for: query
-        ) { (response: SubqueryMultisigs.MultisigsResponseQueryWrapper<SubqueryMultisigs.FetchMultisigCallDataResponse>) in
+        ) { (response: FetchMultisigCallDataResponse) in
             response.query.multisigOperations.nodes.reduce(into: [:]) { acc, node in
                 guard callHashes.contains(node.callHash) else { return }
 

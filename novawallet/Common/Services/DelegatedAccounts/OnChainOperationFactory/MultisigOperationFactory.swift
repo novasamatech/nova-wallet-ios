@@ -6,7 +6,7 @@ protocol MultisigStorageOperationFactoryProtocol {
         for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]>
+    ) -> CompoundOperationWrapper<[CallHash: MultisigPallet.MultisigDefinition]>
 }
 
 final class MultisigStorageOperationFactory {
@@ -22,23 +22,23 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
         for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[CallHash: Multisig.MultisigDefinition]> {
+    ) -> CompoundOperationWrapper<[CallHash: MultisigPallet.MultisigDefinition]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let request = MapRemoteStorageRequest(storagePath: Multisig.multisigList) {
+        let request = MapRemoteStorageRequest(storagePath: MultisigPallet.multisigListStoragePath) {
             BytesCodable(wrappedValue: multisigAccountId)
         }
-        let wrapper: CompoundOperationWrapper<[CallHashKey: Multisig.MultisigDefinition]>
+        let wrapper: CompoundOperationWrapper<[MultisigPallet.CallHashKey: MultisigPallet.MultisigDefinition]>
         wrapper = storageRequestFactory.queryByPrefix(
             engine: connection,
             request: request,
-            storagePath: Multisig.multisigList,
+            storagePath: MultisigPallet.multisigListStoragePath,
             factory: { try codingFactoryOperation.extractNoCancellableResultData() }
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<[CallHash: Multisig.MultisigDefinition]> {
+        let mapOperation = ClosureOperation<[CallHash: MultisigPallet.MultisigDefinition]> {
             try wrapper
                 .targetOperation
                 .extractNoCancellableResultData()

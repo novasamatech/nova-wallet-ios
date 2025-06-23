@@ -13,7 +13,6 @@ protocol MultisigEventsSubscriber: AnyObject {
 final class MultisigEventsSubscription: WebSocketSubscribing {
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
-    let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
 
     private let operationQueue: OperationQueue
@@ -22,16 +21,9 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
     private var subscription: CallbackStorageSubscription<[EventRecord]>?
     private weak var subscriber: MultisigEventsSubscriber?
 
-    private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
-        let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            storageFacade.createRepository()
-        return AnyDataProviderRepository(coreDataRepository)
-    }()
-
     init(
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
-        storageFacade: StorageFacadeProtocol,
         subscriber: MultisigEventsSubscriber,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -39,7 +31,6 @@ final class MultisigEventsSubscription: WebSocketSubscribing {
     ) {
         self.chainId = chainId
         self.chainRegistry = chainRegistry
-        self.storageFacade = storageFacade
         self.subscriber = subscriber
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -66,13 +57,8 @@ private extension MultisigEventsSubscription {
     }
 
     func subscribeRemote() throws {
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
+        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
 
         let request = UnkeyedSubscriptionRequest(
             storagePath: SystemPallet.eventsPath,
@@ -133,43 +119,4 @@ private extension MultisigEventsSubscription {
             }
         }
     }
-}
-
-struct MultisigEventMatcher {
-    private let codingFactory: RuntimeCoderFactoryProtocol
-
-    init(codingFactory: RuntimeCoderFactoryProtocol) {
-        self.codingFactory = codingFactory
-    }
-
-    func matchMultisig(event: Event) -> MultisigEvent? {
-        guard codingFactory.metadata.eventMatches(event, path: EventCodingPath.newMultisig) else {
-            return nil
-        }
-
-        return if let newMultisigEvent = try? event.params.map(
-            to: Multisig.NewMultisigEvent.self,
-            with: codingFactory.createRuntimeJsonContext().toRawContext()
-        ) {
-            MultisigEvent(
-                accountId: newMultisigEvent.accountId,
-                callHash: newMultisigEvent.callHash
-            )
-        } else if let multisigApproval = try? event.params.map(
-            to: Multisig.MultisigApprovalEvent.self,
-            with: codingFactory.createRuntimeJsonContext().toRawContext()
-        ) {
-            MultisigEvent(
-                accountId: multisigApproval.accountId,
-                callHash: multisigApproval.callHash
-            )
-        } else {
-            nil
-        }
-    }
-}
-
-struct MultisigEvent: Hashable {
-    let accountId: AccountId
-    let callHash: CallHash
 }
