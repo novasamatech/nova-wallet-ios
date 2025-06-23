@@ -11,10 +11,11 @@ enum ParitySignerNetworkType: UInt8 {
 
 enum ParitySignerMessageType: UInt8 {
     case transaction = 2
-    case message = 3
+    case concreteChainmessage = 3
     case ddTransaction = 5
     case transactionWithProof = 6
     case ddTransactionWithProof = 7
+    case anyChainMessage = 8
 
     var bytes: Data {
         Data([rawValue])
@@ -63,7 +64,7 @@ protocol ParitySignerMessageOperationFactoryProtocol {
         for payload: Data,
         accountId: AccountId,
         cryptoType: MultiassetCryptoType,
-        genesisHash: String
+        genesisHash: String?
     ) -> CompoundOperationWrapper<Data>
 }
 
@@ -176,7 +177,7 @@ extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFacto
         for payload: Data,
         accountId: AccountId,
         cryptoType: MultiassetCryptoType,
-        genesisHash: String
+        genesisHash: String?
     ) -> CompoundOperationWrapper<Data> {
         let networkCodeBytes = networkType.bytes
 
@@ -185,13 +186,21 @@ extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFacto
                 throw ParitySignerMessageOperationFactoryError.unsupportedCryptoType
             }
 
-            let messageTypeBytes = ParitySignerMessageType.message.bytes
+            if let genesisHash {
+                let messageTypeBytes = ParitySignerMessageType.concreteChainmessage.bytes
 
-            let genesisHashData = try Data(hexString: genesisHash)
+                let genesisHashData = try Data(hexString: genesisHash)
 
-            let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
+                let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
 
-            return prefix + payload + genesisHashData
+                return prefix + payload + genesisHashData
+            } else {
+                let messageTypeBytes = ParitySignerMessageType.anyChainMessage.bytes
+
+                let prefix: Data = networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId
+
+                return prefix + payload
+            }
         }
 
         return CompoundOperationWrapper(targetOperation: operation)
