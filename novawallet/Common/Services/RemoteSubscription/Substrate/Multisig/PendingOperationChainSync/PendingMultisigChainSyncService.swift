@@ -311,11 +311,11 @@ private extension PendingMultisigChainSyncService {
                     multisigDefinition: multisigDefinition
                 )
             }
-            
+
             if let call = realTimeCallData[key] {
                 pendingOperation = pendingOperation.replacingCall(with: call)
             }
-            
+
             return pendingOperation
         }
 
