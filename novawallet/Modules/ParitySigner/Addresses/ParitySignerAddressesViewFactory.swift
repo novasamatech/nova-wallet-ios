@@ -4,40 +4,40 @@ import Foundation_iOS
 
 struct ParitySignerAddressesViewFactory {
     static func createOnboardingView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
-            with: walletFormat,
+            with: walletUpdate,
             type: type,
             wireframe: ParitySignerAddressesWireframe()
         )
     }
 
     static func createAddAccountView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
-            with: walletFormat,
+            with: walletUpdate,
             type: type,
             wireframe: AddAccount.ParitySignerAddressesWireframe()
         )
     }
 
     static func createSwitchAccountView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     ) -> HardwareWalletAddressesViewProtocol? {
         createView(
-            with: walletFormat,
+            with: walletUpdate,
             type: type,
             wireframe: SwitchAccount.ParitySignerAddressesWireframe()
         )
     }
 
     private static func createView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType,
         wireframe: ParitySignerAddressesWireframeProtocol
     ) -> HardwareWalletAddressesViewProtocol? {
@@ -47,7 +47,7 @@ struct ParitySignerAddressesViewFactory {
 
         let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: PolkadotIconGenerator())
         let presenter = ParitySignerAddressesPresenter(
-            walletFormat: walletFormat,
+            walletUpdate: walletUpdate,
             type: type,
             interactor: interactor,
             wireframe: wireframe,

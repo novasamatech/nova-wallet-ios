@@ -12,7 +12,7 @@ protocol ParitySignerAddressesInteractorOutputProtocol: AnyObject {
 protocol ParitySignerAddressesWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {
     func showConfirmation(
         on view: HardwareWalletAddressesViewProtocol?,
-        walletFormat: ParitySignerWalletFormat,
+        walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     )
 }

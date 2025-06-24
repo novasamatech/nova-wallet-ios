@@ -77,9 +77,9 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
         setLastCode(code)
 
-        if let walletScan = matcher.match(code: code) {
+        if let walletUpdate = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.interactor.process(walletScan: walletScan)
+                self?.interactor.process(walletUpdate: walletUpdate)
             }
         } else {
             DispatchQueue.main.async { [weak self] in
@@ -104,10 +104,10 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 }
 
 extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
-    func didReceiveValidation(result: Result<ParitySignerWalletFormat, Error>) {
+    func didReceiveValidation(result: Result<PolkadotVaultWalletUpdate, Error>) {
         switch result {
-        case let .success(walletFormat):
-            scanWireframe.completeScan(on: view, walletFormat: walletFormat, type: type)
+        case let .success(update):
+            scanWireframe.completeScan(on: view, walletUpdate: update, type: type)
         case .failure:
             handleFailure()
             setLastCode(nil)

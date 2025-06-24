@@ -4,12 +4,12 @@ extension SwitchAccount {
     final class ParitySignerScanWireframe: ParitySignerScanWireframeProtocol {
         func completeScan(
             on view: ControllerBackedProtocol?,
-            walletFormat: ParitySignerWalletFormat,
+            walletUpdate: PolkadotVaultWalletUpdate,
             type: ParitySignerType
         ) {
             guard
                 let addressesView = ParitySignerAddressesViewFactory.createSwitchAccountView(
-                    with: walletFormat,
+                    with: walletUpdate,
                     type: type
                 ) else {
                 return

@@ -64,22 +64,6 @@ private extension HardwareWalletAddressesViewController {
         presenter.proceed()
     }
 
-    func getSectionTitle(
-        for scheme: HardwareWalletAddressScheme,
-        locale: Locale
-    ) -> String {
-        switch scheme {
-        case .substrate:
-            R.string.localizable.accountsSubstrate(
-                preferredLanguages: locale.rLanguages
-            ).uppercased()
-        case .evm:
-            R.string.localizable.accountsEvm(
-                preferredLanguages: locale.rLanguages
-            ).uppercased()
-        }
-    }
-
     func shouldDisplaySectionTitles() -> Bool {
         viewModel.sections.count > 1
     }
@@ -124,7 +108,7 @@ extension HardwareWalletAddressesViewController: UITableViewDelegate {
         headerView.titleView.detailsLabel.apply(style: .semiboldCaps2Secondary)
         headerView.backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
 
-        let title = getSectionTitle(for: viewModel.sections[section].scheme, locale: selectedLocale)
+        let title = viewModel.sections[section].title.value(for: selectedLocale)
         headerView.titleView.bind(viewModel: .init(title: title, icon: nil))
 
         return headerView

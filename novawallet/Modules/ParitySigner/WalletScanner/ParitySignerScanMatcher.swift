@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 protocol ParitySignerScanMatcherProtocol {
-    func match(code: QRCodeData) -> ParitySignerWalletScan?
+    func match(code: QRCodeData) -> PolkadotVaultWalletUpdate?
 }
 
 final class ParitySignerScanMatcher {
@@ -22,7 +22,7 @@ final class ParitySignerScanMatcher {
         }
     }
 
-    private func match(code: String) -> ParitySignerWalletScan? {
+    private func match(code: String) -> PolkadotVaultWalletUpdate? {
         let components = code.components(separatedBy: Constants.separator)
 
         guard components.count >= 3 else {
@@ -43,31 +43,30 @@ final class ParitySignerScanMatcher {
             nil
         }
 
-        let singleAddress = ParitySignerWalletScan.SingleAddress(
-            address: components[1],
-            genesisHash: genesisHash,
-            scheme: scheme,
-            publicKey: publicKey
-        )
-
-        return .singleAddress(singleAddress)
-    }
-
-    private func match(rawData: Data) -> ParitySignerWalletScan? {
-        do {
-            let decoder = try ScaleDecoder(data: rawData)
-
-            let rootKeysInfo = try ParitySignerWalletScan.RootKeysInfo(scaleDecoder: decoder)
-
-            return .rootKeys(rootKeysInfo)
-        } catch {
+        guard let accountId = try? components[1].toAccountId() else {
             return nil
         }
+
+        return PolkadotVaultWalletUpdate(
+            addressItems: [
+                PolkadotVaultWalletUpdate.AddressItem(
+                    accountId: accountId,
+                    genesisHash: genesisHash,
+                    scheme: scheme,
+                    publicKey: publicKey
+                )
+            ]
+        )
+    }
+
+    private func match(rawData _: Data) -> PolkadotVaultWalletUpdate? {
+        // we might support other QRs in future
+        nil
     }
 }
 
 extension ParitySignerScanMatcher: ParitySignerScanMatcherProtocol {
-    func match(code: QRCodeData) -> ParitySignerWalletScan? {
+    func match(code: QRCodeData) -> PolkadotVaultWalletUpdate? {
         switch code {
         case let .plain(plainText):
             match(code: plainText)

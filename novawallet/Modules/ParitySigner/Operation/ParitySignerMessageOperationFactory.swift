@@ -11,7 +11,7 @@ enum ParitySignerNetworkType: UInt8 {
 
 enum ParitySignerMessageType: UInt8 {
     case transaction = 2
-    case concreteChainmessage = 3
+    case concreteChainMessage = 3
     case ddTransaction = 5
     case transactionWithProof = 6
     case ddTransactionWithProof = 7
@@ -187,7 +187,7 @@ extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFacto
             }
 
             if let genesisHash {
-                let messageTypeBytes = ParitySignerMessageType.concreteChainmessage.bytes
+                let messageTypeBytes = ParitySignerMessageType.concreteChainMessage.bytes
 
                 let genesisHashData = try Data(hexString: genesisHash)
 

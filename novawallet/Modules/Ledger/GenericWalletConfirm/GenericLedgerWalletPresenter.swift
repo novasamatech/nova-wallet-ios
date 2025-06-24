@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class GenericLedgerWalletPresenter: HardwareWalletAddressesPresenter {
+final class GenericLedgerWalletPresenter: HardwareWalletSchemeBasedPresenter {
     let wireframe: GenericLedgerWalletWireframeProtocol
     let interactor: GenericLedgerWalletInteractorInputProtocol
     let logger: LoggerProtocol

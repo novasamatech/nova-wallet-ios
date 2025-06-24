@@ -3,45 +3,45 @@ import Foundation_iOS
 
 struct ParitySignerAddConfirmViewFactory {
     static func createOnboardingView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     ) -> ControllerBackedProtocol? {
         createView(
-            with: walletFormat,
+            with: walletUpdate,
             type: type,
             wireframe: ParitySignerAddConfirmWireframe()
         )
     }
 
     static func createAddAccountView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     ) -> ControllerBackedProtocol? {
         createView(
-            with: walletFormat,
+            with: walletUpdate,
             type: type,
             wireframe: AddAccount.ParitySignerAddConfirmWireframe()
         )
     }
 
     static func createSwitchAccountView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType
     ) -> ControllerBackedProtocol? {
         createView(
-            with: walletFormat,
+            with: walletUpdate,
             type: type,
             wireframe: SwitchAccount.ParitySignerAddConfirmWireframe()
         )
     }
 
     private static func createView(
-        with walletFormat: ParitySignerWalletFormat,
+        with walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType,
         wireframe: ParitySignerAddConfirmWireframeProtocol
     ) -> ControllerBackedProtocol? {
         let interactor = ParitySignerAddConfirmInteractor(
-            walletFormat: walletFormat,
+            walletUpdate: walletUpdate,
             type: type,
             settings: SelectedWalletSettings.shared,
             walletOperationFactory: ParitySignerWalletOperationFactory(),

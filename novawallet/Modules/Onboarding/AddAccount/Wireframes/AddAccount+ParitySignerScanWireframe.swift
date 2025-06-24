@@ -4,12 +4,12 @@ extension AddAccount {
     final class ParitySignerScanWireframe: ParitySignerScanWireframeProtocol {
         func completeScan(
             on view: ControllerBackedProtocol?,
-            walletFormat: ParitySignerWalletFormat,
+            walletUpdate: PolkadotVaultWalletUpdate,
             type: ParitySignerType
         ) {
             guard
                 let addressesView = ParitySignerAddressesViewFactory.createAddAccountView(
-                    with: walletFormat,
+                    with: walletUpdate,
                     type: type
                 ) else {
                 return

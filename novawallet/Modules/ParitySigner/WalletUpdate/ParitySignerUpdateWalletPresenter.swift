@@ -1,16 +1,18 @@
 import Foundation
 
-final class ParitySignerUpdateWalletPresenter {
-    weak var view: ParitySignerUpdateWalletViewProtocol?
+final class ParitySignerUpdateWalletPresenter: HardwareWalletAddressesBasePresenter {
     let wireframe: ParitySignerUpdateWalletWireframeProtocol
     let interactor: ParitySignerUpdateWalletInteractorInputProtocol
 
     init(
         interactor: ParitySignerUpdateWalletInteractorInputProtocol,
-        wireframe: ParitySignerUpdateWalletWireframeProtocol
+        wireframe: ParitySignerUpdateWalletWireframeProtocol,
+        viewModelFactory: ChainAccountViewModelFactoryProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+
+        super.init(viewModelFactory: viewModelFactory)
     }
 }
 

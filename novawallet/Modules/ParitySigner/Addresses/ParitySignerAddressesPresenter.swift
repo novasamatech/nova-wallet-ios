@@ -3,16 +3,16 @@ import Operation_iOS
 import Foundation_iOS
 import SubstrateSdk
 
-final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
+final class ParitySignerAddressesPresenter: HardwareWalletAddressesBasePresenter {
     let wireframe: ParitySignerAddressesWireframeProtocol
     let interactor: ParitySignerAddressesInteractorInputProtocol
     let type: ParitySignerType
-    let walletFormat: ParitySignerWalletFormat
+    let walletUpdate: PolkadotVaultWalletUpdate
 
     let logger: LoggerProtocol
 
     init(
-        walletFormat: ParitySignerWalletFormat,
+        walletUpdate: PolkadotVaultWalletUpdate,
         type: ParitySignerType,
         interactor: ParitySignerAddressesInteractorInputProtocol,
         wireframe: ParitySignerAddressesWireframeProtocol,
@@ -20,7 +20,7 @@ final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
-        self.walletFormat = walletFormat
+        self.walletUpdate = walletUpdate
         self.type = type
         self.interactor = interactor
         self.wireframe = wireframe
@@ -33,43 +33,7 @@ final class ParitySignerAddressesPresenter: HardwareWalletAddressesPresenter {
 }
 
 private extension ParitySignerAddressesPresenter {
-    func setupSingleFormatAddresses(_ single: ParitySignerWalletFormat.Single) {
-        addresses = [
-            HardwareWalletAddressModel(
-                accountId: single.accountId,
-                scheme: single.scheme
-            )
-        ]
-    }
-
-    func setupRootFormatAddresses(_ rootKeys: ParitySignerWalletFormat.RootKeys) throws {
-        let substrateAccountId = try rootKeys.substrate.publicKeyData.publicKeyToAccountId()
-        let ethereumAccountId = try rootKeys.ethereum.publicKeyData.ethereumAddressFromPublicKey()
-
-        addresses = [
-            HardwareWalletAddressModel(
-                accountId: substrateAccountId,
-                scheme: .substrate
-            ),
-            HardwareWalletAddressModel(
-                accountId: ethereumAccountId,
-                scheme: .evm
-            )
-        ]
-    }
-
-    func setupAddresses() {
-        do {
-            switch walletFormat {
-            case let .single(single):
-                setupSingleFormatAddresses(single)
-            case let .rootKeys(rootKeys):
-                try setupRootFormatAddresses(rootKeys)
-            }
-        } catch {
-            logger.error("Address setup error: \(error)")
-        }
-    }
+    func provideViewModel() {}
 
     func provideDescriptionViewModel() {
         let languages = selectedLocale.rLanguages
@@ -87,7 +51,6 @@ private extension ParitySignerAddressesPresenter {
 
 extension ParitySignerAddressesPresenter: HardwareWalletAddressesPresenterProtocol {
     func setup() {
-        setupAddresses()
         provideDescriptionViewModel()
         interactor.setup()
     }
@@ -97,7 +60,7 @@ extension ParitySignerAddressesPresenter: HardwareWalletAddressesPresenterProtoc
     }
 
     func proceed() {
-        wireframe.showConfirmation(on: view, walletFormat: walletFormat, type: type)
+        wireframe.showConfirmation(on: view, walletUpdate: walletUpdate, type: type)
     }
 }
 
