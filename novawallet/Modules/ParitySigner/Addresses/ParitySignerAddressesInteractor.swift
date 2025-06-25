@@ -22,4 +22,8 @@ extension ParitySignerAddressesInteractor: ParitySignerAddressesInteractorInputP
             self?.presenter?.didReceive(chains: changes)
         }
     }
+
+    func confirm() {
+        presenter?.didReceiveConfirm(result: .success(()))
+    }
 }

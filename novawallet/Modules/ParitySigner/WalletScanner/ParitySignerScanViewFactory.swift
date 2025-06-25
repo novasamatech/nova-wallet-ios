@@ -14,6 +14,10 @@ struct ParitySignerScanViewFactory {
         createView(wireframe: SwitchAccount.ParitySignerScanWireframe(), type: type)
     }
 
+    static func createUpdateVaultAccountView(with wallet: MetaAccountModel) -> QRScannerViewProtocol? {
+        createView(wireframe: ParitySignerScanForUpdateWireframe(wallet: wallet), type: .vault)
+    }
+
     private static func createView(
         wireframe: ParitySignerScanWireframeProtocol,
         type: ParitySignerType

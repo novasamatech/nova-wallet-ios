@@ -103,9 +103,15 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     }
 
     func showAddVaultAccount(
-        from _: AccountManagementViewProtocol?,
-        wallet _: MetaAccountModel
-    ) {}
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel
+    ) {
+        guard let scanView = ParitySignerScanViewFactory.createUpdateVaultAccountView(with: wallet) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(scanView.controller, animated: true)
+    }
 
     func showAddGenericLedgerEvmAccounts(
         from view: AccountManagementViewProtocol?,

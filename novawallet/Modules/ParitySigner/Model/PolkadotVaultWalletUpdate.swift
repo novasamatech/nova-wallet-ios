@@ -71,4 +71,18 @@ extension PolkadotVaultWalletUpdate {
             _ = try addressItem.getPublicKey()
         }
     }
+
+    func toChainAccountModels() throws -> [ChainAccountModel] {
+        try addressItems.map { addressItem in
+            let publicKey = try addressItem.getPublicKey()
+
+            return ChainAccountModel(
+                chainId: addressItem.genesisHash.toHex(),
+                accountId: addressItem.accountId,
+                publicKey: publicKey,
+                cryptoType: addressItem.cryptoType.rawValue,
+                proxy: nil
+            )
+        }
+    }
 }

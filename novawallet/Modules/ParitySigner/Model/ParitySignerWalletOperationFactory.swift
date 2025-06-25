@@ -4,6 +4,15 @@ import SubstrateSdk
 
 protocol ParitySignerWalletOperationFactoryProtocol {
     func newHardwareWallet(for request: PolkadotVaultWallet, type: ParitySignerType) -> BaseOperation<MetaAccountModel>
+
+    func updateHardwareWallet(
+        for wallet: MetaAccountModel,
+        update: PolkadotVaultWalletUpdate
+    ) -> BaseOperation<MetaAccountModel>
+}
+
+enum ParitySignerWalletOperationFactoryError: Error {
+    case unsupportedWalletUpdate
 }
 
 final class ParitySignerWalletOperationFactory {}
@@ -51,17 +60,7 @@ private extension ParitySignerWalletOperationFactory {
         update: PolkadotVaultWalletUpdate
     ) -> BaseOperation<MetaAccountModel> {
         ClosureOperation {
-            let chainAccounts = try update.addressItems.map { addressItem in
-                let publicKey = try addressItem.getPublicKey()
-
-                return ChainAccountModel(
-                    chainId: addressItem.genesisHash.toHex(),
-                    accountId: addressItem.accountId,
-                    publicKey: publicKey,
-                    cryptoType: addressItem.cryptoType.rawValue,
-                    proxy: nil
-                )
-            }
+            let chainAccounts = try update.toChainAccountModels()
 
             return MetaAccountModel(
                 metaId: UUID().uuidString,
@@ -72,6 +71,31 @@ private extension ParitySignerWalletOperationFactory {
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: Set(chainAccounts),
+                type: .polkadotVault
+            )
+        }
+    }
+
+    func updateConsensusBasedWallet(
+        _ wallet: MetaAccountModel,
+        update: PolkadotVaultWalletUpdate
+    ) -> BaseOperation<MetaAccountModel> {
+        ClosureOperation {
+            let newChainAccounts = try update.toChainAccountModels()
+            let newChainIds = Set(newChainAccounts.map(\.chainId))
+            let existingChainAccounts = wallet.chainAccounts.filter { !newChainIds.contains($0.chainId) }
+
+            let updatedChainAccounts = existingChainAccounts + newChainAccounts
+
+            return MetaAccountModel(
+                metaId: wallet.metaId,
+                name: wallet.name,
+                substrateAccountId: nil,
+                substrateCryptoType: nil,
+                substratePublicKey: nil,
+                ethereumAddress: nil,
+                ethereumPublicKey: nil,
+                chainAccounts: Set(updatedChainAccounts),
                 type: .polkadotVault
             )
         }
@@ -89,6 +113,17 @@ extension ParitySignerWalletOperationFactory: ParitySignerWalletOperationFactory
         case .vault:
             newConsensusBasedHardwareWallet(name: request.name, update: request.update)
         }
+    }
+
+    func updateHardwareWallet(
+        for wallet: MetaAccountModel,
+        update: PolkadotVaultWalletUpdate
+    ) -> BaseOperation<MetaAccountModel> {
+        guard case .polkadotVault = wallet.type else {
+            return .createWithError(ParitySignerWalletOperationFactoryError.unsupportedWalletUpdate)
+        }
+
+        return updateConsensusBasedWallet(wallet, update: update)
     }
 }
 
