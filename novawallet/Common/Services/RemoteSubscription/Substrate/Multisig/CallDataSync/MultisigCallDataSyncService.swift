@@ -99,7 +99,7 @@ private extension MultisigCallDataSyncService {
 
         let updateOperation = pendingOperationsRepository.saveOperation(
             {
-                let persistedOperations: [Multisig.PendingOperation.Key: Multisig.PendingOperation]
+                let persistedOperations: MultisigPendingOperationsMap
                 persistedOperations = try fetchOperation.extractNoCancellableResultData()
                     .reduce(into: [:]) { $0[$1.createKey()] = $1 }
 

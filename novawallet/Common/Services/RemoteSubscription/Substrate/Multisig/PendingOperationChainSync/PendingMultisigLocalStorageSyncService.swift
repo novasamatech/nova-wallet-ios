@@ -8,7 +8,6 @@ protocol PendingMultisigLocalStorageSyncServiceProtocol {
     func syncPendingOperations(
         completionBlock: @escaping (_ updatedCallHashes: Set<CallHash>) -> Void
     )
-
     func updateDefinition(
         for callHash: CallHash,
         _ multisigDefinition: MultisigPallet.MultisigDefinition?
@@ -269,7 +268,6 @@ private extension PendingMultisigLocalStorageSyncService {
             by: key.stringValue(),
             options: .init()
         )
-
         let updateOperation = ClosureOperation<Multisig.PendingOperation> { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
@@ -286,7 +284,6 @@ private extension PendingMultisigLocalStorageSyncService {
                 )
             }
         }
-
         let saveOperation = pendingOperationsRepository.saveOperation(
             { [try updateOperation.extractNoCancellableResultData()] },
             { [] }
@@ -314,7 +311,6 @@ private extension PendingMultisigLocalStorageSyncService {
             { [] },
             { [key.stringValue()] }
         )
-
         operationManager.enqueue(
             operations: [removeOperation],
             in: .sync
@@ -327,12 +323,11 @@ private extension PendingMultisigLocalStorageSyncService {
     ) throws -> JSON {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let context = codingFactory.createRuntimeJsonContext()
-        let decodedCall: JSON = try decoder.read(
+        
+        return try decoder.read(
             of: GenericType.call.name,
             with: context.toRawContext()
         )
-
-        return decodedCall
     }
 }
 
@@ -365,7 +360,6 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
                         )
                     }
                 }
-
                 operationManager.enqueue(
                     operations: syncUpWrapper.allOperations,
                     in: .sync
@@ -376,7 +370,6 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
                 )
             }
         }
-
         operationManager.enqueue(
             operations: remoteFetchWrapper.allOperations,
             in: .transient
