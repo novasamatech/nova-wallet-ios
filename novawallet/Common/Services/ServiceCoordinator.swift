@@ -27,7 +27,7 @@ final class ServiceCoordinator {
     let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
-    let pendingMultisigSyncService: MultisigPendingOperationsSyncServiceProtocol
+    let pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -41,7 +41,7 @@ final class ServiceCoordinator {
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
-        pendingMultisigSyncService: MultisigPendingOperationsSyncServiceProtocol
+        pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.substrateBalancesService = substrateBalancesService
@@ -224,31 +224,6 @@ extension ServiceCoordinator {
             logger: logger
         )
 
-        let pendingMultisigQueue = OperationManagerFacade.pendingMultisigQueue
-
-        let pendingMultisigChainSyncServiceFactory = PendingMultisigChainSyncServiceFactory(
-            chainRegistry: chainRegistry,
-            substrateStorageFacade: substrateStorageFacade
-        )
-        let multisigCallFetchFactory = MultisigCallFetchFactory(
-            chainRegistry: chainRegistry,
-            blockQueryFactory: BlockEventsQueryFactory(operationQueue: pendingMultisigQueue)
-        )
-
-        let callDataSyncService = MultisigCallDataSyncService(
-            chainRegistry: chainRegistry,
-            callFetchFactory: multisigCallFetchFactory,
-            walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
-            operationQueue: pendingMultisigQueue
-        )
-        let pendingMultisigSyncService = MultisigPendingOperationsSyncService(
-            selectedMetaAccount: walletSettings.value,
-            chainRegistry: chainRegistry,
-            callDataSyncService: callDataSyncService,
-            chainSyncServiceFactory: pendingMultisigChainSyncServiceFactory,
-            operationQueue: pendingMultisigQueue
-        )
-
         return ServiceCoordinator(
             walletSettings: walletSettings,
             substrateBalancesService: substrateBalancesService,
@@ -261,7 +236,7 @@ extension ServiceCoordinator {
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
-            pendingMultisigSyncService: pendingMultisigSyncService
+            pendingMultisigSyncService: MultisigPendingOperationsService.shared
         )
     }
 }

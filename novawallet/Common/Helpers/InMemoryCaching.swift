@@ -4,7 +4,7 @@ class InMemoryCache<K: Hashable, V> {
     private var cache: [K: V]
     private let mutex = NSLock()
 
-    required init(with dict: [K: V] = [:]) {
+    init(with dict: [K: V] = [:]) {
         cache = dict
     }
 
@@ -38,16 +38,6 @@ class InMemoryCache<K: Hashable, V> {
         return Array(cache.values)
     }
 
-    func fetchAllKeys() -> [K] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Array(cache.keys)
-    }
-
     func removeValue(for key: K) {
         mutex.lock()
 
@@ -67,13 +57,6 @@ class InMemoryCache<K: Hashable, V> {
 
         cache.removeAll()
     }
-
-    func copy() -> Self {
-        mutex.lock()
-        defer { mutex.unlock() }
-
-        return .init(with: cache)
-    }
 }
 
 extension InMemoryCache: Equatable where V: Equatable {
@@ -83,68 +66,38 @@ extension InMemoryCache: Equatable where V: Equatable {
 }
 
 struct ObservableInMemoryCache<K: Hashable, V> {
-    var cache: InMemoryCache<K, V> {
-        internalCache
-    }
-
-    private var internalCache: InMemoryCache<K, V>
+    let internalCache: NotEqualWrapper<InMemoryCache<K, V>>
 
     init(with dict: [K: V] = [:]) {
-        internalCache = InMemoryCache(with: dict)
+        internalCache = .init(value: InMemoryCache(with: dict))
     }
 
     func fetchValue(for key: K) -> V? {
-        internalCache.fetchValue(for: key)
+        internalCache.value.fetchValue(for: key)
     }
 
     mutating func store(value: V, for key: K) {
-        copyIfNeeded()
-        internalCache.store(value: value, for: key)
+        internalCache.value.store(value: value, for: key)
     }
 
     func fetchAllValues() -> [V] {
-        internalCache.fetchAllValues()
-    }
-
-    func fetchAllKeys() -> [K] {
-        internalCache.fetchAllKeys()
+        internalCache.value.fetchAllValues()
     }
 
     mutating func removeValue(for key: K) {
-        copyIfNeeded()
-        internalCache.removeValue(for: key)
+        internalCache.value.removeValue(for: key)
     }
 
     mutating func removeAllValues() {
-        copyIfNeeded()
-        internalCache.removeAllValues()
-    }
-
-    private mutating func copyIfNeeded() {
-        if !isKnownUniquelyReferenced(&internalCache) {
-            internalCache = internalCache.copy()
-        }
+        internalCache.value.removeAllValues()
     }
 }
 
 extension ObservableInMemoryCache: Equatable {
     static func == (
-        _: ObservableInMemoryCache<K, V>,
-        _: ObservableInMemoryCache<K, V>
+        lhs: ObservableInMemoryCache<K, V>,
+        rhs: ObservableInMemoryCache<K, V>
     ) -> Bool {
-        false
-    }
-}
-
-extension ObservableInMemoryCache {
-    func newItems(
-        after olderCache: ObservableInMemoryCache<K, V>
-    ) -> [K: V] {
-        let lhsKeys = Set(fetchAllKeys())
-        let rhsKeys = Set(olderCache.fetchAllKeys())
-
-        let addedKeys = lhsKeys.subtracting(rhsKeys)
-
-        return addedKeys.reduce(into: [K: V]()) { $0[$1] = self.fetchValue(for: $1) }
+        lhs.internalCache == rhs.internalCache
     }
 }

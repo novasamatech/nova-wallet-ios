@@ -44,7 +44,8 @@ private extension MultisigCallFetchFactory {
                 let key = Multisig.PendingOperation.Key(
                     callHash: blockMultisigEvent.callHash,
                     chainId: chainId,
-                    multisigAccountId: blockMultisigEvent.accountId
+                    multisigAccountId: blockMultisigEvent.accountId,
+                    signatoryAccountId: blockMultisigEvent.signatory
                 )
 
                 let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(
@@ -81,7 +82,7 @@ private extension MultisigCallFetchFactory {
             with: callHash,
             in: extrinsic.call,
             sender: sender,
-            context: context
+            codingFactory: codingFactory
         )
     }
 
@@ -89,9 +90,10 @@ private extension MultisigCallFetchFactory {
         with callHash: CallHash,
         in call: JSON,
         sender: AccountId,
-        context: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> JSON? {
         let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
+        let context = codingFactory.createRuntimeJsonContext()
 
         let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall>>
         maybeCallMappingResult = try nestedCallMapper.mapRuntimeCall(
@@ -102,8 +104,12 @@ private extension MultisigCallFetchFactory {
         let foundCalls = maybeCallMappingResult.node.calls.map(\.args.call)
 
         return try foundCalls.first { foundCall in
-            let foundCallData = try JSONEncoder.scaleCompatible(with: context.toRawContext()).encode(foundCall)
-            let foundCallHash = try StorageHasher.blake256.hash(data: foundCallData)
+            let encoder = codingFactory.createEncoder()
+            
+            try encoder.append(json: foundCall, type: GenericType.call.name)
+            
+            let foundCallData = try encoder.encode()
+            let foundCallHash = try foundCallData.blake2b32()
 
             return callHash == foundCallHash
         }

@@ -2,22 +2,31 @@ import SubstrateSdk
 import Operation_iOS
 
 extension Multisig {
-    struct PendingOperation {
+    struct PendingOperation: Codable {
         let call: JSON?
         let callHash: CallHash
         let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
-        let multisigDefinition: MultisigDefinition
+        let multisigDefinition: MultisigDefinition?
     }
 
-    struct MultisigDefinition {
+    struct MultisigDefinition: Codable, Equatable {
         let timepoint: MultisigTimepoint
         let depositor: AccountId
-        var approvals: [AccountId]
+        let approvals: [AccountId]
+        
+        init(from onChainModel: MultisigPallet.MultisigDefinition) {
+            timepoint = .init(
+                height: onChainModel.timepoint.height,
+                index: onChainModel.timepoint.index
+            )
+            depositor = onChainModel.depositor
+            approvals = onChainModel.approvals.map(\.wrappedValue)
+        }
     }
 
-    struct MultisigTimepoint {
+    struct MultisigTimepoint: Codable, Equatable {
         let height: BlockNumber
         let index: UInt32
     }
@@ -38,12 +47,14 @@ extension Multisig.PendingOperation {
         let callHash: CallHash
         let chainId: ChainModel.Id
         let multisigAccountId: AccountId
+        let signatoryAccountId: AccountId
 
         func stringValue() -> String {
             [
                 callHash.toHexString(),
                 chainId,
-                multisigAccountId.toHexString()
+                multisigAccountId.toHexString(),
+                signatoryAccountId.toHexString()
             ].joined(with: .slash)
         }
     }
@@ -52,7 +63,8 @@ extension Multisig.PendingOperation {
         Key(
             callHash: callHash,
             chainId: chainId,
-            multisigAccountId: multisigAccountId
+            multisigAccountId: multisigAccountId,
+            signatoryAccountId: signatory
         )
     }
 }
@@ -60,7 +72,7 @@ extension Multisig.PendingOperation {
 // MARK: - Update Helpers
 
 extension Multisig.PendingOperation {
-    func replaicingDefinition(with definition: Multisig.MultisigDefinition) -> Self {
+    func replacingDefinition(with definition: Multisig.MultisigDefinition?) -> Self {
         .init(
             call: call,
             callHash: callHash,

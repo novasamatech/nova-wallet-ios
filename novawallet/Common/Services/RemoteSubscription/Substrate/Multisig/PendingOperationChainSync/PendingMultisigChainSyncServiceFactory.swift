@@ -5,22 +5,26 @@ import SubstrateSdk
 protocol PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
-        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel,
-        knownCallData: [Multisig.PendingOperation.Key: JSON],
-        operationQueue: OperationQueue
+        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel
     ) -> PendingMultisigChainSyncServiceProtocol
 }
 
 final class PendingMultisigChainSyncServiceFactory {
     private let chainRegistry: ChainRegistryProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
+    private let operationManager: OperationManagerProtocol
+    private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        substrateStorageFacade: StorageFacadeProtocol
+        substrateStorageFacade: StorageFacadeProtocol,
+        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.substrateStorageFacade = substrateStorageFacade
+        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 }
 
@@ -29,18 +33,13 @@ final class PendingMultisigChainSyncServiceFactory {
 extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
-        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel,
-        knownCallData: [Multisig.PendingOperation.Key: JSON],
-        operationQueue: OperationQueue
+        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel
     ) -> PendingMultisigChainSyncServiceProtocol {
-        let pendingMultisigsQueue = OperationManagerFacade.pendingMultisigQueue
-        let multisigSyncOperationManager = OperationManager(operationQueue: pendingMultisigsQueue)
-
         let storageFacade = UserDataStorageFacade.shared
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: multisigSyncOperationManager
+            operationManager: operationManager
         )
         let pendingCallHashesOperationFactory = MultisigStorageOperationFactory(
             storageRequestFactory: storageRequestFactory
@@ -58,16 +57,22 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
         )
-
-        return PendingMultisigChainSyncService(
+        let localStorageSyncService = PendingMultisigLocalStorageSyncService(
             multisigAccount: selectedMultisigAccount,
             chain: chain,
             chainRegistry: chainRegistry,
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,
             remoteOperationUpdateService: remoteOperationUpdateService,
             pendingOperationsRepository: AnyDataProviderRepository(repository),
-            knownCallData: knownCallData,
-            operationQueue: operationQueue
+            operationManager: operationManager
+        )
+            
+        return PendingMultisigChainSyncService(
+            multisigAccount: selectedMultisigAccount,
+            chain: chain,
+            localStorageSyncService: localStorageSyncService,
+            multisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+            remoteOperationUpdateService: remoteOperationUpdateService
         )
     }
 }

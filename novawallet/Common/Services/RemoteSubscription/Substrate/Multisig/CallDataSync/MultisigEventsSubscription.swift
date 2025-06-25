@@ -11,9 +11,9 @@ protocol MultisigEventsSubscriber: AnyObject {
 }
 
 final class MultisigEventsSubscription: WebSocketSubscribing {
-    let chainId: ChainModel.Id
-    let chainRegistry: ChainRegistryProtocol
-    let logger: LoggerProtocol?
+    private let chainId: ChainModel.Id
+    private let chainRegistry: ChainRegistryProtocol
+    private let logger: LoggerProtocol?
 
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
@@ -75,7 +75,7 @@ private extension MultisigEventsSubscription {
         ) { [weak self] result in
             switch result {
             case let .success(eventRecordsWithBlock):
-                self?.handle(eventRecordsWithBlock, using: runtimeProvider.fetchCoderFactoryOperation())
+                self?.handle(eventRecordsWithBlock, runtimeProvider: runtimeProvider)
             case let .failure(error):
                 self?.logger?.error("Failed to subscribe System.Events: \(error)")
             }
@@ -84,7 +84,7 @@ private extension MultisigEventsSubscription {
 
     func handle(
         _ eventRecordsWithBlock: CallbackStorageSubscriptionResult<[EventRecord]>,
-        using codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        runtimeProvider: RuntimeProviderProtocol
     ) {
         guard
             let blockHash = eventRecordsWithBlock.blockHash,
@@ -92,6 +92,8 @@ private extension MultisigEventsSubscription {
         else {
             return
         }
+        
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         execute(
             operation: codingFactoryOperation,

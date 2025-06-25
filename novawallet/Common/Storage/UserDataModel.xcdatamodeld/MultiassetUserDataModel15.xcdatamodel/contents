@@ -66,18 +66,6 @@
         <relationship name="chainAccount" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChainAccount" inverseName="multisig" inverseEntity="CDChainAccount"/>
         <relationship name="metaAccount" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDMetaAccount" inverseName="multisig" inverseEntity="CDMetaAccount"/>
     </entity>
-    <entity name="CDMultisigPendingOperation" representedClassName="CDMultisigPendingOperation" syncable="YES" codeGenerationType="class">
-        <attribute name="approvals" optional="YES" attributeType="String"/>
-        <attribute name="call" optional="YES" attributeType="Binary"/>
-        <attribute name="callHash" optional="YES" attributeType="String"/>
-        <attribute name="chainId" optional="YES" attributeType="String"/>
-        <attribute name="depositor" optional="YES" attributeType="String"/>
-        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="index" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="multisigAccountId" optional="YES" attributeType="String"/>
-        <attribute name="signatory" optional="YES" attributeType="String"/>
-    </entity>
     <entity name="CDProxiedSettings" representedClassName="CDProxiedSettings" syncable="YES" codeGenerationType="class">
         <attribute name="confirmsOperation" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String"/>

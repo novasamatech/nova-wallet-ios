@@ -5,11 +5,8 @@ import SubstrateSdk
 protocol MultisigCallDataSyncServiceProtocol {
     func addSyncing(for chain: ChainModel)
     func stopSyncing(for chainId: ChainModel.Id)
+    func startSyncUp()
     func stopSyncUp()
-    func addObserver(
-        _ observer: MultisigCallDataObserver,
-        sendOnSubscription: Bool
-    )
 }
 
 final class MultisigCallDataSyncService: AnyProviderAutoCleaning {
@@ -19,15 +16,14 @@ final class MultisigCallDataSyncService: AnyProviderAutoCleaning {
 
     private let chainRegistry: ChainRegistryProtocol
     private let callFetchFactory: MultisigCallFetchFactoryProtocol
-    private let operationQueue: OperationQueue
-    private let workingQueue: DispatchQueue
+    private let eventsUpdatingService: MultisigEventsUpdatingServiceProtocol
+    private let pendingOperationsRepository: AnyDataProviderRepository<Multisig.PendingOperation>
+    private let operationManager: OperationManagerProtocol
     private let logger: LoggerProtocol
 
     private var metaAccountsProvider: StreamableProvider<ManagedMetaAccountModel>?
 
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
-    private var eventsSubscriptions: [ChainModel.Id: MultisigEventsSubscription] = [:]
-    private var cachedCallData: CallDataCache = .init(state: .init())
 
     private var availableMetaAccounts: [MetaAccountModel] = [] {
         didSet {
@@ -44,19 +40,19 @@ final class MultisigCallDataSyncService: AnyProviderAutoCleaning {
     init(
         chainRegistry: ChainRegistryProtocol,
         callFetchFactory: MultisigCallFetchFactoryProtocol,
+        eventsUpdatingService: MultisigEventsUpdatingServiceProtocol,
+        pendingOperationsRepository: AnyDataProviderRepository<Multisig.PendingOperation>,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.calldata.sync.service"),
+        operationManager: OperationManagerProtocol,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.callFetchFactory = callFetchFactory
+        self.eventsUpdatingService = eventsUpdatingService
+        self.pendingOperationsRepository = pendingOperationsRepository
         self.chainRegistry = chainRegistry
-        self.operationQueue = operationQueue
-        self.workingQueue = workingQueue
+        self.operationManager = operationManager
         self.logger = logger
-
-        subscribeMetaAccounts()
     }
 }
 
@@ -65,7 +61,7 @@ final class MultisigCallDataSyncService: AnyProviderAutoCleaning {
 private extension MultisigCallDataSyncService {
     func updateSubscriptionsIfNeeded() {
         let availableChainIds = Set(availableChains.keys)
-        let subscribedChainIds = Set(eventsSubscriptions.keys)
+        let subscribedChainIds = eventsUpdatingService.subscribedChainIds
 
         let chainsToSubscribe = availableChainIds
             .subtracting(subscribedChainIds)
@@ -75,21 +71,68 @@ private extension MultisigCallDataSyncService {
     }
 
     func setupSubscription(to chain: ChainModel) {
-        let subscription = MultisigEventsSubscription(
-            chainId: chain.chainId,
-            chainRegistry: chainRegistry,
-            subscriber: self,
-            operationQueue: operationQueue,
-            workingQueue: workingQueue
+        eventsUpdatingService.setupSubscription(
+            for: chain.chainId,
+            subscriber: self
         )
-
-        eventsSubscriptions[chain.chainId] = subscription
     }
 
     func subscribeMetaAccounts() {
         clear(streamableProvider: &metaAccountsProvider)
 
         metaAccountsProvider = subscribeAllWalletsProvider()
+    }
+    
+    func updatePendingOperations(using callData:[Multisig.PendingOperation.Key: MultisigCallOrHash]) {
+        let wrapper = createUpdatePendingOperationsWrapper(using: callData)
+
+        operationManager.enqueue(
+            operations: wrapper.allOperations,
+            in: .sync
+        )
+    }
+    
+    func createUpdatePendingOperationsWrapper(
+        using callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]
+    ) -> CompoundOperationWrapper<Void> {
+        let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
+        
+        let updateOperation = pendingOperationsRepository.saveOperation(
+            {
+                let persistedOperations: [Multisig.PendingOperation.Key: Multisig.PendingOperation]
+                persistedOperations = try fetchOperation.extractNoCancellableResultData()
+                    .reduce(into: [:]) { $0[$1.createKey()] = $1 }
+                
+                let updates: [Multisig.PendingOperation] = callData.compactMap { keyValue in
+                    let call = keyValue.value.call
+                    
+                    if let persistedOperation = persistedOperations[keyValue.key] {
+                        guard let call else { return nil }
+                        
+                        return persistedOperation.replacingCall(with: call)
+                    } else {
+                        return Multisig.PendingOperation(
+                            call: call,
+                            callHash: keyValue.key.callHash,
+                            multisigAccountId: keyValue.key.multisigAccountId,
+                            signatory: keyValue.key.signatoryAccountId,
+                            chainId: keyValue.key.chainId,
+                            multisigDefinition: nil
+                        )
+                    }
+                }
+                
+                return updates
+            },
+            { [] }
+        )
+        
+        updateOperation.addDependency(fetchOperation)
+        
+        return CompoundOperationWrapper(
+            targetOperation: updateOperation,
+            dependencies: [fetchOperation]
+        )
     }
 
     func processEvents(
@@ -102,25 +145,34 @@ private extension MultisigCallDataSyncService {
             at: blockHash,
             chainId: chainId
         )
-
-        execute(
-            wrapper: extractionWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
-            switch result {
-            case let .success(calls):
-                calls.forEach { self?.cachedCallData.state.store(value: $1, for: $0) }
-            case let .failure(error):
+        
+        extractionWrapper.targetOperation.completionBlock = { [weak self] in
+            do {
+                let calls = try extractionWrapper.targetOperation.extractNoCancellableResultData()
+                self?.updatePendingOperations(using: calls)
+            } catch {
                 self?.logger.error("Failed to fetch block details: \(error)")
             }
+            
         }
+
+        operationManager.enqueue(
+            operations: extractionWrapper.allOperations,
+            in: .transient
+        )
     }
 }
 
 // MARK: - MultisigCallDataSyncServiceProtocol
 
 extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
+    func startSyncUp() {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
+        subscribeMetaAccounts()
+    }
+    
     func addSyncing(for chain: ChainModel) {
         mutex.lock()
         defer { mutex.unlock() }
@@ -141,27 +193,17 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         guard availableChains[chainId] != nil else { return }
 
         availableChains[chainId] = nil
-        eventsSubscriptions[chainId] = nil
+        eventsUpdatingService.clearSubscription(for: chainId)
     }
 
     func stopSyncUp() {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
         clear(streamableProvider: &metaAccountsProvider)
-        eventsSubscriptions = [:]
+        eventsUpdatingService.clearAllSubscriptions()
         availableChains = [:]
         availableMetaAccounts = []
-    }
-
-    func addObserver(
-        _ observer: any MultisigCallDataObserver,
-        sendOnSubscription: Bool
-    ) {
-        cachedCallData.addObserver(
-            with: observer,
-            sendStateOnSubscription: sendOnSubscription,
-            queue: workingQueue
-        ) { oldValue, newValue in
-            observer.didReceive(newCallData: newValue.newItems(after: oldValue))
-        }
     }
 }
 
@@ -173,6 +215,9 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
         blockHash: Data,
         chainId: ChainModel.Id
     ) {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
         let availableAccountIds = Set(availableMetaAccounts.compactMap { $0.multisigAccount?.multisig?.accountId })
         let relevantEvents = events.filter { availableAccountIds.contains($0.accountId) }
 
@@ -190,6 +235,9 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
 
 extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
         switch result {
         case let .success(changes):
             let mappedChanges: [DataProviderChange<MetaAccountModel>] = changes
@@ -205,29 +253,9 @@ extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletL
                     }
                 }
 
-            mutex.lock()
             availableMetaAccounts = availableMetaAccounts.applying(changes: mappedChanges)
-            mutex.unlock()
         case let .failure(error):
             logger.error("Failed to fetch all wallets: \(error)")
         }
     }
 }
-
-// MARK: - Errors
-
-enum MultisigCallDataSyncError: Error {
-    case extrinsicParsingFailed
-    case chainUnavailable
-    case chainConnectionUnavailable
-    case runtimeUnavailable
-}
-
-// MARK: - Private types
-
-private typealias CallDataCache = Observable<
-    ObservableInMemoryCache<
-        Multisig.PendingOperation.Key,
-        MultisigCallOrHash
-    >
->

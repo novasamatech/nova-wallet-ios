@@ -99,17 +99,29 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
         operation = createOperation(
             for: query
         ) { (response: FindMultisigsResponse) in
-            accountIds.flatMap { accountId in
-                response.query.accounts.nodes
-                    .filter { $0.signatories.nodes.contains { $0.signatory.id == accountId } }
-                    .map {
-                        DiscoveredMultisig(
-                            accountId: $0.id,
-                            signatory: accountId,
-                            signatories: $0.signatories.nodes.map(\.signatory.id),
-                            threshold: $0.threshold
-                        )
+            let nodes: [AccountId: [SubqueryMultisigs.RemoteMultisig]] = response.query.accounts.nodes.reduce(
+                into: [:]
+            ) { acc, node in
+                node.signatories.nodes.forEach {
+                    if acc[$0.signatory.id] != nil {
+                        acc[$0.signatory.id]?.append(node)
+                    } else {
+                        acc[$0.signatory.id] = [node]
                     }
+                }
+            }
+            
+            return accountIds.reduce(into: []) { acc, accountId in
+                nodes[accountId]?.forEach { remoteMultisig in
+                    let discoveredMultisig = DiscoveredMultisig(
+                        accountId: remoteMultisig.id,
+                        signatory: accountId,
+                        signatories: remoteMultisig.signatories.nodes.map(\.signatory.id),
+                        threshold: remoteMultisig.threshold
+                    )
+                    
+                    acc.append(discoveredMultisig)
+                }
             }
         }
 
