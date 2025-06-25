@@ -5,26 +5,23 @@ extension MultisigPendingOperationsService {
     static let shared: MultisigPendingOperationsServiceProtocol = {
         let walletSettings = SelectedWalletSettings.shared
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let substrateStorageFacade = SubstrateDataStorageFacade.shared
+        let storageFacade = SubstrateDataStorageFacade.shared
 
         let pendingMultisigQueue = OperationManagerFacade.pendingMultisigQueue
         let pendingMultisigOperationManager = OperationManager(operationQueue: pendingMultisigQueue)
 
         let coreDataRepository: CoreDataRepository<Multisig.PendingOperation, CDMultisigPendingOperation>
-        coreDataRepository = substrateStorageFacade.createRepository(
+        coreDataRepository = storageFacade.createRepository(
             mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
         )
 
         let pendingMultisigChainSyncServiceFactory = PendingMultisigChainSyncServiceFactory(
             chainRegistry: chainRegistry,
-            substrateStorageFacade: substrateStorageFacade,
+            storageFacade: storageFacade,
             operationManager: pendingMultisigOperationManager,
             operationQueue: pendingMultisigQueue
         )
-        let multisigCallFetchFactory = MultisigCallFetchFactory(
-            chainRegistry: chainRegistry,
-            blockQueryFactory: BlockEventsQueryFactory(operationQueue: pendingMultisigQueue)
-        )
+        let multisigCallFetchFactory = MultisigCallFetchFactory(chainRegistry: chainRegistry)
         let eventsUpdatingService = MultisigEventsUpdatingService(
             chainRegistry: chainRegistry,
             operationQueue: pendingMultisigQueue

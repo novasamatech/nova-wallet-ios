@@ -11,18 +11,18 @@ protocol PendingMultisigChainSyncServiceFactoryProtocol {
 
 final class PendingMultisigChainSyncServiceFactory {
     private let chainRegistry: ChainRegistryProtocol
-    private let substrateStorageFacade: StorageFacadeProtocol
+    private let storageFacade: StorageFacadeProtocol
     private let operationManager: OperationManagerProtocol
     private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        substrateStorageFacade: StorageFacadeProtocol,
+        storageFacade: StorageFacadeProtocol,
         operationManager: OperationManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.substrateStorageFacade = substrateStorageFacade
+        self.storageFacade = storageFacade
         self.operationManager = operationManager
         self.operationQueue = operationQueue
     }
@@ -35,8 +35,6 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
         for chain: ChainModel,
         selectedMultisigAccount: DelegatedAccount.MultisigAccountModel
     ) -> PendingMultisigChainSyncServiceProtocol {
-        let storageFacade = UserDataStorageFacade.shared
-
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
@@ -71,7 +69,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             multisigAccount: selectedMultisigAccount,
             chain: chain,
             localStorageSyncService: localStorageSyncService,
-            multisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             remoteOperationUpdateService: remoteOperationUpdateService
         )
     }

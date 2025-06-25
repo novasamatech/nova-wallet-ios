@@ -7,7 +7,7 @@ protocol PendingMultisigChainSyncServiceProtocol: SyncServiceProtocol {}
 final class PendingMultisigChainSyncService: BaseSyncService,
     PendingMultisigChainSyncServiceProtocol,
     AnyProviderAutoCleaning {
-    let multisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+    let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
 
     private let multisigAccount: DelegatedAccount.MultisigAccountModel
     private let chain: ChainModel
@@ -20,13 +20,13 @@ final class PendingMultisigChainSyncService: BaseSyncService,
         multisigAccount: DelegatedAccount.MultisigAccountModel,
         chain: ChainModel,
         localStorageSyncService: PendingMultisigLocalStorageSyncServiceProtocol,
-        multisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
+        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
         remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
     ) {
         self.multisigAccount = multisigAccount
         self.chain = chain
         self.localStorageSyncService = localStorageSyncService
-        self.multisigOperationsLocalSubscriptionFactory = multisigOperationsLocalSubscriptionFactory
+        self.pendingMultisigLocalSubscriptionFactory = pendingMultisigLocalSubscriptionFactory
         self.remoteOperationUpdateService = remoteOperationUpdateService
     }
 

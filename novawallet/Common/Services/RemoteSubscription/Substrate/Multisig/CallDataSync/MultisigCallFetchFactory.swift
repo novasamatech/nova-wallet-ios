@@ -12,14 +12,9 @@ protocol MultisigCallFetchFactoryProtocol {
 
 final class MultisigCallFetchFactory {
     private let chainRegistry: ChainRegistryProtocol
-    private let blockQueryFactory: BlockEventsQueryFactoryProtocol
 
-    init(
-        chainRegistry: ChainRegistryProtocol,
-        blockQueryFactory: BlockEventsQueryFactoryProtocol
-    ) {
+    init(chainRegistry: ChainRegistryProtocol) {
         self.chainRegistry = chainRegistry
-        self.blockQueryFactory = blockQueryFactory
     }
 }
 
@@ -68,8 +63,6 @@ private extension MultisigCallFetchFactory {
     ) throws -> JSON? {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let extrinsic: Extrinsic = try decoder.read(of: GenericType.extrinsic.name)
-
-        let context = codingFactory.createRuntimeJsonContext()
 
         guard let sender = ExtrinsicExtraction.getSender(
             from: extrinsic,

@@ -55,18 +55,18 @@ private extension PendingMultisigLocalStorageSyncService {
         let localFetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
 
         let diffOperation = ClosureOperation<CallHashChanges> {
-            let oldCallHashes = try localFetchOperation
+            let oldCallKeys = try localFetchOperation
                 .extractNoCancellableResultData()
-                .compactMap(\.callHash)
+                .map { $0.createKey() }
 
-            let updatedCallHashes = remotePendingOperations.map(\.key.callHash)
+            let updatedKeys = remotePendingOperations.map(\.key)
 
-            let updatedHashSet = Set(updatedCallHashes)
-            let oldHashSet = Set(oldCallHashes)
+            let updatedKeySet = Set(updatedKeys)
+            let oldKeySet = Set(oldCallKeys)
 
             return CallHashChanges(
-                allCallHashes: updatedHashSet,
-                removedCallHashes: oldHashSet.subtracting(updatedHashSet)
+                allOperationsKeys: updatedKeySet,
+                removedOperationsKeys: oldKeySet.subtracting(updatedKeySet)
             )
         }
 
@@ -101,14 +101,22 @@ private extension PendingMultisigLocalStorageSyncService {
                 return newItems + updates
             },
             {
-                try diffOperation.extractNoCancellableResultData().removedCallHashes.map { $0.toHexString() }
+                try diffOperation
+                    .extractNoCancellableResultData()
+                    .removedOperationsKeys
+                    .map { $0.stringValue() }
             }
         )
 
         let resultOperation = ClosureOperation<Set<CallHash>> {
             try updateOperation.extractNoCancellableResultData()
 
-            return try diffOperation.extractNoCancellableResultData().allCallHashes
+            let callHashes = try diffOperation
+                .extractNoCancellableResultData()
+                .allOperationsKeys
+                .map(\.callHash)
+
+            return Set(callHashes)
         }
 
         diffOperation.addDependency(localFetchOperation)
@@ -383,6 +391,6 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
 // MARK: - Local types
 
 private struct CallHashChanges {
-    let allCallHashes: Set<CallHash>
-    let removedCallHashes: Set<CallHash>
+    let allOperationsKeys: Set<Multisig.PendingOperation.Key>
+    let removedOperationsKeys: Set<Multisig.PendingOperation.Key>
 }

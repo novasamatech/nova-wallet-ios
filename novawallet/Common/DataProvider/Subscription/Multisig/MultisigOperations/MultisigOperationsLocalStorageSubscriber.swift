@@ -2,9 +2,9 @@ import Foundation
 import Operation_iOS
 
 protocol MultisigOperationsLocalStorageSubscriber: LocalStorageProviderObserving where Self: AnyObject {
-    var multisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol { get }
+    var pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol { get }
 
-    var multisigOperationsLocalSubscriptionHandler: MultisigOperationsLocalSubscriptionHandler { get }
+    var pendingMultisigLocalSubscriptionHandler: MultisigOperationsLocalSubscriptionHandler { get }
 
     func subscribePendingOperations(
         for accountId: AccountId,
@@ -25,7 +25,7 @@ extension MultisigOperationsLocalStorageSubscriber {
         for accountId: AccountId,
         chainId: ChainModel.Id?
     ) -> StreamableProvider<Multisig.PendingOperation>? {
-        guard let provider = try? multisigOperationsLocalSubscriptionFactory.getPendingOperatonsProvider(
+        guard let provider = try? pendingMultisigLocalSubscriptionFactory.getPendingOperatonsProvider(
             for: accountId,
             chainId: chainId
         ) else { return nil }
@@ -33,11 +33,11 @@ extension MultisigOperationsLocalStorageSubscriber {
         addStreamableProviderObserver(
             for: provider,
             updateClosure: { [weak self] (changes: [DataProviderChange<Multisig.PendingOperation>]) in
-                self?.multisigOperationsLocalSubscriptionHandler.handleMultisigPendingOperations(result: .success(changes))
+                self?.pendingMultisigLocalSubscriptionHandler.handleMultisigPendingOperations(result: .success(changes))
                 return
             },
             failureClosure: { [weak self] (error: Error) in
-                self?.multisigOperationsLocalSubscriptionHandler.handleMultisigPendingOperations(result: .failure(error))
+                self?.pendingMultisigLocalSubscriptionHandler.handleMultisigPendingOperations(result: .failure(error))
                 return
             },
             options: StreamableProviderObserverOptions(
@@ -53,5 +53,5 @@ extension MultisigOperationsLocalStorageSubscriber {
 }
 
 extension MultisigOperationsLocalStorageSubscriber where Self: MultisigOperationsLocalSubscriptionHandler {
-    var multisigOperationsLocalSubscriptionHandler: MultisigOperationsLocalSubscriptionHandler { self }
+    var pendingMultisigLocalSubscriptionHandler: MultisigOperationsLocalSubscriptionHandler { self }
 }

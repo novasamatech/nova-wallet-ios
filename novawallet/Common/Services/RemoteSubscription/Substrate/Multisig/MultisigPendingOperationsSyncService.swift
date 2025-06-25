@@ -17,6 +17,7 @@ final class MultisigPendingOperationsService {
 
     private var selectedMetaAccount: MetaAccountModel
 
+    private var chains: [ChainModel.Id: ChainModel] = [:]
     private var pendingOperationsChainSyncServices: [ChainModel.Id: PendingMultisigChainSyncServiceProtocol] = [:]
 
     init(
@@ -70,9 +71,11 @@ private extension MultisigPendingOperationsService {
         changes.forEach { change in
             switch change {
             case let .insert(chain), let .update(chain):
+                chains[chain.chainId] = chain
                 callDataSyncService.addSyncing(for: chain)
                 setupChainSyncService(for: chain)
             case let .delete(chainId):
+                chains[chainId] = nil
                 callDataSyncService.stopSyncing(for: chainId)
             }
         }
@@ -106,12 +109,10 @@ private extension MultisigPendingOperationsService {
     func updateChainSyncServices() {
         stopSyncUpChainSyncServices()
 
-        pendingOperationsChainSyncServices.keys
-            .compactMap { chainRegistry.getChain(for: $0) }
-            .forEach { chain in
-                pendingOperationsChainSyncServices[chain.chainId] = nil
-                setupChainSyncService(for: chain)
-            }
+        chains.values.forEach {
+            pendingOperationsChainSyncServices[$0.chainId] = nil
+            setupChainSyncService(for: $0)
+        }
     }
 }
 
