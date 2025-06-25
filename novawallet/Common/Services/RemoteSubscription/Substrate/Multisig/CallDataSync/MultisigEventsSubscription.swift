@@ -92,7 +92,7 @@ private extension MultisigEventsSubscription {
         else {
             return
         }
-        
+
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         execute(
@@ -104,9 +104,7 @@ private extension MultisigEventsSubscription {
             switch result {
             case let .success(codingFactory):
                 let multisigEvents = events.compactMap {
-                    MultisigEventMatcher(codingFactory: codingFactory).matchMultisig(
-                        event: $0.event
-                    )
+                    MultisigEventMatcher(codingFactory: codingFactory).matchMultisig(eventRecord: $0)
                 }
 
                 guard !multisigEvents.isEmpty else { return }

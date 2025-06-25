@@ -3,19 +3,23 @@ import SubstrateSdk
 struct MultisigEvent: Hashable {
     let accountId: AccountId
     let callHash: CallHash
+    let extrinsicIndex: UInt32
     let eventType: EventType
 
     init?(
         params: JSON,
+        extrinsicIndex: UInt32,
         context: [CodingUserInfoKey: Any]
     ) {
+        self.extrinsicIndex = extrinsicIndex
+
         if let newMultisigEvent = try? params.map(
             to: MultisigPallet.NewMultisigEvent.self,
             with: context
         ) {
             accountId = newMultisigEvent.accountId
             callHash = newMultisigEvent.callHash
-            
+
             let model = NewMultisig(signatory: newMultisigEvent.approvingAccountId)
             eventType = .newMultisig(model)
         } else if let approvalEvent = try? params.map(
@@ -24,7 +28,7 @@ struct MultisigEvent: Hashable {
         ) {
             accountId = approvalEvent.accountId
             callHash = approvalEvent.callHash
-            
+
             let timepoint = Multisig.MultisigTimepoint(
                 height: approvalEvent.timepoint.height,
                 index: approvalEvent.timepoint.index
@@ -49,16 +53,16 @@ extension MultisigEvent {
             model.signatory
         }
     }
-    
+
     enum EventType: Hashable {
         case newMultisig(NewMultisig)
         case approval(Approval)
     }
-    
+
     struct NewMultisig: Hashable {
         let signatory: AccountId
     }
-    
+
     struct Approval: Hashable {
         let signatory: AccountId
         let timepoint: Multisig.MultisigTimepoint

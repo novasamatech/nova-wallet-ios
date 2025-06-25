@@ -110,7 +110,7 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
                     }
                 }
             }
-            
+
             return accountIds.reduce(into: []) { acc, accountId in
                 nodes[accountId]?.forEach { remoteMultisig in
                     let discoveredMultisig = DiscoveredMultisig(
@@ -119,7 +119,7 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
                         signatories: remoteMultisig.signatories.nodes.map(\.signatory.id),
                         threshold: remoteMultisig.threshold
                     )
-                    
+
                     acc.append(discoveredMultisig)
                 }
             }

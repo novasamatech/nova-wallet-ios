@@ -7,21 +7,24 @@ struct MultisigEventMatcher {
         self.codingFactory = codingFactory
     }
 
-    func matchMultisig(event: Event) -> MultisigEvent? {
+    func matchMultisig(eventRecord: EventRecord) -> MultisigEvent? {
         let pathsToMatch: Set<EventCodingPath> = [
             MultisigPallet.newMultisigEventPath,
             MultisigPallet.multisigApprovalEventPath
         ]
 
         guard codingFactory.metadata.eventMatches(
-            event,
+            eventRecord.event,
             oneOf: pathsToMatch
         ) else { return nil }
+
+        guard let extrinsicIndex = eventRecord.extrinsicIndex else { return nil }
 
         let context = codingFactory.createRuntimeJsonContext().toRawContext()
 
         return MultisigEvent(
-            params: event.params,
+            params: eventRecord.event.params,
+            extrinsicIndex: extrinsicIndex,
             context: context
         )
     }

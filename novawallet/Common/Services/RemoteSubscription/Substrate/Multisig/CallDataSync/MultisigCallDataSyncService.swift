@@ -82,8 +82,8 @@ private extension MultisigCallDataSyncService {
 
         metaAccountsProvider = subscribeAllWalletsProvider()
     }
-    
-    func updatePendingOperations(using callData:[Multisig.PendingOperation.Key: MultisigCallOrHash]) {
+
+    func updatePendingOperations(using callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]) {
         let wrapper = createUpdatePendingOperationsWrapper(using: callData)
 
         operationManager.enqueue(
@@ -91,24 +91,24 @@ private extension MultisigCallDataSyncService {
             in: .sync
         )
     }
-    
+
     func createUpdatePendingOperationsWrapper(
         using callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]
     ) -> CompoundOperationWrapper<Void> {
         let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
-        
+
         let updateOperation = pendingOperationsRepository.saveOperation(
             {
                 let persistedOperations: [Multisig.PendingOperation.Key: Multisig.PendingOperation]
                 persistedOperations = try fetchOperation.extractNoCancellableResultData()
                     .reduce(into: [:]) { $0[$1.createKey()] = $1 }
-                
+
                 let updates: [Multisig.PendingOperation] = callData.compactMap { keyValue in
                     let call = keyValue.value.call
-                    
+
                     if let persistedOperation = persistedOperations[keyValue.key] {
                         guard let call else { return nil }
-                        
+
                         return persistedOperation.replacingCall(with: call)
                     } else {
                         return Multisig.PendingOperation(
@@ -121,14 +121,14 @@ private extension MultisigCallDataSyncService {
                         )
                     }
                 }
-                
+
                 return updates
             },
             { [] }
         )
-        
+
         updateOperation.addDependency(fetchOperation)
-        
+
         return CompoundOperationWrapper(
             targetOperation: updateOperation,
             dependencies: [fetchOperation]
@@ -145,7 +145,7 @@ private extension MultisigCallDataSyncService {
             at: blockHash,
             chainId: chainId
         )
-        
+
         extractionWrapper.targetOperation.completionBlock = { [weak self] in
             do {
                 let calls = try extractionWrapper.targetOperation.extractNoCancellableResultData()
@@ -153,7 +153,6 @@ private extension MultisigCallDataSyncService {
             } catch {
                 self?.logger.error("Failed to fetch block details: \(error)")
             }
-            
         }
 
         operationManager.enqueue(
@@ -169,10 +168,10 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
     func startSyncUp() {
         mutex.lock()
         defer { mutex.unlock() }
-        
+
         subscribeMetaAccounts()
     }
-    
+
     func addSyncing(for chain: ChainModel) {
         mutex.lock()
         defer { mutex.unlock() }
@@ -199,7 +198,7 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
     func stopSyncUp() {
         mutex.lock()
         defer { mutex.unlock() }
-        
+
         clear(streamableProvider: &metaAccountsProvider)
         eventsUpdatingService.clearAllSubscriptions()
         availableChains = [:]
@@ -217,7 +216,7 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
     ) {
         mutex.lock()
         defer { mutex.unlock() }
-        
+
         let availableAccountIds = Set(availableMetaAccounts.compactMap { $0.multisigAccount?.multisig?.accountId })
         let relevantEvents = events.filter { availableAccountIds.contains($0.accountId) }
 
@@ -237,7 +236,7 @@ extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletL
     func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
         mutex.lock()
         defer { mutex.unlock() }
-        
+
         switch result {
         case let .success(changes):
             let mappedChanges: [DataProviderChange<MetaAccountModel>] = changes

@@ -16,23 +16,29 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         let signatory = try Data(hexString: entity.signatory!)
         let callHash = try Data(hexString: entity.callHash!)
 
-        let index = UInt32(entity.index)
-        let height = UInt32(entity.height)
+        var definition: Multisig.MultisigDefinition?
 
-        let timepoint = Multisig.MultisigTimepoint(
-            height: height,
-            index: index
-        )
+        if
+            let depositor = entity.depositor,
+            let approvals = entity.approvals {
+            let index = UInt32(entity.index)
+            let height = UInt32(entity.height)
 
-        let depositor = try Data(hexString: entity.depositor!)
-        let approvals = try entity.approvals?.split(by: .comma)
-            .map { try Data(hexString: $0) } ?? []
+            let timepoint = Multisig.MultisigTimepoint(
+                height: height,
+                index: index
+            )
 
-        let definition = Multisig.MultisigDefinition(
-            timepoint: timepoint,
-            depositor: depositor,
-            approvals: approvals
-        )
+            let depositor = try Data(hexString: depositor)
+            let approvals = try approvals.split(by: .comma)
+                .map { try Data(hexString: $0) }
+
+            definition = Multisig.MultisigDefinition(
+                timepoint: timepoint,
+                depositor: depositor,
+                approvals: approvals
+            )
+        }
 
         let call: JSON? = if let callData = entity.call {
             try JSONDecoder().decode(JSON.self, from: callData)
@@ -61,12 +67,14 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         entity.callHash = model.callHash.toHexString()
         entity.chainId = model.chainId
 
-        entity.index = Int32(model.multisigDefinition.timepoint.index)
-        entity.height = Int32(model.multisigDefinition.timepoint.height)
-        entity.depositor = model.multisigDefinition.depositor.toHexString()
-        entity.approvals = model.multisigDefinition.approvals
-            .map { $0.toHexString() }
-            .joined(with: .comma)
+        if let multisigDefinition = model.multisigDefinition {
+            entity.index = Int32(multisigDefinition.timepoint.index)
+            entity.height = Int32(multisigDefinition.timepoint.height)
+            entity.depositor = multisigDefinition.depositor.toHexString()
+            entity.approvals = multisigDefinition.approvals
+                .map { $0.toHexString() }
+                .joined(with: .comma)
+        }
 
         if let call = model.call {
             entity.call = try JSONEncoder().encode(call)

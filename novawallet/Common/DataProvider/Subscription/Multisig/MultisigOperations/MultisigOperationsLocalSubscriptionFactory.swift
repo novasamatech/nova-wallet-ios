@@ -59,7 +59,7 @@ extension MultisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSub
         } else {
             NSPredicate.pendingMultisigOperations(multisigAccountId: multisigAccountId)
         }
-        
+
         let repository = storageFacade.createRepository(
             filter: predicate,
             sortDescriptors: [],

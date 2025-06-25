@@ -43,7 +43,7 @@ private extension MultisigPendingOperationsService {
         callDataSyncService.startSyncUp()
         subscribeChains()
     }
-    
+
     func performStop() {
         chainRegistry.chainsUnsubscribe(self)
         clearChainSyncServices()
@@ -77,7 +77,7 @@ private extension MultisigPendingOperationsService {
             }
         }
     }
-    
+
     func clearChainSyncServices() {
         stopSyncUpChainSyncServices()
         pendingOperationsChainSyncServices = [:]

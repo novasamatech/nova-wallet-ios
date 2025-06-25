@@ -66,7 +66,7 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             pendingOperationsRepository: AnyDataProviderRepository(repository),
             operationManager: operationManager
         )
-            
+
         return PendingMultisigChainSyncService(
             multisigAccount: selectedMultisigAccount,
             chain: chain,

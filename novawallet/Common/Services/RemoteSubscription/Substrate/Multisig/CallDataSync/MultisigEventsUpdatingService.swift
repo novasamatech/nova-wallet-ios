@@ -4,14 +4,14 @@ import SubstrateSdk
 
 protocol MultisigEventsUpdatingServiceProtocol {
     var subscribedChainIds: Set<ChainModel.Id> { get }
-    
+
     func setupSubscription(
         for chainId: ChainModel.Id,
         subscriber: MultisigEventsSubscriber
     )
-    
+
     func clearSubscription(for chainId: ChainModel.Id)
-    
+
     func clearAllSubscriptions()
 }
 
@@ -19,9 +19,9 @@ final class MultisigEventsUpdatingService {
     private let chainRegistry: ChainRegistryProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
-    
+
     private var eventsSubscriptions: [ChainModel.Id: MultisigEventsSubscription] = [:]
-    
+
     init(
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
@@ -37,7 +37,7 @@ extension MultisigEventsUpdatingService: MultisigEventsUpdatingServiceProtocol {
     var subscribedChainIds: Set<ChainModel.Id> {
         Set(eventsSubscriptions.keys)
     }
-    
+
     func setupSubscription(
         for chainId: ChainModel.Id,
         subscriber: MultisigEventsSubscriber
@@ -52,11 +52,11 @@ extension MultisigEventsUpdatingService: MultisigEventsUpdatingServiceProtocol {
 
         eventsSubscriptions[chainId] = subscription
     }
-    
+
     func clearSubscription(for chainId: ChainModel.Id) {
         eventsSubscriptions[chainId] = nil
     }
-    
+
     func clearAllSubscriptions() {
         eventsSubscriptions.removeAll()
     }

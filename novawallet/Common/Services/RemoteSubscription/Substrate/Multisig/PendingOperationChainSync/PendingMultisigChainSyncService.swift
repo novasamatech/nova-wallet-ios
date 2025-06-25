@@ -5,15 +5,15 @@ import Operation_iOS
 protocol PendingMultisigChainSyncServiceProtocol: SyncServiceProtocol {}
 
 final class PendingMultisigChainSyncService: BaseSyncService,
-                                             PendingMultisigChainSyncServiceProtocol,
-                                             AnyProviderAutoCleaning {
+    PendingMultisigChainSyncServiceProtocol,
+    AnyProviderAutoCleaning {
     let multisigOperationsLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
-    
+
     private let multisigAccount: DelegatedAccount.MultisigAccountModel
     private let chain: ChainModel
     private let localStorageSyncService: PendingMultisigLocalStorageSyncServiceProtocol
     private let remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
-    
+
     private var operationsLocalStorateProvider: StreamableProvider<Multisig.PendingOperation>?
 
     init(
@@ -35,15 +35,15 @@ final class PendingMultisigChainSyncService: BaseSyncService,
     }
 
     // MARK: - Overrides
-    
+
     override func performSyncUp() {
         clear(streamableProvider: &operationsLocalStorateProvider)
-        
+
         operationsLocalStorateProvider = subscribePendingOperations(
             for: multisigAccount.accountId,
             chainId: chain.chainId
         )
-        
+
         localStorageSyncService.syncPendingOperations { [weak self] updatedCallHashes in
             self?.createManageSubscriptionsOperation(callHashes: updatedCallHashes)
         }
@@ -71,19 +71,21 @@ private extension PendingMultisigChainSyncService {
 // MARK: - MultisigOperationsLocalSubscriptionHandler
 
 extension PendingMultisigChainSyncService: MultisigOperationsLocalStorageSubscriber,
-                                           MultisigOperationsLocalSubscriptionHandler {
+    MultisigOperationsLocalSubscriptionHandler {
     func handleMultisigPendingOperations(
-        result: Result<[DataProviderChange<Multisig.PendingOperation>],
-        any Error>
+        result: Result<
+            [DataProviderChange<Multisig.PendingOperation>],
+            any Error
+        >
     ) {
         switch result {
         case let .success(changes):
             let callHashesToUpdate = changes
                 .filter { $0.item?.multisigDefinition != nil }
                 .compactMap { $0.item?.callHash }
-            
+
             guard !callHashesToUpdate.isEmpty else { return }
-            
+
             createManageSubscriptionsOperation(callHashes: Set(callHashesToUpdate))
         case let .failure(error):
             logger.error("Failed to handle multisig pending operations: \(error), chainId: \(chain.chainId)")

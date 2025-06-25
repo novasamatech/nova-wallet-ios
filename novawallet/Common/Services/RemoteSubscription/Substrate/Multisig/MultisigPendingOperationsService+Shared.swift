@@ -6,10 +6,10 @@ extension MultisigPendingOperationsService {
         let walletSettings = SelectedWalletSettings.shared
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
-        
+
         let pendingMultisigQueue = OperationManagerFacade.pendingMultisigQueue
         let pendingMultisigOperationManager = OperationManager(operationQueue: pendingMultisigQueue)
-        
+
         let coreDataRepository: CoreDataRepository<Multisig.PendingOperation, CDMultisigPendingOperation>
         coreDataRepository = substrateStorageFacade.createRepository(
             mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
@@ -37,7 +37,7 @@ extension MultisigPendingOperationsService {
             walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory.shared,
             operationManager: pendingMultisigOperationManager
         )
-        
+
         return MultisigPendingOperationsService(
             selectedMetaAccount: walletSettings.value,
             chainRegistry: chainRegistry,

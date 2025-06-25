@@ -8,7 +8,7 @@ protocol PendingMultisigLocalStorageSyncServiceProtocol {
     func syncPendingOperations(
         completionBlock: @escaping (_ updatedCallHashes: Set<CallHash>) -> Void
     )
-    
+
     func updateDefinition(
         for callHash: CallHash,
         _ multisigDefinition: MultisigPallet.MultisigDefinition?
@@ -24,7 +24,7 @@ final class PendingMultisigLocalStorageSyncService {
     private let pendingOperationsRepository: AnyDataProviderRepository<Multisig.PendingOperation>
     private let operationManager: OperationManagerProtocol
     private let logger: LoggerProtocol
-    
+
     init(
         multisigAccount: DelegatedAccount.MultisigAccountModel,
         chain: ChainModel,
@@ -75,46 +75,46 @@ private extension PendingMultisigLocalStorageSyncService {
                 let localPendingOperations = try localFetchOperation
                     .extractNoCancellableResultData()
                     .reduce(into: [:]) { $0[$1.createKey()] = $1 }
-                
+
                 let newItems = remotePendingOperations.filter { localPendingOperations[$0.key] == nil }.values
-                
-                let updates: [Multisig.PendingOperation] = localPendingOperations.compactMap { (key, local) in
+
+                let updates: [Multisig.PendingOperation] = localPendingOperations.compactMap { key, local in
                     guard let remote = remotePendingOperations[key] else { return nil }
-                    
+
                     let definitionUpdated = remote.multisigDefinition != local.multisigDefinition
                     let callUpdated = remote.call != nil && local.call == nil
-                    
+
                     guard definitionUpdated || callUpdated else { return nil }
-                    
+
                     var updatedValue = local
-                    
+
                     if definitionUpdated {
                         updatedValue = updatedValue.replacingDefinition(with: remote.multisigDefinition)
                     }
                     if callUpdated {
                         updatedValue = updatedValue.replacingCall(with: remote.call)
                     }
-                    
+
                     return updatedValue
                 }
-                
+
                 return newItems + updates
             },
             {
                 try diffOperation.extractNoCancellableResultData().removedCallHashes.map { $0.toHexString() }
             }
         )
-        
+
         let resultOperation = ClosureOperation<Set<CallHash>> {
             try updateOperation.extractNoCancellableResultData()
-            
+
             return try diffOperation.extractNoCancellableResultData().allCallHashes
         }
 
         diffOperation.addDependency(localFetchOperation)
         updateOperation.addDependency(diffOperation)
         resultOperation.addDependency(updateOperation)
-        
+
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
             dependencies: [localFetchOperation, diffOperation, updateOperation]
@@ -327,19 +327,19 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
         let remoteFetchWrapper = createPendingOperationsWrapper()
         remoteFetchWrapper.targetOperation.completionBlock = { [weak self] in
             guard let self else { return }
-            
+
             do {
                 let remotePendingOperations = try remoteFetchWrapper
                     .targetOperation
                     .extractNoCancellableResultData()
                 let syncUpWrapper = createSyncUpWrapper(remotePendingOperations: remotePendingOperations)
-                
+
                 syncUpWrapper.targetOperation.completionBlock = {
                     do {
                         let updatedCallHashes = try syncUpWrapper
                             .targetOperation
                             .extractNoCancellableResultData()
-                        
+
                         completionBlock(updatedCallHashes)
                     } catch {
                         self.logger.error(
@@ -347,7 +347,7 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
                         )
                     }
                 }
-                
+
                 operationManager.enqueue(
                     operations: syncUpWrapper.allOperations,
                     in: .sync
@@ -358,13 +358,13 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
                 )
             }
         }
-        
+
         operationManager.enqueue(
             operations: remoteFetchWrapper.allOperations,
             in: .transient
         )
     }
-    
+
     func updateDefinition(
         for callHash: CallHash,
         _ multisigDefinition: MultisigPallet.MultisigDefinition?

@@ -27,39 +27,37 @@ final class MultisigCallFetchFactory {
 
 private extension MultisigCallFetchFactory {
     func extractMultisigCallDataOrHash(
-        from blockDetails: SubstrateBlockDetails,
+        from block: Block,
         matching multisigEvents: Set<MultisigEvent>,
         chainId: ChainModel.Id,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> [Multisig.PendingOperation.Key: MultisigCallOrHash] {
-        try blockDetails.extrinsicsWithEvents.reduce(into: [:]) { acc, indexedExtrinsicWithEvents in
-            try indexedExtrinsicWithEvents.eventRecords.forEach { eventRecord in
-                let matcher = MultisigEventMatcher(codingFactory: codingFactory)
+        try multisigEvents.reduce(into: [:]) { acc, multisigEvent in
+            let extrinsicIndex = Int(multisigEvent.extrinsicIndex)
 
-                guard
-                    let blockMultisigEvent = matcher.matchMultisig(event: eventRecord.event),
-                    multisigEvents.contains(blockMultisigEvent)
-                else { return }
+            guard block.extrinsics.count > extrinsicIndex else { return }
 
-                let key = Multisig.PendingOperation.Key(
-                    callHash: blockMultisigEvent.callHash,
-                    chainId: chainId,
-                    multisigAccountId: blockMultisigEvent.accountId,
-                    signatoryAccountId: blockMultisigEvent.signatory
-                )
+            let extrinsicHex = block.extrinsics[extrinsicIndex]
+            let extrinsicData = try Data(hexString: extrinsicHex)
 
-                let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(
-                    for: blockMultisigEvent.callHash,
-                    from: indexedExtrinsicWithEvents.extrinsicData,
-                    using: codingFactory
-                ) {
-                    .call(call)
-                } else {
-                    .callHash(blockMultisigEvent.callHash)
-                }
+            let key = Multisig.PendingOperation.Key(
+                callHash: multisigEvent.callHash,
+                chainId: chainId,
+                multisigAccountId: multisigEvent.accountId,
+                signatoryAccountId: multisigEvent.signatory
+            )
 
-                acc[key] = callOrHash
+            let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(
+                for: multisigEvent.callHash,
+                from: extrinsicData,
+                using: codingFactory
+            ) {
+                .call(call)
+            } else {
+                .callHash(multisigEvent.callHash)
             }
+
+            acc[key] = callOrHash
         }
     }
 
@@ -105,9 +103,9 @@ private extension MultisigCallFetchFactory {
 
         return try foundCalls.first { foundCall in
             let encoder = codingFactory.createEncoder()
-            
+
             try encoder.append(json: foundCall, type: GenericType.call.name)
-            
+
             let foundCallData = try encoder.encode()
             let foundCallHash = try foundCallData.blake2b32()
 
@@ -130,18 +128,18 @@ extension MultisigCallFetchFactory: MultisigCallFetchFactoryProtocol {
 
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-            let blockQueryWrapper = blockQueryFactory.queryBlockDetailsWrapper(
-                from: connection,
-                runtimeProvider: runtimeProvider,
-                blockHash: blockHash
+            let blockFetchOperation: JSONRPCOperation<[String], SignedBlock> = JSONRPCOperation(
+                engine: connection,
+                method: RPCMethod.getChainBlock,
+                parameters: [blockHash.toHex(includePrefix: true)]
             )
 
             let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-                let blockDetails = try blockQueryWrapper.targetOperation.extractNoCancellableResultData()
+                let signedBlock = try blockFetchOperation.extractNoCancellableResultData()
 
                 return try self.extractMultisigCallDataOrHash(
-                    from: blockDetails,
+                    from: signedBlock.block,
                     matching: Set(events),
                     chainId: chainId,
                     using: codingFactory
@@ -149,11 +147,11 @@ extension MultisigCallFetchFactory: MultisigCallFetchFactoryProtocol {
             }
 
             callExtractionOperation.addDependency(codingFactoryOperation)
-            callExtractionOperation.addDependency(blockQueryWrapper.targetOperation)
+            callExtractionOperation.addDependency(blockFetchOperation)
 
             return CompoundOperationWrapper(
                 targetOperation: callExtractionOperation,
-                dependencies: [codingFactoryOperation] + blockQueryWrapper.allOperations
+                dependencies: [codingFactoryOperation, blockFetchOperation]
             )
         } catch {
             return .createWithError(error)

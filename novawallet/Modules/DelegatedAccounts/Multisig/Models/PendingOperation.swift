@@ -15,7 +15,17 @@ extension Multisig {
         let timepoint: MultisigTimepoint
         let depositor: AccountId
         let approvals: [AccountId]
-        
+
+        init(
+            timepoint: MultisigTimepoint,
+            depositor: AccountId,
+            approvals: [AccountId]
+        ) {
+            self.timepoint = timepoint
+            self.depositor = depositor
+            self.approvals = approvals
+        }
+
         init(from onChainModel: MultisigPallet.MultisigDefinition) {
             timepoint = .init(
                 height: onChainModel.timepoint.height,
@@ -26,7 +36,7 @@ extension Multisig {
         }
     }
 
-    struct MultisigTimepoint: Codable, Equatable {
+    struct MultisigTimepoint: Codable, Hashable {
         let height: BlockNumber
         let index: UInt32
     }
