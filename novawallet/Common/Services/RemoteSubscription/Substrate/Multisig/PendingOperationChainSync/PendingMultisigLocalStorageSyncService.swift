@@ -70,10 +70,45 @@ private extension PendingMultisigLocalStorageSyncService {
             )
         }
 
-        let updateOperation = pendingOperationsRepository.saveOperation(
-            {
-                let localPendingOperations = try localFetchOperation
+        let updateOperation = createUpdateOperation(
+            remotePendingOperations: remotePendingOperations,
+            localFetchClosure: { try localFetchOperation.extractNoCancellableResultData() },
+            removedOperationsClosure: {
+                try diffOperation
                     .extractNoCancellableResultData()
+                    .removedOperationsKeys
+            }
+        )
+
+        let resultOperation = ClosureOperation<Set<CallHash>> {
+            try updateOperation.extractNoCancellableResultData()
+
+            let callHashes = try diffOperation
+                .extractNoCancellableResultData()
+                .allOperationsKeys
+                .map(\.callHash)
+
+            return Set(callHashes)
+        }
+
+        diffOperation.addDependency(localFetchOperation)
+        updateOperation.addDependency(diffOperation)
+        resultOperation.addDependency(updateOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [localFetchOperation, diffOperation, updateOperation]
+        )
+    }
+
+    func createUpdateOperation(
+        remotePendingOperations: MultisigPendingOperationsMap,
+        localFetchClosure: @escaping () throws -> [Multisig.PendingOperation],
+        removedOperationsClosure: @escaping () throws -> Set<Multisig.PendingOperation.Key>
+    ) -> BaseOperation<Void> {
+        pendingOperationsRepository.saveOperation(
+            {
+                let localPendingOperations = try localFetchClosure()
                     .reduce(into: [:]) { $0[$1.createKey()] = $1 }
 
                 let newItems = remotePendingOperations.filter { localPendingOperations[$0.key] == nil }.values
@@ -100,32 +135,7 @@ private extension PendingMultisigLocalStorageSyncService {
 
                 return newItems + updates
             },
-            {
-                try diffOperation
-                    .extractNoCancellableResultData()
-                    .removedOperationsKeys
-                    .map { $0.stringValue() }
-            }
-        )
-
-        let resultOperation = ClosureOperation<Set<CallHash>> {
-            try updateOperation.extractNoCancellableResultData()
-
-            let callHashes = try diffOperation
-                .extractNoCancellableResultData()
-                .allOperationsKeys
-                .map(\.callHash)
-
-            return Set(callHashes)
-        }
-
-        diffOperation.addDependency(localFetchOperation)
-        updateOperation.addDependency(diffOperation)
-        resultOperation.addDependency(updateOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: [localFetchOperation, diffOperation, updateOperation]
+            { try removedOperationsClosure().map { $0.stringValue() } }
         )
     }
 
