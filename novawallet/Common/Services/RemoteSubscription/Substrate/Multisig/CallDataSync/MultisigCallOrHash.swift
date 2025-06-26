@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 enum MultisigCallOrHash {
-    case callHash(CallHash)
+    case callHash(Substrate.CallHash)
     case call(JSON)
 
     var call: JSON? {

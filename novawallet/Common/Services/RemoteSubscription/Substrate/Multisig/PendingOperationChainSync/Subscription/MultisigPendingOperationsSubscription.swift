@@ -2,12 +2,10 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-typealias CallHash = Data
-
 final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     let accountId: AccountId
     let chainId: ChainModel.Id
-    let callHashes: Set<CallHash>
+    let callHashes: Set<Substrate.CallHash>
     let chainRegistry: ChainRegistryProtocol
     let logger: LoggerProtocol?
 
@@ -21,7 +19,7 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     init(
         accountId: AccountId,
         chainId: ChainModel.Id,
-        callHashes: Set<CallHash>,
+        callHashes: Set<Substrate.CallHash>,
         chainRegistry: ChainRegistryProtocol,
         subscriber: MultisigPendingOperationsSubscriber,
         operationQueue: OperationQueue,
@@ -62,7 +60,7 @@ private extension MultisigPendingOperationsSubscription {
 
     func subscribeRemote(
         for accountId: AccountId,
-        callHashes: Set<CallHash>
+        callHashes: Set<Substrate.CallHash>
     ) throws {
         let connection = try chainRegistry.getConnectionOrError(for: chainId)
         let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
@@ -98,7 +96,7 @@ private extension MultisigPendingOperationsSubscription {
 
     func handleSubscription(
         _ result: Result<SubscriptionResult, Error>,
-        callHashes: Set<CallHash>
+        callHashes: Set<Substrate.CallHash>
     ) {
         switch result {
         case let .success(state):
@@ -130,7 +128,7 @@ private extension MultisigPendingOperationsSubscription {
 
 private struct SubscriptionResult: BatchStorageSubscriptionResult {
     enum Key {
-        static func pendingOperation(with callHash: CallHash) -> String {
+        static func pendingOperation(with callHash: Substrate.CallHash) -> String {
             "pendingOperation:" + callHash.toHexString()
         }
     }

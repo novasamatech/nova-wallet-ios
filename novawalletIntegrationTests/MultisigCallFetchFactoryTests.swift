@@ -47,7 +47,7 @@ final class MultisigCallFetchFactoryTests: XCTestCase {
         for event: MultisigEvent,
         at blockHash: Data,
         chainId: ChainModel.Id,
-        matching callHash: CallHash
+        matching callHash: Substrate.CallHash
     ) throws {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)

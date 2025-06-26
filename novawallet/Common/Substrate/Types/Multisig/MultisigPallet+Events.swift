@@ -4,7 +4,7 @@ extension MultisigPallet {
     struct NewMultisigEvent: Decodable {
         let approvingAccountId: AccountId
         let accountId: AccountId
-        let callHash: CallHash
+        let callHash: Substrate.CallHash
 
         init(from decoder: any Decoder) throws {
             var unkeyedContainer = try decoder.unkeyedContainer()
@@ -19,7 +19,7 @@ extension MultisigPallet {
         let approvingAccountId: AccountId
         let timepoint: MultisigPallet.MultisigTimepoint
         let accountId: AccountId
-        let callHash: CallHash
+        let callHash: Substrate.CallHash
 
         init(from decoder: any Decoder) throws {
             var unkeyedContainer = try decoder.unkeyedContainer()

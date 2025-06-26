@@ -4,7 +4,7 @@ import Operation_iOS
 extension Multisig {
     struct PendingOperation: Codable {
         let call: JSON?
-        let callHash: CallHash
+        let callHash: Substrate.CallHash
         let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
@@ -54,7 +54,7 @@ extension Multisig.PendingOperation: Identifiable {
 
 extension Multisig.PendingOperation {
     struct Key: Hashable {
-        let callHash: CallHash
+        let callHash: Substrate.CallHash
         let chainId: ChainModel.Id
         let multisigAccountId: AccountId
         let signatoryAccountId: AccountId
@@ -82,6 +82,24 @@ extension Multisig.PendingOperation {
 // MARK: - Update Helpers
 
 extension Multisig.PendingOperation {
+    func updating(with operation: Multisig.PendingOperation) -> Self {
+        let definitionUpdated = operation.multisigDefinition != multisigDefinition
+        let callUpdated = operation.call != nil && call == nil
+
+        guard definitionUpdated || callUpdated else { return self }
+
+        var updatedValue = self
+
+        if definitionUpdated {
+            updatedValue = updatedValue.replacingDefinition(with: operation.multisigDefinition)
+        }
+        if callUpdated {
+            updatedValue = updatedValue.replacingCall(with: operation.call)
+        }
+
+        return updatedValue
+    }
+
     func replacingDefinition(with definition: Multisig.MultisigDefinition?) -> Self {
         .init(
             call: call,

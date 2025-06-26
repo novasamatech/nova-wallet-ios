@@ -53,11 +53,11 @@ enum MultisigPallet {
 
     struct CallHashKey: JSONListConvertible, Hashable {
         let accountId: AccountId
-        let callHash: CallHash
+        let callHash: Substrate.CallHash
 
         init(
             accountId: AccountId,
-            callHash: CallHash
+            callHash: Substrate.CallHash
         ) {
             self.accountId = accountId
             self.callHash = callHash

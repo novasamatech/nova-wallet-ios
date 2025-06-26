@@ -2,7 +2,7 @@ import Foundation
 
 protocol MultisigPendingOperationsSubscriber: AnyObject {
     func didReceiveUpdate(
-        callHash: CallHash,
+        callHash: Substrate.CallHash,
         multisigDefinition: MultisigPallet.MultisigDefinition?
     )
 }
@@ -11,7 +11,7 @@ protocol MultisigPendingOperationsUpdatingServiceProtocol {
     func setupSubscription(
         subscriber: MultisigPendingOperationsSubscriber,
         for multisigAccountId: AccountId,
-        callHashes: Set<CallHash>,
+        callHashes: Set<Substrate.CallHash>,
         chainId: ChainModel.Id
     )
 
@@ -48,7 +48,7 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
     func setupSubscription(
         subscriber: MultisigPendingOperationsSubscriber,
         for multisigAccountId: AccountId,
-        callHashes: Set<CallHash>,
+        callHashes: Set<Substrate.CallHash>,
         chainId: ChainModel.Id
     ) {
         guard !callHashes.isEmpty else { return }

@@ -2,13 +2,13 @@ import SubstrateSdk
 
 struct MultisigEvent: Hashable {
     let accountId: AccountId
-    let callHash: CallHash
+    let callHash: Substrate.CallHash
     let extrinsicIndex: UInt32
     let eventType: EventType
 
     init(
         accountId: AccountId,
-        callHash: CallHash,
+        callHash: Substrate.CallHash,
         extrinsicIndex: UInt32,
         eventType: EventType
     ) {
