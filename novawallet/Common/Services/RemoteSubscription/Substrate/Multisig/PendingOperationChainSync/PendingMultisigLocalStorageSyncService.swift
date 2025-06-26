@@ -397,20 +397,20 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
             removeOperation(with: callHash)
         }
     }
-    
+
     func fetchLocalPendingOperations(
         completionBlock: @escaping (_ pendingOperationsCallHashes: Set<CallHash>) -> Void
     ) {
         let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
-        
+
         fetchOperation.completionBlock = { [weak self] in
             guard let self else { return }
-            
+
             do {
                 let callHashes = try fetchOperation
                     .extractNoCancellableResultData()
-                    .map { $0.callHash }
-                
+                    .map(\.callHash)
+
                 dispatchInQueueWhenPossible(workingQueue) {
                     completionBlock(Set(callHashes))
                 }

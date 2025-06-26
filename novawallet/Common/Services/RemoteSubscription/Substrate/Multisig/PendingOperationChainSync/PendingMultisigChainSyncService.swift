@@ -63,7 +63,7 @@ private extension PendingMultisigChainSyncService {
             self?.subscribeUpdates(for: pendingOperationsCallHashes.union(callHashes))
         }
     }
-    
+
     func subscribeUpdates(for callHashes: Set<CallHash>) {
         remoteOperationUpdateService.setupSubscription(
             subscriber: self,

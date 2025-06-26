@@ -19,6 +19,13 @@ enum MultisigPallet {
     struct MultisigTimepoint: Codable {
         @StringCodable var height: BlockNumber
         @StringCodable var index: UInt32
+
+        init(from decoder: Decoder) throws {
+            var unkeyedContainer = try decoder.unkeyedContainer()
+
+            height = try unkeyedContainer.decode(UInt32.self)
+            index = try unkeyedContainer.decode(UInt32.self)
+        }
     }
 
     struct CallHashKey: JSONListConvertible, Hashable {
