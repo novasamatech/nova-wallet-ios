@@ -71,7 +71,7 @@ private extension ParitySignerAddressesPresenter {
         if !model.solochainAccounts.isEmpty {
             let section = createSection(
                 with: LocalizableResource { _ in
-                    "Solochains".uppercased()
+                    "Solochain accounts".uppercased()
                 },
                 from: model.solochainAccounts
             )
@@ -82,7 +82,7 @@ private extension ParitySignerAddressesPresenter {
         if !model.evmAccounts.isEmpty {
             let section = createSection(
                 with: LocalizableResource { _ in
-                    "Solochains".uppercased()
+                    "Evm accounts".uppercased()
                 },
                 from: model.evmAccounts
             )
@@ -92,7 +92,7 @@ private extension ParitySignerAddressesPresenter {
 
         let consensusSections = model.consensusAccounts.map { account in
             let title = LocalizableResource { _ in
-                account.relay.name.uppercased()
+                (account.relay.name + " accounts").uppercased()
             }
 
             let items = account.chains.map { chain in
