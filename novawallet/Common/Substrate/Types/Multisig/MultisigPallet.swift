@@ -17,14 +17,37 @@ enum MultisigPallet {
     }
 
     struct MultisigTimepoint: Codable {
-        @StringCodable var height: BlockNumber
-        @StringCodable var index: UInt32
+        enum CodingKeys: String, CodingKey {
+            case height
+            case index
+        }
+
+        var height: BlockNumber
+        var index: UInt32
 
         init(from decoder: Decoder) throws {
-            var unkeyedContainer = try decoder.unkeyedContainer()
+            if let keyedContainer = try? decoder.container(keyedBy: CodingKeys.self) {
+                let height = try keyedContainer.decode(StringCodable<BlockNumber>.self, forKey: .height)
+                let index = try keyedContainer.decode(StringCodable<UInt32>.self, forKey: .index)
 
-            height = try unkeyedContainer.decode(UInt32.self)
-            index = try unkeyedContainer.decode(UInt32.self)
+                self.height = height.wrappedValue
+                self.index = index.wrappedValue
+            } else {
+                var unkeyedContainer = try decoder.unkeyedContainer()
+
+                let height = try unkeyedContainer.decode(StringCodable<BlockNumber>.self)
+                let index = try unkeyedContainer.decode(StringCodable<UInt32>.self)
+
+                self.height = height.wrappedValue
+                self.index = index.wrappedValue
+            }
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+
+            try container.encode(height.description, forKey: .height)
+            try container.encode(index.description, forKey: .index)
         }
     }
 

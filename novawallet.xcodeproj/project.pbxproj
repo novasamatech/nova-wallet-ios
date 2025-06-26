@@ -1505,6 +1505,7 @@
 		2D3C71BD2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71BC2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift */; };
 		2D3C71BF2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift */; };
 		2D3C71C12E0C67A900DF9E49 /* MultisigPendingOperationsService+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C02E0C67A900DF9E49 /* MultisigPendingOperationsService+Shared.swift */; };
+		2D3C71C32E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C22E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -7470,6 +7471,7 @@
 		2D3C71BC2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEventsUpdatingService.swift; sourceTree = "<group>"; };
 		2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigLocalStorageSyncService.swift; sourceTree = "<group>"; };
 		2D3C71C02E0C67A900DF9E49 /* MultisigPendingOperationsService+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigPendingOperationsService+Shared.swift"; sourceTree = "<group>"; };
+		2D3C71C22E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCallFetchFactoryTests.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -19364,6 +19366,7 @@
 				0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */,
 				0C992C422B54F5D900ACC129 /* EraStakersPagedSearchOperationFactoryTests.swift */,
 				0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */,
+				2D3C71C22E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -28579,6 +28582,7 @@
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,
 				840874E02978882700ACFA55 /* Gov2DelegationTests.swift in Sources */,
 				0C2F869A2A72948100593C01 /* NominationPoolsApyTests.swift in Sources */,
+				2D3C71C32E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift in Sources */,
 				8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */,
 				0CAC03042B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift in Sources */,
 				8455F19A2A1DEEAF003F072D /* SubqueryMultistakingTests.swift in Sources */,

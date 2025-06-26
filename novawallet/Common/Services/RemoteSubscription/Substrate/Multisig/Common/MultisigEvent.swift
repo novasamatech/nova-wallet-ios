@@ -6,6 +6,18 @@ struct MultisigEvent: Hashable {
     let extrinsicIndex: UInt32
     let eventType: EventType
 
+    init(
+        accountId: AccountId,
+        callHash: CallHash,
+        extrinsicIndex: UInt32,
+        eventType: EventType
+    ) {
+        self.accountId = accountId
+        self.callHash = callHash
+        self.extrinsicIndex = extrinsicIndex
+        self.eventType = eventType
+    }
+
     init?(
         params: JSON,
         extrinsicIndex: UInt32,
