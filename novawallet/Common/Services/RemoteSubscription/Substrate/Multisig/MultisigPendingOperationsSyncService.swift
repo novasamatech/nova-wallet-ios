@@ -71,8 +71,6 @@ private extension MultisigPendingOperationsService {
         changes.forEach { change in
             switch change {
             case let .insert(chain), let .update(chain):
-                guard chain.chainId == "e143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e" else { return }
-
                 chains[chain.chainId] = chain
                 callDataSyncService.addSyncing(for: chain)
                 setupChainSyncService(for: chain)
