@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import RaptorQ_iOS
 
 final class ParitySignerScanPresenter: QRScannerPresenter {
     let interactor: ParitySignerScanInteractorInputProtocol
@@ -14,6 +15,9 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
     let type: ParitySignerType
 
     private var lastHandledCode: QRCodeData?
+
+    private var decoder: RaptorQDecoder?
+    private var processedFrames = Set<Data>()
 
     private var mutex = NSLock()
 
@@ -93,7 +97,46 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
     }
 
     override func handle(rawDataCode: Data) {
-        handle(code: QRCodeData.raw(rawDataCode))
+        guard !processedFrames.contains(rawDataCode) else {
+            return
+        }
+
+        guard let frame = RaptorQFrame(payload: rawDataCode) else {
+            logger?.warning("Not a raptor frame")
+            return
+        }
+
+        if let decoder {
+            if decoder.push(frame: frame.packet) {
+                logger?.debug("Processed raptor frame")
+                processedFrames.insert(rawDataCode)
+            }
+        } else if let newDecoder = RaptorQDecoder(
+            totalBytes: UInt64(frame.totalLength),
+            maxPayload: UInt16(frame.packet.count)
+        ) {
+            logger?.debug("New Raptor decoder")
+            decoder = newDecoder
+
+            handle(rawDataCode: rawDataCode)
+        } else {
+            logger?.warning("Can't raptor handle data")
+        }
+
+        guard let decoder, decoder.isComplete else {
+            return
+        }
+
+        logger?.debug("Raptor parsing completed")
+
+        if let data = decoder.takeResult() {
+            handle(code: .raw(data))
+        } else {
+            logger?.warning("No data result after completing raptor decoding")
+        }
+
+        processedFrames.removeAll()
+        self.decoder = nil
     }
 
     override func viewWillAppear() {

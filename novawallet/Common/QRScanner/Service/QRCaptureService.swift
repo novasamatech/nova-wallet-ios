@@ -155,12 +155,11 @@ extension QRCaptureService: AVCaptureMetadataOutputObjectsDelegate {
         if let possibleCode = metadata.stringValue {
             notifyDelegateWithCode(.plain(possibleCode))
         } else if let descriptor = metadata.descriptor as? CIQRCodeDescriptor {
-            if let data = descriptor.errorCorrectedPayload.extractActualDataFromErrorCorrectedPayload() {
+            if let data = try? descriptor.errorCorrectedPayload.extractBytePayload(for: 10) {
                 notifyDelegateWithCode(.raw(data))
             } else {
                 notifyDelegate(with: QRCaptureServiceError.unsupportedFormat)
             }
-
         } else {
             notifyDelegate(with: QRCaptureServiceError.unsupportedFormat)
         }

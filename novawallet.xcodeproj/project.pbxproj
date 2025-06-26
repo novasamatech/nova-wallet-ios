@@ -962,6 +962,11 @@
 		0CC2E5682A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5672A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift */; };
 		0CC2E56A2A6E6EBB004092E7 /* LocalStorageProviderObserving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC2E5692A6E6EBB004092E7 /* LocalStorageProviderObserving.swift */; };
 		0CC31FA52DF09E29005A4ADF /* WalletSubscriptionEvmUpdateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC31FA42DF09E29005A4ADF /* WalletSubscriptionEvmUpdateHandler.swift */; };
+		0CC39E842E0C8FB4005148F4 /* RaptorQFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC39E832E0C8FB4005148F4 /* RaptorQFrame.swift */; };
+		0CC39E862E0D3844005148F4 /* ParitySignerExportAddrInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC39E852E0D3844005148F4 /* ParitySignerExportAddrInfo.swift */; };
+		0CC39E882E0D3BBA005148F4 /* ParitySignerMultiSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC39E872E0D3BBA005148F4 /* ParitySignerMultiSigner.swift */; };
+		0CC39E8A2E0D3D36005148F4 /* ParitySignerSigningAlgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC39E892E0D3D36005148F4 /* ParitySignerSigningAlgo.swift */; };
+		0CC39E8C2E0D3EB1005148F4 /* PolkadotVaultFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC39E8B2E0D3EB1005148F4 /* PolkadotVaultFeatures.swift */; };
 		0CC4CCF42A67C9C400F63041 /* Multistaking+NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC4CCF32A67C9C400F63041 /* Multistaking+NominationPools.swift */; };
 		0CC633542B3009C2001BF257 /* ChainRemoteAccountConfirmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC633532B3009C2001BF257 /* ChainRemoteAccountConfirmService.swift */; };
 		0CC6C8D82AAB401200AD8D9B /* CustomValidatorsFullList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */; };
@@ -6883,6 +6888,11 @@
 		0CC2E5672A6E64FD004092E7 /* NPoolsLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPoolsLocalStorageHandler.swift; sourceTree = "<group>"; };
 		0CC2E5692A6E6EBB004092E7 /* LocalStorageProviderObserving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageProviderObserving.swift; sourceTree = "<group>"; };
 		0CC31FA42DF09E29005A4ADF /* WalletSubscriptionEvmUpdateHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSubscriptionEvmUpdateHandler.swift; sourceTree = "<group>"; };
+		0CC39E832E0C8FB4005148F4 /* RaptorQFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaptorQFrame.swift; sourceTree = "<group>"; };
+		0CC39E852E0D3844005148F4 /* ParitySignerExportAddrInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerExportAddrInfo.swift; sourceTree = "<group>"; };
+		0CC39E872E0D3BBA005148F4 /* ParitySignerMultiSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerMultiSigner.swift; sourceTree = "<group>"; };
+		0CC39E892E0D3D36005148F4 /* ParitySignerSigningAlgo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerSigningAlgo.swift; sourceTree = "<group>"; };
+		0CC39E8B2E0D3EB1005148F4 /* PolkadotVaultFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotVaultFeatures.swift; sourceTree = "<group>"; };
 		0CC4CCF32A67C9C400F63041 /* Multistaking+NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multistaking+NominationPools.swift"; sourceTree = "<group>"; };
 		0CC633532B3009C2001BF257 /* ChainRemoteAccountConfirmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRemoteAccountConfirmService.swift; sourceTree = "<group>"; };
 		0CC6C8D72AAB401200AD8D9B /* CustomValidatorsFullList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomValidatorsFullList.swift; sourceTree = "<group>"; };
@@ -14201,6 +14211,14 @@
 			path = WalletRemoteSubscription;
 			sourceTree = "<group>";
 		};
+		0CC39E822E0C8FA3005148F4 /* RaptorQ */ = {
+			isa = PBXGroup;
+			children = (
+				0CC39E832E0C8FB4005148F4 /* RaptorQFrame.swift */,
+			);
+			path = RaptorQ;
+			sourceTree = "<group>";
+		};
 		0CC633522B30099F001BF257 /* LighSync */ = {
 			isa = PBXGroup;
 			children = (
@@ -18181,6 +18199,10 @@
 				0C1290EB2DFC753E002A5E67 /* MetaAccountModel+Vault.swift */,
 				0C1290ED2DFC7731002A5E67 /* ParitySignerSigningIdentity.swift */,
 				0C1290F52DFF794C002A5E67 /* ParitySignerSignatureConverter.swift */,
+				0CC39E852E0D3844005148F4 /* ParitySignerExportAddrInfo.swift */,
+				0CC39E872E0D3BBA005148F4 /* ParitySignerMultiSigner.swift */,
+				0CC39E892E0D3D36005148F4 /* ParitySignerSigningAlgo.swift */,
+				0CC39E8B2E0D3EB1005148F4 /* PolkadotVaultFeatures.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -21104,6 +21126,7 @@
 		849013D124A92686008F705E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				0CC39E822E0C8FA3005148F4 /* RaptorQ */,
 				2DF95D1B2D771914001D8785 /* HapticPlayer */,
 				0C8C8F802D6C3E2D00441FB3 /* PriceProvider */,
 				2D1D65FE2CD80A33009C6C2F /* ImageRetrieve */,
@@ -29036,6 +29059,7 @@
 				0C1CCC412B60138F00A6EA17 /* XcmDeliveryRequest.swift in Sources */,
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
 				84CFF1E826526FBC00DB7CF7 /* StakingBondMoreViewFactory.swift in Sources */,
+				0CC39E842E0C8FB4005148F4 /* RaptorQFrame.swift in Sources */,
 				8490147524A94A37008F705E /* RootWireframe.swift in Sources */,
 				778D979D2A24D21B002BA681 /* AssetsOperationViewLayout.swift in Sources */,
 				84F1CB3C27CF42B80095D523 /* NftListItemWithPriceCell.swift in Sources */,
@@ -29623,6 +29647,7 @@
 				0C38B5032B7A86CE00882A8B /* TokensPallet.swift in Sources */,
 				0C746DBE2CCF440800E9178B /* AssetExchangeAtomicOperation.swift in Sources */,
 				88421056289BBA8D00306F2C /* CurrencyPresenter.swift in Sources */,
+				0CC39E8C2E0D3EB1005148F4 /* PolkadotVaultFeatures.swift in Sources */,
 				84D33996262250B800130A89 /* String+Substrate.swift in Sources */,
 				8442003428E9BD3200C49C4A /* VoteChildPresenterFactory.swift in Sources */,
 				0CFAABFF2E0BF1AD00945577 /* ParitySignerScanForUpdateWireframe.swift in Sources */,
@@ -30072,6 +30097,7 @@
 				77F033952A8142B0006BC67E /* StakingTypeValidatorView.swift in Sources */,
 				0C2352A02BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift in Sources */,
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
+				0CC39E882E0D3BBA005148F4 /* ParitySignerMultiSigner.swift in Sources */,
 				849014BF24AA87E4008F705E /* ScreenAuthorizationProtocol.swift in Sources */,
 				84CB2250270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift in Sources */,
 				77CBD39E2ABC28BE00D646D6 /* SendAssetsOperationInteractor.swift in Sources */,
@@ -30576,6 +30602,7 @@
 				847999A9288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift in Sources */,
 				8496ADD7276AFEED00306B24 /* DAppBrowserModel.swift in Sources */,
 				8473B4782A207FE0003DE213 /* StakingDashboardOffchainMapper.swift in Sources */,
+				0CC39E862E0D3844005148F4 /* ParitySignerExportAddrInfo.swift in Sources */,
 				77D2E2712B05416E0098F188 /* AssetListGroupModelCompator.swift in Sources */,
 				84F4386625D9B8C600AEDA56 /* TypeRegistryPrepared.swift in Sources */,
 				2D7C645D2D84B1BA00FD658E /* UnifiedAddressPopupViewModelFactory.swift in Sources */,
@@ -32024,6 +32051,7 @@
 				8451720F298C495500489EF1 /* BorderedIconLabelView+TrackStyle.swift in Sources */,
 				DE03CA5AD7F1D0B80DFF13B6 /* DAppBrowserViewController.swift in Sources */,
 				8473B47A2A2083B1003DE213 /* StakingDashboardItemMapper.swift in Sources */,
+				0CC39E8A2E0D3D36005148F4 /* ParitySignerSigningAlgo.swift in Sources */,
 				0C3205D62A895F0F002EB914 /* EvmGasLimitWithFallbackProvider.swift in Sources */,
 				0C1998ED2C4CB24C000EBFB8 /* AssetHold+Display.swift in Sources */,
 				8442002328E6FE1E00C49C4A /* ReferendumsViewManager.swift in Sources */,

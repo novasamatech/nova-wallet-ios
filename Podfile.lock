@@ -1422,6 +1422,7 @@ PODS:
   - R.swift (5.4.0):
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
+  - RaptorQ-iOS (0.1.0)
   - ReachabilitySwift (5.2.4)
   - RecaptchaInterop (100.0.0)
   - scrypt.c (0.1.1)
@@ -1564,6 +1565,7 @@ DEPENDENCIES:
   - NovaCrypto (from `https://github.com/novasamatech/Crypto-iOS`, tag `0.1.0`)
   - Operation-iOS (from `https://github.com/novasamatech/Operation-iOS`, tag `2.1.0`)
   - R.swift
+  - RaptorQ-iOS (from `https://github.com/novasamatech/raptorq-ios`, commit `8e3255f833e012d2f7f26de754725d387d36983f`)
   - ReachabilitySwift (~> 5.2.4)
   - secp256k1.c (from `https://github.com/novasamatech/secp256k1.c`, tag `0.1.3`)
   - SnapKit (~> 5.0.0)
@@ -1667,6 +1669,9 @@ EXTERNAL SOURCES:
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.1.0
+  RaptorQ-iOS:
+    :commit: 8e3255f833e012d2f7f26de754725d387d36983f
+    :git: https://github.com/novasamatech/raptorq-ios
   secp256k1.c:
     :git: https://github.com/novasamatech/secp256k1.c
     :tag: 0.1.3
@@ -1722,6 +1727,9 @@ CHECKOUT OPTIONS:
   Operation-iOS:
     :git: https://github.com/novasamatech/Operation-iOS
     :tag: 2.1.0
+  RaptorQ-iOS:
+    :commit: 8e3255f833e012d2f7f26de754725d387d36983f
+    :git: https://github.com/novasamatech/raptorq-ios
   secp256k1.c:
     :git: https://github.com/novasamatech/secp256k1.c
     :tag: 0.1.3
@@ -1792,6 +1800,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
+  RaptorQ-iOS: 5abad368a5324ae98cc0759fe66fb1ec312b0fb5
   ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
@@ -1818,6 +1827,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: d4290d1b21c6e37dd8dfcbfde11db1ca43066d71
+PODFILE CHECKSUM: 89b640f178a981af5e208c1ce7dd883d75c52f21
 
 COCOAPODS: 1.15.2

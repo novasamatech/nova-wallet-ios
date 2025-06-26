@@ -16,6 +16,7 @@ enum ParitySignerMessageType: UInt8 {
     case transactionWithProof = 6
     case ddTransactionWithProof = 7
     case anyChainMessage = 8
+    case ddExportKeyset = 222 // 0xde
 
     var bytes: Data {
         Data([rawValue])

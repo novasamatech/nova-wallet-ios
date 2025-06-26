@@ -40,6 +40,7 @@ abstract_target 'novawalletAll' do
   pod 'ed25519.c', :git => 'https://github.com/novasamatech/ed25519.c', :tag => '0.1.1'
   pod 'blake2.c', :git => 'https://github.com/novasamatech/blake2.c', :tag => '0.1.0'
   pod 'BranchSDK', '~> 3.10.0'
+  pod 'RaptorQ-iOS', :git => 'https://github.com/novasamatech/raptorq-ios', :commit => '8e3255f833e012d2f7f26de754725d387d36983f'
   
   target 'novawalletTests' do
     inherit! :search_paths

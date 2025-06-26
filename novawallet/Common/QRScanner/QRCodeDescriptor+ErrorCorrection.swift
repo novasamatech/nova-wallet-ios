@@ -27,6 +27,53 @@ extension Data {
         }
         return Data(result)
     }
+
+    /// Extract the raw payload from a Byte-mode segment.
+    /// - Parameters:
+    ///   - codewords: Data region of the QR symbol (error-correction bytes *not* included).
+    ///   - version:   Symbol version (1‒40).  Versions 1‒9 use an 8-bit length
+    ///                field; versions 10‒40 use a 16-bit length field.
+    /// - Returns:     A `Data` object containing exactly the bytes encoded in the QR symbol.
+    /// - Throws:      `FormatError` if the stream is malformed (wrong mode, truncated, etc.).
+    func extractBytePayload(for version: Int) throws -> Data {
+        struct FormatError: Error {}
+        precondition((1 ... 40).contains(version), "Version must be 1‒40")
+
+        // ---- Bit reader ----------------------------------------------------
+        let bytes = [UInt8](self) // local copy for fast random access
+        var bitIndex = 0 // position in bits
+
+        @inline(__always)
+        func take(_ num: Int) throws -> Int {
+            var value = 0
+            for _ in 0 ..< num {
+                let bytePos = bitIndex >> 3
+                guard bytePos < bytes.count else { throw FormatError() }
+                let bit = (bytes[bytePos] >> (7 - (bitIndex & 7))) & 1
+                value = (value << 1) | Int(bit)
+                bitIndex += 1
+            }
+            return value
+        }
+
+        // 1. Mode indicator must be 0b0100 (Byte mode) -----------------------
+        guard try take(4) == 0b0100 else { throw FormatError() }
+
+        // 2. Character-count indicator (8 or 16 bits) ------------------------
+        let lengthBits = version <= 9 ? 8 : 16
+        let length = try take(lengthBits)
+        guard length >= 0 else { throw FormatError() }
+
+        // 3. Payload bytes ----------------------------------------------------
+        var payload = [UInt8]()
+        payload.reserveCapacity(length)
+
+        for _ in 0 ..< length {
+            payload.append(UInt8(try take(8)))
+        }
+
+        return Data(payload)
+    }
 }
 
 private extension Array where Element == UInt8 {
