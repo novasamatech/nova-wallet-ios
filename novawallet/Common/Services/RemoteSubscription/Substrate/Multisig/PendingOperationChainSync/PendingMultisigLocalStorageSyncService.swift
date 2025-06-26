@@ -323,7 +323,7 @@ private extension PendingMultisigLocalStorageSyncService {
     ) throws -> JSON {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let context = codingFactory.createRuntimeJsonContext()
-        
+
         return try decoder.read(
             of: GenericType.call.name,
             with: context.toRawContext()

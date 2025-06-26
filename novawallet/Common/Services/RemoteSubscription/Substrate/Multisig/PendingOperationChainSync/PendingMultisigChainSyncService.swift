@@ -81,7 +81,7 @@ extension PendingMultisigChainSyncService: MultisigOperationsLocalStorageSubscri
         switch result {
         case let .success(changes):
             let callHashesToUpdate = changes
-                .filter { $0.item?.multisigDefinition != nil }
+                .filter { $0.item?.multisigDefinition == nil }
                 .compactMap { $0.item?.callHash }
 
             guard !callHashesToUpdate.isEmpty else { return }
