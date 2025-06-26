@@ -45,7 +45,7 @@ final class PendingMultisigChainSyncService: BaseSyncService,
         )
 
         localStorageSyncService.syncPendingOperations { [weak self] updatedCallHashes in
-            self?.createManageSubscriptionsOperation(callHashes: updatedCallHashes)
+            self?.subscribeUpdates(for: updatedCallHashes)
         }
     }
 
@@ -58,7 +58,13 @@ final class PendingMultisigChainSyncService: BaseSyncService,
 // MARK: - Private
 
 private extension PendingMultisigChainSyncService {
-    func createManageSubscriptionsOperation(callHashes: Set<CallHash>) {
+    func updateSubscriptions(adding callHashes: Set<CallHash>) {
+        localStorageSyncService.fetchLocalPendingOperations { [weak self] pendingOperationsCallHashes in
+            self?.subscribeUpdates(for: pendingOperationsCallHashes.union(callHashes))
+        }
+    }
+    
+    func subscribeUpdates(for callHashes: Set<CallHash>) {
         remoteOperationUpdateService.setupSubscription(
             subscriber: self,
             for: multisigAccount.accountId,
@@ -80,13 +86,13 @@ extension PendingMultisigChainSyncService: MultisigOperationsLocalStorageSubscri
     ) {
         switch result {
         case let .success(changes):
-            let callHashesToUpdate = changes
+            let callHashesToSubscribe = changes
                 .filter { $0.item?.multisigDefinition == nil }
                 .compactMap { $0.item?.callHash }
 
-            guard !callHashesToUpdate.isEmpty else { return }
+            guard !callHashesToSubscribe.isEmpty else { return }
 
-            createManageSubscriptionsOperation(callHashes: Set(callHashesToUpdate))
+            updateSubscriptions(adding: Set(callHashesToSubscribe))
         case let .failure(error):
             logger.error("Failed to handle multisig pending operations: \(error), chainId: \(chain.chainId)")
         }

@@ -12,6 +12,9 @@ protocol PendingMultisigLocalStorageSyncServiceProtocol {
         for callHash: CallHash,
         _ multisigDefinition: MultisigPallet.MultisigDefinition?
     )
+    func fetchLocalPendingOperations(
+        completionBlock: @escaping (_ pendingOperationsCallHashes: Set<CallHash>) -> Void
+    )
 }
 
 final class PendingMultisigLocalStorageSyncService {
@@ -22,6 +25,7 @@ final class PendingMultisigLocalStorageSyncService {
     private let remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
     private let pendingOperationsRepository: AnyDataProviderRepository<Multisig.PendingOperation>
     private let operationManager: OperationManagerProtocol
+    private let workingQueue: DispatchQueue
     private let logger: LoggerProtocol
 
     init(
@@ -32,6 +36,7 @@ final class PendingMultisigLocalStorageSyncService {
         remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol,
         pendingOperationsRepository: AnyDataProviderRepository<Multisig.PendingOperation>,
         operationManager: OperationManagerProtocol,
+        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.local.storage.sync"),
         logger: LoggerProtocol = Logger.shared
     ) {
         self.multisigAccount = multisigAccount
@@ -41,6 +46,7 @@ final class PendingMultisigLocalStorageSyncService {
         self.remoteOperationUpdateService = remoteOperationUpdateService
         self.pendingOperationsRepository = pendingOperationsRepository
         self.operationManager = operationManager
+        self.workingQueue = workingQueue
         self.logger = logger
     }
 }
@@ -353,7 +359,9 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
                             .targetOperation
                             .extractNoCancellableResultData()
 
-                        completionBlock(updatedCallHashes)
+                        dispatchInQueueWhenPossible(self.workingQueue) {
+                            completionBlock(updatedCallHashes)
+                        }
                     } catch {
                         self.logger.error(
                             "Failed to sync pending operations: \(error), chainId: \(self.chain.chainId)"
@@ -387,6 +395,30 @@ extension PendingMultisigLocalStorageSyncService: PendingMultisigLocalStorageSyn
             )
         } else {
             removeOperation(with: callHash)
+        }
+    }
+    
+    func fetchLocalPendingOperations(
+        completionBlock: @escaping (_ pendingOperationsCallHashes: Set<CallHash>) -> Void
+    ) {
+        let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
+        
+        fetchOperation.completionBlock = { [weak self] in
+            guard let self else { return }
+            
+            do {
+                let callHashes = try fetchOperation
+                    .extractNoCancellableResultData()
+                    .map { $0.callHash }
+                
+                dispatchInQueueWhenPossible(workingQueue) {
+                    completionBlock(Set(callHashes))
+                }
+            } catch {
+                logger.error(
+                    "Failed to fetch local pending operations: \(error), chainId: \(chain.chainId)"
+                )
+            }
         }
     }
 }
