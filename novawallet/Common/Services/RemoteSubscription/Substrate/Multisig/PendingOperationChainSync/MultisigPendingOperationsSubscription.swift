@@ -9,7 +9,6 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     let chainId: ChainModel.Id
     let callHashes: Set<CallHash>
     let chainRegistry: ChainRegistryProtocol
-    let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
 
     private let mutex = NSLock()
@@ -19,18 +18,11 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     private var subscription: CallbackBatchStorageSubscription<SubscriptionResult>?
     private weak var subscriber: MultisigPendingOperationsSubscriber?
 
-    private lazy var repository: AnyDataProviderRepository<ChainStorageItem> = {
-        let coreDataRepository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
-            storageFacade.createRepository()
-        return AnyDataProviderRepository(coreDataRepository)
-    }()
-
     init(
         accountId: AccountId,
         chainId: ChainModel.Id,
         callHashes: Set<CallHash>,
         chainRegistry: ChainRegistryProtocol,
-        storageFacade: StorageFacadeProtocol,
         subscriber: MultisigPendingOperationsSubscriber,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -40,7 +32,6 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         self.chainId = chainId
         self.callHashes = callHashes
         self.chainRegistry = chainRegistry
-        self.storageFacade = storageFacade
         self.subscriber = subscriber
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -73,23 +64,14 @@ private extension MultisigPendingOperationsSubscription {
         for accountId: AccountId,
         callHashes: Set<CallHash>
     ) throws {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            Multisig.multisigList,
-            chainId: chainId
-        )
+        let connection = try chainRegistry.getConnectionOrError(for: chainId)
+        let runtimeService = try chainRegistry.getRuntimeProviderOrError(for: chainId)
 
         let requests = callHashes.map { callHash in
             BatchStorageSubscriptionRequest(
                 innerRequest: DoubleMapSubscriptionRequest(
-                    storagePath: Multisig.multisigList,
-                    localKey: localKey,
+                    storagePath: MultisigPallet.multisigListStoragePath,
+                    localKey: "",
                     keyParamClosure: {
                         (
                             BytesCodable(wrappedValue: accountId),
@@ -105,7 +87,7 @@ private extension MultisigPendingOperationsSubscription {
             requests: requests,
             connection: connection,
             runtimeService: runtimeService,
-            repository: repository,
+            repository: nil,
             operationQueue: operationQueue,
             callbackQueue: workingQueue
         ) { [weak self] result in
@@ -126,7 +108,7 @@ private extension MultisigPendingOperationsSubscription {
                     let json = state.values[key]
 
                     let definition = try? json?.map(
-                        to: Multisig.MultisigDefinition.self,
+                        to: MultisigPallet.MultisigDefinition.self,
                         with: state.context
                     )
 

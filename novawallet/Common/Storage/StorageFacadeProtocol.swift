@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import CoreData
 
-protocol StorageFacadeProtocol: AnyObject, InMemoryRepositoryCachingFactory {
+protocol StorageFacadeProtocol: AnyObject {
     var databaseService: CoreDataServiceProtocol { get }
 
     func createRepository<T, U>(

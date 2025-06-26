@@ -5,6 +5,13 @@ import BigInt
 
 typealias CallData = Data
 
+private typealias FindMultisigsResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
+    SubqueryMultisigs.FindMultisigsResponse
+>
+private typealias FetchMultisigCallDataResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
+    SubqueryMultisigs.FetchMultisigCallDataResponse
+>
+
 protocol SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
         for accountIds: Set<AccountId>
@@ -91,18 +98,30 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
 
         operation = createOperation(
             for: query
-        ) { (response: SubqueryMultisigs.MultisigsResponseQueryWrapper<SubqueryMultisigs.FindMultisigsResponse>) in
-            accountIds.flatMap { accountId in
-                response.query.accounts.nodes
-                    .filter { $0.signatories.nodes.contains { $0.signatory.id == accountId } }
-                    .map {
-                        DiscoveredMultisig(
-                            accountId: $0.id,
-                            signatory: accountId,
-                            signatories: $0.signatories.nodes.map(\.signatory.id),
-                            threshold: $0.threshold
-                        )
+        ) { (response: FindMultisigsResponse) in
+            let nodes: [AccountId: [SubqueryMultisigs.RemoteMultisig]] = response.query.accounts.nodes.reduce(
+                into: [:]
+            ) { acc, node in
+                node.signatories.nodes.forEach {
+                    if acc[$0.signatory.id] != nil {
+                        acc[$0.signatory.id]?.append(node)
+                    } else {
+                        acc[$0.signatory.id] = [node]
                     }
+                }
+            }
+
+            return accountIds.reduce(into: []) { acc, accountId in
+                nodes[accountId]?.forEach { remoteMultisig in
+                    let discoveredMultisig = DiscoveredMultisig(
+                        accountId: remoteMultisig.id,
+                        signatory: accountId,
+                        signatories: remoteMultisig.signatories.nodes.map(\.signatory.id),
+                        threshold: remoteMultisig.threshold
+                    )
+
+                    acc.append(discoveredMultisig)
+                }
             }
         }
 
@@ -118,7 +137,7 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
 
         operation = createOperation(
             for: query
-        ) { (response: SubqueryMultisigs.MultisigsResponseQueryWrapper<SubqueryMultisigs.FetchMultisigCallDataResponse>) in
+        ) { (response: FetchMultisigCallDataResponse) in
             response.query.multisigOperations.nodes.reduce(into: [:]) { acc, node in
                 guard callHashes.contains(node.callHash) else { return }
 

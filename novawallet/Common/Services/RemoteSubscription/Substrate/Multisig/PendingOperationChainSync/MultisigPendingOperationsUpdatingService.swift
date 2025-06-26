@@ -3,7 +3,7 @@ import Foundation
 protocol MultisigPendingOperationsSubscriber: AnyObject {
     func didReceiveUpdate(
         callHash: CallHash,
-        multisigDefinition: Multisig.MultisigDefinition?
+        multisigDefinition: MultisigPallet.MultisigDefinition?
     )
 }
 
@@ -20,7 +20,6 @@ protocol MultisigPendingOperationsUpdatingServiceProtocol {
 
 final class MultisigPendingOperationsUpdatingService {
     private let chainRegistry: ChainRegistryProtocol
-    private let storageFacade: StorageFacadeProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
 
@@ -30,12 +29,10 @@ final class MultisigPendingOperationsUpdatingService {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.updating")
     ) {
         self.chainRegistry = chainRegistry
-        self.storageFacade = storageFacade
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
     }
@@ -65,7 +62,6 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
             chainId: chainId,
             callHashes: callHashes,
             chainRegistry: chainRegistry,
-            storageFacade: storageFacade,
             subscriber: subscriber,
             operationQueue: operationQueue,
             workingQueue: workingQueue

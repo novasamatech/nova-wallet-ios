@@ -5,22 +5,26 @@ import SubstrateSdk
 protocol PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
-        selectedMetaAccount: MetaAccountModel,
-        knownCallData: [Multisig.PendingOperation.Key: JSON],
-        operationQueue: OperationQueue
+        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel
     ) -> PendingMultisigChainSyncServiceProtocol
 }
 
 final class PendingMultisigChainSyncServiceFactory {
     private let chainRegistry: ChainRegistryProtocol
-    private let substrateStorageFacade: StorageFacadeProtocol
+    private let storageFacade: StorageFacadeProtocol
+    private let operationManager: OperationManagerProtocol
+    private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        substrateStorageFacade: StorageFacadeProtocol
+        storageFacade: StorageFacadeProtocol,
+        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.substrateStorageFacade = substrateStorageFacade
+        self.storageFacade = storageFacade
+        self.operationManager = operationManager
+        self.operationQueue = operationQueue
     }
 }
 
@@ -29,37 +33,44 @@ final class PendingMultisigChainSyncServiceFactory {
 extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol {
     func createMultisigChainSyncService(
         for chain: ChainModel,
-        selectedMetaAccount: MetaAccountModel,
-        knownCallData: [Multisig.PendingOperation.Key: JSON],
-        operationQueue: OperationQueue
+        selectedMultisigAccount: DelegatedAccount.MultisigAccountModel
     ) -> PendingMultisigChainSyncServiceProtocol {
-        let pendingMultisigsQueue = OperationManagerFacade.pendingMultisigQueue
-        let multisigSyncOperationManager = OperationManager(operationQueue: pendingMultisigsQueue)
-
-        let substrateStorageFacade = SubstrateDataStorageFacade.shared
-
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: multisigSyncOperationManager
+            operationManager: operationManager
         )
         let pendingCallHashesOperationFactory = MultisigStorageOperationFactory(
             storageRequestFactory: storageRequestFactory
         )
         let remoteOperationUpdateService = MultisigPendingOperationsUpdatingService(
             chainRegistry: chainRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
-
-        return PendingMultisigChainSyncService(
-            wallet: selectedMetaAccount,
+        let predicate = NSPredicate.pendingMultisigOperations(
+            for: chain.chainId,
+            multisigAccountId: selectedMultisigAccount.accountId
+        )
+        let repository = storageFacade.createRepository(
+            filter: predicate,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
+        )
+        let localStorageSyncService = PendingMultisigLocalStorageSyncService(
+            multisigAccount: selectedMultisigAccount,
             chain: chain,
             chainRegistry: chainRegistry,
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,
             remoteOperationUpdateService: remoteOperationUpdateService,
-            repositoryCachingFactory: substrateStorageFacade,
-            knownCallData: knownCallData,
-            operationQueue: operationQueue
+            pendingOperationsRepository: AnyDataProviderRepository(repository),
+            operationManager: operationManager
+        )
+
+        return PendingMultisigChainSyncService(
+            multisigAccount: selectedMultisigAccount,
+            chain: chain,
+            localStorageSyncService: localStorageSyncService,
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+            remoteOperationUpdateService: remoteOperationUpdateService
         )
     }
 }

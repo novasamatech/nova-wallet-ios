@@ -2,54 +2,36 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-protocol MultisigPendingOperationsSyncServiceProtocol: ApplicationServiceProtocol {}
+protocol MultisigPendingOperationsServiceProtocol: ApplicationServiceProtocol {
+    func update(selectedMetaAccount: MetaAccountModel)
+}
 
-class MultisigPendingOperationsSyncService {
-    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
-
+final class MultisigPendingOperationsService {
     private let mutex = NSLock()
 
-    private let chainRepository: AnyDataProviderRepository<ChainModel>
+    private let chainRegistry: ChainRegistryProtocol
     private let callDataSyncService: MultisigCallDataSyncServiceProtocol
     private let chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol
-    private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
     private let logger: LoggerProtocol?
 
+    private var selectedMetaAccount: MetaAccountModel
+
+    private var chains: [ChainModel.Id: ChainModel] = [:]
     private var pendingOperationsChainSyncServices: [ChainModel.Id: PendingMultisigChainSyncServiceProtocol] = [:]
 
-    private var selectedMetaAccountProvider: StreamableProvider<ManagedMetaAccountModel>?
-
-    private var knownCallData: [Multisig.PendingOperation.Key: JSON] = [:]
-
-    private var selectedMetaAccount: MetaAccountModel? {
-        didSet {
-            if let selectedMetaAccount,
-               selectedMetaAccount != oldValue {
-                if selectedMetaAccount.multisigAccount != nil {
-                    createChainSyncServices(for: selectedMetaAccount)
-                } else {
-                    pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
-                    pendingOperationsChainSyncServices = [:]
-                }
-            }
-        }
-    }
-
     init(
-        chainRepository: AnyDataProviderRepository<ChainModel>,
+        selectedMetaAccount: MetaAccountModel,
+        chainRegistry: ChainRegistryProtocol,
         callDataSyncService: MultisigCallDataSyncServiceProtocol,
         chainSyncServiceFactory: PendingMultisigChainSyncServiceFactoryProtocol,
-        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
-        operationQueue: OperationQueue,
         workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.sync.service"),
         logger: LoggerProtocol? = nil
     ) {
-        self.chainRepository = chainRepository
+        self.selectedMetaAccount = selectedMetaAccount
+        self.chainRegistry = chainRegistry
         self.callDataSyncService = callDataSyncService
         self.chainSyncServiceFactory = chainSyncServiceFactory
-        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
-        self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
     }
@@ -57,83 +39,90 @@ class MultisigPendingOperationsSyncService {
 
 // MARK: - Private
 
-private extension MultisigPendingOperationsSyncService {
+private extension MultisigPendingOperationsService {
     func performSetup() {
-        mutex.lock()
-        defer { mutex.unlock() }
-
-        selectedMetaAccountProvider = subscribeSelectedWalletProvider()
-        setupCallDataSync()
+        callDataSyncService.startSyncUp()
+        subscribeChains()
     }
 
-    func setupCallDataSync() {
-        let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
+    func performStop() {
+        chainRegistry.chainsUnsubscribe(self)
+        clearChainSyncServices()
+        callDataSyncService.stopSyncUp()
+    }
 
-        execute(
-            operation: chainsFetchOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
+    func subscribeChains() {
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: workingQueue,
+            filterStrategy: .hasMultisig
+        ) { [weak self] changes in
             guard let self else { return }
 
-            switch result {
-            case let .success(chains):
-                let relevantChains = matchRelevantChains(from: chains)
+            mutex.lock()
 
-                callDataSyncService.addObserver(
-                    self,
-                    sendOnSubscription: true
-                )
-                callDataSyncService.setup(with: relevantChains)
-            case let .failure(error):
-                logger?.error("Failed to fetch chains: \(error)")
+            handleChain(changes)
+
+            mutex.unlock()
+        }
+    }
+
+    func handleChain(_ changes: [DataProviderChange<ChainModel>]) {
+        changes.forEach { change in
+            switch change {
+            case let .insert(chain), let .update(chain):
+                chains[chain.chainId] = chain
+                callDataSyncService.addSyncing(for: chain)
+                setupChainSyncService(for: chain)
+            case let .delete(chainId):
+                chains[chainId] = nil
+                callDataSyncService.stopSyncing(for: chainId)
             }
         }
     }
 
-    func createChainSyncServices(for selectedMetaAccount: MetaAccountModel) {
+    func clearChainSyncServices() {
+        stopSyncUpChainSyncServices()
+        pendingOperationsChainSyncServices = [:]
+    }
+
+    func stopSyncUpChainSyncServices() {
         pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
-
-        let chainsFetchOperation = chainRepository.fetchAllOperation(with: .init())
-
-        execute(
-            operation: chainsFetchOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: workingQueue
-        ) { [weak self] result in
-            guard let self else { return }
-
-            switch result {
-            case let .success(chains):
-                let relevantChains = matchRelevantChains(from: chains)
-
-                mutex.lock()
-                pendingOperationsChainSyncServices = relevantChains.reduce(into: [:]) { acc, chain in
-                    let service = self.chainSyncServiceFactory.createMultisigChainSyncService(
-                        for: chain,
-                        selectedMetaAccount: selectedMetaAccount,
-                        knownCallData: self.knownCallData,
-                        operationQueue: self.operationQueue
-                    )
-                    acc[chain.chainId] = service
-                }
-                pendingOperationsChainSyncServices.forEach { $0.value.setup() }
-                mutex.unlock()
-            case let .failure(error):
-                logger?.error("Failed to fetch chains: \(error)")
-            }
-        }
     }
 
-    func matchRelevantChains(from chains: [ChainModel]) -> [ChainModel] {
-        chains.filter { $0.hasMultisig }
+    func setupChainSyncService(for chain: ChainModel) {
+        guard
+            let multisigAccount = selectedMetaAccount.multisigAccount?.multisig,
+            pendingOperationsChainSyncServices[chain.chainId] == nil
+        else { return }
+
+        let service = chainSyncServiceFactory.createMultisigChainSyncService(
+            for: chain,
+            selectedMultisigAccount: multisigAccount
+        )
+
+        pendingOperationsChainSyncServices[chain.chainId] = service
+
+        service.setup()
+    }
+
+    func updateChainSyncServices() {
+        stopSyncUpChainSyncServices()
+
+        chains.values.forEach {
+            pendingOperationsChainSyncServices[$0.chainId] = nil
+            setupChainSyncService(for: $0)
+        }
     }
 }
 
-// MARK: - MultisigPendingOperationsSyncServiceProtocol
+// MARK: - MultisigPendingOperationsServiceProtocol
 
-extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSyncServiceProtocol {
+extension MultisigPendingOperationsService: MultisigPendingOperationsServiceProtocol {
     func setup() {
+        mutex.lock()
+        defer { mutex.unlock() }
+
         performSetup()
     }
 
@@ -141,41 +130,21 @@ extension MultisigPendingOperationsSyncService: MultisigPendingOperationsSyncSer
         mutex.lock()
         defer { mutex.unlock() }
 
-        pendingOperationsChainSyncServices.forEach { $0.value.stopSyncUp() }
-        callDataSyncService.stopSyncUp()
-        selectedMetaAccountProvider = nil
+        performStop()
     }
-}
 
-// MARK: - WalletListLocalStorageSubscriber
-
-extension MultisigPendingOperationsSyncService: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleSelectedWallet(result: Result<ManagedMetaAccountModel?, any Error>) {
-        switch result {
-        case let .success(selectedMetaAccount):
-            mutex.lock()
-            self.selectedMetaAccount = selectedMetaAccount?.info
-            mutex.unlock()
-        case let .failure(error):
-            logger?.error("Failed to fetch selected wallet: \(error)")
-        }
-    }
-}
-
-// MARK: - MultisigCallDataObserver
-
-extension MultisigPendingOperationsSyncService: MultisigCallDataObserver {
-    func didReceive(newCallData: [Multisig.PendingOperation.Key: MultisigCallOrHash]) {
+    func update(selectedMetaAccount: MetaAccountModel) {
         mutex.lock()
         defer { mutex.unlock() }
 
-        knownCallData.merge(
-            newCallData.reduce(into: [:]) { $0[$1.key] = $1.value.call },
-            uniquingKeysWith: { $1 }
-        )
+        guard selectedMetaAccount.metaId != self.selectedMetaAccount.metaId else { return }
 
-        pendingOperationsChainSyncServices.forEach {
-            $0.value.updatePendingOperations(using: newCallData)
+        self.selectedMetaAccount = selectedMetaAccount
+
+        if selectedMetaAccount.multisigAccount != nil {
+            updateChainSyncServices()
+        } else {
+            clearChainSyncServices()
         }
     }
 }
