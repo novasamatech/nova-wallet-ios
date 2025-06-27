@@ -379,19 +379,19 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         switch AssetListFlowLayout.CellType(indexPath: indexPath) {
         case .account:
-            return provideAccountCell(collectionView, indexPath: indexPath)
+            provideAccountCell(collectionView, indexPath: indexPath)
         case .totalBalance:
-            return provideTotalBalanceCell(collectionView, indexPath: indexPath)
+            provideTotalBalanceCell(collectionView, indexPath: indexPath)
         case .yourNfts:
-            return provideYourNftsCell(collectionView, indexPath: indexPath)
+            provideYourNftsCell(collectionView, indexPath: indexPath)
         case .banner:
-            return provideBannersCell(collectionView, indexPath: indexPath)
+            provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:
-            return provideSettingsCell(collectionView, indexPath: indexPath)
+            provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
-            return provideEmptyStateCell(collectionView, indexPath: indexPath)
+            provideEmptyStateCell(collectionView, indexPath: indexPath)
         case .asset:
-            return provideAssetCell(collectionView, indexPath: indexPath)
+            provideAssetCell(collectionView, indexPath: indexPath)
         }
     }
 

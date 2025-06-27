@@ -28,7 +28,15 @@ struct AssetListHeaderParams {
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
     func createHeaderViewModel(params: AssetListHeaderParams, locale: Locale) -> AssetListHeaderViewModel
 
-    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> AssetListNftsViewModel
+    func createNftsViewModel(
+        from nfts: [NftModel],
+        locale: Locale
+    ) -> AssetListNftsViewModel
+    
+    func createMultisigOperationsViewModel(
+        from operations: [Multisig.PendingOperation],
+        locale: Locale
+    ) -> AssetListMultisigOperationsViewModel
 }
 
 final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
@@ -195,5 +203,15 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         }
 
         return AssetListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
+    }
+    
+    func createMultisigOperationsViewModel(
+        from operations: [Multisig.PendingOperation],
+        locale: Locale
+    ) -> AssetListMultisigOperationsViewModel {
+        let numberOfOperations = NSNumber(value: operations.count)
+        let count = quantityFormatter.value(for: locale).string(from: numberOfOperations) ?? ""
+        
+        return AssetListMultisigOperationsViewModel(totalCount: count)
     }
 }

@@ -416,6 +416,19 @@ private extension AssetListPresenter {
         let nftViewModel = viewModelFactory.createNftsViewModel(from: model.nfts, locale: selectedLocale)
         view?.didReceiveNft(viewModel: nftViewModel)
     }
+    
+    func provideMultisigViewModel() {
+        guard !model.pendingOperations.isEmpty else {
+            view?.didReceiveMultisigOperations(viewModel: nil)
+            return
+        }
+        
+        let multisigOperationsViewModel = viewModelFactory.createMultisigOperationsViewModel(
+            from: model.pendingOperations,
+            locale: selectedLocale
+        )
+        view?.didReceiveMultisigOperations(viewModel: multisigOperationsViewModel)
+    }
 
     func updateAssetsView() {
         provideHeaderViewModel()
@@ -428,6 +441,10 @@ private extension AssetListPresenter {
 
     func updateNftView() {
         provideNftViewModel()
+    }
+    
+    func updateMultisigOperations() {
+        provideMultisigViewModel()
     }
 
     func presentAssetDetails(for chainAssetId: ChainAssetId) {
@@ -587,6 +604,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
             updateAssetsView()
         case .nfts:
             updateNftView()
+        case .pendingOperations:
+            updateMultisigOperations()
         }
     }
 
@@ -605,6 +624,7 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
         updateAssetsView()
         updateNftView()
+        updateMultisigOperations()
     }
 
     func didChange(name: String) {
@@ -737,6 +757,7 @@ extension AssetListPresenter: Localizable {
         if let view = view, view.isSetup {
             updateAssetsView()
             updateNftView()
+            updateMultisigOperations()
             bannersModule?.updateLocale(selectedLocale)
         }
     }

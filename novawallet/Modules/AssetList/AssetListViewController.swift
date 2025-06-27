@@ -86,6 +86,10 @@ final class AssetListViewController: UIViewController, ViewHolder {
 // MARK: AssetListViewProtocol
 
 extension AssetListViewController: AssetListViewProtocol {
+    func didReceiveMultisigOperations(viewModel: AssetListMultisigOperationsViewModel?) {
+        <#code#>
+    }
+    
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
         collectionViewManager.updateHeaderViewModel(with: viewModel)
 

@@ -67,6 +67,7 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
     func didReceiveNft(viewModel: AssetListNftsViewModel?)
+    func didReceiveMultisigOperations(viewModel: AssetListMultisigOperationsViewModel?)
     func didReceiveBanners(available: Bool)
     func didCompleteRefreshing()
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle)

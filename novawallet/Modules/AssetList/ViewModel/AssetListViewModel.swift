@@ -57,9 +57,22 @@ struct AssetListTotalAmountViewModel {
     let decimalSeparator: String?
 }
 
+struct AssetListOrganizerViewModel {
+    let items: [AssetListOrganizerItemViewModel]
+}
+
+enum AssetListOrganizerItemViewModel {
+    case nfts(AssetListNftsViewModel)
+    case pendingTransactions
+}
+
 struct AssetListNftsViewModel {
     let totalCount: LoadableViewModelState<String>
     let mediaViewModels: [NftMediaViewModelProtocol]
+}
+
+struct AssetListMultisigOperationsViewModel {
+    let totalCount: String
 }
 
 struct AssetPriceViewModel {

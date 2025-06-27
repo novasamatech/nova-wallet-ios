@@ -5,7 +5,7 @@ import Foundation
 extension AssetListFlowLayout {
     enum SectionType: CaseIterable {
         case summary
-        case nfts
+        case organizer
         case settings
         case banners
         case assetGroup
@@ -15,7 +15,7 @@ extension AssetListFlowLayout {
             case 0:
                 self = .summary
             case 1:
-                self = .nfts
+                self = .organizer
             case 2:
                 self = .banners
             case 3:
@@ -29,7 +29,7 @@ extension AssetListFlowLayout {
             switch self {
             case .summary:
                 return 0
-            case .nfts:
+            case .organizer:
                 return 1
             case .banners:
                 return 2
@@ -56,7 +56,7 @@ extension AssetListFlowLayout {
             switch self {
             case .summary:
                 return 10.0
-            case .settings, .assetGroup, .nfts, .banners:
+            case .settings, .assetGroup, .organizer, .banners:
                 return 0
             }
         }
@@ -65,7 +65,7 @@ extension AssetListFlowLayout {
     enum CellType {
         case account
         case totalBalance
-        case yourNfts
+        case organizer
         case banner
         case settings
         case asset(sectionIndex: Int, itemIndex: Int)
@@ -76,7 +76,7 @@ extension AssetListFlowLayout {
             case 0:
                 self = indexPath.row == 0 ? .account : .totalBalance
             case 1:
-                self = .yourNfts
+                self = .organizer
             case 2:
                 self = .banner
             case 3:
@@ -92,7 +92,7 @@ extension AssetListFlowLayout {
                 return IndexPath(item: 0, section: 0)
             case .totalBalance:
                 return IndexPath(item: 1, section: 0)
-            case .yourNfts:
+            case .organizer:
                 return IndexPath(item: 0, section: 1)
             case .banner:
                 return IndexPath(item: 0, section: 2)
