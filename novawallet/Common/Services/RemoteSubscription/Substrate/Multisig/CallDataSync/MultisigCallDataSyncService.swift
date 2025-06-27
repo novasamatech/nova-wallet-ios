@@ -80,7 +80,7 @@ private extension MultisigCallDataSyncService {
     func subscribeMetaAccounts() {
         clear(streamableProvider: &metaAccountsProvider)
 
-        metaAccountsProvider = subscribeAllWalletsProvider()
+        metaAccountsProvider = subscribeForWallets(of: .multisig)
     }
 
     func updatePendingOperations(using callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]) {
@@ -233,26 +233,16 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
 // MARK: - WalletListLocalStorageSubscriber
 
 extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
-    func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
+    func handleWallets(
+        result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>,
+        of type: MetaAccountModelType
+    ) {
         mutex.lock()
         defer { mutex.unlock() }
 
         switch result {
         case let .success(changes):
-            let mappedChanges: [DataProviderChange<MetaAccountModel>] = changes
-                .compactMap { change in
-                    guard change.isDeletion || change.item?.info.delegationId?.delegationType == .multisig else {
-                        return nil
-                    }
-
-                    return switch change {
-                    case let .insert(newItem): .insert(newItem: newItem.info)
-                    case let .update(newItem): .update(newItem: newItem.info)
-                    case let .delete(deletedIdentifier): .delete(deletedIdentifier: deletedIdentifier)
-                    }
-                }
-
-            availableMetaAccounts = availableMetaAccounts.applying(changes: mappedChanges)
+            availableMetaAccounts = availableMetaAccounts.applying(changes: changes.mapToInfoChanges())
         case let .failure(error):
             logger.error("Failed to fetch all wallets: \(error)")
         }

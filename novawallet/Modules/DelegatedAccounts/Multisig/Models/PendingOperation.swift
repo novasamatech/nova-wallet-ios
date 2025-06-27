@@ -83,18 +83,12 @@ extension Multisig.PendingOperation {
 
 extension Multisig.PendingOperation {
     func updating(with operation: Multisig.PendingOperation) -> Self {
-        let definitionUpdated = operation.multisigDefinition != multisigDefinition
-        let callUpdated = operation.call != nil && call == nil
-
-        guard definitionUpdated || callUpdated else { return self }
-
         var updatedValue = self
 
-        if definitionUpdated {
-            updatedValue = updatedValue.replacingDefinition(with: operation.multisigDefinition)
-        }
-        if callUpdated {
-            updatedValue = updatedValue.replacingCall(with: operation.call)
+        updatedValue = updatedValue.replacingDefinition(with: operation.multisigDefinition)
+        
+        if let callUpdate = operation.call, call == nil {
+            updatedValue = updatedValue.replacingCall(with: callUpdate)
         }
 
         return updatedValue

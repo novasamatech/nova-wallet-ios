@@ -1509,6 +1509,7 @@
 		2D3C71C52E0DB84800DF9E49 /* CallData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C42E0DB84700DF9E49 /* CallData.swift */; };
 		2D3C71C72E0DB8DA00DF9E49 /* CallHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */; };
 		2D3C71C92E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */; };
+		2D3C71CD2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -7478,6 +7479,7 @@
 		2D3C71C42E0DB84700DF9E49 /* CallData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallData.swift; sourceTree = "<group>"; };
 		2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHash.swift; sourceTree = "<group>"; };
 		2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigRemoteFetchFactory.swift; sourceTree = "<group>"; };
+		2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+ManagedMetaAccount.swift"; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -21877,6 +21879,7 @@
 				84E25BE127E5F23E00290BF1 /* PasteboardHandler.swift */,
 				84CF00C227F6C1E4004DB322 /* CustomAssetMapper.swift */,
 				84FF26852849530E003EC78D /* AccountId+Dummy.swift */,
+				2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */,
 				848F8B1C2863616E00204BC4 /* ChainsStore.swift */,
 				849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */,
 				84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */,
@@ -28895,6 +28898,7 @@
 				8849AD6029C3526700F4F7FF /* Caip2.swift in Sources */,
 				8424A8C7262EC0E50091BFB1 /* PayoutInfo.swift in Sources */,
 				0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */,
+				2D3C71CD2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift in Sources */,
 				0CCDB2EF2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift in Sources */,
 				2D81FAE62CC62D0400BA0E46 /* AssetListTokenGroupAssetCell.swift in Sources */,
 				84F523FF298AA64A0026AD08 /* ReferendumsModelFactory+Votes.swift in Sources */,

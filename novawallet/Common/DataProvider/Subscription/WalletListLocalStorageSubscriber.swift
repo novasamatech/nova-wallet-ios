@@ -11,6 +11,8 @@ protocol WalletListLocalStorageSubscriber where Self: AnyObject {
     func subscribeWallet(by walletId: String) -> StreamableProvider<ManagedMetaAccountModel>?
 
     func subscribeSelectedWalletProvider() -> StreamableProvider<ManagedMetaAccountModel>?
+    
+    func subscribeForWallets(of type: MetaAccountModelType) -> StreamableProvider<ManagedMetaAccountModel>?
 }
 
 private extension WalletListLocalStorageSubscriber {
@@ -99,6 +101,30 @@ extension WalletListLocalStorageSubscriber {
 
         let failureClosure = { [weak self] (error: Error) in
             self?.walletListLocalSubscriptionHandler.handleSelectedWallet(result: .failure(error))
+            return
+        }
+
+        return subscribeWallets(
+            provider: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
+        )
+    }
+    
+    func subscribeForWallets(of type: MetaAccountModelType) -> StreamableProvider<ManagedMetaAccountModel>? {
+        guard let provider = try? walletListLocalSubscriptionFactory.getWalletsProvider(for: type) else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<ManagedMetaAccountModel>]) in
+            let wallet = changes.reduceToLastChange()
+
+            self?.walletListLocalSubscriptionHandler.handleWallets(result: .success(changes), of: type)
+            return
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.walletListLocalSubscriptionHandler.handleWallets(result: .failure(error), of: type)
             return
         }
 

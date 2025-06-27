@@ -80,6 +80,8 @@ private extension MultisigPendingOperationsSubscription {
                 mappingKey: SubscriptionResult.Key.pendingOperation(with: callHash)
             )
         }
+        
+        unsubscribeRemote()
 
         subscription = CallbackBatchStorageSubscription(
             requests: requests,

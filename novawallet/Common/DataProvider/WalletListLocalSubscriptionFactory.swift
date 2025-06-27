@@ -5,6 +5,7 @@ protocol WalletListLocalSubscriptionFactoryProtocol {
     func getWalletProvider(for walletId: String) throws -> StreamableProvider<ManagedMetaAccountModel>
     func getSelectedWalletProvider() throws -> StreamableProvider<ManagedMetaAccountModel>
     func getWalletsProvider() throws -> StreamableProvider<ManagedMetaAccountModel>
+    func getWalletsProvider(for walletType: MetaAccountModelType) throws -> StreamableProvider<ManagedMetaAccountModel>
 }
 
 final class WalletListLocalSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -104,6 +105,16 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
             predicateClosure: { _ in true }
         )
     }
+    
+    func getWalletsProvider(
+        for walletType: MetaAccountModelType
+    ) throws -> StreamableProvider<ManagedMetaAccountModel> {
+        try getWalletProvider(
+            cacheKey: CacheKeys.wallets(of: walletType),
+            with: NSPredicate.metaAccountsByType(walletType),
+            predicateClosure: { entity in entity.type == walletType.rawValue }
+        )
+    }
 }
 
 // MARK: CacheKeys
@@ -120,6 +131,10 @@ private extension WalletListLocalSubscriptionFactory {
 
         static func wallet(with id: String) -> String {
             "wallet-\(id)"
+        }
+        
+        static func wallets(of type: MetaAccountModelType) -> String {
+            "wallets-\(type.rawValue)"
         }
     }
 }
