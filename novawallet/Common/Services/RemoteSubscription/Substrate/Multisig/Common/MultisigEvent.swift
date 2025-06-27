@@ -41,13 +41,9 @@ struct MultisigEvent: Hashable {
             accountId = approvalEvent.accountId
             callHash = approvalEvent.callHash
 
-            let timepoint = Multisig.MultisigTimepoint(
-                height: approvalEvent.timepoint.height,
-                index: approvalEvent.timepoint.index
-            )
             let model = Approval(
                 signatory: approvalEvent.approvingAccountId,
-                timepoint: timepoint
+                timepoint: approvalEvent.timepoint
             )
             eventType = .approval(model)
         } else {
@@ -77,6 +73,6 @@ extension MultisigEvent {
 
     struct Approval: Hashable {
         let signatory: AccountId
-        let timepoint: Multisig.MultisigTimepoint
+        let timepoint: MultisigPallet.EventTimePoint
     }
 }

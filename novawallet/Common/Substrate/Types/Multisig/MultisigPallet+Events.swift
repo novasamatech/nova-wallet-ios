@@ -17,7 +17,7 @@ extension MultisigPallet {
 
     struct MultisigApprovalEvent: Decodable {
         let approvingAccountId: AccountId
-        let timepoint: MultisigPallet.MultisigTimepoint
+        let timepoint: EventTimePoint
         let accountId: AccountId
         let callHash: Substrate.CallHash
 
@@ -25,7 +25,7 @@ extension MultisigPallet {
             var unkeyedContainer = try decoder.unkeyedContainer()
 
             approvingAccountId = try unkeyedContainer.decode(BytesCodable.self).wrappedValue
-            timepoint = try unkeyedContainer.decode(MultisigPallet.MultisigTimepoint.self)
+            timepoint = try unkeyedContainer.decode(EventTimePoint.self)
             accountId = try unkeyedContainer.decode(BytesCodable.self).wrappedValue
             callHash = try unkeyedContainer.decode(BytesCodable.self).wrappedValue
         }
