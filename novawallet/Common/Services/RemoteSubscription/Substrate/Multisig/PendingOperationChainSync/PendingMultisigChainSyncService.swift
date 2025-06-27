@@ -11,23 +11,29 @@ final class PendingMultisigChainSyncService: BaseSyncService,
 
     private let multisigAccount: DelegatedAccount.MultisigAccountModel
     private let chain: ChainModel
-    private let localStorageSyncService: PendingMultisigLocalStorageSyncServiceProtocol
+    private let localSyncFactory: PendingMultisigLocalSyncFactoryProtocol
+    private let remoteFetchFactory: PendingMultisigRemoteFetchFactoryProtocol
     private let remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
+    private let operationManager: OperationManagerProtocol
 
     private var operationsLocalStorateProvider: StreamableProvider<Multisig.PendingOperation>?
 
     init(
         multisigAccount: DelegatedAccount.MultisigAccountModel,
         chain: ChainModel,
-        localStorageSyncService: PendingMultisigLocalStorageSyncServiceProtocol,
+        localSyncFactory: PendingMultisigLocalSyncFactoryProtocol,
+        remoteFetchFactory: PendingMultisigRemoteFetchFactoryProtocol,
         pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
-        remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol
+        remoteOperationUpdateService: MultisigPendingOperationsUpdatingServiceProtocol,
+        operationManager: OperationManagerProtocol
     ) {
         self.multisigAccount = multisigAccount
         self.chain = chain
-        self.localStorageSyncService = localStorageSyncService
+        self.localSyncFactory = localSyncFactory
+        self.remoteFetchFactory = remoteFetchFactory
         self.pendingMultisigLocalSubscriptionFactory = pendingMultisigLocalSubscriptionFactory
         self.remoteOperationUpdateService = remoteOperationUpdateService
+        self.operationManager = operationManager
     }
 
     deinit {
@@ -44,9 +50,7 @@ final class PendingMultisigChainSyncService: BaseSyncService,
             chainId: chain.chainId
         )
 
-        localStorageSyncService.syncPendingOperations { [weak self] updatedCallHashes in
-            self?.subscribeUpdates(for: updatedCallHashes)
-        }
+        syncPendingOperations()
     }
 
     override func stopSyncUp() {
@@ -58,13 +62,69 @@ final class PendingMultisigChainSyncService: BaseSyncService,
 // MARK: - Private
 
 private extension PendingMultisigChainSyncService {
-    func updateSubscriptions(adding callHashes: Set<CallHash>) {
-        localStorageSyncService.fetchLocalPendingOperations { [weak self] pendingOperationsCallHashes in
-            self?.subscribeUpdates(for: pendingOperationsCallHashes.union(callHashes))
+    func syncPendingOperations() {
+        let remoteFetchWrapper = remoteFetchFactory.createFetchWrapper()
+
+        configureRemoteFetchWrapper(targetOperation: remoteFetchWrapper.targetOperation)
+
+        operationManager.enqueue(
+            operations: remoteFetchWrapper.allOperations,
+            in: .transient
+        )
+    }
+
+    func configureRemoteFetchWrapper(targetOperation: BaseOperation<MultisigPendingOperationsMap>) {
+        targetOperation.completionBlock = { [weak self] in
+            guard let self else { return }
+
+            do {
+                let remoteOperations = try targetOperation.extractNoCancellableResultData()
+                let localSyncWrapper = localSyncFactory.createSyncLocalWrapper(with: remoteOperations)
+
+                configureLocalSyncWrapper(targetOperation: localSyncWrapper.targetOperation)
+
+                operationManager.enqueue(
+                    operations: localSyncWrapper.allOperations,
+                    in: .sync
+                )
+            } catch {
+                self.logger.error("Failed to fetch remote pending operations: \(error)")
+            }
         }
     }
 
-    func subscribeUpdates(for callHashes: Set<CallHash>) {
+    func configureLocalSyncWrapper(targetOperation: BaseOperation<Set<Substrate.CallHash>>) {
+        targetOperation.completionBlock = {
+            do {
+                let callHashes = try targetOperation.extractNoCancellableResultData()
+                self.subscribeUpdates(for: callHashes)
+            } catch {
+                self.logger.error("Failed to sync local pending operations: \(error)")
+            }
+        }
+    }
+
+    func updateSubscriptions(adding callHashes: Set<Substrate.CallHash>) {
+        let localHashesWrapper = localSyncFactory.createFetchLocalHashesWrapper()
+
+        localHashesWrapper.targetOperation.completionBlock = { [weak self] in
+            do {
+                let localOperationsCallHashes = try localHashesWrapper
+                    .targetOperation
+                    .extractNoCancellableResultData()
+                self?.subscribeUpdates(for: localOperationsCallHashes.union(callHashes))
+            } catch {
+                self?.logger.error("Failed to fetch local call hashes: \(error)")
+            }
+        }
+
+        operationManager.enqueue(
+            operations: localHashesWrapper.allOperations,
+            in: .sync
+        )
+    }
+
+    func subscribeUpdates(for callHashes: Set<Substrate.CallHash>) {
         remoteOperationUpdateService.setupSubscription(
             subscriber: self,
             for: multisigAccount.accountId,
@@ -103,12 +163,17 @@ extension PendingMultisigChainSyncService: MultisigOperationsLocalStorageSubscri
 
 extension PendingMultisigChainSyncService: MultisigPendingOperationsSubscriber {
     func didReceiveUpdate(
-        callHash: CallHash,
+        callHash: Substrate.CallHash,
         multisigDefinition: MultisigPallet.MultisigDefinition?
     ) {
-        localStorageSyncService.updateDefinition(
+        let updateDefinitionWrapper = localSyncFactory.createUpdateDefinitionWrapper(
             for: callHash,
             multisigDefinition
+        )
+
+        operationManager.enqueue(
+            operations: updateDefinitionWrapper.allOperations,
+            in: .sync
         )
     }
 }

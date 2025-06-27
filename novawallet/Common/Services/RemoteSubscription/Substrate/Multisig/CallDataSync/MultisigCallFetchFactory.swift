@@ -57,7 +57,7 @@ private extension MultisigCallFetchFactory {
     }
 
     func matchAsMultiCallData(
-        for callHash: CallHash,
+        for callHash: Substrate.CallHash,
         from extrinsicData: Data,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> JSON? {
@@ -78,7 +78,7 @@ private extension MultisigCallFetchFactory {
     }
 
     func findCall(
-        with callHash: CallHash,
+        with callHash: Substrate.CallHash,
         in call: JSON,
         sender: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol

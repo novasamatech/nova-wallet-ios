@@ -17,47 +17,40 @@ enum MultisigPallet {
     }
 
     struct MultisigTimepoint: Codable {
-        enum CodingKeys: String, CodingKey {
-            case height
-            case index
-        }
+        @StringCodable var height: BlockNumber
+        @StringCodable var index: UInt32
+    }
 
-        var height: BlockNumber
-        var index: UInt32
+    struct EventTimePoint: Decodable, Hashable {
+        let height: BlockNumber
+        let index: UInt32
+
+        init(
+            height: BlockNumber,
+            index: UInt32
+        ) {
+            self.height = height
+            self.index = index
+        }
 
         init(from decoder: Decoder) throws {
-            if let keyedContainer = try? decoder.container(keyedBy: CodingKeys.self) {
-                let height = try keyedContainer.decode(StringCodable<BlockNumber>.self, forKey: .height)
-                let index = try keyedContainer.decode(StringCodable<UInt32>.self, forKey: .index)
+            var unkeyedContainer = try decoder.unkeyedContainer()
 
-                self.height = height.wrappedValue
-                self.index = index.wrappedValue
-            } else {
-                var unkeyedContainer = try decoder.unkeyedContainer()
+            let height = try unkeyedContainer.decode(StringCodable<BlockNumber>.self)
+            let index = try unkeyedContainer.decode(StringCodable<UInt32>.self)
 
-                let height = try unkeyedContainer.decode(StringCodable<BlockNumber>.self)
-                let index = try unkeyedContainer.decode(StringCodable<UInt32>.self)
-
-                self.height = height.wrappedValue
-                self.index = index.wrappedValue
-            }
-        }
-
-        func encode(to encoder: any Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-
-            try container.encode(height.description, forKey: .height)
-            try container.encode(index.description, forKey: .index)
+            self.height = height.wrappedValue
+            self.index = index.wrappedValue
         }
     }
 
     struct CallHashKey: JSONListConvertible, Hashable {
         let accountId: AccountId
-        let callHash: CallHash
+        let callHash: Substrate.CallHash
 
         init(
             accountId: AccountId,
-            callHash: CallHash
+            callHash: Substrate.CallHash
         ) {
             self.accountId = accountId
             self.callHash = callHash

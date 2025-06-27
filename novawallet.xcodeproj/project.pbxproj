@@ -1503,9 +1503,13 @@
 		2D3C71B82E0BF5A400DF9E49 /* MultisigOperationsLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71B72E0BF5A400DF9E49 /* MultisigOperationsLocalSubscriptionHandler.swift */; };
 		2D3C71BA2E0BF6CF00DF9E49 /* MultisigOperationsLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71B92E0BF6CF00DF9E49 /* MultisigOperationsLocalStorageSubscriber.swift */; };
 		2D3C71BD2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71BC2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift */; };
-		2D3C71BF2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift */; };
+		2D3C71BF2E0C535700DF9E49 /* PendingMultisigLocalSyncFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalSyncFactory.swift */; };
 		2D3C71C12E0C67A900DF9E49 /* MultisigPendingOperationsService+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C02E0C67A900DF9E49 /* MultisigPendingOperationsService+Shared.swift */; };
 		2D3C71C32E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C22E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift */; };
+		2D3C71C52E0DB84800DF9E49 /* CallData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C42E0DB84700DF9E49 /* CallData.swift */; };
+		2D3C71C72E0DB8DA00DF9E49 /* CallHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */; };
+		2D3C71C92E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */; };
+		2D3C71CD2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -7469,9 +7473,13 @@
 		2D3C71B72E0BF5A400DF9E49 /* MultisigOperationsLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		2D3C71B92E0BF6CF00DF9E49 /* MultisigOperationsLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		2D3C71BC2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEventsUpdatingService.swift; sourceTree = "<group>"; };
-		2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigLocalStorageSyncService.swift; sourceTree = "<group>"; };
+		2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalSyncFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigLocalSyncFactory.swift; sourceTree = "<group>"; };
 		2D3C71C02E0C67A900DF9E49 /* MultisigPendingOperationsService+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigPendingOperationsService+Shared.swift"; sourceTree = "<group>"; };
 		2D3C71C22E0D399200DF9E49 /* MultisigCallFetchFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigCallFetchFactoryTests.swift; sourceTree = "<group>"; };
+		2D3C71C42E0DB84700DF9E49 /* CallData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallData.swift; sourceTree = "<group>"; };
+		2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHash.swift; sourceTree = "<group>"; };
+		2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigRemoteFetchFactory.swift; sourceTree = "<group>"; };
+		2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+ManagedMetaAccount.swift"; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -12913,6 +12921,8 @@
 				0C277DAC2D82E7FA004FF053 /* SubstratePrimitives.swift */,
 				0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */,
 				0C27F38B2DA8162A00191FFF /* WeightPropertyWrappers.swift */,
+				2D3C71C42E0DB84700DF9E49 /* CallData.swift */,
+				2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */,
 			);
 			path = Primitives;
 			sourceTree = "<group>";
@@ -15423,10 +15433,9 @@
 			isa = PBXGroup;
 			children = (
 				2D3286F52E00B70B004D5D24 /* MultisigCallDataSyncService.swift */,
-				2D3C71BC2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift */,
 				2D3C71B12E08C99D00DF9E49 /* MultisigCallFetchFactory.swift */,
 				2D3286FC2E04562E004D5D24 /* MultisigCallOrHash.swift */,
-				2D3286F12E006667004D5D24 /* MultisigEventsSubscription.swift */,
+				2D3C71CB2E0DEB5E00DF9E49 /* Subscription */,
 			);
 			path = CallDataSync;
 			sourceTree = "<group>";
@@ -15435,10 +15444,10 @@
 			isa = PBXGroup;
 			children = (
 				2D3286ED2DFFF910004D5D24 /* PendingMultisigChainSyncService.swift */,
-				2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift */,
+				2D3C71BE2E0C535700DF9E49 /* PendingMultisigLocalSyncFactory.swift */,
+				2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */,
 				2D3286EF2E0032F1004D5D24 /* PendingMultisigChainSyncServiceFactory.swift */,
-				2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */,
-				2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */,
+				2D3C71CA2E0DEB4900DF9E49 /* Subscription */,
 			);
 			path = PendingOperationChainSync;
 			sourceTree = "<group>";
@@ -15593,6 +15602,24 @@
 				2D3C71B92E0BF6CF00DF9E49 /* MultisigOperationsLocalStorageSubscriber.swift */,
 			);
 			path = MultisigOperations;
+			sourceTree = "<group>";
+		};
+		2D3C71CA2E0DEB4900DF9E49 /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */,
+				2DC694522DF56B3B004F4584 /* MultisigPendingOperationsSubscription.swift */,
+			);
+			path = Subscription;
+			sourceTree = "<group>";
+		};
+		2D3C71CB2E0DEB5E00DF9E49 /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				2D3C71BC2E0C2BF000DF9E49 /* MultisigEventsUpdatingService.swift */,
+				2D3286F12E006667004D5D24 /* MultisigEventsSubscription.swift */,
+			);
+			path = Subscription;
 			sourceTree = "<group>";
 		};
 		2D3EA7D22CF9BB7C0033AFD2 /* Transition */ = {
@@ -21852,6 +21879,7 @@
 				84E25BE127E5F23E00290BF1 /* PasteboardHandler.swift */,
 				84CF00C227F6C1E4004DB322 /* CustomAssetMapper.swift */,
 				84FF26852849530E003EC78D /* AccountId+Dummy.swift */,
+				2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */,
 				848F8B1C2863616E00204BC4 /* ChainsStore.swift */,
 				849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */,
 				84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */,
@@ -28870,6 +28898,7 @@
 				8849AD6029C3526700F4F7FF /* Caip2.swift in Sources */,
 				8424A8C7262EC0E50091BFB1 /* PayoutInfo.swift in Sources */,
 				0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */,
+				2D3C71CD2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift in Sources */,
 				0CCDB2EF2B752168007BC5D6 /* HydraStableswapQuoteParamsService.swift in Sources */,
 				2D81FAE62CC62D0400BA0E46 /* AssetListTokenGroupAssetCell.swift in Sources */,
 				84F523FF298AA64A0026AD08 /* ReferendumsModelFactory+Votes.swift in Sources */,
@@ -29035,6 +29064,7 @@
 				0CCD18BD2BA1EF030068D73A /* ChainModel+Remote.swift in Sources */,
 				84BAD215293B0E8A00C55C49 /* UITableView+Section.swift in Sources */,
 				84B73AD6279B4E0B0071AE16 /* AssetDetails.swift in Sources */,
+				2D3C71C52E0DB84800DF9E49 /* CallData.swift in Sources */,
 				88A5317B28B9149600AF18F5 /* UIImage+DrawableIcon.swift in Sources */,
 				843461F5290E4A1C00379936 /* GovernanceUnlocksCalculator.swift in Sources */,
 				84C2063A28D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift in Sources */,
@@ -31839,7 +31869,7 @@
 				8466780F27EB2939007935D3 /* OnChainTransferPresenter.swift in Sources */,
 				7725062C2A1C99DB00E653DB /* ReferendumSearchViewLayout.swift in Sources */,
 				84466B3528B6731B00FA1E0D /* LedgerSigningWrapper.swift in Sources */,
-				2D3C71BF2E0C535700DF9E49 /* PendingMultisigLocalStorageSyncService.swift in Sources */,
+				2D3C71BF2E0C535700DF9E49 /* PendingMultisigLocalSyncFactory.swift in Sources */,
 				0C38B4FB2B7A5DB500882A8B /* ExtrinsicProcessor+HydraSwapMatching.swift in Sources */,
 				2DBB288F2CD42E8D00DFA0AD /* IconType.swift in Sources */,
 				F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */,
@@ -32342,6 +32372,7 @@
 				70C0E48EE41B4C7229F5946C /* DAppBrowserViewLayout.swift in Sources */,
 				8849C5EA29806F1E00DE35CC /* InAppUpdatesStyles.swift in Sources */,
 				845AADA62903B32E00B5AE96 /* ReferendumVoteConfirmError.swift in Sources */,
+				2D3C71C72E0DB8DA00DF9E49 /* CallHash.swift in Sources */,
 				FDE2CA45061C620567AC329C /* DAppBrowserViewFactory.swift in Sources */,
 				882C29AC28DC7B7F009CA4B6 /* SubstrateStorageVersion.swift in Sources */,
 				0CC2E5642A6E5C72004092E7 /* NPoolsLocalSubscriptionFactory.swift in Sources */,
@@ -33565,6 +33596,7 @@
 				D8918818FD97B52EB9DA941E /* NominationPoolBondMoreSetupProtocols.swift in Sources */,
 				948FE60822DFC49A0BD5740B /* NominationPoolBondMoreBaseWireframe.swift in Sources */,
 				478D954AF83399843A2FAA8A /* NominationPoolBondMoreBasePresenter.swift in Sources */,
+				2D3C71C92E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift in Sources */,
 				C49AC521056CBDB5451B1CDC /* NominationPoolBondMoreBaseInteractor.swift in Sources */,
 				873FAB6E5CAD1FD4D02737D0 /* NominationPoolBondMoreSetupViewController.swift in Sources */,
 				5FF13D27B596CD7B0CA20671 /* NominationPoolBondMoreSetupViewLayout.swift in Sources */,

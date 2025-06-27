@@ -55,22 +55,27 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
         )
-        let localStorageSyncService = PendingMultisigLocalStorageSyncService(
+        let remoteFetchFactory = PendingMultisigRemoteFetchFactory(
             multisigAccount: selectedMultisigAccount,
             chain: chain,
             chainRegistry: chainRegistry,
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,
-            remoteOperationUpdateService: remoteOperationUpdateService,
-            pendingOperationsRepository: AnyDataProviderRepository(repository),
             operationManager: operationManager
+        )
+        let localSyncFactory = PendingMultisigLocalSyncFactory(
+            multisigAccount: selectedMultisigAccount,
+            chain: chain,
+            pendingOperationsRepository: AnyDataProviderRepository(repository)
         )
 
         return PendingMultisigChainSyncService(
             multisigAccount: selectedMultisigAccount,
             chain: chain,
-            localStorageSyncService: localStorageSyncService,
+            localSyncFactory: localSyncFactory,
+            remoteFetchFactory: remoteFetchFactory,
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
-            remoteOperationUpdateService: remoteOperationUpdateService
+            remoteOperationUpdateService: remoteOperationUpdateService,
+            operationManager: operationManager
         )
     }
 }

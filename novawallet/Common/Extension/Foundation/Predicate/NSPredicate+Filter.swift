@@ -59,6 +59,10 @@ extension NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDMetaAccount.metaId), identifier)
     }
 
+    static func metaAccountsByType(_ type: MetaAccountModelType) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDMetaAccount.type), type.rawValue)
+    }
+
     static func selectedMetaAccount() -> NSPredicate {
         NSPredicate(format: "%K == true", #keyPath(CDMetaAccount.isSelected))
     }

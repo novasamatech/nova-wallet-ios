@@ -14,7 +14,7 @@ final class MultisigCallFetchFactoryTests: XCTestCase {
         let callHashHex = "0xee73a78c700aea518d7cab7d7cb5fc4daf4c2abd1782aee8335ad54cf36b58ff"
         let blockHashHex = "0xc6b386e537aee225da801c1552c25331440aa11f4c66a5fa47d2ff24d63691f8"
         
-        let timePoint = Multisig.MultisigTimepoint(
+        let timePoint = MultisigPallet.EventTimePoint(
             height: 24113414,
             index: 3
         )
@@ -47,7 +47,7 @@ final class MultisigCallFetchFactoryTests: XCTestCase {
         for event: MultisigEvent,
         at blockHash: Data,
         chainId: ChainModel.Id,
-        matching callHash: CallHash
+        matching callHash: Substrate.CallHash
     ) throws {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)

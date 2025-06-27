@@ -33,8 +33,8 @@ enum SubqueryMultisigs {
     }
 
     struct RemoteCallData: Decodable {
-        @HexCodable var callHash: CallHash
-        @OptionHexCodable var callData: CallData?
+        @HexCodable var callHash: Substrate.CallHash
+        @OptionHexCodable var callData: Substrate.CallData?
     }
 }
 

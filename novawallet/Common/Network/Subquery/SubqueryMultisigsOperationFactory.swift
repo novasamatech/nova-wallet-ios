@@ -3,8 +3,6 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
-typealias CallData = Data
-
 private typealias FindMultisigsResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
     SubqueryMultisigs.FindMultisigsResponse
 >
@@ -18,8 +16,8 @@ protocol SubqueryMultisigsOperationFactoryProtocol {
     ) -> BaseOperation<[DiscoveredMultisig]>
 
     func createFetchCallDataOperation(
-        for callHashes: Set<CallHash>
-    ) -> BaseOperation<[CallHash: CallData]>
+        for callHashes: Set<Substrate.CallHash>
+    ) -> BaseOperation<[Substrate.CallHash: Substrate.CallData]>
 }
 
 final class SubqueryMultisigsOperationFactory: SubqueryBaseOperationFactory {}
@@ -63,7 +61,7 @@ private extension SubqueryMultisigsOperationFactory {
         """
     }
 
-    func createCallDataRequestQuery(for callHashes: Set<CallHash>) -> String {
+    func createCallDataRequestQuery(for callHashes: Set<Substrate.CallHash>) -> String {
         let callHashesHex = callHashes.map { $0.toHexWithPrefix() }
         let hashInFilter = callHashesHex.map { "\"\($0)\"" }.joined(with: .commaSpace)
 
@@ -129,11 +127,11 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
     }
 
     func createFetchCallDataOperation(
-        for callHashes: Set<CallHash>
-    ) -> BaseOperation<[CallHash: CallData]> {
+        for callHashes: Set<Substrate.CallHash>
+    ) -> BaseOperation<[Substrate.CallHash: Substrate.CallData]> {
         let query = createCallDataRequestQuery(for: callHashes)
 
-        let operation: BaseOperation<[CallHash: CallData]>
+        let operation: BaseOperation<[Substrate.CallHash: Substrate.CallData]>
 
         operation = createOperation(
             for: query

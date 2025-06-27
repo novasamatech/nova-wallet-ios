@@ -6,7 +6,7 @@ protocol MultisigStorageOperationFactoryProtocol {
         for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[CallHash: MultisigPallet.MultisigDefinition]>
+    ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]>
 }
 
 final class MultisigStorageOperationFactory {
@@ -22,7 +22,7 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
         for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<[CallHash: MultisigPallet.MultisigDefinition]> {
+    ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let request = MapRemoteStorageRequest(storagePath: MultisigPallet.multisigListStoragePath) {
@@ -38,7 +38,7 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<[CallHash: MultisigPallet.MultisigDefinition]> {
+        let mapOperation = ClosureOperation<[Substrate.CallHash: MultisigPallet.MultisigDefinition]> {
             try wrapper
                 .targetOperation
                 .extractNoCancellableResultData()

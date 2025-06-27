@@ -124,10 +124,9 @@ enum ChainFilterStrategy {
 
                 var updatedHasMultisig: Bool {
                     #if F_RELEASE
-                        changedChain.hasMultisig == true
-                            && changedChain.isTestnet == false
+                        changedChain.hasMultisig && !changedChain.isTestnet
                     #else
-                        changedChain.hasMultisig == true
+                        changedChain.hasMultisig
                     #endif
                 }
                 return transform(
