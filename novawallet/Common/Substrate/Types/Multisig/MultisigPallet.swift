@@ -25,6 +25,14 @@ enum MultisigPallet {
         let height: BlockNumber
         let index: UInt32
 
+        init(
+            height: BlockNumber,
+            index: UInt32
+        ) {
+            self.height = height
+            self.index = index
+        }
+
         init(from decoder: Decoder) throws {
             var unkeyedContainer = try decoder.unkeyedContainer()
 
