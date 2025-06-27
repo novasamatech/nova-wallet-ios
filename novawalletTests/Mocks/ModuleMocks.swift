@@ -15520,6 +15520,21 @@ import Operation_iOS
     
     
     
+     func showAddVaultAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)  {
+        
+    return cuckoo_manager.call("showAddVaultAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)",
+            parameters: (view, wallet),
+            escapingParameters: (view, wallet),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAddVaultAccount(from: view, wallet: wallet))
+        
+    }
+    
+    
+    
      func showAddGenericLedgerEvmAccounts(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)  {
         
     return cuckoo_manager.call("showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)",
@@ -15642,6 +15657,11 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddLedgerAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
+	    func showAddVaultAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManagementViewProtocol?, MetaAccountModel)> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddVaultAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", parameterMatchers: matchers))
+	    }
+	    
 	    func showAddGenericLedgerEvmAccounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManagementViewProtocol?, MetaAccountModel)> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", parameterMatchers: matchers))
@@ -15719,6 +15739,12 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
+	    func showAddVaultAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.__DoNotUse<(AccountManagementViewProtocol?, MetaAccountModel), Void> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
+	        return cuckoo_manager.verify("showAddVaultAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showAddGenericLedgerEvmAccounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, wallet: M2) -> Cuckoo.__DoNotUse<(AccountManagementViewProtocol?, MetaAccountModel), Void> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }]
 	        return cuckoo_manager.verify("showAddGenericLedgerEvmAccounts(from: AccountManagementViewProtocol?, wallet: MetaAccountModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -15790,6 +15816,12 @@ import Operation_iOS
     
     
      func showAddLedgerAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showAddVaultAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

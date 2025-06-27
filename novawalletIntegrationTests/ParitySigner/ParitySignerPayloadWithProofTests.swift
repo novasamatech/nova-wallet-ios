@@ -90,6 +90,72 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
         }
     }
     
+    func testHydrationTransferGeneration() {
+        do {
+            let message = try createSignerMessage(
+                for: KnowChainId.hydra,
+                account: "15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5"
+            ) { builder in
+                
+                let dest = try "14E5nqKAp3oAJcmzgZhUD2RcptBeUBScxKHgJKU4HPNcKVf3".toAccountId()
+                let transferCall = RuntimeCall(
+                    moduleName: BalancesPallet.name,
+                    callName: "transfer_keep_alive",
+                    args: TransferCall(
+                        dest: .accoundId(dest),
+                        value: Balance(100000000)
+                    )
+                )
+                
+                return try builder
+                    .with(
+                        era: .mortal(period: 64, phase: 61),
+                        blockHash: "98a8ee9e389043cd8a9954b254d822d34138b9ae97d3b7f50dc6781b13df8d84"
+                    )
+                    .with(tip: 10000000)
+                    .with(nonce: 261)
+                    .adding(call: transferCall)
+            }
+            
+            Logger.shared.info("Hydration payload: \(message.toHexWithPrefix())")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testMythosTransferGeneration() {
+        do {
+            let message = try createSignerMessage(
+                for: KnowChainId.mythos,
+                account: "0xe9267b732a8e9c9444e46f3d04d4610a996d682d"
+            ) { builder in
+                
+                let dest = try "0xe9267b732a8e9c9555e46f3d04d4610a996d682d".toAccountId()
+                let transferCall = RuntimeCall(
+                    moduleName: BalancesPallet.name,
+                    callName: "transfer_keep_alive",
+                    args: TransferCall(
+                        dest: .accoundId(dest),
+                        value: Balance(100000000)
+                    )
+                )
+                
+                return try builder
+                    .with(
+                        era: .mortal(period: 64, phase: 61),
+                        blockHash: "98a8ee9e389043cd8a9954b254d822d34138b9ae97d3b7f50dc6781b13df8d84"
+                    )
+                    .with(tip: 10000000)
+                    .with(nonce: 261)
+                    .adding(call: transferCall)
+            }
+            
+            Logger.shared.info("Hydration payload: \(message.toHexWithPrefix())")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
     private func createSignerMessage(
         for chainId: ChainModel.Id,
         account: AccountAddress,
@@ -219,6 +285,7 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
         chainId: ChainModel.Id
     ) throws -> Data {
         let messageFactory = ParitySignerMessageOperationFactory()
+        let cryptoType = account.isHex() ? MultiassetCryptoType.ethereumEcdsa : .sr25519
         let accountId = try account.toAccountId()
         
         let operationQueue = OperationQueue()
@@ -228,7 +295,7 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
             metadataProofClosure: {
                 model.proof
             },
-            signingIdentity: .regular(.init(accountId: accountId, cryptoType: .sr25519)),
+            signingIdentity: .regular(.init(accountId: accountId, cryptoType: cryptoType)),
             genesisHash: chainId
         )
         
