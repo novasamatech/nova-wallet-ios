@@ -235,7 +235,7 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
 extension MultisigCallDataSyncService: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
     func handleWallets(
         result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>,
-        of type: MetaAccountModelType
+        of _: MetaAccountModelType
     ) {
         mutex.lock()
         defer { mutex.unlock() }

@@ -11,7 +11,7 @@ protocol WalletListLocalStorageSubscriber where Self: AnyObject {
     func subscribeWallet(by walletId: String) -> StreamableProvider<ManagedMetaAccountModel>?
 
     func subscribeSelectedWalletProvider() -> StreamableProvider<ManagedMetaAccountModel>?
-    
+
     func subscribeForWallets(of type: MetaAccountModelType) -> StreamableProvider<ManagedMetaAccountModel>?
 }
 
@@ -110,7 +110,7 @@ extension WalletListLocalStorageSubscriber {
             failureClosure: failureClosure
         )
     }
-    
+
     func subscribeForWallets(of type: MetaAccountModelType) -> StreamableProvider<ManagedMetaAccountModel>? {
         guard let provider = try? walletListLocalSubscriptionFactory.getWalletsProvider(for: type) else {
             return nil

@@ -13,6 +13,6 @@ extension DataProviderChange where T == ManagedMetaAccountModel {
 
 extension Array where Element == DataProviderChange<ManagedMetaAccountModel> {
     func mapToInfoChanges() -> [DataProviderChange<MetaAccountModel>] {
-        map { $0.infoChange }
+        map(\.infoChange)
     }
 }

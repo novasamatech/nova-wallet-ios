@@ -58,7 +58,7 @@ extension NSPredicate {
     static func metaAccountById(_ identifier: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDMetaAccount.metaId), identifier)
     }
-    
+
     static func metaAccountsByType(_ type: MetaAccountModelType) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDMetaAccount.type), Int16(type.rawValue))
     }

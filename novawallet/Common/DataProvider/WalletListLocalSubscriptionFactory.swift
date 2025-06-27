@@ -105,7 +105,7 @@ extension WalletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactory
             predicateClosure: { _ in true }
         )
     }
-    
+
     func getWalletsProvider(
         for walletType: MetaAccountModelType
     ) throws -> StreamableProvider<ManagedMetaAccountModel> {
@@ -132,7 +132,7 @@ private extension WalletListLocalSubscriptionFactory {
         static func wallet(with id: String) -> String {
             "wallet-\(id)"
         }
-        
+
         static func wallets(of type: MetaAccountModelType) -> String {
             "wallets-\(type.rawValue)"
         }

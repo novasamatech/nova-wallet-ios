@@ -86,7 +86,7 @@ extension Multisig.PendingOperation {
         var updatedValue = self
 
         updatedValue = updatedValue.replacingDefinition(with: operation.multisigDefinition)
-        
+
         if let callUpdate = operation.call, call == nil {
             updatedValue = updatedValue.replacingCall(with: callUpdate)
         }
