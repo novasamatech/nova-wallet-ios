@@ -7,30 +7,30 @@ import SubstrateSdk
  *      - provide coders to encode/decode signed extension's parameters part of signed extra
  */
 protocol ExtrinsicSignedExtensionFactoryProtocol {
-    func createExtensions() -> [ExtrinsicSignedExtending]
+    func createExtensions() -> [TransactionExtending]
 
-    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicSignedExtending]
+    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [TransactionExtending]
 
-    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding]
+    func createCoders(for metadata: RuntimeMetadataProtocol) -> [TransactionExtensionCoding]
 }
 
 final class ExtrinsicSignedExtensionFactory {}
 
 extension ExtrinsicSignedExtensionFactory: ExtrinsicSignedExtensionFactoryProtocol {
-    func createExtensions() -> [ExtrinsicSignedExtending] {
+    func createExtensions() -> [TransactionExtending] {
         [
-            ExtrinsicSignedExtension.ChargeAssetTxPayment(),
+            TransactionExtension.ChargeAssetTxPayment(),
             AvailSignedExtension.CheckAppId(appId: 0)
         ]
     }
 
-    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [ExtrinsicSignedExtending] {
+    func createExtensions(payingFeeIn assetId: AssetConversionPallet.AssetId) -> [TransactionExtending] {
         [
             AssetConversionTxPayment(assetId: assetId)
         ]
     }
 
-    func createCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
+    func createCoders(for metadata: RuntimeMetadataProtocol) -> [TransactionExtensionCoding] {
         let baseCoders = DefaultSignedExtensionCoders.createDefaultCoders(for: metadata)
         let availCoders = AvailSignedExtensionCoders.getCoders(for: metadata)
 
@@ -39,15 +39,15 @@ extension ExtrinsicSignedExtensionFactory: ExtrinsicSignedExtensionFactoryProtoc
 }
 
 enum DefaultSignedExtensionCoders {
-    static func createDefaultCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
-        let extensionId = Extrinsic.SignedExtensionId.assetTxPayment
+    static func createDefaultCoders(for metadata: RuntimeMetadataProtocol) -> [TransactionExtensionCoding] {
+        let extensionId = Extrinsic.TransactionExtensionId.assetTxPayment
 
         let extraType = metadata.getSignedExtensionType(for: extensionId)
 
         return [
-            DefaultExtrinsicSignedExtensionCoder(
-                signedExtensionId: extensionId,
-                extraType: extraType ?? "pallet_asset_tx_payment.ChargeAssetTxPayment"
+            DefaultTransactionExtensionCoder(
+                txExtensionId: extensionId,
+                extensionExplicitType: extraType ?? "pallet_asset_tx_payment.ChargeAssetTxPayment"
             )
         ]
     }

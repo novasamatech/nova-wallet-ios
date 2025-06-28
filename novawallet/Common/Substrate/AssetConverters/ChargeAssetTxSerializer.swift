@@ -9,7 +9,7 @@ enum ChargeAssetTxSerializer {
     private static func extractFeeAssetIdType(from codingFactory: RuntimeCoderFactoryProtocol) -> String? {
         guard
             let extensionType = codingFactory.metadata.getSignedExtensionType(
-                for: Extrinsic.SignedExtensionId.assetTxPayment
+                for: Extrinsic.TransactionExtensionId.assetTxPayment
             ),
             let extensionTypeNode = codingFactory.getTypeNode(for: extensionType) as? StructNode,
             let assetIdType = extensionTypeNode.typeMapping.first(
