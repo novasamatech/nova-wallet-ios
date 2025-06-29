@@ -63,7 +63,7 @@ struct AssetListOrganizerViewModel {
 
 enum AssetListOrganizerItemViewModel {
     case nfts(AssetListNftsViewModel)
-    case pendingTransactions
+    case pendingTransactions(AssetListMultisigOperationsViewModel)
 }
 
 struct AssetListNftsViewModel {
