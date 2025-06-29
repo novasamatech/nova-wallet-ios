@@ -60,10 +60,11 @@ struct AssetListBuilderResult {
                 balances: balances,
                 externalBalanceResult: externalBalanceResult,
                 nfts: nfts,
+                pendingOperations: pendingOperations,
                 locksResult: locksResult
             )
         }
-        
+
         func replacing(pendingOperations: [Multisig.PendingOperation]) -> Model {
             .init(
                 chainGroups: chainGroups,

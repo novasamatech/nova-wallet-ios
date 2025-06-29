@@ -74,10 +74,10 @@ extension AssetListModelHelpers {
 
         return createdAt1.compare(createdAt2) == .orderedDescending
     }
-    
+
     static var pendingOperationSortingBlock: (
         Multisig.PendingOperation, Multisig.PendingOperation
-    ) -> Bool = { lhs, rhs in
+    ) -> Bool = { _, _ in
         true
     }
 }

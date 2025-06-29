@@ -25,8 +25,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
     let assetListModelObservable: AssetListModelObservable
     let walletNotificationService: WalletNotificationServiceProtocol
 
-    private var nftSubscription: StreamableProvider<NftModel>?
     private var multisigOperationsSubscription: StreamableProvider<Multisig.PendingOperation>?
+
+    private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
 
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
@@ -68,14 +69,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
             logger: logger
         )
     }
-    
+
     // MARK: - Overrides
 
     override func resetWallet() {
         clearNftSubscription()
+        clearMultisigOperationsSubscription()
         clearLocksSubscription()
         clearHoldsSubscription()
-        clear(streamableProvider: &multisigOperationsSubscription)
 
         providerWalletInfo()
         provideWalletConnectSessionsCount()
@@ -173,14 +174,16 @@ private extension AssetListInteractor {
         assetHoldsSubscriptions = [:]
         holds = [:]
     }
-    
+
     func subscribeMultisigOperationsIfNeeded() {
+        clearMultisigOperationsSubscription()
+        modelBuilder?.applyPendingOperationsReset()
+
         guard
             selectedWalletSettings.value.type == .multisig,
             let multisigAccount = selectedWalletSettings.value.multisigAccount?.multisig
         else { return }
 
-        clear(streamableProvider: &multisigOperationsSubscription)
         multisigOperationsSubscription = subscribePendingOperations(for: multisigAccount.accountId)
     }
 
@@ -205,12 +208,14 @@ private extension AssetListInteractor {
     }
 
     func clearNftSubscription() {
-        nftSubscription?.removeObserver(self)
-        nftSubscription = nil
-
+        clear(streamableProvider: &nftSubscription)
         nftChainIds = nil
     }
-    
+
+    func clearMultisigOperationsSubscription() {
+        clear(streamableProvider: &multisigOperationsSubscription)
+    }
+
     func setupNftSubscription(from allChains: [ChainModel]) {
         let nftChains = allChains.filter { !$0.nftSources.isEmpty }
 
@@ -229,7 +234,7 @@ private extension AssetListInteractor {
         nftSubscription = subscribeToNftProvider(for: selectedWalletSettings.value, chains: nftChains)
         nftSubscription?.refresh()
     }
-    
+
     func handleAccountLocksChanges(
         _ changes: [DataProviderChange<AssetLock>],
         accountId: AccountId
@@ -303,7 +308,7 @@ private extension AssetListInteractor {
 
         modelBuilder?.applyHolds(.success(Array(holds.values.flatMap { $0 })))
     }
-    
+
     func provideWalletConnectSessionsCount() {
         walletConnect.fetchSessions { [weak self] result in
             guard let selectedMetaAccount = self?.selectedWalletSettings.value else {
@@ -319,7 +324,7 @@ private extension AssetListInteractor {
             }
         }
     }
-    
+
     func updateLocksSubscription(from changes: [DataProviderChange<ChainModel>]) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -399,7 +404,7 @@ extension AssetListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHa
 // MARK: - MultisigPendingOperationsSubscriber
 
 extension AssetListInteractor: MultisigOperationsLocalStorageSubscriber,
-                               MultisigOperationsLocalSubscriptionHandler {
+    MultisigOperationsLocalSubscriptionHandler {
     func handleMultisigPendingOperations(
         result: Result<[DataProviderChange<Multisig.PendingOperation>], any Error>
     ) {

@@ -57,21 +57,31 @@ struct AssetListTotalAmountViewModel {
     let decimalSeparator: String?
 }
 
-struct AssetListOrganizerViewModel {
+struct AssetListOrganizerViewModel: Equatable {
     let items: [AssetListOrganizerItemViewModel]
 }
 
-enum AssetListOrganizerItemViewModel {
+enum AssetListOrganizerItemViewModel: Equatable {
     case nfts(AssetListNftsViewModel)
     case pendingTransactions(AssetListMultisigOperationsViewModel)
 }
 
-struct AssetListNftsViewModel {
+struct AssetListNftsViewModel: Equatable {
     let totalCount: LoadableViewModelState<String>
     let mediaViewModels: [NftMediaViewModelProtocol]
+
+    static func == (
+        lhs: AssetListNftsViewModel,
+        rhs: AssetListNftsViewModel
+    ) -> Bool {
+        let lhsIdSet = Set(lhs.mediaViewModels.map(\.identifier))
+        let rhsIdSet = Set(rhs.mediaViewModels.map(\.identifier))
+
+        return lhs.totalCount == rhs.totalCount && lhsIdSet == rhsIdSet
+    }
 }
 
-struct AssetListMultisigOperationsViewModel {
+struct AssetListMultisigOperationsViewModel: Equatable {
     let totalCount: String
 }
 

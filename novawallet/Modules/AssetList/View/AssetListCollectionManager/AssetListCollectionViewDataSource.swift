@@ -6,7 +6,7 @@ final class AssetListCollectionViewDataSource: NSObject {
 
     var groupsViewModel: AssetListViewModel
     var headerViewModel: AssetListHeaderViewModel?
-    var nftViewModel: AssetListNftsViewModel?
+    var organizerViewModel: AssetListOrganizerViewModel?
     var bannersAvailable: Bool?
 
     var selectedLocale: Locale
@@ -246,9 +246,44 @@ private extension AssetListCollectionViewDataSource {
         return cell
     }
 
-    func provideYourNftsCell(
+    func provideOrganizerCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let itemIndex = indexPath.item
+
+        guard let organizerViewModel, organizerViewModel.items.count > itemIndex else {
+            return UICollectionViewCell()
+        }
+
+        let addsSeparator = organizerViewModel.items.count > 1 &&
+            itemIndex < organizerViewModel.items.endIndex - 1
+
+        let organizerItemModel = organizerViewModel.items[itemIndex]
+
+        return switch organizerItemModel {
+        case let .nfts(nftsModel):
+            provideYourNftsCell(
+                collectionView,
+                indexPath: indexPath,
+                model: nftsModel,
+                addsSeparator: addsSeparator
+            )
+        case let .pendingTransactions(transactionsModel):
+            provideTransactionsToSignCell(
+                collectionView,
+                indexPath: indexPath,
+                model: transactionsModel,
+                addsSeparator: addsSeparator
+            )
+        }
+    }
+
+    func provideYourNftsCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        model: AssetListNftsViewModel,
+        addsSeparator: Bool
     ) -> AssetListNftsCell {
         let cell = collectionView.dequeueReusableCellWithType(
             AssetListNftsCell.self,
@@ -256,9 +291,31 @@ private extension AssetListCollectionViewDataSource {
         )!
 
         cell.locale = selectedLocale
+        cell.bind(viewModel: model)
 
-        if let viewModel = nftViewModel {
-            cell.bind(viewModel: viewModel)
+        if addsSeparator {
+            cell.addSeparatorLine(horizontalSpace: UIConstants.horizontalInset * 2)
+        }
+
+        return cell
+    }
+
+    func provideTransactionsToSignCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        model: AssetListMultisigOperationsViewModel,
+        addsSeparator: Bool
+    ) -> AssetListMultisigOperationsCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListMultisigOperationsCell.self,
+            for: indexPath
+        )!
+
+        cell.locale = selectedLocale
+        cell.bind(viewModel: model)
+
+        if addsSeparator {
+            cell.addSeparatorLine(horizontalSpace: UIConstants.horizontalInset * 2)
         }
 
         return cell
@@ -346,6 +403,10 @@ private extension AssetListCollectionViewDataSource {
     @objc func actionCardOpen() {
         actionsDelegate?.actionCardOpen()
     }
+
+    @objc func actionRefresh() {
+        actionsDelegate?.actionRefresh()
+    }
 }
 
 // MARK: UICollectionViewDataSource
@@ -362,8 +423,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         switch AssetListFlowLayout.SectionType(section: section) {
         case .summary:
             headerViewModel != nil ? 2 : 0
-        case .nfts:
-            nftViewModel != nil ? 1 : 0
+        case .organizer:
+            organizerViewModel?.items.count ?? 0
         case .banners:
             bannersAvailable == true ? 1 : 0
         case .settings:
@@ -382,8 +443,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             provideAccountCell(collectionView, indexPath: indexPath)
         case .totalBalance:
             provideTotalBalanceCell(collectionView, indexPath: indexPath)
-        case .yourNfts:
-            provideYourNftsCell(collectionView, indexPath: indexPath)
+        case .organizerItem:
+            provideOrganizerCell(collectionView, indexPath: indexPath)
         case .banner:
             provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:

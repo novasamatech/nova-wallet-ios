@@ -176,6 +176,10 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
     }
 
+    func showMultisigOperations(from _: (any AssetListViewProtocol)?) {
+        // TODO: Implement multisig operations view
+    }
+
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput) {
         guard let viewController = LocksViewFactory.createView(input: params) else {
             return

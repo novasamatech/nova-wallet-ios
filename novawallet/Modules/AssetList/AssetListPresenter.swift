@@ -24,6 +24,8 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
 
+    private var organizerViewModel: AssetListOrganizerViewModel?
+
     private(set) var walletConnectSessionsCount: Int = 0
 
     private(set) var assetListStyle: AssetListGroupsStyle?
@@ -407,27 +409,20 @@ private extension AssetListPresenter {
         )
     }
 
-    func provideNftViewModel() {
-        guard !model.nfts.isEmpty else {
-            view?.didReceiveNft(viewModel: nil)
+    func provideOrganizerViewModel() {
+        let viewModel = viewModelFactory.createOrganizerViewModel(
+            from: model.nfts,
+            operations: model.pendingOperations,
+            locale: selectedLocale
+        )
+
+        guard organizerViewModel != viewModel else {
             return
         }
 
-        let nftViewModel = viewModelFactory.createNftsViewModel(from: model.nfts, locale: selectedLocale)
-        view?.didReceiveNft(viewModel: nftViewModel)
-    }
-    
-    func provideMultisigViewModel() {
-        guard !model.pendingOperations.isEmpty else {
-            view?.didReceiveMultisigOperations(viewModel: nil)
-            return
-        }
-        
-        let multisigOperationsViewModel = viewModelFactory.createMultisigOperationsViewModel(
-            from: model.pendingOperations,
-            locale: selectedLocale
-        )
-        view?.didReceiveMultisigOperations(viewModel: multisigOperationsViewModel)
+        organizerViewModel = viewModel
+
+        view?.didReceiveOrganizer(viewModel: viewModel)
     }
 
     func updateAssetsView() {
@@ -439,12 +434,8 @@ private extension AssetListPresenter {
         provideHeaderViewModel()
     }
 
-    func updateNftView() {
-        provideNftViewModel()
-    }
-    
-    func updateMultisigOperations() {
-        provideMultisigViewModel()
+    func updateOrganizerView() {
+        provideOrganizerViewModel()
     }
 
     func presentAssetDetails(for chainAssetId: ChainAssetId) {
@@ -464,6 +455,22 @@ private extension AssetListPresenter {
 // MARK: AssetListPresenterProtocol
 
 extension AssetListPresenter: AssetListPresenterProtocol {
+    func selectOrganizerItem(at index: Int) {
+        guard
+            let organizerViewModel,
+            organizerViewModel.items.count > index
+        else { return }
+
+        let item = organizerViewModel.items[index]
+
+        switch item {
+        case .nfts:
+            wireframe.showNfts(from: view)
+        case .pendingTransactions:
+            wireframe.showMultisigOperations(from: view)
+        }
+    }
+
     func setup() {
         if let bannersModule {
             provideBanners(state: bannersModule.bannersState)
@@ -478,10 +485,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
     func selectAsset(for chainAssetId: ChainAssetId) {
         presentAssetDetails(for: chainAssetId)
-    }
-
-    func selectNfts() {
-        wireframe.showNfts(from: view)
     }
 
     func refresh() {
@@ -602,10 +605,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         switch result.changeKind {
         case .reload:
             updateAssetsView()
-        case .nfts:
-            updateNftView()
-        case .pendingOperations:
-            updateMultisigOperations()
+        case .nfts, .pendingOperations:
+            updateOrganizerView()
         }
     }
 
@@ -623,8 +624,7 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         model = .init()
 
         updateAssetsView()
-        updateNftView()
-        updateMultisigOperations()
+        updateOrganizerView()
     }
 
     func didChange(name: String) {
@@ -756,8 +756,7 @@ extension AssetListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateAssetsView()
-            updateNftView()
-            updateMultisigOperations()
+            updateOrganizerView()
             bannersModule?.updateLocale(selectedLocale)
         }
     }
@@ -782,5 +781,6 @@ extension AssetListPresenter: IconAppearanceDepending {
         guard let view, view.isSetup else { return }
 
         provideAssetViewModels()
+        updateOrganizerView()
     }
 }

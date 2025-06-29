@@ -117,8 +117,10 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .settings, .emptyState, .totalBalance, .banner, .organizer:
+        case .account, .settings, .emptyState, .totalBalance, .banner:
             break
+        case let .organizerItem(itemIndex: itemIndex):
+            selectionDelegate?.selectOrganizerItem(at: itemIndex)
         case .asset:
             processAssetSelect(collectionView, at: indexPath)
         }
