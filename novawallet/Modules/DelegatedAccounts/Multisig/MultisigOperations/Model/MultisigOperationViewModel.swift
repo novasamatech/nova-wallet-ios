@@ -15,7 +15,7 @@ struct MultisigOperationViewModel {
 
     enum Status: Hashable {
         case createdByUser(String)
-        case signed(String)
+        case signed(TitleIconViewModel)
     }
 }
 

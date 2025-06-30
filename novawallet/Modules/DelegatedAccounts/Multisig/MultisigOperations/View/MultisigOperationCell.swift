@@ -50,6 +50,12 @@ final class MultisigOperationCell: UICollectionViewCell {
         return view
     }()
 
+    let statusView: IconDetailsView = .create { view in
+        view.mode = .detailsIcon
+        view.spacing = Constants.statusViewInnerSpacing
+        view.iconWidth = Constants.statusIconSize
+    }
+
     let networkIconView: UIImageView = {
         let view = UIImageView()
         return view
@@ -75,8 +81,12 @@ final class MultisigOperationCell: UICollectionViewCell {
         view.apply(style: .semiboldCaps1ChipText)
     }
 
-    let statusLabel: UILabel = .create { view in
-        view.isHidden = true
+    var statusLabel: UILabel {
+        statusView.detailsLabel
+    }
+
+    var statusIcon: UIImageView {
+        statusView.imageView
     }
 
     var delegatedAccountFieldLabel: UILabel {
@@ -127,8 +137,8 @@ private extension MultisigOperationCell {
             make.top.equalToSuperview().inset(Constants.contentInsets.top)
         }
 
-        contentView.addSubview(statusLabel)
-        statusLabel.snp.makeConstraints { make in
+        contentView.addSubview(statusView)
+        statusView.snp.makeConstraints { make in
             make.centerY.equalTo(signingProgressLabel)
             make.trailing.equalToSuperview().inset(Constants.contentInsets.right)
         }
@@ -157,7 +167,7 @@ private extension MultisigOperationCell {
         contentView.addSubview(amountTimeValues)
         amountTimeValues.snp.makeConstraints { make in
             make.centerY.equalTo(operationTypeValues)
-            make.trailing.equalTo(statusLabel)
+            make.trailing.equalTo(statusView)
         }
     }
 
@@ -173,17 +183,21 @@ private extension MultisigOperationCell {
 
     func updateStatus(with status: MultisigOperationViewModel.Status?) {
         guard let status else {
-            statusLabel.isHidden = true
+            statusView.isHidden = true
             return
         }
 
+        statusView.isHidden = false
+
         switch status {
         case let .createdByUser(text):
+            statusView.hidesIcon = true
             statusLabel.apply(style: .caption1Secondary)
             statusLabel.text = text
-        case let .signed(text):
+        case let .signed(model):
+            statusView.hidesIcon = false
+            statusView.bind(viewModel: model)
             statusLabel.apply(style: .caption1Positive)
-            statusLabel.text = text
         }
     }
 
@@ -280,6 +294,7 @@ private extension MultisigOperationCell {
         static let iconSize: CGFloat = 32.0
         static let networkIconSize: CGFloat = 16.0
         static let addressIconSize: CGFloat = 16.0
+        static let statusIconSize: CGFloat = 16.0
 
         static let iconTopOffset: CGFloat = 14.5
         static let iconBottomOffsetToFooter: CGFloat = 16.0
@@ -291,5 +306,7 @@ private extension MultisigOperationCell {
 
         static let cornerRadius: CGFloat = 12.0
         static let contentInsets = UIEdgeInsets(top: 13.5, left: 12.0, bottom: 20.0, right: 12.0)
+
+        static let statusViewInnerSpacing: CGFloat = 4.0
     }
 }
