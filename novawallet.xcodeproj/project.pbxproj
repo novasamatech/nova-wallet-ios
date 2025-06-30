@@ -1354,18 +1354,10 @@
 		270C21973CB61F0BF3D2D1E3 /* CrowdloanListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02ACCC85B2CCF3D9392CA9B4 /* CrowdloanListProtocols.swift */; };
 		2736BAABAE1389260A0B28D6 /* AssetListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B754B68D6F1D1ED5C8577A5 /* AssetListViewFactory.swift */; };
 		2793D406FD618A892D54EA84 /* CrowdloanContributionConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C92E3ED704CB0BBAB3A669F /* CrowdloanContributionConfirmViewLayout.swift */; };
-		27B8E15E2E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E15A2E12A34D00EB1F5B /* UniqueNftSyncService.swift */; };
-		27B8E1622E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E15A2E12A34D00EB1F5B /* UniqueNftSyncService.swift */; };
 		27B8E1662E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E15A2E12A34D00EB1F5B /* UniqueNftSyncService.swift */; };
 		27B8E16A2E12A5FA00EB1F5B /* UniqueDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1692E12A5F600EB1F5B /* UniqueDetailsInteractor.swift */; };
 		27B8E16C2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E16B2E12B04200EB1F5B /* UniqueNftOperationFactory.swift */; };
-		27B8E16D2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E16B2E12B04200EB1F5B /* UniqueNftOperationFactory.swift */; };
-		27B8E16E2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E16B2E12B04200EB1F5B /* UniqueNftOperationFactory.swift */; };
-		27B8E1752E12B0B800EB1F5B /* UniqueNft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1742E12B0B400EB1F5B /* UniqueNft.swift */; };
-		27B8E1762E12B0B800EB1F5B /* UniqueNft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1742E12B0B400EB1F5B /* UniqueNft.swift */; };
 		27B8E1772E12B0B800EB1F5B /* UniqueNft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1742E12B0B400EB1F5B /* UniqueNft.swift */; };
-		27B8E17A2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1792E12B14900EB1F5B /* UniqueNftModelConverter.swift */; };
-		27B8E17B2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1792E12B14900EB1F5B /* UniqueNftModelConverter.swift */; };
 		27B8E17C2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1792E12B14900EB1F5B /* UniqueNftModelConverter.swift */; };
 		27FA1D57A06AA3A030D226B6 /* StakingUnbondConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84638893DC99974E098719E /* StakingUnbondConfirmWireframe.swift */; };
 		286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0F7D4389B932A1F2E17361 /* DAppSearchViewLayout.swift */; };
@@ -28471,10 +28463,8 @@
 			files = (
 				0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */,
 				844133BB2860528500845987 /* XcmTransfersFeeTests.swift in Sources */,
-				27B8E16D2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */,
 				0C2F86932A72648D00593C01 /* ActiveNominationPoolsTests.swift in Sources */,
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
-				27B8E1752E12B0B800EB1F5B /* UniqueNft.swift in Sources */,
 				84BB3CE9267C9ADE00676FFE /* CrowdloanTests.swift in Sources */,
 				0C495B952B44709000B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */,
@@ -28488,7 +28478,6 @@
 				8461CC8526BC1306007460E4 /* MortalEraFactoryTests.swift in Sources */,
 				840874E02978882700ACFA55 /* Gov2DelegationTests.swift in Sources */,
 				0C2F869A2A72948100593C01 /* NominationPoolsApyTests.swift in Sources */,
-				27B8E15E2E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */,
 				8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */,
 				0CAC03042B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift in Sources */,
 				8455F19A2A1DEEAF003F072D /* SubqueryMultistakingTests.swift in Sources */,
@@ -28530,7 +28519,6 @@
 				844133BD2860532C00845987 /* XcmTransfersSync+Setup.swift in Sources */,
 				8499FE7D27BE61E000712589 /* UniquesIntegrationTests.swift in Sources */,
 				84216FD82827A35F00479375 /* ParaStakingRewardCalculatorTests.swift in Sources */,
-				27B8E17A2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */,
 				0C39766F2C326C4E00998DD6 /* HydraXYKTests.swift in Sources */,
 				847A25C328D84A9C006AC9F5 /* ReferendumFetchTests.swift in Sources */,
 				0C7CF4D22BD4C1600015DD45 /* CloudBackupFacadeTests.swift in Sources */,
@@ -33971,7 +33959,6 @@
 			files = (
 				0C846B872BE48998000EBFC2 /* MockPreferredValidatorsProvider.swift in Sources */,
 				2D5EBEB02D37D4090016AC4E /* WalletStorageCleanerFactory.swift in Sources */,
-				27B8E16E2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */,
 				8410562E27AF22DA004F5CA3 /* EthereumAddressChecksum.swift in Sources */,
 				84B66A1826FE05B00038B963 /* ChainRegistryStub.swift in Sources */,
 				8467FD3924EACE08005D486C /* AccountCreationHelper.swift in Sources */,
@@ -34066,12 +34053,10 @@
 				84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */,
 				84B7C730289BFA79001A3566 /* CustomValidatorListTests.swift in Sources */,
 				0C41D2202BFB07B4000950EE /* CloudBackupFetchHelper.swift in Sources */,
-				27B8E1762E12B0B800EB1F5B /* UniqueNft.swift in Sources */,
 				0C41D2122BF78389000950EE /* MockCloudBackupFileManager.swift in Sources */,
 				84B7C741289BFA79001A3566 /* AccountConfirmTests.swift in Sources */,
 				771056062B717E0400EE2C20 /* PushNotificationParsingTests.swift in Sources */,
 				8434C9EA2540AE51009E4191 /* ExtrinsicEraTests.swift in Sources */,
-				27B8E1622E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */,
 				84B7C749289BFA79001A3566 /* ControllerAccountTests.swift in Sources */,
 				84B7C719289BFA79001A3566 /* DAppSearchTests.swift in Sources */,
 				0C0AE4072DE45A9000D506F3 /* MockBranchService.swift in Sources */,
@@ -34145,7 +34130,6 @@
 				84BAFCD026AF585900871E86 /* SharedArrayTests.swift in Sources */,
 				84B7C721289BFA79001A3566 /* CrowdloanContributionSetupTests.swift in Sources */,
 				848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */,
-				27B8E17B2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */,
 				846CA7822709AD300011124C /* StakingAnalyticsLocalSubscriptionFactoryStub.swift in Sources */,
 				84B7C72C289BFA79001A3566 /* SelectValidatorsConfirmTests.swift in Sources */,
 				84E25BF427E8FEFD00290BF1 /* RewardDataSourceTests.swift in Sources */,
