@@ -15,9 +15,10 @@ protocol SubqueryMultisigsOperationFactoryProtocol {
         for accountIds: Set<AccountId>
     ) -> BaseOperation<[DiscoveredMultisig]>
 
-    func createFetchCallDataOperation(
-        for callHashes: Set<Substrate.CallHash>
-    ) -> BaseOperation<[Substrate.CallHash: Substrate.CallData]>
+    func createFetchOffChainOperationInfo(
+        for accountId: AccountId,
+        callHashes: Set<Substrate.CallHash>
+    ) -> BaseOperation<[Substrate.CallHash: OffChainMultisigInfo]>
 }
 
 final class SubqueryMultisigsOperationFactory: SubqueryBaseOperationFactory {}
@@ -61,21 +62,36 @@ private extension SubqueryMultisigsOperationFactory {
         """
     }
 
-    func createCallDataRequestQuery(for callHashes: Set<Substrate.CallHash>) -> String {
+    func createCallDataRequestQuery(
+        for accountId: AccountId,
+        callHashes: Set<Substrate.CallHash>
+    ) -> String {
         let callHashesHex = callHashes.map { $0.toHexWithPrefix() }
-        let hashInFilter = callHashesHex.map { "\"\($0)\"" }.joined(with: .commaSpace)
+        let joinedHashHexes = callHashesHex.map { "\"\($0)\"" }.joined(with: .commaSpace)
+        let accountIdHex = accountId.toHexWithPrefix()
+        let accountIdFilter = "accountId: { equalTo: \"\(accountIdHex)\" }"
+        let statusFilter = "status: { equalTo: pending }"
+        let callHashFilter = "callHash: { in: [\(joinedHashHexes)] }"
 
         return """
         {
             query {
                 multisigOperations(
                     filter:  {
-                        callHash: { in: [\(hashInFilter)] }
+                        \(accountIdFilter),
+                        \(statusFilter),
+                        \(callHashFilter)
                     }
                 ) {
                     nodes {
                         callHash
                         callData
+                        timestamp
+                        events(last: 1) {
+                            nodes {
+                                timestamp
+                            }
+                        }
                     }
                 }
             }
@@ -126,12 +142,16 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
         return operation
     }
 
-    func createFetchCallDataOperation(
-        for callHashes: Set<Substrate.CallHash>
-    ) -> BaseOperation<[Substrate.CallHash: Substrate.CallData]> {
-        let query = createCallDataRequestQuery(for: callHashes)
+    func createFetchOffChainOperationInfo(
+        for accountId: AccountId,
+        callHashes: Set<Substrate.CallHash>
+    ) -> BaseOperation<[Substrate.CallHash: OffChainMultisigInfo]> {
+        let query = createCallDataRequestQuery(
+            for: accountId,
+            callHashes: callHashes
+        )
 
-        let operation: BaseOperation<[Substrate.CallHash: Substrate.CallData]>
+        let operation: BaseOperation<[Substrate.CallHash: OffChainMultisigInfo]>
 
         operation = createOperation(
             for: query
@@ -139,7 +159,11 @@ extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryPr
             response.query.multisigOperations.nodes.reduce(into: [:]) { acc, node in
                 guard callHashes.contains(node.callHash) else { return }
 
-                acc[node.callHash] = node.callData
+                acc[node.callHash] = OffChainMultisigInfo(
+                    callHash: node.callHash,
+                    callData: node.callData,
+                    timestamp: node.events.nodes.first?.timestamp ?? node.timestamp
+                )
             }
         }
 

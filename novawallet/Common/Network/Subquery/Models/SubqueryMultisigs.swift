@@ -29,13 +29,25 @@ enum SubqueryMultisigs {
     // MARK: - Fetch Call Data
 
     struct FetchMultisigCallDataResponse: Decodable {
-        let multisigOperations: SubqueryNodes<RemoteCallData>
+        let multisigOperations: SubqueryNodes<OffChainMultisigOperationInfo>
     }
 
-    struct RemoteCallData: Decodable {
+    struct OffChainMultisigOperationInfo: Decodable {
         @HexCodable var callHash: Substrate.CallHash
         @OptionHexCodable var callData: Substrate.CallData?
+        let timestamp: Int
+        let events: SubqueryNodes<OperationEvent>
     }
+
+    struct OperationEvent: Decodable {
+        let timestamp: Int
+    }
+}
+
+struct OffChainMultisigInfo {
+    let callHash: Substrate.CallHash
+    let callData: Substrate.CallData?
+    let timestamp: Int
 }
 
 struct DiscoveredMultisig: DiscoveredDelegatedAccountProtocol {

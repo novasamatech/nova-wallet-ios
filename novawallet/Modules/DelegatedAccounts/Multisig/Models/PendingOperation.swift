@@ -5,6 +5,7 @@ extension Multisig {
     struct PendingOperation: Codable {
         let call: JSON?
         let callHash: Substrate.CallHash
+        let timestamp: Int
         let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
@@ -98,6 +99,7 @@ extension Multisig.PendingOperation {
         .init(
             call: call,
             callHash: callHash,
+            timestamp: timestamp,
             multisigAccountId: multisigAccountId,
             signatory: signatory,
             chainId: chainId,
@@ -109,6 +111,7 @@ extension Multisig.PendingOperation {
         .init(
             call: newCall,
             callHash: callHash,
+            timestamp: timestamp,
             multisigAccountId: multisigAccountId,
             signatory: signatory,
             chainId: chainId,
