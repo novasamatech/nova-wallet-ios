@@ -48,6 +48,9 @@ final class UniqueNftOperationFactory: UniqueNftOperationFactoryProtocol {
         }
 
         let urlRequest = URLRequest(url: url)
+        let requestFactory = BlockNetworkRequestFactory {
+            urlRequest
+        }
 
         let resultFactory = AnyNetworkResultFactory<UniqueScanNftResponse> { data in
             try JSONDecoder().decode(UniqueScanNftResponse.self, from: data)
