@@ -114,6 +114,7 @@ private extension MultisigCallDataSyncService {
                         return Multisig.PendingOperation(
                             call: call,
                             callHash: keyValue.key.callHash,
+                            timestamp: 0,
                             multisigAccountId: keyValue.key.multisigAccountId,
                             signatory: keyValue.key.signatoryAccountId,
                             chainId: keyValue.key.chainId,

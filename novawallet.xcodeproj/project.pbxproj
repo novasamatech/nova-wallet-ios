@@ -1493,7 +1493,7 @@
 		2D389B132C86FF7300256C7B /* VoteCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B122C86FF7300256C7B /* VoteCardViewModel.swift */; };
 		2D389B152C87036100256C7B /* ReferendumFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B142C87036100256C7B /* ReferendumFilter.swift */; };
 		2D389B172C875B3200256C7B /* SwipeGovInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */; };
-		2D3C71A12E056EA900DF9E49 /* MultisigPendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71A02E056EA900DF9E49 /* MultisigPendingOperation.swift */; };
+		2D3C71A12E056EA900DF9E49 /* MultisigPendingOperationMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71A02E056EA900DF9E49 /* MultisigPendingOperationMapper.swift */; };
 		2D3C71A92E087CC300DF9E49 /* Multisig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71A82E087CC300DF9E49 /* Multisig.swift */; };
 		2D3C71AB2E087CFB00DF9E49 /* PendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71AA2E087CFB00DF9E49 /* PendingOperation.swift */; };
 		2D3C71AD2E08804800DF9E49 /* MultisigEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71AC2E08804800DF9E49 /* MultisigEventMatcher.swift */; };
@@ -1510,6 +1510,9 @@
 		2D3C71C72E0DB8DA00DF9E49 /* CallHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */; };
 		2D3C71C92E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */; };
 		2D3C71CD2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */; };
+		2D3C71CF2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71CE2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift */; };
+		2D3C71D12E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71D02E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift */; };
+		2D3C71D32E124F7C00DF9E49 /* OffChainDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3C71D22E124F7C00DF9E49 /* OffChainDefinition.swift */; };
 		2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */; };
 		2D3EA7D42CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */; };
 		2D3EA7D62CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */; };
@@ -7463,7 +7466,7 @@
 		2D389B142C87036100256C7B /* ReferendumFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFilter.swift; sourceTree = "<group>"; };
 		2D389B162C875B3200256C7B /* SwipeGovInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovInteractor.swift; sourceTree = "<group>"; };
 		2D397C3B2D81E54D0026CA01 /* SubstrateDataModel36.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel36.xcdatamodel; sourceTree = "<group>"; };
-		2D3C71A02E056EA900DF9E49 /* MultisigPendingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperation.swift; sourceTree = "<group>"; };
+		2D3C71A02E056EA900DF9E49 /* MultisigPendingOperationMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationMapper.swift; sourceTree = "<group>"; };
 		2D3C71A82E087CC300DF9E49 /* Multisig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multisig.swift; sourceTree = "<group>"; };
 		2D3C71AA2E087CFB00DF9E49 /* PendingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingOperation.swift; sourceTree = "<group>"; };
 		2D3C71AC2E08804800DF9E49 /* MultisigEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigEventMatcher.swift; sourceTree = "<group>"; };
@@ -7480,6 +7483,9 @@
 		2D3C71C62E0DB8DA00DF9E49 /* CallHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHash.swift; sourceTree = "<group>"; };
 		2D3C71C82E0DC68C00DF9E49 /* PendingMultisigRemoteFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMultisigRemoteFetchFactory.swift; sourceTree = "<group>"; };
 		2D3C71CC2E0E769000DF9E49 /* DataProviderChange+ManagedMetaAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+ManagedMetaAccount.swift"; sourceTree = "<group>"; };
+		2D3C71CE2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListMultisigOperationsCell.swift; sourceTree = "<group>"; };
+		2D3C71D02E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListOrganizerDecorationView.swift; sourceTree = "<group>"; };
+		2D3C71D22E124F7C00DF9E49 /* OffChainDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffChainDefinition.swift; sourceTree = "<group>"; };
 		2D3EA7D02CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMaximizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D32CF9BB9C0033AFD2 /* FadeContentDAppBrowserMinimizeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeContentDAppBrowserMinimizeTransition.swift; sourceTree = "<group>"; };
 		2D3EA7D52CF9BBCC0033AFD2 /* DAppBrowserTransitionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransitionProtocol.swift; sourceTree = "<group>"; };
@@ -15571,6 +15577,7 @@
 			children = (
 				2D3C71A82E087CC300DF9E49 /* Multisig.swift */,
 				2D3C71AA2E087CFB00DF9E49 /* PendingOperation.swift */,
+				2D3C71D22E124F7C00DF9E49 /* OffChainDefinition.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -19995,7 +20002,7 @@
 				845B822026EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift */,
 				77DAFF6C2B297DB500D4220C /* ProxyAccountMapper.swift */,
 				2DC694502DF2F0DB004F4584 /* MultisigAccountMapper.swift */,
-				2D3C71A02E056EA900DF9E49 /* MultisigPendingOperation.swift */,
+				2D3C71A02E056EA900DF9E49 /* MultisigPendingOperationMapper.swift */,
 				849A4EF9279ABC8800AB6709 /* AssetBalanceMapper.swift */,
 				88C017E528C60A65003B2D28 /* AssetLockMapper.swift */,
 				0C1998E12C49AD19000EBFB8 /* AssetHoldMapper.swift */,
@@ -24585,7 +24592,9 @@
 				84AEEE6927A9204C005EBA77 /* AssetListSettingsCell.swift */,
 				2D6F51A32CDBCF9B00564C00 /* AssetListStyleSwitcher */,
 				847F2D4127A96D9200AFD476 /* AssetListNetworkGroupDecorationView.swift */,
+				2D3C71D02E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift */,
 				8452585427ABF270004F9082 /* AssetListEmptyCell.swift */,
+				2D3C71CE2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift */,
 				843E9B2727C83985009C143A /* AssetListNftsCell.swift */,
 				88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */,
 				0C9ECB592A4A9AB400BDCA73 /* AssetListAccountCell.swift */,
@@ -28936,7 +28945,7 @@
 				8487010A2907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift in Sources */,
 				84CA407C2A037175004BB71E /* WalletConnectSessionListViewModel.swift in Sources */,
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
-				2D3C71A12E056EA900DF9E49 /* MultisigPendingOperation.swift in Sources */,
+				2D3C71A12E056EA900DF9E49 /* MultisigPendingOperationMapper.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
 				0C0F6DD42D41362200943A7C /* ParachainStakingCollatorService+CollatorService.swift in Sources */,
 				887AFC8D28BCB314002A0422 /* SelectableIconSubtitleCollectionViewCell.swift in Sources */,
@@ -31787,6 +31796,7 @@
 				847F2D4427A9822200AFD476 /* AssetIconView.swift in Sources */,
 				20B2942A4241F6713A1C70D9 /* StakingRewardDetailsViewFactory.swift in Sources */,
 				84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */,
+				2D3C71D12E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift in Sources */,
 				848CCB442832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift in Sources */,
 				8483B15828F98C9F0048B295 /* ReferendumVotersViewModel.swift in Sources */,
 				2D7BEBD62C23818B00BBCB57 /* NetworkManageNodeWireframe.swift in Sources */,
@@ -32072,6 +32082,7 @@
 				84B24FA02A2F19DE00F9BF59 /* WalletSwitchCollectionViewCell.swift in Sources */,
 				0CA72A842D4A2B1B00B3FD02 /* CollatorStkPartialUnstakeSetupLayout.swift in Sources */,
 				8480154E29BB6521008557F3 /* BorderedImageView.swift in Sources */,
+				2D3C71CF2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift in Sources */,
 				84BFE89C28C23A2500140F1F /* AutomationTime.swift in Sources */,
 				2D6287402C91ED5300060814 /* ReferendumVoteSetupPresenter.swift in Sources */,
 				846DA5592A2098BE006CD6C1 /* StakingResolvedAccountMapper.swift in Sources */,
@@ -33714,6 +33725,7 @@
 				D5F1C910930BA08E5F7681B2 /* StakingProxyManagementWireframe.swift in Sources */,
 				5AEA54E0691BD6DC6B570ACF /* StakingProxyManagementPresenter.swift in Sources */,
 				0CE94FF22D046A8700E31D0C /* AssetExchangeFeePayerMatcher.swift in Sources */,
+				2D3C71D32E124F7C00DF9E49 /* OffChainDefinition.swift in Sources */,
 				6362476898582D2118E96447 /* StakingProxyManagementInteractor.swift in Sources */,
 				ACF27885E3B3D01B6C3BBB4B /* StakingProxyManagementViewController.swift in Sources */,
 				78E67009E5A7D4564172FD0B /* StakingProxyManagementViewLayout.swift in Sources */,

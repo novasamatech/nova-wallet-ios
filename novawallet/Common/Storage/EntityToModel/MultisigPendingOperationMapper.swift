@@ -49,6 +49,7 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         return Multisig.PendingOperation(
             call: call,
             callHash: callHash,
+            timestamp: Int(entity.timestamp),
             multisigAccountId: multisigAccountId,
             signatory: signatory,
             chainId: entity.chainId!,
@@ -65,6 +66,7 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         entity.multisigAccountId = model.multisigAccountId.toHexString()
         entity.signatory = model.signatory.toHexString()
         entity.callHash = model.callHash.toHexString()
+        entity.timestamp = Int64(model.timestamp)
         entity.chainId = model.chainId
 
         if let multisigDefinition = model.multisigDefinition {

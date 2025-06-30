@@ -46,9 +46,9 @@ private extension PendingMultisigRemoteFetchFactory {
         }
     }
 
-    func createCallDataFetchWrapper(
+    func createOperationInfoFetchWrapper(
         dependsOn callHashesWrapper: CompoundOperationWrapper<CallHashFetchResult>
-    ) -> CompoundOperationWrapper<CallDataFetchResult> {
+    ) -> CompoundOperationWrapper<OffChainInfoFetchResult> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: operationManager
         ) { [weak self] in
@@ -67,26 +67,37 @@ private extension PendingMultisigRemoteFetchFactory {
 
             let remoteCallDataFetchFactory = SubqueryMultisigsOperationFactory(url: apiURL)
 
-            let callDataFetchOperation = remoteCallDataFetchFactory.createFetchCallDataOperation(
-                for: Set(callHashes)
+            let operationInfoFetchOperation = remoteCallDataFetchFactory.createFetchOffChainOperationInfo(
+                for: multisigAccount.accountId,
+                callHashes: Set(callHashes)
             )
 
-            return CompoundOperationWrapper(targetOperation: callDataFetchOperation)
+            return CompoundOperationWrapper(targetOperation: operationInfoFetchOperation)
         }
     }
 
     func createCallsDecodingWrapper(
-        dependsOn callDataWrapper: CompoundOperationWrapper<CallDataFetchResult>,
+        dependsOn callDataWrapper: CompoundOperationWrapper<OffChainInfoFetchResult>,
         runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<CallsFetchResult> {
+    ) -> CompoundOperationWrapper<OffChainInfoDecodingResult> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let mapOperation = ClosureOperation<CallsFetchResult> { [weak self] in
+        let mapOperation = ClosureOperation<OffChainInfoDecodingResult> { [weak self] in
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            let callData = try callDataWrapper.targetOperation.extractNoCancellableResultData()
+            let offChainOperationInfo = try callDataWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try callData.compactMapValues {
-                try self?.extractDecodedCall(from: $0, using: codingFactory)
+            return try offChainOperationInfo.compactMapValues {
+                let call: JSON? = if let callData = $0.callData {
+                    try self?.extractDecodedCall(from: callData, using: codingFactory)
+                } else {
+                    nil
+                }
+
+                return Multisig.OffChainMultisigInfo(
+                    callHash: $0.callHash,
+                    call: call,
+                    timestamp: $0.timestamp
+                )
             }
         }
 
@@ -113,15 +124,16 @@ private extension PendingMultisigRemoteFetchFactory {
 
     func createPendingOperations(
         with callHashes: CallHashFetchResult,
-        calls: CallsFetchResult
+        info: OffChainInfoDecodingResult
     ) -> MultisigPendingOperationsMap {
         callHashes.reduce(into: [:]) { acc, keyValue in
             let callHash = keyValue.key
             let operationDefinition = keyValue.value
 
             let operation = Multisig.PendingOperation(
-                call: calls[callHash],
+                call: info[callHash]?.call,
                 callHash: callHash,
+                timestamp: 0,
                 multisigAccountId: multisigAccount.accountId,
                 signatory: multisigAccount.signatory,
                 chainId: chain.chainId,
@@ -141,7 +153,7 @@ extension PendingMultisigRemoteFetchFactory: PendingMultisigRemoteFetchFactoryPr
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
 
             let callHashFetchWrapper = createCallHashFetchWrapper()
-            let callDataFetchWrapper = createCallDataFetchWrapper(dependsOn: callHashFetchWrapper)
+            let callDataFetchWrapper = createOperationInfoFetchWrapper(dependsOn: callHashFetchWrapper)
             let callsDecodingWrapper = createCallsDecodingWrapper(
                 dependsOn: callDataFetchWrapper,
                 runtimeProvider: runtimeProvider
@@ -153,7 +165,7 @@ extension PendingMultisigRemoteFetchFactory: PendingMultisigRemoteFetchFactoryPr
 
                 return createPendingOperations(
                     with: try callHashFetchWrapper.targetOperation.extractNoCancellableResultData(),
-                    calls: try callsDecodingWrapper.targetOperation.extractNoCancellableResultData()
+                    info: try callsDecodingWrapper.targetOperation.extractNoCancellableResultData()
                 )
             }
 
@@ -174,5 +186,5 @@ extension PendingMultisigRemoteFetchFactory: PendingMultisigRemoteFetchFactoryPr
 // MARK: - Private types
 
 private typealias CallHashFetchResult = [Substrate.CallHash: MultisigPallet.MultisigDefinition]
-private typealias CallDataFetchResult = [Substrate.CallHash: Substrate.CallData]
-private typealias CallsFetchResult = [Substrate.CallHash: JSON]
+private typealias OffChainInfoFetchResult = [Substrate.CallHash: OffChainMultisigInfo]
+private typealias OffChainInfoDecodingResult = [Substrate.CallHash: Multisig.OffChainMultisigInfo]

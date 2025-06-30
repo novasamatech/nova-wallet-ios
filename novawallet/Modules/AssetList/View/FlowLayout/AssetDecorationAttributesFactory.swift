@@ -9,7 +9,14 @@ class AssetDecorationAttributesFactory {
         assetsStartingSection: Int,
         from initialY: CGFloat
     ) -> [UICollectionViewLayoutAttributes] {
-        switch style {
+        var attributes: [UICollectionViewLayoutAttributes] = []
+
+        // Add organizer decoration if needed
+        let organizerAttributes = createOrganizerAttributes(for: collectionView)
+        attributes.append(contentsOf: organizerAttributes)
+
+        // Add asset group decorations
+        let assetAttributes = switch style {
         case .tokens:
             createAttributesForTokenGroups(
                 for: collectionView,
@@ -24,10 +31,43 @@ class AssetDecorationAttributesFactory {
                 initialY: initialY
             )
         }
+
+        attributes.append(contentsOf: assetAttributes)
+        return attributes
     }
 }
 
 private extension AssetDecorationAttributesFactory {
+    func createOrganizerAttributes(for collectionView: UICollectionView) -> [UICollectionViewLayoutAttributes] {
+        let organizerSection = AssetListFlowLayout.SectionType.organizer.index
+        let numberOfItems = collectionView.numberOfItems(inSection: organizerSection)
+
+        guard numberOfItems > 0 else {
+            return []
+        }
+
+        let decorationAttributes = UICollectionViewLayoutAttributes(
+            forDecorationViewOfKind: AssetListFlowLayout.DecorationIdentifiers.organizer,
+            with: IndexPath(item: 0, section: organizerSection)
+        )
+
+        // Calculate position based on summary section
+        let summaryHeight = AssetListMeasurement.accountHeight + AssetListFlowLayout.SectionType.summary.cellSpacing +
+            AssetListMeasurement.totalBalanceHeight + AssetListMeasurement.summaryInsets.top + AssetListMeasurement.summaryInsets.bottom
+
+        let contentHeight = CGFloat(numberOfItems) * AssetListMeasurement.organizerItemHeight
+
+        let decorationWidth = max(collectionView.frame.width - 2 * UIConstants.horizontalInset, 0)
+        let size = CGSize(width: decorationWidth, height: contentHeight)
+
+        let origin = CGPoint(x: UIConstants.horizontalInset, y: summaryHeight)
+
+        decorationAttributes.frame = CGRect(origin: origin, size: size)
+        decorationAttributes.zIndex = -1
+
+        return [decorationAttributes]
+    }
+
     func createAttributesForTokenGroups(
         for collectionView: UICollectionView,
         using sectionsExpandableState: [Int: Bool],

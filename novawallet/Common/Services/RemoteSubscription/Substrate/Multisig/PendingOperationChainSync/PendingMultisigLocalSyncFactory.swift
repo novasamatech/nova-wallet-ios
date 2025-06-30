@@ -115,6 +115,7 @@ private extension PendingMultisigLocalSyncFactory {
                 Multisig.PendingOperation(
                     call: nil,
                     callHash: callHash,
+                    timestamp: 0,
                     multisigAccountId: multisigAccount.accountId,
                     signatory: multisigAccount.signatory,
                     chainId: self.chain.chainId,

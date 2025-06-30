@@ -1870,3 +1870,4 @@
 "multisig.selection.unavailable.title" = "Multisigs coming soon";
 "multisig.selection.unavailable.message" = "Multisig wallet management will be available in an upcoming update.
 Stay tuned!";
+"multisig.transactions.to.sign" = "Transactions to sign";

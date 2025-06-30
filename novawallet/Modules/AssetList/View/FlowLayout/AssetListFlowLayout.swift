@@ -13,7 +13,7 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
 
     private var bannersHeight: CGFloat = AssetListMeasurement.bannerHeight
     private var bannersInsets: UIEdgeInsets = .zero
-    private var nftsInsets: UIEdgeInsets = .zero
+    private var organizerInsets: UIEdgeInsets = .zero
 
     private let attributesFactory = AssetDecorationAttributesFactory()
 
@@ -36,14 +36,13 @@ class AssetListFlowLayout: UICollectionViewFlowLayout {
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
         guard
-            elementKind == assetGroupDecorationIdentifier(),
-            indexPath.section > SectionType.assetsStartingSection,
-            indexPath.section < itemsDecorationAttributes.count
+            elementKind == assetGroupDecorationIdentifier() || elementKind == AssetListFlowLayout.DecorationIdentifiers.organizer,
+            let attributes = itemsDecorationAttributes[indexPath]
         else {
             return nil
         }
 
-        return itemsDecorationAttributes[indexPath]
+        return attributes
     }
 
     override func prepare() {
@@ -167,13 +166,11 @@ private extension AssetListFlowLayout {
 
         initialY += totalBalanceInsets.top + totalBalanceInsets.bottom
 
-        initialY += nftsInsets.top + nftsInsets.bottom
+        initialY += organizerInsets.top + organizerInsets.bottom
 
-        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
+        let numberOfOrganizerItems = collectionView.numberOfItems(inSection: SectionType.organizer.index)
 
-        if hasNfts {
-            initialY += AssetListMeasurement.nftsHeight
-        }
+        initialY += CGFloat(numberOfOrganizerItems) * AssetListMeasurement.organizerItemHeight
 
         initialY += bannersInsets.top + bannersInsets.bottom
 
@@ -248,8 +245,8 @@ extension AssetListFlowLayout {
     func updateTotalBalanceHeight(_ height: CGFloat) {
         var newInsets = AssetListMeasurement.summaryInsets
 
-        if nftsInsets == .zero {
-            newInsets.bottom = AssetListMeasurement.nftsInsets.bottom
+        if organizerInsets == .zero {
+            newInsets.bottom = AssetListMeasurement.organizerInsets.bottom
         }
 
         guard height != totalBalanceHeight || totalBalanceInsets != newInsets else {
@@ -284,15 +281,15 @@ extension AssetListFlowLayout {
         bannersInsets = newInsets
     }
 
-    func setNftsActive(_ isActive: Bool) {
-        let newInsets = isActive ? AssetListMeasurement.nftsInsets : .zero
+    func setOrganizerActive(_ isActive: Bool) {
+        let newInsets = isActive ? AssetListMeasurement.organizerInsets : .zero
 
-        guard nftsInsets != newInsets else {
+        guard organizerInsets != newInsets else {
             return
         }
 
-        nftsInsets = newInsets
-        invalidateLayout()
+        organizerInsets = newInsets
+        updateTotalBalanceHeight(totalBalanceHeight)
     }
 
     func cellHeight(
@@ -304,8 +301,8 @@ extension AssetListFlowLayout {
             AssetListMeasurement.accountHeight
         case .totalBalance:
             totalBalanceHeight
-        case .yourNfts:
-            AssetListMeasurement.nftsHeight
+        case .organizerItem:
+            AssetListMeasurement.organizerItemHeight
         case .banner:
             bannersHeight
         case .settings:
@@ -324,8 +321,8 @@ extension AssetListFlowLayout {
         switch type {
         case .summary:
             totalBalanceInsets
-        case .nfts:
-            nftsInsets
+        case .organizer:
+            organizerInsets
         case .banners:
             bannersInsets
         case .settings:
