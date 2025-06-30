@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-extension Multisig {
+extension MultisigPallet {
     struct AsMultiCall: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold

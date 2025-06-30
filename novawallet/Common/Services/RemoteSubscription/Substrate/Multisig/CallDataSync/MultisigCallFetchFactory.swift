@@ -1,0 +1,153 @@
+import Foundation
+import Operation_iOS
+import SubstrateSdk
+
+protocol MultisigCallFetchFactoryProtocol {
+    func createCallFetchWrapper(
+        for events: [MultisigEvent],
+        at blockHash: Data,
+        chainId: ChainModel.Id
+    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallOrHash]>
+}
+
+final class MultisigCallFetchFactory {
+    private let chainRegistry: ChainRegistryProtocol
+
+    init(chainRegistry: ChainRegistryProtocol) {
+        self.chainRegistry = chainRegistry
+    }
+}
+
+// MARK: - Private
+
+private extension MultisigCallFetchFactory {
+    func extractMultisigCallDataOrHash(
+        from block: Block,
+        matching multisigEvents: Set<MultisigEvent>,
+        chainId: ChainModel.Id,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> [Multisig.PendingOperation.Key: MultisigCallOrHash] {
+        try multisigEvents.reduce(into: [:]) { acc, multisigEvent in
+            let extrinsicIndex = Int(multisigEvent.extrinsicIndex)
+
+            guard block.extrinsics.count > extrinsicIndex else { return }
+
+            let extrinsicHex = block.extrinsics[extrinsicIndex]
+            let extrinsicData = try Data(hexString: extrinsicHex)
+
+            let key = Multisig.PendingOperation.Key(
+                callHash: multisigEvent.callHash,
+                chainId: chainId,
+                multisigAccountId: multisigEvent.accountId,
+                signatoryAccountId: multisigEvent.signatory
+            )
+
+            let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(
+                for: multisigEvent.callHash,
+                from: extrinsicData,
+                using: codingFactory
+            ) {
+                .call(call)
+            } else {
+                .callHash(multisigEvent.callHash)
+            }
+
+            acc[key] = callOrHash
+        }
+    }
+
+    func matchAsMultiCallData(
+        for callHash: Substrate.CallHash,
+        from extrinsicData: Data,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> JSON? {
+        let decoder = try codingFactory.createDecoder(from: extrinsicData)
+        let extrinsic: Extrinsic = try decoder.read(of: GenericType.extrinsic.name)
+
+        guard let sender = ExtrinsicExtraction.getSender(
+            from: extrinsic,
+            codingFactory: codingFactory
+        ) else { return nil }
+
+        return try findCall(
+            with: callHash,
+            in: extrinsic.call,
+            sender: sender,
+            codingFactory: codingFactory
+        )
+    }
+
+    func findCall(
+        with callHash: Substrate.CallHash,
+        in call: JSON,
+        sender: AccountId,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> JSON? {
+        let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
+        let context = codingFactory.createRuntimeJsonContext()
+
+        let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall>>
+        maybeCallMappingResult = try nestedCallMapper.mapRuntimeCall(
+            call: call,
+            context: context
+        )
+
+        let foundCalls = maybeCallMappingResult.node.calls.map(\.args.call)
+
+        return try foundCalls.first { foundCall in
+            let encoder = codingFactory.createEncoder()
+
+            try encoder.append(json: foundCall, type: GenericType.call.name)
+
+            let foundCallData = try encoder.encode()
+            let foundCallHash = try foundCallData.blake2b32()
+
+            return callHash == foundCallHash
+        }
+    }
+}
+
+// MARK: - MultisigCallFetchFactoryProtocol
+
+extension MultisigCallFetchFactory: MultisigCallFetchFactoryProtocol {
+    func createCallFetchWrapper(
+        for events: [MultisigEvent],
+        at blockHash: Data,
+        chainId: ChainModel.Id
+    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
+        do {
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+            let blockFetchOperation: JSONRPCOperation<[String], SignedBlock> = JSONRPCOperation(
+                engine: connection,
+                method: RPCMethod.getChainBlock,
+                parameters: [blockHash.toHex(includePrefix: true)]
+            )
+
+            let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let signedBlock = try blockFetchOperation.extractNoCancellableResultData()
+
+                return try self.extractMultisigCallDataOrHash(
+                    from: signedBlock.block,
+                    matching: Set(events),
+                    chainId: chainId,
+                    using: codingFactory
+                )
+            }
+
+            callExtractionOperation.addDependency(codingFactoryOperation)
+            callExtractionOperation.addDependency(blockFetchOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: callExtractionOperation,
+                dependencies: [codingFactoryOperation, blockFetchOperation]
+            )
+        } catch {
+            return .createWithError(error)
+        }
+    }
+}

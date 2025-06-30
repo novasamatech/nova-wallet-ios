@@ -3,10 +3,21 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
+private typealias FindMultisigsResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
+    SubqueryMultisigs.FindMultisigsResponse
+>
+private typealias FetchMultisigCallDataResponse = SubqueryMultisigs.MultisigsResponseQueryWrapper<
+    SubqueryMultisigs.FetchMultisigCallDataResponse
+>
+
 protocol SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
         for accountIds: Set<AccountId>
-    ) -> BaseOperation<[DiscoveredMultisig]?>
+    ) -> BaseOperation<[DiscoveredMultisig]>
+
+    func createFetchCallDataOperation(
+        for callHashes: Set<Substrate.CallHash>
+    ) -> BaseOperation<[Substrate.CallHash: Substrate.CallData]>
 }
 
 final class SubqueryMultisigsOperationFactory: SubqueryBaseOperationFactory {}
@@ -14,7 +25,7 @@ final class SubqueryMultisigsOperationFactory: SubqueryBaseOperationFactory {}
 // MARK: Private
 
 private extension SubqueryMultisigsOperationFactory {
-    func createRequestQuery(for accountIds: Set<AccountId>) -> String {
+    func createDiscoverMultisigsRequestQuery(for accountIds: Set<AccountId>) -> String {
         let accountIdsHex = accountIds.map { $0.toHexWithPrefix() }
         let idsInFilter = accountIdsHex.map { "\"\($0)\"" }.joined(with: .commaSpace)
 
@@ -50,22 +61,26 @@ private extension SubqueryMultisigsOperationFactory {
         """
     }
 
-    func mapResponse(
-        _ response: SubqueryMultisigs.FindMultisigsResponse,
-        _ accountIds: Set<AccountId>
-    ) -> [DiscoveredMultisig] {
-        accountIds.flatMap { accountId in
-            response.accounts.nodes
-                .filter { $0.signatories.nodes.contains { $0.signatory.id == accountId } }
-                .map {
-                    DiscoveredMultisig(
-                        accountId: $0.id,
-                        signatory: accountId,
-                        signatories: $0.signatories.nodes.map(\.signatory.id),
-                        threshold: $0.threshold
-                    )
+    func createCallDataRequestQuery(for callHashes: Set<Substrate.CallHash>) -> String {
+        let callHashesHex = callHashes.map { $0.toHexWithPrefix() }
+        let hashInFilter = callHashesHex.map { "\"\($0)\"" }.joined(with: .commaSpace)
+
+        return """
+        {
+            query {
+                multisigOperations(
+                    filter:  {
+                        callHash: { in: [\(hashInFilter)] }
+                    }
+                ) {
+                    nodes {
+                        callHash
+                        callData
+                    }
                 }
+            }
         }
+        """
     }
 }
 
@@ -74,15 +89,58 @@ private extension SubqueryMultisigsOperationFactory {
 extension SubqueryMultisigsOperationFactory: SubqueryMultisigsOperationFactoryProtocol {
     func createDiscoverMultisigsOperation(
         for accountIds: Set<AccountId>
-    ) -> BaseOperation<[DiscoveredMultisig]?> {
-        let query = createRequestQuery(for: accountIds)
+    ) -> BaseOperation<[DiscoveredMultisig]> {
+        let query = createDiscoverMultisigsRequestQuery(for: accountIds)
 
-        let operation: BaseOperation<[DiscoveredMultisig]?>
+        let operation: BaseOperation<[DiscoveredMultisig]>
 
         operation = createOperation(
             for: query
-        ) { [weak self] (response: SubqueryMultisigs.FindMultisigsResponseQueryWrapper) in
-            self?.mapResponse(response.query, accountIds)
+        ) { (response: FindMultisigsResponse) in
+            let nodes: [AccountId: [SubqueryMultisigs.RemoteMultisig]] = response.query.accounts.nodes.reduce(
+                into: [:]
+            ) { acc, node in
+                node.signatories.nodes.forEach {
+                    if acc[$0.signatory.id] != nil {
+                        acc[$0.signatory.id]?.append(node)
+                    } else {
+                        acc[$0.signatory.id] = [node]
+                    }
+                }
+            }
+
+            return accountIds.reduce(into: []) { acc, accountId in
+                nodes[accountId]?.forEach { remoteMultisig in
+                    let discoveredMultisig = DiscoveredMultisig(
+                        accountId: remoteMultisig.id,
+                        signatory: accountId,
+                        signatories: remoteMultisig.signatories.nodes.map(\.signatory.id),
+                        threshold: remoteMultisig.threshold
+                    )
+
+                    acc.append(discoveredMultisig)
+                }
+            }
+        }
+
+        return operation
+    }
+
+    func createFetchCallDataOperation(
+        for callHashes: Set<Substrate.CallHash>
+    ) -> BaseOperation<[Substrate.CallHash: Substrate.CallData]> {
+        let query = createCallDataRequestQuery(for: callHashes)
+
+        let operation: BaseOperation<[Substrate.CallHash: Substrate.CallData]>
+
+        operation = createOperation(
+            for: query
+        ) { (response: FetchMultisigCallDataResponse) in
+            response.query.multisigOperations.nodes.reduce(into: [:]) { acc, node in
+                guard callHashes.contains(node.callHash) else { return }
+
+                acc[node.callHash] = node.callData
+            }
         }
 
         return operation
