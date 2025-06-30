@@ -7,9 +7,10 @@ protocol WalletViewProtocol: UIView {
     var titleLabel: UILabel { get }
     var networkImageView: UIImageView { get }
     var viewModel: ViewModel? { get set }
-    func cancelProxyIconsLoading(info: ViewModel.ProxyInfo?)
+    func cancelIconsLoading(info: ViewModel.DelegatedAccountInfo?)
+    func setAppearance(for selectionAvailable: Bool)
     func bind(regular viewModel: ViewModel.BalanceInfo)
-    func bind(proxy viewModel: ViewModel.ProxyInfo)
+    func bind(delegatedAccount viewModel: ViewModel.DelegatedAccountInfo)
     func bindNoInfo()
 }
 
@@ -20,8 +21,8 @@ extension WalletViewProtocol {
         switch viewModel.type {
         case let .regular(balanceViewModel):
             bind(regular: balanceViewModel)
-        case let .proxy(proxyViewModel):
-            bind(proxy: proxyViewModel)
+        case let .proxy(delegatedAccountViewModel), let .multisig(delegatedAccountViewModel):
+            bind(delegatedAccount: delegatedAccountViewModel)
         case .noInfo:
             bindNoInfo()
         }
@@ -31,7 +32,7 @@ extension WalletViewProtocol {
 
     func cancelImagesLoading() {
         cancelIconLoading(info: viewModel?.wallet)
-        cancelProxyIconsLoading(info: viewModel?.proxyInfo)
+        cancelIconsLoading(info: viewModel?.delegatedAccountInfo)
     }
 }
 

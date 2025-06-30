@@ -94,6 +94,13 @@ final class YourWalletsPresenter {
                 ).uppercased(),
                 icon: R.image.iconProxy()
             )
+        case .multisig:
+            return .init(
+                title: R.string.localizable.commonMultisig(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconMultisig()
+            )
         case .genericLedger:
             return .init(
                 title: R.string.localizable.commonLedger(

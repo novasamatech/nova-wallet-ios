@@ -19,8 +19,12 @@ protocol WalletSelectionInteractorOutputProtocol: WalletsListInteractorOutputPro
 protocol WalletSelectionWireframeProtocol: WalletsListWireframeProtocol {
     func close(view: WalletsListViewProtocol?)
     func showSettings(from view: WalletsListViewProtocol?)
-    func showProxiedsUpdates(
+    func showDelegatesUpdates(
         from view: ControllerBackedProtocol?,
         initWallets: [ManagedMetaAccountModel]
+    )
+    func showMultisigUnavailable(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
     )
 }

@@ -24,7 +24,7 @@ class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, Wal
         valueView.setContentCompressionResistancePriority(.low, for: .horizontal)
     }
 
-    func cancelProxyIconsLoading(info: WalletView.ViewModel.ProxyInfo?) {
+    func cancelIconsLoading(info: WalletView.ViewModel.DelegatedAccountInfo?) {
         info?.networkIcon?.cancel(on: networkImageView)
         networkImageView.image = nil
 
@@ -39,7 +39,7 @@ class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, Wal
         networkImageView.isHidden = true
     }
 
-    func bind(proxy viewModel: ViewModel.ProxyInfo) {
+    func bind(delegatedAccount viewModel: ViewModel.DelegatedAccountInfo) {
         viewModel.networkIcon?.loadImage(
             on: networkImageView,
             targetSize: WalletIconView.Constants.networkIconSize,
@@ -49,5 +49,20 @@ class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, Wal
         networkImageView.isHidden = viewModel.networkIcon == nil
 
         titleView.setNeedsLayout()
+    }
+
+    func setAppearance(for selectionAvailable: Bool) {
+        if selectionAvailable {
+            titleLabel.textColor = R.color.colorTextPrimary()
+        } else {
+            titleLabel.textColor = R.color.colorTextSecondary()
+        }
+
+        let alpha = selectionAvailable ? 1.0 : 0.5
+
+        [
+            networkImageView,
+            iconImageView
+        ].forEach { $0.alpha = alpha }
     }
 }

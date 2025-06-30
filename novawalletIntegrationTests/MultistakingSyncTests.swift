@@ -46,7 +46,8 @@ final class MultistakingSyncTests: XCTestCase {
             ethereumAddress: ethereumAccountId,
             ethereumPublicKey: ethereumAccountId,
             chainAccounts: [],
-            type: .watchOnly
+            type: .watchOnly,
+            multisig: nil
         )
 
         let multistakingRepositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)

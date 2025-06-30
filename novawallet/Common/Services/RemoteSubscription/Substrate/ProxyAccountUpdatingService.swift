@@ -13,20 +13,20 @@ class ProxyAccountUpdatingService: ProxyAccountUpdatingServiceProtocol {
     private var proxySubscription: ProxyAccountSubscription?
 
     let chainRegistry: ChainRegistryProtocol
-    let proxySyncService: ProxySyncServiceProtocol
+    let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
     let storageFacade: StorageFacadeProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        proxySyncService: ProxySyncServiceProtocol,
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
         self.chainRegistry = chainRegistry
-        self.proxySyncService = proxySyncService
+        self.delegatedAccountSyncService = delegatedAccountSyncService
         self.storageFacade = storageFacade
         self.operationQueue = operationQueue
         self.logger = logger
@@ -40,7 +40,7 @@ class ProxyAccountUpdatingService: ProxyAccountUpdatingServiceProtocol {
             accountId: accountId,
             chainId: chainId,
             chainRegistry: chainRegistry,
-            proxySyncService: proxySyncService,
+            delegatedAccountSyncService: delegatedAccountSyncService,
             storageFacade: storageFacade,
             operationQueue: operationQueue,
             workingQueue: .init(label: "com.novawallet.proxy.updating", qos: .userInitiated)

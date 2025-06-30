@@ -6,7 +6,7 @@ struct AssetListViewFactory {
     static func createView(
         with dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        proxySyncService: ProxySyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let walletConnect = dappMediator.children.first(
@@ -36,7 +36,7 @@ struct AssetListViewFactory {
         let wireframe = AssetListWireframe(
             dappMediator: dappMediator,
             assetListModelObservable: assetListModelObservable,
-            proxySyncService: proxySyncService
+            delegatedAccountSyncService: delegatedAccountSyncService
         )
 
         let nftDownloadService = NftFileDownloadService(

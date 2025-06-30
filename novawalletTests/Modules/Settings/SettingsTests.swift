@@ -60,8 +60,14 @@ final class SettingsTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager,
             logger: Logger.shared
         )
+        let multisigListLocalSubscriptionFactory = MultisigListLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
         let walletNotificationService = WalletNotificationService(
             proxyListLocalSubscriptionFactory: proxyListLocalSubscriptionFactory,
+            multisigListLocalSubscriptionFactory: multisigListLocalSubscriptionFactory,
             logger: Logger.shared
         )
         

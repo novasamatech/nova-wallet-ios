@@ -22,7 +22,8 @@ final class ParitySignerWalletOperationFactory: ParitySignerWalletOperationFacto
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
                 chainAccounts: [],
-                type: type.walletType
+                type: type.walletType,
+                multisig: nil
             )
         }
     }

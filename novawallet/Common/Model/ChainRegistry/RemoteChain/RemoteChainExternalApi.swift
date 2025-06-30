@@ -13,6 +13,7 @@ struct RemoteChainExternalApiSet: Equatable, Codable {
         case history
         case crowdloans
         case governance
+        case multisig
         case goverananceDelegations = "governance-delegations"
         case referendumSummary = "referendum-summary"
     }
@@ -23,4 +24,5 @@ struct RemoteChainExternalApiSet: Equatable, Codable {
     let governance: [RemoteChainExternalApi]?
     let goverananceDelegations: [RemoteChainExternalApi]?
     let referendumSummary: [RemoteChainExternalApi]?
+    let multisig: [RemoteChainExternalApi]?
 }

@@ -152,7 +152,8 @@ class XcmTransfersFeeTests: XCTestCase {
                 ethereumAddress: AccountId.zeroAccountId(of: 20),
                 ethereumPublicKey: Data.random(of: 33)!,
                 chainAccounts: Set(),
-                type: .secrets
+                type: .secrets,
+                multisig: nil
             )
 
             let destinationFee = try estimateConcreteFee(
@@ -217,7 +218,8 @@ class XcmTransfersFeeTests: XCTestCase {
                 ethereumAddress: AccountId.zeroAccountId(of: 20),
                 ethereumPublicKey: Data.random(of: 33)!,
                 chainAccounts: Set(),
-                type: .secrets
+                type: .secrets,
+                multisig: nil
             )
 
             let fee = try estimateCrosschainFee(
