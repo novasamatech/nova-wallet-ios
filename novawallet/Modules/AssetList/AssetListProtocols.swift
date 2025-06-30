@@ -138,6 +138,7 @@ protocol AssetListWireframeProtocol: AnyObject,
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)
 
     func showNfts(from view: AssetListViewProtocol?)
+
     func showMultisigOperations(from view: AssetListViewProtocol?)
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput)
