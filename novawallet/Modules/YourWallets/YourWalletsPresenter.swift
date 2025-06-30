@@ -15,6 +15,7 @@ final class YourWalletsPresenter {
         .paritySigner,
         .genericLedger,
         .ledger,
+        .multisig,
         .proxied,
         .watchOnly
     ]
