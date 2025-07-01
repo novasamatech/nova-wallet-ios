@@ -8,13 +8,6 @@ protocol MultisigDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> [DataValidating]
 
-    func operationNotExists(
-        callHash: Substrate.CallHash,
-        callHashSet: Set<Substrate.CallHash>?,
-        accountName: String,
-        locale: Locale
-    ) -> DataValidating
-
     func canPayFee(
         params: MultisigBalanceValidationParams,
         locale: Locale
@@ -22,6 +15,13 @@ protocol MultisigDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 
     func canPayDeposit(
         params: MultisigBalanceValidationParams,
+        locale: Locale
+    ) -> DataValidating
+    
+    func operationNotExists(
+        callHash: Substrate.CallHash,
+        callHashSet: Set<Substrate.CallHash>?,
+        accountName: String,
         locale: Locale
     ) -> DataValidating
 }
