@@ -1871,3 +1871,8 @@
 "multisig.selection.unavailable.message" = "Multisig wallet management will be available in an upcoming update.
 Stay tuned!";
 "multisig.transactions.to.sign" = "Transactions to sign";
+"multisig.operation.type.unknown" = "Unknown operation";
+"multisig.operation.signing.progress.format" = "Signing (%d of %d)";
+"multisig.operation.status.created" = "Created by you";
+"multisig.operation.status.signed" = "Signed by you";
+"delegated.account.on.behalf.of" = "On behalf of:";

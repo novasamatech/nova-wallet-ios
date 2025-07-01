@@ -208,20 +208,28 @@ extension DelegationResolution.PathFinder {
             delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
-            // TODO: Add weight support if call is not final and timepoint support if call is not the first one
-            let othersignatories = signatories
+            let otherSignatories = signatories
                 .filter { $0 != delegation.delegate }
                 .map { BytesCodable(wrappedValue: $0) }
 
-            return try MultisigPallet.AsMultiCall(
-                threshold: threshold,
-                otherSignatories: othersignatories,
-                maybeTimepoint: nil,
-                call: call,
-                maxWeight: .zero
-            )
-            .runtimeCall()
-            .toScaleCompatibleJSON(with: context.toRawContext())
+            return if threshold == 1 {
+                try MultisigPallet.AsMultiThreshold1Call(
+                    otherSignatories: otherSignatories,
+                    call: call
+                )
+                .runtimeCall()
+                .toScaleCompatibleJSON(with: context.toRawContext())
+            } else {
+                try MultisigPallet.AsMultiCall(
+                    threshold: threshold,
+                    otherSignatories: otherSignatories,
+                    maybeTimepoint: nil,
+                    call: call,
+                    maxWeight: .zero
+                )
+                .runtimeCall()
+                .toScaleCompatibleJSON(with: context.toRawContext())
+            }
         }
     }
 }

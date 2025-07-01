@@ -173,11 +173,22 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         nftListView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
+        view?.controller.navigationController?.pushViewController(
+            nftListView.controller,
+            animated: true
+        )
     }
 
-    func showMultisigOperations(from _: (any AssetListViewProtocol)?) {
-        // TODO: Implement multisig operations view
+    func showMultisigOperations(from view: AssetListViewProtocol?) {
+        guard let operationsView = MultisigOperationsViewFactory.createView() else {
+            return
+        }
+
+        operationsView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(
+            operationsView.controller,
+            animated: true
+        )
     }
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput) {

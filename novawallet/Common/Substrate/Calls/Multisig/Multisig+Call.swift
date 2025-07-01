@@ -27,6 +27,24 @@ extension MultisigPallet {
         }
     }
 
+    struct AsMultiThreshold1Call: Codable {
+        enum CodingKeys: String, CodingKey {
+            case otherSignatories = "other_signatories"
+            case call
+        }
+
+        let otherSignatories: [BytesCodable]
+        let call: JSON
+
+        func runtimeCall() throws -> RuntimeCall<Self> {
+            RuntimeCall(
+                moduleName: "Multisig",
+                callName: "as_multi_threshold_1",
+                args: self
+            )
+        }
+    }
+
     struct ApproveAsMultiCall: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
@@ -39,7 +57,7 @@ extension MultisigPallet {
         @StringCodable var threshold: UInt16
         let otherSignatories: [BytesCodable]
         @NullCodable var maybeTimepoint: MultisigTimepoint?
-        let callHash: Data
+        let callHash: Substrate.CallHash
         let maxWeight: Substrate.WeightV2
 
         func runtimeCall() throws -> RuntimeCall<Self> {
