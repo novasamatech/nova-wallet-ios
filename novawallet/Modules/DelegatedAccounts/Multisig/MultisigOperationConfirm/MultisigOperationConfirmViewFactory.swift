@@ -53,7 +53,7 @@ struct MultisigOperationConfirmViewFactory {
         ).createMetaAccountRepository(for: nil, sortDescriptors: [])
 
         return MultisigOperationConfirmInteractor(
-            operationId: operation.identifier,
+            operation: operation,
             chain: chain,
             multisigWallet: multisigWallet,
             signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
@@ -61,7 +61,6 @@ struct MultisigOperationConfirmViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: SigningWrapperFactory(),
             chainRegistry: chainRegistry,
-            callWeightEstimator: CallWeightEstimatingFactory(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

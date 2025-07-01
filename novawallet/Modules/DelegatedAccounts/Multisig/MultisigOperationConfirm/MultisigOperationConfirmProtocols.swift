@@ -6,6 +6,7 @@ protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
 
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
     func setup()
+    func confirm()
 }
 
 protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {

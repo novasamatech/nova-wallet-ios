@@ -37,7 +37,7 @@ final class MultisigOperationsViewModelFactory {
 // MARK: - Private
 
 private extension MultisigOperationsViewModelFactory {
-    func createOperationTitle(from call: JSON?, locale: Locale) -> String {
+    func createOperationTitle(from call: Substrate.CallData?, locale: Locale) -> String {
         let languages = locale.rLanguages
 
         guard let call else {
@@ -51,7 +51,7 @@ private extension MultisigOperationsViewModelFactory {
         return "Operation title"
     }
 
-    func createOperationSubTitle(from call: JSON?, locale: Locale) -> String? {
+    func createOperationSubTitle(from call: Substrate.CallData?, locale: Locale) -> String? {
         guard let call else { return nil }
 
         let languages = locale.rLanguages

@@ -40,14 +40,8 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
             )
         }
 
-        let call: JSON? = if let callData = entity.call {
-            try JSONDecoder().decode(JSON.self, from: callData)
-        } else {
-            nil
-        }
-
         return Multisig.PendingOperation(
-            call: call,
+            call: entity.call,
             callHash: callHash,
             timestamp: Int(entity.timestamp),
             multisigAccountId: multisigAccountId,
@@ -78,8 +72,6 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
                 .joined(with: .comma)
         }
 
-        if let call = model.call {
-            entity.call = try JSONEncoder().encode(call)
-        }
+        entity.call = model.call
     }
 }

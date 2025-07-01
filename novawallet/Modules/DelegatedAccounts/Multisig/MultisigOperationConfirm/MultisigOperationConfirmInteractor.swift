@@ -1,27 +1,27 @@
 import UIKit
 import Operation_iOS
 
-final class MultisigOperationConfirmInteractor {
+class MultisigOperationConfirmInteractor {
     weak var presenter: MultisigOperationConfirmInteractorOutputProtocol?
 
-    let operationId: String
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
     let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
-    let callWeightEstimator: CallWeightEstimatingFactoryProtocol
     let signatoryRepository: MultisigSignatoryRepositoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
+
+    private(set) var operation: Multisig.PendingOperation
 
     private var operationProvider: StreamableProvider<Multisig.PendingOperation>?
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var signer: SigningWrapperProtocol?
 
     init(
-        operationId: String,
+        operation: Multisig.PendingOperation,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
@@ -29,11 +29,10 @@ final class MultisigOperationConfirmInteractor {
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
-        callWeightEstimator: CallWeightEstimatingFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.operationId = operationId
+        self.operation = operation
         self.chain = chain
         self.multisigWallet = multisigWallet
         self.signatoryRepository = signatoryRepository
@@ -41,9 +40,20 @@ final class MultisigOperationConfirmInteractor {
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.signingWrapperFactory = signingWrapperFactory
         self.chainRegistry = chainRegistry
-        self.callWeightEstimator = callWeightEstimator
         self.operationQueue = operationQueue
         self.logger = logger
+    }
+
+    func didSetupSignatories() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func didUpdateOperation() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func doConfirm() {
+        fatalError("Must be overriden by subsclass")
     }
 }
 
@@ -93,6 +103,8 @@ private extension MultisigOperationConfirmInteractor {
         )
 
         logger.debug("Did setup current signatory")
+
+        didSetupSignatories()
     }
 }
 
@@ -100,7 +112,11 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     func setup() {
         setupSignatories()
 
-        operationProvider = subscribePendingOperation(identifier: operationId)
+        operationProvider = subscribePendingOperation(identifier: operation.identifier)
+    }
+
+    func confirm() {
+        doConfirm()
     }
 }
 
@@ -112,6 +128,12 @@ extension MultisigOperationConfirmInteractor: MultisigOperationsLocalStorageSubs
     ) {
         switch result {
         case let .success(item):
+            if let item {
+                operation = item
+            }
+
+            didUpdateOperation()
+
             presenter?.didReceiveOperation(item)
         case let .failure(error):
             logger.error("Unexpected error: \(error)")

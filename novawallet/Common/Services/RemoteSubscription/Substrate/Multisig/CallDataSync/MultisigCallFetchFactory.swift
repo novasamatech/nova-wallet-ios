@@ -60,7 +60,7 @@ private extension MultisigCallFetchFactory {
         for callHash: Substrate.CallHash,
         from extrinsicData: Data,
         using codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> JSON? {
+    ) throws -> Substrate.CallData? {
         let decoder = try codingFactory.createDecoder(from: extrinsicData)
         let extrinsic: Extrinsic = try decoder.read(of: GenericType.extrinsic.name)
 
@@ -82,7 +82,7 @@ private extension MultisigCallFetchFactory {
         in call: JSON,
         sender: AccountId,
         codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> JSON? {
+    ) throws -> Substrate.CallData? {
         let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
         let context = codingFactory.createRuntimeJsonContext()
 
@@ -94,7 +94,7 @@ private extension MultisigCallFetchFactory {
 
         let foundCalls = maybeCallMappingResult.node.calls.map(\.args.call)
 
-        return try foundCalls.first { foundCall in
+        for foundCall in foundCalls {
             let encoder = codingFactory.createEncoder()
 
             try encoder.append(json: foundCall, type: GenericType.call.name)
@@ -102,8 +102,12 @@ private extension MultisigCallFetchFactory {
             let foundCallData = try encoder.encode()
             let foundCallHash = try foundCallData.blake2b32()
 
-            return callHash == foundCallHash
+            if callHash == foundCallHash {
+                return foundCallData
+            }
         }
+
+        return nil
     }
 }
 

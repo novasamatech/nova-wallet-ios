@@ -3,7 +3,7 @@ import Operation_iOS
 
 extension Multisig {
     struct PendingOperation: Codable {
-        let call: JSON?
+        let call: Substrate.CallData?
         let callHash: Substrate.CallHash
         let timestamp: Int
         let multisigAccountId: AccountId
@@ -107,7 +107,7 @@ extension Multisig.PendingOperation {
         )
     }
 
-    func replacingCall(with newCall: JSON?) -> Self {
+    func replacingCall(with newCall: Substrate.CallData?) -> Self {
         .init(
             call: newCall,
             callHash: callHash,
