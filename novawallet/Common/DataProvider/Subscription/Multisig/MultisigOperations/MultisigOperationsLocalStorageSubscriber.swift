@@ -10,6 +10,10 @@ protocol MultisigOperationsLocalStorageSubscriber: LocalStorageProviderObserving
         for accountId: AccountId,
         chainId: ChainModel.Id?
     ) -> StreamableProvider<Multisig.PendingOperation>?
+
+    func subscribePendingOperation(
+        identifier: String
+    ) -> StreamableProvider<Multisig.PendingOperation>?
 }
 
 extension MultisigOperationsLocalStorageSubscriber {
@@ -38,6 +42,42 @@ extension MultisigOperationsLocalStorageSubscriber {
             },
             failureClosure: { [weak self] (error: Error) in
                 self?.pendingMultisigLocalSubscriptionHandler.handleMultisigPendingOperations(result: .failure(error))
+                return
+            },
+            options: StreamableProviderObserverOptions(
+                alwaysNotifyOnRefresh: false,
+                waitsInProgressSyncOnAdd: false,
+                initialSize: 0,
+                refreshWhenEmpty: false
+            )
+        )
+
+        return provider
+    }
+
+    func subscribePendingOperation(
+        identifier: String
+    ) -> StreamableProvider<Multisig.PendingOperation>? {
+        guard let provider = try? pendingMultisigLocalSubscriptionFactory.getPendingOperatonProvider(
+            identifier: identifier
+        ) else { return nil }
+
+        addStreamableProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] (changes: [DataProviderChange<Multisig.PendingOperation>]) in
+                let item = changes.reduceToLastChange()
+
+                self?.pendingMultisigLocalSubscriptionHandler.handleMultisigPendingOperation(
+                    result: .success(item),
+                    identifier: identifier
+                )
+                return
+            },
+            failureClosure: { [weak self] (error: Error) in
+                self?.pendingMultisigLocalSubscriptionHandler.handleMultisigPendingOperation(
+                    result: .failure(error),
+                    identifier: identifier
+                )
                 return
             },
             options: StreamableProviderObserverOptions(

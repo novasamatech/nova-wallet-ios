@@ -9,7 +9,11 @@ struct MultisigOperationConfirmViewFactory {
 
         let wireframe = MultisigOperationConfirmWireframe()
 
-        let presenter = MultisigOperationConfirmPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = MultisigOperationConfirmPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            logger: Logger.shared
+        )
 
         let view = MultisigOperationConfirmViewController(presenter: presenter)
 
@@ -30,14 +34,16 @@ struct MultisigOperationConfirmViewFactory {
 
         let signatoryRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
-        ).createAccountRepository(for: operation.signatory)
+        ).createMetaAccountRepository(for: nil, sortDescriptors: [])
 
         return MultisigOperationConfirmInteractor(
-            operation: operation,
+            operationId: operation.identifier,
             multisigWallet: multisignWallet,
             signatorWalletRepository: signatoryRepository,
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             chainRegistry: chainRegistry,
-            callWeightEstimator: CallWeightEstimatingFactory()
+            callWeightEstimator: CallWeightEstimatingFactory(),
+            logger: Logger.shared
         )
     }
 }

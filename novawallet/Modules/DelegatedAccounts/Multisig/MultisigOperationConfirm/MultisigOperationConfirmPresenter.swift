@@ -5,17 +5,27 @@ final class MultisigOperationConfirmPresenter {
     let wireframe: MultisigOperationConfirmWireframeProtocol
     let interactor: MultisigOperationConfirmInteractorInputProtocol
 
+    let logger: LoggerProtocol
+
     init(
         interactor: MultisigOperationConfirmInteractorInputProtocol,
-        wireframe: MultisigOperationConfirmWireframeProtocol
+        wireframe: MultisigOperationConfirmWireframeProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.logger = logger
     }
 }
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 }
 
-extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorOutputProtocol {}
+extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorOutputProtocol {
+    func didReceiveOperation(_ operation: Multisig.PendingOperation?) {
+        logger.debug("Operation \(String(describing: operation))")
+    }
+}

@@ -15607,6 +15607,7 @@
 		2D3C71A62E087C9000DF9E49 /* Multisig */ = {
 			isa = PBXGroup;
 			children = (
+				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 				2D3C71D42E1267CA00DF9E49 /* MultisigOperations */,
 				2D3C71A72E087CA000DF9E49 /* Models */,
 			);
@@ -21625,7 +21626,6 @@
 				525901B46946ED08CB25F6C3 /* Banners */,
 				0274F684DCFA6D2AFEA43CF5 /* AssetPriceChart */,
 				028384EC1D6B48710C2236A2 /* UnifiedAddressPopup */,
-				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
