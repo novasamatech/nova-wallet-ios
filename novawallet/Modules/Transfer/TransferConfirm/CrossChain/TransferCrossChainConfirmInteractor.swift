@@ -5,6 +5,7 @@ import Operation_iOS
 final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
+    let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
 
     var submitionPresenter: TransferConfirmCrossChainInteractorOutputProtocol? {
@@ -27,11 +28,13 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
         self.persistExtrinsicService = persistExtrinsicService
+        self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
 
         super.init(
@@ -107,9 +110,17 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in
+                guard let self else { return }
+
                 switch result {
                 case let .success(result):
-                    if let txHashData = try? Data(hexString: result.txHash) {
+                    guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
+                        submitionPresenter?.didCompleteSubmition()
+                        return
+                    }
+
+                    if
+                        let txHashData = try? Data(hexString: result.txHash) {
                         let details = PersistExtrinsicDetails(
                             sender: sender,
                             txHash: txHashData,
@@ -117,13 +128,13 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                             fee: originFee?.amount
                         )
 
-                        self?.persistExtrinsicAndComplete(details: details)
+                        persistExtrinsicAndComplete(details: details)
                     } else {
-                        self?.submitionPresenter?.didReceiveError(CommonError.dataCorruption)
+                        submitionPresenter?.didReceiveError(CommonError.dataCorruption)
                     }
 
                 case let .failure(error):
-                    self?.presenter?.didReceiveError(error)
+                    presenter?.didReceiveError(error)
                 }
             }
         } catch {

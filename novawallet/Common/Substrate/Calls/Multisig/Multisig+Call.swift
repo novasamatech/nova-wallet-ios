@@ -2,8 +2,8 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-extension Multisig {
-    struct AsMultiCall<Weight: Codable>: Codable {
+extension MultisigPallet {
+    struct AsMultiCall: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
             case otherSignatories = "other_signatories"
@@ -13,10 +13,10 @@ extension Multisig {
         }
 
         @StringCodable var threshold: UInt16
-        let otherSignatories: [AccountId]
+        let otherSignatories: [BytesCodable]
         @NullCodable var maybeTimepoint: MultisigTimepoint?
         let call: JSON
-        let maxWeight: Weight
+        let maxWeight: Substrate.WeightV2
 
         func runtimeCall() throws -> RuntimeCall<Self> {
             RuntimeCall(
@@ -33,7 +33,7 @@ extension Multisig {
             case call
         }
 
-        let otherSignatories: [AccountId]
+        let otherSignatories: [BytesCodable]
         let call: JSON
 
         func runtimeCall() throws -> RuntimeCall<Self> {
@@ -45,7 +45,7 @@ extension Multisig {
         }
     }
 
-    struct ApproveAsMultiCall<Weight: Codable>: Codable {
+    struct ApproveAsMultiCall: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
             case otherSignatories = "other_signatories"
@@ -55,10 +55,10 @@ extension Multisig {
         }
 
         @StringCodable var threshold: UInt16
-        let otherSignatories: [AccountId]
+        let otherSignatories: [BytesCodable]
         @NullCodable var maybeTimepoint: MultisigTimepoint?
-        let callHash: Data
-        let maxWeight: Weight
+        let callHash: Substrate.CallHash
+        let maxWeight: Substrate.WeightV2
 
         func runtimeCall() throws -> RuntimeCall<Self> {
             RuntimeCall(

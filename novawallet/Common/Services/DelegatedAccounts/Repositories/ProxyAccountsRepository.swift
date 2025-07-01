@@ -11,7 +11,7 @@ final class ChainProxyAccountsRepository {
     private let proxyOperationFactory: ProxyOperationFactoryProtocol
 
     @Atomic(defaultValue: [:])
-    private var proxieds: [ProxiedAccountId: [ProxiedAccount]]
+    private var proxieds: [AccountId: [ProxiedAccount]]
 
     private let mutex = NSLock()
 
@@ -30,16 +30,18 @@ final class ChainProxyAccountsRepository {
     }
 
     private func filterProxiedList(
-        _ proxiedList: [ProxiedAccountId: [ProxiedAccount]],
+        _ proxiedList: [AccountId: [ProxiedAccount]],
         by proxyIds: Set<AccountId>
-    ) -> [ProxiedAccountId: [ProxiedAccount]] {
+    ) -> [AccountId: [ProxiedAccount]] {
         guard !proxyIds.isEmpty else { return [:] }
 
-        return proxiedList.compactMapValues { accounts in
-            accounts.filter {
-                !$0.proxyAccount.hasDelay && proxyIds.contains($0.proxyAccount.accountId)
+        return proxyIds
+            .reduce(into: [:]) { acc, id in
+                acc[id] = proxiedList[id]?.filter {
+                    !$0.proxyAccount.hasDelay && proxyIds.contains($0.proxyAccount.accountId)
+                }
             }
-        }.filter { !$0.value.isEmpty }
+            .filter { !$0.value.isEmpty }
     }
 }
 

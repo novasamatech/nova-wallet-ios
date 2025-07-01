@@ -6,7 +6,7 @@ protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
     func set(nameViewModel: InputViewModelProtocol)
     func set(walletType: WalletsListSectionViewModel.SectionType)
-    func setProxy(viewModel: AccountProxyViewModel)
+    func setDelegate(viewModel: AccountDelegateViewModel)
     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)
 }
 
@@ -17,8 +17,10 @@ protocol AccountManagementPresenterProtocol: AnyObject {
     func numberOfItems(in section: Int) -> Int
     func item(at indexPath: IndexPath) -> ChainAccountViewModelItem
     func titleForSection(_ section: Int) -> LocalizableResource<String>?
+    func actionForSection(_ section: Int) -> LocalizableResource<IconWithTitleViewModel>?
     func activateDetails(at indexPath: IndexPath)
     func selectItem(at indexPath: IndexPath)
+    func activateActionInSection(_ section: Int)
     func finalizeName()
 }
 
@@ -39,7 +41,7 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
         metaAccount: MetaAccountModel,
         chain: ChainModel
     )
-    func didReceiveProxyWallet(_ result: Result<MetaAccountModel?, Error>)
+    func didReceiveDelegateWallet(_ result: Result<MetaAccountModel?, Error>)
     func didReceiveCloudBackup(state: CloudBackupSyncState)
     func didReceiveAccountCreationResult(_ result: Result<Void, Error>, chain: ChainModel)
 }
@@ -85,6 +87,11 @@ protocol AccountManagementWireframeProtocol: AlertPresentable,
         from view: AccountManagementViewProtocol?,
         wallet: MetaAccountModel,
         chain: ChainModel
+    )
+
+    func showAddGenericLedgerEvmAccounts(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel
     )
 }
 

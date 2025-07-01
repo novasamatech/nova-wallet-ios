@@ -33,8 +33,8 @@ extension DelegatedAccount.ProxyAccountModel {
     }
 }
 
-extension Array where Element == DelegatedAccount.ProxyAccountModel {
+extension Array where Element: DelegatedAccountProtocol {
     var hasNotActive: Bool {
-        contains { $0.isNotActive }
+        contains { $0.status == .new || $0.status == .revoked }
     }
 }

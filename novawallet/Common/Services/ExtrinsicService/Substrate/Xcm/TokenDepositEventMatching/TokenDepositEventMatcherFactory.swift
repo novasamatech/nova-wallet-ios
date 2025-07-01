@@ -24,8 +24,13 @@ enum TokenDepositEventMatcherFactory {
                 [
                     TokensPalletDepositEventMatcher(extras: extras, logger: logger)
                 ]
-            }, evmHandler: { _ in
-                nil
+            }, evmHandler: { contractAccountId in
+                [
+                    MoonbeamEvmMintedEventMatcher(
+                        contractAccountId: contractAccountId,
+                        logger: logger
+                    )
+                ]
             },
             evmNativeHandler: {
                 nil

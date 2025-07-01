@@ -194,7 +194,9 @@ final class CloudBackupSecretsImporter {
                 try saveSeed(seedHex, wallet: wallet, accountId: nil, isEthereumBased: true)
             }
 
-            try savePrivateKey(ethereum.keypair, wallet: wallet, accountId: nil, isEthereumBased: true)
+            if let keypair = ethereum.keypair {
+                try savePrivateKey(keypair, wallet: wallet, accountId: nil, isEthereumBased: true)
+            }
         }
     }
 

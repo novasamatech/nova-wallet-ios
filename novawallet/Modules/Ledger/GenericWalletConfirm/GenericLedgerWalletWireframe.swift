@@ -11,7 +11,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
         on view: HardwareWalletAddressesViewProtocol?,
         deviceName: String,
         deviceModel: LedgerDeviceModel,
-        address: AccountAddress,
+        addresses: [HardwareWalletAddressScheme: AccountAddress],
         cancelClosure: @escaping () -> Void
     ) {
         guard
@@ -19,7 +19,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
             let confirmationView = LedgerMessageSheetViewFactory.createVerifyLedgerView(
                 for: deviceName,
                 deviceModel: deviceModel,
-                address: address,
+                addresses: addresses,
                 cancelClosure: cancelClosure
             ) else {
             return
@@ -28,7 +28,7 @@ final class GenericLedgerWalletWireframe: GenericLedgerWalletWireframeProtocol, 
         transitToMessageSheet(confirmationView, on: view)
     }
 
-    func procced(from view: HardwareWalletAddressesViewProtocol?, walletModel: SubstrateLedgerWalletModel) {
+    func procced(from view: HardwareWalletAddressesViewProtocol?, walletModel: PolkadotLedgerWalletModel) {
         guard
             let createView = LedgerWalletConfirmViewFactory.createGenericView(
                 for: walletModel,

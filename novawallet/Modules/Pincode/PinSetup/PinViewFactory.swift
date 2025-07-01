@@ -3,7 +3,9 @@ import Keystore_iOS
 import Foundation_iOS
 
 class PinViewFactory: PinViewFactoryProtocol {
-    static func createPinSetupView() -> PinSetupViewProtocol? {
+    static func createPinSetupView(
+        initialFlowStatusPresentingClosure: FlowStatusPresentingClosure?
+    ) -> PinSetupViewProtocol? {
         let pinSetupView = PinSetupViewController(nib: R.nib.pinSetupViewController)
 
         pinSetupView.mode = .create
@@ -19,7 +21,9 @@ class PinViewFactory: PinViewFactoryProtocol {
             biometryAuth: BiometryAuth(),
             locale: LocalizationManager.shared.selectedLocale
         )
-        let wireframe = PinSetupWireframe()
+        let wireframe = PinSetupWireframe(
+            initialFlowStatusPresentingClosure: initialFlowStatusPresentingClosure
+        )
 
         pinSetupView.presenter = presenter
         presenter.view = pinSetupView

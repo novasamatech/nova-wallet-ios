@@ -321,9 +321,9 @@ extension MetaAccountModel {
 
     func has(accountId: AccountId, chainId: ChainModel.Id) -> Bool {
         if let chainAccount = chainAccounts.first(where: { $0.chainId == chainId }) {
-            return chainAccount.accountId == accountId
+            chainAccount.accountId == accountId
         } else {
-            return substrateAccountId == accountId || ethereumAddress == accountId
+            substrateAccountId == accountId || ethereumAddress == accountId
         }
     }
 }
@@ -357,5 +357,9 @@ extension ChainModel {
         }
 
         return accountId
+    }
+
+    static func getEvmNullAccountId() -> AccountId {
+        AccountId.zeroAccountId(of: getAccountIdSize(for: .ethereum))
     }
 }

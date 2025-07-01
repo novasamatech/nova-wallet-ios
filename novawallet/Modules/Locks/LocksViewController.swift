@@ -1,12 +1,13 @@
 import UIKit
 
-final class LocksViewController: UIViewController, ViewHolder, ModalSheetCollectionViewProtocol {
+final class LocksViewController: UIViewController, ViewHolder, ModalSheetScrollViewProtocol {
     typealias RootViewType = LocksViewLayout
     typealias DataSource =
         UICollectionViewDiffableDataSource<LocksViewSectionModel, LocksViewSectionModel.CellViewModel>
 
     let presenter: LocksPresenterProtocol
-    var collectionView: UICollectionView {
+
+    var scrollView: UIScrollView {
         rootView.collectionView
     }
 

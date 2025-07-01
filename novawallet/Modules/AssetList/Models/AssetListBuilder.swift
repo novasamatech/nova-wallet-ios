@@ -5,6 +5,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
     let resultClosure: (AssetListBuilderResult) -> Void
 
     private(set) var nftList: ListDifferenceCalculator<NftModel>
+    private(set) var pendingOperations: ListDifferenceCalculator<Multisig.PendingOperation>
     private(set) var locksResult: Result<[AssetLock], Error>?
     private(set) var holdsResult: Result<[AssetHold], Error>?
 
@@ -18,6 +19,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
     ) {
         self.resultClosure = resultClosure
         nftList = AssetListModelHelpers.createNftDiffCalculator()
+        pendingOperations = AssetListModelHelpers.createPendingOperationDiffCalculator()
 
         super.init(workingQueue: workingQueue, callbackQueue: callbackQueue, rebuildPeriod: rebuildPeriod)
     }
@@ -50,6 +52,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
             balances: balances,
             externalBalanceResult: externalBalancesResult,
             nfts: nftList.allItems,
+            pendingOperations: pendingOperations.allItems,
             locksResult: locksResult,
             holdsResult: holdsResult
         )
@@ -60,6 +63,21 @@ final class AssetListBuilder: AssetListBaseBuilder {
             walletId: wallet?.metaId,
             model: model,
             changeKind: .reload
+        )
+
+        callbackQueue.async { [weak self] in
+            self?.resultClosure(result)
+        }
+    }
+
+    func rebuildPendingOperationsOnly() {
+        let model = currentModel.replacing(pendingOperations: pendingOperations.allItems)
+        currentModel = model
+
+        let result = AssetListBuilderResult(
+            walletId: wallet?.metaId,
+            model: model,
+            changeKind: .pendingOperations
         )
 
         callbackQueue.async { [weak self] in
@@ -86,6 +104,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
         super.resetStorages()
 
         nftList = AssetListModelHelpers.createNftDiffCalculator()
+        pendingOperations = AssetListModelHelpers.createPendingOperationDiffCalculator()
         locksResult = nil
         currentModel = .init()
     }
@@ -105,6 +124,22 @@ extension AssetListBuilder {
             self?.nftList = AssetListModelHelpers.createNftDiffCalculator()
 
             self?.rebuildNftOnly()
+        }
+    }
+
+    func applyPendingOperationsChanges(_ changes: [DataProviderChange<Multisig.PendingOperation>]) {
+        workingQueue.async { [weak self] in
+            self?.pendingOperations.apply(changes: changes)
+
+            self?.rebuildPendingOperationsOnly()
+        }
+    }
+
+    func applyPendingOperationsReset() {
+        workingQueue.async { [weak self] in
+            self?.pendingOperations = AssetListModelHelpers.createPendingOperationDiffCalculator()
+
+            self?.rebuildPendingOperationsOnly()
         }
     }
 

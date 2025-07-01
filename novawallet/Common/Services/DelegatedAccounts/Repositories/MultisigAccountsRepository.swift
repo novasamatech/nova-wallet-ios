@@ -20,8 +20,7 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
         for signatoryIds: Set<AccountId>
     ) -> CompoundOperationWrapper<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
         let cachedMultisigsForSignatories = signatoryIds
-            .map { (signatory: $0, multisigs: multisigsBySignatories[$0]) }
-            .reduce(into: [:]) { $0[$1.signatory] = $1.multisigs }
+            .reduce(into: [:]) { $0[$1] = multisigsBySignatories[$1] }
 
         let cachedSignatories = Set(cachedMultisigsForSignatories.keys)
         let nonCachedSignatories = signatoryIds.subtracting(cachedSignatories)
@@ -42,8 +41,6 @@ extension MultisigAccountsRepository: DelegatedAccountsRepositoryProtocol {
 
         let mapOperation = ClosureOperation<[AccountId: [DiscoveredDelegatedAccountProtocol]]> {
             let fetchResult = try fetchOperation.extractNoCancellableResultData()
-
-            guard let fetchResult else { return [:] }
 
             let mappedFetchResult: [AccountId: [DiscoveredMultisig]] = fetchResult
                 .reduce(into: [:]) { acc, multisig in

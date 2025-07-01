@@ -50,4 +50,19 @@ class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, Wal
 
         titleView.setNeedsLayout()
     }
+
+    func setAppearance(for selectionAvailable: Bool) {
+        if selectionAvailable {
+            titleLabel.textColor = R.color.colorTextPrimary()
+        } else {
+            titleLabel.textColor = R.color.colorTextSecondary()
+        }
+
+        let alpha = selectionAvailable ? 1.0 : 0.5
+
+        [
+            networkImageView,
+            iconImageView
+        ].forEach { $0.alpha = alpha }
+    }
 }

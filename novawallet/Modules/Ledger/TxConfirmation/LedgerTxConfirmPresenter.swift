@@ -24,6 +24,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
 
     let needsMigration: Bool
     let applicationConfig: ApplicationConfigProtocol
+    let logger: LoggerProtocol
 
     init(
         chainName: String,
@@ -32,11 +33,13 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         interactor: LedgerTxConfirmInteractorInputProtocol,
         wireframe: LedgerTxConfirmWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.completion = completion
         self.needsMigration = needsMigration
         self.applicationConfig = applicationConfig
+        self.logger = logger
 
         super.init(
             appName: chainName,
@@ -216,6 +219,8 @@ extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
                 self.completion(.success(signature))
             }
         case let .failure(error):
+            logger.error("Did receive error: \(error)")
+
             stopConnecting()
 
             handleAppConnection(error: error, deviceId: deviceId)

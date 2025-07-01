@@ -7,6 +7,10 @@ protocol ApplicationConfigProtocol {
     var supportEmail: String { get }
     var websiteURL: URL { get }
     var appStoreURL: URL { get }
+    var externalUniversalLinkURL: URL { get }
+    var internalUniversalLinkURL: URL { get }
+    var deepLinkScheme: String { get }
+    var deepLinkHost: String { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
@@ -39,6 +43,7 @@ protocol ApplicationConfigProtocol {
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
     var proxyWikiURL: URL { get }
+    var multisigWikiURL: URL { get }
     var unifiedAddressWikiURL: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
@@ -46,6 +51,12 @@ protocol ApplicationConfigProtocol {
     var wikiURL: URL { get }
     var whiteAppearanceIconsPath: String { get }
     var coloredAppearanceIconsPath: String { get }
+}
+
+extension ApplicationConfigProtocol {
+    var deepLinkURL: URL {
+        URL(string: "\(deepLinkScheme)://\(deepLinkHost)")!
+    }
 }
 
 final class ApplicationConfig {
@@ -141,25 +152,25 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
         #endif
     }
 
     var preConfiguredLightChainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/chains_dev.json")!
         #endif
     }
 
     var preConfiguredChainDirectoryURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/details")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/details")!
         #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v21/preConfigured/detailsDev")!
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/preConfigured/detailsDev")!
         #endif
     }
 
@@ -318,16 +329,33 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
     }
 
+    var multisigWikiURL: URL {
+        // TODO: - Update to use the correct URL for multisig when wiki url is available
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/delegated-authorities-proxies")!
+    }
+
     var unifiedAddressWikiURL: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/asset-management/how-to-receive-tokens#unified-and-legacy-addresses")!
     }
 
-    var universalLinkURL: URL {
+    var externalUniversalLinkURL: URL {
+        URL(string: "https://nova-wallet.app.link")!
+    }
+
+    var internalUniversalLinkURL: URL {
         #if F_RELEASE
             URL(string: "https://app.novawallet.io")!
         #else
             URL(string: "https://dev.novawallet.io")!
         #endif
+    }
+
+    var deepLinkScheme: String {
+        "novawallet"
+    }
+
+    var deepLinkHost: String {
+        "nova"
     }
 
     var whiteAppearanceIconsPath: String {

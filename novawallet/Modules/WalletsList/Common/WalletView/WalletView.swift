@@ -37,6 +37,7 @@ final class WalletView: GenericTitleValueView<
         valueView.sView.sView.iconWidth = 16
         subtitleDetailsLabel.numberOfLines = 1
         subtitleDetailsLabel.apply(style: .footnotePrimary)
+        subtitleDetailsLabel.lineBreakMode = .byTruncatingMiddle
         valueView.fView.mode = .detailsIcon
         valueView.sView.makeHorizontal()
         valueView.sView.spacing = 4
@@ -159,5 +160,23 @@ extension WalletView {
         indicatorImageView.isHidden = !viewModel.isNew
 
         titleView.setNeedsLayout()
+    }
+
+    func setAppearance(for selectionAvailable: Bool) {
+        if selectionAvailable {
+            titleLabel.textColor = R.color.colorTextPrimary()
+            subtitleDetailsLabel.textColor = R.color.colorTextPrimary()
+        } else {
+            titleLabel.textColor = R.color.colorTextSecondary()
+            subtitleDetailsLabel.textColor = R.color.colorTextSecondary()
+        }
+
+        let alpha = selectionAvailable ? 1.0 : 0.5
+
+        [
+            networkImageView,
+            iconImageView,
+            subtitleDetailsImage
+        ].forEach { $0.alpha = alpha }
     }
 }

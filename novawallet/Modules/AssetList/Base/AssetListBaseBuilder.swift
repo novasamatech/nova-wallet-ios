@@ -34,6 +34,7 @@ class AssetListBaseBuilder {
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var balances: [ChainAssetId: Result<AssetBalance, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var allAssetSymbols: Set<AssetModel.Symbol> = []
     private(set) var externalBalancesResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
 
     private(set) var scheduler: Scheduler?
@@ -134,6 +135,12 @@ class AssetListBaseBuilder {
                 result[deletedIdentifier] = nil
             }
         }
+
+        allAssetSymbols = allChains.values
+            .flatMap { $0.chainAssets() }
+            .reduce(into: []) { accum, chainAsset in
+                accum.insert(chainAsset.asset.symbol)
+            }
     }
 
     private func rebuildChainGroups(using state: AssetListState) {
@@ -308,26 +315,24 @@ class AssetListBaseBuilder {
             .compactMap {
                 allChains[$0.chainId]
             }
-            .createMultichainTokens()
+            .createMultichainTokensWithValidSymbols(allAssetSymbols)
             .reduce(into: [ChainAssetId: MultichainToken]()) { acc, token in
                 token.instances.forEach { acc[$0.chainAssetId] = token }
             }
 
+        let state = AssetListState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains,
+            externalBalances: externalBalancesResult
+        )
+
         for chainAssetId in results.keys {
             guard
                 let chainModel = allChains[chainAssetId.chainId],
-                let assetModel = chainModel.assets.first(
-                    where: { $0.assetId == chainAssetId.assetId }
-                ) else {
+                let assetModel = chainModel.asset(for: chainAssetId.assetId) else {
                 continue
             }
-
-            let state = AssetListState(
-                priceResult: priceResult,
-                balanceResults: balanceResults,
-                allChains: allChains,
-                externalBalances: externalBalancesResult
-            )
 
             let assetListAssetModel = AssetListModelHelpers.createAssetModel(
                 for: chainModel,
@@ -341,15 +346,18 @@ class AssetListBaseBuilder {
 
             if let symbol = tokensByChainAsset[assetListAssetModel.chainAssetModel.chainAssetId]?.symbol {
                 var assetChanges = assetListsChanges[symbol] ?? []
-                if groupListsByAsset[symbol]?.allItems.contains(
+
+                let hasModel = groupListsByAsset[symbol]?.allItems.contains(
                     where: { $0.chainAssetModel.chainAssetId == assetListAssetModel.chainAssetModel.chainAssetId }
-                ) ?? false {
+                ) ?? false
+
+                if hasModel {
                     assetChanges.append(.update(newItem: assetListAssetModel))
                 } else {
                     assetChanges.append(.insert(newItem: assetListAssetModel))
                 }
 
-                assetListsChanges[assetModel.symbol] = assetChanges
+                assetListsChanges[symbol] = assetChanges
             }
 
             changedChains[chainModel.chainId] = chainModel

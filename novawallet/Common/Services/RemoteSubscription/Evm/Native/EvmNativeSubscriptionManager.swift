@@ -8,7 +8,7 @@ final class EvmNativeSubscriptionManager {
     let connection: JSONRPCEngine
     let logger: LoggerProtocol?
     let serviceFactory: EvmBalanceUpdateServiceFactoryProtocol
-    let eventCenter: EventCenterProtocol
+    let eventCenter: EventCenterProtocol?
 
     private var syncService: SyncServiceProtocol?
 
@@ -23,7 +23,7 @@ final class EvmNativeSubscriptionManager {
         params: EvmNativeBalanceSubscriptionRequest,
         serviceFactory: EvmBalanceUpdateServiceFactoryProtocol,
         connection: JSONRPCEngine,
-        eventCenter: EventCenterProtocol,
+        eventCenter: EventCenterProtocol?,
         logger: LoggerProtocol?
     ) {
         self.chainId = chainId
@@ -38,11 +38,15 @@ final class EvmNativeSubscriptionManager {
         unsubscribe()
     }
 
-    private func handleTransactions(for blockNumber: BigUInt) {
+    private func handleTransactionsIfNeeded(for blockNumber: BigUInt) {
         params.transactionHistoryUpdater?.processEvmNativeTransactions(from: blockNumber)
     }
 
-    private func notifyBalanceUpdate() {
+    private func notifyBalanceUpdateIfNeeded() {
+        guard let eventCenter else {
+            return
+        }
+
         guard let accountId = try? params.holder.toAccountId(using: .ethereum) else {
             return
         }
@@ -69,10 +73,15 @@ final class EvmNativeSubscriptionManager {
         syncService = nil
 
         do {
+            let block = EvmBalanceUpdateBlock(
+                updateDetectedAt: .exact(blockNumber),
+                fetchRequestedAt: .latest
+            )
+
             syncService = try serviceFactory.createNativeBalanceUpdateService(
                 for: params.holder,
                 chainAssetId: .init(chainId: chainId, assetId: params.assetId),
-                blockNumber: .latest
+                block: block
             ) { [weak self] hasChanges in
                 self?.logProcessMutex.lock()
 
@@ -88,8 +97,8 @@ final class EvmNativeSubscriptionManager {
                 self?.syncService = nil
 
                 if hasChanges {
-                    self?.notifyBalanceUpdate()
-                    self?.handleTransactions(for: blockNumber)
+                    self?.notifyBalanceUpdateIfNeeded()
+                    self?.handleTransactionsIfNeeded(for: blockNumber)
                 }
             }
 
@@ -139,10 +148,11 @@ final class EvmNativeSubscriptionManager {
     }
 
     private func subscribe() throws {
+        let block = EvmBalanceUpdateBlock(updateDetectedAt: nil, fetchRequestedAt: .latest)
         syncService = try serviceFactory.createNativeBalanceUpdateService(
             for: params.holder,
             chainAssetId: .init(chainId: chainId, assetId: params.assetId),
-            blockNumber: .latest
+            block: block
         ) { [weak self] _ in
             self?.syncService = nil
             self?.performSubscription()
@@ -155,5 +165,9 @@ final class EvmNativeSubscriptionManager {
 extension EvmNativeSubscriptionManager: EvmRemoteSubscriptionProtocol {
     func start() throws {
         try subscribe()
+    }
+
+    func stop() throws {
+        unsubscribe()
     }
 }

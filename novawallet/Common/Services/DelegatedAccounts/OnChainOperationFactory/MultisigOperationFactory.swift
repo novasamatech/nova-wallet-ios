@@ -2,14 +2,12 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol MultisigStorageOperationFactoryProtocol {
-    func fetchMultisigStateWrapper(
-        for accountId: AccountId,
+    func fetchPendingOperations(
+        for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<OnChainMultisigs?>
+    ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]>
 }
-
-typealias OnChainMultisigs = (accountId: AccountId, multisigs: [Multisig.MultisigOperation])
 
 final class MultisigStorageOperationFactory {
     private let storageRequestFactory: StorageRequestFactoryProtocol
@@ -20,28 +18,31 @@ final class MultisigStorageOperationFactory {
 }
 
 extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtocol {
-    func fetchMultisigStateWrapper(
-        for accountId: AccountId,
+    func fetchPendingOperations(
+        for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<OnChainMultisigs?> {
+    ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<[Multisig.MultisigOperation]>]> = storageRequestFactory.queryItems(
+        let request = MapRemoteStorageRequest(storagePath: MultisigPallet.multisigListStoragePath) {
+            BytesCodable(wrappedValue: multisigAccountId)
+        }
+        let wrapper: CompoundOperationWrapper<[MultisigPallet.CallHashKey: MultisigPallet.MultisigDefinition]>
+        wrapper = storageRequestFactory.queryByPrefix(
             engine: connection,
-            keyParams: { [BytesCodable(wrappedValue: accountId)] },
-            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: Multisig.multisigList
+            request: request,
+            storagePath: MultisigPallet.multisigListStoragePath,
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() }
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<OnChainMultisigs?> {
-            let result = try wrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let values = result.first?.value else { return nil }
-
-            return (accountId, values.compactMap { $0 })
+        let mapOperation = ClosureOperation<[Substrate.CallHash: MultisigPallet.MultisigDefinition]> {
+            try wrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .reduce(into: [:]) { $0[$1.key.callHash] = $1.value }
         }
 
         mapOperation.addDependency(wrapper.targetOperation)

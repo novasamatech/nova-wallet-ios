@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import UIKit
+import Foundation_iOS
 
 protocol ChainAccountViewModelFactoryProtocol {
     func createViewModel(
@@ -11,11 +12,11 @@ protocol ChainAccountViewModelFactoryProtocol {
 
     func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
 
-    func createProxyViewModel(
-        proxiedWallet: MetaAccountModel,
-        proxyWallet: MetaAccountModel,
+    func createDelegateViewModel(
+        delegatedWallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel,
         locale: Locale
-    ) -> AccountProxyViewModel
+    ) -> AccountDelegateViewModel
 }
 
 final class ChainAccountViewModelFactory {
@@ -148,6 +149,106 @@ final class ChainAccountViewModelFactory {
             }
         }
     }
+
+    private func createAccountList(
+        from wallet: MetaAccountModel,
+        chains: [ChainModel],
+        locale: Locale
+    ) -> [ChainAccountViewModelItem] {
+        chains.map { chainModel in
+            let imageViewModel = ImageViewModelFactory.createChainIconOrDefault(from: chainModel.icon)
+
+            if let accountResponse = wallet.fetch(for: chainModel.accountRequest()) {
+                let accountAddress = try? accountResponse.accountId.toAddress(using: chainModel.chainFormat)
+                let icon = try? iconGenerator.generateFromAccountId(accountResponse.accountId)
+
+                return ChainAccountViewModelItem(
+                    chainId: chainModel.chainId,
+                    name: chainModel.name,
+                    address: accountAddress,
+                    warning: nil,
+                    chainIconViewModel: imageViewModel,
+                    accountIcon: icon,
+                    hasAction: false
+                )
+            } else {
+                return ChainAccountViewModelItem(
+                    chainId: chainModel.chainId,
+                    name: chainModel.name,
+                    address: nil,
+                    warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                    chainIconViewModel: imageViewModel,
+                    accountIcon: nil,
+                    hasAction: false
+                )
+            }
+        }
+    }
+
+    private func createGenericLedgerSections(
+        from wallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
+        for locale: Locale
+    ) -> ChainAccountListViewModel {
+        let ledgerChains = chains.values
+            .filter { $0.supportsGenericLedgerApp }
+            .sortedUsingDefaultComparator()
+
+        guard wallet.ethereumAddress == nil, ledgerChains.contains(where: { $0.isEthereumBased }) else {
+            // no evm chains supported but substrate always defined
+            let items = createAccountList(from: wallet, chains: ledgerChains, locale: locale)
+
+            return [
+                ChainAccountListSectionViewModel(
+                    section: .noSection,
+                    chainAccounts: items
+                )
+            ]
+        }
+
+        let substrateChains = ledgerChains.filter { !$0.isEthereumBased }
+        let evmChains = ledgerChains.filter { $0.isEthereumBased }
+
+        let substrateItems = createAccountList(from: wallet, chains: substrateChains, locale: locale)
+        let substrateTitle = LocalizableResource { locale in
+            R.string.localizable.accountsSubstrate(preferredLanguages: locale.rLanguages)
+        }
+
+        let evmItems = createAccountList(from: wallet, chains: evmChains, locale: locale)
+        let evmTitle = LocalizableResource { locale in
+            R.string.localizable.accountsEvm(preferredLanguages: locale.rLanguages)
+        }
+
+        let evmAction = LocalizableResource { locale in
+            IconWithTitleViewModel(
+                icon: R.image.iconBlueAdd(),
+                title: R.string.localizable.commonAddAddress(
+                    preferredLanguages: locale.rLanguages
+                )
+            )
+        }
+
+        return [
+            ChainAccountListSectionViewModel(
+                section: .custom(
+                    ChainAccountSectionType.Custom(
+                        title: evmTitle,
+                        action: evmAction
+                    )
+                ),
+                chainAccounts: evmItems
+            ),
+            ChainAccountListSectionViewModel(
+                section: .custom(
+                    ChainAccountSectionType.Custom(
+                        title: substrateTitle,
+                        action: nil
+                    )
+                ),
+                chainAccounts: substrateItems
+            )
+        ]
+    }
 }
 
 extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
@@ -180,11 +281,11 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel {
-        let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
-        let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
-
         switch wallet.type {
         case .secrets, .watchOnly, .paritySigner, .polkadotVault:
+            let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
+            let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
+
             guard !customSecretAccountList.isEmpty else {
                 return [ChainAccountListSectionViewModel(
                     section: .sharedSecret,
@@ -202,30 +303,35 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                     chainAccounts: sharedSecretAccountList
                 )
             ]
-        case .ledger, .proxied, .genericLedger, .multisig:
+        case .ledger, .proxied, .multisig:
+            let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
+            let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
+
             let allChainAccounts = customSecretAccountList + sharedSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)
 
             return [section]
+        case .genericLedger:
+            return createGenericLedgerSections(from: wallet, chains: chains, for: locale)
         }
     }
 
-    func createProxyViewModel(
-        proxiedWallet: MetaAccountModel,
-        proxyWallet: MetaAccountModel,
+    func createDelegateViewModel(
+        delegatedWallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel,
         locale: Locale
-    ) -> AccountProxyViewModel {
-        let optIcon = proxyWallet.walletIdenticonData().flatMap {
+    ) -> AccountDelegateViewModel {
+        let optIcon = delegateWallet.walletIdenticonData().flatMap {
             try? walletIconGenerator.generateFromAccountId($0)
         }
         let iconViewModel = optIcon.map {
             DrawableIconViewModel(icon: $0)
         }
-        let type = proxiedWallet.proxy?.type.title(locale: locale) ?? ""
+        let type = delegatedWallet.proxy?.type.title(locale: locale) ?? ""
 
         return .init(
-            name: proxyWallet.name,
+            name: delegateWallet.name,
             icon: iconViewModel,
             type: type
         )

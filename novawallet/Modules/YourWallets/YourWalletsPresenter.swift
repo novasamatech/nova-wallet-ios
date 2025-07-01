@@ -16,6 +16,7 @@ final class YourWalletsPresenter {
         .genericLedger,
         .ledger,
         .proxied,
+        .multisig,
         .watchOnly
     ]
 

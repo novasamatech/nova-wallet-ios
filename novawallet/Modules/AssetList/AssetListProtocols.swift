@@ -11,7 +11,7 @@ protocol AssetListCollectionManagerProtocol {
     func setupCollectionView()
     func updateGroupsViewModel(with model: AssetListViewModel)
     func updateHeaderViewModel(with model: AssetListHeaderViewModel?)
-    func updateNftViewModel(with model: AssetListNftsViewModel?)
+    func updateOrganizerViewModel(with model: AssetListOrganizerViewModel?)
     func updateBanners(available: Bool)
     func updateSelectedLocale(with locale: Locale)
 
@@ -43,7 +43,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
 
 protocol AssetListCollectionSelectionDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
-    func selectNfts()
+    func selectOrganizerItem(at index: Int)
 }
 
 protocol AssetListCollectionViewLayoutDelegate: AnyObject {
@@ -66,7 +66,7 @@ protocol AssetListCollectionViewLayoutDelegate: AnyObject {
 protocol AssetListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel)
     func didReceiveGroups(viewModel: AssetListViewModel)
-    func didReceiveNft(viewModel: AssetListNftsViewModel?)
+    func didReceiveOrganizer(viewModel: AssetListOrganizerViewModel?)
     func didReceiveBanners(available: Bool)
     func didCompleteRefreshing()
     func didReceiveAssetListStyle(_ style: AssetListGroupsStyle)
@@ -77,8 +77,8 @@ protocol AssetListViewProtocol: ControllerBackedProtocol {
 protocol AssetListPresenterProtocol: AnyObject {
     func setup()
     func selectWallet()
+    func selectOrganizerItem(at index: Int)
     func selectAsset(for chainAssetId: ChainAssetId)
-    func selectNfts()
     func refresh()
     func presentSearch()
     func presentAssetsManage()
@@ -138,6 +138,7 @@ protocol AssetListWireframeProtocol: AnyObject,
     func showAssetsSearch(from view: AssetListViewProtocol?, delegate: AssetsSearchDelegate)
 
     func showNfts(from view: AssetListViewProtocol?)
+    func showMultisigOperations(from view: AssetListViewProtocol?)
 
     func showBalanceBreakdown(from view: AssetListViewProtocol?, params: LocksViewInput)
 

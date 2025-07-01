@@ -217,6 +217,7 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                         value: model.minBalance
                     ).value(for: locale),
                     token: params.receiveChainAsset.asset.symbol,
+                    network: params.receiveChainAsset.chain.name,
                     locale: locale
                 )
             }

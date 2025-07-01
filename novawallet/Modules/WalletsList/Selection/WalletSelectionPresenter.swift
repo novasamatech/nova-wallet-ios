@@ -27,35 +27,8 @@ final class WalletSelectionPresenter: WalletsListPresenter {
         )
     }
 
-    private func getProxiedUpdates(
-        for changes: [DataProviderChange<ManagedMetaAccountModel>]
-    ) -> [ManagedMetaAccountModel] {
-        let oldWallets = walletsList.allItems.reduceToDict()
-
-        return changes.compactMap { change in
-            switch change {
-            case let .insert(newWallet):
-                guard let proxy = newWallet.info.proxy else {
-                    return nil
-                }
-
-                return newWallet.info.type == .proxied && proxy.isNotActive ? newWallet : nil
-            case let .update(newWallet):
-                guard newWallet.info.type == .proxied, let newProxy = newWallet.info.proxy else {
-                    return nil
-                }
-
-                let oldProxy = oldWallets[newWallet.identifier]?.info.proxy
-
-                return newProxy.isNotActive && oldProxy?.status != newProxy.status ? newWallet : nil
-            case .delete:
-                return nil
-            }
-        }
-    }
-
     override func updateWallets(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
-        let proxiedUpdates = getProxiedUpdates(for: changes)
+        let delegatedAccountsUpdates = getDelegatedAccountsUpdates(for: changes)
 
         super.updateWallets(changes: changes)
 
@@ -63,19 +36,66 @@ final class WalletSelectionPresenter: WalletsListPresenter {
             return
         }
 
-        if !proxiedUpdates.isEmpty {
-            wireframe?.showProxiedsUpdates(from: baseView, initWallets: proxiedUpdates)
+        if !delegatedAccountsUpdates.isEmpty {
+            wireframe?.showDelegatesUpdates(from: baseView, initWallets: delegatedAccountsUpdates)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension WalletSelectionPresenter {
+    func getDelegatedAccountsUpdates(
+        for changes: [DataProviderChange<ManagedMetaAccountModel>]
+    ) -> [ManagedMetaAccountModel] {
+        let oldWallets = walletsList.allItems.reduceToDict()
+
+        return changes.compactMap { change in
+            switch change {
+            case let .insert(newWallet):
+                guard let delegationStatus = newWallet.info.delegatedAccountStatus() else {
+                    return nil
+                }
+
+                return delegationStatus != .active ? newWallet : nil
+            case let .update(newWallet):
+                guard
+                    let oldStatus = oldWallets[newWallet.identifier]?.info.delegatedAccountStatus(),
+                    let newStatus = newWallet.info.delegatedAccountStatus()
+                else {
+                    return nil
+                }
+
+                return newStatus != .active && oldStatus != newStatus ? newWallet : nil
+            case .delete:
+                return nil
+            }
+        }
+    }
+
+    func showNotSelectableAlert(for viewModel: WalletsListSectionViewModel) {
+        if viewModel.type == .multisig {
+            wireframe?.showMultisigUnavailable(
+                from: baseView,
+                locale: selectedLocale
+            )
         }
     }
 }
 
 extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
     func selectItem(at index: Int, section: Int) {
-        let identifier = viewModels[section].items[index].identifier
+        let viewModel = viewModels[section].items[index]
+        let identifier = viewModel.identifier
 
         guard
             let item = walletsList.allItems.first(where: { $0.identifier == identifier }),
             !item.isSelected else {
+            return
+        }
+
+        guard viewModel.isSelectable else {
+            showNotSelectableAlert(for: viewModels[section])
             return
         }
 

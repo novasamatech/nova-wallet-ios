@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 protocol OnboardingMainViewProtocol: ControllerBackedProtocol {}
 
@@ -14,6 +15,7 @@ protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, Aler
     func showSignup(from view: OnboardingMainViewProtocol?)
     func showAccountRestore(from view: OnboardingMainViewProtocol?)
     func showAccountSecretImport(from view: OnboardingMainViewProtocol?, source: SecretSource)
+    func showWalletMigration(from view: OnboardingMainViewProtocol?, message: WalletMigrationMessage.Start)
 }
 
 protocol OnboardingMainInteractorInputProtocol: AnyObject {
@@ -22,6 +24,7 @@ protocol OnboardingMainInteractorInputProtocol: AnyObject {
 
 protocol OnboardingMainInteractorOutputProtocol: AnyObject {
     func didSuggestSecretImport(source: SecretSource)
+    func didSuggestWalletMigration(with message: WalletMigrationMessage.Start)
     func didReceiveError(_ error: Error)
 }
 

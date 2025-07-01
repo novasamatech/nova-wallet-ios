@@ -11,10 +11,22 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
     private static func createView(
         for wireframe: OnboardingMainWireframeProtocol
     ) -> OnboardingMainViewProtocol? {
-        guard let kestoreImportService: KeystoreImportServiceProtocol =
-            URLHandlingService.shared.findService()
+        guard let urlHandlingFacade = URLHandlingServiceFacade.shared else {
+            Logger.shared.error("Url handling has not been setup")
+            return nil
+        }
+
+        guard
+            let kestoreImportService: KeystoreImportServiceProtocol = urlHandlingFacade.findInternalService()
         else {
             Logger.shared.error("Can't find required keystore import service")
+            return nil
+        }
+
+        guard
+            let walletMigrationService: WalletMigrationServiceProtocol = urlHandlingFacade.findInternalService()
+        else {
+            Logger.shared.error("Can't find required migration service")
             return nil
         }
 
@@ -25,7 +37,11 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
             privacyPolicyUrl: applicationConfig.privacyPolicyURL
         )
 
-        let interactor = OnboardingMainInteractor(keystoreImportService: kestoreImportService)
+        let interactor = OnboardingMainInteractor(
+            keystoreImportService: kestoreImportService,
+            walletMigrationService: walletMigrationService
+        )
+
         let presenter = OnboardingMainPresenter(
             interactor: interactor,
             wireframe: wireframe,

@@ -41,7 +41,13 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
-        if !sufficiencyProvider.isSufficient(chainAsset: chainAssetOut) {
+        let isAssetInSufficient = sufficiencyProvider.isSufficient(chainAsset: chainAssetIn)
+        let isAssetOutSufficient = sufficiencyProvider.isSufficient(chainAsset: chainAssetOut)
+
+        let anyInsufficientAsset = !isAssetInSufficient || !isAssetOutSufficient
+
+        // reject any path with len > 1 that includes insufficient asset
+        if anyInsufficientAsset {
             return false
         }
 

@@ -20,12 +20,12 @@ final class AccountManagementHintView: UIView {
 
     let contentInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
 
-    lazy var proxyViewContainer = UIView.hStack([
+    lazy var delegateViewContainer = UIView.hStack([
         FlexibleSpaceView(),
-        proxyView
+        delegateView
     ])
 
-    let proxyView: GenericPairValueView<IconDetailsView, UILabel> = .create {
+    let delegateView: GenericPairValueView<IconDetailsView, UILabel> = .create {
         $0.sView.apply(style: .footnoteSecondary)
         $0.sView.setContentCompressionResistancePriority(.high, for: .horizontal)
         $0.fView.detailsLabel.apply(style: .footnotePrimary)
@@ -57,16 +57,16 @@ final class AccountManagementHintView: UIView {
 
         let contentView = UIView.vStack(spacing: 12, [
             iconDetailsView,
-            proxyViewContainer
+            delegateViewContainer
         ])
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(contentInsets)
         }
-        proxyViewContainer.isHidden = true
+        delegateViewContainer.isHidden = true
 
-        proxyView.snp.makeConstraints { make in
+        delegateView.snp.makeConstraints { make in
             make.leading.equalTo(iconDetailsView.detailsLabel.snp.leading)
         }
     }
@@ -76,20 +76,20 @@ final class AccountManagementHintView: UIView {
         iconDetailsView.imageView.image = icon
     }
 
-    private var proxyIcon: ImageViewModelProtocol?
+    private var delegateIcon: ImageViewModelProtocol?
 
-    func bindProxy(viewModel: AccountProxyViewModel) {
-        proxyViewContainer.isHidden = false
-        proxyView.fView.detailsLabel.text = viewModel.name
-        proxyView.sView.text = viewModel.type
-        proxyIcon?.cancel(on: proxyView.fView.imageView)
+    func bindDelegate(viewModel: AccountDelegateViewModel) {
+        delegateViewContainer.isHidden = false
+        delegateView.fView.detailsLabel.text = viewModel.name
+        delegateView.sView.text = viewModel.type
+        delegateIcon?.cancel(on: delegateView.fView.imageView)
 
         viewModel.icon?.loadImage(
-            on: proxyView.fView.imageView,
+            on: delegateView.fView.imageView,
             targetSize: .init(width: 16, height: 16),
             animated: true
         )
 
-        proxyIcon = viewModel.icon
+        delegateIcon = viewModel.icon
     }
 }

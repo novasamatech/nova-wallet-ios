@@ -11,6 +11,7 @@ protocol OpenScreenUrlParsingServiceProtocol: AnyObject {
 enum OpenScreenUrlParsingError: Error {
     case openGovScreen(GovScreenError)
     case openDAppScreen(DAppError)
+    case cardScreen(CardError)
 
     enum GovScreenError: Error {
         case govTypeIsNotSpecified
@@ -27,12 +28,18 @@ enum OpenScreenUrlParsingError: Error {
         case unknownURL
     }
 
+    enum CardError: Error {
+        case unsupportedProvider
+    }
+
     func message(locale: Locale) -> String? {
         switch self {
         case let .openGovScreen(govScreenError):
             return govScreenError.message(locale: locale)
         case let .openDAppScreen(dAppError):
             return dAppError.message(locale: locale)
+        case let .cardScreen(cardError):
+            return nil
         }
     }
 }

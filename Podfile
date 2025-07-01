@@ -12,7 +12,7 @@ abstract_target 'novawalletAll' do
   pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
   pod 'UIKit-iOS', :git => 'https://github.com/novasamatech/UIKit-iOS.git', :tag => '1.1.2'
   pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
-  pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.0.1'
+  pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.1.0'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift', '~> 5.2.4'
   pod 'SnapKit', '~> 5.0.0'
@@ -39,13 +39,14 @@ abstract_target 'novawalletAll' do
   pod 'sr25519.c', :git => 'https://github.com/novasamatech/sr25519.c', :tag => '0.1.0'
   pod 'ed25519.c', :git => 'https://github.com/novasamatech/ed25519.c', :tag => '0.1.1'
   pod 'blake2.c', :git => 'https://github.com/novasamatech/blake2.c', :tag => '0.1.0'
+  pod 'BranchSDK', '~> 3.10.0'
   
   target 'novawalletTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
     pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '3.7.2'
-    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.0.1'
+    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.1.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
@@ -70,7 +71,7 @@ abstract_target 'novawalletAll' do
 
     pod 'SwiftLint'
     pod 'R.swift', :inhibit_warnings => true
-    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.0.1'
+    pod 'Foundation-iOS', :git => 'https://github.com/novasamatech/Foundation-iOS.git', :tag => '1.1.0'
     pod 'Keystore-iOS', :git => 'https://github.com/novasamatech/Keystore-iOS.git', :tag => '1.0.0'
     pod 'Operation-iOS', :git => 'https://github.com/novasamatech/Operation-iOS', :tag => '2.1.0'
     pod 'Sourcery', '~> 1.4'

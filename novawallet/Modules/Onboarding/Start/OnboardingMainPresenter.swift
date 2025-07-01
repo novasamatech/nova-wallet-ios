@@ -62,6 +62,10 @@ extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
         wireframe.showAccountSecretImport(from: view, source: source)
     }
 
+    func didSuggestWalletMigration(with message: WalletMigrationMessage.Start) {
+        wireframe.showWalletMigration(from: view, message: message)
+    }
+
     func didReceiveError(_ error: Error) {
         _ = wireframe.present(error: error, from: view, locale: locale)
     }

@@ -106,7 +106,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
                 width: collectionView.frame.width,
                 height: AssetListMeasurement.assetHeaderHeight
             )
-        case .summary, .settings, .nfts, .banners, .assetGroup:
+        case .summary, .settings, .organizer, .banners, .assetGroup:
             .zero
         }
     }
@@ -119,10 +119,10 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         switch cellType {
         case .account, .settings, .emptyState, .totalBalance, .banner:
             break
+        case let .organizerItem(itemIndex: itemIndex):
+            selectionDelegate?.selectOrganizerItem(at: itemIndex)
         case .asset:
             processAssetSelect(collectionView, at: indexPath)
-        case .yourNfts:
-            selectionDelegate?.selectNfts()
         }
     }
 

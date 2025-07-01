@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24D70" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CDAsset" representedClassName="CDAsset" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="buyProviders" optional="YES" attributeType="Binary"/>
+        <attribute name="enabled" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="iconPath" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="precision" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="priceId" optional="YES" attributeType="String"/>
+        <attribute name="sellProviders" optional="YES" attributeType="Binary"/>
+        <attribute name="source" attributeType="String" defaultValueString="remote"/>
+        <attribute name="staking" optional="YES" attributeType="String"/>
+        <attribute name="symbol" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="typeExtras" optional="YES" attributeType="Binary"/>
+        <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="assets" inverseEntity="CDChain"/>
+    </entity>
+    <entity name="CDAssetBalance" representedClassName="CDAssetBalance" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="blocked" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="edCountMode" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="freeInPlank" optional="YES" attributeType="String"/>
+        <attribute name="frozenInPlank" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="reservedInPlank" optional="YES" attributeType="String"/>
+        <attribute name="transferrableMode" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDAssetHold" representedClassName="CDAssetHold" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" attributeType="String"/>
+        <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" attributeType="String"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="module" attributeType="String"/>
+        <attribute name="reason" attributeType="String"/>
+    </entity>
+    <entity name="CDAssetLock" representedClassName="CDAssetLock" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="String"/>
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="module" optional="YES" attributeType="String"/>
+        <attribute name="storage" attributeType="String" defaultValueString="Locks"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
+        <attribute name="additional" optional="YES" attributeType="Binary"/>
+        <attribute name="addressPrefix" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="color" optional="YES" attributeType="String"/>
+        <attribute name="connectionMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="explorers" optional="YES" attributeType="Binary"/>
+        <attribute name="hasAssetHubTransferFees" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hasGovernance" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasGovernanceV1" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasHydrationTransferFees" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hasMultisig" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasProxy" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasPushNotifications" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasSwapHub" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hasSwapHydra" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="icon" optional="YES" attributeType="URI"/>
+        <attribute name="isEthereumBased" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isTestnet" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="legacyAddressPrefix" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="nodeSwitchStrategy" optional="YES" attributeType="String"/>
+        <attribute name="noSubstrateRuntime" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="order" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="parentId" optional="YES" attributeType="String"/>
+        <attribute name="source" attributeType="String" defaultValueString="remote"/>
+        <attribute name="syncMode" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="types" optional="YES" attributeType="URI"/>
+        <attribute name="typesOverrideCommon" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
+        <relationship name="assets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDAsset" inverseName="chain" inverseEntity="CDAsset"/>
+        <relationship name="externalApis" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDChainApi" inverseName="chain" inverseEntity="CDChainApi"/>
+        <relationship name="nodes" optional="YES" toMany="YES" minCount="1" deletionRule="Cascade" destinationEntity="CDChainNodeItem" inverseName="chain" inverseEntity="CDChainNodeItem"/>
+        <relationship name="selectedNode" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChainNodeItem" inverseName="selectedInChain" inverseEntity="CDChainNodeItem"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="chainId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDChainApi" representedClassName="CDChainApi" syncable="YES" codeGenerationType="class">
+        <attribute name="apiType" optional="YES" attributeType="String"/>
+        <attribute name="parameters" optional="YES" attributeType="Binary"/>
+        <attribute name="serviceType" attributeType="String" defaultValueString=""/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="externalApis" inverseEntity="CDChain"/>
+    </entity>
+    <entity name="CDChainNodeItem" representedClassName="CDChainNodeItem" syncable="YES" codeGenerationType="class">
+        <attribute name="features" optional="YES" attributeType="Binary"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="order" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" attributeType="String" defaultValueString="remote"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="nodes" inverseEntity="CDChain"/>
+        <relationship name="selectedInChain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="selectedNode" inverseEntity="CDChain"/>
+    </entity>
+    <entity name="CDChainStorageItem" representedClassName="CDChainStorageItem" syncable="YES" codeGenerationType="class">
+        <attribute name="data" optional="YES" attributeType="Binary"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDContactItem" representedClassName="CDContactItem" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="peerAddress" optional="YES" attributeType="String"/>
+        <attribute name="peerName" optional="YES" attributeType="String"/>
+        <attribute name="targetAddress" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDExternalBalance" representedClassName="CDExternalBalance" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="String"/>
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="param" optional="YES" attributeType="String"/>
+        <attribute name="subtype" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDMultisigPendingOperation" representedClassName="CDMultisigPendingOperation" syncable="YES" codeGenerationType="class">
+        <attribute name="approvals" optional="YES" attributeType="String"/>
+        <attribute name="call" optional="YES" attributeType="Binary"/>
+        <attribute name="callHash" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="depositor" optional="YES" attributeType="String"/>
+        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="index" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="multisigAccountId" optional="YES" attributeType="String"/>
+        <attribute name="signatory" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDNft" representedClassName="CDNft" syncable="YES" codeGenerationType="class">
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="collectionId" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="instanceId" optional="YES" attributeType="String"/>
+        <attribute name="issuanceMyAmount" optional="YES" attributeType="String"/>
+        <attribute name="issuanceTotal" optional="YES" attributeType="String"/>
+        <attribute name="label" optional="YES" attributeType="String"/>
+        <attribute name="media" optional="YES" attributeType="String"/>
+        <attribute name="metadata" optional="YES" attributeType="Binary"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="ownerId" attributeType="String"/>
+        <attribute name="price" optional="YES" attributeType="String"/>
+        <attribute name="priceUnits" optional="YES" attributeType="String"/>
+        <attribute name="type" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDPhishingItem" representedClassName="CDPhishingItem" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="publicKey" optional="YES" attributeType="String"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDPhishingSite" representedClassName="CDPhishingSite" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDPrice" representedClassName="CDPrice" syncable="YES" codeGenerationType="class">
+        <attribute name="currency" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="dayChange" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="price" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDReferendumMetadata" representedClassName="CDReferendumMetadata" syncable="YES" codeGenerationType="class">
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="content" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="proposer" optional="YES" attributeType="String"/>
+        <attribute name="referendumId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timeline" optional="YES" attributeType="Binary"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDRuntimeMetadataItem" representedClassName="CDRuntimeMetadataItem" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="localMigratorVersion" attributeType="Integer 32" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="metadata" optional="YES" attributeType="Binary"/>
+        <attribute name="opaque" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="txVersion" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="version" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDSingleValue" representedClassName="CDSingleValue" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="payload" attributeType="Binary"/>
+    </entity>
+    <entity name="CDStakingAccount" representedClassName="CDStakingAccount" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="resolvedAccountId" attributeType="String"/>
+        <attribute name="rewardsAccountId" optional="YES" attributeType="String"/>
+        <attribute name="stakingType" attributeType="String"/>
+        <attribute name="walletAccountId" attributeType="String"/>
+    </entity>
+    <entity name="CDStakingDashboardItem" representedClassName="CDStakingDashboardItem" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="hasAssignedStake" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="maxApy" optional="YES" attributeType="Decimal"/>
+        <attribute name="onchainState" optional="YES" attributeType="String"/>
+        <attribute name="stake" optional="YES" attributeType="String"/>
+        <attribute name="stakingType" attributeType="String"/>
+        <attribute name="totalRewards" optional="YES" attributeType="String"/>
+        <attribute name="walletId" attributeType="String"/>
+    </entity>
+    <entity name="CDStashItem" representedClassName="CDStashItem" syncable="YES" codeGenerationType="class">
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="controller" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="stash" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDTransactionItem" representedClassName="CDTransactionItem" syncable="YES" codeGenerationType="class">
+        <attribute name="amountInPlank" optional="YES" attributeType="String"/>
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="blockNumber" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO"/>
+        <attribute name="call" optional="YES" attributeType="Binary"/>
+        <attribute name="callName" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="fee" optional="YES" attributeType="String"/>
+        <attribute name="feeAssetId" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="moduleName" optional="YES" attributeType="String"/>
+        <attribute name="receiver" optional="YES" attributeType="String"/>
+        <attribute name="sender" optional="YES" attributeType="String"/>
+        <attribute name="source" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="txHash" optional="YES" attributeType="String"/>
+        <attribute name="txIndex" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO"/>
+        <relationship name="swap" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTransactionSwapItem" inverseName="transaction" inverseEntity="CDTransactionSwapItem"/>
+    </entity>
+    <entity name="CDTransactionSwapItem" representedClassName="CDTransactionSwapItem" syncable="YES" codeGenerationType="class">
+        <attribute name="amountIn" optional="YES" attributeType="String"/>
+        <attribute name="amountOut" optional="YES" attributeType="String"/>
+        <attribute name="assetIdIn" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO"/>
+        <attribute name="assetIdOut" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO"/>
+        <relationship name="transaction" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="CDTransactionItem" inverseName="swap" inverseEntity="CDTransactionItem"/>
+    </entity>
+</model>
