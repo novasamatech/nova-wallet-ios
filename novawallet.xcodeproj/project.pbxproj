@@ -506,6 +506,7 @@
 		0C500B222B05102900ABEE70 /* AssetTxPaymentPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B212B05102900ABEE70 /* AssetTxPaymentPallet.swift */; };
 		0C500B242B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */; };
 		0C500B272B07314000ABEE70 /* ExtrinsicProcessingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B262B07314000ABEE70 /* ExtrinsicProcessingResult.swift */; };
+		0C521C002E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C521BFF2E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift */; };
 		0C5364A02A4D6EB700990478 /* AssetListBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */; };
 		0C543E972AAB1B350035F45F /* ElectedAndPrefValidators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */; };
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
@@ -673,6 +674,7 @@
 		0C85F5C32E140D90003789DC /* Multisig+Signatory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5C22E140D90003789DC /* Multisig+Signatory.swift */; };
 		0C85F5C62E14176F003789DC /* WalletType+Delegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5C52E14176F003789DC /* WalletType+Delegation.swift */; };
 		0C85F5CA2E142872003789DC /* MultisigOperationApproveInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5C92E142872003789DC /* MultisigOperationApproveInteractor.swift */; };
+		0C85F5CE2E143B03003789DC /* RuntimeCodingService+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5CD2E143B03003789DC /* RuntimeCodingService+Coding.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF2A2B6D230100FC0014 /* AssetHubReQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */; };
 		0C85FF2C2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */; };
@@ -6463,6 +6465,7 @@
 		0C500B212B05102900ABEE70 /* AssetTxPaymentPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTxPaymentPallet.swift; sourceTree = "<group>"; };
 		0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+CustomFee.swift"; sourceTree = "<group>"; };
 		0C500B262B07314000ABEE70 /* ExtrinsicProcessingResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessingResult.swift; sourceTree = "<group>"; };
+		0C521BFF2E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationApproveInteractorError.swift; sourceTree = "<group>"; };
 		0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilder.swift; sourceTree = "<group>"; };
 		0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectedAndPrefValidators.swift; sourceTree = "<group>"; };
 		0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBaseBuilder.swift; sourceTree = "<group>"; };
@@ -6630,6 +6633,7 @@
 		0C85F5C22E140D90003789DC /* Multisig+Signatory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multisig+Signatory.swift"; sourceTree = "<group>"; };
 		0C85F5C52E14176F003789DC /* WalletType+Delegation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletType+Delegation.swift"; sourceTree = "<group>"; };
 		0C85F5C92E142872003789DC /* MultisigOperationApproveInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationApproveInteractor.swift; sourceTree = "<group>"; };
+		0C85F5CD2E143B03003789DC /* RuntimeCodingService+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCodingService+Coding.swift"; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubReQuoteService.swift; sourceTree = "<group>"; };
 		0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionSyncState.swift; sourceTree = "<group>"; };
@@ -13636,6 +13640,7 @@
 			isa = PBXGroup;
 			children = (
 				0C85F5C92E142872003789DC /* MultisigOperationApproveInteractor.swift */,
+				0C521BFF2E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift */,
 			);
 			path = Approve;
 			sourceTree = "<group>";
@@ -20386,6 +20391,7 @@
 				0CE840E12BFB81F9003C2B7A /* RuntimeFetchOperationFactory.swift */,
 				0CE933852BFF90B4000F3EFE /* RuntimeLocalMigrator.swift */,
 				0CE933892C00538D000F3EFE /* RuntimeTypeRegistryFactory.swift */,
+				0C85F5CD2E143B03003789DC /* RuntimeCodingService+Coding.swift */,
 			);
 			path = RuntimeProviderPool;
 			sourceTree = "<group>";
@@ -30878,6 +30884,7 @@
 				0C13D3002A7D50C10054BB6F /* PoolStakingRecommendationMediator.swift in Sources */,
 				8412219E28F0514400715C82 /* ReferendumsMetadataPreviewProviderSource.swift in Sources */,
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
+				0C85F5CE2E143B03003789DC /* RuntimeCodingService+Coding.swift in Sources */,
 				0CD61EC62D3554B80064AC97 /* DryRunOperationFactory.swift in Sources */,
 				840302E4292CFCF90013F356 /* ChainAssetSelectionBasePresenter.swift in Sources */,
 				0CEB6B432CA50FC500609DC2 /* ChainRegistry+AsyncWait.swift in Sources */,
@@ -32423,6 +32430,7 @@
 				2D8F0ECA2CEE4CC300A22074 /* UIView+StateRender.swift in Sources */,
 				B316F0D2BDF0F44AD27F58E0 /* MoonbeamTermsWireframe.swift in Sources */,
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
+				0C521C002E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift in Sources */,
 				845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */,
 				8452585527ABF270004F9082 /* AssetListEmptyCell.swift in Sources */,
 				2D8F0ECC2CEFC76300A22074 /* DAppBrowserTabManagerError.swift in Sources */,

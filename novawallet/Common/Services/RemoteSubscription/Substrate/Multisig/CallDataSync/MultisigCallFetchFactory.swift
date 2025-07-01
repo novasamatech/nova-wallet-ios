@@ -86,7 +86,7 @@ private extension MultisigCallFetchFactory {
         let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
         let context = codingFactory.createRuntimeJsonContext()
 
-        let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall>>
+        let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall<JSON>>>
         maybeCallMappingResult = try nestedCallMapper.mapRuntimeCall(
             call: call,
             context: context

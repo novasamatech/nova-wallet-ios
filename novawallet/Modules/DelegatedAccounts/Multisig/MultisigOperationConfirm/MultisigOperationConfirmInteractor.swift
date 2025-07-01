@@ -1,5 +1,6 @@
 import UIKit
 import Operation_iOS
+import SubstrateSdk
 
 class MultisigOperationConfirmInteractor {
     weak var presenter: MultisigOperationConfirmInteractorOutputProtocol?
@@ -15,10 +16,12 @@ class MultisigOperationConfirmInteractor {
     let logger: LoggerProtocol
 
     private(set) var operation: Multisig.PendingOperation
+    private(set) var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol?
+    private(set) var signer: SigningWrapperProtocol?
+    private(set) var call: AnyRuntimeCall?
 
     private var operationProvider: StreamableProvider<Multisig.PendingOperation>?
-    private var extrinsicService: ExtrinsicServiceProtocol?
-    private var signer: SigningWrapperProtocol?
+    private var callProcessingStore = CancellableCallStore()
 
     init(
         operation: Multisig.PendingOperation,
@@ -49,6 +52,10 @@ class MultisigOperationConfirmInteractor {
     }
 
     func didUpdateOperation() {
+        fatalError("Must be overriden by subsclass")
+    }
+
+    func didProcessCall() {
         fatalError("Must be overriden by subsclass")
     }
 
@@ -92,7 +99,7 @@ private extension MultisigOperationConfirmInteractor {
             return
         }
 
-        extrinsicService = extrinsicServiceFactory.createService(
+        extrinsicOperationFactory = extrinsicServiceFactory.createOperationFactory(
             account: signatoryAccount.chainAccount,
             chain: chain
         )
@@ -105,6 +112,41 @@ private extension MultisigOperationConfirmInteractor {
         logger.debug("Did setup current signatory")
 
         didSetupSignatories()
+    }
+
+    func processCallDataIfNeeded() {
+        guard
+            call == nil,
+            !callProcessingStore.hasCall,
+            let callData = operation.call else {
+            return
+        }
+
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
+            let wrapper: CompoundOperationWrapper<AnyRuntimeCall> = runtimeProvider.createDecodingWrapper(
+                for: callData,
+                of: GenericType.call.name
+            )
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: callProcessingStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(call):
+                    self?.call = call
+                    self?.didProcessCall()
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(.callProcessingFailed(error))
+                }
+            }
+
+        } catch {
+            presenter?.didReceiveError(.callProcessingFailed(error))
+        }
     }
 }
 
@@ -133,6 +175,7 @@ extension MultisigOperationConfirmInteractor: MultisigOperationsLocalStorageSubs
             }
 
             didUpdateOperation()
+            processCallDataIfNeeded()
 
             presenter?.didReceiveOperation(item)
         case let .failure(error):

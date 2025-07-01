@@ -8,6 +8,33 @@ protocol CallWeightEstimatingFactoryProtocol {
     ) -> CompoundOperationWrapper<[CallCodingPath: Substrate.Weight]>
 }
 
+enum CallWeightEstimatingFactoryError: Error {
+    case noWeightReceived
+}
+
+extension CallWeightEstimatingFactoryProtocol {
+    func estimateWeight(
+        of call: RuntimeCallCollecting,
+        operationFactory: ExtrinsicOperationFactoryProtocol
+    ) -> CompoundOperationWrapper<Substrate.Weight> {
+        let wrapper = estimateWeight(for: [call], operationFactory: operationFactory)
+
+        let mapOperation = ClosureOperation<Substrate.Weight> {
+            let dict = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let weight = dict[call.callPath] else {
+                throw CallWeightEstimatingFactoryError.noWeightReceived
+            }
+
+            return weight
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: mapOperation)
+    }
+}
+
 final class CallWeightEstimatingFactory {}
 
 extension CallWeightEstimatingFactory: CallWeightEstimatingFactoryProtocol {

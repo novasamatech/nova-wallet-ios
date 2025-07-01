@@ -33,7 +33,15 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         logger.debug("Signatories: \(signatories)")
     }
 
+    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
+        logger.debug("Fee: \(fee)")
+    }
+
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError) {
         logger.error("Error: \(error)")
+    }
+
+    func didCompleteSubmission() {
+        logger.debug("Did complete submission")
     }
 }

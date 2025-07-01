@@ -3,7 +3,7 @@ import SubstrateSdk
 import BigInt
 
 extension MultisigPallet {
-    struct AsMultiCall: Codable {
+    struct AsMultiCall<C: Codable>: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
             case otherSignatories = "other_signatories"
@@ -15,10 +15,10 @@ extension MultisigPallet {
         @StringCodable var threshold: UInt16
         let otherSignatories: [BytesCodable]
         @NullCodable var maybeTimepoint: MultisigTimepoint?
-        let call: JSON
+        let call: C
         let maxWeight: Substrate.Weight
 
-        func runtimeCall() throws -> RuntimeCall<Self> {
+        func runtimeCall() -> RuntimeCall<Self> {
             RuntimeCall(
                 moduleName: "Multisig",
                 callName: "as_multi",
@@ -27,16 +27,16 @@ extension MultisigPallet {
         }
     }
 
-    struct AsMultiThreshold1Call: Codable {
+    struct AsMultiThreshold1Call<C: Codable>: Codable {
         enum CodingKeys: String, CodingKey {
             case otherSignatories = "other_signatories"
             case call
         }
 
         let otherSignatories: [BytesCodable]
-        let call: JSON
+        let call: C
 
-        func runtimeCall() throws -> RuntimeCall<Self> {
+        func runtimeCall() -> RuntimeCall<Self> {
             RuntimeCall(
                 moduleName: "Multisig",
                 callName: "as_multi_threshold_1",

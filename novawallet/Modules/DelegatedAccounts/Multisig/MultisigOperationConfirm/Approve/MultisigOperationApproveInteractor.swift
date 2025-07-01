@@ -1,11 +1,11 @@
 import Foundation
 import Operation_iOS
+import SubstrateSdk
 
 final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteractor {
     let callWeightEstimator: CallWeightEstimatingFactoryProtocol
 
     private var callWeight: Substrate.Weight?
-    private var callCollector: RuntimeCallCollecting?
 
     init(
         operation: Multisig.PendingOperation,
@@ -35,8 +35,145 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             logger: logger
         )
     }
+
+    override func didSetupSignatories() {
+        estimateFee()
+    }
+
+    override func didUpdateOperation() {
+        estimateFee()
+    }
+
+    override func didProcessCall() {
+        logger.debug("Did process call")
+
+        estimateFee()
+    }
+
+    override func doConfirm() {
+        guard
+            let call,
+            let multisig = multisigWallet.multisigAccount?.multisig,
+            let definition = operation.multisigDefinition,
+            let extrinsicOperationFactory,
+            let signer else {
+            return
+        }
+
+        let callWeightWrapper = fetchCallWeight()
+
+        let builderClosure = createExtrinsicClosure(
+            for: multisig,
+            definition: definition,
+            call: call,
+            callWeightClosure: {
+                try callWeightWrapper.targetOperation.extractNoCancellableResultData()
+            }
+        )
+
+        let submissionWrapper = extrinsicOperationFactory.submit(
+            builderClosure,
+            signer: signer
+        )
+
+        submissionWrapper.addDependency(wrapper: callWeightWrapper)
+
+        let totalWrapper = submissionWrapper.insertingHead(operations: callWeightWrapper.allOperations)
+
+        execute(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case .success:
+                self?.presenter?.didCompleteSubmission()
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.feeError(error))
+            }
+        }
+    }
 }
 
 private extension MultisigOperationApproveInteractor {
-    func fetchCallWeight(with _: @escaping (Result<Substrate.Weight, Error>) -> Void) {}
+    func estimateFee() {
+        guard
+            let call,
+            let multisig = multisigWallet.multisigAccount?.multisig,
+            let definition = operation.multisigDefinition,
+            let operationFactory = extrinsicOperationFactory else {
+            return
+        }
+
+        let callWeightWrapper = fetchCallWeight()
+
+        let builderClosure = createExtrinsicClosure(
+            for: multisig,
+            definition: definition,
+            call: call,
+            callWeightClosure: {
+                try callWeightWrapper.targetOperation.extractNoCancellableResultData()
+            }
+        )
+
+        let feeWrapper = operationFactory.estimateFeeOperation(builderClosure)
+
+        feeWrapper.addDependency(wrapper: callWeightWrapper)
+
+        let totalWrapper = feeWrapper.insertingHead(operations: callWeightWrapper.allOperations)
+
+        execute(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(fee):
+                self?.presenter?.didReceiveFee(fee)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.feeError(error))
+            }
+        }
+    }
+
+    func createExtrinsicClosure(
+        for multisig: DelegatedAccount.MultisigAccountModel,
+        definition: Multisig.MultisigDefinition,
+        call: AnyRuntimeCall,
+        callWeightClosure: @escaping () throws -> Substrate.Weight
+    ) -> ExtrinsicBuilderClosure {
+        { builder in
+            let weight = try callWeightClosure()
+
+            let wrappedCall = MultisigPallet.AsMultiCall(
+                threshold: UInt16(multisig.threshold),
+                otherSignatories: multisig.otherSignatories.map { BytesCodable(wrappedValue: $0) },
+                maybeTimepoint: MultisigPallet.MultisigTimepoint(
+                    height: definition.timepoint.height,
+                    index: definition.timepoint.index
+                ),
+                call: call,
+                maxWeight: weight
+            ).runtimeCall()
+
+            return try builder.adding(call: wrappedCall)
+        }
+    }
+
+    func fetchCallWeight() -> CompoundOperationWrapper<Substrate.Weight> {
+        if let callWeight {
+            return .createWithResult(callWeight)
+        }
+
+        guard let call else {
+            return .createWithError(MultisigOperationApproveInteractorError.missingCall)
+        }
+
+        let operationFactory = extrinsicServiceFactory.createOperationFactoryForWeightEstimation(on: chain)
+
+        return callWeightEstimator.estimateWeight(
+            of: RuntimeCallCollector(call: call),
+            operationFactory: operationFactory
+        )
+    }
 }
