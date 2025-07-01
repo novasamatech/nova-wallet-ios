@@ -81,6 +81,7 @@ private extension MultisigOperationsViewController {
             )
 
             headerView?.titleLabel.apply(style: .regularBodyPrimary)
+            headerView?.contentInsets.left = .zero
             headerView?.bind(title: headerModel)
 
             return headerView
@@ -120,10 +121,12 @@ extension MultisigOperationsViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         guard let item = dataSource.itemIdentifier(for: indexPath) else { return .zero }
 
+        let width = collectionView.contentSize.width
+
         return if item.delegatedAccountModel != nil {
-            CGSize(width: collectionView.frame.width, height: Constants.cellHeightWithFooter)
+            CGSize(width: width, height: Constants.cellHeightWithFooter)
         } else {
-            CGSize(width: collectionView.frame.width, height: Constants.defaultCellHeight)
+            CGSize(width: width, height: Constants.defaultCellHeight)
         }
     }
 

@@ -70,7 +70,7 @@ private extension MultisigOperationsViewModelFactory {
             currentApprovals,
             requiredApprovals,
             preferredLanguages: locale.rLanguages
-        )
+        ).uppercased()
     }
 
     func createOperationStatus(

@@ -3,8 +3,14 @@ import UIKit
 final class MultisigOperationsViewLayout: UIView {
     let backgroundView = MultigradientView.background
 
+    let navBarBlurView: BlurBackgroundView = .create {
+        $0.cornerCut = []
+    }
+
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.sectionInset.top = Constants.itemSpacing
+        layout.sectionInset.bottom = Constants.itemSpacing
         layout.minimumLineSpacing = Constants.itemSpacing
         layout.minimumInteritemSpacing = 0
 
@@ -44,6 +50,8 @@ final class MultisigOperationsViewLayout: UIView {
 
 private extension MultisigOperationsViewLayout {
     func setupLayout() {
+        collectionView.contentInset = Constants.contentInsets
+
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -51,7 +59,7 @@ private extension MultisigOperationsViewLayout {
 
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Constants.contentInsets)
+            make.edges.equalToSuperview()
         }
 
         addSubview(emptyStateView)
@@ -73,6 +81,12 @@ private extension MultisigOperationsViewLayout {
             make.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview()
         }
+
+        addSubview(navBarBlurView)
+        navBarBlurView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top)
+        }
     }
 }
 
@@ -87,7 +101,7 @@ extension MultisigOperationsViewLayout {
 
 // MARK: - Constants
 
-private extension MultisigOperationsViewLayout {
+extension MultisigOperationsViewLayout {
     enum Constants {
         static let contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
         static let itemSpacing: CGFloat = 8.0
