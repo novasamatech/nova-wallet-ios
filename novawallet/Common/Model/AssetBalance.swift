@@ -54,6 +54,15 @@ struct AssetBalance: Equatable {
         )
     }
 
+    func regularReservableBalance(for existentialDeposit: BigUInt) -> BigUInt {
+        Self.reservableBalance(
+            from: freeInPlank,
+            frozen: frozenInPlank,
+            existentialDeposit: existentialDeposit,
+            mode: .regular
+        )
+    }
+
     static func transferrableBalance(
         from free: BigUInt,
         frozen: BigUInt,
@@ -66,6 +75,20 @@ struct AssetBalance: Equatable {
         case .fungibleTrait:
             let locked = frozen > reserved ? frozen - reserved : 0
             return free > locked ? free - locked : 0
+        }
+    }
+
+    static func reservableBalance(
+        from free: BigUInt,
+        frozen: BigUInt,
+        existentialDeposit: BigUInt,
+        mode: TransferrableMode
+    ) -> BigUInt {
+        switch mode {
+        case .regular:
+            free - max(existentialDeposit, frozen)
+        case .fungibleTrait:
+            free - existentialDeposit
         }
     }
 }

@@ -1414,6 +1414,12 @@
 		2D0673842E13086D006392EB /* MultisigDefinition+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673832E13086D006392EB /* MultisigDefinition+Helpers.swift */; };
 		2D0673862E134423006392EB /* MultisigOperationsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673852E134423006392EB /* MultisigOperationsViewFactory.swift */; };
 		2D0673882E134462006392EB /* MultisigOperationsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673872E134462006392EB /* MultisigOperationsWireframe.swift */; };
+		2D06738B2E13E519006392EB /* MultisigValidationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06738A2E13E519006392EB /* MultisigValidationInteractor.swift */; };
+		2D06738D2E13EF8C006392EB /* MultisigValidationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06738C2E13EF8C006392EB /* MultisigValidationProtocols.swift */; };
+		2D06738F2E1405C1006392EB /* MultisigValidationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06738E2E1405C1006392EB /* MultisigValidationPresenter.swift */; };
+		2D0673912E141471006392EB /* MultisigDepositCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673902E141471006392EB /* MultisigDepositCalculator.swift */; };
+		2D0673942E141BCF006392EB /* MultisigDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673932E141BCF006392EB /* MultisigDataValidatorFactory.swift */; };
+		2D0673962E142401006392EB /* MultisigErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673952E142401006392EB /* MultisigErrorPresentable.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
@@ -7398,6 +7404,12 @@
 		2D0673832E13086D006392EB /* MultisigDefinition+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultisigDefinition+Helpers.swift"; sourceTree = "<group>"; };
 		2D0673852E134423006392EB /* MultisigOperationsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsViewFactory.swift; sourceTree = "<group>"; };
 		2D0673872E134462006392EB /* MultisigOperationsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationsWireframe.swift; sourceTree = "<group>"; };
+		2D06738A2E13E519006392EB /* MultisigValidationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigValidationInteractor.swift; sourceTree = "<group>"; };
+		2D06738C2E13EF8C006392EB /* MultisigValidationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigValidationProtocols.swift; sourceTree = "<group>"; };
+		2D06738E2E1405C1006392EB /* MultisigValidationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigValidationPresenter.swift; sourceTree = "<group>"; };
+		2D0673902E141471006392EB /* MultisigDepositCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigDepositCalculator.swift; sourceTree = "<group>"; };
+		2D0673932E141BCF006392EB /* MultisigDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigDataValidatorFactory.swift; sourceTree = "<group>"; };
+		2D0673952E142401006392EB /* MultisigErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigErrorPresentable.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
@@ -15296,6 +15308,26 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		2D0673892E13E503006392EB /* MultisigValidation */ = {
+			isa = PBXGroup;
+			children = (
+				2D06738A2E13E519006392EB /* MultisigValidationInteractor.swift */,
+				2D0673902E141471006392EB /* MultisigDepositCalculator.swift */,
+				2D06738E2E1405C1006392EB /* MultisigValidationPresenter.swift */,
+				2D06738C2E13EF8C006392EB /* MultisigValidationProtocols.swift */,
+			);
+			path = MultisigValidation;
+			sourceTree = "<group>";
+		};
+		2D0673922E141BAA006392EB /* Validation */ = {
+			isa = PBXGroup;
+			children = (
+				2D0673932E141BCF006392EB /* MultisigDataValidatorFactory.swift */,
+				2D0673952E142401006392EB /* MultisigErrorPresentable.swift */,
+			);
+			path = Validation;
+			sourceTree = "<group>";
+		};
 		2D07803F2D12C68E003E35B1 /* MessageHandlers */ = {
 			isa = PBXGroup;
 			children = (
@@ -15591,6 +15623,8 @@
 		2D3C71A62E087C9000DF9E49 /* Multisig */ = {
 			isa = PBXGroup;
 			children = (
+				2D0673922E141BAA006392EB /* Validation */,
+				2D0673892E13E503006392EB /* MultisigValidation */,
 				2D3C71D42E1267CA00DF9E49 /* MultisigOperations */,
 				2D3C71A72E087CA000DF9E49 /* Models */,
 			);
@@ -29210,6 +29244,7 @@
 				2DA549982DB0F70300FB03BF /* DAppOperationBytesConfirmViewModelFactory.swift in Sources */,
 				842876B324AE059700D91AD8 /* AboutData.swift in Sources */,
 				8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */,
+				2D06738B2E13E519006392EB /* MultisigValidationInteractor.swift in Sources */,
 				0C11D8522CC9F5F2003EC46D /* HydraOmnipoolExchangeEdge.swift in Sources */,
 				84EBC55B24F660F500459D15 /* SelectedWalletSwitched.swift in Sources */,
 				840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */,
@@ -29552,6 +29587,7 @@
 				848CCB522833D29F00A1FD00 /* StakingParachainStatics.swift in Sources */,
 				84CA68D926BE9E7F003B9453 /* SpecVersionSubscription.swift in Sources */,
 				0C13DFCB2AF6182500E5F355 /* SwapModel.swift in Sources */,
+				2D0673962E142401006392EB /* MultisigErrorPresentable.swift in Sources */,
 				84C74363251E4C2F009576C6 /* DummySigner.swift in Sources */,
 				8454C26A2632B8CE00657DAD /* BalancesPallet+Events.swift in Sources */,
 				0C0CB38A2AC56A1600EAC516 /* AssetConversionPallet+Path.swift in Sources */,
@@ -31393,6 +31429,7 @@
 				AE6F7FDF2685E812002BBC3E /* ValidatorListFilterPresenter.swift in Sources */,
 				84A5915A292AA83500BCCF8F /* EvmWebSocketOperationFactory.swift in Sources */,
 				8430AAF626023087005B1066 /* NominatorState.swift in Sources */,
+				2D06738F2E1405C1006392EB /* MultisigValidationPresenter.swift in Sources */,
 				0CF4ADFD2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift in Sources */,
 				842A735E27DB2EC4006EE1EA /* OperationDetailsModel.swift in Sources */,
 				2DD018BF2D635AEA0063F9BB /* TextHeightCalculationContext.swift in Sources */,
@@ -31835,6 +31872,7 @@
 				65909D701527D99837B439D9 /* StakingRewardDetailsWireframe.swift in Sources */,
 				84350ACC284569560031EF24 /* CollatorStakingInfoViewController.swift in Sources */,
 				775F194D2A56EEAC009915B6 /* StartStakingInfoRelaychainPresenter.swift in Sources */,
+				2D0673942E141BCF006392EB /* MultisigDataValidatorFactory.swift in Sources */,
 				6A977B56FD6441F52660771C /* StakingRewardDetailsPresenter.swift in Sources */,
 				84981EEA29D4349300948306 /* TransactionHistoryRemoteFetcher.swift in Sources */,
 				0CD54E4F2BCE6C11007B58E7 /* CloudBackupValidating.swift in Sources */,
@@ -33188,6 +33226,7 @@
 				879D493C025963619CFADF4F /* GovernanceUnlockSetupProtocols.swift in Sources */,
 				0CA5BDE92C416099000A4CDD /* BalanceRemoteSubscriptionHandlingFactory.swift in Sources */,
 				46298240F3528B5C62AEC29E /* GovernanceUnlockSetupWireframe.swift in Sources */,
+				2D06738D2E13EF8C006392EB /* MultisigValidationProtocols.swift in Sources */,
 				9097EE6D11E2E023D2637BE5 /* GovernanceUnlockSetupPresenter.swift in Sources */,
 				0C2F86822A7233DC00593C01 /* EraNominationPoolsService.swift in Sources */,
 				845938842A03D34F00292BFF /* WCSessionDetailsInteractorError.swift in Sources */,
@@ -33438,6 +33477,7 @@
 				AD1920A8DE1C9A4D6502473F /* GovernanceRemoveVotesConfirmViewController.swift in Sources */,
 				4883346B78B82D2037DEBA56 /* GovernanceRemoveVotesConfirmViewLayout.swift in Sources */,
 				893CA0DF4EAD03CC118A2733 /* GovernanceRemoveVotesConfirmViewFactory.swift in Sources */,
+				2D0673912E141471006392EB /* MultisigDepositCalculator.swift in Sources */,
 				0C8C8F812D6C3E2D00441FB3 /* PriceProviderFactory.swift in Sources */,
 				0C8C8F822D6C3E2D00441FB3 /* PriceIdProvider.swift in Sources */,
 				0C8C8F832D6C3E2D00441FB3 /* PriceLocalSubscriptionHandler.swift in Sources */,
