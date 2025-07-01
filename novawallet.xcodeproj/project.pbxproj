@@ -669,6 +669,9 @@
 		0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C846B952BE69417000EBFC2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */; };
 		0C85F5BE2E133B8A003789DC /* CallWeightOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5BD2E133B8A003789DC /* CallWeightOperationFactory.swift */; };
+		0C85F5C12E140D12003789DC /* MultisigSignatoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5C02E140D12003789DC /* MultisigSignatoryRepository.swift */; };
+		0C85F5C32E140D90003789DC /* Multisig+Signatory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5C22E140D90003789DC /* Multisig+Signatory.swift */; };
+		0C85F5C62E14176F003789DC /* WalletType+Delegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85F5C52E14176F003789DC /* WalletType+Delegation.swift */; };
 		0C85FF242B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */; };
 		0C85FF2A2B6D230100FC0014 /* AssetHubReQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */; };
 		0C85FF2C2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */; };
@@ -6622,6 +6625,9 @@
 		0C846B912BE69079000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C846B942BE69417000EBFC2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C85F5BD2E133B8A003789DC /* CallWeightOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallWeightOperationFactory.swift; sourceTree = "<group>"; };
+		0C85F5C02E140D12003789DC /* MultisigSignatoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSignatoryRepository.swift; sourceTree = "<group>"; };
+		0C85F5C22E140D90003789DC /* Multisig+Signatory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multisig+Signatory.swift"; sourceTree = "<group>"; };
+		0C85F5C52E14176F003789DC /* WalletType+Delegation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletType+Delegation.swift"; sourceTree = "<group>"; };
 		0C85FF232B6CB28200FC0014 /* AssetHubExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExtrinsicConverter.swift; sourceTree = "<group>"; };
 		0C85FF292B6D230100FC0014 /* AssetHubReQuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubReQuoteService.swift; sourceTree = "<group>"; };
 		0C85FF2B2B6D23D600FC0014 /* ObservableSubscriptionSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionSyncState.swift; sourceTree = "<group>"; };
@@ -13608,6 +13614,22 @@
 			path = Staking;
 			sourceTree = "<group>";
 		};
+		0C85F5BF2E140CFA003789DC /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				0C85F5C02E140D12003789DC /* MultisigSignatoryRepository.swift */,
+			);
+			path = Operation;
+			sourceTree = "<group>";
+		};
+		0C85F5C42E141753003789DC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0C85F5C52E14176F003789DC /* WalletType+Delegation.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
 			isa = PBXGroup;
 			children = (
@@ -15607,6 +15629,7 @@
 		2D3C71A62E087C9000DF9E49 /* Multisig */ = {
 			isa = PBXGroup;
 			children = (
+				0C85F5BF2E140CFA003789DC /* Operation */,
 				5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */,
 				2D3C71D42E1267CA00DF9E49 /* MultisigOperations */,
 				2D3C71A72E087CA000DF9E49 /* Models */,
@@ -15621,6 +15644,7 @@
 				2D3C71AA2E087CFB00DF9E49 /* PendingOperation.swift */,
 				2D0673832E13086D006392EB /* MultisigDefinition+Helpers.swift */,
 				2D3C71D22E124F7C00DF9E49 /* OffChainDefinition.swift */,
+				0C85F5C22E140D90003789DC /* Multisig+Signatory.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -16169,6 +16193,7 @@
 		2D6CE43A2DE4C3FD00B94DBA /* DelegatedAccounts */ = {
 			isa = PBXGroup;
 			children = (
+				0C85F5C42E141753003789DC /* Model */,
 				77FF02672B21DCB300B655BC /* Proxy */,
 				2D3C71A62E087C9000DF9E49 /* Multisig */,
 				2D96D8692DF04FF700159E91 /* DelegatedAccountsUpdate */,
@@ -31992,6 +32017,7 @@
 				F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */,
 				8473F4B8282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift in Sources */,
 				841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */,
+				0C85F5C62E14176F003789DC /* WalletType+Delegation.swift in Sources */,
 				88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */,
 				8468119428E6234B00BF54F1 /* RoundedSegmentedControl.swift in Sources */,
 				8453DE5928FD32780055345C /* NotEqualWrapper.swift in Sources */,
@@ -32941,6 +32967,7 @@
 				0CE9B7222DE9F1C9007C7F5A /* MessageSheetViewController+LedgerMeasurement.swift in Sources */,
 				2D7C8A932C2E9D9F0044E601 /* NetworkNodeCorrespondingTrait.swift in Sources */,
 				0C32728D2CD1F90100FC1B42 /* AssetExchangeSwapLimit.swift in Sources */,
+				0C85F5C32E140D90003789DC /* Multisig+Signatory.swift in Sources */,
 				884A7532299CB22F00FEFC30 /* TrackTableViewCell.swift in Sources */,
 				B310C3D126C304851A40CFA9 /* ChainAddressDetailsProtocols.swift in Sources */,
 				FB405A41F9B89097016D4C78 /* ChainAddressDetailsWireframe.swift in Sources */,
@@ -33294,6 +33321,7 @@
 				B8349266F061AEFFA9802237 /* TokenManageSingleViewController.swift in Sources */,
 				D9746967761B1B4772A562B2 /* TokenManageSingleViewLayout.swift in Sources */,
 				0C7C88662A95030800DD96A1 /* SubqueryStakingType.swift in Sources */,
+				0C85F5C12E140D12003789DC /* MultisigSignatoryRepository.swift in Sources */,
 				0C8AF7BF2B3A9E0600005AC9 /* Pdc20DetailsInteractor.swift in Sources */,
 				0C7945BB2ABB2251001C07CA /* XTokens.swift in Sources */,
 				0CAC01572A52E1960069413E /* AssetListPresenterHelpers.swift in Sources */,

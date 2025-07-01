@@ -28,4 +28,12 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
     func didReceiveOperation(_ operation: Multisig.PendingOperation?) {
         logger.debug("Operation \(String(describing: operation))")
     }
+
+    func didReceiveSignatories(_ signatories: [Multisig.Signatory]) {
+        logger.debug("Signatories: \(signatories)")
+    }
+
+    func didReceiveError(_ error: MultisigOperationConfirmInteractorError) {
+        logger.error("Error: \(error)")
+    }
 }
