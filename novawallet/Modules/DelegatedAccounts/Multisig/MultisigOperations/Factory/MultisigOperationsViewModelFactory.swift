@@ -16,18 +16,21 @@ final class MultisigOperationsViewModelFactory {
     private let sectionDateFormatter: LocalizableResource<DateFormatter>
     private let timeFormatter: LocalizableResource<DateFormatter>
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
     init(
         timeFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistory,
         sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDate,
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
+        displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
         balanceViewModelFactory: BalanceViewModelFactoryProtocol? = nil
     ) {
         self.timeFormatter = timeFormatter
         self.sectionDateFormatter = sectionDateFormatter
-        self.balanceViewModelFactory = balanceViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
+        self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
     }
 }
 
@@ -97,6 +100,12 @@ private extension MultisigOperationsViewModelFactory {
         }
     }
 
+    func createDelegatedAccountModel(
+        displayAddress: DisplayAddress
+    ) -> DisplayAddressViewModel {
+        displayAddressViewModelFactory.createViewModel(from: displayAddress)
+    }
+
     func createViewModel(
         from operation: Multisig.PendingOperation,
         chain: ChainModel,
@@ -128,6 +137,15 @@ private extension MultisigOperationsViewModelFactory {
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
         let operationIcon = StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
 
+        var delegatedAccountModel: (String, DisplayAddressViewModel)?
+
+        if let displayAddress = try? wallet.fetch(for: chain.accountRequest())?.toDisplayAddress() {
+            delegatedAccountModel = (
+                R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+                createDelegatedAccountModel(displayAddress: displayAddress)
+            )
+        }
+
         return MultisigOperationViewModel(
             identifier: operation.identifier,
             chainIcon: chainIcon,
@@ -138,7 +156,7 @@ private extension MultisigOperationsViewModelFactory {
             timeString: timeString,
             signingProgress: signingProgress,
             status: status,
-            delegatedAccountModel: nil
+            delegatedAccountModel: delegatedAccountModel
         )
     }
 

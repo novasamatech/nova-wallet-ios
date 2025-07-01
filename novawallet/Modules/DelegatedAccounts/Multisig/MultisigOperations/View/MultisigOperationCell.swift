@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import UIKit_iOS
 
 final class MultisigOperationCell: UICollectionViewCell {
     let blurBackgroundView: BlockBackgroundView = .create { view in
@@ -30,7 +31,9 @@ final class MultisigOperationCell: UICollectionViewCell {
         >
     > = .create { view in
         view.rowContentView.makeHorizontal()
-        view.rowContentView.stackView.distribution = .fill
+        view.rowContentView.stackView.distribution = .fillEqually
+        view.rowContentView.stackView.alignment = .center
+        view.roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
 
         view.rowContentView.fView.textAlignment = .left
         view.rowContentView.fView.apply(style: .caption1Secondary)
@@ -38,17 +41,27 @@ final class MultisigOperationCell: UICollectionViewCell {
         view.rowContentView.sView.spacing = 4.0
         view.rowContentView.sView.detailsLabel.apply(style: .caption1Secondary)
         view.rowContentView.sView.iconWidth = Constants.addressIconSize
+        view.rowContentView.sView.detailsLabel.numberOfLines = 1
+        view.rowContentView.sView.detailsLabel.lineBreakMode = .byTruncatingMiddle
 
         view.roundedBackgroundView.cornerRadius = .zero
+        view.roundedBackgroundView.roundingCorners = [.bottomLeft, .bottomRight]
+        view.roundedBackgroundView.cornerRadius = Constants.cornerRadius
+        view.contentInsets = Constants.delegatedViewContentInsets
     }
 
-    let operationIconView: AssetIconView = {
-        let view = AssetIconView()
+    let borderedContainer: BorderedContainerView = .create { view in
+        view.borderType = [.top]
+        view.strokeWidth = 2.0
+        view.strokeColor = R.color.colorDivider()!
+        view.fillColor = .clear
+    }
+
+    let operationIconView: AssetIconView = .create { view in
         view.backgroundView.cornerRadius = Constants.iconSize / 2.0
         view.backgroundView.fillColor = R.color.colorContainerBackground()!
         view.backgroundView.highlightedFillColor = R.color.colorContainerBackground()!
-        return view
-    }()
+    }
 
     let statusView: IconDetailsView = .create { view in
         view.mode = .detailsIcon
@@ -237,11 +250,17 @@ private extension MultisigOperationCell {
     }
 
     func updateConstraints(showingFooter: Bool) {
+        borderedContainer.removeFromSuperview()
         delegatedAccountView.removeFromSuperview()
 
         if showingFooter {
-            contentView.addSubview(delegatedAccountView)
+            borderedContainer.addSubview(delegatedAccountView)
             delegatedAccountView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+
+            contentView.addSubview(borderedContainer)
+            borderedContainer.snp.makeConstraints { make in
                 make.leading.trailing.bottom.equalToSuperview()
                 make.height.equalTo(Constants.delegatedAccountViewHeight)
             }
@@ -250,7 +269,7 @@ private extension MultisigOperationCell {
                 make.size.equalTo(Constants.iconSize)
                 make.leading.equalTo(signingProgressLabel)
                 make.top.equalTo(signingProgressLabel.snp.bottom).offset(Constants.iconTopOffset)
-                make.bottom.equalTo(delegatedAccountView.snp.top).offset(Constants.iconBottomOffsetToFooter)
+                make.bottom.equalTo(borderedContainer.snp.top).offset(-Constants.iconBottomOffsetToFooter)
             }
         } else {
             operationIconView.snp.remakeConstraints { make in
@@ -306,6 +325,8 @@ private extension MultisigOperationCell {
 
         static let cornerRadius: CGFloat = 12.0
         static let contentInsets = UIEdgeInsets(top: 13.5, left: 12.0, bottom: 20.0, right: 12.0)
+
+        static let delegatedViewContentInsets = UIEdgeInsets(top: 10.0, left: 12.0, bottom: 6.0, right: 12.0)
 
         static let statusViewInnerSpacing: CGFloat = 4.0
     }

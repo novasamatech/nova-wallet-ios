@@ -1875,3 +1875,4 @@ Stay tuned!";
 "multisig.operation.signing.progress.format" = "Signing (%d of %d)";
 "multisig.operation.status.created" = "Created by you";
 "multisig.operation.status.signed" = "Signed by you";
+"delegated.account.on.behalf.of" = "On behalf of:";
