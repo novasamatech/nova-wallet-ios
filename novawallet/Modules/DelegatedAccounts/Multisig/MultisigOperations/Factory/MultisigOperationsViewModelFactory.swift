@@ -137,14 +137,8 @@ private extension MultisigOperationsViewModelFactory {
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
         let operationIcon = StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
 
+        // TODO: Implement proper logic to determine if the operation is delegated
         var delegatedAccountModel: (String, DisplayAddressViewModel)?
-
-        if let displayAddress = try? wallet.fetch(for: chain.accountRequest())?.toDisplayAddress() {
-            delegatedAccountModel = (
-                R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
-                createDelegatedAccountModel(displayAddress: displayAddress)
-            )
-        }
 
         return MultisigOperationViewModel(
             identifier: operation.identifier,
