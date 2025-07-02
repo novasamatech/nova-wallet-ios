@@ -102,9 +102,10 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
                 value: feeDecimal
             ).value(for: locale)
 
-            self?.presentable.presentNotEnoughBalanceForDeposit(
+            self?.presentable.presentNotEnoughBalanceForDepositAndFee(
                 from: view,
                 deposit: depositModel,
+                fee: feeModel,
                 remaining: remainingModel,
                 accountName: params.metaAccountResponse.chainAccount.name,
                 locale: locale
