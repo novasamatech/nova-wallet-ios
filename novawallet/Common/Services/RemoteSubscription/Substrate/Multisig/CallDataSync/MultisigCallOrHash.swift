@@ -3,9 +3,9 @@ import SubstrateSdk
 
 enum MultisigCallOrHash {
     case callHash(Substrate.CallHash)
-    case call(JSON)
+    case call(Substrate.CallData)
 
-    var call: JSON? {
+    var call: Substrate.CallData? {
         guard case let .call(call) = self else { return nil }
 
         return call
