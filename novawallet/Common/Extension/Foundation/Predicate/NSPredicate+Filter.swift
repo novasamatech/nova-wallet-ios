@@ -524,4 +524,12 @@ extension NSPredicate {
             multisigAccountId.toHex()
         )
     }
+
+    static func pendingOperation(identifier: String) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMultisigPendingOperation.identifier),
+            identifier
+        )
+    }
 }

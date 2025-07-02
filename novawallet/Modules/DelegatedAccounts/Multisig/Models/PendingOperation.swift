@@ -3,13 +3,17 @@ import Operation_iOS
 
 extension Multisig {
     struct PendingOperation: Codable {
-        let call: JSON?
+        let call: Substrate.CallData?
         let callHash: Substrate.CallHash
         let timestamp: Int
         let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition?
+
+        func isCreator(accountId: AccountId) -> Bool {
+            multisigDefinition?.depositor == accountId
+        }
     }
 
     struct MultisigDefinition: Codable, Equatable {
@@ -40,6 +44,12 @@ extension Multisig {
     struct MultisigTimepoint: Codable, Hashable {
         let height: BlockNumber
         let index: UInt32
+    }
+}
+
+extension Multisig.MultisigTimepoint {
+    func toSubmissionModel() -> MultisigPallet.MultisigTimepoint {
+        .init(height: height, index: index)
     }
 }
 
@@ -107,7 +117,7 @@ extension Multisig.PendingOperation {
         )
     }
 
-    func replacingCall(with newCall: JSON?) -> Self {
+    func replacingCall(with newCall: Substrate.CallData?) -> Self {
         .init(
             call: newCall,
             callHash: callHash,
