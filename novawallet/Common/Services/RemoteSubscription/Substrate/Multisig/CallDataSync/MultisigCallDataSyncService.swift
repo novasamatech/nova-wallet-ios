@@ -83,8 +83,14 @@ private extension MultisigCallDataSyncService {
         metaAccountsProvider = subscribeForWallets(of: .multisig)
     }
 
-    func updatePendingOperations(using callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]) {
-        let wrapper = createUpdatePendingOperationsWrapper(using: callData)
+    func updatePendingOperations(
+        using callData: [Multisig.PendingOperation.Key: MultisigCallFromEvent],
+        blockTime: BlockTime
+    ) {
+        let wrapper = createUpdatePendingOperationsWrapper(
+            using: callData,
+            blockTime: blockTime
+        )
 
         operationManager.enqueue(
             operations: wrapper.allOperations,
@@ -93,47 +99,50 @@ private extension MultisigCallDataSyncService {
     }
 
     func createUpdatePendingOperationsWrapper(
-        using callData: [Multisig.PendingOperation.Key: MultisigCallOrHash]
+        using callData: [Multisig.PendingOperation.Key: MultisigCallFromEvent],
+        blockTime: BlockTime
     ) -> CompoundOperationWrapper<Void> {
         let fetchOperation = pendingOperationsRepository.fetchAllOperation(with: .init())
 
-        let updateOperation = pendingOperationsRepository.saveOperation(
-            {
-                let persistedOperations: MultisigPendingOperationsMap
-                persistedOperations = try fetchOperation.extractNoCancellableResultData()
-                    .reduce(into: [:]) { $0[$1.createKey()] = $1 }
+        let updateOperation = pendingOperationsRepository.saveOperation({
+            let persistedOperations: MultisigPendingOperationsMap
+            persistedOperations = try fetchOperation.extractNoCancellableResultData()
+                .reduce(into: [:]) { $0[$1.createKey()] = $1 }
 
-                let updates: [Multisig.PendingOperation] = callData.compactMap { keyValue in
-                    let call = keyValue.value.call
+            let updates: [Multisig.PendingOperation] = callData.compactMap { keyValue in
+                let call = keyValue.value.callOrHash.call
 
-                    if let persistedOperation = persistedOperations[keyValue.key] {
-                        guard let call else { return nil }
+                if let persistedOperation = persistedOperations[keyValue.key] {
+                    guard let call else { return nil }
 
-                        return persistedOperation.replacingCall(with: call)
-                    } else {
-                        return Multisig.PendingOperation(
-                            call: call,
-                            callHash: keyValue.key.callHash,
-                            timestamp: 0,
-                            multisigAccountId: keyValue.key.multisigAccountId,
-                            signatory: keyValue.key.signatoryAccountId,
-                            chainId: keyValue.key.chainId,
-                            multisigDefinition: nil
-                        )
-                    }
+                    return persistedOperation.replacingCall(with: call)
+                } else {
+                    let timestamp = BlockTimestampEstimator.estimateTimestamp(
+                        for: keyValue.value.timepoint.height,
+                        currentBlock: keyValue.value.blockNumber,
+                        blockTimeInMillis: blockTime
+                    )
+
+                    return Multisig.PendingOperation(
+                        call: call,
+                        callHash: keyValue.key.callHash,
+                        timestamp: timestamp,
+                        multisigAccountId: keyValue.key.multisigAccountId,
+                        signatory: keyValue.key.signatoryAccountId,
+                        chainId: keyValue.key.chainId,
+                        multisigDefinition: nil
+                    )
                 }
+            }
 
-                return updates
-            },
-            { [] }
-        )
+            return updates
+        }, {
+            []
+        })
 
         updateOperation.addDependency(fetchOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: updateOperation,
-            dependencies: [fetchOperation]
-        )
+        return CompoundOperationWrapper(targetOperation: updateOperation, dependencies: [fetchOperation])
     }
 
     func processEvents(
@@ -141,25 +150,39 @@ private extension MultisigCallDataSyncService {
         at blockHash: Data,
         chainId: ChainModel.Id
     ) {
-        let extractionWrapper = callFetchFactory.createCallFetchWrapper(
-            for: events,
-            at: blockHash,
-            chainId: chainId
-        )
+        do {
+            let extractionWrapper = callFetchFactory.createCallFetchWrapper(
+                for: events,
+                at: blockHash,
+                chainId: chainId
+            )
 
-        extractionWrapper.targetOperation.completionBlock = { [weak self] in
-            do {
-                let calls = try extractionWrapper.targetOperation.extractNoCancellableResultData()
-                self?.updatePendingOperations(using: calls)
-            } catch {
-                self?.logger.error("Failed to fetch block details: \(error)")
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+            let chain = try chainRegistry.getChainOrError(for: chainId)
+
+            let blockTimeWrapper = BlockTimeOperationFactory(
+                chain: chain
+            ).createExpectedBlockTimeWrapper(from: runtimeProvider)
+
+            blockTimeWrapper.addDependency(wrapper: extractionWrapper)
+
+            blockTimeWrapper.targetOperation.completionBlock = { [weak self] in
+                do {
+                    let calls = try extractionWrapper.targetOperation.extractNoCancellableResultData()
+                    let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+                    self?.updatePendingOperations(using: calls, blockTime: blockTime)
+                } catch {
+                    self?.logger.error("Failed to fetch block details: \(error)")
+                }
             }
-        }
 
-        operationManager.enqueue(
-            operations: extractionWrapper.allOperations,
-            in: .transient
-        )
+            operationManager.enqueue(
+                operations: extractionWrapper.allOperations + blockTimeWrapper.allOperations,
+                in: .transient
+            )
+        } catch {
+            logger.error("Unexpected error: \(error)")
+        }
     }
 }
 

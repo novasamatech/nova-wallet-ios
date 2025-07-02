@@ -44,7 +44,8 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
         )
         let remoteOperationUpdateService = MultisigPendingOperationsUpdatingService(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
         let predicate = NSPredicate.pendingMultisigOperations(
             for: chain.chainId,
@@ -55,11 +56,17 @@ extension PendingMultisigChainSyncServiceFactory: PendingMultisigChainSyncServic
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(MultisigPendingOperationMapper())
         )
+
         let remoteFetchFactory = PendingMultisigRemoteFetchFactory(
             multisigAccount: selectedMultisigAccount,
             chain: chain,
             chainRegistry: chainRegistry,
             pendingCallHashesOperationFactory: pendingCallHashesOperationFactory,
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+            blockNumberOperationFactory: BlockNumberOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            ),
             operationManager: operationManager
         )
         let localSyncFactory = PendingMultisigLocalSyncFactory(

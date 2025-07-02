@@ -7,16 +7,20 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
     let chainId: ChainModel.Id
     let callHashes: Set<Substrate.CallHash>
     let chainRegistry: ChainRegistryProtocol
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
-    private let mutex = NSLock()
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
 
     private var subscription: CallbackBatchStorageSubscription<SubscriptionResult>?
     private weak var subscriber: MultisigPendingOperationsSubscriber?
 
-    init(
+    private var pendingCallStore: CancellableCallStore?
+    private let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
+    private let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    private let runtimeProvider: RuntimeProviderProtocol
+
+    init?(
         accountId: AccountId,
         chainId: ChainModel.Id,
         callHashes: Set<Substrate.CallHash>,
@@ -24,7 +28,7 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         subscriber: MultisigPendingOperationsSubscriber,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.accountId = accountId
         self.chainId = chainId
@@ -35,13 +39,24 @@ final class MultisigPendingOperationsSubscription: WebSocketSubscribing {
         self.workingQueue = workingQueue
         self.logger = logger
 
+        blockNumberOperationFactory = BlockNumberOperationFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
+
         do {
+            let chain = try chainRegistry.getChainOrError(for: chainId)
+
+            runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+            blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
+
             try subscribeRemote(
                 for: accountId,
                 callHashes: callHashes
             )
         } catch {
-            logger?.error(error.localizedDescription)
+            logger.error(error.localizedDescription)
+            return nil
         }
     }
 
@@ -102,27 +117,112 @@ private extension MultisigPendingOperationsSubscription {
     ) {
         switch result {
         case let .success(state):
-            callHashes
-                .map { callHash in
-                    let key = SubscriptionResult.Key.pendingOperation(with: callHash)
-                    let json = state.values[key]
+            fetchTimestampParamsAndNotify(
+                state: state,
+                callHashes: callHashes
+            )
+        case let .failure(error):
+            logger.error(error.localizedDescription)
+        }
+    }
 
-                    let definition = try? json?.map(
-                        to: MultisigPallet.MultisigDefinition.self,
+    func fetchTimestampParamsAndNotify(
+        state: SubscriptionResult,
+        callHashes: Set<Substrate.CallHash>
+    ) {
+        let blockNumberWrapper = blockNumberOperationFactory.createWrapper(
+            for: chainId,
+            blockHash: state.blockHash
+        )
+
+        let blockTimeWrapper = blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider)
+
+        let updatesOperation = ClosureOperation<[(Substrate.CallHash, MultisigDefinitionWithTime?)]> {
+            let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+            let blockNumber = try blockNumberWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.calculateChanges(
+                state: state,
+                callHashes: callHashes,
+                blockNumber: blockNumber,
+                blockTime: blockTime
+            )
+        }
+
+        updatesOperation.addDependency(blockTimeWrapper.targetOperation)
+        updatesOperation.addDependency(blockNumberWrapper.targetOperation)
+
+        let wrapper = blockTimeWrapper.insertingHead(
+            operations: blockTimeWrapper.allOperations
+        ).insertingTail(operation: updatesOperation)
+
+        pendingCallStore?.addDependency(to: wrapper)
+
+        let newCallStore = CancellableCallStore()
+        pendingCallStore = newCallStore
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: newCallStore,
+            runningCallbackIn: workingQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(changes):
+                changes.forEach { change in
+                    self?.subscriber?.didReceiveUpdate(
+                        callHash: change.0,
+                        multisigDefinition: change.1
+                    )
+                }
+            case let .failure(error):
+                self?.logger.error("Can't process changes: \(error)")
+            }
+        }
+    }
+
+    func calculateChanges(
+        state: SubscriptionResult,
+        callHashes: Set<Substrate.CallHash>,
+        blockNumber: BlockNumber,
+        blockTime: BlockTime
+    ) -> [(Substrate.CallHash, MultisigDefinitionWithTime?)] {
+        callHashes
+            .compactMap { callHash in
+                let key = SubscriptionResult.Key.pendingOperation(with: callHash)
+
+                // only modified definitions are sent in the update
+                guard let json = state.values[key] else {
+                    return nil
+                }
+
+                do {
+                    let optDefinition = try json.map(
+                        to: MultisigPallet.MultisigDefinition?.self,
                         with: state.context
                     )
 
-                    return (callHash, definition)
+                    if let definition = optDefinition {
+                        let timestamp = BlockTimestampEstimator.estimateTimestamp(
+                            for: definition.timepoint.height,
+                            currentBlock: blockNumber,
+                            blockTimeInMillis: blockTime
+                        )
+
+                        let model = MultisigDefinitionWithTime(
+                            definition: definition,
+                            timestamp: timestamp
+                        )
+
+                        return (callHash, model)
+                    } else {
+                        return (callHash, nil)
+                    }
+                } catch {
+                    logger.error("Unexpected definition: \(json)")
+                    return nil
                 }
-                .forEach {
-                    subscriber?.didReceiveUpdate(
-                        callHash: $0.0,
-                        multisigDefinition: $0.1
-                    )
-                }
-        case let .failure(error):
-            logger?.error(error.localizedDescription)
-        }
+            }
     }
 }
 
@@ -137,10 +237,11 @@ private struct SubscriptionResult: BatchStorageSubscriptionResult {
 
     let context: [CodingUserInfoKey: Any]?
     let values: [String: JSON]
+    let blockHash: Data?
 
     init(
         values: [BatchStorageSubscriptionResultValue],
-        blockHashJson _: JSON,
+        blockHashJson: JSON,
         context: [CodingUserInfoKey: Any]?
     ) throws {
         self.context = context
@@ -149,5 +250,7 @@ private struct SubscriptionResult: BatchStorageSubscriptionResult {
                 $0[mappingKey] = $1.value
             }
         }
+
+        blockHash = try blockHashJson.map(to: Data?.self, with: context)
     }
 }

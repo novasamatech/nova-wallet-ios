@@ -11,7 +11,7 @@ protocol PendingMultisigLocalSyncFactoryProtocol {
 
     func createUpdateDefinitionWrapper(
         for callHash: Substrate.CallHash,
-        _ multisigDefinition: MultisigPallet.MultisigDefinition?
+        _ multisigDefinition: MultisigDefinitionWithTime?
     ) -> CompoundOperationWrapper<Void>
 
     func createFetchLocalHashesWrapper() -> CompoundOperationWrapper<Set<Substrate.CallHash>>
@@ -66,35 +66,32 @@ private extension PendingMultisigLocalSyncFactory {
         dependsOn localFetchOperation: BaseOperation<[Multisig.PendingOperation]>,
         _ changesOperation: BaseOperation<OperationsChanges>
     ) -> BaseOperation<Void> {
-        pendingOperationsRepository.saveOperation(
-            {
-                let changes = try changesOperation.extractNoCancellableResultData()
+        pendingOperationsRepository.saveOperation({
+            let changes = try changesOperation.extractNoCancellableResultData()
 
-                let localPendingOperations = try localFetchOperation
-                    .extractNoCancellableResultData()
-                    .reduce(into: [:]) { $0[$1.createKey()] = $1 }
+            let localPendingOperations = try localFetchOperation
+                .extractNoCancellableResultData()
+                .reduce(into: [:]) { $0[$1.createKey()] = $1 }
 
-                let newItems = changes.newOperations.compactMap { remotePendingOperations[$0] }
-                let updates: [Multisig.PendingOperation] = changes.updatedOperations.compactMap { key in
-                    guard let remote = remotePendingOperations[key] else { return nil }
+            let newItems = changes.newOperations.compactMap { remotePendingOperations[$0] }
+            let updates: [Multisig.PendingOperation] = changes.updatedOperations.compactMap { key in
+                guard let remote = remotePendingOperations[key] else { return nil }
 
-                    return localPendingOperations[key]?.updating(with: remote)
-                }
-
-                return newItems + updates
-            },
-            {
-                try changesOperation
-                    .extractNoCancellableResultData()
-                    .removedOperationsKeys
-                    .map { $0.stringValue() }
+                return localPendingOperations[key]?.updating(with: remote)
             }
-        )
+
+            return newItems + updates
+        }, {
+            try changesOperation
+                .extractNoCancellableResultData()
+                .removedOperationsKeys
+                .map { $0.stringValue() }
+        })
     }
 
     func updateDefinition(
         for callHash: Substrate.CallHash,
-        multisigDefinition: Multisig.MultisigDefinition
+        multisigDefinition: MultisigDefinitionWithTime
     ) -> CompoundOperationWrapper<Void> {
         let key = Multisig.PendingOperation.Key(
             callHash: callHash,
@@ -109,24 +106,29 @@ private extension PendingMultisigLocalSyncFactory {
         let updateOperation = ClosureOperation<Multisig.PendingOperation> { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
+            let localDefinition = Multisig.MultisigDefinition(
+                from: multisigDefinition.definition
+            )
+
             return if let localPendingOperation = try? localFetchOperation.extractNoCancellableResultData() {
-                localPendingOperation.replacingDefinition(with: multisigDefinition)
+                localPendingOperation.replacingDefinition(with: localDefinition)
             } else {
                 Multisig.PendingOperation(
                     call: nil,
                     callHash: callHash,
-                    timestamp: 0,
+                    timestamp: multisigDefinition.timestamp,
                     multisigAccountId: multisigAccount.accountId,
                     signatory: multisigAccount.signatory,
                     chainId: self.chain.chainId,
-                    multisigDefinition: multisigDefinition
+                    multisigDefinition: localDefinition
                 )
             }
         }
-        let saveOperation = pendingOperationsRepository.saveOperation(
-            { [try updateOperation.extractNoCancellableResultData()] },
-            { [] }
-        )
+        let saveOperation = pendingOperationsRepository.saveOperation({
+            [try updateOperation.extractNoCancellableResultData()]
+        }, {
+            []
+        })
 
         updateOperation.addDependency(localFetchOperation)
         saveOperation.addDependency(updateOperation)
@@ -145,10 +147,11 @@ private extension PendingMultisigLocalSyncFactory {
             signatoryAccountId: multisigAccount.signatory
         )
 
-        return pendingOperationsRepository.saveOperation(
-            { [] },
-            { [key.stringValue()] }
-        )
+        return pendingOperationsRepository.saveOperation({
+            []
+        }, {
+            [key.stringValue()]
+        })
     }
 }
 
@@ -190,13 +193,10 @@ extension PendingMultisigLocalSyncFactory: PendingMultisigLocalSyncFactoryProtoc
 
     func createUpdateDefinitionWrapper(
         for callHash: Substrate.CallHash,
-        _ multisigDefinition: MultisigPallet.MultisigDefinition?
+        _ multisigDefinition: MultisigDefinitionWithTime?
     ) -> CompoundOperationWrapper<Void> {
         if let multisigDefinition {
-            updateDefinition(
-                for: callHash,
-                multisigDefinition: .init(from: multisigDefinition)
-            )
+            updateDefinition(for: callHash, multisigDefinition: multisigDefinition)
         } else {
             CompoundOperationWrapper(targetOperation: removeOperation(with: callHash))
         }

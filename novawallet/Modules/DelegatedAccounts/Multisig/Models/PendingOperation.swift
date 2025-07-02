@@ -5,7 +5,7 @@ extension Multisig {
     struct PendingOperation: Codable {
         let call: Substrate.CallData?
         let callHash: Substrate.CallHash
-        let timestamp: Int
+        let timestamp: UInt64
         let multisigAccountId: AccountId
         let signatory: AccountId
         let chainId: ChainModel.Id
@@ -96,7 +96,9 @@ extension Multisig.PendingOperation {
     func updating(with operation: Multisig.PendingOperation) -> Self {
         var updatedValue = self
 
-        updatedValue = updatedValue.replacingDefinition(with: operation.multisigDefinition)
+        updatedValue = updatedValue
+            .replacingDefinition(with: operation.multisigDefinition)
+            .replacingTimestamp(with: operation.timestamp)
 
         if let callUpdate = operation.call, call == nil {
             updatedValue = updatedValue.replacingCall(with: callUpdate)
@@ -122,6 +124,18 @@ extension Multisig.PendingOperation {
             call: newCall,
             callHash: callHash,
             timestamp: timestamp,
+            multisigAccountId: multisigAccountId,
+            signatory: signatory,
+            chainId: chainId,
+            multisigDefinition: multisigDefinition
+        )
+    }
+
+    func replacingTimestamp(with newTimestamp: UInt64) -> Self {
+        .init(
+            call: call,
+            callHash: callHash,
+            timestamp: newTimestamp,
             multisigAccountId: multisigAccountId,
             signatory: signatory,
             chainId: chainId,

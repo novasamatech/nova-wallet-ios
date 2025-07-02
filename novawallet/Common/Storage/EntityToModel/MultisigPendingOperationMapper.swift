@@ -21,8 +21,8 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         if
             let depositor = entity.depositor,
             let approvals = entity.approvals {
-            let index = UInt32(entity.index)
-            let height = UInt32(entity.height)
+            let index = UInt32(bitPattern: entity.index)
+            let height = UInt32(bitPattern: entity.height)
 
             let timepoint = Multisig.MultisigTimepoint(
                 height: height,
@@ -43,7 +43,7 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         return Multisig.PendingOperation(
             call: entity.call,
             callHash: callHash,
-            timestamp: Int(entity.timestamp),
+            timestamp: UInt64(bitPattern: entity.timestamp),
             multisigAccountId: multisigAccountId,
             signatory: signatory,
             chainId: entity.chainId!,
@@ -60,12 +60,12 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
         entity.multisigAccountId = model.multisigAccountId.toHexString()
         entity.signatory = model.signatory.toHexString()
         entity.callHash = model.callHash.toHexString()
-        entity.timestamp = Int64(model.timestamp)
+        entity.timestamp = Int64(bitPattern: model.timestamp)
         entity.chainId = model.chainId
 
         if let multisigDefinition = model.multisigDefinition {
-            entity.index = Int32(multisigDefinition.timepoint.index)
-            entity.height = Int32(multisigDefinition.timepoint.height)
+            entity.index = Int32(bitPattern: multisigDefinition.timepoint.index)
+            entity.height = Int32(bitPattern: multisigDefinition.timepoint.height)
             entity.depositor = multisigDefinition.depositor.toHexString()
             entity.approvals = multisigDefinition.approvals
                 .map { $0.toHexString() }
