@@ -1857,6 +1857,8 @@
 		2DF95D342D786097001D8785 /* CustomHapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */; };
 		2DF95D372D786156001D8785 /* SequentialHapticPlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */; };
 		2DF95D3B2D786631001D8785 /* HapticPlayerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */; };
+		2DFF39B82E15353C00529984 /* UnsupportedFeatureType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39B72E15353C00529984 /* UnsupportedFeatureType.swift */; };
+		2DFF39BA2E1539A800529984 /* FeatureSupportChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39B92E1539A800529984 /* FeatureSupportChecking.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -7837,6 +7839,8 @@
 		2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHapticPatternConfig.swift; sourceTree = "<group>"; };
 		2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentialHapticPlayerConfig.swift; sourceTree = "<group>"; };
 		2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlayerFactory.swift; sourceTree = "<group>"; };
+		2DFF39B72E15353C00529984 /* UnsupportedFeatureType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedFeatureType.swift; sourceTree = "<group>"; };
+		2DFF39B92E1539A800529984 /* FeatureSupportChecking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureSupportChecking.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
 		2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewLayout.swift; sourceTree = "<group>"; };
@@ -21687,6 +21691,7 @@
 				8411706E285B0B1B006F4DFB /* Xcm */,
 				84D1110F26B932300016D962 /* ChainRegistry */,
 				84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */,
+				2DFF39B72E15353C00529984 /* UnsupportedFeatureType.swift */,
 				8424A8C6262EC0E50091BFB1 /* PayoutInfo.swift */,
 				84D1ABD727E0A0600073C631 /* AssetStorageInfo.swift */,
 				842876B024AE059700D91AD8 /* AboutData.swift */,
@@ -21808,6 +21813,7 @@
 			children = (
 				2D5A77352D8D4B8C003838D3 /* Ramp */,
 				0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */,
+				2DFF39B92E1539A800529984 /* FeatureSupportChecking.swift */,
 				843910D8253F8DFB00E3C217 /* StatusPresentable.swift */,
 				842876B524AE05C700D91AD8 /* EmailPresentable.swift */,
 				8428766824ADF27D00D91AD8 /* AuthorizationPresentable.swift */,
@@ -29667,6 +29673,7 @@
 				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
 				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
 				0C61082A2CD5DE9500909928 /* AssetHubExchangeHost.swift in Sources */,
+				2DFF39BA2E1539A800529984 /* FeatureSupportChecking.swift in Sources */,
 				8433B34A29B63661005E5D0F /* ExtrinsicSplitter.swift in Sources */,
 				0C28DF292D2D38CF0016DB8E /* DAppMessageSignFactory.swift in Sources */,
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
@@ -33068,6 +33075,7 @@
 				2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */,
 				E5DC2660D78D3CC9FC48E748 /* LedgerAccountConfirmationViewController.swift in Sources */,
 				845B823229C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift in Sources */,
+				2DFF39B82E15353C00529984 /* UnsupportedFeatureType.swift in Sources */,
 				CDAB179209D12B81430E377C /* LedgerAccountConfirmationViewLayout.swift in Sources */,
 				0C1998E82C49B5B9000EBFB8 /* BalancesPallet+StoragePath.swift in Sources */,
 				FA894DFA8EEBB0B4562CD788 /* LedgerAccountConfirmationViewFactory.swift in Sources */,

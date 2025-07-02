@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Kontrol bersama (multisig)";
 "multisig.details.hint" = "Transaksi dari dompet ini memerlukan persetujuan dari beberapa penandatangan. Akun anda adalah salah satu penandatangan:";
 "multisig.signing.title" = "Transaksi Multisig";
-"multisig.signing.message" = "\"%@\" akan menandatangani transaksi dan membayar biaya jaringan. Transaksi akan dieksekusi setelah tanda tangan akhir dan deposit multisig akan dikembalikan ke \"%@\"";
 "multisig.transaction.created.title" = "Transaksi Multisig dibuat";
 "multisig.transaction.created.message" = "Penandatangan lain sekarang dapat mengonfirmasi transaksi. Anda dapat melacak statusnya dalam Transaksi Multisig.";
 "multisig.selection.unavailable.title" = "Multisig segera hadir";

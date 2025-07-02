@@ -1864,7 +1864,7 @@
 "wallet.list.multisig" = "Shared control (multisig)";
 "multisig.details.hint" = "Transactions from this wallet require approval from multiple signatories. Your account is one of the signatories:";
 "multisig.signing.title" = "Multisig transaction";
-"multisig.signing.message" = "\“%@\” will sign the transaction and pay the network fee. The transaction will be executed upon final signature and the multisig deposit will be returned to \“%@\”";
+"multisig.signing.message" = "The multisig transaction will be initiated by %@. The initiator pays the network fee and reserves a multisig deposit, which will be unreserved once the transaction is executed.";
 "multisig.transaction.created.title" = "Multisig transaction created";
 "multisig.transaction.created.message" = "Other signers can now confirm the transaction. You can track its status in the Multisig Transactions.";
 "multisig.selection.unavailable.title" = "Multisigs coming soon";
@@ -1882,3 +1882,7 @@ Stay tuned!";
 "multisig.validation.not.enough.for.deposit.message" = "%@ doesn’t have enough balance to place multisig deposit of %@. You need to add %@ more to your balance.";
 "multisig.validation.not.enough.for.fee.message" = "%@ needs at least %@ to pay this transaction fee and stay above the minimum network balance. You need to add %@ more to your balance.";
 "multisig.validation.insuffisient.balance.message" = "%@ doesn’t have enough balance to pay the network fee of %@ and place multisig deposit of %@. You need to add %@ more to your balance.";
+"feature.unsupported.sheet.title.sell" = "Sell is not supported for %@";
+"feature.unsupported.sheet.title.card" = "Debit Card is not supported for %@";
+"feature.unsupported.sheet.message.sell" = "To sell crypto for fiat, please switch to a different type of wallet.";
+"feature.unsupported.sheet.message.card" = "To manage your Debit Card, please switch to a different type of wallet.";

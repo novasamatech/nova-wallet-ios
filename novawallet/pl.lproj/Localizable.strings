@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Wspólna kontrola (multisig)";
 "multisig.details.hint" = "Transakcje z tego portfela wymagają zatwierdzenia przez wielu sygnatariuszy. Twoje konto jest jednym z sygnatariuszy:";
 "multisig.signing.title" = "Transakcja multisig";
-"multisig.signing.message" = "„%@” podpisze transakcję i opłaci opłatę sieciową. Transakcja zostanie wykonana po ostatecznym podpisie, a depozyt multisig zostanie zwrócony do „%@”";
 "multisig.transaction.created.title" = "Transakcja multisig utworzona";
 "multisig.transaction.created.message" = "Inni sygnatariusze mogą teraz potwierdzić transakcję. Możesz śledzić jej status w Transakcjach Multisig.";
 "multisig.selection.unavailable.title" = "Multisigs wkrótce";

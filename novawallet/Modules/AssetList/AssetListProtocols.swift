@@ -104,12 +104,7 @@ protocol AssetListInteractorInputProtocol {
 }
 
 protocol AssetListInteractorOutputProtocol {
-    func didReceive(
-        walletId: MetaAccountModel.Id,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    )
+    func didReceive(wallet: MetaAccountModel)
 
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
@@ -131,7 +126,10 @@ protocol AssetListWireframeProtocol: AnyObject,
     WalletConnectScanPresentable,
     WalletConnectErrorPresentable,
     RampActionsPresentable,
-    RampPresentable {
+    RampPresentable,
+    MessageSheetPresentable,
+    FeatureSupportChecking
+{
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showTokensManage(from view: AssetListViewProtocol?)
 
@@ -155,6 +153,7 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
+        for wallet: MetaAccountModel,
         action: RampActionType,
         delegate: RampFlowStartingDelegate?
     )
@@ -163,7 +162,10 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showStaking(from view: AssetListViewProtocol?)
 
-    func showCard(from view: AssetListViewProtocol?)
+    func showCard(
+        from view: AssetListViewProtocol?,
+        wallet: MetaAccountModel
+    )
 
     func dropModalFlow(
         from view: AssetListViewProtocol?,

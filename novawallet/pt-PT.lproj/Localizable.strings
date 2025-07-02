@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Controle compartilhado (multisig)";
 "multisig.details.hint" = "Transações desta carteira requerem aprovação de múltiplos signatários. Sua conta é um dos signatários:";
 "multisig.signing.title" = "Transação Multisig";
-"multisig.signing.message" = "\“%@\” assinará a transação e pagará a taxa de rede. A transação será executada após a assinatura final e o depósito multisig será devolvido para \“%@\”";
 "multisig.transaction.created.title" = "Transação Multisig criada";
 "multisig.transaction.created.message" = "Outros signatários agora podem confirmar a transação. Você pode acompanhar o status na seção Transações Multisig.";
 "multisig.selection.unavailable.title" = "Multisigs em breve";

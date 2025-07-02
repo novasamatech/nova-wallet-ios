@@ -189,7 +189,7 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
                 let deposit = params.deposit,
                 let fee = params.fee
             else { return false }
-            
+
             guard let feeAmountInPlank = fee.amountForCurrentAccount else { return true }
 
             return params.available >= deposit + feeAmountInPlank

@@ -17,10 +17,20 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
 
-    private(set) var walletId: MetaAccountModel.Id?
+    private var wallet: MetaAccountModel?
+
     private var walletIdenticon: Data?
-    private var walletType: MetaAccountModelType?
+
+    private var walletId: MetaAccountModel.Id? {
+        wallet?.identifier
+    }
+
+    private var walletType: MetaAccountModelType? {
+        wallet?.type
+    }
+
     private var name: String?
+
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
 
@@ -501,7 +511,12 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func presentCard() {
-        wireframe.showCard(from: view)
+        guard let wallet else { return }
+
+        wireframe.showCard(
+            from: view,
+            wallet: wallet
+        )
     }
 
     func presentLocks() {
@@ -536,8 +551,11 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            self?.wireframe.showRamp(
-                from: self?.view,
+            guard let self, let wallet else { return }
+
+            wireframe.showRamp(
+                from: view,
+                for: wallet,
                 action: .onRamp,
                 delegate: self
             )
@@ -560,8 +578,11 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             delegate: self,
             locale: selectedLocale
         ) { [weak self] rampAction in
-            self?.wireframe.showRamp(
-                from: self?.view,
+            guard let self, let wallet else { return }
+
+            wireframe.showRamp(
+                from: view,
+                for: wallet,
                 action: rampAction,
                 delegate: self
             )
@@ -610,16 +631,11 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         }
     }
 
-    func didReceive(
-        walletId: MetaAccountModel.Id,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    ) {
-        self.walletId = walletId
-        self.walletIdenticon = walletIdenticon
-        self.walletType = walletType
-        self.name = name
+    func didReceive(wallet: MetaAccountModel) {
+        self.wallet = wallet
+
+        name = wallet.name
+        walletIdenticon = wallet.walletIdenticonData()
 
         model = .init()
 

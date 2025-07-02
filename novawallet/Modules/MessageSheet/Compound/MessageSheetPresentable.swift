@@ -79,6 +79,23 @@ extension MessageSheetPresentable {
         transitToMessageSheet(confirmationView, on: presentationView)
     }
 
+    func presentFeatureUnsupportedView(
+        from presentationView: ControllerBackedProtocol,
+        type: SupportCheckingFeatureType,
+        walletType: FeatureUnsupportedWalletType,
+        completion: @escaping () -> Void
+    ) {
+        guard let confirmationView = MessageSheetViewFactory.createFeatureNotSupportedView(
+            type: type,
+            walletType: walletType,
+            completionCallback: completion
+        ) else {
+            return
+        }
+
+        transitToMessageSheet(confirmationView, on: presentationView)
+    }
+
     func presentSignerNotSupportedView(
         from presentationView: ControllerBackedProtocol,
         type: NoSigningSupportType,

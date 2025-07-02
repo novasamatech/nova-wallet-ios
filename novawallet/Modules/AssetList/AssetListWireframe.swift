@@ -115,6 +115,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
+        for wallet: MetaAccountModel,
         action: RampActionType,
         delegate: RampFlowStartingDelegate?
     ) {
@@ -130,10 +131,23 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             rootViewController: assetOperationView.controller
         )
 
-        view?.controller.presentWithCardLayout(
-            navigationController,
-            animated: true
-        )
+        if action == .offRamp {
+            checkingSupport(
+                of: .sell,
+                for: wallet,
+                sheetPresentingView: view
+            ) {
+                view?.controller.presentWithCardLayout(
+                    navigationController,
+                    animated: true
+                )
+            }
+        } else {
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
+        }
     }
 
     func showSwapTokens(from view: AssetListViewProtocol?) {
@@ -248,13 +262,22 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
     }
 
-    func showCard(from view: AssetListViewProtocol?) {
-        guard let payCardView = PayCardViewFactory.createView() else {
-            return
-        }
+    func showCard(
+        from view: AssetListViewProtocol?,
+        wallet: MetaAccountModel
+    ) {
+        checkingSupport(
+            of: .card,
+            for: wallet,
+            sheetPresentingView: view
+        ) {
+            guard let payCardView = PayCardViewFactory.createView() else {
+                return
+            }
 
-        payCardView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+            payCardView.controller.hidesBottomBarWhenPushed = true
+            view?.controller.navigationController?.pushViewController(payCardView.controller, animated: true)
+        }
     }
 
     func dropModalFlow(
