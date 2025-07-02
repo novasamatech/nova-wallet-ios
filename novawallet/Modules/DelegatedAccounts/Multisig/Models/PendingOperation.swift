@@ -10,6 +10,10 @@ extension Multisig {
         let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition?
+
+        func isCreator(accountId: AccountId) -> Bool {
+            multisigDefinition?.depositor == accountId
+        }
     }
 
     struct MultisigDefinition: Codable, Equatable {

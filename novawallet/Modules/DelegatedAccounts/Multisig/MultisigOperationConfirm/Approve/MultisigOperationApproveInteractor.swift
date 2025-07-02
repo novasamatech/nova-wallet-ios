@@ -5,6 +5,8 @@ import SubstrateSdk
 final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteractor {
     let callWeightEstimator: CallWeightEstimatingFactoryProtocol
 
+    let feeCallStore = CancellableCallStore()
+
     private var callWeight: Substrate.Weight?
 
     init(
@@ -105,6 +107,8 @@ private extension MultisigOperationApproveInteractor {
             return
         }
 
+        feeCallStore.cancel()
+
         let callWeightWrapper = fetchCallWeight()
 
         let builderClosure = createExtrinsicClosure(
@@ -122,9 +126,10 @@ private extension MultisigOperationApproveInteractor {
 
         let totalWrapper = feeWrapper.insertingHead(operations: callWeightWrapper.allOperations)
 
-        execute(
+        executeCancellable(
             wrapper: totalWrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: feeCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {

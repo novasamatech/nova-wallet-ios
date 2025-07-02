@@ -33,6 +33,7 @@ struct MultisigOperationConfirmViewFactory {
 
         guard
             let multisigWallet = SelectedWalletSettings.shared.value,
+            let multisig = multisigWallet.multisigAccount?.multisig,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
             return nil
@@ -52,18 +53,33 @@ struct MultisigOperationConfirmViewFactory {
             storageFacade: UserDataStorageFacade.shared
         ).createMetaAccountRepository(for: nil, sortDescriptors: [])
 
-        return MultisigOperationApproveInteractor(
-            operation: operation,
-            chain: chain,
-            multisigWallet: multisigWallet,
-            signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
-            extrinsicServiceFactory: extrinsicServiceFactory,
-            signingWrapperFactory: SigningWrapperFactory(),
-            chainRegistry: chainRegistry,
-            callWeightEstimator: CallWeightEstimatingFactory(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
-        )
+        if operation.isCreator(accountId: multisig.signatory) {
+            return MultisigOperationRejectInteractor(
+                operation: operation,
+                chain: chain,
+                multisigWallet: multisigWallet,
+                signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
+                pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+                extrinsicServiceFactory: extrinsicServiceFactory,
+                signingWrapperFactory: SigningWrapperFactory(),
+                chainRegistry: chainRegistry,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                logger: Logger.shared
+            )
+        } else {
+            return MultisigOperationApproveInteractor(
+                operation: operation,
+                chain: chain,
+                multisigWallet: multisigWallet,
+                signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
+                pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+                extrinsicServiceFactory: extrinsicServiceFactory,
+                signingWrapperFactory: SigningWrapperFactory(),
+                chainRegistry: chainRegistry,
+                callWeightEstimator: CallWeightEstimatingFactory(),
+                operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                logger: Logger.shared
+            )
+        }
     }
 }

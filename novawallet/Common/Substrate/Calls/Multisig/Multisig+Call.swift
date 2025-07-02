@@ -44,4 +44,26 @@ extension MultisigPallet {
             )
         }
     }
+
+    struct CancelAsMultiCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case threshold
+            case otherSignatories = "other_signatories"
+            case timepoint
+            case callHash = "call_hash"
+        }
+
+        @StringCodable var threshold: UInt16
+        let otherSignatories: [BytesCodable]
+        let timepoint: MultisigTimepoint
+        @BytesCodable var callHash: Substrate.CallHash
+
+        func runtimeCall() -> RuntimeCall<Self> {
+            RuntimeCall(
+                moduleName: "Multisig",
+                callName: "cancel_as_multi",
+                args: self
+            )
+        }
+    }
 }

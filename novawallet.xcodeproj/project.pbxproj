@@ -507,6 +507,7 @@
 		0C500B242B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */; };
 		0C500B272B07314000ABEE70 /* ExtrinsicProcessingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C500B262B07314000ABEE70 /* ExtrinsicProcessingResult.swift */; };
 		0C521C002E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C521BFF2E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift */; };
+		0C521C022E15210400ABAC97 /* MultisigOperationRejectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C521C012E15210400ABAC97 /* MultisigOperationRejectInteractor.swift */; };
 		0C5364A02A4D6EB700990478 /* AssetListBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */; };
 		0C543E972AAB1B350035F45F /* ElectedAndPrefValidators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */; };
 		0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18E8361691E548ABAB33EA4 /* GovernanceEditDelegationTracksViewController.swift */; };
@@ -6466,6 +6467,7 @@
 		0C500B232B0511F400ABEE70 /* ExtrinsicProcessor+CustomFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+CustomFee.swift"; sourceTree = "<group>"; };
 		0C500B262B07314000ABEE70 /* ExtrinsicProcessingResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProcessingResult.swift; sourceTree = "<group>"; };
 		0C521BFF2E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationApproveInteractorError.swift; sourceTree = "<group>"; };
+		0C521C012E15210400ABAC97 /* MultisigOperationRejectInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationRejectInteractor.swift; sourceTree = "<group>"; };
 		0C53649F2A4D6EB700990478 /* AssetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBuilder.swift; sourceTree = "<group>"; };
 		0C543E962AAB1B350035F45F /* ElectedAndPrefValidators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectedAndPrefValidators.swift; sourceTree = "<group>"; };
 		0C56B4FA2A4B0C320030F9C9 /* AssetListBaseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListBaseBuilder.swift; sourceTree = "<group>"; };
@@ -13648,6 +13650,7 @@
 		0C85F5C82E142841003789DC /* Reject */ = {
 			isa = PBXGroup;
 			children = (
+				0C521C012E15210400ABAC97 /* MultisigOperationRejectInteractor.swift */,
 			);
 			path = Reject;
 			sourceTree = "<group>";
@@ -33536,6 +33539,7 @@
 				12F8A8A869D05D66B658F649 /* GovernanceDelegateSetupWireframe.swift in Sources */,
 				0CCD18CB2BA1F0F00068D73A /* BalanceViewModelFactoryProtocol.swift in Sources */,
 				061C16B970BE568D7A80F53A /* GovernanceDelegateSetupPresenter.swift in Sources */,
+				0C521C022E15210400ABAC97 /* MultisigOperationRejectInteractor.swift in Sources */,
 				7D690E88EAB7437B9F69C92F /* GovernanceDelegateSetupInteractor.swift in Sources */,
 				0C1998E22C49AD19000EBFB8 /* AssetHoldMapper.swift in Sources */,
 				847C15BF2A0CFE0D003F3FF8 /* WalletConnectErrorPresentable.swift in Sources */,
