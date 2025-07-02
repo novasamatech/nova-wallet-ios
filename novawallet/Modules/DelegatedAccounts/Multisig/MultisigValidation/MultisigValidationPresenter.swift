@@ -7,7 +7,7 @@ enum MultisigBalanceValidationModeParams {
 
     case delegatedSigner(
         rootSignerParams: MultisigBalanceValidationParams,
-        delegatedSignerParams: MultisigBalanceValidationParams
+        delegateSignerParams: MultisigBalanceValidationParams
     )
 }
 
@@ -141,7 +141,7 @@ private extension MultisigValidationPresenter {
                 asset: chainAsset.assetDisplayInfo
             )
 
-            return .delegatedSigner(rootSignerParams: signerParams, delegatedSignerParams: delegateParams)
+            return .delegatedSigner(rootSignerParams: signerParams, delegateSignerParams: delegateParams)
         }
     }
 }

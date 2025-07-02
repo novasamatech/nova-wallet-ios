@@ -8,16 +8,6 @@ protocol MultisigDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> [DataValidating]
 
-    func canPayFee(
-        params: MultisigBalanceValidationParams,
-        locale: Locale
-    ) -> DataValidating
-
-    func canPayDeposit(
-        params: MultisigBalanceValidationParams,
-        locale: Locale
-    ) -> DataValidating
-
     func operationNotExists(
         callHash: Substrate.CallHash,
         callHashSet: Set<Substrate.CallHash>?,
@@ -42,84 +32,9 @@ final class MultisigDataValidatorFactory {
     }
 }
 
-// MARK: - MultisigDataValidatorFactoryProtocol
+// MARK: - Private
 
-extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
-    func hasSufficientBalance(
-        params: MultisigBalanceValidationModeParams,
-        locale: Locale
-    ) -> [DataValidating] {
-        switch params {
-        case let .rootSigner(signerParams):
-            [
-                hasSufficientBalance(
-                    params: signerParams,
-                    locale: locale
-                )
-            ]
-        case let .delegatedSigner(rootSignerParams, delegatedSignerParams):
-            [
-                canPayDeposit(
-                    params: delegatedSignerParams,
-                    locale: locale
-                ),
-                canPayFee(
-                    params: rootSignerParams,
-                    locale: locale
-                )
-            ]
-        }
-    }
-
-    func hasSufficientBalance(
-        params: MultisigBalanceValidationParams,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard
-                let view = self?.view,
-                let viewModelFactory = self?.balanceViewModelFactoryFacade
-            else { return }
-
-            let balanceDecimal = params.available.decimal(assetInfo: params.asset)
-            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset) ?? 0
-            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset) ?? 0
-
-            let remainingDecimal = (depositDecimal + feeDecimal) - balanceDecimal
-
-            let remainingModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: remainingDecimal
-            ).value(for: locale)
-
-            let depositModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: depositDecimal
-            ).value(for: locale)
-
-            let feeModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: feeDecimal
-            ).value(for: locale)
-
-            self?.presentable.presentNotEnoughBalanceForDepositAndFee(
-                from: view,
-                deposit: depositModel,
-                fee: feeModel,
-                remaining: remainingModel,
-                accountName: params.metaAccountResponse.chainAccount.name,
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard
-                let deposit = params.deposit,
-                let fee = params.fee?.amountForCurrentAccount
-            else { return false }
-
-            return params.available >= deposit + fee
-        })
-    }
-
+private extension MultisigDataValidatorFactory {
     func canPayDeposit(
         params: MultisigBalanceValidationParams,
         locale: Locale
@@ -197,6 +112,85 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
             guard let feeAmountInPlank = fee.amountForCurrentAccount else { return true }
 
             return feeAmountInPlank <= params.available
+        })
+    }
+}
+
+// MARK: - MultisigDataValidatorFactoryProtocol
+
+extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
+    func hasSufficientBalance(
+        params: MultisigBalanceValidationModeParams,
+        locale: Locale
+    ) -> [DataValidating] {
+        switch params {
+        case let .rootSigner(signerParams):
+            [
+                hasSufficientBalance(
+                    params: signerParams,
+                    locale: locale
+                )
+            ]
+        case let .delegatedSigner(rootSignerParams, signatoryParams):
+            [
+                canPayDeposit(
+                    params: signatoryParams,
+                    locale: locale
+                ),
+                canPayFee(
+                    params: rootSignerParams,
+                    locale: locale
+                )
+            ]
+        }
+    }
+
+    func hasSufficientBalance(
+        params: MultisigBalanceValidationParams,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard
+                let view = self?.view,
+                let viewModelFactory = self?.balanceViewModelFactoryFacade
+            else { return }
+
+            let balanceDecimal = params.available.decimal(assetInfo: params.asset)
+            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset) ?? 0
+            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset) ?? 0
+
+            let remainingDecimal = (depositDecimal + feeDecimal) - balanceDecimal
+
+            let remainingModel = viewModelFactory.amountFromValue(
+                targetAssetInfo: params.asset,
+                value: remainingDecimal
+            ).value(for: locale)
+
+            let depositModel = viewModelFactory.amountFromValue(
+                targetAssetInfo: params.asset,
+                value: depositDecimal
+            ).value(for: locale)
+
+            let feeModel = viewModelFactory.amountFromValue(
+                targetAssetInfo: params.asset,
+                value: feeDecimal
+            ).value(for: locale)
+
+            self?.presentable.presentNotEnoughBalanceForDepositAndFee(
+                from: view,
+                deposit: depositModel,
+                fee: feeModel,
+                remaining: remainingModel,
+                accountName: params.metaAccountResponse.chainAccount.name,
+                locale: locale
+            )
+        }, preservesCondition: {
+            guard
+                let deposit = params.deposit,
+                let fee = params.fee?.amountForCurrentAccount
+            else { return false }
+
+            return params.available >= deposit + fee
         })
     }
 
