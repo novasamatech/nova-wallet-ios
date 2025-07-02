@@ -53,15 +53,22 @@ struct MultisigOperationConfirmViewFactory {
             storageFacade: UserDataStorageFacade.shared
         ).createMetaAccountRepository(for: nil, sortDescriptors: [])
 
+        let walletRemoteWrapper = WalletRemoteSubscriptionWrapper(
+            remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
+        )
+
         if operation.isCreator(accountId: multisig.signatory) {
             return MultisigOperationRejectInteractor(
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,
+                walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+                balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
                 pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
+                assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
                 chainRegistry: chainRegistry,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
                 logger: Logger.shared
@@ -71,10 +78,13 @@ struct MultisigOperationConfirmViewFactory {
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,
+                walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+                balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
                 pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
+                assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
                 chainRegistry: chainRegistry,
                 callWeightEstimator: CallWeightEstimatingFactory(),
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,

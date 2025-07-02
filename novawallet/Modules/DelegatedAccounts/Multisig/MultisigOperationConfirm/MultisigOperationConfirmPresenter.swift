@@ -33,6 +33,14 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         logger.debug("Signatories: \(signatories)")
     }
 
+    func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence) {
+        logger.debug("Existense: \(existense)")
+    }
+
+    func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?) {
+        logger.debug("Balance: \(assetBalance)")
+    }
+
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
         logger.debug("Fee: \(fee)")
     }
