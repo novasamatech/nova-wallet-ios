@@ -51,8 +51,6 @@ final class MultisigCallFetchFactoryTests: XCTestCase {
     ) throws {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
-        let codingFactoryFetchOperation = runtimeProvider.fetchCoderFactoryOperation()
         let operationQueue = OperationQueue()
         
         let callFetchFactory = MultisigCallFetchFactory(chainRegistry: chainRegistry)
@@ -63,23 +61,14 @@ final class MultisigCallFetchFactoryTests: XCTestCase {
             chainId: chainId
         )
         
-        operationQueue.addOperations(wrapper.allOperations + [codingFactoryFetchOperation], waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
         
         let calls = try wrapper.targetOperation.extractNoCancellableResultData()
         let maybeCall = calls.first(where: { $0.key.callHash == callHash })?.value.call
         
         XCTAssert(maybeCall != nil, "Call should not be nil for the provided callHash")
 
-        let foundCall = maybeCall!
-        
-        let codingFactory = try codingFactoryFetchOperation.extractNoCancellableResultData()
-        
-        let encoder = codingFactory.createEncoder()
-
-        try encoder.append(json: foundCall, type: GenericType.call.name)
-
-        let foundCallData = try encoder.encode()
-        let foundCallHash = try foundCallData.blake2b32()
+        let foundCallHash = try maybeCall!.blake2b32()
 
         XCTAssert(callHash == foundCallHash, "Fetched call's hash should match the provided callHash")
     }

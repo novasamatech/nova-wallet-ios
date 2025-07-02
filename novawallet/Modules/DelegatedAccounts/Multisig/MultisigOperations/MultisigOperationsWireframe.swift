@@ -4,9 +4,15 @@ final class MultisigOperationsWireframe {}
 
 extension MultisigOperationsWireframe: MultisigOperationsWireframeProtocol {
     func showOperationDetails(
-        from _: (any MultisigOperationsViewProtocol)?,
-        operation _: Multisig.PendingOperation
+        from view: (any MultisigOperationsViewProtocol)?,
+        operation: Multisig.PendingOperation
     ) {
-        // TODO: Implement operation details navigation
+        guard let confirmView = MultisigOperationConfirmViewFactory.createView(for: operation) else {
+            return
+        }
+
+        let operationNavigationController = NovaNavigationController(rootViewController: confirmView.controller)
+
+        view?.controller.presentWithCardLayout(operationNavigationController, animated: true)
     }
 }

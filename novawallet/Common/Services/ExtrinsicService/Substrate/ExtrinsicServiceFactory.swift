@@ -31,6 +31,28 @@ protocol ExtrinsicServiceFactoryProtocol {
 }
 
 extension ExtrinsicServiceFactoryProtocol {
+    func createOperationFactoryForWeightEstimation(
+        on chain: ChainModel
+    ) -> ExtrinsicOperationFactoryProtocol {
+        let accountId = AccountId.zeroAccountId(of: chain.accountIdSize)
+
+        // we need an account with the type that prevents call override
+        let account = ChainAccountResponse(
+            metaId: UUID().uuidString,
+            chainId: chain.chainId,
+            accountId: accountId,
+            publicKey: accountId,
+            name: "",
+            cryptoType: .sr25519,
+            addressPrefix: chain.addressPrefix,
+            isEthereumBased: chain.isEthereumBased,
+            isChainAccount: false,
+            type: .watchOnly
+        )
+
+        return createOperationFactory(account: account, chain: chain)
+    }
+
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel
