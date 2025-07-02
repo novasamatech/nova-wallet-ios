@@ -82,28 +82,30 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
             else { return }
 
             let balanceDecimal = params.available.decimal(assetInfo: params.asset)
-            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset)
-            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset)
+            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset) ?? 0
+            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset) ?? 0
 
-            let balanceModel = viewModelFactory.amountFromValue(
+            let remainingDecimal = (depositDecimal + feeDecimal) - balanceDecimal
+
+            let remainingModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: balanceDecimal
+                value: remainingDecimal
             ).value(for: locale)
 
             let depositModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: depositDecimal ?? 0
+                value: depositDecimal
             ).value(for: locale)
 
             let feeModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: feeDecimal ?? 0
+                value: feeDecimal
             ).value(for: locale)
 
             self?.presentable.presentNotEnoughBalanceForDeposit(
                 from: view,
                 deposit: depositModel,
-                balance: balanceModel,
+                remaining: remainingModel,
                 accountName: params.metaAccountResponse.chainAccount.name,
                 locale: locale
             )
@@ -128,22 +130,24 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
             else { return }
 
             let balanceDecimal = params.available.decimal(assetInfo: params.asset)
-            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset)
+            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset) ?? 0
 
-            let balanceModel = viewModelFactory.amountFromValue(
+            let remainingDecimal = depositDecimal - balanceDecimal
+
+            let remainingModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: balanceDecimal
+                value: remainingDecimal
             ).value(for: locale)
 
             let depositModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: depositDecimal ?? 0
+                value: depositDecimal
             ).value(for: locale)
 
             self?.presentable.presentNotEnoughBalanceForDeposit(
                 from: view,
                 deposit: depositModel,
-                balance: balanceModel,
+                remaining: remainingModel,
                 accountName: params.metaAccountResponse.chainAccount.name,
                 locale: locale
             )
@@ -164,23 +168,24 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
             }
 
             let balanceDecimal = params.available.decimal(assetInfo: params.asset)
+            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset) ?? 0
 
-            let balanceString = viewModelFactory.amountFromValue(
+            let remainingDecimal = feeDecimal - balanceDecimal
+
+            let remainingModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: balanceDecimal
+                value: remainingDecimal
             ).value(for: locale)
 
-            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset)
-
-            let feeString = viewModelFactory.amountFromValue(
+            let feeModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.asset,
-                value: feeDecimal ?? 0
+                value: feeDecimal
             ).value(for: locale)
 
-            self?.presentable.presentFeeTooHigh(
+            self?.presentable.presentNotEnoughBalanceForFee(
                 from: view,
-                balance: balanceString,
-                fee: feeString,
+                fee: feeModel,
+                remaining: remainingModel,
                 accountName: params.metaAccountResponse.chainAccount.name,
                 locale: locale
             )

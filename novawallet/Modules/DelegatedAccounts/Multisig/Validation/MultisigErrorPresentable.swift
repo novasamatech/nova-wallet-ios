@@ -1,10 +1,27 @@
 import Foundation
 
 protocol MultisigErrorPresentable: BaseErrorPresentable {
+    func presentNotEnoughBalanceForDepositAndFee(
+        from view: ControllerBackedProtocol,
+        deposit: String,
+        fee: String,
+        remaining: String,
+        accountName: String,
+        locale: Locale?
+    )
+
     func presentNotEnoughBalanceForDeposit(
         from view: ControllerBackedProtocol,
         deposit: String,
-        balance: String,
+        remaining: String,
+        accountName: String,
+        locale: Locale?
+    )
+
+    func presentNotEnoughBalanceForFee(
+        from view: ControllerBackedProtocol,
+        fee: String,
+        remaining: String,
         accountName: String,
         locale: Locale?
     )
@@ -14,33 +31,82 @@ protocol MultisigErrorPresentable: BaseErrorPresentable {
         accountName: String,
         locale: Locale
     )
-
-    func presentFeeTooHigh(
-        from view: ControllerBackedProtocol,
-        balance: String,
-        fee: String,
-        accountName: String,
-        locale: Locale?
-    )
 }
 
 extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentable {
+    func presentNotEnoughBalanceForDepositAndFee(
+        from view: ControllerBackedProtocol,
+        deposit: String,
+        fee: String,
+        remaining: String,
+        accountName: String,
+        locale: Locale?
+    ) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.multisigValidationNotEnoughTokensTitle(
+            preferredLanguages: languages
+        )
+        let message = R.string.localizable.multisigValidationInsuffisientBalanceMessage(
+            accountName,
+            fee,
+            deposit,
+            remaining,
+            preferredLanguages: languages
+        )
+        let closeAction = R.string.localizable.commonClose(
+            preferredLanguages: languages
+        )
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
     func presentNotEnoughBalanceForDeposit(
         from view: ControllerBackedProtocol,
         deposit: String,
-        balance: String,
-        accountName _: String,
+        remaining: String,
+        accountName: String,
         locale: Locale?
     ) {
-        let title = R.string.localizable.stakingSetupProxyErrorInsufficientBalanceTitle(
-            preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingSetupProxyErrorInsufficientBalanceMessage(
-            deposit,
-            balance,
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.multisigValidationNotEnoughTokensTitle(
             preferredLanguages: locale?.rLanguages
         )
+        let message = R.string.localizable.multisigValidationNotEnoughForDepositMessage(
+            accountName,
+            deposit,
+            remaining,
+            preferredLanguages: languages
+        )
         let closeAction = R.string.localizable.commonClose(
-            preferredLanguages: locale?.rLanguages)
+            preferredLanguages: languages
+        )
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentNotEnoughBalanceForFee(
+        from view: ControllerBackedProtocol,
+        fee: String,
+        remaining: String,
+        accountName: String,
+        locale: Locale?
+    ) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.multisigValidationNotEnoughTokensTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        let message = R.string.localizable.multisigValidationNotEnoughForFeeMessage(
+            accountName,
+            fee,
+            remaining,
+            preferredLanguages: languages
+        )
+        let closeAction = R.string.localizable.commonClose(
+            preferredLanguages: languages
+        )
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
@@ -62,26 +128,6 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
         let closeAction = R.string.localizable.commonClose(
             preferredLanguages: languages
         )
-
-        present(message: message, title: title, closeAction: closeAction, from: view)
-    }
-
-    func presentFeeTooHigh(
-        from view: ControllerBackedProtocol,
-        balance: String,
-        fee: String,
-        accountName: String,
-        locale: Locale?
-    ) {
-        let message = R.string.localizable.proxyFeeErrorMessage(
-            accountName,
-            fee,
-            balance,
-            preferredLanguages: locale?.rLanguages
-        )
-
-        let title = R.string.localizable.commonNotEnoughFeeTitle(preferredLanguages: locale?.rLanguages)
-        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
