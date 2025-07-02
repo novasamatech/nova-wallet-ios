@@ -214,6 +214,33 @@ private extension TransactionSigningPresenter {
             presenter.setup()
         }
     }
+    
+    func createMultisigValidationClosure(
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        extrinsicMemo: ExtrinsicBuilderMemoProtocol
+    ) -> (@escaping DelegatedSignValidationCompletion) -> Void {
+        { [weak self] completionClosure in
+            guard
+                let strongSelf = self,
+                let presentationController = strongSelf.presentationController,
+                let presenter = MultisigValidationViewFactory.createView(
+                    from: presentationController,
+                    resolvedSigner: resolution,
+                    calls: extrinsicMemo.restoreBuilder().getCalls(),
+                    completionClosure: { result in
+                        self?.flowHolder = nil
+                        completionClosure(result)
+                    }
+                ) else {
+                completionClosure(false)
+                return
+            }
+
+            strongSelf.flowHolder = presenter
+
+            presenter.setup()
+        }
+    }
 }
 
 // MARK: - TransactionSigningPresenting
@@ -291,14 +318,17 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
         substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     ) {
-        // TODO: Implement validation
+        let validationClosure = createMultisigValidationClosure(
+            resolution: resolution,
+            extrinsicMemo: substrateContext.extrinsicMemo
+        )
 
         presentDelegatedFlow(
             for: data,
             delegatedMetaId: multisigAccountId,
             resolution: resolution,
             substrateContext: substrateContext,
-            validationClosure: { $0(true) },
+            validationClosure: validationClosure,
             completion: completion
         )
     }

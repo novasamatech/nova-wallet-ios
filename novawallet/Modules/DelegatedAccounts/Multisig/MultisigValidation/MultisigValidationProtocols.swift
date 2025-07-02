@@ -16,4 +16,4 @@ protocol MultisigValidationInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol MultisigValidationWireframeProtocol: AlertPresentable, ErrorPresentable, ProxyErrorPresentable {}
+protocol MultisigValidationWireframeProtocol: AlertPresentable, ErrorPresentable, MultisigErrorPresentable {}

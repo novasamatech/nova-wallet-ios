@@ -32,7 +32,6 @@ final class MultisigValidationPresenter {
     private let localizationManager: LocalizationManagerProtocol
     private let logger: LoggerProtocol
     private let completionClosure: DelegatedSignValidationCompletion
-    private let proxyName: String
 
     private var deposit: BigUInt?
     private var balances: [AccountId: AssetBalance]?
@@ -44,7 +43,6 @@ final class MultisigValidationPresenter {
         interactor: MultisigValidationInteractorInputProtocol,
         validationMode: MultisigValidationMode,
         wireframe: MultisigValidationWireframeProtocol,
-        proxyName: String,
         dataValidationFactory: MultisigDataValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         completionClosure: @escaping DelegatedSignValidationCompletion,
@@ -55,7 +53,6 @@ final class MultisigValidationPresenter {
         self.interactor = interactor
         self.validationMode = validationMode
         self.wireframe = wireframe
-        self.proxyName = proxyName
         self.dataValidationFactory = dataValidationFactory
         self.chainAsset = chainAsset
         self.completionClosure = completionClosure
@@ -149,9 +146,9 @@ private extension MultisigValidationPresenter {
     }
 }
 
-// MARK: - ProxySignValidationPresenterProtocol
+// MARK: - MultisigValidationPresenterProtocol
 
-extension MultisigValidationPresenter: ProxySignValidationPresenterProtocol {
+extension MultisigValidationPresenter: MultisigValidationPresenterProtocol {
     func setup() {
         interactor.setup()
     }

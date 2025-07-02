@@ -1420,6 +1420,8 @@
 		2D0673912E141471006392EB /* MultisigDepositCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673902E141471006392EB /* MultisigDepositCalculator.swift */; };
 		2D0673942E141BCF006392EB /* MultisigDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673932E141BCF006392EB /* MultisigDataValidatorFactory.swift */; };
 		2D0673962E142401006392EB /* MultisigErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673952E142401006392EB /* MultisigErrorPresentable.swift */; };
+		2D0673982E150D95006392EB /* MultisigValidationViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673972E150D95006392EB /* MultisigValidationViewFactory.swift */; };
+		2D06739A2E15159D006392EB /* MultisigValidationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673992E15159D006392EB /* MultisigValidationWireframe.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
@@ -7410,6 +7412,8 @@
 		2D0673902E141471006392EB /* MultisigDepositCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigDepositCalculator.swift; sourceTree = "<group>"; };
 		2D0673932E141BCF006392EB /* MultisigDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigDataValidatorFactory.swift; sourceTree = "<group>"; };
 		2D0673952E142401006392EB /* MultisigErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigErrorPresentable.swift; sourceTree = "<group>"; };
+		2D0673972E150D95006392EB /* MultisigValidationViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigValidationViewFactory.swift; sourceTree = "<group>"; };
+		2D0673992E15159D006392EB /* MultisigValidationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigValidationWireframe.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
@@ -15313,8 +15317,10 @@
 			children = (
 				2D06738A2E13E519006392EB /* MultisigValidationInteractor.swift */,
 				2D0673902E141471006392EB /* MultisigDepositCalculator.swift */,
+				2D0673972E150D95006392EB /* MultisigValidationViewFactory.swift */,
 				2D06738E2E1405C1006392EB /* MultisigValidationPresenter.swift */,
 				2D06738C2E13EF8C006392EB /* MultisigValidationProtocols.swift */,
+				2D0673992E15159D006392EB /* MultisigValidationWireframe.swift */,
 			);
 			path = MultisigValidation;
 			sourceTree = "<group>";
@@ -30821,6 +30827,7 @@
 				84D184F82A04F9D60060C1BD /* WalletConnectSessionViewModelFactory.swift in Sources */,
 				0C277DA42D829EDC004FF053 /* XcmDynamicAsset.swift in Sources */,
 				0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */,
+				2D0673982E150D95006392EB /* MultisigValidationViewFactory.swift in Sources */,
 				84CA68E126BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift in Sources */,
 				842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */,
 				DAB29F2A9C864D7FCF1AF934 /* UsernameSetupProtocols.swift in Sources */,
@@ -30909,6 +30916,7 @@
 				8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */,
 				84C2063C28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift in Sources */,
 				84D1ABDE27E1B5240073C631 /* AssetViewModel.swift in Sources */,
+				2D06739A2E15159D006392EB /* MultisigValidationWireframe.swift in Sources */,
 				840D626F29CB39EE00D5E894 /* URLBuilder.swift in Sources */,
 				842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */,
 				8439399C2636FAB40087658D /* YourValidatorViewModel.swift in Sources */,
