@@ -15,12 +15,6 @@ protocol MultisigErrorPresentable: BaseErrorPresentable {
         locale: Locale
     )
 
-    func presentNotValidAddress(
-        from view: ControllerBackedProtocol,
-        networkName: String,
-        locale: Locale?
-    )
-
     func presentFeeTooHigh(
         from view: ControllerBackedProtocol,
         balance: String,

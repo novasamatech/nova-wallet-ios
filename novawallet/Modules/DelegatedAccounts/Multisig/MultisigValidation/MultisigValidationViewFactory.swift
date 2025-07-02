@@ -12,17 +12,17 @@ struct MultisigValidationViewFactory {
         let multisigWallet = resolvedSigner.allWallets.first {
             $0.metaId == resolvedSigner.delegatedAccount.metaId
         }
-        
+
         guard
             let multisigWallet,
             let multisigContext = multisigWallet.multisigAccount?.multisig
         else { return nil }
-        
+
         let validationMode = createValidationMode(
             multisigWallet: multisigWallet,
             resolvedSigner: resolvedSigner
         )
-        
+
         guard
             let validationMode,
             let utilityChainAsset = resolvedSigner.chain.utilityChainAsset(),
@@ -68,7 +68,7 @@ struct MultisigValidationViewFactory {
 
         return presenter
     }
-    
+
     private static func createValidationMode(
         multisigWallet: MetaAccountModel,
         resolvedSigner: ExtrinsicSenderResolution.ResolvedDelegate
@@ -77,23 +77,23 @@ struct MultisigValidationViewFactory {
             let signerResponse = resolvedSigner.delegateAccount,
             let multisigContext = multisigWallet.multisigAccount?.multisig
         else { return nil }
-        
+
         let resolvedSignerId = signerResponse.chainAccount.accountId
-        
+
         let validationMode: MultisigValidationMode
-        
+
         if multisigContext.signatory == resolvedSignerId {
             validationMode = .rootSigner(signer: signerResponse)
         } else {
             let request = resolvedSigner.chain.accountRequest()
-            
+
             guard let signerDelegateResponse = multisigWallet.fetchMetaChainAccount(for: request) else {
                 return nil
             }
-            
+
             validationMode = .delegatedSigner(signer: signerResponse, delegate: signerDelegateResponse)
         }
-        
+
         return validationMode
     }
 
@@ -105,7 +105,7 @@ struct MultisigValidationViewFactory {
     ) -> MultisigValidationInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = resolvedSigner.chain
-                
+
         guard
             let multisigAccount = resolvedSigner.delegateAccount,
             let chainAsset = chain.utilityChainAsset(),

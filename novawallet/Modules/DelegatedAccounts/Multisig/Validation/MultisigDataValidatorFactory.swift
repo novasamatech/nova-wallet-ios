@@ -17,7 +17,7 @@ protocol MultisigDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         params: MultisigBalanceValidationParams,
         locale: Locale
     ) -> DataValidating
-    
+
     func operationNotExists(
         callHash: Substrate.CallHash,
         callHashSet: Set<Substrate.CallHash>?,

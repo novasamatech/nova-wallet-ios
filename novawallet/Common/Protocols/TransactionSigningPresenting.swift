@@ -214,7 +214,7 @@ private extension TransactionSigningPresenter {
             presenter.setup()
         }
     }
-    
+
     func createMultisigValidationClosure(
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         extrinsicMemo: ExtrinsicBuilderMemoProtocol
