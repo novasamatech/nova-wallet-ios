@@ -43,6 +43,12 @@ extension Multisig {
     }
 }
 
+extension Multisig.MultisigTimepoint {
+    func toSubmissionModel() -> MultisigPallet.MultisigTimepoint {
+        .init(height: height, index: index)
+    }
+}
+
 // MARK: - Identifiable
 
 extension Multisig.PendingOperation: Identifiable {

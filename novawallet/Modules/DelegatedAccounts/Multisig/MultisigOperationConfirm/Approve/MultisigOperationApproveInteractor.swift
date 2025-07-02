@@ -89,7 +89,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             case .success:
                 self?.presenter?.didCompleteSubmission()
             case let .failure(error):
-                self?.presenter?.didReceiveError(.feeError(error))
+                self?.presenter?.didReceiveError(.submissionError(error))
             }
         }
     }
@@ -144,14 +144,14 @@ private extension MultisigOperationApproveInteractor {
     ) -> ExtrinsicBuilderClosure {
         { builder in
             let weight = try callWeightClosure()
+            let otherSignatories = multisig.getOtherSignatoriesInOrder().map {
+                BytesCodable(wrappedValue: $0)
+            }
 
             let wrappedCall = MultisigPallet.AsMultiCall(
                 threshold: UInt16(multisig.threshold),
-                otherSignatories: multisig.otherSignatories.map { BytesCodable(wrappedValue: $0) },
-                maybeTimepoint: MultisigPallet.MultisigTimepoint(
-                    height: definition.timepoint.height,
-                    index: definition.timepoint.index
-                ),
+                otherSignatories: otherSignatories,
+                maybeTimepoint: definition.timepoint.toSubmissionModel(),
                 call: call,
                 maxWeight: weight
             ).runtimeCall()
