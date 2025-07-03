@@ -26,4 +26,14 @@ final class MultisigOperationConfirmViewController: UIViewController {
     }
 }
 
-extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewProtocol {}
+// MARK: - MultisigOperationConfirmViewProtocol
+
+extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewProtocol {
+    func didReceive(viewModel: MultisigOperationConfirmViewModel) {
+        print(viewModel)
+    }
+
+    func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
+        print(feeViewModel)
+    }
+}

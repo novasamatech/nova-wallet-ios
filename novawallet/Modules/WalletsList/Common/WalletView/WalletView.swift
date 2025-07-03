@@ -2,7 +2,10 @@ import UIKit
 
 final class WalletView: GenericTitleValueView<
     WalletIconView,
-    GenericPairValueView<IconDetailsView, GenericPairValueView<UILabel, IconDetailsView>>
+    GenericPairValueView<
+        IconDetailsView,
+        GenericPairValueView<UILabel, IconDetailsView>
+    >
 >, WalletViewProtocol {
     var viewModel: ViewModel?
 

@@ -1,20 +1,87 @@
 import Foundation
+import Foundation_iOS
 
 final class MultisigOperationConfirmPresenter {
     weak var view: MultisigOperationConfirmViewProtocol?
     let wireframe: MultisigOperationConfirmWireframeProtocol
     let interactor: MultisigOperationConfirmInteractorInputProtocol
+    let viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol
+
+    let chain: ChainModel
+    let multisigWallet: MetaAccountModel
+
+    var signatories: [Multisig.Signatory]?
+    var pendingOperation: Multisig.PendingOperation?
+    var balanceExistence: AssetBalanceExistence?
+    var signatoryBalance: AssetBalance?
+    var signatoryWallet: MetaAccountModel?
+    var fee: ExtrinsicFeeProtocol?
+    var priceData: PriceData?
 
     let logger: LoggerProtocol
 
     init(
         interactor: MultisigOperationConfirmInteractorInputProtocol,
         wireframe: MultisigOperationConfirmWireframeProtocol,
+        viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol,
+        chain: ChainModel,
+        multisigWallet: MetaAccountModel,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
+        self.chain = chain
+        self.multisigWallet = multisigWallet
         self.logger = logger
+        self.localizationManager = localizationManager
+    }
+}
+
+// MARK: - Private
+
+private extension MultisigOperationConfirmPresenter {
+    func provideViewModel() {
+        guard
+            let pendingOperation,
+            let signatories,
+            let chainAsset = chain.utilityChainAsset(),
+            let priceData
+        else { return }
+
+        let params = MultisigOperationConfirmViewModelParams(
+            pendingOperation: pendingOperation,
+            chain: chain,
+            multisigWallet: multisigWallet,
+            signatories: signatories,
+            fee: fee,
+            feeAsset: chainAsset,
+            assetPrice: priceData
+        )
+
+        let viewModel = viewModelFactory.createViewModel(
+            params: params,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(viewModel: viewModel)
+    }
+
+    func provideFeeViewModel() {
+        guard
+            let chainAsset = chain.utilityChainAsset(),
+            let priceData
+        else { return }
+
+        let viewModel = viewModelFactory.createFeeFieldViewModel(
+            fee: fee,
+            feeAsset: chainAsset,
+            assetPrice: priceData,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(feeViewModel: viewModel)
     }
 }
 
@@ -26,23 +93,39 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorOutputProtocol {
     func didReceiveOperation(_ operation: Multisig.PendingOperation?) {
-        logger.debug("Operation \(String(describing: operation))")
+        pendingOperation = operation
+
+        provideViewModel()
     }
 
     func didReceiveSignatories(_ signatories: [Multisig.Signatory]) {
-        logger.debug("Signatories: \(signatories)")
+        self.signatories = signatories
+
+        provideViewModel()
     }
 
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence) {
-        logger.debug("Existense: \(existense)")
+        balanceExistence = existense
+
+        provideViewModel()
     }
 
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?) {
-        logger.debug("Balance: \(assetBalance)")
+        signatoryBalance = assetBalance
+
+        provideViewModel()
     }
 
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
-        logger.debug("Fee: \(fee)")
+        self.fee = fee
+
+        provideFeeViewModel()
+    }
+
+    func didReceivePriceData(_ priceData: PriceData?) {
+        self.priceData = priceData
+
+        provideFeeViewModel()
     }
 
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError) {
@@ -51,5 +134,13 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
 
     func didCompleteSubmission() {
         logger.debug("Did complete submission")
+    }
+}
+
+// MARK: Localizable
+
+extension MultisigOperationConfirmPresenter: Localizable {
+    func applyLocalization() {
+        guard let view, view.isSetup else { return }
     }
 }

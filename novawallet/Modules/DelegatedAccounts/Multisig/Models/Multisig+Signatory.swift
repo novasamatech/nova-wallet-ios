@@ -7,6 +7,7 @@ extension Multisig {
 
     struct LocalSignatory {
         let metaAccount: MetaChainAccountResponse
+        let delegate: Delegate?
     }
 
     enum Signatory {
@@ -30,6 +31,13 @@ extension Multisig {
                 nil
             }
         }
+    }
+}
+
+extension Multisig.LocalSignatory {
+    struct Delegate {
+        let metaAccount: MetaChainAccountResponse
+        let delegationType: DelegationType
     }
 }
 

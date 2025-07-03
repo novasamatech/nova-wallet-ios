@@ -5,11 +5,13 @@ import SubstrateSdk
 class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     weak var presenter: MultisigOperationConfirmInteractorOutputProtocol?
 
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
-    let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
     let assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
@@ -27,12 +29,14 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     private var assetRemoteSubscriptionId: UUID?
     private var operationProvider: StreamableProvider<Multisig.PendingOperation>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var callProcessingStore = CancellableCallStore()
 
     init(
         operation: Multisig.PendingOperation,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
@@ -42,11 +46,13 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.operation = operation
         self.chain = chain
         self.multisigWallet = multisigWallet
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.balanceRemoteSubscriptionFactory = balanceRemoteSubscriptionFactory
         self.signatoryRepository = signatoryRepository
@@ -57,6 +63,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -79,6 +86,8 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         fatalError("Must be overriden by subsclass")
     }
 }
+
+// MARK: - Private
 
 private extension MultisigOperationConfirmInteractor {
     func setupSignatories() {
@@ -233,6 +242,23 @@ private extension MultisigOperationConfirmInteractor {
         }
     }
 
+    func setupChainAssetPriceSubscription() {
+        clear(streamableProvider: &priceProvider)
+
+        guard
+            let asset = chain.utilityAsset(),
+            let priceId = asset.priceId
+        else {
+            logger.error("Asset and price id expected")
+            return
+        }
+
+        priceProvider = subscribeToPrice(
+            for: priceId,
+            currency: selectedCurrency
+        )
+    }
+
     func setupSignatoryLocalBalanceSubsription() {
         clear(streamableProvider: &balanceProvider)
 
@@ -286,6 +312,8 @@ private extension MultisigOperationConfirmInteractor {
     }
 }
 
+// MARK: - MultisigOperationConfirmInteractorInputProtocol
+
 extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractorInputProtocol {
     func setup() {
         setupSignatories()
@@ -299,6 +327,8 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
         doConfirm()
     }
 }
+
+// MARK: - MultisigOperationsLocalStorageSubscriber
 
 extension MultisigOperationConfirmInteractor: MultisigOperationsLocalStorageSubscriber,
     MultisigOperationsLocalSubscriptionHandler {
@@ -322,6 +352,8 @@ extension MultisigOperationConfirmInteractor: MultisigOperationsLocalStorageSubs
     }
 }
 
+// MARK: - WalletLocalSubscriptionHandler
+
 extension MultisigOperationConfirmInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
@@ -335,5 +367,34 @@ extension MultisigOperationConfirmInteractor: WalletLocalStorageSubscriber, Wall
         case let .failure(error):
             logger.error("Can't load local balance: \(error)")
         }
+    }
+}
+
+// MARK: - PriceLocalSubscriptionHandler
+
+extension MultisigOperationConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(
+        result: Result<PriceData?, any Error>,
+        priceId _: AssetModel.PriceId
+    ) {
+        switch result {
+        case let .success(priceData):
+            presenter?.didReceivePriceData(priceData)
+        case let .failure(error):
+            logger.error("Can't load local price: \(error)")
+            presenter?.didReceivePriceData(nil)
+        }
+    }
+}
+
+// MARK: - SelectedCurrencyDepending
+
+extension MultisigOperationConfirmInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
+        setupChainAssetPriceSubscription()
     }
 }

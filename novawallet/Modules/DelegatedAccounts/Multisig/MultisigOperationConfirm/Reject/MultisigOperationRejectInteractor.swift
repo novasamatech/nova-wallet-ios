@@ -55,6 +55,8 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
     }
 }
 
+// MARK: - Private
+
 private extension MultisigOperationRejectInteractor {
     func estimateFee() {
         guard
