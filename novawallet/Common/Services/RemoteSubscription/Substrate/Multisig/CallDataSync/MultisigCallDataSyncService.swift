@@ -94,7 +94,7 @@ private extension MultisigCallDataSyncService {
 
         operationManager.enqueue(
             operations: wrapper.allOperations,
-            in: .sync
+            in: .transient
         )
     }
 

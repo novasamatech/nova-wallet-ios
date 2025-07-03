@@ -1,6 +1,7 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 protocol MultisigCallFetchFactoryProtocol {
     func createCallFetchWrapper(
@@ -27,9 +28,12 @@ private extension MultisigCallFetchFactory {
         chainId: ChainModel.Id,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> [Multisig.PendingOperation.Key: MultisigCallFromEvent] {
-        guard let blockNumber = BlockNumber(block.header.number) else {
+        guard
+            let blockNumberData = BigUInt.fromHexString(block.header.number) else {
             return [:]
         }
+
+        let blockNumber = BlockNumber(blockNumberData)
 
         return try multisigEvents.reduce(into: [:]) { acc, multisigEvent in
             let extrinsicIndex = Int(multisigEvent.extrinsicIndex)

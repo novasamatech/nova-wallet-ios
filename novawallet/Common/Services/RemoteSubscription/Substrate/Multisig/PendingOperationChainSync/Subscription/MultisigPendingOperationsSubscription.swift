@@ -153,7 +153,7 @@ private extension MultisigPendingOperationsSubscription {
         updatesOperation.addDependency(blockNumberWrapper.targetOperation)
 
         let wrapper = blockTimeWrapper.insertingHead(
-            operations: blockTimeWrapper.allOperations
+            operations: blockNumberWrapper.allOperations
         ).insertingTail(operation: updatesOperation)
 
         pendingCallStore?.addDependency(to: wrapper)
