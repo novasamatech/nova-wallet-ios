@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "共享控制（多重签名）";
 "multisig.details.hint" = "从此钱包进行的交易需要多个签署人的批准。您的账户是其中之一的签署人：";
 "multisig.signing.title" = "多重签名交易";
-"multisig.signing.message" = "“%@” 将签署交易并支付网络费用。交易将在最终签名后执行，多重签名的保证金将退还给 “%@”";
 "multisig.transaction.created.title" = "多重签名交易已创建";
 "multisig.transaction.created.message" = "其他签署人现在可以确认交易。您可以在多重签名交易中跟踪其状态。";
 "multisig.selection.unavailable.title" = "多重签名即将上线";

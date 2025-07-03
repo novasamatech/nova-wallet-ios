@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Control compartido (multifirma)";
 "multisig.details.hint" = "Las transacciones de esta billetera requieren aprobación de múltiples firmantes. Tu cuenta es uno de los firmantes:";
 "multisig.signing.title" = "Transacción multifirma";
-"multisig.signing.message" = "\"%@\" firmará la transacción y pagará la tarifa de red. La transacción se ejecutará tras la firma final y el depósito multifirma se devolverá a \"%@\"";
 "multisig.transaction.created.title" = "Transacción multifirma creada";
 "multisig.transaction.created.message" = "Otros firmantes pueden ahora confirmar la transacción. Puedes seguir su estado en las Transacciones Multifirma.";
 "multisig.selection.unavailable.title" = "Multifirmas próximamente";
