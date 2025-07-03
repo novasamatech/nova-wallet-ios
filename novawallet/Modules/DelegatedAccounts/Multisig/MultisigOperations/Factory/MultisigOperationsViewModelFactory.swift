@@ -123,7 +123,7 @@ private extension MultisigOperationsViewModelFactory {
         )
 
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
-        let operationIcon = StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
+        let operationIcon = StaticImageViewModel(image: R.image.iconUnknownOperation()!)
 
         return MultisigOperationViewModel(
             identifier: operation.identifier,
@@ -199,7 +199,7 @@ private extension MultisigOperationsViewModelFactory {
 
                 return (date, value)
             }
-            .sorted { $0.0 < $1.0 }
+            .sorted { $0.0 > $1.0 }
 
         return sortedOperations
     }
