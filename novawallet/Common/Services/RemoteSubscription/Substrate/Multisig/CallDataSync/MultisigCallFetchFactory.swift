@@ -46,8 +46,7 @@ private extension MultisigCallFetchFactory {
             let key = Multisig.PendingOperation.Key(
                 callHash: multisigEvent.callHash,
                 chainId: chainId,
-                multisigAccountId: multisigEvent.accountId,
-                signatoryAccountId: multisigEvent.signatory
+                multisigAccountId: multisigEvent.accountId
             )
 
             let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(

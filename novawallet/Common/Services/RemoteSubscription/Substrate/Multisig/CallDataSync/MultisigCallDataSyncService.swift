@@ -128,7 +128,6 @@ private extension MultisigCallDataSyncService {
                         callHash: keyValue.key.callHash,
                         timestamp: timestamp,
                         multisigAccountId: keyValue.key.multisigAccountId,
-                        signatory: keyValue.key.signatoryAccountId,
                         chainId: keyValue.key.chainId,
                         multisigDefinition: nil
                     )

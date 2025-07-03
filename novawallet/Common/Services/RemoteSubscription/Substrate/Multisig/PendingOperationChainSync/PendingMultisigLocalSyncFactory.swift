@@ -96,8 +96,7 @@ private extension PendingMultisigLocalSyncFactory {
         let key = Multisig.PendingOperation.Key(
             callHash: callHash,
             chainId: chain.chainId,
-            multisigAccountId: multisigAccount.accountId,
-            signatoryAccountId: multisigAccount.signatory
+            multisigAccountId: multisigAccount.accountId
         )
         let localFetchOperation = pendingOperationsRepository.fetchOperation(
             by: key.stringValue(),
@@ -118,7 +117,6 @@ private extension PendingMultisigLocalSyncFactory {
                     callHash: callHash,
                     timestamp: multisigDefinition.timestamp,
                     multisigAccountId: multisigAccount.accountId,
-                    signatory: multisigAccount.signatory,
                     chainId: self.chain.chainId,
                     multisigDefinition: localDefinition
                 )
@@ -143,8 +141,7 @@ private extension PendingMultisigLocalSyncFactory {
         let key = Multisig.PendingOperation.Key(
             callHash: callHash,
             chainId: chain.chainId,
-            multisigAccountId: multisigAccount.accountId,
-            signatoryAccountId: multisigAccount.signatory
+            multisigAccountId: multisigAccount.accountId
         )
 
         return pendingOperationsRepository.saveOperation({

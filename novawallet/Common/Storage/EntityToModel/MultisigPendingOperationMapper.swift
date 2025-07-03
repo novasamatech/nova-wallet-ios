@@ -13,7 +13,6 @@ final class MultisigPendingOperationMapper {
 extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
         let multisigAccountId = try Data(hexString: entity.multisigAccountId!)
-        let signatory = try Data(hexString: entity.signatory!)
         let callHash = try Data(hexString: entity.callHash!)
 
         var definition: Multisig.MultisigDefinition?
@@ -45,7 +44,6 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
             callHash: callHash,
             timestamp: UInt64(bitPattern: entity.timestamp),
             multisigAccountId: multisigAccountId,
-            signatory: signatory,
             chainId: entity.chainId!,
             multisigDefinition: definition
         )
@@ -58,7 +56,6 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
     ) throws {
         entity.identifier = model.identifier
         entity.multisigAccountId = model.multisigAccountId.toHexString()
-        entity.signatory = model.signatory.toHexString()
         entity.callHash = model.callHash.toHexString()
         entity.timestamp = Int64(bitPattern: model.timestamp)
         entity.chainId = model.chainId

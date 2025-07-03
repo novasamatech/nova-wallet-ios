@@ -107,7 +107,6 @@ private extension PendingMultisigRemoteFetchFactory {
                 callHash: callHash,
                 timestamp: timestamp,
                 multisigAccountId: multisigAccount.accountId,
-                signatory: multisigAccount.signatory,
                 chainId: chain.chainId,
                 multisigDefinition: .init(from: operationDefinition)
             )

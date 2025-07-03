@@ -7,7 +7,6 @@ extension Multisig {
         let callHash: Substrate.CallHash
         let timestamp: UInt64
         let multisigAccountId: AccountId
-        let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition?
 
@@ -68,14 +67,12 @@ extension Multisig.PendingOperation {
         let callHash: Substrate.CallHash
         let chainId: ChainModel.Id
         let multisigAccountId: AccountId
-        let signatoryAccountId: AccountId
 
         func stringValue() -> String {
             [
-                callHash.toHexString(),
+                callHash.toHex(),
                 chainId,
-                multisigAccountId.toHexString(),
-                signatoryAccountId.toHexString()
+                multisigAccountId.toHex()
             ].joined(with: .slash)
         }
     }
@@ -84,8 +81,7 @@ extension Multisig.PendingOperation {
         Key(
             callHash: callHash,
             chainId: chainId,
-            multisigAccountId: multisigAccountId,
-            signatoryAccountId: signatory
+            multisigAccountId: multisigAccountId
         )
     }
 }
@@ -113,7 +109,6 @@ extension Multisig.PendingOperation {
             callHash: callHash,
             timestamp: timestamp,
             multisigAccountId: multisigAccountId,
-            signatory: signatory,
             chainId: chainId,
             multisigDefinition: definition
         )
@@ -125,7 +120,6 @@ extension Multisig.PendingOperation {
             callHash: callHash,
             timestamp: timestamp,
             multisigAccountId: multisigAccountId,
-            signatory: signatory,
             chainId: chainId,
             multisigDefinition: multisigDefinition
         )
@@ -137,7 +131,6 @@ extension Multisig.PendingOperation {
             callHash: callHash,
             timestamp: newTimestamp,
             multisigAccountId: multisigAccountId,
-            signatory: signatory,
             chainId: chainId,
             multisigDefinition: multisigDefinition
         )
