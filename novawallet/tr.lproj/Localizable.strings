@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Paylaşılan kontrol (çoklu imza)";
 "multisig.details.hint" = "Bu cüzdandan yapılan işlemler birden fazla imza sahibinin onayını gerektirir. Hesabınız bu imza sahiplerinden biridir:";
 "multisig.signing.title" = "Çoklu İmza işlemi";
-"multisig.signing.message" = "\“%@\” işlemi imzalayacak ve ağ ücretini ödeyecek. İşlem son imza alındığında yürütülecek ve çoklu imza depozitosu \\n“%@\”'e iade edilecek";
 "multisig.transaction.created.title" = "Çoklu İmza işlemi oluşturuldu";
 "multisig.transaction.created.message" = "Diğer imzacı şimdi işlemi onaylayabilir. Çoklu İmza İşlemleri'nde durumunu izleyebilirsiniz.";
 "multisig.selection.unavailable.title" = "Çoklu İmzalar yakında geliyor";

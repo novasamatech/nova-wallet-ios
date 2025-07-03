@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Megosztott irányítás (többaláírás)";
 "multisig.details.hint" = "Ennél a fióknál a tranzakciók több aláíró jóváhagyását igénylik. Az Ön fiókja egyike az aláíróknak:";
 "multisig.signing.title" = "Többaláírásos tranzakció";
-"multisig.signing.message" = "\%@\ aláírja a tranzakciót és kifizeti a hálózati díjat. A tranzakció a végső aláíráskor kerül végrehajtásra, és az letét visszakerül a \%@\ címre";
 "multisig.transaction.created.title" = "Többaláírásos tranzakció létrehozva";
 "multisig.transaction.created.message" = "Más aláírók most megerősíthetik a tranzakciót. Nyomon követheti annak állapotát a Többaláírásos Tranzakciókban.";
 "multisig.selection.unavailable.title" = "Hamarosan elérhető a Többaláírás";

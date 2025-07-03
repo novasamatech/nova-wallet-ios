@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Controllo condiviso (multisig)";
 "multisig.details.hint" = "Le transazioni da questo portafoglio richiedono l'approvazione di più firmatari. Il tuo account è uno dei firmatari:";
 "multisig.signing.title" = "Transazione multisig";
-"multisig.signing.message" = "\%@\ firmerà la transazione e pagherà la commissione di rete. La transazione verrà eseguita alla firma finale e il deposito multisig sarà restituito a \%@\";
 "multisig.transaction.created.title" = "Transazione multisig creata";
 "multisig.transaction.created.message" = "Altri firmatari possono ora confermare la transazione. Puoi seguirne lo stato nelle Transazioni Multisig.";
 "multisig.selection.unavailable.title" = "Multisig in arrivo";

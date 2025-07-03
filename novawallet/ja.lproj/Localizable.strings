@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "共有コントロール（マルチシグ）";
 "multisig.details.hint" = "このウォレットからのトランザクションには、複数の署名者の承認が必要です。あなたのアカウントはその署名者の一つです：";
 "multisig.signing.title" = "マルチシグトランザクション";
-"multisig.signing.message" = "“%@” がトランザクションに署名し、ネットワーク手数料を支払います。最終署名後にトランザクションが実行され、マルチシグデポジットが “%@” に返されます";
 "multisig.transaction.created.title" = "マルチシグトランザクションが作成されました";
 "multisig.transaction.created.message" = "他の署名者がトランザクションを確認できます。マルチシグトランザクションでそのステータスを追跡できます。";
 "multisig.selection.unavailable.title" = "マルチシグが近日公開";

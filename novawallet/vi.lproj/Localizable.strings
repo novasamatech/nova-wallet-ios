@@ -1864,7 +1864,6 @@
 "wallet.list.multisig" = "Kiểm soát chung (đa chữ ký)";
 "multisig.details.hint" = "Các giao dịch từ ví này yêu cầu sự chấp thuận từ nhiều người ký. Tài khoản của bạn là một trong những người ký:";
 "multisig.signing.title" = "Giao dịch Đa chữ ký";
-"multisig.signing.message" = "\"%@\" sẽ ký giao dịch và trả phí mạng. Giao dịch sẽ được thực hiện khi có chữ ký cuối cùng và khoản tiền gửi đa chữ ký sẽ được hoàn trả cho \"%@\"";
 "multisig.transaction.created.title" = "Giao dịch Đa chữ ký đã được tạo";
 "multisig.transaction.created.message" = "Các người ký khác bây giờ có thể xác nhận giao dịch. Bạn có thể theo dõi trạng thái của nó trong Giao dịch Đa chữ ký.";
 "multisig.selection.unavailable.title" = "Đa chữ ký sắp ra mắt";
