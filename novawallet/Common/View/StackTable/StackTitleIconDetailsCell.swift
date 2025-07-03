@@ -28,8 +28,9 @@ final class StackTitleIconDetailsCell: RowView<GenericPairValueView<UILabel, Ico
         valueLabel.apply(style: .footnoteSecondary)
 
         rowContentView.makeHorizontal()
-        rowContentView.stackView.distribution = .fill
+        rowContentView.stackView.distribution = .fillProportionally
         rowContentView.sView.mode = .detailsIcon
+        rowContentView.sView.detailsLabel.textAlignment = .right
         rowContentView.sView.spacing = 4.0
     }
 }

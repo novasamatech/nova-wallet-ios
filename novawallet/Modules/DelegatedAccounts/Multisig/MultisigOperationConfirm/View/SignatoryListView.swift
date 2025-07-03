@@ -3,14 +3,27 @@ import UIKit
 import UIKit_iOS
 
 final class StackSignatoryCheckmarkTableView: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupLayout()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    var rows: [WalletInfoCheckmarkControl] = []
+
     let tableView: StackTableView = .create { view in
         view.cellHeight = Constants.signatoryCellHeight
-        view.hasSeparators = true
+        view.hasSeparators = false
         view.contentInsets = Constants.contentInsets
     }
 
     func bind(with model: SignatoryListViewModel) {
-        model.items.forEach { signatory in
+        rows = model.items.map { signatory in
             let view = WalletInfoCheckmarkControl()
             view.bind(viewModel: signatory)
 
@@ -18,7 +31,17 @@ final class StackSignatoryCheckmarkTableView: UIView {
                 make.height.equalTo(Constants.signatoryCellHeight)
             }
 
-            tableView.addArrangedSubview(view)
+            return view
+        }
+
+        rows.forEach { tableView.addArrangedSubview($0) }
+    }
+
+    func setupLayout() {
+        addSubview(tableView)
+
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 }

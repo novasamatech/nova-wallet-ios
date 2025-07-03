@@ -1,13 +1,18 @@
 import UIKit
+import Foundation_iOS
 
-final class MultisigOperationConfirmViewController: UIViewController {
+final class MultisigOperationConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = MultisigOperationConfirmViewLayout
 
     let presenter: MultisigOperationConfirmPresenterProtocol
 
-    init(presenter: MultisigOperationConfirmPresenterProtocol) {
+    init(
+        presenter: MultisigOperationConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -23,6 +28,15 @@ final class MultisigOperationConfirmViewController: UIViewController {
         super.viewDidLoad()
 
         presenter.setup()
+        setupLocalization()
+    }
+}
+
+// MARK: - Private
+
+private extension MultisigOperationConfirmViewController {
+    func setupLocalization() {
+        rootView.signatoryListView.set(locale: selectedLocale)
     }
 }
 
@@ -30,10 +44,22 @@ final class MultisigOperationConfirmViewController: UIViewController {
 
 extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewProtocol {
     func didReceive(viewModel: MultisigOperationConfirmViewModel) {
-        print(viewModel)
+        title = viewModel.title
+
+        rootView.bind(viewModel: viewModel)
     }
 
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
         print(feeViewModel)
+    }
+}
+
+// MARK: - Localizable
+
+extension MultisigOperationConfirmViewController: Localizable {
+    func applyLocalization() {
+        guard isViewLoaded else { return }
+
+        setupLocalization()
     }
 }

@@ -4,6 +4,12 @@ import UIKit
 final class WalletInfoControl: RowView<
     WalletInfoView<WalletView>
 > {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        preferredHeight = 48
+    }
+
     func bind(viewModel: WalletInfoView<WalletView>.ViewModel) {
         rowContentView.bind(viewModel: viewModel)
     }
@@ -14,6 +20,16 @@ final class WalletInfoCheckmarkControl: RowView<
         WalletInfoView<WalletView>
     >
 > {
+    convenience init() {
+        self.init(frame: .zero)
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        preferredHeight = 48
+    }
+
     func bind(viewModel: WalletsCheckmarkViewModel) {
         rowContentView.bind(viewModel: viewModel)
     }

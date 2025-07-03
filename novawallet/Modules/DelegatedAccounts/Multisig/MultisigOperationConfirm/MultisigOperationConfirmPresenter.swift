@@ -46,8 +46,7 @@ private extension MultisigOperationConfirmPresenter {
         guard
             let pendingOperation,
             let signatories,
-            let chainAsset = chain.utilityChainAsset(),
-            let priceData
+            let chainAsset = chain.utilityChainAsset()
         else { return }
 
         let params = MultisigOperationConfirmViewModelParams(

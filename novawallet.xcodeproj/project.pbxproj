@@ -16852,8 +16852,18 @@
 			children = (
 				2DFF39CC2E1686B300529984 /* MultisigOperationConfirmViewModel.swift */,
 				2DFF39CE2E168D5B00529984 /* MultisigOperationConfirmViewModelFactory.swift */,
+				2DFF39C72E1670AD00529984 /* SignatoryListViewModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		2DFF39D02E17188200529984 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2DFF39C32E1665FD00529984 /* SignatoryListExpandableView.swift */,
+				2DFF39C92E16724000529984 /* SignatoryListView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2F9F44CABD4DE8B400DC60FA /* Confirm */ = {
@@ -17480,6 +17490,7 @@
 				2DFF39CB2E1686A000529984 /* Model */,
 				0C85F5C82E142841003789DC /* Reject */,
 				0C85F5C72E14281A003789DC /* Approve */,
+				2DFF39D02E17188200529984 /* View */,
 				CE44E532A23A205C6534F14A /* MultisigOperationConfirmProtocols.swift */,
 				E607CFA75CE36C683E535256 /* MultisigOperationConfirmWireframe.swift */,
 				7F0E2F6946DD54A37CD7D543 /* MultisigOperationConfirmPresenter.swift */,
@@ -17487,9 +17498,6 @@
 				34F5DCF9D47DA3F2361A25B5 /* MultisigOperationConfirmViewController.swift */,
 				09A8C6E8A39A9D956DA476D7 /* MultisigOperationConfirmViewLayout.swift */,
 				64B3F0B9613413BE07D2864C /* MultisigOperationConfirmViewFactory.swift */,
-				2DFF39C32E1665FD00529984 /* SignatoryListExpandableView.swift */,
-				2DFF39C92E16724000529984 /* SignatoryListView.swift */,
-				2DFF39C72E1670AD00529984 /* SignatoryListViewModel.swift */,
 			);
 			path = MultisigOperationConfirm;
 			sourceTree = "<group>";

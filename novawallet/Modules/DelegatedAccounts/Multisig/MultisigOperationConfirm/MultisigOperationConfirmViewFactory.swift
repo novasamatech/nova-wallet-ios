@@ -19,6 +19,8 @@ struct MultisigOperationConfirmViewFactory {
             return nil
         }
 
+        let localizationManager = LocalizationManager.shared
+
         let wireframe = MultisigOperationConfirmWireframe()
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -40,11 +42,14 @@ struct MultisigOperationConfirmViewFactory {
             viewModelFactory: viewModelFactory,
             chain: chain,
             multisigWallet: multisigWallet,
-            localizationManager: LocalizationManager.shared,
+            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = MultisigOperationConfirmViewController(presenter: presenter)
+        let view = MultisigOperationConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

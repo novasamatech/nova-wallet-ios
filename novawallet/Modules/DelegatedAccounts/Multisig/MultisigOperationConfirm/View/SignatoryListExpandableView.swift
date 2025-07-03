@@ -31,6 +31,9 @@ final class SignatoryListExpandableView: UIView {
         view.titleLabel.apply(style: .footnoteSecondary)
         view.valueLabel.apply(style: .footnoteSecondary)
         view.contentInsets = Constants.headerCellInsets
+        view.iconView.image = R.image.iconSmallArrowDown()?.tinted(
+            with: R.color.colorIconSecondary()!
+        )
     }
 
     private var locale: Locale? {
@@ -39,10 +42,12 @@ final class SignatoryListExpandableView: UIView {
         }
     }
 
-    var signatoryCells: [UIView] = []
-
     var rowIconImageView: UIImageView {
         headerCell.rowContentView.sView.imageView
+    }
+
+    var titleLabel: UILabel {
+        headerCell.titleLabel
     }
 
     override init(frame: CGRect) {
@@ -64,12 +69,12 @@ final class SignatoryListExpandableView: UIView {
 
 private extension SignatoryListExpandableView {
     func setupLayout() {
-        setupSignatoryTableViewLayout()
-
         addSubview(signatoryTableView)
         signatoryTableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        setupSignatoryTableViewLayout()
     }
 
     func setupStyle() {
@@ -97,7 +102,7 @@ private extension SignatoryListExpandableView {
     }
 
     func hideDetails(animated: Bool = false) {
-        signatoryCells.forEach {
+        signatoryTableView.rows.forEach {
             if animated {
                 disappearanceAnimator.animate(view: $0, completionBlock: nil)
             } else {
@@ -107,7 +112,7 @@ private extension SignatoryListExpandableView {
     }
 
     func showDetails(animated: Bool = false) {
-        signatoryCells.forEach {
+        signatoryTableView.rows.forEach {
             if animated {
                 appearanceAnimator.animate(view: $0, completionBlock: nil)
             } else {
@@ -143,7 +148,7 @@ private extension SignatoryListExpandableView {
     }
 
     func calculateExpandedHeight() -> CGFloat {
-        let contentHeight = CGFloat(signatoryCells.count)
+        let contentHeight = CGFloat(signatoryTableView.rows.count)
             * StackSignatoryCheckmarkTableView.Constants.signatoryCellHeight
         let totalHeight = Constants.headerCellHeight
             + contentHeight
@@ -158,11 +163,11 @@ private extension SignatoryListExpandableView {
 
         switch state {
         case .collapsed:
-            headerCell.valueLabel.text = R.string.localizable.commonHide(
+            headerCell.valueLabel.text = R.string.localizable.commonShow(
                 preferredLanguages: locale.rLanguages
             )
         case .expanded:
-            headerCell.valueLabel.text = R.string.localizable.commonShow(
+            headerCell.valueLabel.text = R.string.localizable.commonHide(
                 preferredLanguages: locale.rLanguages
             )
         }
@@ -177,7 +182,7 @@ private extension SignatoryListExpandableView {
 
 extension SignatoryListExpandableView {
     func bind(with model: SignatoryListViewModel) {
-        signatoryTableView.tableView.removeFromSuperview()
+        signatoryTableView.tableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         signatoryTableView.tableView.addArrangedSubview(headerCell)
         signatoryTableView.bind(with: model)
