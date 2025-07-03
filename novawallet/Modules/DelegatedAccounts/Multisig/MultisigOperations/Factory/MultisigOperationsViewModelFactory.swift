@@ -37,28 +37,16 @@ final class MultisigOperationsViewModelFactory {
 // MARK: - Private
 
 private extension MultisigOperationsViewModelFactory {
-    func createOperationTitle(from call: Substrate.CallData?, locale: Locale) -> String {
+    func createOperationTitle(from _: Substrate.CallData?, locale: Locale) -> String {
         let languages = locale.rLanguages
 
-        guard let call else {
-            return R.string.localizable.multisigOperationTypeUnknown(
-                preferredLanguages: languages
-            )
-        }
-
-        // TODO: Implement proper operation type extraction logic
-
-        return "Operation title"
+        return R.string.localizable.multisigOperationTypeUnknown(
+            preferredLanguages: languages
+        )
     }
 
-    func createOperationSubTitle(from call: Substrate.CallData?, locale: Locale) -> String? {
-        guard let call else { return nil }
-
-        let languages = locale.rLanguages
-
-        // TODO: Implement proper operation subtitle extraction logic
-
-        return "Operation subtitle"
+    func createOperationSubTitle(from _: Substrate.CallData?, locale _: Locale) -> String? {
+        nil
     }
 
     func createSigningProgress(
@@ -137,9 +125,6 @@ private extension MultisigOperationsViewModelFactory {
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
         let operationIcon = StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
 
-        // TODO: Implement proper logic to determine if the operation is delegated
-        var delegatedAccountModel: (String, DisplayAddressViewModel)?
-
         return MultisigOperationViewModel(
             identifier: operation.identifier,
             chainIcon: chainIcon,
@@ -150,7 +135,7 @@ private extension MultisigOperationsViewModelFactory {
             timeString: timeString,
             signingProgress: signingProgress,
             status: status,
-            delegatedAccountModel: delegatedAccountModel
+            delegatedAccountModel: nil
         )
     }
 
