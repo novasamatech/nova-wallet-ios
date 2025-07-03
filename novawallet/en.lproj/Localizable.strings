@@ -1897,3 +1897,6 @@ Stay tuned!";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova has automatically switched to your multisig wallet so you can view pending transactions.";
 "common.hide" = "Hide";
 "common.show" = "Show";
+"multisig.other.signatories" = "Other signatories";
+"multisig.operation.signatories.progress.format" = "Signatories (%d of %d)";
+"common.transaction.signed" = "Transaction signed!";
