@@ -64,7 +64,7 @@ final class MultisigCallFetchFactoryTests: XCTestCase {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
         
         let calls = try wrapper.targetOperation.extractNoCancellableResultData()
-        let maybeCall = calls.first(where: { $0.key.callHash == callHash })?.value.call
+        let maybeCall = calls.first(where: { $0.key.callHash == callHash })?.value.callOrHash.call
         
         XCTAssert(maybeCall != nil, "Call should not be nil for the provided callHash")
 

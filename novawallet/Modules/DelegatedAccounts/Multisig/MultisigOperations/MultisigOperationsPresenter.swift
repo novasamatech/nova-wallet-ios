@@ -12,7 +12,7 @@ final class MultisigOperationsPresenter {
     private let wallet: MetaAccountModel
 
     private var chains: [ChainModel.Id: ChainModel] = [:]
-    private var operations: [Multisig.PendingOperation] = []
+    private var operations: [String: Multisig.PendingOperation] = [:]
 
     init(
         interactor: MultisigOperationsInteractorInputProtocol,
@@ -33,12 +33,14 @@ final class MultisigOperationsPresenter {
 
 private extension MultisigOperationsPresenter {
     func provideViewModel() {
-        guard !operations.isEmpty, !chains.isEmpty else {
+        guard !chains.isEmpty else {
             return
         }
 
+        let sortedOperations = operations.values.sorted { $0.timestamp > $1.timestamp }
+
         let viewModel = viewModelFactory.createListViewModel(
-            from: operations,
+            from: sortedOperations,
             chains: chains,
             wallet: wallet,
             for: selectedLocale
@@ -56,7 +58,7 @@ extension MultisigOperationsPresenter: MultisigOperationsPresenterProtocol {
     }
 
     func selectOperation(with id: String) {
-        guard let operation = operations.first(where: { $0.identifier == id }) else { return }
+        guard let operation = operations[id] else { return }
 
         wireframe.showOperationDetails(
             from: view,
@@ -69,7 +71,7 @@ extension MultisigOperationsPresenter: MultisigOperationsPresenterProtocol {
 
 extension MultisigOperationsPresenter: MultisigOperationsInteractorOutputProtocol {
     func didReceiveOperations(changes: [DataProviderChange<Multisig.PendingOperation>]) {
-        operations = operations.applying(changes: changes)
+        operations = changes.mergeToDict(operations)
         provideViewModel()
     }
 
