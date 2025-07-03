@@ -150,9 +150,7 @@ private extension DelegatedMessageSheetViewFactory {
         )
     }
 
-    static func createMultisigContent(
-        signatoryName: String
-    ) -> MessageSheetContent {
+    static func createMultisigContent(signatoryName: String) -> MessageSheetContent {
         let title = LocalizableResource { locale in
             R.string.localizable.multisigSigningTitle(preferredLanguages: locale.rLanguages)
         }
