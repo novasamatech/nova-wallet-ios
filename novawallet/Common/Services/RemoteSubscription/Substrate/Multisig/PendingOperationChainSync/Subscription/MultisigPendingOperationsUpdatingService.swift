@@ -3,7 +3,7 @@ import Foundation
 protocol MultisigPendingOperationsSubscriber: AnyObject {
     func didReceiveUpdate(
         callHash: Substrate.CallHash,
-        multisigDefinition: MultisigPallet.MultisigDefinition?
+        multisigDefinition: MultisigDefinitionWithTime?
     )
 }
 
@@ -22,6 +22,7 @@ final class MultisigPendingOperationsUpdatingService {
     private let chainRegistry: ChainRegistryProtocol
     private let operationQueue: OperationQueue
     private let workingQueue: DispatchQueue
+    private let logger: LoggerProtocol
 
     private let mutex = NSLock()
 
@@ -30,11 +31,13 @@ final class MultisigPendingOperationsUpdatingService {
     init(
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
-        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.updating")
+        workingQueue: DispatchQueue = DispatchQueue(label: "com.nova.wallet.pending.multisigs.updating"),
+        logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
+        self.logger = logger
     }
 
     deinit {
@@ -64,7 +67,8 @@ extension MultisigPendingOperationsUpdatingService: MultisigPendingOperationsUpd
             chainRegistry: chainRegistry,
             subscriber: subscriber,
             operationQueue: operationQueue,
-            workingQueue: workingQueue
+            workingQueue: workingQueue,
+            logger: logger
         )
 
         mutex.unlock()

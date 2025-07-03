@@ -164,7 +164,7 @@ extension PendingMultisigChainSyncService: MultisigOperationsLocalStorageSubscri
 extension PendingMultisigChainSyncService: MultisigPendingOperationsSubscriber {
     func didReceiveUpdate(
         callHash: Substrate.CallHash,
-        multisigDefinition: MultisigPallet.MultisigDefinition?
+        multisigDefinition: MultisigDefinitionWithTime?
     ) {
         let updateDefinitionWrapper = localSyncFactory.createUpdateDefinitionWrapper(
             for: callHash,
