@@ -32,12 +32,7 @@ enum DelegatedMessageSheetViewFactory {
         case .proxy:
             createProxyContent(proxyName: delegateChainAccountResponse.name)
         case .multisig:
-            createMultisigContent(
-                signatoryName: delegateChainAccountResponse.name,
-                signatoryAddress: (try? delegateChainAccountResponse.accountId.toAddress(
-                    using: delegateChainAccountResponse.chainFormat
-                )) ?? ""
-            )
+            createMultisigContent(signatoryName: delegateChainAccountResponse.name)
         }
 
         let text = LocalizableResource { locale in
@@ -155,10 +150,7 @@ private extension DelegatedMessageSheetViewFactory {
         )
     }
 
-    static func createMultisigContent(
-        signatoryName: String,
-        signatoryAddress: String
-    ) -> MessageSheetContent {
+    static func createMultisigContent(signatoryName: String) -> MessageSheetContent {
         let title = LocalizableResource { locale in
             R.string.localizable.multisigSigningTitle(preferredLanguages: locale.rLanguages)
         }
@@ -167,13 +159,12 @@ private extension DelegatedMessageSheetViewFactory {
             let marker = AttributedReplacementStringDecorator.marker
             let template = R.string.localizable.multisigSigningMessage(
                 marker,
-                marker,
                 preferredLanguages: locale.rLanguages
             )
 
             let decorator = AttributedReplacementStringDecorator(
                 pattern: marker,
-                replacements: [signatoryName, signatoryAddress],
+                replacements: [signatoryName],
                 attributes: [.foregroundColor: R.color.colorTextPrimary()!]
             )
 
