@@ -123,12 +123,14 @@ extension MultisigOperationConfirmViewLayout: SignatoryListExpandableViewDelegat
     func didChangeState(to state: SignatoryListExpandableView.State) {
         currentSignatoryWidgetHeight = state.height
 
-        signatoryListView.snp.updateConstraints { make in
+        signatoryListView.snp.remakeConstraints { make in
             make.height.equalTo(state.height)
         }
 
         layoutChangesAnimator.animate(
-            block: { [weak self] in self?.containerView.stackView.layoutIfNeeded() },
+            block: { [weak self] in
+                self?.containerView.layoutIfNeeded()
+            },
             completionBlock: nil
         )
     }

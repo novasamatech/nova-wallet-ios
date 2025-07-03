@@ -69,6 +69,17 @@ extension WalletView {
         struct WalletInfo: Hashable {
             let icon: IdentifiableImageViewModelProtocol?
             let name: String
+            let lineBreakMode: NSLineBreakMode
+
+            init(
+                icon: IdentifiableImageViewModelProtocol?,
+                name: String,
+                lineBreakMode: NSLineBreakMode = .byTruncatingTail
+            ) {
+                self.icon = icon
+                self.name = name
+                self.lineBreakMode = lineBreakMode
+            }
 
             static func == (lhs: WalletInfo, rhs: WalletInfo) -> Bool {
                 lhs.icon?.identifier == rhs.icon?.identifier &&

@@ -29,21 +29,18 @@ final class MultisigOperationConfirmViewModelFactory {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let addressIconGenerator: IconGenerating
-    let walletIconGenerator: IconGenerating
+    let iconViewModelFactory: IconViewModelFactoryProtocol
 
     init(
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        addressIconGenerator: IconGenerating = PolkadotIconGenerator(),
-        walletIconGenerator: IconGenerating = NovaIconGenerator()
+        iconViewModelFactory: IconViewModelFactoryProtocol = IconViewModelFactory()
     ) {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
-        self.addressIconGenerator = addressIconGenerator
-        self.walletIconGenerator = walletIconGenerator
+        self.iconViewModelFactory = iconViewModelFactory
     }
 }
 
@@ -61,10 +58,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         using identiconData: Data?,
         name: String
     ) -> StackCellViewModel {
-        let icon = identiconData.flatMap {
-            try? walletIconGenerator.generateFromAccountId($0)
-        }
-        let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
+        let iconViewModel = iconViewModelFactory.createDrawableIconViewModel(from: identiconData)
 
         let walletViewModel = StackCellViewModel(
             details: name,
@@ -188,6 +182,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             from: signatories,
             chain: chain,
             multisigDefinition: definition,
+            multisigContext: multisigContext,
             locale: locale
         )
         let listViewModel = SignatoryListViewModel(items: signatoryViewModels)
@@ -199,6 +194,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         from signatories: [Multisig.Signatory],
         chain: ChainModel,
         multisigDefinition: Multisig.MultisigDefinition,
+        multisigContext _: DelegatedAccount.MultisigAccountModel,
         locale: Locale
     ) -> [WalletsCheckmarkViewModel] {
         signatories.compactMap { signatory -> WalletsCheckmarkViewModel? in
@@ -206,16 +202,12 @@ private extension MultisigOperationConfirmViewModelFactory {
             let name: String
             let type: WalletView.ViewModel.TypeInfo
             let accountId: AccountId
+            let lineBreakMode: NSLineBreakMode
 
             switch signatory {
             case let .local(localSignatory):
-                guard let icon = localSignatory.metaAccount.walletIdenticonData.flatMap({
-                    try? walletIconGenerator.generateFromAccountId($0)
-                }) else {
-                    return nil
-                }
-                iconViewModel = IdentifiableDrawableIconViewModel(
-                    DrawableIconViewModel(icon: icon),
+                iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
+                    from: localSignatory.metaAccount.walletIdenticonData,
                     identifier: localSignatory.metaAccount.metaId
                 )
 
@@ -225,28 +217,27 @@ private extension MultisigOperationConfirmViewModelFactory {
                     locale: locale
                 )
                 accountId = localSignatory.metaAccount.chainAccount.accountId
+                lineBreakMode = .byTruncatingTail
+
             case let .remote(remoteSignatory):
-                guard
-                    let icon = try? addressIconGenerator.generateFromAccountId(
-                        remoteSignatory.accountId
-                    ),
-                    let address = try? remoteSignatory.accountId.toAddress(using: chain.chainFormat)
-                else {
+                guard let address = try? remoteSignatory.accountId.toAddress(using: chain.chainFormat) else {
                     return nil
                 }
 
-                iconViewModel = IdentifiableDrawableIconViewModel(
-                    DrawableIconViewModel(icon: icon),
-                    identifier: address
+                iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
+                    from: remoteSignatory.accountId,
+                    chainFormat: chain.chainFormat
                 )
                 name = address
                 type = .noInfo
                 accountId = remoteSignatory.accountId
+                lineBreakMode = .byTruncatingMiddle
             }
 
             let walletInfo = WalletView.ViewModel.WalletInfo(
                 icon: iconViewModel,
-                name: name
+                name: name,
+                lineBreakMode: lineBreakMode
             )
             let walletViewModel = WalletView.ViewModel(
                 wallet: walletInfo,
@@ -271,16 +262,13 @@ private extension MultisigOperationConfirmViewModelFactory {
         case .multisig:
             guard
                 let delegate = localSignatory.delegate,
-                let icon = delegate.metaAccount.walletIdenticonData.flatMap({
-                    try? walletIconGenerator.generateFromAccountId($0)
-                }) else {
-                return .regular("")
+                let iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
+                    from: delegate.metaAccount.walletIdenticonData,
+                    identifier: localSignatory.metaAccount.metaId
+                )
+            else {
+                return .noInfo
             }
-
-            let iconViewModel = IdentifiableDrawableIconViewModel(
-                DrawableIconViewModel(icon: icon),
-                identifier: localSignatory.metaAccount.metaId
-            )
 
             let delegatedAccountInfo = WalletView.ViewModel.DelegatedAccountInfo(
                 networkIcon: iconViewModel,
@@ -290,20 +278,17 @@ private extension MultisigOperationConfirmViewModelFactory {
                 isNew: false
             )
             type = .multisig(delegatedAccountInfo)
+
         case .proxied:
-            guard let delegate = localSignatory.delegate else { return .regular("") }
+            guard let delegate = localSignatory.delegate else { return .noInfo }
 
             if case let .proxy(proxyType) = delegate.delegationType {
-                guard let icon = delegate.metaAccount.walletIdenticonData.flatMap({
-                    try? walletIconGenerator.generateFromAccountId($0)
-                }) else {
-                    return .regular("")
-                }
-
-                let iconViewModel = IdentifiableDrawableIconViewModel(
-                    DrawableIconViewModel(icon: icon),
+                guard let iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
+                    from: delegate.metaAccount.walletIdenticonData,
                     identifier: localSignatory.metaAccount.metaId
-                )
+                ) else {
+                    return .noInfo
+                }
 
                 let delegatedAccountInfo = WalletView.ViewModel.DelegatedAccountInfo(
                     networkIcon: iconViewModel,
@@ -314,10 +299,10 @@ private extension MultisigOperationConfirmViewModelFactory {
                 )
                 type = .proxy(delegatedAccountInfo)
             } else {
-                type = .regular("")
+                type = .noInfo
             }
         default:
-            type = .regular("")
+            type = .noInfo
         }
 
         return type

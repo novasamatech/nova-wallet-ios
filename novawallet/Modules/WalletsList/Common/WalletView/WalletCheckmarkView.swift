@@ -4,6 +4,10 @@ import UIKit
 final class WalletInfoControl: RowView<
     WalletInfoView<WalletView>
 > {
+    convenience init() {
+        self.init(frame: .zero)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -55,12 +59,14 @@ final class WalletCheckmarkView<T: WalletViewProtocol>: GenericTitleValueView<T,
         } else {
             checkMarkView.image = nil
         }
+
+        walletView.titleLabel.lineBreakMode = viewModel.walletViewModel.wallet.lineBreakMode
     }
 }
 
 private extension WalletCheckmarkView {
     func setupLayout() {
-        spacing = 29.0
+        spacing = 52.0
 
         checkMarkView.snp.makeConstraints { make in
             make.size.equalTo(24.0)
