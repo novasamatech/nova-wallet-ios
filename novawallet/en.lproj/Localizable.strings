@@ -1895,3 +1895,5 @@ Stay tuned!";
 "multisig.transaction.created.sheet.title" = "Multisig transaction created";
 "multisig.transaction.created.sheet.message" = "Other signatories can now confirm the transaction. You can track its status in the %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova has automatically switched to your multisig wallet so you can view pending transactions.";
+"common.hide" = "Hide";
+"common.show" = "Show";
