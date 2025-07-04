@@ -258,7 +258,6 @@ private extension MultisigOperationConfirmInteractor {
             let asset = chain.utilityAsset(),
             let priceId = asset.priceId
         else {
-            logger.error("Asset and price id expected")
             return
         }
 
@@ -333,6 +332,8 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
         )
 
         deriveAssetInfoAndProvideBalance()
+
+        setupChainAssetPriceSubscription()
     }
 
     func confirm() {
