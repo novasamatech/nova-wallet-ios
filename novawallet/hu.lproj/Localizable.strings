@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Más aláírók most megerősíthetik a tranzakciót. Nyomon követheti annak állapotát a Többaláírásos Tranzakciókban.";
 "multisig.selection.unavailable.title" = "Hamarosan elérhető a Többaláírás";
 "multisig.selection.unavailable.message" = "Többaláírásos pénztárca kezelése hamarosan elérhetővé válik egy közelgő frissítésben.\nMaradjon velünk!";
+"common.view.details" = "Részletek megtekintése";
+"common.approve" = "Jóváhagyás";
 "multisig.validation.already.exists.title" = "Művelet már létezik";
 "multisig.call.data.copy" = "Hívás adatok másolása";
 "multisig.call.data.share" = "Hívás adatok megosztása";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Elrejt";
 "common.show" = "Megjelenít";
 "multisig.operation.signatories.progress.format" = "Aláírók (%li a %li-ből)";
+"enter.call.data.details.button.title" = "Adja meg a hívás adatokat a részletek megtekintéséhez";
 "feature.unsupported.sheet.message.card" = "A bankkártya kezeléséhez kérjük, váltson más típusú tárcára.";
 "feature.unsupported.sheet.message.sell" = "Kriptopénz eladása fiat pénzért, kérjük, váltson más típusú tárcára.";
 "multisig.transactions.to.sign" = "Aláírásra váró tranzakciók";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Más aláírók";
 "common.transaction.signed" = "Tranzakció aláírva!";
 "multisig.transaction.created.sheet.title" = "Többaláírásos tranzakció létrehozva";
+"common.transaction.signed.and.executed" = "Tranzakció aláírva és végrehajtva!";
+"common.transaction.rejected" = "Tranzakció elutasítva!";
+"common.approve.and.execute" = "Jóváhagyás és végrehajtás";
+"multisig.transaction.reject.sheet.message" = "A tranzakció elutasításra kerül. A multisig letét visszakerül %@-hoz.";

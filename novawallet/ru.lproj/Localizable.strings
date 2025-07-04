@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Другие подписанты теперь могут подтвердить транзакцию. Вы можете отслеживать ее статус в Мультисиг Транзакциях.";
 "multisig.selection.unavailable.title" = "Мультисиги скоро появятся";
 "multisig.selection.unavailable.message" = "Управление мультисиг кошельком будет доступно в предстоящем обновлении.\nСледите за обновлениями!";
+"common.view.details" = "Просмотреть детали";
+"common.approve" = "Одобрить";
 "multisig.validation.already.exists.title" = "Операция уже существует";
 "multisig.call.data.copy" = "Скопировать данные вызова";
 "multisig.call.data.share" = "Поделиться данными вызова";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Скрыть";
 "common.show" = "Показать";
 "multisig.operation.signatories.progress.format" = "Подписанты (%li из %li)";
+"enter.call.data.details.button.title" = "Введите данные вызова, чтобы просмотреть детали";
 "feature.unsupported.sheet.message.card" = "Чтобы управлять своей дебетовой картой, пожалуйста, переключитесь на другой тип кошелька.";
 "feature.unsupported.sheet.message.sell" = "Чтобы продать криптовалюту за фиат, пожалуйста, переключитесь на другой тип кошелька.";
 "multisig.transactions.to.sign" = "Транзакции для подписи";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Другие подписанты";
 "common.transaction.signed" = "Транзакция подписана!";
 "multisig.transaction.created.sheet.title" = "Мультисиг транзакция создана";
+"common.transaction.signed.and.executed" = "Транзакция подписана и выполнена!";
+"common.transaction.rejected" = "Транзакция отклонена!";
+"common.approve.and.execute" = "Одобрить и выполнить";
+"multisig.transaction.reject.sheet.message" = "Транзакция будет отклонена. Депозит мультиподписи будет возвращен %@.";

@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Diğer imzacı şimdi işlemi onaylayabilir. Çoklu İmza İşlemleri'nde durumunu izleyebilirsiniz.";
 "multisig.selection.unavailable.title" = "Çoklu İmzalar yakında geliyor";
 "multisig.selection.unavailable.message" = "Çoklu İmza cüzdan yönetimi yakında gelecek bir güncellemede mevcut olacak.\nTakipte kalın!";
+"common.view.details" = "Detayları Görüntüle";
+"common.approve" = "Onayla";
 "multisig.validation.already.exists.title" = "İşlem zaten mevcut";
 "multisig.call.data.copy" = "Arama verisini kopyala";
 "multisig.call.data.share" = "Arama verisini paylaş";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Gizle";
 "common.show" = "Göster";
 "multisig.operation.signatories.progress.format" = "İmza yetkilileri (%li / %li)";
+"enter.call.data.details.button.title" = "Detayları görmek için arama verisi girin";
 "feature.unsupported.sheet.message.card" = "Debit Kartınızı yönetmek için lütfen farklı bir cüzdan türüne geçin.";
 "feature.unsupported.sheet.message.sell" = "Kriptoyu fiat ile satmak için lütfen farklı bir cüzdan türüne geçin.";
 "multisig.transactions.to.sign" = "İmzalanacak işlemler";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Diğer imza yetkilileri";
 "common.transaction.signed" = "İşlem imzalandı!";
 "multisig.transaction.created.sheet.title" = "Çoklu İmza işlemi oluşturuldu";
+"common.transaction.signed.and.executed" = "İşlem imzalandı ve gerçekleştirildi!";
+"common.transaction.rejected" = "İşlem reddedildi!";
+"common.approve.and.execute" = "Onayla ve Gerçekleştir";
+"multisig.transaction.reject.sheet.message" = "İşlem reddedilecek. Çoklu imza depozitosu %@'e geri dönecek.";

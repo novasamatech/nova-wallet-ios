@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "他の署名者がトランザクションを確認できます。マルチシグトランザクションでそのステータスを追跡できます。";
 "multisig.selection.unavailable.title" = "マルチシグが近日公開";
 "multisig.selection.unavailable.message" = "マルチシグウォレット管理は近日中に利用可能になります。\n乞うご期待！";
+"common.view.details" = "詳細を表示";
+"common.approve" = "承認";
 "multisig.validation.already.exists.title" = "操作は既に存在します";
 "multisig.call.data.copy" = "コールデータをコピー";
 "multisig.call.data.share" = "コールデータを共有";
@@ -1879,6 +1881,7 @@
 "common.hide" = "非表示";
 "common.show" = "表示";
 "multisig.operation.signatories.progress.format" = "署名者 (%li/%li)";
+"enter.call.data.details.button.title" = "詳細を表示するにはコールデータを入力してください";
 "feature.unsupported.sheet.message.card" = "デビットカードを管理するには、異なるタイプのウォレットに切り替えてください。";
 "feature.unsupported.sheet.message.sell" = "仮想通貨をフィアットに売却するには、異なるタイプのウォレットに切り替えてください。";
 "multisig.transactions.to.sign" = "署名すべきトランザクション";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "他の署名者";
 "common.transaction.signed" = "トランザクションが署名されました！";
 "multisig.transaction.created.sheet.title" = "マルチシグトランザクションが作成されました";
+"common.transaction.signed.and.executed" = "トランザクションが署名され、実行されました！";
+"common.transaction.rejected" = "取引が拒否されました！";
+"common.approve.and.execute" = "承認と実行";
+"multisig.transaction.reject.sheet.message" = "トランザクションは拒否されます。マルチシグのデポジットは%@に返されます。";

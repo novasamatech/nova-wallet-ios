@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "其他签署人现在可以确认交易。您可以在多重签名交易中跟踪其状态。";
 "multisig.selection.unavailable.title" = "多重签名即将上线";
 "multisig.selection.unavailable.message" = "多重签名钱包管理将在即将到来的更新中可用。\n敬请期待！";
+"common.view.details" = "查看详细信息";
+"common.approve" = "批准";
 "multisig.validation.already.exists.title" = "操作已存在";
 "multisig.call.data.copy" = "复制调用数据";
 "multisig.call.data.share" = "分享调用数据";
@@ -1879,6 +1881,7 @@
 "common.hide" = "隐藏";
 "common.show" = "显示";
 "multisig.operation.signatories.progress.format" = "签署人 (%li / %li)";
+"enter.call.data.details.button.title" = "输入调用数据以查看详细信息";
 "feature.unsupported.sheet.message.card" = "要管理您的借记卡，请切换到不同类型的钱包。";
 "feature.unsupported.sheet.message.sell" = "要将加密货币出售为法币，请切换到不同类型的钱包。";
 "multisig.transactions.to.sign" = "待签署的交易";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "其他签署人";
 "common.transaction.signed" = "交易已签署！";
 "multisig.transaction.created.sheet.title" = "多重签名交易已创建";
+"common.transaction.signed.and.executed" = "交易已签名并执行！";
+"common.transaction.rejected" = "交易被拒绝！";
+"common.approve.and.execute" = "批准并执行";
+"multisig.transaction.reject.sheet.message" = "交易将会被拒绝。多重签名存款将返还给 %@。";

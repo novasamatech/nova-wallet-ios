@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Altri firmatari possono ora confermare la transazione. Puoi seguirne lo stato nelle Transazioni Multisig.";
 "multisig.selection.unavailable.title" = "Multisig in arrivo";
 "multisig.selection.unavailable.message" = "La gestione dei portafogli multisig sarà disponibile in un aggiornamento futuro.\nResta sintonizzato!";
+"common.view.details" = "Visualizza dettagli";
+"common.approve" = "Approva";
 "multisig.validation.already.exists.title" = "Operazione già esistente";
 "multisig.call.data.copy" = "Copia i dati della chiamata";
 "multisig.call.data.share" = "Condividi i dati della chiamata";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Nascondi";
 "common.show" = "Mostra";
 "multisig.operation.signatories.progress.format" = "Firmatari (%li di %li)";
+"enter.call.data.details.button.title" = "Inserisci i dati della chiamata per visualizzare i dettagli";
 "feature.unsupported.sheet.message.card" = "Per gestire la tua carta di debito, passa a un diverso tipo di portafoglio.";
 "feature.unsupported.sheet.message.sell" = "Per vendere criptovaluta per fiat, passa a un diverso tipo di portafoglio.";
 "multisig.transactions.to.sign" = "Transazioni da firmare";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Altri firmatari";
 "common.transaction.signed" = "Transazione firmata!";
 "multisig.transaction.created.sheet.title" = "Transazione multisig creata";
+"common.transaction.signed.and.executed" = "Transazione firmata ed eseguita!";
+"common.transaction.rejected" = "Transazione rifiutata!";
+"common.approve.and.execute" = "Approva & Esegui";
+"multisig.transaction.reject.sheet.message" = "La transazione sarà respinta. Il deposito multisig sarà restituito a %@.";

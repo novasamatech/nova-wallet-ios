@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Các người ký khác bây giờ có thể xác nhận giao dịch. Bạn có thể theo dõi trạng thái của nó trong Giao dịch Đa chữ ký.";
 "multisig.selection.unavailable.title" = "Đa chữ ký sắp ra mắt";
 "multisig.selection.unavailable.message" = "Quản lý ví Đa chữ ký sẽ có sẵn trong bản cập nhật sắp tới.\nHãy chờ đợi!";
+"common.view.details" = "Xem chi tiết";
+"common.approve" = "Phê duyệt";
 "multisig.validation.already.exists.title" = "Hoạt động đã tồn tại";
 "multisig.call.data.copy" = "Sao chép dữ liệu cuộc gọi";
 "multisig.call.data.share" = "Chia sẻ dữ liệu cuộc gọi";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Ẩn";
 "common.show" = "Hiển thị";
 "multisig.operation.signatories.progress.format" = "Người ký (%li của %li)";
+"enter.call.data.details.button.title" = "Nhập dữ liệu cuộc gọi để xem chi tiết";
 "feature.unsupported.sheet.message.card" = "Để quản lý Thẻ ghi nợ, vui lòng chuyển sang loại ví khác.";
 "feature.unsupported.sheet.message.sell" = "Để bán tiền điện tử lấy tiền pháp định, vui lòng chuyển sang loại ví khác.";
 "multisig.transactions.to.sign" = "Giao dịch cần ký";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Người ký khác";
 "common.transaction.signed" = "Giao dịch đã được ký!";
 "multisig.transaction.created.sheet.title" = "Giao dịch Đa chữ ký đã được tạo";
+"common.transaction.signed.and.executed" = "Giao dịch đã được ký và thực hiện!";
+"common.transaction.rejected" = "Giao dịch bị từ chối!";
+"common.approve.and.execute" = "Phê duyệt & Thực hiện";
+"multisig.transaction.reject.sheet.message" = "Giao dịch sẽ bị từ chối. Tiền gửi multisig sẽ được trả lại cho %@.";

@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Otros firmantes pueden ahora confirmar la transacción. Puedes seguir su estado en las Transacciones Multifirma.";
 "multisig.selection.unavailable.title" = "Multifirmas próximamente";
 "multisig.selection.unavailable.message" = "La gestión de billeteras multifirma estará disponible en una próxima actualización.\n¡Estén atentos!";
+"common.view.details" = "Ver detalles";
+"common.approve" = "Aprobar";
 "multisig.validation.already.exists.title" = "La operación ya existe";
 "multisig.call.data.copy" = "Copiar datos de la llamada";
 "multisig.call.data.share" = "Compartir datos de la llamada";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Ocultar";
 "common.show" = "Mostrar";
 "multisig.operation.signatories.progress.format" = "Firmantes (%li de %li)";
+"enter.call.data.details.button.title" = "Ingresa datos de la llamada para ver detalles";
 "feature.unsupported.sheet.message.card" = "Para gestionar tu tarjeta de débito, por favor cambia a un tipo diferente de billetera.";
 "feature.unsupported.sheet.message.sell" = "Para vender cripto por fiat, por favor cambia a un tipo diferente de billetera.";
 "multisig.transactions.to.sign" = "Transacciones a firmar";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Otros firmantes";
 "common.transaction.signed" = "¡Transacción firmada!";
 "multisig.transaction.created.sheet.title" = "Transacción multifirma creada";
+"common.transaction.signed.and.executed" = "¡Transacción firmada y ejecutada!";
+"common.transaction.rejected" = "¡Transacción rechazada!";
+"common.approve.and.execute" = "Aprobar y Ejecutar";
+"multisig.transaction.reject.sheet.message" = "La transacción será rechazada. El depósito multisig será devuelto a %@.";

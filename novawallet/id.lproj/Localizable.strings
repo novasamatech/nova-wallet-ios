@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "Penandatangan lain sekarang dapat mengonfirmasi transaksi. Anda dapat melacak statusnya dalam Transaksi Multisig.";
 "multisig.selection.unavailable.title" = "Multisig segera hadir";
 "multisig.selection.unavailable.message" = "Manajemen dompet Multisig akan tersedia di pembaruan mendatang.\nTetap pantau!";
+"common.view.details" = "Lihat rincian";
+"common.approve" = "Setujui";
 "multisig.validation.already.exists.title" = "Operasi sudah ada";
 "multisig.call.data.copy" = "Salin data pemanggilan";
 "multisig.call.data.share" = "Bagikan data pemanggilan";
@@ -1879,6 +1881,7 @@
 "common.hide" = "Sembunyikan";
 "common.show" = "Tampilkan";
 "multisig.operation.signatories.progress.format" = "Penandatangan (%li dari %li)";
+"enter.call.data.details.button.title" = "Masukkan data pemanggilan untuk melihat detail";
 "feature.unsupported.sheet.message.card" = "Untuk mengelola Kartu Debit Anda, silakan beralih ke jenis dompet yang berbeda.";
 "feature.unsupported.sheet.message.sell" = "Untuk menjual crypto untuk fiat, silakan beralih ke jenis dompet yang berbeda.";
 "multisig.transactions.to.sign" = "Transaksi untuk ditandatangani";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "Penandatangan lainnya";
 "common.transaction.signed" = "Transaksi telah ditandatangani!";
 "multisig.transaction.created.sheet.title" = "Transaksi Multisig dibuat";
+"common.transaction.signed.and.executed" = "Transaksi telah ditandatangani dan dijalankan!";
+"common.transaction.rejected" = "Transaksi ditolak!";
+"common.approve.and.execute" = "Setujui & Eksekusi";
+"multisig.transaction.reject.sheet.message" = "Transaksi akan ditolak. Deposit multisig akan dikembalikan ke %@.";

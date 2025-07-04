@@ -1868,6 +1868,8 @@
 "multisig.transaction.created.message" = "다른 서명자가 이제 거래를 확인할 수 있습니다. 다중 서명 거래에서 상태를 추적할 수 있습니다.";
 "multisig.selection.unavailable.title" = "다중 서명이 곧 제공됩니다";
 "multisig.selection.unavailable.message" = "다중 서명 지갑 관리 기능이 곧 업데이트됩니다.\n기대를 해주세요!";
+"common.view.details" = "세부 사항 보기";
+"common.approve" = "승인";
 "multisig.validation.already.exists.title" = "작업이 이미 존재합니다";
 "multisig.call.data.copy" = "호출 데이터 복사";
 "multisig.call.data.share" = "호출 데이터 공유";
@@ -1879,6 +1881,7 @@
 "common.hide" = "숨기기";
 "common.show" = "표시";
 "multisig.operation.signatories.progress.format" = "서명자 (%li 중 %li)";
+"enter.call.data.details.button.title" = "세부 정보를 보려면 호출 데이터를 입력하십시오";
 "feature.unsupported.sheet.message.card" = "데빗 카드를 관리하려면 다른 종류의 지갑으로 전환하십시오.";
 "feature.unsupported.sheet.message.sell" = "암호화폐를 법정 화폐로 판매하려면 다른 종류의 지갑으로 전환하십시오.";
 "multisig.transactions.to.sign" = "서명할 거래";
@@ -1899,3 +1902,7 @@
 "multisig.other.signatories" = "다른 서명자";
 "common.transaction.signed" = "거래 서명됨!";
 "multisig.transaction.created.sheet.title" = "다중 서명 거래 생성됨";
+"common.transaction.signed.and.executed" = "거래가 서명되고 실행되었습니다!";
+"common.transaction.rejected" = "거래가 거부되었습니다!";
+"common.approve.and.execute" = "승인 및 실행";
+"multisig.transaction.reject.sheet.message" = "거래가 거부됩니다. 멀티시그 예치금은 %@에게 반환됩니다.";
