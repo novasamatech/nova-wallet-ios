@@ -50,7 +50,7 @@ extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewPr
     }
 
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
-        print(feeViewModel)
+        rootView.bind(fee: feeViewModel)
     }
 }
 

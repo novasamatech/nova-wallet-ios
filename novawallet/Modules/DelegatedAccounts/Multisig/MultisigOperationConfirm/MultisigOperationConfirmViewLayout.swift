@@ -115,6 +115,11 @@ extension MultisigOperationConfirmViewLayout {
             }
         }
     }
+    
+    func bind(fee viewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
+        feeCell.rowContentView.titleLabel.text = viewModel.title
+        feeCell.rowContentView.bind(viewModel: viewModel.value)
+    }
 }
 
 // MARK: - SignatoryListExpandableViewDelegate
