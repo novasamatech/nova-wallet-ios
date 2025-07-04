@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Geçersiz türetim yolu";
 "nft.issuance.fungible.format" = "%@ birimi %@ içinden";
 "nft.fungible.price" = "%@ karşılığında %@";
+"common.proxieds" = "Size Delege Edilenler (Proxied)";
 "proxy.nomination.pools.type.title" = "Aday Gösterme Havuzları";
 "proxy.auction.type.title" = "Açık Artırma";
 "proxy.cancel.proxy.type.title" = "Proksiyi İptal Et";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Neredeyse geldiniz! 🎉\n Kurulumu tamamlamak ve hesaplarınızı hem Polkadot Uygulaması'nda hem de Nova Cüzdan'da sorunsuz bir şekilde kullanmaya başlamak için aşağıya dokunmanız yeterli";
 "wallet.migration.successful.alert.title" = "Hesaplar başarıyla taşındı";
 "swap.failure.cannot.receive.insufficient.asset.out" = "%@ tokenini almak için %@ üzerinde en az %@ olmalıdır";
-"common.proxieds" = "Size delege edildi (Vekil)";
 "delegate.updates.revoked" = "Artık geçerli değil";
 "delegate.updates.wallet.type.proxied" = "Size Delege Edildi";
 "delegate.updates.wallet.type.multisig" = "Paylaşılan kontrol";

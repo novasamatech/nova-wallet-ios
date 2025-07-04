@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Format derivasi tidak valid";
 "nft.issuance.fungible.format" = "%@ unit dari %@";
 "nft.fungible.price" = "%@ untuk %@";
+"common.proxieds" = "Didelegasikan kepada Anda (Proxied)";
 "proxy.nomination.pools.type.title" = "Kolam Nominasi";
 "proxy.auction.type.title" = "Lelang";
 "proxy.cancel.proxy.type.title" = "Batal Proxy";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Anda hampir selesai! 🎉\n Cukup ketuk di bawah untuk menyelesaikan pengaturan dan mulai menggunakan akun Anda dengan lancar di Aplikasi Polkadot dan Nova Wallet";
 "wallet.migration.successful.alert.title" = "Akun berhasil dimigrasikan";
 "swap.failure.cannot.receive.insufficient.asset.out" = "Anda harus memiliki setidaknya %@ di %@ untuk menerima %@ token";
-"common.proxieds" = "Diwakilkan kepadamu (Diwakilkan)";
 "delegate.updates.revoked" = "Tidak lagi valid";
 "delegate.updates.wallet.type.proxied" = "Diwakilkan kepadamu";
 "delegate.updates.wallet.type.multisig" = "Kontrol bersama";

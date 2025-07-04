@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "派生パスが無効です";
 "nft.issuance.fungible.format" = "%@ 単位の %@";
 "nft.fungible.price" = "%@ の価格は %@";
+"common.proxieds" = "委任された（プロキシ）";
 "proxy.nomination.pools.type.title" = "ノミネーションプール";
 "proxy.auction.type.title" = "オークション";
 "proxy.cancel.proxy.type.title" = "プロキシのキャンセル";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "もう少しです！🎉\n 設定を完了して、Polkadot AppとNova Walletの両方でアカウントをスムーズに使用するには、以下をタップしてください。";
 "wallet.migration.successful.alert.title" = "アカウントの移行に成功しました";
 "swap.failure.cannot.receive.insufficient.asset.out" = "%@トークンを受け取るには、%@上に少なくとも%@が必要です";
-"common.proxieds" = "委任された（プロキシ）";
 "delegate.updates.revoked" = "無効になりました";
 "delegate.updates.wallet.type.proxied" = "委任された";
 "delegate.updates.wallet.type.multisig" = "共有コントロール";

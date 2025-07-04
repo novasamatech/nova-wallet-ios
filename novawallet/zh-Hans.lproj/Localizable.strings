@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "无效的派生路径";
 "nft.issuance.fungible.format" = "%@单位的%@";
 "nft.fungible.price" = "%@为%@";
+"common.proxieds" = "代理给你（代理）";
 "proxy.nomination.pools.type.title" = "提名池";
 "proxy.auction.type.title" = "拍卖";
 "proxy.cancel.proxy.type.title" = "取消代理";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "您快到了！🎉\n 只需点击下面即可完成设置，并在 Polkadot App 和 Nova Wallet 中无缝使用您的账户";
 "wallet.migration.successful.alert.title" = "账户迁移成功";
 "swap.failure.cannot.receive.insufficient.asset.out" = "要接收 %@ 代币，您必须在 %@ 至少拥有 %@";
-"common.proxieds" = "代理给你（代理）";
 "delegate.updates.revoked" = "不再有效";
 "delegate.updates.wallet.type.proxied" = "代理给你";
 "delegate.updates.wallet.type.multisig" = "共享控制";

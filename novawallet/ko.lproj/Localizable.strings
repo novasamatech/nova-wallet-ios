@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "잘못된 파생 경로";
 "nft.issuance.fungible.format" = "%@ 개의 %@ 단위";
 "nft.fungible.price" = "%@ 당 %@";
+"common.proxieds" = "위임된 사용(프록시됨)";
 "proxy.nomination.pools.type.title" = "지명 풀";
 "proxy.auction.type.title" = "경매";
 "proxy.cancel.proxy.type.title" = "프록시 취소";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "거의 다 왔어요! 🎉\n 아래를 탭하여 설정을 완료하고 Polkadot 앱과 Nova Wallet에서 계정을 원활하게 사용하세요";
 "wallet.migration.successful.alert.title" = "계정 마이그레이션 성공";
 "swap.failure.cannot.receive.insufficient.asset.out" = "%@ 토큰을 받으려면 %@에 최소 %@가 있어야 합니다";
-"common.proxieds" = "당신에게 위임됨 (프록시됨)";
 "delegate.updates.revoked" = "더 이상 유효하지 않음";
 "delegate.updates.wallet.type.proxied" = "당신에게 위임됨";
 "delegate.updates.wallet.type.multisig" = "공유 제어";

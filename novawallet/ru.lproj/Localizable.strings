@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Неверный формат пути деривации";
 "nft.issuance.fungible.format" = "%@ единиц из %@";
 "nft.fungible.price" = "%@ за %@";
+"common.proxieds" = "Делегировано вам (Proxied)";
 "proxy.nomination.pools.type.title" = "Пулы номинаций";
 "proxy.auction.type.title" = "Аукционы";
 "proxy.cancel.proxy.type.title" = "Отмена прокси";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Почти готово! 🎉\n Просто нажмите ниже, чтобы завершить настройку и начать использовать свои учетные записи без проблем как в Polkadot App, так и в Nova Wallet";
 "wallet.migration.successful.alert.title" = "Учетные записи успешно мигрированы";
 "swap.failure.cannot.receive.insufficient.asset.out" = "У вас должно быть как минимум %@ на %@, чтобы получить %@ токен";
-"common.proxieds" = "Делегировано вам (Проксированный)";
 "delegate.updates.revoked" = "Больше недействителен";
 "delegate.updates.wallet.type.proxied" = "Делегировано вам";
 "delegate.updates.wallet.type.multisig" = "Совместный контроль";

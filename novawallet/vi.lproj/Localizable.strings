@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Đường dẫn dẫn xuất không hợp lệ";
 "nft.issuance.fungible.format" = "%@ đơn vị của %@";
 "nft.fungible.price" = "%@ cho %@";
+"common.proxieds" = "Được ủy quyền cho bạn (Proxied)";
 "proxy.nomination.pools.type.title" = "Pool đề cử";
 "proxy.auction.type.title" = "Đấu giá";
 "proxy.cancel.proxy.type.title" = "Hủy Proxy";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Bạn sắp hoàn tất! 🎉\n Chỉ cần nhấn bên dưới để hoàn tất thiết lập và bắt đầu sử dụng tài khoản của bạn một cách liền mạch trong cả Polkadot App và Nova Wallet";
 "wallet.migration.successful.alert.title" = "Tài khoản đã được di chuyển thành công";
 "swap.failure.cannot.receive.insufficient.asset.out" = "Bạn phải có ít nhất %@ trên %@ để nhận %@ token";
-"common.proxieds" = "Đã ủy quyền cho bạn (Được ủy quyền)";
 "delegate.updates.revoked" = "Không còn hiệu lực";
 "delegate.updates.wallet.type.proxied" = "Đã ủy quyền cho bạn";
 "delegate.updates.wallet.type.multisig" = "Kiểm soát chung";

@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Caminho de derivação inválido";
 "nft.issuance.fungible.format" = "%@ unidades de %@";
 "nft.fungible.price" = "%@ por %@";
+"common.proxieds" = "Delegado para você (Proxied)";
 "proxy.nomination.pools.type.title" = "Piscinas de Nomeação";
 "proxy.auction.type.title" = "Leilão";
 "proxy.cancel.proxy.type.title" = "Cancelar Proxy";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Você está quase lá! 🎉\n Basta tocar abaixo para completar a configuração e começar a usar suas contas perfeitamente tanto no Polkadot App quanto na Nova Wallet";
 "wallet.migration.successful.alert.title" = "Contas migradas com sucesso";
 "swap.failure.cannot.receive.insufficient.asset.out" = "Você deve ter pelo menos %@ em %@ para receber %@ token";
-"common.proxieds" = "Delegado a você (Delegado)";
 "delegate.updates.revoked" = "Não é mais válido";
 "delegate.updates.wallet.type.proxied" = "Delegado a você";
 "delegate.updates.wallet.type.multisig" = "Controle compartilhado";

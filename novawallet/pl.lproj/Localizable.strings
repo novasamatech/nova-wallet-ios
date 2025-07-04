@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Nieprawidłowa ścieżka pochodna";
 "nft.issuance.fungible.format" = "%@ jednostek z %@";
 "nft.fungible.price" = "%@ za %@";
+"common.proxieds" = "Delegowane do Ciebie (Proxied)";
 "proxy.nomination.pools.type.title" = "Pule nominacji";
 "proxy.auction.type.title" = "Aukcja";
 "proxy.cancel.proxy.type.title" = "Anuluj Proxy";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Jesteś prawie na miejscu! 🎉\n Po prostu stuknij poniżej, aby ukończyć konfigurację i zacząć korzystać ze swoich kont bezproblemowo w Polkadot App i Nova Wallet";
 "wallet.migration.successful.alert.title" = "Konta zostały pomyślnie przeniesione";
 "swap.failure.cannot.receive.insufficient.asset.out" = "Musisz mieć co najmniej %@ na %@, aby otrzymać %@ token";
-"common.proxieds" = "Delegowane do Ciebie (Zastępczy)";
 "delegate.updates.revoked" = "Już nieważne";
 "delegate.updates.wallet.type.proxied" = "Delegowane do Ciebie";
 "delegate.updates.wallet.type.multisig" = "Wspólna kontrola";

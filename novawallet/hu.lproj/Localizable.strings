@@ -1428,6 +1428,7 @@
 "deeplink.error.invalid.derivation.path.message" = "Érvénytelen származtatási útvonal";
 "nft.issuance.fungible.format" = "%@ / %@ egység";
 "nft.fungible.price" = "%@ / %@";
+"common.proxieds" = "Hozzád delegálva (Proxied)";
 "proxy.nomination.pools.type.title" = "Nomináló Pool-ok";
 "proxy.auction.type.title" = "Aukció";
 "proxy.cancel.proxy.type.title" = "Proxy megszakító";
@@ -1854,7 +1855,6 @@
 "wallet.migrate.accept.message" = "Már majdnem kész vagy! 🎉\n Csak koppints az alábbi gombra, hogy befejezd a beállítást, és zökkenőmentesen kezdd el használni a fiókjaidat mind a Polkadot App-ban, mind a Nova Walletben";
 "wallet.migration.successful.alert.title" = "A fiókok sikeresen át lettek költöztetve";
 "swap.failure.cannot.receive.insufficient.asset.out" = "Legalább %@ szükséges a %@ hálózaton a %@ token fogadásához";
-"common.proxieds" = "Önnek delegálva (Meghatalmazott)";
 "delegate.updates.revoked" = "Már nem érvényes";
 "delegate.updates.wallet.type.proxied" = "Önnek delegálva";
 "delegate.updates.wallet.type.multisig" = "Megosztott irányítás";
