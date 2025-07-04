@@ -180,8 +180,12 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         logger.error("Error: \(error)")
     }
 
-    func didCompleteSubmission() {
-        logger.debug("Did complete submission")
+    func didCompleteSubmission(with submissionType: MultisigSubmissionType) {
+        wireframe.showSubmisstionresult(
+            for: submissionType,
+            locale: selectedLocale,
+            from: view
+        )
     }
 }
 

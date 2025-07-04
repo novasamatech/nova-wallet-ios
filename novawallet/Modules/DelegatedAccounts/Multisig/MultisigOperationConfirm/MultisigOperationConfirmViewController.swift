@@ -50,7 +50,7 @@ private extension MultisigOperationConfirmViewController {
         clearButtonActions()
         clearInfoActions()
     }
-    
+
     func addActions() {
         addInfoActions()
         addButtonActions()
@@ -128,7 +128,7 @@ private extension MultisigOperationConfirmViewController {
                     for: .touchUpInside
                 )
                 rootView.bindApprove(
-                    title: R.string.localizable.commonApproveAndExecute(preferredLanguages: languages)
+                    title: R.string.localizable.commonApprove(preferredLanguages: languages)
                 )
             case .reject:
                 rootView.confirmButton.addTarget(

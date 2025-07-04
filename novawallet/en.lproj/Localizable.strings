@@ -1900,5 +1900,9 @@ Stay tuned!";
 "multisig.other.signatories" = "Other signatories";
 "multisig.operation.signatories.progress.format" = "Signatories (%d of %d)";
 "common.transaction.signed" = "Transaction signed!";
+"common.transaction.signed.and.executed" = "Transaction signed and executed!";
+"common.transaction.rejected" = "Transaction signed and executed!";
 "enter.call.data.details.button.title" = "Enter call data to view details";
 "common.approve.and.execute" = "Approve & Execute";
+"common.approve" = "Approve";
+

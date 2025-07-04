@@ -47,7 +47,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didCompleteSubmission()
+                self?.presenter?.didCompleteSubmission(with: .reject)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submissionError(error))
             }

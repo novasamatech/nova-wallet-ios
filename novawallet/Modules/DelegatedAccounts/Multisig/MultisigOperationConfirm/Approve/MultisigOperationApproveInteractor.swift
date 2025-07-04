@@ -99,7 +99,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didCompleteSubmission()
+                self?.presenter?.didCompleteSubmission(with: .approve)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submissionError(error))
             }

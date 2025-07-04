@@ -1,3 +1,5 @@
+import Foundation
+
 protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: MultisigOperationConfirmViewModel)
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>)
@@ -24,12 +26,17 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence)
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?)
     func didReceivePriceData(_ priceData: PriceData?)
-    func didCompleteSubmission()
+    func didCompleteSubmission(with submissionType: MultisigSubmissionType)
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable {
+protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, ModalAlertPresenting {
     func showAddCallData(from view: ControllerBackedProtocol?)
+    func showSubmisstionresult(
+        for submissionType: MultisigSubmissionType,
+        locale: Locale,
+        from view: ControllerBackedProtocol?
+    )
 }
 
 enum MultisigOperationConfirmInteractorError {
