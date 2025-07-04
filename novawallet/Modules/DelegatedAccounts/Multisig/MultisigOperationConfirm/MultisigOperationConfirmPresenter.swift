@@ -56,7 +56,9 @@ private extension MultisigOperationConfirmPresenter {
             signatories: signatories,
             fee: fee,
             feeAsset: chainAsset,
-            assetPrice: priceData
+            assetPrice: priceData,
+            confirmClosure: { [weak self] in self?.interactor.confirm() },
+            callDataAddClosure: { [weak self] in self?.wireframe.showAddCallData(from: self?.view) }
         )
 
         let viewModel = viewModelFactory.createViewModel(

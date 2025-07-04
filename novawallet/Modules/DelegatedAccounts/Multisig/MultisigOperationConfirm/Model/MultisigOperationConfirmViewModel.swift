@@ -3,6 +3,7 @@ import Foundation
 struct MultisigOperationConfirmViewModel {
     let title: String
     let sections: [Section]
+    let actions: [Action]
 }
 
 extension MultisigOperationConfirmViewModel {
@@ -13,6 +14,14 @@ extension MultisigOperationConfirmViewModel {
         case signatories(SignatoriesModel)
         case fullDetails
     }
+
+    enum Action {
+        case approve(ActionClosure)
+        case reject(ActionClosure)
+        case addCallData(ActionClosure)
+    }
+
+    typealias ActionClosure = () -> Void
 }
 
 extension MultisigOperationConfirmViewModel {

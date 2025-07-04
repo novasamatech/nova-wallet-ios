@@ -6,6 +6,8 @@ final class MultisigOperationConfirmViewController: UIViewController, ViewHolder
 
     let presenter: MultisigOperationConfirmPresenterProtocol
 
+    var viewModel: MultisigOperationConfirmViewModel?
+
     init(
         presenter: MultisigOperationConfirmPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -38,14 +40,107 @@ private extension MultisigOperationConfirmViewController {
     func setupLocalization() {
         rootView.signatoryListView.set(locale: selectedLocale)
     }
+
+    func setupActions() {
+        clearActions()
+        addActions()
+    }
+
+    func clearActions() {
+        rootView.confirmButton.removeTarget(
+            self,
+            action: #selector(actionApprove),
+            for: .touchUpInside
+        )
+        rootView.confirmButton.removeTarget(
+            self,
+            action: #selector(actionReject),
+            for: .touchUpInside
+        )
+        rootView.callDataButton.removeTarget(
+            self,
+            action: #selector(actionCallData),
+            for: .touchUpInside
+        )
+    }
+
+    func addActions() {
+        guard let viewModel else { return }
+
+        let languages = selectedLocale.rLanguages
+
+        viewModel.actions.forEach { action in
+            switch action {
+            case .approve:
+                rootView.confirmButton.addTarget(
+                    self,
+                    action: #selector(actionApprove),
+                    for: .touchUpInside
+                )
+                rootView.bindApprove(
+                    title: R.string.localizable.commonApproveAndExecute(preferredLanguages: languages)
+                )
+            case .reject:
+                rootView.confirmButton.addTarget(
+                    self,
+                    action: #selector(actionReject),
+                    for: .touchUpInside
+                )
+                rootView.bindReject(
+                    title: R.string.localizable.commonReject(preferredLanguages: languages)
+                )
+            case .addCallData:
+                rootView.callDataButton.addTarget(
+                    self,
+                    action: #selector(actionCallData),
+                    for: .touchUpInside
+                )
+                rootView.bindCallDataButton(
+                    title: R.string.localizable.enterCallDataDetailsButtonTitle(preferredLanguages: languages)
+                )
+            }
+        }
+    }
+
+    @objc func actionApprove() {
+        let actionClosure: (() -> Void)? = viewModel?.actions.compactMap { action -> (() -> Void)? in
+            guard case let .approve(closure) = action else { return nil }
+
+            return closure
+        }.first
+
+        actionClosure?()
+    }
+
+    @objc func actionReject() {
+        let actionClosure: (() -> Void)? = viewModel?.actions.compactMap { action -> (() -> Void)? in
+            guard case let .reject(closure) = action else { return nil }
+
+            return closure
+        }.first
+
+        actionClosure?()
+    }
+
+    @objc func actionCallData() {
+        let actionClosure: (() -> Void)? = viewModel?.actions.compactMap { action -> (() -> Void)? in
+            guard case let .addCallData(closure) = action else { return nil }
+
+            return closure
+        }.first
+
+        actionClosure?()
+    }
 }
 
 // MARK: - MultisigOperationConfirmViewProtocol
 
 extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewProtocol {
     func didReceive(viewModel: MultisigOperationConfirmViewModel) {
+        self.viewModel = viewModel
         title = viewModel.title
 
+        setupActions()
         rootView.bind(viewModel: viewModel)
     }
 

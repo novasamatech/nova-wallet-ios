@@ -23,7 +23,9 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AnyObject {}
+protocol MultisigOperationConfirmWireframeProtocol: AnyObject {
+    func showAddCallData(from view: ControllerBackedProtocol?)
+}
 
 enum MultisigOperationConfirmInteractorError {
     case signatoriesFetchFailed(Error)

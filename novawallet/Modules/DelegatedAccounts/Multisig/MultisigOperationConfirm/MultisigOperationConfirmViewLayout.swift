@@ -46,6 +46,42 @@ final class MultisigOperationConfirmViewLayout: ScrollableContainerLayoutView {
     lazy var signatoryListView: SignatoryListExpandableView = .create { view in
         view.delegate = self
     }
+
+    // MARK: - Actions
+
+    private lazy var buttonsStack: UIStackView = .vStack(
+        spacing: 16.0,
+        [confirmButton, callDataButton]
+    )
+
+    let callDataButton: TriangularedButton = .create { button in
+        button.applySecondaryDefaultStyle()
+        button.changesContentOpacityWhenHighlighted = true
+        button.isHidden = true
+    }
+
+    let confirmButton: TriangularedButton = .create { button in
+        button.applyDefaultStyle()
+        button.changesContentOpacityWhenHighlighted = true
+        button.isHidden = true
+    }
+
+    override func setupLayout() {
+        super.setupLayout()
+
+        addSubview(buttonsStack)
+
+        buttonsStack.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+        }
+
+        [callDataButton, confirmButton].forEach {
+            $0.snp.makeConstraints { make in
+                make.height.equalTo(UIConstants.actionHeight)
+            }
+        }
+    }
 }
 
 // MARK: - Private
@@ -115,10 +151,27 @@ extension MultisigOperationConfirmViewLayout {
             }
         }
     }
-    
+
     func bind(fee viewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
         feeCell.rowContentView.titleLabel.text = viewModel.title
         feeCell.rowContentView.bind(viewModel: viewModel.value)
+    }
+
+    func bindReject(title: String) {
+        confirmButton.imageWithTitleView?.title = title
+        confirmButton.applyDestructiveEnabledStyle()
+        confirmButton.isHidden = false
+    }
+
+    func bindApprove(title: String) {
+        confirmButton.imageWithTitleView?.title = title
+        confirmButton.applyDefaultStyle()
+        confirmButton.isHidden = false
+    }
+
+    func bindCallDataButton(title: String) {
+        callDataButton.imageWithTitleView?.title = title
+        callDataButton.isHidden = false
     }
 }
 

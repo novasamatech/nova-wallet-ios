@@ -1,16 +1,6 @@
 import Foundation
 import SubstrateSdk
 
-struct MultisigOperationConfirmViewModelParams {
-    let pendingOperation: Multisig.PendingOperation
-    let chain: ChainModel
-    let multisigWallet: MetaAccountModel
-    let signatories: [Multisig.Signatory]
-    let fee: ExtrinsicFeeProtocol?
-    let feeAsset: ChainAsset
-    let assetPrice: PriceData?
-}
-
 protocol MultisigOperationConfirmViewModelFactoryProtocol {
     func createViewModel(
         params: MultisigOperationConfirmViewModelParams,
@@ -58,14 +48,10 @@ private extension MultisigOperationConfirmViewModelFactory {
         using identiconData: Data?,
         name: String
     ) -> StackCellViewModel {
-        let iconViewModel = iconViewModelFactory.createDrawableIconViewModel(from: identiconData)
-
-        let walletViewModel = StackCellViewModel(
+        StackCellViewModel(
             details: name,
-            imageViewModel: iconViewModel
+            imageViewModel: iconViewModelFactory.createDrawableIconViewModel(from: identiconData)
         )
-
-        return walletViewModel
     }
 
     func createOriginSection(
@@ -95,6 +81,7 @@ private extension MultisigOperationConfirmViewModelFactory {
     }
 
     func createSignatorySection(
+        for pendingOperation: Multisig.PendingOperation,
         multisigWallet: MetaAccountModel,
         signatories: [Multisig.Signatory],
         fee: ExtrinsicFeeProtocol?,
@@ -104,11 +91,16 @@ private extension MultisigOperationConfirmViewModelFactory {
     ) -> MultisigOperationConfirmViewModel.Section? {
         guard
             let multisigContext = multisigWallet.multisigAccount?.multisig,
+            let definition = pendingOperation.multisigDefinition,
             let signatory = signatories.first(
                 where: { $0.localAccount?.chainAccount.accountId == multisigContext.signatory }
             ),
             case let .local(localSignatory) = signatory
         else { return nil }
+
+        let approved = definition.approvals.count >= multisigContext.threshold
+
+        guard !approved else { return nil }
 
         let walletViewModel = createWalletViewModel(
             using: localSignatory.metaAccount.walletIdenticonData,
@@ -118,7 +110,6 @@ private extension MultisigOperationConfirmViewModelFactory {
             title: R.string.localizable.commonSignatory(preferredLanguages: locale.rLanguages),
             value: walletViewModel
         )
-
         let feeViewModel = createFeeViewModel(
             fee: fee,
             feeAsset: feeAsset,
@@ -129,7 +120,6 @@ private extension MultisigOperationConfirmViewModelFactory {
             title: R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages),
             value: feeViewModel
         )
-
         let signatoryModel = MultisigOperationConfirmViewModel.SignatoryModel(
             wallet: signatoryField,
             fee: feeField
@@ -307,6 +297,36 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         return type
     }
+
+    func createActions(
+        for pendingOperation: Multisig.PendingOperation,
+        multisigWallet: MetaAccountModel,
+        confirmClosure: @escaping () -> Void,
+        callDataAddClosure: @escaping () -> Void
+    ) -> [MultisigOperationConfirmViewModel.Action] {
+        guard
+            let multisigContext = multisigWallet.multisigAccount?.multisig,
+            let definition = pendingOperation.multisigDefinition
+        else { return [] }
+
+        var actions: [MultisigOperationConfirmViewModel.Action] = []
+
+        let hasCallData = pendingOperation.call != nil
+        let createdBySignatory = pendingOperation.isCreator(accountId: multisigContext.signatory)
+        let approved = definition.approvals.count >= multisigContext.threshold
+
+        if createdBySignatory, !approved {
+            actions.append(.reject(confirmClosure))
+        } else if !createdBySignatory, hasCallData {
+            actions.append(.approve(confirmClosure))
+        }
+
+        if !hasCallData {
+            actions.append(.addCallData(callDataAddClosure))
+        }
+
+        return actions
+    }
 }
 
 // MARK: - MultisigOperationConfirmViewModelFactoryProtocol
@@ -322,6 +342,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             locale: locale
         )
         let signatorySection = createSignatorySection(
+            for: params.pendingOperation,
             multisigWallet: params.multisigWallet,
             signatories: params.signatories,
             fee: params.fee,
@@ -343,9 +364,17 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             signatoriesSection
         ].compactMap { $0 }
 
+        let actions = createActions(
+            for: params.pendingOperation,
+            multisigWallet: params.multisigWallet,
+            confirmClosure: params.confirmClosure,
+            callDataAddClosure: params.callDataAddClosure
+        )
+
         return MultisigOperationConfirmViewModel(
             title: R.string.localizable.commonCall(preferredLanguages: locale.rLanguages),
-            sections: sections
+            sections: sections,
+            actions: actions
         )
     }
 
