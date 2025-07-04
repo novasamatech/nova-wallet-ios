@@ -12,7 +12,7 @@ final class MultisigOperationConfirmPresenter {
     let multisigWallet: MetaAccountModel
 
     var signatories: [Multisig.Signatory]?
-    var pendingOperation: Multisig.PendingOperation?
+    var pendingOperation: Multisig.PendingOperationProxyModel?
     var balanceExistence: AssetBalanceExistence?
     var signatoryBalance: AssetBalance?
     var signatoryWallet: MetaAccountModel?
@@ -104,7 +104,7 @@ private extension MultisigOperationConfirmPresenter {
     func showSuccessApprove() {
         guard
             let multisigContext,
-            let definition = pendingOperation?.multisigDefinition
+            let definition = pendingOperation?.operation.multisigDefinition
         else { return }
 
         let text = if multisigContext.threshold - definition.approvals.count > 1 {
@@ -176,7 +176,7 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
 }
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorOutputProtocol {
-    func didReceiveOperation(_ operation: Multisig.PendingOperation?) {
+    func didReceiveOperation(_ operation: Multisig.PendingOperationProxyModel?) {
         pendingOperation = operation
 
         provideViewModel()

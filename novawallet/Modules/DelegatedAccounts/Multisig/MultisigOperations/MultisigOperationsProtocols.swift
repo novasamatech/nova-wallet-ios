@@ -23,6 +23,6 @@ protocol MultisigOperationsInteractorOutputProtocol: AnyObject {
 protocol MultisigOperationsWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showOperationDetails(
         from view: MultisigOperationsViewProtocol?,
-        operation: Multisig.PendingOperation
+        operation: Multisig.PendingOperationProxyModel
     )
 }

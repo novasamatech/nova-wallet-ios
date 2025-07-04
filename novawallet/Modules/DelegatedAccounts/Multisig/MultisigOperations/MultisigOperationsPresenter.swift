@@ -62,7 +62,7 @@ extension MultisigOperationsPresenter: MultisigOperationsPresenterProtocol {
 
         wireframe.showOperationDetails(
             from: view,
-            operation: operation.operation
+            operation: operation
         )
     }
 }

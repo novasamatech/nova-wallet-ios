@@ -1,7 +1,7 @@
 import Foundation
 
 struct MultisigOperationConfirmViewModelParams {
-    let pendingOperation: Multisig.PendingOperation
+    let pendingOperation: Multisig.PendingOperationProxyModel
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
     let signatories: [Multisig.Signatory]

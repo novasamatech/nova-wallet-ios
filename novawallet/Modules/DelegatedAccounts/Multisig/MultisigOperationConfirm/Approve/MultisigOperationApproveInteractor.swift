@@ -10,14 +10,14 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     private var callWeight: Substrate.Weight?
 
     init(
-        operation: Multisig.PendingOperation,
+        operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
-        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
+        pendingOperationProvider: MultisigOperationProviderProxyProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
@@ -37,7 +37,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             balanceRemoteSubscriptionFactory: balanceRemoteSubscriptionFactory,
             signatoryRepository: signatoryRepository,
-            pendingMultisigLocalSubscriptionFactory: pendingMultisigLocalSubscriptionFactory,
+            pendingOperationProvider: pendingOperationProvider,
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: signingWrapperFactory,
             assetInfoOperationFactory: assetInfoOperationFactory,
@@ -66,7 +66,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         guard
             let call,
             let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
+            let definition = operation.operation.multisigDefinition,
             let extrinsicOperationFactory,
             let signer else {
             return
@@ -114,7 +114,7 @@ private extension MultisigOperationApproveInteractor {
         guard
             let call,
             let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
+            let definition = operation.operation.multisigDefinition,
             let operationFactory = extrinsicOperationFactory else {
             return
         }
