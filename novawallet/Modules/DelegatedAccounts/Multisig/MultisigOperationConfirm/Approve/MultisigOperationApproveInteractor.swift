@@ -13,6 +13,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         operation: Multisig.PendingOperation,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
@@ -23,6 +24,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         chainRegistry: ChainRegistryProtocol,
         callWeightEstimator: CallWeightEstimatingFactoryProtocol,
         operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.callWeightEstimator = callWeightEstimator
@@ -31,6 +33,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             operation: operation,
             chain: chain,
             multisigWallet: multisigWallet,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             balanceRemoteSubscriptionFactory: balanceRemoteSubscriptionFactory,
             signatoryRepository: signatoryRepository,
@@ -40,6 +43,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             assetInfoOperationFactory: assetInfoOperationFactory,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
+            currencyManager: currencyManager,
             logger: logger
         )
     }
@@ -95,13 +99,15 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didCompleteSubmission()
+                self?.presenter?.didCompleteSubmission(with: .approve)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submissionError(error))
             }
         }
     }
 }
+
+// MARK: - Private
 
 private extension MultisigOperationApproveInteractor {
     func estimateFee() {

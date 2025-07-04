@@ -1,7 +1,18 @@
-protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {}
+import Foundation
+
+protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: MultisigOperationConfirmViewModel)
+    func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>)
+    func didReceive(loading: Bool)
+}
 
 protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
     func setup()
+    func actionShowSender()
+    func actionShowReceiver()
+    func actionShowDelegate()
+    func actionShowCurrentSignatory()
+    func actionShowSignatory(with identifier: String)
 }
 
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
@@ -15,11 +26,15 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence)
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?)
-    func didCompleteSubmission()
+    func didReceivePriceData(_ priceData: PriceData?)
+    func didCompleteSubmission(with submissionType: MultisigSubmissionType)
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AnyObject {}
+protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, ModalAlertPresenting {
+    func showAddCallData(from view: ControllerBackedProtocol?)
+    func close(from view: ControllerBackedProtocol?)
+}
 
 enum MultisigOperationConfirmInteractorError {
     case signatoriesFetchFailed(Error)

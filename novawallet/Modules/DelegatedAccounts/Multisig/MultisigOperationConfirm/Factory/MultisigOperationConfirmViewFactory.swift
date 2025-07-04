@@ -1,23 +1,55 @@
 import Foundation
 import Operation_iOS
+import Foundation_iOS
 
 struct MultisigOperationConfirmViewFactory {
     static func createView(for operation: Multisig.PendingOperation) -> MultisigOperationConfirmViewProtocol? {
         guard
             let chain = ChainRegistryFacade.sharedRegistry.getChain(for: operation.chainId),
-            let interactor = createInteractor(for: operation, chain: chain) else {
+            let asset = chain.utilityAsset(),
+            let multisigWallet = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor(
+                for: operation,
+                multisigWallet: multisigWallet,
+                chain: chain,
+                currencyManager: currencyManager
+            )
+        else {
             return nil
         }
 
+        let localizationManager = LocalizationManager.shared
+
         let wireframe = MultisigOperationConfirmWireframe()
+
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: asset.displayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let viewModelFactory = MultisigOperationConfirmViewModelFactory(
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            networkViewModelFactory: NetworkViewModelFactory(),
+            utilityBalanceViewModelFactory: balanceViewModelFactory
+        )
 
         let presenter = MultisigOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            chain: chain,
+            multisigWallet: multisigWallet,
+            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = MultisigOperationConfirmViewController(presenter: presenter)
+        let view = MultisigOperationConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
@@ -27,12 +59,13 @@ struct MultisigOperationConfirmViewFactory {
 
     private static func createInteractor(
         for operation: Multisig.PendingOperation,
-        chain: ChainModel
+        multisigWallet: MetaAccountModel,
+        chain: ChainModel,
+        currencyManager: CurrencyManagerProtocol
     ) -> MultisigOperationConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let multisigWallet = SelectedWalletSettings.shared.value,
             let multisig = multisigWallet.multisigAccount?.multisig,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -57,11 +90,12 @@ struct MultisigOperationConfirmViewFactory {
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
         )
 
-        if operation.isCreator(accountId: multisig.signatory) {
-            return MultisigOperationRejectInteractor(
+        return if operation.isCreator(accountId: multisig.signatory) {
+            MultisigOperationRejectInteractor(
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,
+                priceLocalSubscriptionFactory: PriceProviderFactory.shared,
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
@@ -71,13 +105,15 @@ struct MultisigOperationConfirmViewFactory {
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
                 chainRegistry: chainRegistry,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                currencyManager: currencyManager,
                 logger: Logger.shared
             )
         } else {
-            return MultisigOperationApproveInteractor(
+            MultisigOperationApproveInteractor(
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,
+                priceLocalSubscriptionFactory: PriceProviderFactory.shared,
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
@@ -88,6 +124,7 @@ struct MultisigOperationConfirmViewFactory {
                 chainRegistry: chainRegistry,
                 callWeightEstimator: CallWeightEstimatingFactory(),
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                currencyManager: currencyManager,
                 logger: Logger.shared
             )
         }
