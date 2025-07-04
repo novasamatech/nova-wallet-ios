@@ -34,8 +34,79 @@ private extension CallFormattingOperationFactory {
         }
     }
 
+    func detectNativeTransfer(
+        from call: AnyRuntimeCall,
+        chain: ChainModel,
+        localAccounts: [AccountId: MetaChainAccountResponse],
+        context: RuntimeJsonContext
+    ) -> FormattedCall.Definition? {
+        guard
+            call.path.isBalancesTransfer,
+            let transferArgs = try? call.args.map(
+                to: TransferCall.self,
+                with: context.toRawContext()
+            ),
+            let accountId = transferArgs.dest.accountId,
+            let nativeAsset = chain.utilityChainAsset() else {
+            return nil
+        }
+
+        let account: FormattedCall.Account = if let localAccount = localAccounts[accountId] {
+            .local(localAccount)
+        } else {
+            .remote(accountId)
+        }
+
+        let transfer = FormattedCall.Transfer(
+            amount: transferArgs.value,
+            account: account,
+            asset: nativeAsset
+        )
+
+        return .transfer(transfer)
+    }
+
+    func detectTransfer(
+        from call: AnyRuntimeCall,
+        chain: ChainModel,
+        localAccounts: [AccountId: MetaChainAccountResponse],
+        context: RuntimeJsonContext
+    ) -> FormattedCall.Definition? {
+        if let native = detectNativeTransfer(
+            from: call,
+            chain: chain,
+            localAccounts: localAccounts,
+            context: context
+        ) {
+            return native
+        } else {
+            return nil
+        }
+    }
+
+    func resolveDefinition(
+        for call: AnyRuntimeCall,
+        chain: ChainModel,
+        localAccounts: [AccountId: MetaChainAccountResponse],
+        context: RuntimeJsonContext
+    ) -> FormattedCall.Definition {
+        if let transfer = detectTransfer(
+            from: call,
+            chain: chain,
+            localAccounts: localAccounts,
+            context: context
+        ) {
+            return transfer
+        } else {
+            let general = FormattedCall.General(callPath: call.path)
+
+            return .general(general)
+        }
+    }
+
     func performFormatting(
         of json: JSON,
+        chain: ChainModel,
         localAccounts: [AccountId: MetaChainAccountResponse],
         context: RuntimeJsonContext
     ) throws -> FormattedCall {
@@ -43,12 +114,17 @@ private extension CallFormattingOperationFactory {
 
         let (delegatedAccountId, runtimeCall) = try NestedCallMapper().mapProxiedAndCall(call: json, context: context)
 
-        let generalFormat = FormattedCall.General(callPath: runtimeCall.path)
+        let definition = resolveDefinition(
+            for: runtimeCall,
+            chain: chain,
+            localAccounts: localAccounts,
+            context: context
+        )
 
         let delegatedAccount = delegatedAccountId.map { resolveAccount(for: $0, localAccounts: localAccounts) }
 
         return FormattedCall(
-            definition: .general(generalFormat),
+            definition: definition,
             delegatedAccount: delegatedAccount,
             decoded: decodedCall
         )
@@ -79,6 +155,7 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
 
                 return try self.performFormatting(
                     of: jsonCall,
+                    chain: chain,
                     localAccounts: localAccounts,
                     context: codingFactory.createRuntimeJsonContext()
                 )
