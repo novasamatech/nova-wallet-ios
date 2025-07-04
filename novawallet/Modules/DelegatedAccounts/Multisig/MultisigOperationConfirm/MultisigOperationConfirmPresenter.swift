@@ -84,9 +84,56 @@ private extension MultisigOperationConfirmPresenter {
 
         view?.didReceive(feeViewModel: viewModel)
     }
+
+    func presentOptions(for address: AccountAddress) {
+        guard let view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterProtocol {
+    func actionShowSender() {
+        guard
+            let multisigContext = multisigWallet.multisigAccount?.multisig,
+            let address = try? multisigContext.accountId.toAddress(using: chain.chainFormat)
+        else {
+            return
+        }
+
+        presentOptions(for: address)
+    }
+
+    func actionShowReceiver() {
+        // TODO: Implement when call formatting is available
+    }
+
+    func actionShowDelegate() {
+        // TODO: Implement when call formatting is available
+    }
+
+    func actionShowCurrentSignatory() {
+        guard
+            let multisigContext = multisigWallet.multisigAccount?.multisig,
+            let address = try? multisigContext.signatory.toAddress(using: chain.chainFormat)
+        else {
+            return
+        }
+
+        presentOptions(for: address)
+    }
+
+    func actionShowSignatory(with identifier: String) {
+        presentOptions(for: identifier)
+    }
+
     func setup() {
         interactor.setup()
     }

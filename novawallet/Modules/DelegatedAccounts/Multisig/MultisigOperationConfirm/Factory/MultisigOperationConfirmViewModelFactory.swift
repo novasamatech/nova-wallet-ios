@@ -163,7 +163,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             let definition = pendingOperation.multisigDefinition
         else { return nil }
 
-        let title = R.string.localizable.multisigOperationSigningProgressFormat(
+        let title = R.string.localizable.multisigOperationSignatoriesProgressFormat(
             definition.approvals.count,
             multisigContext.threshold,
             preferredLanguages: locale.rLanguages
@@ -192,10 +192,16 @@ private extension MultisigOperationConfirmViewModelFactory {
             let name: String
             let type: WalletView.ViewModel.TypeInfo
             let accountId: AccountId
+            let accountAddress: AccountAddress
             let lineBreakMode: NSLineBreakMode
 
             switch signatory {
             case let .local(localSignatory):
+                guard let address = try? localSignatory.metaAccount.chainAccount.accountId.toAddress(
+                    using: chain.chainFormat
+                ) else {
+                    return nil
+                }
                 iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
                     from: localSignatory.metaAccount.walletIdenticonData,
                     identifier: localSignatory.metaAccount.metaId
@@ -207,6 +213,7 @@ private extension MultisigOperationConfirmViewModelFactory {
                     locale: locale
                 )
                 accountId = localSignatory.metaAccount.chainAccount.accountId
+                accountAddress = address
                 lineBreakMode = .byTruncatingTail
 
             case let .remote(remoteSignatory):
@@ -221,6 +228,7 @@ private extension MultisigOperationConfirmViewModelFactory {
                 name = address
                 type = .noInfo
                 accountId = remoteSignatory.accountId
+                accountAddress = address
                 lineBreakMode = .byTruncatingMiddle
             }
 
@@ -235,7 +243,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             )
 
             return WalletsCheckmarkViewModel(
-                identifier: walletViewModel.wallet.name,
+                identifier: accountAddress,
                 walletViewModel: walletViewModel,
                 checked: multisigDefinition.approvals.contains(accountId)
             )

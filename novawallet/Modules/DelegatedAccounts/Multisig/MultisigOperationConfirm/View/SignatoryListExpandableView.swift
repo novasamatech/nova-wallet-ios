@@ -50,6 +50,10 @@ final class SignatoryListExpandableView: UIView {
         headerCell.titleLabel
     }
 
+    var rows: [WalletInfoCheckmarkControl] {
+        signatoryTableView.rows
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 

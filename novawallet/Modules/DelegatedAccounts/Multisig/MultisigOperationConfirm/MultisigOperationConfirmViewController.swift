@@ -47,6 +47,31 @@ private extension MultisigOperationConfirmViewController {
     }
 
     func clearActions() {
+        clearButtonActions()
+        clearInfoActions()
+    }
+
+    func clearInfoActions() {
+        rootView.multisigWalletCell.removeTarget(
+            self,
+            action: #selector(actionMultisigWallet),
+            for: .touchUpInside
+        )
+        rootView.signatoryWalletCell.removeTarget(
+            self,
+            action: #selector(actionCurrentSignatory),
+            for: .touchUpInside
+        )
+        rootView.signatoryListView.rows.forEach {
+            $0.removeTarget(
+                self,
+                action: #selector(actionSignatory(sender:)),
+                for: .touchUpInside
+            )
+        }
+    }
+
+    func clearButtonActions() {
         rootView.confirmButton.removeTarget(
             self,
             action: #selector(actionApprove),
@@ -65,6 +90,31 @@ private extension MultisigOperationConfirmViewController {
     }
 
     func addActions() {
+        addInfoActions()
+        addButtonActions()
+    }
+
+    func addInfoActions() {
+        rootView.multisigWalletCell.addTarget(
+            self,
+            action: #selector(actionMultisigWallet),
+            for: .touchUpInside
+        )
+        rootView.signatoryWalletCell.addTarget(
+            self,
+            action: #selector(actionCurrentSignatory),
+            for: .touchUpInside
+        )
+        rootView.signatoryListView.rows.forEach {
+            $0.addTarget(
+                self,
+                action: #selector(actionSignatory(sender:)),
+                for: .touchUpInside
+            )
+        }
+    }
+
+    func addButtonActions() {
         guard let viewModel else { return }
 
         let languages = selectedLocale.rLanguages
@@ -100,6 +150,25 @@ private extension MultisigOperationConfirmViewController {
                 )
             }
         }
+    }
+
+    @objc func actionMultisigWallet() {
+        presenter.actionShowSender()
+    }
+
+    @objc func actionCurrentSignatory() {
+        presenter.actionShowCurrentSignatory()
+    }
+
+    @objc func actionSignatory(sender: UIView) {
+        guard
+            let control = sender as? WalletInfoCheckmarkControl,
+            let identifier = control.model?.identifier
+        else {
+            return
+        }
+
+        presenter.actionShowSignatory(with: identifier)
     }
 
     @objc func actionApprove() {
@@ -140,8 +209,9 @@ extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewPr
         self.viewModel = viewModel
         title = viewModel.title
 
-        setupActions()
         rootView.bind(viewModel: viewModel)
+
+        setupActions()
     }
 
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {

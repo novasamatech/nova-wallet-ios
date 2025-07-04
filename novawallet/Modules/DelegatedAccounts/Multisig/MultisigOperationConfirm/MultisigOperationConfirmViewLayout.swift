@@ -50,7 +50,7 @@ final class MultisigOperationConfirmViewLayout: ScrollableContainerLayoutView {
     // MARK: - Actions
 
     private lazy var buttonsStack: UIStackView = .vStack(
-        spacing: 16.0,
+        spacing: Constants.interButtonSpacing,
         [confirmButton, callDataButton]
     )
 
@@ -91,7 +91,7 @@ private extension MultisigOperationConfirmViewLayout {
         senderTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         containerView.stackView.addArrangedSubview(senderTableView)
-        containerView.stackView.setCustomSpacing(12.0, after: senderTableView)
+        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: senderTableView)
 
         senderTableView.addArrangedSubview(originNetworkCell)
         senderTableView.addArrangedSubview(multisigWalletCell)
@@ -107,7 +107,7 @@ private extension MultisigOperationConfirmViewLayout {
         signatoryTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         containerView.stackView.addArrangedSubview(signatoryTableView)
-        containerView.stackView.setCustomSpacing(12.0, after: signatoryTableView)
+        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: signatoryTableView)
 
         signatoryTableView.addArrangedSubview(signatoryWalletCell)
         signatoryTableView.addArrangedSubview(feeCell)
@@ -125,7 +125,7 @@ private extension MultisigOperationConfirmViewLayout {
         }
 
         containerView.stackView.addArrangedSubview(signatoryListView)
-        containerView.stackView.setCustomSpacing(12.0, after: signatoryListView)
+        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: signatoryListView)
 
         signatoryListView.titleLabel.text = viewModel.signatories.title
         signatoryListView.bind(with: viewModel.signatories.value)
@@ -191,5 +191,14 @@ extension MultisigOperationConfirmViewLayout: SignatoryListExpandableViewDelegat
             },
             completionBlock: nil
         )
+    }
+}
+
+// MARK: - Constants
+
+private extension MultisigOperationConfirmViewLayout {
+    enum Constants {
+        static let interSectionSpacing: CGFloat = 12.0
+        static let interButtonSpacing: CGFloat = 16.0
     }
 }

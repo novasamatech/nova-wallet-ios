@@ -5,6 +5,11 @@ protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
 
 protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
     func setup()
+    func actionShowSender()
+    func actionShowReceiver()
+    func actionShowDelegate()
+    func actionShowCurrentSignatory()
+    func actionShowSignatory(with identifier: String)
 }
 
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
@@ -23,7 +28,7 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AnyObject {
+protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable {
     func showAddCallData(from view: ControllerBackedProtocol?)
 }
 

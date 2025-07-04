@@ -24,6 +24,8 @@ final class WalletInfoCheckmarkControl: RowView<
         WalletInfoView<WalletView>
     >
 > {
+    var model: WalletsCheckmarkViewModel?
+
     convenience init() {
         self.init(frame: .zero)
     }
@@ -35,6 +37,8 @@ final class WalletInfoCheckmarkControl: RowView<
     }
 
     func bind(viewModel: WalletsCheckmarkViewModel) {
+        model = viewModel
+
         rowContentView.bind(viewModel: viewModel)
     }
 }
