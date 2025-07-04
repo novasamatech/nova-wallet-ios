@@ -49,7 +49,7 @@ final class MultilineTextInputView: BackgroundedContentControl {
         return view
     }()
 
-    let rightFieldSpacing: CGFloat = 12.0
+    let rightFieldSpacing: CGFloat = 8.0
 
     weak var delegate: MultilineTextInputViewDelegate?
 
