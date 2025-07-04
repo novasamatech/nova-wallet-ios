@@ -7,7 +7,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
 
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+    let pendingOperationProvider: MultisigOperationProviderProxyProtocol
 
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
@@ -20,27 +20,26 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private(set) var operation: Multisig.PendingOperation
+    private(set) var operation: Multisig.PendingOperationProxyModel
     private(set) var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol?
     private(set) var signer: SigningWrapperProtocol?
     private(set) var call: AnyRuntimeCall?
 
     private var assetInfo: AssetStorageInfo?
     private var assetRemoteSubscriptionId: UUID?
-    private var operationProvider: StreamableProvider<Multisig.PendingOperation>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
     private var callProcessingStore = CancellableCallStore()
 
     init(
-        operation: Multisig.PendingOperation,
+        operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
-        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
+        pendingOperationProvider: MultisigOperationProviderProxyProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
@@ -56,7 +55,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.balanceRemoteSubscriptionFactory = balanceRemoteSubscriptionFactory
         self.signatoryRepository = signatoryRepository
-        self.pendingMultisigLocalSubscriptionFactory = pendingMultisigLocalSubscriptionFactory
+        self.pendingOperationProvider = pendingOperationProvider
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.signingWrapperFactory = signingWrapperFactory
         self.assetInfoOperationFactory = assetInfoOperationFactory
@@ -64,6 +63,8 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         self.operationQueue = operationQueue
         self.logger = logger
         self.currencyManager = currencyManager
+
+        call = operation.formattedModel?.decoded
     }
 
     deinit {
@@ -143,7 +144,7 @@ private extension MultisigOperationConfirmInteractor {
         guard
             call == nil,
             !callProcessingStore.hasCall,
-            let callData = operation.call else {
+            let callData = operation.operation.call else {
             return
         }
 
@@ -318,7 +319,10 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     func setup() {
         setupSignatories()
 
-        operationProvider = subscribePendingOperation(identifier: operation.identifier)
+        pendingOperationProvider.handler = self
+        pendingOperationProvider.subscribePendingOperation(
+            identifier: operation.operation.identifier
+        )
 
         deriveAssetInfoAndProvideBalance()
     }
@@ -330,10 +334,9 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
 
 // MARK: - MultisigOperationsLocalStorageSubscriber
 
-extension MultisigOperationConfirmInteractor: MultisigOperationsLocalStorageSubscriber,
-    MultisigOperationsLocalSubscriptionHandler {
+extension MultisigOperationConfirmInteractor: MultisigOperationProviderHandlerProtocol {
     func handleMultisigPendingOperation(
-        result: Result<Multisig.PendingOperation?, any Error>,
+        result: Result<Multisig.PendingOperationProxyModel?, Error>,
         identifier _: String
     ) {
         switch result {

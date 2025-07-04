@@ -3,9 +3,13 @@ import Operation_iOS
 import Foundation_iOS
 
 struct MultisigOperationConfirmViewFactory {
-    static func createView(for operation: Multisig.PendingOperation) -> MultisigOperationConfirmViewProtocol? {
+    static func createView(
+        for operation: Multisig.PendingOperationProxyModel
+    ) -> MultisigOperationConfirmViewProtocol? {
         guard
-            let chain = ChainRegistryFacade.sharedRegistry.getChain(for: operation.chainId),
+            let chain = ChainRegistryFacade.sharedRegistry.getChain(
+                for: operation.operation.chainId
+            ),
             let asset = chain.utilityAsset(),
             let multisigWallet = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
@@ -58,7 +62,7 @@ struct MultisigOperationConfirmViewFactory {
     }
 
     private static func createInteractor(
-        for operation: Multisig.PendingOperation,
+        for operation: Multisig.PendingOperationProxyModel,
         multisigWallet: MetaAccountModel,
         chain: ChainModel,
         currencyManager: CurrencyManagerProtocol
@@ -90,7 +94,16 @@ struct MultisigOperationConfirmViewFactory {
             remoteSubscriptionService: WalletServiceFacade.sharedSubstrateRemoteSubscriptionService
         )
 
-        return if operation.isCreator(accountId: multisig.signatory) {
+        let pendingOperationsProvider = MultisigOperationProviderProxy(
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+            callFormattingFactory: CallFormattingOperationFactory(
+                chainRegistry: chainRegistry,
+                walletRepository: walletRepository
+            ),
+            operationQueue: operationQueue
+        )
+
+        return if operation.operation.isCreator(accountId: multisig.signatory) {
             MultisigOperationRejectInteractor(
                 operation: operation,
                 chain: chain,
@@ -99,7 +112,7 @@ struct MultisigOperationConfirmViewFactory {
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-                pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+                pendingOperationProvider: pendingOperationsProvider,
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
@@ -117,7 +130,7 @@ struct MultisigOperationConfirmViewFactory {
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
                 signatoryRepository: MultisigSignatoryRepository(repository: walletRepository),
-                pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+                pendingOperationProvider: pendingOperationsProvider,
                 extrinsicServiceFactory: extrinsicServiceFactory,
                 signingWrapperFactory: SigningWrapperFactory(),
                 assetInfoOperationFactory: AssetStorageInfoOperationFactory(),
