@@ -1907,3 +1907,7 @@ Stay tuned!";
 "common.approve" = "Approve";
 "common.view.details" = "View details";
 "multisig.transaction.reject.sheet.message" = "Transaction will be rejected. Multisig deposit will be returned to %@.";
+"enter.call.data" = "Enter call data";
+"call.data.validation.error.title" = "Invalid call data";
+"call.data.validation.error.message" = "The call data you provided is invalid or has the wrong format. Please ensure it is correct and try again.";
+"call.data.validation.hash.matching.error.message" = "This call data for another operation with call hash %@";

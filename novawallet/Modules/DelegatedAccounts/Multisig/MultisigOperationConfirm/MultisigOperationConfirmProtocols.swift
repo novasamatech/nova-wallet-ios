@@ -32,7 +32,10 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, ModalAlertPresenting {
-    func showAddCallData(from view: ControllerBackedProtocol?)
+    func showAddCallData(
+        from view: ControllerBackedProtocol?,
+        for operation: Multisig.PendingOperation
+    )
     func close(from view: ControllerBackedProtocol?)
 }
 

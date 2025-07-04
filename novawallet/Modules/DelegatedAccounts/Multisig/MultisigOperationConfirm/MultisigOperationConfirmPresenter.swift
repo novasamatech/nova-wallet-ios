@@ -64,7 +64,14 @@ private extension MultisigOperationConfirmPresenter {
                 self?.view?.didReceive(loading: true)
                 self?.interactor.confirm()
             },
-            callDataAddClosure: { [weak self] in self?.wireframe.showAddCallData(from: self?.view) }
+            callDataAddClosure: {
+                [weak self] in
+
+                self?.wireframe.showAddCallData(
+                    from: self?.view,
+                    for: pendingOperation
+                )
+            }
         )
 
         let viewModel = viewModelFactory.createViewModel(
