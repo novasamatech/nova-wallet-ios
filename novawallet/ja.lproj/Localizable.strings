@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "取引が拒否されました！";
 "common.approve.and.execute" = "承認と実行";
 "multisig.transaction.reject.sheet.message" = "トランザクションは拒否されます。マルチシグのデポジットは%@に返されます。";
+"multisig.operations.empty.text" = "まだ取引はありません。\n署名リクエストがここに表示されます";

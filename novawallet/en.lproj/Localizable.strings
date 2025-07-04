@@ -1868,8 +1868,7 @@
 "multisig.transaction.created.title" = "Multisig transaction created";
 "multisig.transaction.created.message" = "Other signers can now confirm the transaction. You can track its status in the Multisig Transactions.";
 "multisig.selection.unavailable.title" = "Multisigs coming soon";
-"multisig.selection.unavailable.message" = "Multisig wallet management will be available in an upcoming update.
-Stay tuned!";
+"multisig.selection.unavailable.message" = "Multisig wallet management will be available in an upcoming update. Stay tuned!";
 "multisig.transactions.to.sign" = "Transactions to sign";
 "multisig.operation.type.unknown" = "Unknown operation";
 "multisig.operation.signing.progress.format" = "Signing (%d of %d)";
@@ -1907,3 +1906,4 @@ Stay tuned!";
 "common.approve" = "Approve";
 "common.view.details" = "View details";
 "multisig.transaction.reject.sheet.message" = "Transaction will be rejected. Multisig deposit will be returned to %@.";
+"multisig.operations.empty.text" = "No transactions yet.\nSigning requests will show up here";
