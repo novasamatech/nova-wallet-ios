@@ -47,4 +47,10 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     ) -> ExtrinsicOperationFactoryProtocol {
         extrinsicOperationFactory
     }
+    
+    func createExtrinsicSubmissionMonitor(
+        with extrinsicService: ExtrinsicServiceProtocol
+    ) -> ExtrinsicSubmitMonitorFactoryProtocol {
+        fatalError("Unsupported factory method")
+    }
 }
