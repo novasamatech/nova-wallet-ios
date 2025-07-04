@@ -1907,3 +1907,4 @@ Stay tuned!";
 "common.approve" = "Approve";
 "common.view.details" = "View details";
 "multisig.transaction.reject.sheet.message" = "Transaction will be rejected. Multisig deposit will be returned to %@.";
+"multisig.operations.empty.text" = "No transactions yet.\nSigning requests will show up here";

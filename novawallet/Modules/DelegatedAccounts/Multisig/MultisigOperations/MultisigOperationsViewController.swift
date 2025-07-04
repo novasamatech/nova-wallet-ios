@@ -94,6 +94,7 @@ private extension MultisigOperationsViewController {
         title = R.string.localizable.multisigTransactionsToSign(
             preferredLanguages: selectedLocale.rLanguages
         )
+        rootView.locale = selectedLocale
     }
 
     func applySnapshot(
@@ -160,11 +161,10 @@ extension MultisigOperationsViewController: MultisigOperationsViewProtocol {
 
         switch viewModel {
         case .empty:
-            rootView.showEmptyState(true)
+            rootView.showEmptyState()
             applySnapshot(with: [])
-
         case let .sections(sections):
-            rootView.showEmptyState(false)
+            rootView.showContent()
             applySnapshot(with: sections)
         }
     }
