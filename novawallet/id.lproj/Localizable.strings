@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "Transaksi ditolak!";
 "common.approve.and.execute" = "Setujui & Eksekusi";
 "multisig.transaction.reject.sheet.message" = "Transaksi akan ditolak. Deposit multisig akan dikembalikan ke %@.";
+"multisig.operations.empty.text" = "Belum ada transaksi.\nPermintaan penandatanganan akan muncul di sini";

@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "İşlem reddedildi!";
 "common.approve.and.execute" = "Onayla ve Gerçekleştir";
 "multisig.transaction.reject.sheet.message" = "İşlem reddedilecek. Çoklu imza depozitosu %@'e geri dönecek.";
+"multisig.operations.empty.text" = "Henüz işlem yok.\nİmzalama istekleri burada görünecek";

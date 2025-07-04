@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "Транзакция отклонена!";
 "common.approve.and.execute" = "Одобрить и выполнить";
 "multisig.transaction.reject.sheet.message" = "Транзакция будет отклонена. Депозит мультиподписи будет возвращен %@.";
+"multisig.operations.empty.text" = "Транзакций пока нет.\nЗапросы на подпись будут отображаться здесь";

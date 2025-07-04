@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "Tranzakció elutasítva!";
 "common.approve.and.execute" = "Jóváhagyás és végrehajtás";
 "multisig.transaction.reject.sheet.message" = "A tranzakció elutasításra kerül. A multisig letét visszakerül %@-hoz.";
+"multisig.operations.empty.text" = "Még nincsenek tranzakciók.\nAz aláírási kérelmek itt fognak megjelenni";
