@@ -50,6 +50,11 @@ private extension MultisigOperationConfirmViewController {
         clearButtonActions()
         clearInfoActions()
     }
+    
+    func addActions() {
+        addInfoActions()
+        addButtonActions()
+    }
 
     func clearInfoActions() {
         rootView.multisigWalletCell.removeTarget(
@@ -87,11 +92,6 @@ private extension MultisigOperationConfirmViewController {
             action: #selector(actionCallData),
             for: .touchUpInside
         )
-    }
-
-    func addActions() {
-        addInfoActions()
-        addButtonActions()
     }
 
     func addInfoActions() {
