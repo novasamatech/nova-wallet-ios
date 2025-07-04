@@ -319,9 +319,9 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     func setup() {
         setupSignatories()
 
-        pendingOperationProvider.handler = self
         pendingOperationProvider.subscribePendingOperation(
-            identifier: operation.operation.identifier
+            identifier: operation.operation.identifier,
+            handler: self
         )
 
         deriveAssetInfoAndProvideBalance()

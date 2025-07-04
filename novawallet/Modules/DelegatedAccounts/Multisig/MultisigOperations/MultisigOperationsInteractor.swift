@@ -34,10 +34,10 @@ private extension MultisigOperationsInteractor {
             return
         }
 
-        pendingOperationsProvider.handler = self
         pendingOperationsProvider.subscribePendingOperations(
             for: multisigAccount.accountId,
-            chainId: nil
+            chainId: nil,
+            handler: self
         )
     }
 
