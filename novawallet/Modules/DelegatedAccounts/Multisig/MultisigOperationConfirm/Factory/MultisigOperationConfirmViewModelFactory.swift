@@ -357,6 +357,21 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         return actions
     }
+
+    private func createTitle(for formattedCall: FormattedCall?, locale: Locale) -> String {
+        switch formattedCall?.definition {
+        case let .general(general):
+            return general.callPath.callName.displayCall
+        case .transfer:
+            return R.string.localizable.transferTitle(
+                preferredLanguages: locale.rLanguages
+            )
+        case nil:
+            return R.string.localizable.multisigOperationTypeUnknown(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+    }
 }
 
 // MARK: - MultisigOperationConfirmViewModelFactoryProtocol
@@ -372,7 +387,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             locale: locale
         )
         let signatorySection = createSignatorySection(
-            for: params.pendingOperation,
+            for: params.pendingOperation.operation,
             multisigWallet: params.multisigWallet,
             signatories: params.signatories,
             fee: params.fee,
@@ -381,7 +396,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             locale: locale
         )
         let signatoriesSection = createSignatoriesSection(
-            pendingOperation: params.pendingOperation,
+            pendingOperation: params.pendingOperation.operation,
             multisigWallet: params.multisigWallet,
             signatories: params.signatories,
             chain: params.chain,
@@ -395,15 +410,17 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         ].compactMap { $0 }
 
         let actions = createActions(
-            for: params.pendingOperation,
+            for: params.pendingOperation.operation,
             multisigWallet: params.multisigWallet,
             locale: locale,
             confirmClosure: params.confirmClosure,
             callDataAddClosure: params.callDataAddClosure
         )
 
+        let title = createTitle(for: params.pendingOperation.formattedModel, locale: locale)
+
         return MultisigOperationConfirmViewModel(
-            title: R.string.localizable.commonCall(preferredLanguages: locale.rLanguages),
+            title: title,
             sections: sections,
             actions: actions
         )

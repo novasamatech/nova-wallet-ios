@@ -11,11 +11,27 @@ final class MultisigOperationsViewFactory {
 
         let wireframe = MultisigOperationsWireframe()
 
+        let walletsRepository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
+
+        let pendingOperationsProvider = MultisigOperationProviderProxy(
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+            callFormattingFactory: CallFormattingOperationFactory(
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                walletRepository: walletsRepository
+            ),
+            operationQueue: operationQueue
+        )
+
         let interactor = MultisigOperationsInteractor(
             wallet: selectedWallet,
+            pendingOperationsProvider: pendingOperationsProvider,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: operationQueue,
-            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared
+            operationQueue: operationQueue
         )
 
         let viewModelFactory = MultisigOperationsViewModelFactory()
