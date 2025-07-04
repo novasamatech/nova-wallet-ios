@@ -74,14 +74,14 @@ private extension MultisigOperationsViewModelFactory {
         let signedByUser = definition.signedBy(accountId: multisigContext.signatory)
         let createdByUser = definition.createdBy(accountId: multisigContext.signatory)
 
-        return if signedByUser {
+        return if createdByUser {
             .signed(
                 TitleIconViewModel(
                     title: R.string.localizable.multisigOperationStatusSigned(preferredLanguages: languages),
                     icon: R.image.iconPositiveCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
                 )
             )
-        } else if createdByUser {
+        } else if signedByUser {
             .createdByUser(R.string.localizable.multisigOperationStatusCreated(preferredLanguages: languages))
         } else {
             nil
