@@ -157,7 +157,7 @@ private extension CallFormattingOperationFactory {
         ) {
             return native
         }
-        
+
         if let palletAsset = detectPalletAssetsTransfer(
             from: call,
             chain: chain,
@@ -166,7 +166,7 @@ private extension CallFormattingOperationFactory {
         ) {
             return palletAsset
         }
-        
+
         if let ormlAsset = detectOrmlTransfer(
             from: call,
             chain: chain,
@@ -175,7 +175,7 @@ private extension CallFormattingOperationFactory {
         ) {
             return ormlAsset
         }
-        
+
         return nil
     }
 

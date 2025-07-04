@@ -24,7 +24,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         guard
             let multisig = multisigWallet.multisigAccount?.multisig,
             let definition = operation.operation.multisigDefinition,
-            let extrinsicOperationFactory,
+            let extrinsicSubmissionMonitor,
             let signer else {
             return
         }
@@ -35,8 +35,8 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
             callHash: operation.operation.callHash
         )
 
-        let submissionWrapper = extrinsicOperationFactory.submit(
-            builderClosure,
+        let submissionWrapper = extrinsicSubmissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
             signer: signer
         )
 
