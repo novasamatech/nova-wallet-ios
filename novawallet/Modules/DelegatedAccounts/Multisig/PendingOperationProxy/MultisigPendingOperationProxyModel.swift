@@ -5,6 +5,10 @@ extension Multisig {
     struct PendingOperationProxyModel {
         let operation: PendingOperation
         let formattedModel: FormattedCall?
+
+        var timestamp: UInt64 {
+            operation.timestamp
+        }
     }
 }
 

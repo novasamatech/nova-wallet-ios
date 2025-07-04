@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol MultisigOperationProviderProxyProtocol {
+protocol MultisigOperationProviderProxyProtocol: AnyObject {
     var handler: MultisigOperationProviderHandlerProtocol? { get set }
 
     func subscribePendingOperations(
@@ -23,6 +23,17 @@ protocol MultisigOperationProviderHandlerProtocol: AnyObject {
         result: Result<Multisig.PendingOperationProxyModel?, Error>,
         identifier: String
     )
+}
+
+extension MultisigOperationProviderHandlerProtocol {
+    func handleMultisigPendingOperations(
+        result _: Result<[DataProviderChange<Multisig.PendingOperationProxyModel>], Error>
+    ) {}
+
+    func handleMultisigPendingOperation(
+        result _: Result<Multisig.PendingOperationProxyModel?, Error>,
+        identifier _: String
+    ) {}
 }
 
 final class MultisigOperationProviderProxy {

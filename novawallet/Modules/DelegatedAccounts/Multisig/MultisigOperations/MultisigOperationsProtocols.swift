@@ -15,7 +15,7 @@ protocol MultisigOperationsInteractorInputProtocol: AnyObject {
 }
 
 protocol MultisigOperationsInteractorOutputProtocol: AnyObject {
-    func didReceiveOperations(changes: [DataProviderChange<Multisig.PendingOperation>])
+    func didReceiveOperations(changes: [DataProviderChange<Multisig.PendingOperationProxyModel>])
     func didReceiveChains(changes: [DataProviderChange<ChainModel>])
     func didReceive(error: Error)
 }
