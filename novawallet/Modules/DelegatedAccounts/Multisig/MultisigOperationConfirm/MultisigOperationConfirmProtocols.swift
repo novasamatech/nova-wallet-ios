@@ -21,7 +21,7 @@ protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
 }
 
 protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
-    func didReceiveOperation(_ operation: Multisig.PendingOperation?)
+    func didReceiveOperation(_ operation: Multisig.PendingOperationProxyModel?)
     func didReceiveSignatories(_ signatories: [Multisig.Signatory])
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence)

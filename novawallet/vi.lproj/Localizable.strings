@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "Giao dịch bị từ chối!";
 "common.approve.and.execute" = "Phê duyệt & Thực hiện";
 "multisig.transaction.reject.sheet.message" = "Giao dịch sẽ bị từ chối. Tiền gửi multisig sẽ được trả lại cho %@.";
+"multisig.operations.empty.text" = "Chưa có giao dịch nào.\nCác yêu cầu ký sẽ hiển thị ở đây";

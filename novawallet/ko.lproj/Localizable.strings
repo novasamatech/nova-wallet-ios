@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "거래가 거부되었습니다!";
 "common.approve.and.execute" = "승인 및 실행";
 "multisig.transaction.reject.sheet.message" = "거래가 거부됩니다. 멀티시그 예치금은 %@에게 반환됩니다.";
+"multisig.operations.empty.text" = "아직 거래 내역이 없습니다.\n서명 요청이 여기에 표시됩니다";

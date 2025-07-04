@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "交易被拒绝！";
 "common.approve.and.execute" = "批准并执行";
 "multisig.transaction.reject.sheet.message" = "交易将会被拒绝。多重签名存款将返还给 %@。";
+"multisig.operations.empty.text" = "暂无交易。\n签名请求将显示在此处";
