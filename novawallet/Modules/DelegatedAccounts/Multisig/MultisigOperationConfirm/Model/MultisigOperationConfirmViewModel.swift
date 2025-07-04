@@ -4,6 +4,10 @@ struct MultisigOperationConfirmViewModel {
     let title: String
     let sections: [Section]
     let actions: [Action]
+
+    var hasAddCallDataAction: Bool {
+        actions.contains { $0.type == .addCallData }
+    }
 }
 
 extension MultisigOperationConfirmViewModel {

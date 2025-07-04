@@ -5,7 +5,17 @@ final class MultisigOperationConfirmWireframe: MultisigOperationConfirmWireframe
         view?.controller.dismiss(animated: true)
     }
 
-    func showAddCallData(from _: ControllerBackedProtocol?) {
-        // TODO: Implement add call data screen
+    func showAddCallData(
+        from view: (any ControllerBackedProtocol)?,
+        for operation: Multisig.PendingOperation
+    ) {
+        let callDataView = MultisigCallDataImportViewFactory.createView(
+            pendingOperation: operation
+        )
+
+        view?.controller.navigationController?.pushViewController(
+            callDataView.controller,
+            animated: true
+        )
     }
 }
