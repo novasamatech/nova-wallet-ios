@@ -15,10 +15,16 @@ extension MultisigOperationConfirmViewModel {
         case fullDetails
     }
 
-    enum Action {
-        case approve(ActionClosure)
-        case reject(ActionClosure)
-        case addCallData(ActionClosure)
+    struct Action {
+        let title: String
+        let type: ActionType
+        let actionClosure: ActionClosure
+    }
+
+    enum ActionType {
+        case approve
+        case reject
+        case addCallData
     }
 
     typealias ActionClosure = () -> Void

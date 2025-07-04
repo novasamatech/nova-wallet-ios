@@ -120,34 +120,28 @@ private extension MultisigOperationConfirmViewController {
         let languages = selectedLocale.rLanguages
 
         viewModel.actions.forEach { action in
-            switch action {
+            switch action.type {
             case .approve:
                 rootView.confirmButton.addTarget(
                     self,
                     action: #selector(actionApprove),
                     for: .touchUpInside
                 )
-                rootView.bindApprove(
-                    title: R.string.localizable.commonApprove(preferredLanguages: languages)
-                )
+                rootView.bindApprove(title: action.title)
             case .reject:
                 rootView.confirmButton.addTarget(
                     self,
                     action: #selector(actionReject),
                     for: .touchUpInside
                 )
-                rootView.bindReject(
-                    title: R.string.localizable.commonReject(preferredLanguages: languages)
-                )
+                rootView.bindReject(title: action.title)
             case .addCallData:
                 rootView.callDataButton.addTarget(
                     self,
                     action: #selector(actionCallData),
                     for: .touchUpInside
                 )
-                rootView.bindCallDataButton(
-                    title: R.string.localizable.enterCallDataDetailsButtonTitle(preferredLanguages: languages)
-                )
+                rootView.bindCallDataButton(title: action.title)
             }
         }
     }
@@ -172,31 +166,19 @@ private extension MultisigOperationConfirmViewController {
     }
 
     @objc func actionApprove() {
-        let actionClosure: (() -> Void)? = viewModel?.actions.compactMap { action -> (() -> Void)? in
-            guard case let .approve(closure) = action else { return nil }
-
-            return closure
-        }.first
+        let actionClosure = viewModel?.actions.first { $0.type == .approve }?.actionClosure
 
         actionClosure?()
     }
 
     @objc func actionReject() {
-        let actionClosure: (() -> Void)? = viewModel?.actions.compactMap { action -> (() -> Void)? in
-            guard case let .reject(closure) = action else { return nil }
-
-            return closure
-        }.first
+        let actionClosure = viewModel?.actions.first { $0.type == .reject }?.actionClosure
 
         actionClosure?()
     }
 
     @objc func actionCallData() {
-        let actionClosure: (() -> Void)? = viewModel?.actions.compactMap { action -> (() -> Void)? in
-            guard case let .addCallData(closure) = action else { return nil }
-
-            return closure
-        }.first
+        let actionClosure = viewModel?.actions.first { $0.type == .addCallData }?.actionClosure
 
         actionClosure?()
     }

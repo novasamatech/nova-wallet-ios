@@ -32,11 +32,7 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
 
 protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, ModalAlertPresenting {
     func showAddCallData(from view: ControllerBackedProtocol?)
-    func showSubmisstionresult(
-        for submissionType: MultisigSubmissionType,
-        locale: Locale,
-        from view: ControllerBackedProtocol?
-    )
+    func close(from view: ControllerBackedProtocol?)
 }
 
 enum MultisigOperationConfirmInteractorError {

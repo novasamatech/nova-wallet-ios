@@ -6,6 +6,7 @@ final class MultisigOperationConfirmPresenter {
     let wireframe: MultisigOperationConfirmWireframeProtocol
     let interactor: MultisigOperationConfirmInteractorInputProtocol
     let viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol
+    let logger: LoggerProtocol
 
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
@@ -18,7 +19,9 @@ final class MultisigOperationConfirmPresenter {
     var fee: ExtrinsicFeeProtocol?
     var priceData: PriceData?
 
-    let logger: LoggerProtocol
+    var multisigContext: DelegatedAccount.MultisigAccountModel? {
+        multisigWallet.multisigAccount?.multisig
+    }
 
     init(
         interactor: MultisigOperationConfirmInteractorInputProtocol,
@@ -70,10 +73,7 @@ private extension MultisigOperationConfirmPresenter {
     }
 
     func provideFeeViewModel() {
-        guard
-            let chainAsset = chain.utilityChainAsset(),
-            let priceData
-        else { return }
+        guard let chainAsset = chain.utilityChainAsset() else { return }
 
         let viewModel = viewModelFactory.createFeeFieldViewModel(
             fee: fee,
@@ -96,6 +96,39 @@ private extension MultisigOperationConfirmPresenter {
             chain: chain,
             locale: selectedLocale
         )
+    }
+
+    func showSuccessApprove() {
+        guard
+            let multisigContext,
+            let definition = pendingOperation?.multisigDefinition
+        else { return }
+
+        let text = if multisigContext.threshold - definition.approvals.count > 1 {
+            R.string.localizable.commonTransactionSigned(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            R.string.localizable.commonTransactionSignedAndExecuted(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        wireframe.presentSuccessNotification(
+            text,
+            from: view
+        ) { [weak self] in
+            self?.wireframe.close(from: self?.view)
+        }
+    }
+
+    func showSuccessReject() {
+        wireframe.presentSuccessNotification(
+            R.string.localizable.commonTransactionRejected(preferredLanguages: selectedLocale.rLanguages),
+            from: view
+        ) { [weak self] in
+            self?.wireframe.close(from: self?.view)
+        }
     }
 }
 
@@ -181,11 +214,12 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
     }
 
     func didCompleteSubmission(with submissionType: MultisigSubmissionType) {
-        wireframe.showSubmisstionresult(
-            for: submissionType,
-            locale: selectedLocale,
-            from: view
-        )
+        switch submissionType {
+        case .approve:
+            showSuccessApprove()
+        case .reject:
+            showSuccessReject()
+        }
     }
 }
 

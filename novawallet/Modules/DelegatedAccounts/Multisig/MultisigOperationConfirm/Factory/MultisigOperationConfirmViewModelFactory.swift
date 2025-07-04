@@ -134,7 +134,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         assetPrice: PriceData?,
         locale: Locale
     ) -> BalanceViewModelProtocol? {
-        guard let fee, let assetPrice else { return nil }
+        guard let fee else { return nil }
 
         let assetInfo = feeAsset.asset.displayInfo
 
@@ -309,6 +309,7 @@ private extension MultisigOperationConfirmViewModelFactory {
     func createActions(
         for pendingOperation: Multisig.PendingOperation,
         multisigWallet: MetaAccountModel,
+        locale: Locale,
         confirmClosure: @escaping () -> Void,
         callDataAddClosure: @escaping () -> Void
     ) -> [MultisigOperationConfirmViewModel.Action] {
@@ -322,15 +323,36 @@ private extension MultisigOperationConfirmViewModelFactory {
         let hasCallData = pendingOperation.call != nil
         let createdBySignatory = pendingOperation.isCreator(accountId: multisigContext.signatory)
         let approved = definition.approvals.count >= multisigContext.threshold
+        let willExecute = (multisigContext.threshold - definition.approvals.count) == 1
 
         if createdBySignatory, !approved {
-            actions.append(.reject(confirmClosure))
+            let action = MultisigOperationConfirmViewModel.Action(
+                title: R.string.localizable.commonReject(preferredLanguages: locale.rLanguages),
+                type: .reject,
+                actionClosure: confirmClosure
+            )
+            actions.append(action)
         } else if !createdBySignatory, hasCallData {
-            actions.append(.approve(confirmClosure))
+            let title = if willExecute {
+                R.string.localizable.commonApproveAndExecute(preferredLanguages: locale.rLanguages)
+            } else {
+                R.string.localizable.commonApprove(preferredLanguages: locale.rLanguages)
+            }
+            let action = MultisigOperationConfirmViewModel.Action(
+                title: title,
+                type: .approve,
+                actionClosure: confirmClosure
+            )
+            actions.append(action)
         }
 
         if !hasCallData {
-            actions.append(.addCallData(callDataAddClosure))
+            let action = MultisigOperationConfirmViewModel.Action(
+                title: R.string.localizable.enterCallDataDetailsButtonTitle(preferredLanguages: locale.rLanguages),
+                type: .addCallData,
+                actionClosure: callDataAddClosure
+            )
+            actions.append(action)
         }
 
         return actions
@@ -375,6 +397,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         let actions = createActions(
             for: params.pendingOperation,
             multisigWallet: params.multisigWallet,
+            locale: locale,
             confirmClosure: params.confirmClosure,
             callDataAddClosure: params.callDataAddClosure
         )
