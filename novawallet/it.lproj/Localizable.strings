@@ -1906,3 +1906,4 @@
 "common.transaction.rejected" = "Transazione rifiutata!";
 "common.approve.and.execute" = "Approva & Esegui";
 "multisig.transaction.reject.sheet.message" = "La transazione sarà respinta. Il deposito multisig sarà restituito a %@.";
+"multisig.operations.empty.text" = "Nessuna transazione ancora.\nLe richieste di firma appariranno qui";

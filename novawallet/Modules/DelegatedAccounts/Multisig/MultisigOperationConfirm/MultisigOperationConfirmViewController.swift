@@ -139,8 +139,12 @@ private extension MultisigOperationConfirmViewController {
                     action: #selector(actionCallData),
                     for: .touchUpInside
                 )
-                rootView.bindCallDataButton(title: action.title)
+                rootView.bindCallDataButton(action.title)
             }
+        }
+
+        if !viewModel.hasAddCallDataAction {
+            rootView.bindCallDataButton(nil)
         }
     }
 
