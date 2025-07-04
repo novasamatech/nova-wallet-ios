@@ -77,12 +77,12 @@ private extension MultisigOperationConfirmViewController {
     }
 
     func clearButtonActions() {
-        rootView.confirmButton.removeTarget(
+        rootView.confirmButton.actionButton.removeTarget(
             self,
             action: #selector(actionApprove),
             for: .touchUpInside
         )
-        rootView.confirmButton.removeTarget(
+        rootView.confirmButton.actionButton.removeTarget(
             self,
             action: #selector(actionReject),
             for: .touchUpInside
@@ -117,19 +117,17 @@ private extension MultisigOperationConfirmViewController {
     func addButtonActions() {
         guard let viewModel else { return }
 
-        let languages = selectedLocale.rLanguages
-
         viewModel.actions.forEach { action in
             switch action.type {
             case .approve:
-                rootView.confirmButton.addTarget(
+                rootView.confirmButton.actionButton.addTarget(
                     self,
                     action: #selector(actionApprove),
                     for: .touchUpInside
                 )
                 rootView.bindApprove(title: action.title)
             case .reject:
-                rootView.confirmButton.addTarget(
+                rootView.confirmButton.actionButton.addTarget(
                     self,
                     action: #selector(actionReject),
                     for: .touchUpInside
@@ -198,6 +196,14 @@ extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewPr
 
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
         rootView.bind(fee: feeViewModel)
+    }
+
+    func didReceive(loading: Bool) {
+        if loading {
+            rootView.confirmButton.startLoading()
+        } else {
+            rootView.confirmButton.stopLoading()
+        }
     }
 }
 

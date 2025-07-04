@@ -51,7 +51,7 @@ final class MultisigOperationConfirmViewLayout: ScrollableContainerLayoutView {
 
     private lazy var buttonsStack: UIStackView = .vStack(
         spacing: Constants.interButtonSpacing,
-        [confirmButton, callDataButton]
+        [callDataButton, confirmButton]
     )
 
     let callDataButton: TriangularedButton = .create { button in
@@ -60,9 +60,9 @@ final class MultisigOperationConfirmViewLayout: ScrollableContainerLayoutView {
         button.isHidden = true
     }
 
-    let confirmButton: TriangularedButton = .create { button in
-        button.applyDefaultStyle()
-        button.changesContentOpacityWhenHighlighted = true
+    let confirmButton: LoadableActionView = .create { button in
+        button.actionButton.applyDefaultStyle()
+        button.actionButton.changesContentOpacityWhenHighlighted = true
         button.isHidden = true
     }
 
@@ -158,14 +158,14 @@ extension MultisigOperationConfirmViewLayout {
     }
 
     func bindReject(title: String) {
-        confirmButton.imageWithTitleView?.title = title
-        confirmButton.applyDestructiveEnabledStyle()
+        confirmButton.actionButton.imageWithTitleView?.title = title
+        confirmButton.actionButton.applyDestructiveEnabledStyle()
         confirmButton.isHidden = false
     }
 
     func bindApprove(title: String) {
-        confirmButton.imageWithTitleView?.title = title
-        confirmButton.applyDefaultStyle()
+        confirmButton.actionButton.imageWithTitleView?.title = title
+        confirmButton.actionButton.applyDefaultStyle()
         confirmButton.isHidden = false
     }
 

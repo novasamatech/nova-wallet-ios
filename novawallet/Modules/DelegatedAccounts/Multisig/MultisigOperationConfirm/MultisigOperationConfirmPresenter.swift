@@ -60,7 +60,10 @@ private extension MultisigOperationConfirmPresenter {
             fee: fee,
             feeAsset: chainAsset,
             assetPrice: priceData,
-            confirmClosure: { [weak self] in self?.interactor.confirm() },
+            confirmClosure: { [weak self] in
+                self?.view?.didReceive(loading: true)
+                self?.interactor.confirm()
+            },
             callDataAddClosure: { [weak self] in self?.wireframe.showAddCallData(from: self?.view) }
         )
 
@@ -210,10 +213,13 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
     }
 
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError) {
+        view?.didReceive(loading: false)
         logger.error("Error: \(error)")
     }
 
     func didCompleteSubmission(with submissionType: MultisigSubmissionType) {
+        view?.didReceive(loading: false)
+
         switch submissionType {
         case .approve:
             showSuccessApprove()

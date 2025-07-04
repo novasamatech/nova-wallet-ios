@@ -3,6 +3,7 @@ import Foundation
 protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: MultisigOperationConfirmViewModel)
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>)
+    func didReceive(loading: Bool)
 }
 
 protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
