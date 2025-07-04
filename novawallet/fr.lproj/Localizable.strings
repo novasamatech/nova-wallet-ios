@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova a automatiquement changé pour votre portefeuille multisig afin que vous puissiez voir les transactions en attente.";
 "multisig.other.signatories" = "Autres signataires";
 "common.transaction.signed" = "Transaction signée !";
+"multisig.transaction.created.sheet.title" = "Transaction multisig créée";

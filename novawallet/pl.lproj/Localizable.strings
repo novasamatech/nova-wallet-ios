@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova automatycznie przełączyła się na Twój portfel multisig, abyś mógł zobaczyć oczekujące transakcje.";
 "multisig.other.signatories" = "Inni sygnatariusze";
 "common.transaction.signed" = "Transakcja podpisana!";
+"multisig.transaction.created.sheet.title" = "Transakcja multisig utworzona";

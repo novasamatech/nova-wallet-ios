@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova 已自动切换到您的多签钱包，以便查看待处理交易。";
 "multisig.other.signatories" = "其他签署人";
 "common.transaction.signed" = "交易已签署！";
+"multisig.transaction.created.sheet.title" = "多重签名交易已创建";

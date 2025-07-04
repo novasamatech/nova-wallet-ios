@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova đã tự động chuyển sang ví đa chữ ký của bạn để bạn có thể xem các giao dịch đang chờ xử lý.";
 "multisig.other.signatories" = "Người ký khác";
 "common.transaction.signed" = "Giao dịch đã được ký!";
+"multisig.transaction.created.sheet.title" = "Giao dịch Đa chữ ký đã được tạo";

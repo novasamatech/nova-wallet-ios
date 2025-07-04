@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Novaは自動であなたのマルチシグウォレットに切り替えましたので、保留中のトランザクションを確認できます。";
 "multisig.other.signatories" = "他の署名者";
 "common.transaction.signed" = "トランザクションが署名されました！";
+"multisig.transaction.created.sheet.title" = "マルチシグトランザクションが作成されました";

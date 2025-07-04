@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova secara otomatis beralih ke dompet multisig Anda agar Anda dapat melihat transaksi yang tertunda.";
 "multisig.other.signatories" = "Penandatangan lainnya";
 "common.transaction.signed" = "Transaksi telah ditandatangani!";
+"multisig.transaction.created.sheet.title" = "Transaksi Multisig dibuat";

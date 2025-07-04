@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova, bekleyen işlemleri görebilmeniz için otomatik olarak çoklu imza cüzdanınıza geçti.";
 "multisig.other.signatories" = "Diğer imza yetkilileri";
 "common.transaction.signed" = "İşlem imzalandı!";
+"multisig.transaction.created.sheet.title" = "Çoklu İmza işlemi oluşturuldu";

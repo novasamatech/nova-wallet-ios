@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova автоматически переключилась на ваш кошелек с мультиподписью, чтобы вы могли просматривать ожидающие транзакции.";
 "multisig.other.signatories" = "Другие подписанты";
 "common.transaction.signed" = "Транзакция подписана!";
+"multisig.transaction.created.sheet.title" = "Мультисиг транзакция создана";

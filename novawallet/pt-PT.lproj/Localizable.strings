@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "A Nova mudou automaticamente para a sua carteira multisig para que você possa ver transações pendentes.";
 "multisig.other.signatories" = "Outros signatários";
 "common.transaction.signed" = "Transação assinada!";
+"multisig.transaction.created.sheet.title" = "Transação Multisig criada";

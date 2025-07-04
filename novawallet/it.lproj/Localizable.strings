@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova ha automaticamente cambiato il portafoglio in modalità multisig affinché tu possa visualizzare le transazioni in sospeso.";
 "multisig.other.signatories" = "Altri firmatari";
 "common.transaction.signed" = "Transazione firmata!";
+"multisig.transaction.created.sheet.title" = "Transazione multisig creata";

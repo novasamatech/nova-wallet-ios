@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "A Nova automatikusan átváltott a multisig tárcájára, így megtekintheti a függő tranzakciókat.";
 "multisig.other.signatories" = "Más aláírók";
 "common.transaction.signed" = "Tranzakció aláírva!";
+"multisig.transaction.created.sheet.title" = "Többaláírásos tranzakció létrehozva";

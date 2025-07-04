@@ -1898,3 +1898,4 @@
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova ha cambiado automáticamente a tu billetera multisig para que puedas ver las transacciones pendientes.";
 "multisig.other.signatories" = "Otros firmantes";
 "common.transaction.signed" = "¡Transacción firmada!";
+"multisig.transaction.created.sheet.title" = "Transacción multifirma creada";
