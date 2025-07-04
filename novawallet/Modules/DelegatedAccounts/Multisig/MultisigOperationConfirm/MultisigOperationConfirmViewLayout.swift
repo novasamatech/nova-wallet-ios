@@ -169,9 +169,13 @@ extension MultisigOperationConfirmViewLayout {
         confirmButton.isHidden = false
     }
 
-    func bindCallDataButton(title: String) {
-        callDataButton.imageWithTitleView?.title = title
-        callDataButton.isHidden = false
+    func bindCallDataButton(_ title: String?) {
+        if let title {
+            callDataButton.imageWithTitleView?.title = title
+            callDataButton.isHidden = false
+        } else {
+            callDataButton.isHidden = true
+        }
     }
 }
 
