@@ -1862,6 +1862,18 @@
 		2DF95D342D786097001D8785 /* CustomHapticPatternConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */; };
 		2DF95D372D786156001D8785 /* SequentialHapticPlayerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */; };
 		2DF95D3B2D786631001D8785 /* HapticPlayerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */; };
+		2DFF39BC2E16534E00529984 /* WalletInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39BB2E16534E00529984 /* WalletInfoView.swift */; };
+		2DFF39BE2E16540400529984 /* WalletCheckmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39BD2E16540400529984 /* WalletCheckmarkView.swift */; };
+		2DFF39C02E165E6100529984 /* WalletCheckmarkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39BF2E165E6100529984 /* WalletCheckmarkViewModel.swift */; };
+		2DFF39C42E1665FD00529984 /* SignatoryListExpandableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39C32E1665FD00529984 /* SignatoryListExpandableView.swift */; };
+		2DFF39C62E166A0E00529984 /* StackTitleIconDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39C52E166A0E00529984 /* StackTitleIconDetailsCell.swift */; };
+		2DFF39C82E1670AD00529984 /* SignatoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39C72E1670AD00529984 /* SignatoryListViewModel.swift */; };
+		2DFF39CA2E16724000529984 /* SignatoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39C92E16724000529984 /* SignatoryListView.swift */; };
+		2DFF39CD2E1686B300529984 /* MultisigOperationConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39CC2E1686B300529984 /* MultisigOperationConfirmViewModel.swift */; };
+		2DFF39CF2E168D5B00529984 /* MultisigOperationConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39CE2E168D5B00529984 /* MultisigOperationConfirmViewModelFactory.swift */; };
+		2DFF39D22E174E8300529984 /* IconViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39D12E174E8300529984 /* IconViewModelFactory.swift */; };
+		2DFF39D52E17995B00529984 /* MultisigOperationConfirmViewModelParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39D42E17995B00529984 /* MultisigOperationConfirmViewModelParams.swift */; };
+		2DFF39D72E17B14400529984 /* MultisigConfirmationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFF39D62E17B14400529984 /* MultisigConfirmationResult.swift */; };
 		2EC610DC06643A00876BED6E /* AssetListWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B249C5D43CB86CF62C165F8 /* AssetListWireframe.swift */; };
 		2EDE38E0F2E3494D16717A74 /* WalletConnectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDDB8BE848C65B65FE4086D /* WalletConnectInteractor.swift */; };
 		2F133E695C10ACC0D2FB44FE /* DAppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */; };
@@ -7854,6 +7866,18 @@
 		2DF95D332D786097001D8785 /* CustomHapticPatternConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHapticPatternConfig.swift; sourceTree = "<group>"; };
 		2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequentialHapticPlayerConfig.swift; sourceTree = "<group>"; };
 		2DF95D3A2D786631001D8785 /* HapticPlayerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPlayerFactory.swift; sourceTree = "<group>"; };
+		2DFF39BB2E16534E00529984 /* WalletInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletInfoView.swift; sourceTree = "<group>"; };
+		2DFF39BD2E16540400529984 /* WalletCheckmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCheckmarkView.swift; sourceTree = "<group>"; };
+		2DFF39BF2E165E6100529984 /* WalletCheckmarkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCheckmarkViewModel.swift; sourceTree = "<group>"; };
+		2DFF39C32E1665FD00529984 /* SignatoryListExpandableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatoryListExpandableView.swift; sourceTree = "<group>"; };
+		2DFF39C52E166A0E00529984 /* StackTitleIconDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTitleIconDetailsCell.swift; sourceTree = "<group>"; };
+		2DFF39C72E1670AD00529984 /* SignatoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatoryListViewModel.swift; sourceTree = "<group>"; };
+		2DFF39C92E16724000529984 /* SignatoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatoryListView.swift; sourceTree = "<group>"; };
+		2DFF39CC2E1686B300529984 /* MultisigOperationConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationConfirmViewModel.swift; sourceTree = "<group>"; };
+		2DFF39CE2E168D5B00529984 /* MultisigOperationConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationConfirmViewModelFactory.swift; sourceTree = "<group>"; };
+		2DFF39D12E174E8300529984 /* IconViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconViewModelFactory.swift; sourceTree = "<group>"; };
+		2DFF39D42E17995B00529984 /* MultisigOperationConfirmViewModelParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOperationConfirmViewModelParams.swift; sourceTree = "<group>"; };
+		2DFF39D62E17B14400529984 /* MultisigConfirmationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigConfirmationResult.swift; sourceTree = "<group>"; };
 		2E4B0600AFFB96A75CF98755 /* StakingRedeemProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemProtocols.swift; sourceTree = "<group>"; };
 		2E800814C025B38C87CC282D /* TokensAddSelectNetworkViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokensAddSelectNetworkViewFactory.swift; sourceTree = "<group>"; };
 		2E965356C7C646CB86BBEBB6 /* SwapSlippageViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewLayout.swift; sourceTree = "<group>"; };
@@ -16767,6 +16791,8 @@
 			children = (
 				2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */,
 				77DAFF6E2B298FFF00D4220C /* WalletView.swift */,
+				2DFF39BB2E16534E00529984 /* WalletInfoView.swift */,
+				2DFF39BD2E16540400529984 /* WalletCheckmarkView.swift */,
 				2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */,
 			);
 			path = WalletView;
@@ -16825,6 +16851,36 @@
 				2DF95D362D786156001D8785 /* SequentialHapticPlayerConfig.swift */,
 			);
 			path = SequentialPlayer;
+			sourceTree = "<group>";
+		};
+		2DFF39CB2E1686A000529984 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2DFF39CC2E1686B300529984 /* MultisigOperationConfirmViewModel.swift */,
+				2DFF39D12E174E8300529984 /* IconViewModelFactory.swift */,
+				2DFF39D62E17B14400529984 /* MultisigConfirmationResult.swift */,
+				2DFF39C72E1670AD00529984 /* SignatoryListViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2DFF39D02E17188200529984 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2DFF39C32E1665FD00529984 /* SignatoryListExpandableView.swift */,
+				2DFF39C92E16724000529984 /* SignatoryListView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		2DFF39D32E17994800529984 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2DFF39CE2E168D5B00529984 /* MultisigOperationConfirmViewModelFactory.swift */,
+				2DFF39D42E17995B00529984 /* MultisigOperationConfirmViewModelParams.swift */,
+				64B3F0B9613413BE07D2864C /* MultisigOperationConfirmViewFactory.swift */,
+			);
+			path = Factory;
 			sourceTree = "<group>";
 		};
 		2F9F44CABD4DE8B400DC60FA /* Confirm */ = {
@@ -17448,15 +17504,17 @@
 		5FD8EF3372BBEC7774AA123A /* MultisigOperationConfirm */ = {
 			isa = PBXGroup;
 			children = (
+				2DFF39CB2E1686A000529984 /* Model */,
 				0C85F5C82E142841003789DC /* Reject */,
 				0C85F5C72E14281A003789DC /* Approve */,
+				2DFF39D32E17994800529984 /* Factory */,
+				2DFF39D02E17188200529984 /* View */,
 				CE44E532A23A205C6534F14A /* MultisigOperationConfirmProtocols.swift */,
 				E607CFA75CE36C683E535256 /* MultisigOperationConfirmWireframe.swift */,
 				7F0E2F6946DD54A37CD7D543 /* MultisigOperationConfirmPresenter.swift */,
 				064DAF1CCE3AB24880E37705 /* MultisigOperationConfirmInteractor.swift */,
 				34F5DCF9D47DA3F2361A25B5 /* MultisigOperationConfirmViewController.swift */,
 				09A8C6E8A39A9D956DA476D7 /* MultisigOperationConfirmViewLayout.swift */,
-				64B3F0B9613413BE07D2864C /* MultisigOperationConfirmViewFactory.swift */,
 			);
 			path = MultisigOperationConfirm;
 			sourceTree = "<group>";
@@ -19284,6 +19342,7 @@
 				7073BBC153295FF46FD06FB3 /* WalletsListViewLayout.swift */,
 				842EBB2828908ADB00B952D8 /* WalletsListTableViewCell.swift */,
 				84BFFA0B288FFFA100069846 /* WalletsListViewModel.swift */,
+				2DFF39BF2E165E6100529984 /* WalletCheckmarkViewModel.swift */,
 				84BFFA0D2890014600069846 /* WalletsListViewModelFactory.swift */,
 				2DD9DB902BED2C2C00F68665 /* WalletView */,
 			);
@@ -20903,6 +20962,7 @@
 				8489A6CF27FD5B9E0040C066 /* StackActionView.swift */,
 				8489A6D127FD5FB80040C066 /* StackActionCell.swift */,
 				844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */,
+				2DFF39C52E166A0E00529984 /* StackTitleIconDetailsCell.swift */,
 				844D2A41281B24510049CF5E /* StackUrlCell.swift */,
 				844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */,
 				845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */,
@@ -29025,6 +29085,7 @@
 				841AB7922993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift in Sources */,
 				774091F92ACB1F4B00172516 /* SwapAmountInputView.swift in Sources */,
 				0C39765E2C2DABD100998DD6 /* LedgerMigrationBannerView.swift in Sources */,
+				2DFF39D72E17B14400529984 /* MultisigConfirmationResult.swift in Sources */,
 				7728E5912A1324A2007901E0 /* ReferendumsSearchManager.swift in Sources */,
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				7730904F2B557F46002577AE /* StakingProxyBasePresenter.swift in Sources */,
@@ -30509,6 +30570,7 @@
 				84A7AC8029465BF9001A39CF /* TokenAddErrorPresentable.swift in Sources */,
 				84F1A073286A5DDA007DB053 /* CommonRetryable.swift in Sources */,
 				845B821526EF657700D25C72 /* PersistentValueSettings.swift in Sources */,
+				2DFF39C82E1670AD00529984 /* SignatoryListViewModel.swift in Sources */,
 				F4DCAE4726207EF900CCA6BF /* PayoutRewardsServiceProtocol.swift in Sources */,
 				848919902A052C18008D57A3 /* ModalNetworksFactory.swift in Sources */,
 				778215BC2B9140C5006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
@@ -30614,6 +30676,7 @@
 				841AAC2726F6A2A500F0A25E /* ChainAccountFetching.swift in Sources */,
 				2D8FF9D02C9AA54000089F53 /* BaseReferendumVoteConfirmPresenter.swift in Sources */,
 				2D3286FD2E04562E004D5D24 /* MultisigCallOrHash.swift in Sources */,
+				2DFF39D52E17995B00529984 /* MultisigOperationConfirmViewModelParams.swift in Sources */,
 				8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
 				2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */,
@@ -30825,6 +30888,7 @@
 				0CB64E652B01E0CC008F268F /* TransferNetworkSelectionCell.swift in Sources */,
 				0C3205EC2A8A122D002EB914 /* FeeOutputModel.swift in Sources */,
 				84D911AA292C923D0032EF33 /* Data+Fill.swift in Sources */,
+				2DFF39CF2E168D5B00529984 /* MultisigOperationConfirmViewModelFactory.swift in Sources */,
 				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
 				2D20F1C92D36BD5C003E9CF2 /* WalletStorageCleanerFactory.swift in Sources */,
@@ -31223,6 +31287,7 @@
 				8804AD8D295B7735001C4E09 /* DAppGlobalSettingsMapper.swift in Sources */,
 				94B0F0C84AF74B3CD7223C3A /* AccountConfirmPresenter.swift in Sources */,
 				84B8AA7929F905C800347A37 /* WalletConnectStateInitiating.swift in Sources */,
+				2DFF39BC2E16534E00529984 /* WalletInfoView.swift in Sources */,
 				2D5D0CD12D513C72000E32F6 /* BannersLocalizationFactory.swift in Sources */,
 				8468B87224F63D3A00B76BC6 /* AddAccount+AccountCreateWireframe.swift in Sources */,
 				9DFB37659A6B911A4D54623E /* AccountConfirmInteractor.swift in Sources */,
@@ -31709,6 +31774,7 @@
 				0CA307BC2F570941CD22C9AA /* ExportMnemonicConfirmViewFactory.swift in Sources */,
 				840EAE6929FA935900453C7E /* WalletConnectModelFactory.swift in Sources */,
 				844CB57A26FA706C00396E13 /* ChainAssetDisplayInfo.swift in Sources */,
+				2DFF39D22E174E8300529984 /* IconViewModelFactory.swift in Sources */,
 				848DAEF7282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift in Sources */,
 				845B821F26EF8E8900D25C72 /* ManagedMetaAccountModel.swift in Sources */,
 				2D5D0CCB2D50CBE4000E32F6 /* Banner.swift in Sources */,
@@ -32220,6 +32286,7 @@
 				0CE933D72C072697000F3EFE /* SwitchAccount+CloudBackupAddWalletWireframe.swift in Sources */,
 				883DB17A297A416400EFB7D8 /* GovernanceDelegateView.swift in Sources */,
 				8434B5FC298D292E00FACF4C /* GovernanceBaseEditDelegationLayout.swift in Sources */,
+				2DFF39CD2E1686B300529984 /* MultisigOperationConfirmViewModel.swift in Sources */,
 				84FF26862849530E003EC78D /* AccountId+Dummy.swift in Sources */,
 				8849AD6C29C37EB800F4F7FF /* Web3NameReceipientView.swift in Sources */,
 				77DF404D2B8452FC00ABDB53 /* NetworkTracksContainerView.swift in Sources */,
@@ -32288,6 +32355,7 @@
 				8489A6DE27FEA1930040C066 /* StakingUnbondingItemView.swift in Sources */,
 				F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */,
 				830A27C5447348F1D202D996 /* CrowdloanContributionSetupInteractor.swift in Sources */,
+				2DFF39CA2E16724000529984 /* SignatoryListView.swift in Sources */,
 				84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */,
 				0C71D3F62DF0E9AD0042134B /* MoonbeamEvmPallet.swift in Sources */,
 				77799AF22A7CFB8D00B7E564 /* PoolAccountViewModel.swift in Sources */,
@@ -32935,6 +33003,7 @@
 				8456D2C12993EE9F00D159A7 /* GovernanceDelegateStackCell.swift in Sources */,
 				8582395FEF296771447439FF /* AssetsSearchWireframe.swift in Sources */,
 				844304602A28946B00DE36DE /* StakingDashboardParachainMapper.swift in Sources */,
+				2DFF39BE2E16540400529984 /* WalletCheckmarkView.swift in Sources */,
 				CC1723581BAC50E8B9E6DE48 /* AssetsSearchPresenter.swift in Sources */,
 				849B036B2A14FCC3009624D9 /* PriceHistoryItem.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
@@ -32966,6 +33035,7 @@
 				842E9EA02A2DC23900759972 /* StakingDashboardBuilderProtocol.swift in Sources */,
 				454D41CC5C7CC2FDAB778026 /* CreateWatchOnlyInteractor.swift in Sources */,
 				576010F6494B3E2A6CA0B444 /* CreateWatchOnlyViewController.swift in Sources */,
+				2DFF39C62E166A0E00529984 /* StackTitleIconDetailsCell.swift in Sources */,
 				7778FE7B2B910FC50023E801 /* ImageViewModelFactory.swift in Sources */,
 				1B1402BB29CFF6D9FB944B2D /* CreateWatchOnlyViewLayout.swift in Sources */,
 				0C363E9C2B6B8C400065AFA6 /* HydraExtrinsicConverter.swift in Sources */,
@@ -33494,6 +33564,7 @@
 				5D532A958C5C961391177C4A /* DelegationListProtocols.swift in Sources */,
 				886A277E29E93995003B269F /* EquilibriumAccountInfo.swift in Sources */,
 				F65CC130E018157C0778B074 /* DelegationListWireframe.swift in Sources */,
+				2DFF39C02E165E6100529984 /* WalletCheckmarkViewModel.swift in Sources */,
 				7308DEA4955C03B95A214B8C /* DelegationListPresenter.swift in Sources */,
 				D93E9ED2F69607B7DD36D191 /* DelegationListInteractor.swift in Sources */,
 				331186FCF0903BA793C6D930 /* DelegationListViewFactory.swift in Sources */,
@@ -34022,6 +34093,7 @@
 				72CFDDCC80DA2CC0FC5FD412 /* CloudBackupSettingsInteractor.swift in Sources */,
 				AC571A49AD32AA736803835E /* CloudBackupSettingsViewController.swift in Sources */,
 				7E710E6BE9C41940ACFA3B8C /* CloudBackupSettingsViewLayout.swift in Sources */,
+				2DFF39C42E1665FD00529984 /* SignatoryListExpandableView.swift in Sources */,
 				B11153C80B6FF72E0437E287 /* CloudBackupSettingsViewFactory.swift in Sources */,
 				1C57B1089303D97A92A5EE85 /* ManualBackupWalletListProtocols.swift in Sources */,
 				10DD08A4E459DB4757809318 /* ManualBackupWalletListWireframe.swift in Sources */,
