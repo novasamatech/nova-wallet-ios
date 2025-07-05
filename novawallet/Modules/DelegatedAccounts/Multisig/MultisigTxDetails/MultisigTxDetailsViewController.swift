@@ -65,7 +65,7 @@ private extension MultisigTxDetailsViewController {
     @objc func actionCallData() {
         presenter.actionCallData()
     }
-    
+
     @objc func actionDepositInfo() {
         presenter.actionDepositInfo()
     }
