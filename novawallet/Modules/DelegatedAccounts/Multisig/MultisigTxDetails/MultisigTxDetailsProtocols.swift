@@ -30,7 +30,8 @@ protocol MultisigTxDetailsWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     AddressOptionsPresentable,
     SharingPresentable,
-    CopyPresentable
+    CopyPresentable,
+    ShortTextInfoPresentable
 {
     func presentCallHashActions(
         from view: ControllerBackedProtocol?,

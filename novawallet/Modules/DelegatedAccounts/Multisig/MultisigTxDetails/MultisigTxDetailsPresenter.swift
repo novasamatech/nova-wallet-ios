@@ -96,7 +96,17 @@ extension MultisigTxDetailsPresenter: MultisigTxDetailsPresenterProtocol {
         presentOptions(for: address)
     }
 
-    func actionDepositInfo() {}
+    func actionDepositInfo() {
+        wireframe.showInfo(
+            from: view,
+            title: .init(closure: { locale in
+                R.string.localizable.commonMultisigDeposit(preferredLanguages: locale.rLanguages)
+            }),
+            details: .init(closure: { locale in
+                R.string.localizable.multisigDepositInfoMessage(preferredLanguages: locale.rLanguages)
+            })
+        )
+    }
 
     func actionCallHash() {
         guard let callHashHex = txDetails?.callHash.toHexWithPrefix() else { return }
