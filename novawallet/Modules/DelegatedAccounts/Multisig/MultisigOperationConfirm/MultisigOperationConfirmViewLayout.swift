@@ -93,10 +93,7 @@ final class MultisigOperationConfirmViewLayout: ScrollableContainerLayoutView {
 
 private extension MultisigOperationConfirmViewLayout {
     func setupOriginSection(with viewModel: MultisigOperationConfirmViewModel.OriginModel) {
-        senderTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-        containerView.stackView.addArrangedSubview(senderTableView)
-        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: senderTableView)
+        prepareTableView(senderTableView)
 
         senderTableView.addArrangedSubview(originNetworkCell)
         senderTableView.addArrangedSubview(multisigWalletCell)
@@ -116,10 +113,7 @@ private extension MultisigOperationConfirmViewLayout {
     }
 
     func setupRecipientSection(with viewModel: MultisigOperationConfirmViewModel.RecipientModel) {
-        recipientTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-        containerView.stackView.addArrangedSubview(recipientTableView)
-        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: recipientTableView)
+        prepareTableView(recipientTableView)
 
         recipientTableView.addArrangedSubview(recipientCell)
 
@@ -129,10 +123,7 @@ private extension MultisigOperationConfirmViewLayout {
     }
 
     func setupSignatorySection(with viewModel: MultisigOperationConfirmViewModel.SignatoryModel) {
-        signatoryTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-        containerView.stackView.addArrangedSubview(signatoryTableView)
-        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: signatoryTableView)
+        prepareTableView(signatoryTableView)
 
         signatoryTableView.addArrangedSubview(signatoryWalletCell)
         signatoryTableView.addArrangedSubview(feeCell)
@@ -157,14 +148,18 @@ private extension MultisigOperationConfirmViewLayout {
     }
 
     func setupFullDetailsSection(with viewModel: MultisigOperationConfirmViewModel.FullDetailsModel) {
-        fullDetailsTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-        containerView.stackView.addArrangedSubview(fullDetailsTableView)
-        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: fullDetailsTableView)
+        prepareTableView(fullDetailsTableView)
 
         fullDetailsTableView.addArrangedSubview(fullDetailsCell)
 
         fullDetailsCell.bind(title: viewModel.title, icon: nil, details: nil)
+    }
+
+    func prepareTableView(_ tableView: StackTableView) {
+        tableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        containerView.stackView.addArrangedSubview(tableView)
+        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: tableView)
     }
 }
 

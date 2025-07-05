@@ -9,8 +9,8 @@ protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
 protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
     func setup()
     func actionShowSender()
-    func actionShowReceiver()
-    func actionShowDelegate()
+    func actionShowRecipient()
+    func actionShowDelegated()
     func actionShowCurrentSignatory()
     func actionShowSignatory(with identifier: String)
     func actionFullDetails()
