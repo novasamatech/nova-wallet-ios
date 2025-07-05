@@ -1848,6 +1848,11 @@
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
 		2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */; };
 		2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */; };
+		2DDF94BD2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */; };
+		2DDF94BF2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */; };
+		2DDF94C12E192344009B7F19 /* MultisigTxDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */; };
+		2DDF94C32E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C22E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift */; };
+		2DDF94C52E1924CB009B7F19 /* MultisigTxDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C42E1924CB009B7F19 /* MultisigTxDetailsViewController.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
@@ -7867,6 +7872,11 @@
 		2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel14.xcdatamodel; sourceTree = "<group>"; };
 		2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTab.swift; sourceTree = "<group>"; };
 		2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabMapper.swift; sourceTree = "<group>"; };
+		2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsProtocols.swift; sourceTree = "<group>"; };
+		2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsInteractor.swift; sourceTree = "<group>"; };
+		2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsPresenter.swift; sourceTree = "<group>"; };
+		2DDF94C22E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewLayout.swift; sourceTree = "<group>"; };
+		2DDF94C42E1924CB009B7F19 /* MultisigTxDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewController.swift; sourceTree = "<group>"; };
 		2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkBaseInteractorError.swift; sourceTree = "<group>"; };
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
@@ -15746,6 +15756,7 @@
 		2D3C71A62E087C9000DF9E49 /* Multisig */ = {
 			isa = PBXGroup;
 			children = (
+				2DDF94BB2E192296009B7F19 /* MultisigTxDetails */,
 				0C521C1A2E17BF3100ABAC97 /* PendingOperationProxy */,
 				2DFF39D82E18056200529984 /* MultisigCallDataImport */,
 				0C85F5BF2E140CFA003789DC /* Operation */,
@@ -16849,6 +16860,18 @@
 				2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */,
 			);
 			path = WalletView;
+			sourceTree = "<group>";
+		};
+		2DDF94BB2E192296009B7F19 /* MultisigTxDetails */ = {
+			isa = PBXGroup;
+			children = (
+				2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */,
+				2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */,
+				2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */,
+				2DDF94C22E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift */,
+				2DDF94C42E1924CB009B7F19 /* MultisigTxDetailsViewController.swift */,
+			);
+			path = MultisigTxDetails;
 			sourceTree = "<group>";
 		};
 		2DEDF68B2C36F41A007D5F4A /* View */ = {
@@ -29664,6 +29687,7 @@
 				84C5ADDD2813248B006D7388 /* WalletDisplayAddress.swift in Sources */,
 				844DAADF28ABCBF6008E11DA /* LedgerTransport.swift in Sources */,
 				84BCC71A2924B53500354DE0 /* EvmRemoteSubscription.swift in Sources */,
+				2DDF94BD2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift in Sources */,
 				8466781E27ED982C007935D3 /* PhishingAddressValidatorFactory.swift in Sources */,
 				0C1CCC412B60138F00A6EA17 /* XcmDeliveryRequest.swift in Sources */,
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
@@ -30218,6 +30242,7 @@
 				849976C427B286AF00B14A6C /* MetamaskMessage.swift in Sources */,
 				0CB261DB2A98943800287305 /* NPoolsUnstakeBaseError.swift in Sources */,
 				847A25BD28D7C0E7006AC9F5 /* TokenTransferedEvent.swift in Sources */,
+				2DDF94BF2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift in Sources */,
 				8401F24F24E524900081D8F8 /* String+Helpers.swift in Sources */,
 				F4113B3F260C77FF00DF4DBA /* StakingRewardPayoutsViewLayout.swift in Sources */,
 				AEA0C8A8267B6B3200F9666F /* SelectedValidatorListPresenter.swift in Sources */,
@@ -30385,6 +30410,7 @@
 				84FB298426393D0900BE0FCD /* YourValidatorListViewModelFactory.swift in Sources */,
 				0CCCDF8A2B661D5300473D42 /* HydraOmnipoolQuoteRemoteState.swift in Sources */,
 				842E9E942A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift in Sources */,
+				2DDF94C52E1924CB009B7F19 /* MultisigTxDetailsViewController.swift in Sources */,
 				8489A6D827FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift in Sources */,
 				2DB5B1172D3FEF600075EB3F /* CollectionViewRotationHandling.swift in Sources */,
 				0CB64E602B00AD83008F268F /* GetTokenOptionsWireframe.swift in Sources */,
@@ -31562,6 +31588,7 @@
 				0CFF73F22DA96D04009889FC /* AssetExchangeFeeConstants.swift in Sources */,
 				8443CA4A289D04E900FA4A95 /* TransactionSigningPresenting.swift in Sources */,
 				0C3AD3082DF04D3500387C0E /* AssetTypeExtras.swift in Sources */,
+				2DDF94C12E192344009B7F19 /* MultisigTxDetailsPresenter.swift in Sources */,
 				8475B47B289870A4009B90BC /* ProcessStepView.swift in Sources */,
 				0C0F6D772D3A5C9500943A7C /* StartStakingInfoMythosInteractor.swift in Sources */,
 				8465DA41298F05D500C7CFF1 /* GovernanceTrackViewModelFactory.swift in Sources */,
@@ -33648,6 +33675,7 @@
 				DDA07514BEF3E2FD6EE1BB4E /* InAppUpdatesViewLayout.swift in Sources */,
 				32009DBB90D19ACD6D7B7A5C /* InAppUpdatesViewFactory.swift in Sources */,
 				77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */,
+				2DDF94C32E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift in Sources */,
 				5D532A958C5C961391177C4A /* DelegationListProtocols.swift in Sources */,
 				886A277E29E93995003B269F /* EquilibriumAccountInfo.swift in Sources */,
 				F65CC130E018157C0778B074 /* DelegationListWireframe.swift in Sources */,
