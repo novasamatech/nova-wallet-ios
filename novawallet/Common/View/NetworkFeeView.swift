@@ -38,5 +38,7 @@ class NetworkFeeView: TitleAmountView {
     private func setupStyle() {
         titleView.iconWidth = .zero
         titleView.detailsView.iconWidth = .zero
+        titleView.imageView.isHidden = true
+        titleView.detailsView.imageView.isHidden = true
     }
 }
