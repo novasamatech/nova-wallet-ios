@@ -47,6 +47,17 @@ final class MultisigOperationConfirmViewLayout: ScrollableContainerLayoutView {
         view.delegate = self
     }
 
+    // MARK: - Full details
+
+    let fullDetailsTableView = StackTableView()
+
+    let fullDetailsCell: StackActionCell = .create { view in
+        view.rowContentView.disclosureIndicatorView.image = R.image.iconSmallArrow()?
+            .tinted(with: R.color.colorIconSecondary()!)
+        view.rowContentView.iconSize = .zero
+        view.titleLabel.textColor = R.color.colorButtonTextAccent()
+    }
+
     // MARK: - Actions
 
     private lazy var buttonsStack: UIStackView = .vStack(
@@ -130,6 +141,17 @@ private extension MultisigOperationConfirmViewLayout {
         signatoryListView.titleLabel.text = viewModel.signatories.title
         signatoryListView.bind(with: viewModel.signatories.value)
     }
+
+    func setupFullDetailsSection(with viewModel: MultisigOperationConfirmViewModel.FullDetailsModel) {
+        fullDetailsTableView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        containerView.stackView.addArrangedSubview(fullDetailsTableView)
+        containerView.stackView.setCustomSpacing(Constants.interSectionSpacing, after: fullDetailsTableView)
+
+        fullDetailsTableView.addArrangedSubview(fullDetailsCell)
+
+        fullDetailsCell.bind(title: viewModel.title, icon: nil, details: nil)
+    }
 }
 
 // MARK: - Internal
@@ -146,6 +168,8 @@ extension MultisigOperationConfirmViewLayout {
                 setupSignatorySection(with: signatoryModel)
             case let .signatories(signatoriesModel):
                 setupAllSignatoriesSection(with: signatoriesModel)
+            case let .fullDetails(fullDetailsModel):
+                setupFullDetailsSection(with: fullDetailsModel)
             default:
                 break
             }

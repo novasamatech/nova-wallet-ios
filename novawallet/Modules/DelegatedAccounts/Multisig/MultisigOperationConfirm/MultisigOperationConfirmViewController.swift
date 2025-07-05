@@ -112,6 +112,10 @@ private extension MultisigOperationConfirmViewController {
                 for: .touchUpInside
             )
         }
+        rootView.fullDetailsCell.addTarget(
+            self, action: #selector(actionFullDetails),
+            for: .touchUpInside
+        )
     }
 
     func addButtonActions() {
@@ -183,6 +187,10 @@ private extension MultisigOperationConfirmViewController {
         let actionClosure = viewModel?.actions.first { $0.type == .addCallData }?.actionClosure
 
         actionClosure?()
+    }
+
+    @objc func actionFullDetails() {
+        presenter.actionFullDetails()
     }
 }
 
