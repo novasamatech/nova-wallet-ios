@@ -226,7 +226,7 @@ extension MultisigOperationConfirmViewLayout: SignatoryListExpandableViewDelegat
 
 private extension MultisigOperationConfirmViewLayout {
     enum Constants {
-        static let interSectionSpacing: CGFloat = 12.0
+        static let interSectionSpacing: CGFloat = 8.0
         static let interButtonSpacing: CGFloat = 16.0
     }
 }

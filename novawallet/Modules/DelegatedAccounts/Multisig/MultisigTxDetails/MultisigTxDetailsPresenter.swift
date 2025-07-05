@@ -67,11 +67,57 @@ private extension MultisigTxDetailsPresenter {
 
         view?.didReceive(depositViewModel: viewModel)
     }
+
+    func presentOptions(for address: AccountAddress) {
+        guard let view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: localizationManager.selectedLocale
+        )
+    }
 }
 
 // MARK: - MultisigTxDetailsPresenterProtocol
 
 extension MultisigTxDetailsPresenter: MultisigTxDetailsPresenterProtocol {
+    func actionDepositorInfo() {
+        guard
+            let depositorAccountId = txDetails?.depositor.accountId,
+            let address = try? depositorAccountId.toAddress(using: chain.chainFormat)
+        else {
+            return
+        }
+
+        presentOptions(for: address)
+    }
+
+    func actionDepositInfo() {}
+
+    func actionCallHash() {
+        guard let callHashHex = txDetails?.callHash.toHexWithPrefix() else { return }
+
+        wireframe.presentCallHashActions(
+            from: view,
+            value: callHashHex,
+            locale: localizationManager.selectedLocale
+        )
+    }
+
+    func actionCallData() {
+        guard let callDataHex = txDetails?.callData?.toHexWithPrefix() else { return }
+
+        wireframe.presentCallDataActions(
+            from: view,
+            value: callDataHex,
+            locale: localizationManager.selectedLocale
+        )
+    }
+
     func setup() {
         interactor.setup()
     }

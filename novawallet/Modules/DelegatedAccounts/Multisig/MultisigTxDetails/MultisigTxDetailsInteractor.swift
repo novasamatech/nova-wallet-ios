@@ -8,7 +8,7 @@ final class MultisigTxDetailsInteractor: AnyProviderAutoCleaning {
 
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
-    let pendingOperation: Multisig.PendingOperation
+    let pendingOperation: Multisig.PendingOperationProxyModel
 
     let chain: ChainModel
     let chainRegistry: ChainRegistryProtocol
@@ -20,7 +20,7 @@ final class MultisigTxDetailsInteractor: AnyProviderAutoCleaning {
     private var priceProvider: StreamableProvider<PriceData>?
 
     init(
-        pendingOperation: Multisig.PendingOperation,
+        pendingOperation: Multisig.PendingOperationProxyModel,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         chain: ChainModel,
         chainRegistry: ChainRegistryProtocol,
@@ -79,23 +79,18 @@ private extension MultisigTxDetailsInteractor {
     }
 
     func provideCallDisplayString() {
-        guard let callData = pendingOperation.call else {
+        guard
+            let callJson = pendingOperation.formattedModel?.decoded.toCallJSON()
+        else {
             return
         }
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(
-            for: pendingOperation.chainId
-        ) else {
-            return
-        }
-
-        let wrapper = createPrettifiedCallStringWrapper(
-            callData: callData,
-            runtimeProvider: runtimeProvider
+        let prettifyOperation = prettyPrintedJSONOperationFactory.createProcessingOperation(
+            for: callJson
         )
 
         execute(
-            wrapper: wrapper,
+            operation: prettifyOperation,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
@@ -109,34 +104,6 @@ private extension MultisigTxDetailsInteractor {
         }
     }
 
-    func createPrettifiedCallStringWrapper(
-        callData: Substrate.CallData,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<String> {
-        let decodingWrapper: CompoundOperationWrapper<AnyRuntimeCall> = runtimeProvider.createDecodingWrapper(
-            for: callData,
-            of: GenericType.call.name
-        )
-
-        let prettifyWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-
-            let decodedCall = try decodingWrapper.targetOperation.extractNoCancellableResultData()
-
-            let prettifyOperation = prettyPrintedJSONOperationFactory.createProcessingOperation(
-                for: decodedCall.args
-            )
-
-            return CompoundOperationWrapper(targetOperation: prettifyOperation)
-        }
-
-        prettifyWrapper.addDependency(wrapper: decodingWrapper)
-
-        return prettifyWrapper.insertingHead(operations: decodingWrapper.allOperations)
-    }
-
     func createTxDetailsWrapper(for chain: ChainModel) -> CompoundOperationWrapper<MultisigTxDetails> {
         let localAccountsWrapper = walletRepository.createWalletsWrapperByAccountId(
             for: chain
@@ -145,7 +112,7 @@ private extension MultisigTxDetailsInteractor {
         let mapOperation: BaseOperation<MultisigTxDetails> = ClosureOperation { [weak self] in
             guard
                 let self,
-                let definition = pendingOperation.multisigDefinition
+                let definition = pendingOperation.operation.multisigDefinition
             else { throw BaseOperationError.parentOperationCancelled }
 
             let localAccounts = try localAccountsWrapper.targetOperation.extractNoCancellableResultData()
@@ -161,8 +128,8 @@ private extension MultisigTxDetailsInteractor {
             return MultisigTxDetails(
                 depositAmount: definition.deposit,
                 depositor: depositor,
-                callHash: pendingOperation.callHash,
-                callData: pendingOperation.call
+                callHash: pendingOperation.operation.callHash,
+                callData: pendingOperation.operation.call
             )
         }
 

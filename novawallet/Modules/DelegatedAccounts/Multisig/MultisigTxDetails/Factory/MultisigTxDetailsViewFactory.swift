@@ -2,11 +2,13 @@ import Foundation
 import Foundation_iOS
 
 final class MultisigTxDetailsViewFactory {
-    static func createView(for pendingOperation: Multisig.PendingOperation) -> MultisigTxDetailsViewProtocol? {
+    static func createView(
+        for pendingOperation: Multisig.PendingOperationProxyModel
+    ) -> MultisigTxDetailsViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let chain = chainRegistry.getChain(for: pendingOperation.chainId),
+            let chain = chainRegistry.getChain(for: pendingOperation.operation.chainId),
             let currencyManager = CurrencyManager.shared,
             let asset = chain.utilityAsset()
         else {

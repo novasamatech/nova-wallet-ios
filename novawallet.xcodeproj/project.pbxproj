@@ -1858,6 +1858,9 @@
 		2DDF94CD2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94CC2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift */; };
 		2DDF94CF2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */; };
 		2DDF94D12E197872009B7F19 /* MultisigTxDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */; };
+		2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */; };
+		2DDF94D52E19BC0D009B7F19 /* String+Trancation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Trancation.swift */; };
+		2DDF94DB2E19C70B009B7F19 /* StackDepositCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
@@ -7887,6 +7890,9 @@
 		2DDF94CC2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewModel.swift; sourceTree = "<group>"; };
 		2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsWireframe.swift; sourceTree = "<group>"; };
 		2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewFactory.swift; sourceTree = "<group>"; };
+		2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCall+JSON.swift"; sourceTree = "<group>"; };
+		2DDF94D42E19BC0D009B7F19 /* String+Trancation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Trancation.swift"; sourceTree = "<group>"; };
+		2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDepositCell.swift; sourceTree = "<group>"; };
 		2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkBaseInteractorError.swift; sourceTree = "<group>"; };
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
@@ -14154,6 +14160,7 @@
 				0CA8AF202D85E6E300DB4E6A /* RuntimeCallBuilding.swift */,
 				0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */,
 				0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */,
+				2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */,
 				0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */,
 			);
 			path = Builder;
@@ -16877,6 +16884,7 @@
 			children = (
 				2DDF94C62E1955B1009B7F19 /* Model */,
 				2DDF94C92E195B23009B7F19 /* Factory */,
+				2DDF94D92E19C6EA009B7F19 /* View */,
 				2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */,
 				2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */,
 				2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */,
@@ -16903,6 +16911,14 @@
 				2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */,
 			);
 			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DDF94D92E19C6EA009B7F19 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2DEDF68B2C36F41A007D5F4A /* View */ = {
@@ -22324,6 +22340,7 @@
 				0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */,
 				0C5FA9A62B8313950077934C /* String+Search.swift */,
 				0C803D082C9B7D8400AEB35B /* String+Trimming.swift */,
+				2DDF94D42E19BC0D009B7F19 /* String+Trancation.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -30622,6 +30639,7 @@
 				887404BA2983DDA800EE270A /* SessionStorage.swift in Sources */,
 				2D6F51A92CDD2C3100564C00 /* AssetListFlowLayout+Types.swift in Sources */,
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
+				2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */,
 				0CED71B32D995D4300F79C02 /* XcmV5WeightMessagesFactory.swift in Sources */,
 				0C2B18AE2BFE378B00206EDE /* CloudBackupSyncService+Create.swift in Sources */,
 				846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */,
@@ -31559,6 +31577,7 @@
 				F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */,
 				D9046DBA27451ED700C29F2E /* ParallelContributionSource.swift in Sources */,
 				0CE629DE2AA9B6BF00E250BD /* RewardDestinationViewModelFactory.swift in Sources */,
+				2DDF94DB2E19C70B009B7F19 /* StackDepositCell.swift in Sources */,
 				2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */,
 				0CB313652C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift in Sources */,
 				77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */,
@@ -34298,6 +34317,7 @@
 				74A93B3225BF8541B69F88EF /* CloudBackupAddWalletPresenter.swift in Sources */,
 				1CD99FC2F2D45A3BF6AA1E00 /* CloudBackupAddWalletInteractor.swift in Sources */,
 				9202CBF07DA49C807A8687FA /* CloudBackupAddWalletViewFactory.swift in Sources */,
+				2DDF94D52E19BC0D009B7F19 /* String+Trancation.swift in Sources */,
 				1DE0BC8BC9D9462C58C4C39F /* CloudBackupRemindProtocols.swift in Sources */,
 				CFD1B4635D0ED2DC7DAD1EC1 /* CloudBackupRemindPresenter.swift in Sources */,
 				9065800EAB4A8B807C713220 /* CloudBackupRemindInteractor.swift in Sources */,

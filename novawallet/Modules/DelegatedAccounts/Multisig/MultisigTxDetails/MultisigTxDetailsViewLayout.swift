@@ -8,18 +8,18 @@ final class MultisigTxDetailsViewLayout: ScrollableContainerLayoutView {
 
     let depositorWalletCell = StackInfoTableCell()
 
-    let depositCell = StackNetworkFeeCell()
+    let depositCell = StackDepositCell()
 
     // MARK: - Call Data
 
     let callDataTableView = StackTableView()
 
     let callHashCell: StackInfoTableCell = .create { view in
-        view.titleLabel.lineBreakMode = .byTruncatingMiddle
+        view.detailsLabel.lineBreakMode = .byTruncatingMiddle
     }
 
     let callDataCell: StackInfoTableCell = .create { view in
-        view.titleLabel.lineBreakMode = .byTruncatingMiddle
+        view.detailsLabel.lineBreakMode = .byTruncatingMiddle
     }
 
     // MARK: - Call JSON
@@ -87,12 +87,13 @@ private extension MultisigTxDetailsViewLayout {
         )
 
         callDataTableView.addArrangedSubview(callHashCell)
-        callDataTableView.addArrangedSubview(callDataCell)
 
         callHashCell.titleLabel.text = viewModel.callHash.title
         callHashCell.bind(viewModel: viewModel.callHash.value)
 
         if let callDataField = viewModel.callData {
+            callDataTableView.addArrangedSubview(callDataCell)
+
             callDataCell.titleLabel.text = callDataField.title
             callDataCell.bind(viewModel: callDataField.value)
         }

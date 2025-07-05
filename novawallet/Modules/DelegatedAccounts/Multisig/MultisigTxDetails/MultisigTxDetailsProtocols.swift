@@ -1,3 +1,5 @@
+import Foundation
+
 protocol MultisigTxDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: MultisigTxDetailsViewModel)
     func didReceive(
@@ -7,6 +9,10 @@ protocol MultisigTxDetailsViewProtocol: ControllerBackedProtocol {
 
 protocol MultisigTxDetailsPresenterProtocol: AnyObject {
     func setup()
+    func actionDepositorInfo()
+    func actionDepositInfo()
+    func actionCallHash()
+    func actionCallData()
 }
 
 protocol MultisigTxDetailsInteractorInputProtocol: AnyObject {
@@ -22,4 +28,18 @@ protocol MultisigTxDetailsInteractorOutputProtocol: AnyObject {
 
 protocol MultisigTxDetailsWireframeProtocol: AlertPresentable,
     ErrorPresentable,
-    AddressOptionsPresentable {}
+    AddressOptionsPresentable,
+    SharingPresentable,
+    CopyPresentable
+{
+    func presentCallHashActions(
+        from view: ControllerBackedProtocol?,
+        value: String,
+        locale: Locale
+    )
+    func presentCallDataActions(
+        from view: ControllerBackedProtocol?,
+        value: String,
+        locale: Locale
+    )
+}

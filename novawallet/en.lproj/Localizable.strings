@@ -1913,3 +1913,6 @@
 "call.data.validation.hash.matching.error.message" = "This call data for another operation with call hash %@";
 "operation.details.check.hint" = "Make sure the operation is correct";
 "common.call.hash" = "Call hash";
+"common.full.details" = "Full details";
+"multisig.call.hash.copy" = "Copy call data";
+"multisig.call.hash.share" = "Share call data";

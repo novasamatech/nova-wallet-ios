@@ -24,8 +24,54 @@ final class MultisigTxDetailsViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         presenter.setup()
+        setupHandlers()
     }
 }
+
+// MARK: - Private
+
+private extension MultisigTxDetailsViewController {
+    func setupHandlers() {
+        rootView.depositorWalletCell.addTarget(
+            self,
+            action: #selector(actionDepositorInfo),
+            for: .touchUpInside
+        )
+        rootView.callHashCell.addTarget(
+            self,
+            action: #selector(actionCallHash),
+            for: .touchUpInside
+        )
+        rootView.callDataCell.addTarget(
+            self,
+            action: #selector(actionCallData),
+            for: .touchUpInside
+        )
+        rootView.depositCell.addTarget(
+            self,
+            action: #selector(actionDepositInfo),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionDepositorInfo() {
+        presenter.actionDepositorInfo()
+    }
+
+    @objc func actionCallHash() {
+        presenter.actionCallHash()
+    }
+
+    @objc func actionCallData() {
+        presenter.actionCallData()
+    }
+    
+    @objc func actionDepositInfo() {
+        presenter.actionDepositInfo()
+    }
+}
+
+// MARK: - MultisigTxDetailsViewProtocol
 
 extension MultisigTxDetailsViewController: MultisigTxDetailsViewProtocol {
     func didReceive(viewModel: MultisigTxDetailsViewModel) {
