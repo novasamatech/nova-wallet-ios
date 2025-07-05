@@ -148,7 +148,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         let originViewModel = MultisigOperationConfirmViewModel.OriginModel(
             network: networkField,
             wallet: walletField,
-            onBehalfOf: delegatedField
+            delegatedAccount: delegatedField
         )
 
         return .origin(originViewModel)
@@ -513,6 +513,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
 
         let sections = [
             originSection,
+            recipientSection,
             signatorySection,
             signatoriesSection,
             fullDetailsSection
