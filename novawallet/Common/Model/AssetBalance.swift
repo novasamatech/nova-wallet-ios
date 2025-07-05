@@ -86,9 +86,9 @@ struct AssetBalance: Equatable {
     ) -> BigUInt {
         switch mode {
         case .regular:
-            free - max(existentialDeposit, frozen)
+            free.subtractOrZero(max(existentialDeposit, frozen))
         case .fungibleTrait:
-            free - existentialDeposit
+            free.subtractOrZero(existentialDeposit)
         }
     }
 }
