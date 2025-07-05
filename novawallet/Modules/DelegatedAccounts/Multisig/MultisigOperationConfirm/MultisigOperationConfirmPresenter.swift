@@ -58,7 +58,7 @@ private extension MultisigOperationConfirmPresenter {
             multisigWallet: multisigWallet,
             signatories: signatories,
             fee: fee,
-            feeAsset: chainAsset,
+            chainAsset: chainAsset,
             assetPrice: priceData,
             confirmClosure: { [weak self] in
                 self?.view?.didReceive(loading: true)
