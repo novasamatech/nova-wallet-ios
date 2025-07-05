@@ -22,6 +22,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
 
     private(set) var operation: Multisig.PendingOperationProxyModel
     private(set) var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol?
+    private(set) var extrinsicSubmissionMonitor: ExtrinsicSubmitMonitorFactoryProtocol?
     private(set) var signer: SigningWrapperProtocol?
     private(set) var call: AnyRuntimeCall?
 
@@ -128,6 +129,13 @@ private extension MultisigOperationConfirmInteractor {
         extrinsicOperationFactory = extrinsicServiceFactory.createOperationFactory(
             account: signatoryAccount.chainAccount,
             chain: chain
+        )
+
+        extrinsicSubmissionMonitor = extrinsicServiceFactory.createExtrinsicSubmissionMonitor(
+            with: extrinsicServiceFactory.createService(
+                account: signatoryAccount.chainAccount,
+                chain: chain
+            )
         )
 
         signer = signingWrapperFactory.createSigningWrapper(
@@ -250,7 +258,6 @@ private extension MultisigOperationConfirmInteractor {
             let asset = chain.utilityAsset(),
             let priceId = asset.priceId
         else {
-            logger.error("Asset and price id expected")
             return
         }
 
@@ -319,12 +326,14 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     func setup() {
         setupSignatories()
 
-        pendingOperationProvider.handler = self
         pendingOperationProvider.subscribePendingOperation(
-            identifier: operation.operation.identifier
+            identifier: operation.operation.identifier,
+            handler: self
         )
 
         deriveAssetInfoAndProvideBalance()
+
+        setupChainAssetPriceSubscription()
     }
 
     func confirm() {

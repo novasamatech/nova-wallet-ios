@@ -61,6 +61,7 @@ struct MultisigOperationConfirmViewFactory {
         return view
     }
 
+    // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for operation: Multisig.PendingOperationProxyModel,
         multisigWallet: MetaAccountModel,

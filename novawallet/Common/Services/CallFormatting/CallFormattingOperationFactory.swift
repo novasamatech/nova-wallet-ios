@@ -38,8 +38,10 @@ private extension CallFormattingOperationFactory {
         from call: AnyRuntimeCall,
         chain: ChainModel,
         localAccounts: [AccountId: MetaChainAccountResponse],
-        context: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) -> FormattedCall.Definition? {
+        let context = codingFactory.createRuntimeJsonContext()
+
         guard
             call.path.isBalancesTransfer,
             let transferArgs = try? call.args.map(
@@ -66,35 +68,128 @@ private extension CallFormattingOperationFactory {
         return .transfer(transfer)
     }
 
+    func detectPalletAssetsTransfer(
+        from call: AnyRuntimeCall,
+        chain: ChainModel,
+        localAccounts: [AccountId: MetaChainAccountResponse],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> FormattedCall.Definition? {
+        let context = codingFactory.createRuntimeJsonContext()
+
+        guard
+            call.path.isAssetsTransfer,
+            let transferArgs = try? call.args.map(
+                to: PalletAssets.TransferCall.self,
+                with: context.toRawContext()
+            ),
+            let accountId = transferArgs.target.accountId,
+            let chainAsset = chain.getChainAssetByPalletAssetId(
+                transferArgs.assetId,
+                palletName: call.moduleName,
+                codingFactory: codingFactory
+            ) else {
+            return nil
+        }
+
+        let account: FormattedCall.Account = if let localAccount = localAccounts[accountId] {
+            .local(localAccount)
+        } else {
+            .remote(accountId)
+        }
+
+        let transfer = FormattedCall.Transfer(
+            amount: transferArgs.amount,
+            account: account,
+            asset: chainAsset
+        )
+
+        return .transfer(transfer)
+    }
+
+    func detectOrmlTransfer(
+        from call: AnyRuntimeCall,
+        chain: ChainModel,
+        localAccounts: [AccountId: MetaChainAccountResponse],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> FormattedCall.Definition? {
+        let context = codingFactory.createRuntimeJsonContext()
+
+        guard
+            call.path.isTokensTransfer,
+            let transferArgs = try? call.args.map(
+                to: OrmlTokensPallet.TransferCall.self,
+                with: context.toRawContext()
+            ),
+            let accountId = transferArgs.dest.accountId,
+            let chainAsset = chain.getChainAssetByOrmlAssetId(
+                transferArgs.currencyId,
+                codingFactory: codingFactory
+            ) else {
+            return nil
+        }
+
+        let account: FormattedCall.Account = if let localAccount = localAccounts[accountId] {
+            .local(localAccount)
+        } else {
+            .remote(accountId)
+        }
+
+        let transfer = FormattedCall.Transfer(
+            amount: transferArgs.amount,
+            account: account,
+            asset: chainAsset
+        )
+
+        return .transfer(transfer)
+    }
+
     func detectTransfer(
         from call: AnyRuntimeCall,
         chain: ChainModel,
         localAccounts: [AccountId: MetaChainAccountResponse],
-        context: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) -> FormattedCall.Definition? {
         if let native = detectNativeTransfer(
             from: call,
             chain: chain,
             localAccounts: localAccounts,
-            context: context
+            codingFactory: codingFactory
         ) {
             return native
-        } else {
-            return nil
         }
+
+        if let palletAsset = detectPalletAssetsTransfer(
+            from: call,
+            chain: chain,
+            localAccounts: localAccounts,
+            codingFactory: codingFactory
+        ) {
+            return palletAsset
+        }
+
+        if let ormlAsset = detectOrmlTransfer(
+            from: call,
+            chain: chain,
+            localAccounts: localAccounts,
+            codingFactory: codingFactory
+        ) {
+            return ormlAsset
+        }
+
+        return nil
     }
 
     func resolveDefinition(
         for call: AnyRuntimeCall,
         chain: ChainModel,
         localAccounts: [AccountId: MetaChainAccountResponse],
-        context: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) -> FormattedCall.Definition {
         if let transfer = detectTransfer(
             from: call,
             chain: chain,
             localAccounts: localAccounts,
-            context: context
+            codingFactory: codingFactory
         ) {
             return transfer
         } else {
@@ -108,8 +203,9 @@ private extension CallFormattingOperationFactory {
         of json: JSON,
         chain: ChainModel,
         localAccounts: [AccountId: MetaChainAccountResponse],
-        context: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> FormattedCall {
+        let context = codingFactory.createRuntimeJsonContext()
         let decodedCall = try ExtrinsicExtraction.getCall(from: json, context: context)
 
         let (delegatedAccountId, runtimeCall) = try NestedCallMapper().mapProxiedAndCall(call: json, context: context)
@@ -118,7 +214,7 @@ private extension CallFormattingOperationFactory {
             for: runtimeCall,
             chain: chain,
             localAccounts: localAccounts,
-            context: context
+            codingFactory: codingFactory
         )
 
         let delegatedAccount = delegatedAccountId.map { resolveAccount(for: $0, localAccounts: localAccounts) }
@@ -157,7 +253,7 @@ extension CallFormattingOperationFactory: CallFormattingOperationFactoryProtocol
                     of: jsonCall,
                     chain: chain,
                     localAccounts: localAccounts,
-                    context: codingFactory.createRuntimeJsonContext()
+                    codingFactory: codingFactory
                 )
             }
 

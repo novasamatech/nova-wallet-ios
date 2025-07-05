@@ -67,7 +67,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             let call,
             let multisig = multisigWallet.multisigAccount?.multisig,
             let definition = operation.operation.multisigDefinition,
-            let extrinsicOperationFactory,
+            let extrinsicSubmissionMonitor,
             let signer else {
             return
         }
@@ -83,8 +83,8 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             }
         )
 
-        let submissionWrapper = extrinsicOperationFactory.submit(
-            builderClosure,
+        let submissionWrapper = extrinsicSubmissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
             signer: signer
         )
 

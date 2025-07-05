@@ -69,7 +69,7 @@ private extension MultisigOperationConfirmPresenter {
 
                 self?.wireframe.showAddCallData(
                     from: self?.view,
-                    for: pendingOperation
+                    for: pendingOperation.operation
                 )
             }
         )
@@ -184,6 +184,10 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorOutputProtocol {
     func didReceiveOperation(_ operation: Multisig.PendingOperationProxyModel?) {
+        guard let operation else {
+            return
+        }
+
         pendingOperation = operation
 
         provideViewModel()

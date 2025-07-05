@@ -2,15 +2,15 @@ import Foundation
 import Operation_iOS
 
 protocol MultisigOperationProviderProxyProtocol: AnyObject {
-    var handler: MultisigOperationProviderHandlerProtocol? { get set }
-
     func subscribePendingOperations(
         for accountId: AccountId,
-        chainId: ChainModel.Id?
+        chainId: ChainModel.Id?,
+        handler: MultisigOperationProviderHandlerProtocol
     )
 
     func subscribePendingOperation(
-        identifier: String
+        identifier: String,
+        handler: MultisigOperationProviderHandlerProtocol
     )
 }
 
@@ -36,7 +36,7 @@ extension MultisigOperationProviderHandlerProtocol {
     ) {}
 }
 
-final class MultisigOperationProviderProxy {
+final class MultisigOperationProviderProxy: AnyProviderAutoCleaning {
     let callFormattingFactory: CallFormattingOperationFactoryProtocol
     let operationQueue: OperationQueue
     let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
@@ -157,21 +157,23 @@ private extension MultisigOperationProviderProxy {
 extension MultisigOperationProviderProxy: MultisigOperationProviderProxyProtocol {
     func subscribePendingOperations(
         for accountId: AccountId,
-        chainId: ChainModel.Id?
+        chainId: ChainModel.Id?,
+        handler: MultisigOperationProviderHandlerProtocol
     ) {
-        guard provider == nil else {
-            return
-        }
+        clear(streamableProvider: &provider)
+
+        self.handler = handler
 
         provider = subscribePendingOperations(for: accountId, chainId: chainId)
     }
 
     func subscribePendingOperation(
-        identifier: String
+        identifier: String,
+        handler: MultisigOperationProviderHandlerProtocol
     ) {
-        guard provider == nil else {
-            return
-        }
+        clear(streamableProvider: &provider)
+
+        self.handler = handler
 
         provider = subscribePendingOperation(identifier: identifier)
     }
