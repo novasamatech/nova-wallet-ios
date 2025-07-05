@@ -2,6 +2,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 import CoreData
+import BigInt
 
 final class MultisigPendingOperationMapper {
     var entityIdentifierFieldName: String { #keyPath(CDMultisigPendingOperation.identifier) }
@@ -28,12 +29,14 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
                 index: index
             )
 
+            let deposit = entity.deposit.map { BigUInt($0) ?? 0 } ?? 0
             let depositor = try Data(hexString: depositor)
             let approvals = try approvals.split(by: .comma)
                 .map { try Data(hexString: $0) }
 
             definition = Multisig.MultisigDefinition(
                 timepoint: timepoint,
+                deposit: deposit,
                 depositor: depositor,
                 approvals: approvals
             )
@@ -64,6 +67,7 @@ extension MultisigPendingOperationMapper: CoreDataMapperProtocol {
             entity.index = Int32(bitPattern: multisigDefinition.timepoint.index)
             entity.height = Int32(bitPattern: multisigDefinition.timepoint.height)
             entity.depositor = multisigDefinition.depositor.toHexString()
+            entity.deposit = String(multisigDefinition.deposit)
             entity.approvals = multisigDefinition.approvals
                 .map { $0.toHexString() }
                 .joined(with: .comma)

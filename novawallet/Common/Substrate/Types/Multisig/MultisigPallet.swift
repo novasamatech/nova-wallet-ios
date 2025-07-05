@@ -1,5 +1,6 @@
 import SubstrateSdk
 import Operation_iOS
+import BigInt
 
 enum MultisigPallet {
     static var name: String { "Multisig" }
@@ -7,11 +8,13 @@ enum MultisigPallet {
     struct MultisigDefinition: Codable {
         enum CodingKeys: String, CodingKey {
             case timepoint = "when"
+            case deposit
             case depositor
             case approvals
         }
 
         let timepoint: MultisigTimepoint
+        @StringCodable var deposit: BigUInt
         @BytesCodable var depositor: AccountId
         var approvals: [BytesCodable]
     }

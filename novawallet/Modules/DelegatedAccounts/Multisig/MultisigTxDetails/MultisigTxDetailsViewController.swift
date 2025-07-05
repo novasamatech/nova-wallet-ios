@@ -6,14 +6,9 @@ final class MultisigTxDetailsViewController: UIViewController, ViewHolder {
 
     let presenter: MultisigTxDetailsPresenterProtocol
 
-    init(
-        presenter: MultisigTxDetailsPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
-    ) {
+    init(presenter: MultisigTxDetailsPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-
-        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -28,31 +23,18 @@ final class MultisigTxDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupLocalization()
-
         presenter.setup()
-    }
-
-    private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
-
-        title = R.string.localizable.commonTxDetails(preferredLanguages: languages)
-        rootView.titleLabel.text = R.string.localizable.dappSignOperationDetailsSubtitle(
-            preferredLanguages: languages
-        )
     }
 }
 
 extension MultisigTxDetailsViewController: MultisigTxDetailsViewProtocol {
-    func didReceive(txDetails: String) {
-        rootView.detailsLabel.text = txDetails
+    func didReceive(viewModel: MultisigTxDetailsViewModel) {
+        title = viewModel.title
     }
-}
 
-extension MultisigTxDetailsViewController: Localizable {
-    func applyLocalization() {
-        if isViewLoaded {
-            setupLocalization()
-        }
+    func didReceive(
+        depositViewModel: MultisigTxDetailsViewModel.SectionField<BalanceViewModelProtocol>
+    ) {
+        print(depositViewModel)
     }
 }
