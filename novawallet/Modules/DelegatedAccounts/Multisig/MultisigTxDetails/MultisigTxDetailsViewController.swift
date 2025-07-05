@@ -30,11 +30,12 @@ final class MultisigTxDetailsViewController: UIViewController, ViewHolder {
 extension MultisigTxDetailsViewController: MultisigTxDetailsViewProtocol {
     func didReceive(viewModel: MultisigTxDetailsViewModel) {
         title = viewModel.title
+        rootView.bind(viewModel: viewModel)
     }
 
     func didReceive(
         depositViewModel: MultisigTxDetailsViewModel.SectionField<BalanceViewModelProtocol>
     ) {
-        print(depositViewModel)
+        rootView.bind(deposit: depositViewModel)
     }
 }

@@ -23,8 +23,7 @@ extension DisplayAddressViewModel {
 
         return StackCellViewModel(
             details: details,
-            imageViewModel: imageViewModel,
-            lineBreakMode: lineBreakMode
+            imageViewModel: imageViewModel
         )
     }
 }

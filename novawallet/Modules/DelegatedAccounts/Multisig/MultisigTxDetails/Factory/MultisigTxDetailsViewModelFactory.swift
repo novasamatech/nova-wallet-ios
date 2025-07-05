@@ -75,8 +75,7 @@ private extension MultisigTxDetailsViewModelFactory {
     ) -> MultisigTxDetailsViewModel.Section {
         let callHashModel = StackCellViewModel(
             details: multisigTxDetails.callHash.toHexWithPrefix(),
-            imageViewModel: nil,
-            lineBreakMode: .byTruncatingMiddle
+            imageViewModel: nil
         )
         let callHashField = MultisigTxDetailsViewModel.SectionField(
             title: R.string.localizable.commonCallHash(preferredLanguages: locale.rLanguages),
@@ -88,8 +87,7 @@ private extension MultisigTxDetailsViewModelFactory {
         if let callData = multisigTxDetails.callData {
             let callDataModel = StackCellViewModel(
                 details: callData.toHexWithPrefix(),
-                imageViewModel: nil,
-                lineBreakMode: .byTruncatingMiddle
+                imageViewModel: nil
             )
 
             callDataField = MultisigTxDetailsViewModel.SectionField(
