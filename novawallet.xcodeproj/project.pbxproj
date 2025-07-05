@@ -1859,7 +1859,7 @@
 		2DDF94CF2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */; };
 		2DDF94D12E197872009B7F19 /* MultisigTxDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */; };
 		2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */; };
-		2DDF94D52E19BC0D009B7F19 /* String+Trancation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Trancation.swift */; };
+		2DDF94D52E19BC0D009B7F19 /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
 		2DDF94DB2E19C70B009B7F19 /* StackDepositCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
@@ -7891,7 +7891,7 @@
 		2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsWireframe.swift; sourceTree = "<group>"; };
 		2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewFactory.swift; sourceTree = "<group>"; };
 		2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCall+JSON.swift"; sourceTree = "<group>"; };
-		2DDF94D42E19BC0D009B7F19 /* String+Trancation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Trancation.swift"; sourceTree = "<group>"; };
+		2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Truncation.swift"; sourceTree = "<group>"; };
 		2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDepositCell.swift; sourceTree = "<group>"; };
 		2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkBaseInteractorError.swift; sourceTree = "<group>"; };
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
@@ -22340,7 +22340,7 @@
 				0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */,
 				0C5FA9A62B8313950077934C /* String+Search.swift */,
 				0C803D082C9B7D8400AEB35B /* String+Trimming.swift */,
-				2DDF94D42E19BC0D009B7F19 /* String+Trancation.swift */,
+				2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -34317,7 +34317,7 @@
 				74A93B3225BF8541B69F88EF /* CloudBackupAddWalletPresenter.swift in Sources */,
 				1CD99FC2F2D45A3BF6AA1E00 /* CloudBackupAddWalletInteractor.swift in Sources */,
 				9202CBF07DA49C807A8687FA /* CloudBackupAddWalletViewFactory.swift in Sources */,
-				2DDF94D52E19BC0D009B7F19 /* String+Trancation.swift in Sources */,
+				2DDF94D52E19BC0D009B7F19 /* String+Truncation.swift in Sources */,
 				1DE0BC8BC9D9462C58C4C39F /* CloudBackupRemindProtocols.swift in Sources */,
 				CFD1B4635D0ED2DC7DAD1EC1 /* CloudBackupRemindPresenter.swift in Sources */,
 				9065800EAB4A8B807C713220 /* CloudBackupRemindInteractor.swift in Sources */,
