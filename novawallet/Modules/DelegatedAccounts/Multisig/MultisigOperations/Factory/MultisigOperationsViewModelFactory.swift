@@ -13,6 +13,7 @@ protocol MultisigOperationsViewModelFactoryProtocol {
 }
 
 final class MultisigOperationsViewModelFactory {
+    private let calendar = Calendar.current
     private let sectionDateFormatter: LocalizableResource<DateFormatter>
     private let timeFormatter: LocalizableResource<DateFormatter>
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
@@ -21,7 +22,7 @@ final class MultisigOperationsViewModelFactory {
 
     init(
         timeFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistory,
-        sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDate,
+        sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistoryDate.localizableResource(),
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
@@ -269,9 +270,7 @@ private extension MultisigOperationsViewModelFactory {
         let operationsByDay = Dictionary(grouping: operations) { operation -> DateComponents in
             let date = Date(timeIntervalSince1970: TimeInterval(operation.timestamp))
 
-            return Calendar
-                .current
-                .dateComponents([.day, .year, .month], from: date)
+            return calendar.dateComponents([.day, .year, .month], from: date)
         }
 
         let sortedOperations = operationsByDay
