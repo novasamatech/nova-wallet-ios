@@ -68,10 +68,11 @@ final class ExtrinsicDelegateSenderResolver {
             }
         }
 
+        // TODO: batch calls before wrapping into delegate
         let resolvedDelegate = ExtrinsicSenderResolution.ResolvedDelegate(
             delegateAccount: solution.delegate,
             delegatedAccount: delegatedAccount,
-            paths: solution.callToPath,
+            path: Array(solution.callToPath.values)[0],
             allWallets: wallets,
             chain: chain,
             failures: resolutionFailures
@@ -139,7 +140,7 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
             let resolvedDelegate = ExtrinsicSenderResolution.ResolvedDelegate(
                 delegateAccount: nil,
                 delegatedAccount: delegatedAccount,
-                paths: nil,
+                path: nil,
                 allWallets: wallets,
                 chain: chain,
                 failures: resolutionFailures

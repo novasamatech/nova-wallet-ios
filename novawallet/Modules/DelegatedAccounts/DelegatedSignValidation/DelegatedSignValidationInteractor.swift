@@ -24,8 +24,13 @@ final class DelegatedSignValidationInteractor {
 
 extension DelegatedSignValidationInteractor: DelegatedSignValidationInteractorInputProtocol {
     func setup() {
-        // TODO: Refactor to single path
-        guard let path = resolution.paths?.values.first else {
+        guard let path = resolution.path else {
+            presenter?.didReceive(
+                validationSequenceResult: .failure(
+                    DelegatedSignValidationInteractorError.missingDelegationPath
+                )
+            )
+
             return
         }
 

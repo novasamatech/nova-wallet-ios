@@ -58,7 +58,9 @@ extension DelegationResolution {
         ) throws -> PathFinderResult {
             let allCalls = Set(callPaths.keys)
 
-            let callDelegates = callPaths.reduce(into: [CallDelegateKey: DelegationResolution.GraphPath]()) { accum, keyValue in
+            let callDelegates = callPaths.reduce(
+                into: [CallDelegateKey: DelegationResolution.GraphPath]()
+            ) { accum, keyValue in
                 let call = keyValue.key
                 let paths = keyValue.value
 

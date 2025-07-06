@@ -16,3 +16,7 @@ protocol DelegatedSignValidationWireframeProtocol: AnyObject {
     func proceed(from view: ControllerBackedProtocol, with sequence: DelegatedSignValidationSequence)
     func completeWithError()
 }
+
+enum DelegatedSignValidationInteractorError: Error {
+    case missingDelegationPath
+}
