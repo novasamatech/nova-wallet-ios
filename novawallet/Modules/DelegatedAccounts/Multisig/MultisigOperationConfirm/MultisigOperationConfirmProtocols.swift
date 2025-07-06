@@ -2,6 +2,7 @@ import Foundation
 
 protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: MultisigOperationConfirmViewModel)
+    func didReceive(amount: BalanceViewModelProtocol?)
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>)
     func didReceive(loading: Bool)
 }
@@ -9,10 +10,11 @@ protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
 protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
     func setup()
     func actionShowSender()
-    func actionShowReceiver()
-    func actionShowDelegate()
+    func actionShowRecipient()
+    func actionShowDelegated()
     func actionShowCurrentSignatory()
     func actionShowSignatory(with identifier: String)
+    func actionFullDetails()
 }
 
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
@@ -26,15 +28,20 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence)
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?)
-    func didReceivePriceData(_ priceData: PriceData?)
+    func didReceiveUtilityAssetPrice(_ priceData: PriceData?)
+    func didReceiveTransferAssetPrice(_ priceData: PriceData?)
     func didCompleteSubmission(with submissionType: MultisigSubmissionType)
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, ModalAlertPresenting {
+protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable {
     func showAddCallData(
         from view: ControllerBackedProtocol?,
         for operation: Multisig.PendingOperation
+    )
+    func showFullDetails(
+        from view: ControllerBackedProtocol?,
+        for operation: Multisig.PendingOperationProxyModel
     )
     func close(from view: ControllerBackedProtocol?)
 }

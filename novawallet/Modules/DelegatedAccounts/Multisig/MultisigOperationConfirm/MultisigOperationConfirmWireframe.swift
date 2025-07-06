@@ -18,4 +18,18 @@ final class MultisigOperationConfirmWireframe: MultisigOperationConfirmWireframe
             animated: true
         )
     }
+
+    func showFullDetails(
+        from view: ControllerBackedProtocol?,
+        for operation: Multisig.PendingOperationProxyModel
+    ) {
+        guard let detailsView = MultisigTxDetailsViewFactory.createView(for: operation) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            detailsView.controller,
+            animated: true
+        )
+    }
 }

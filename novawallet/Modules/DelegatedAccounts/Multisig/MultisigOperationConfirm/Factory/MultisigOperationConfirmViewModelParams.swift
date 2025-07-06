@@ -6,8 +6,9 @@ struct MultisigOperationConfirmViewModelParams {
     let multisigWallet: MetaAccountModel
     let signatories: [Multisig.Signatory]
     let fee: ExtrinsicFeeProtocol?
-    let feeAsset: ChainAsset
-    let assetPrice: PriceData?
+    let chainAsset: ChainAsset
+    let utilityAssetPrice: PriceData?
+    let transferAssetPrice: PriceData?
     let confirmClosure: () -> Void
     let callDataAddClosure: () -> Void
 }

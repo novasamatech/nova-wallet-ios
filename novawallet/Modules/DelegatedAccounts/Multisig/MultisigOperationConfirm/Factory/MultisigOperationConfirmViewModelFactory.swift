@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 protocol MultisigOperationConfirmViewModelFactoryProtocol {
     func createViewModel(
@@ -13,23 +14,29 @@ protocol MultisigOperationConfirmViewModelFactoryProtocol {
         assetPrice: PriceData?,
         locale: Locale
     ) -> MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>
+
+    func createAmountViewModel(
+        from callDefinition: FormattedCall.Definition,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol?
 }
 
 final class MultisigOperationConfirmViewModelFactory {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     let iconViewModelFactory: IconViewModelFactoryProtocol
 
     init(
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         iconViewModelFactory: IconViewModelFactoryProtocol = IconViewModelFactory()
     ) {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
-        self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
         self.iconViewModelFactory = iconViewModelFactory
     }
 }
@@ -54,9 +61,29 @@ private extension MultisigOperationConfirmViewModelFactory {
         )
     }
 
+    func createBalanceViewModel(
+        for amount: BigUInt,
+        chainAsset: ChainAsset,
+        assetPrice: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol {
+        let assetInfo = chainAsset.asset.displayInfo
+
+        let decimal = amount.decimal(assetInfo: assetInfo)
+
+        let balanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset.displayInfo,
+            amount: decimal,
+            priceData: assetPrice
+        ).value(for: locale)
+
+        return balanceViewModel
+    }
+
     func createOriginSection(
         chain: ChainModel,
         wallet: MetaAccountModel,
+        delegatedAccount: FormattedCall.Account?,
         locale: Locale
     ) -> MultisigOperationConfirmViewModel.Section? {
         let networkModel = networkViewModelFactory.createViewModel(from: chain)
@@ -71,13 +98,52 @@ private extension MultisigOperationConfirmViewModelFactory {
             value: walletViewModel
         )
 
+        var delegatedField: MultisigOperationConfirmViewModel.SectionField<DisplayAddressViewModel>?
+
+        if
+            let delegatedAccount,
+            let delegatedViewModel = try? displayAddressViewModelFactory.createViewModel(
+                from: delegatedAccount,
+                chain: chain
+            ) {
+            delegatedField = MultisigOperationConfirmViewModel.SectionField(
+                title: R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+                value: delegatedViewModel
+            )
+        }
+
         let originViewModel = MultisigOperationConfirmViewModel.OriginModel(
             network: networkField,
             wallet: walletField,
-            onBehalfOf: nil
+            delegatedAccount: delegatedField
         )
 
         return .origin(originViewModel)
+    }
+
+    func createRecipientSection(
+        chain: ChainModel,
+        callDefinition: FormattedCall.Definition?,
+        locale: Locale
+    ) -> MultisigOperationConfirmViewModel.Section? {
+        guard
+            case let .transfer(transfer) = callDefinition,
+            let recipientViewModel = try? displayAddressViewModelFactory.createViewModel(
+                from: transfer.account,
+                chain: chain
+            )
+        else { return nil }
+
+        let fieldModel = MultisigOperationConfirmViewModel.SectionField(
+            title: R.string.localizable.commonRecipient(preferredLanguages: locale.rLanguages),
+            value: recipientViewModel
+        )
+
+        let sectionViewModel = MultisigOperationConfirmViewModel.RecipientModel(
+            recipient: fieldModel
+        )
+
+        return .recipient(sectionViewModel)
     }
 
     func createSignatorySection(
@@ -136,19 +202,30 @@ private extension MultisigOperationConfirmViewModelFactory {
     ) -> BalanceViewModelProtocol? {
         guard let fee else { return nil }
 
-        let assetInfo = feeAsset.asset.displayInfo
+        return createBalanceViewModel(
+            for: fee.amount,
+            chainAsset: feeAsset,
+            assetPrice: assetPrice,
+            locale: locale
+        )
+    }
 
-        let feeDecimal = Decimal.fromSubstrateAmount(
-            fee.amount,
-            precision: assetInfo.assetPrecision
-        ) ?? 0.0
+    func createAmount(
+        from callDefinition: FormattedCall.Definition?,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        guard case let .transfer(transfer) = callDefinition else { return nil }
 
-        let balanceViewModel = utilityBalanceViewModelFactory.balanceFromPrice(
-            feeDecimal,
-            priceData: assetPrice
+        let amount = transfer.amount
+
+        let amountDecimal = amount.decimal(assetInfo: transfer.asset.assetDisplayInfo)
+
+        return balanceViewModelFactoryFacade.spendingAmountFromPrice(
+            targetAssetInfo: transfer.asset.assetDisplayInfo,
+            amount: amountDecimal,
+            priceData: priceData
         ).value(for: locale)
-
-        return balanceViewModel
     }
 
     func createSignatoriesSection(
@@ -178,6 +255,15 @@ private extension MultisigOperationConfirmViewModelFactory {
         let listViewModel = SignatoryListViewModel(items: signatoryViewModels)
 
         return .signatories(.init(signatories: .init(title: title, value: listViewModel)))
+    }
+
+    func createFullDetailsSection(locale: Locale) -> MultisigOperationConfirmViewModel.Section {
+        let model = MultisigOperationConfirmViewModel.FullDetailsModel(
+            title: R.string.localizable.commonFullDetails(preferredLanguages: locale.rLanguages),
+            value: ""
+        )
+
+        return .fullDetails(model)
     }
 
     func createSignatoriesViewModels(
@@ -384,6 +470,12 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         let originSection = createOriginSection(
             chain: params.chain,
             wallet: params.multisigWallet,
+            delegatedAccount: params.pendingOperation.formattedModel?.delegatedAccount,
+            locale: locale
+        )
+        let recipientSection = createRecipientSection(
+            chain: params.chain,
+            callDefinition: params.pendingOperation.formattedModel?.definition,
             locale: locale
         )
         let signatorySection = createSignatorySection(
@@ -391,8 +483,8 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             multisigWallet: params.multisigWallet,
             signatories: params.signatories,
             fee: params.fee,
-            feeAsset: params.feeAsset,
-            assetPrice: params.assetPrice,
+            feeAsset: params.chainAsset,
+            assetPrice: params.utilityAssetPrice,
             locale: locale
         )
         let signatoriesSection = createSignatoriesSection(
@@ -402,11 +494,14 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             chain: params.chain,
             locale: locale
         )
+        let fullDetailsSection = createFullDetailsSection(locale: locale)
 
         let sections = [
             originSection,
+            recipientSection,
             signatorySection,
-            signatoriesSection
+            signatoriesSection,
+            fullDetailsSection
         ].compactMap { $0 }
 
         let actions = createActions(
@@ -419,8 +514,15 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
 
         let title = createTitle(for: params.pendingOperation.formattedModel, locale: locale)
 
+        var amountViewModel = createAmount(
+            from: params.pendingOperation.formattedModel?.definition,
+            priceData: params.transferAssetPrice,
+            locale: locale
+        )
+
         return MultisigOperationConfirmViewModel(
             title: title,
+            amount: amountViewModel,
             sections: sections,
             actions: actions
         )
@@ -444,5 +546,17 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         )
 
         return feeField
+    }
+
+    func createAmountViewModel(
+        from callDefinition: FormattedCall.Definition,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        createAmount(
+            from: callDefinition,
+            priceData: priceData,
+            locale: locale
+        )
     }
 }

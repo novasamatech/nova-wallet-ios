@@ -29,15 +29,14 @@ struct MultisigOperationConfirmViewFactory {
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: asset.displayInfo,
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let viewModelFactory = MultisigOperationConfirmViewModelFactory(
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             networkViewModelFactory: NetworkViewModelFactory(),
-            utilityBalanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
         let presenter = MultisigOperationConfirmPresenter(

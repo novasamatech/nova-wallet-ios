@@ -1,5 +1,6 @@
 import SubstrateSdk
 import Operation_iOS
+import BigInt
 
 extension Multisig {
     struct PendingOperation: Codable {
@@ -17,15 +18,18 @@ extension Multisig {
 
     struct MultisigDefinition: Codable, Equatable {
         let timepoint: MultisigTimepoint
+        let deposit: BigUInt
         let depositor: AccountId
         let approvals: [AccountId]
 
         init(
             timepoint: MultisigTimepoint,
+            deposit: BigUInt,
             depositor: AccountId,
             approvals: [AccountId]
         ) {
             self.timepoint = timepoint
+            self.deposit = deposit
             self.depositor = depositor
             self.approvals = approvals
         }
@@ -35,6 +39,7 @@ extension Multisig {
                 height: onChainModel.timepoint.height,
                 index: onChainModel.timepoint.index
             )
+            deposit = onChainModel.deposit
             depositor = onChainModel.depositor
             approvals = onChainModel.approvals.map(\.wrappedValue)
         }

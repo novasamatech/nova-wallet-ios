@@ -218,13 +218,13 @@ extension SignatoryListExpandableView {
 extension SignatoryListExpandableView {
     enum Constants {
         static let headerCellHeight: CGFloat = 44.0
-        static let collapsedStateHeight: CGFloat = 52.0
+        static let collapsedStateHeight: CGFloat = headerCellHeight
         static let arrowImageViewSize: CGSize = .init(width: 24, height: 24)
 
         static let headerCellInsets: UIEdgeInsets = .init(
-            top: 14,
+            top: .zero,
             left: 16,
-            bottom: 0,
+            bottom: .zero,
             right: 16
         )
     }

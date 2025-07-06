@@ -1911,3 +1911,8 @@
 "call.data.validation.error.title" = "Invalid call data";
 "call.data.validation.error.message" = "The call data you provided is invalid or has the wrong format. Please ensure it is correct and try again.";
 "call.data.validation.hash.matching.error.message" = "This call data for another operation with call hash %@";
+"operation.details.check.hint" = "Make sure the operation is correct";
+"common.call.hash" = "Call hash";
+"common.full.details" = "Full details";
+"multisig.call.hash.copy" = "Copy call hash";
+"multisig.call.hash.share" = "Share call hash";

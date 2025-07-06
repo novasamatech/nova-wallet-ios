@@ -100,6 +100,16 @@ private extension MultisigOperationConfirmViewController {
             action: #selector(actionMultisigWallet),
             for: .touchUpInside
         )
+        rootView.delegatedAccountCell.addTarget(
+            self,
+            action: #selector(actionDelegatedAccount),
+            for: .touchUpInside
+        )
+        rootView.recipientCell.addTarget(
+            self,
+            action: #selector(actionRecipient),
+            for: .touchUpInside
+        )
         rootView.signatoryWalletCell.addTarget(
             self,
             action: #selector(actionCurrentSignatory),
@@ -112,6 +122,10 @@ private extension MultisigOperationConfirmViewController {
                 for: .touchUpInside
             )
         }
+        rootView.fullDetailsCell.addTarget(
+            self, action: #selector(actionFullDetails),
+            for: .touchUpInside
+        )
     }
 
     func addButtonActions() {
@@ -152,6 +166,14 @@ private extension MultisigOperationConfirmViewController {
         presenter.actionShowSender()
     }
 
+    @objc func actionDelegatedAccount() {
+        presenter.actionShowDelegated()
+    }
+
+    @objc func actionRecipient() {
+        presenter.actionShowRecipient()
+    }
+
     @objc func actionCurrentSignatory() {
         presenter.actionShowCurrentSignatory()
     }
@@ -184,6 +206,10 @@ private extension MultisigOperationConfirmViewController {
 
         actionClosure?()
     }
+
+    @objc func actionFullDetails() {
+        presenter.actionFullDetails()
+    }
 }
 
 // MARK: - MultisigOperationConfirmViewProtocol
@@ -198,8 +224,14 @@ extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewPr
         setupActions()
     }
 
-    func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
+    func didReceive(
+        feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>
+    ) {
         rootView.bind(fee: feeViewModel)
+    }
+
+    func didReceive(amount: BalanceViewModelProtocol?) {
+        rootView.bind(amount: amount)
     }
 
     func didReceive(loading: Bool) {

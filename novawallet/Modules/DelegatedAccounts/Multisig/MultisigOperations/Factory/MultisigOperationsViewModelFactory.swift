@@ -13,24 +13,28 @@ protocol MultisigOperationsViewModelFactoryProtocol {
 }
 
 final class MultisigOperationsViewModelFactory {
+    private let calendar = Calendar.current
     private let sectionDateFormatter: LocalizableResource<DateFormatter>
     private let timeFormatter: LocalizableResource<DateFormatter>
+    private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
-    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol?
+    private let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
     init(
         timeFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistory,
-        sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDate,
+        sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistoryDate.localizableResource(),
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol? = nil
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
         self.timeFormatter = timeFormatter
         self.sectionDateFormatter = sectionDateFormatter
+        self.assetIconViewModelFactory = assetIconViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 }
 
@@ -74,7 +78,7 @@ private extension MultisigOperationsViewModelFactory {
                 using: chain.chainFormat
             ) {
                 return R.string.localizable.walletHistoryTransferOutgoingDetails(
-                    address,
+                    address.truncated,
                     preferredLanguages: locale.rLanguages
                 )
             } else {
@@ -116,7 +120,7 @@ private extension MultisigOperationsViewModelFactory {
             return .signed(
                 TitleIconViewModel(
                     title: R.string.localizable.multisigOperationStatusSigned(preferredLanguages: languages),
-                    icon: R.image.iconPositiveCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
+                    icon: R.image.iconCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
                 )
             )
         } else {
@@ -124,10 +128,59 @@ private extension MultisigOperationsViewModelFactory {
         }
     }
 
-    func createDelegatedAccountModel(
-        displayAddress: DisplayAddress
-    ) -> DisplayAddressViewModel {
-        displayAddressViewModelFactory.createViewModel(from: displayAddress)
+    func createAmount(
+        from callDefinition: FormattedCall.Definition?,
+        locale: Locale
+    ) -> String? {
+        guard case let .transfer(transfer) = callDefinition else { return nil }
+
+        let amount = transfer.amount
+
+        let amountDecimal = amount.decimal(assetInfo: transfer.asset.assetDisplayInfo)
+
+        return balanceViewModelFactoryFacade.spendingAmountFromPrice(
+            targetAssetInfo: transfer.asset.assetDisplayInfo,
+            amount: amountDecimal,
+            priceData: nil
+        ).value(for: locale).amount
+    }
+
+    func createDelegatedAccount(
+        from delegatedAccount: FormattedCall.Account?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> MultisigOperationViewModel.DelegatedAccount? {
+        guard
+            let delegatedAccount,
+            let displayAddressModel = try? displayAddressViewModelFactory.createViewModel(
+                from: delegatedAccount,
+                chain: chain
+            )
+        else { return nil }
+
+        return MultisigOperationViewModel.DelegatedAccount(
+            title: R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+            model: displayAddressModel
+        )
+    }
+
+    func createOperationIcon(
+        for callDefinition: FormattedCall.Definition?,
+        chain: ChainModel
+    ) -> ImageViewModelProtocol {
+        guard let callDefinition else {
+            return StaticImageViewModel(image: R.image.iconUnknownOperation()!)
+        }
+
+        switch callDefinition {
+        case .transfer:
+            return StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
+        case let .general(generalCall):
+            return assetIconViewModelFactory.createAssetIconViewModel(
+                for: chain.utilityChainAsset()?.asset.icon,
+                with: .white
+            )
+        }
     }
 
     func createViewModel(
@@ -148,6 +201,10 @@ private extension MultisigOperationsViewModelFactory {
             locale: locale
         )
 
+        let amount = createAmount(
+            from: operationModel.formattedModel?.definition,
+            locale: locale
+        )
         let operationDate = Date(timeIntervalSince1970: TimeInterval(operationModel.timestamp))
         let timeString = timeFormatter.value(for: locale).string(from: operationDate)
 
@@ -162,8 +219,18 @@ private extension MultisigOperationsViewModelFactory {
             locale: locale
         )
 
+        let delegatedAccount = createDelegatedAccount(
+            from: operationModel.formattedModel?.delegatedAccount,
+            chain: chain,
+            locale: locale
+        )
+
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
-        let operationIcon = StaticImageViewModel(image: R.image.iconUnknownOperation()!)
+
+        let operationIcon = createOperationIcon(
+            for: operationModel.formattedModel?.definition,
+            chain: chain
+        )
 
         return MultisigOperationViewModel(
             identifier: operationModel.identifier,
@@ -171,11 +238,11 @@ private extension MultisigOperationsViewModelFactory {
             iconViewModel: operationIcon,
             operationTitle: title,
             operationSubtitle: subtitle,
-            amount: nil,
+            amount: amount,
             timeString: timeString,
             signingProgress: signingProgress,
             status: status,
-            delegatedAccountModel: nil
+            delegatedAccountModel: delegatedAccount
         )
     }
 
@@ -227,9 +294,7 @@ private extension MultisigOperationsViewModelFactory {
         let operationsByDay = Dictionary(grouping: operations) { operation -> DateComponents in
             let date = Date(timeIntervalSince1970: TimeInterval(operation.timestamp))
 
-            return Calendar
-                .current
-                .dateComponents([.day, .year, .month], from: date)
+            return calendar.dateComponents([.day, .year, .month], from: date)
         }
 
         let sortedOperations = operationsByDay

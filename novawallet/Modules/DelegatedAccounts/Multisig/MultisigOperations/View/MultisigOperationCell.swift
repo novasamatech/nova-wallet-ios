@@ -2,12 +2,9 @@ import UIKit
 import SnapKit
 import UIKit_iOS
 
-final class MultisigOperationCell: UICollectionViewCell {
-    let blurBackgroundView: BlockBackgroundView = .create { view in
-        view.sideLength = Constants.cornerRadius
-        view.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
-    }
+typealias MultisigOperationCell = BlurredCollectionViewCell<MultisigOperationView>
 
+final class MultisigOperationView: UIView {
     let operationTypeValues: MultiValueView = .create { view in
         view.valueTop.apply(style: .regularSubhedlinePrimary)
         view.valueTop.textAlignment = .left
@@ -24,29 +21,29 @@ final class MultisigOperationCell: UICollectionViewCell {
         view.valueBottom.textAlignment = .right
     }
 
-    let delegatedAccountView: RowView<
+    let delegatedAccountView: GenericBackgroundView<
         GenericPairValueView<
             UILabel,
             IconDetailsView
         >
     > = .create { view in
-        view.rowContentView.makeHorizontal()
-        view.rowContentView.stackView.distribution = .fillEqually
-        view.rowContentView.stackView.alignment = .center
-        view.roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
+        view.wrappedView.makeHorizontal()
+        view.wrappedView.stackView.distribution = .fillEqually
+        view.wrappedView.stackView.alignment = .center
+        view.fillColor = R.color.colorBlockBackground()!
 
-        view.rowContentView.fView.textAlignment = .left
-        view.rowContentView.fView.apply(style: .caption1Secondary)
+        view.wrappedView.fView.textAlignment = .left
+        view.wrappedView.fView.apply(style: .caption1Secondary)
 
-        view.rowContentView.sView.spacing = 4.0
-        view.rowContentView.sView.detailsLabel.apply(style: .caption1Secondary)
-        view.rowContentView.sView.iconWidth = Constants.addressIconSize
-        view.rowContentView.sView.detailsLabel.numberOfLines = 1
-        view.rowContentView.sView.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        view.wrappedView.sView.spacing = 4.0
+        view.wrappedView.sView.detailsLabel.apply(style: .caption1Secondary)
+        view.wrappedView.sView.iconWidth = Constants.addressIconSize
+        view.wrappedView.sView.detailsLabel.numberOfLines = 1
+        view.wrappedView.sView.detailsLabel.lineBreakMode = .byTruncatingMiddle
 
-        view.roundedBackgroundView.cornerRadius = .zero
-        view.roundedBackgroundView.roundingCorners = [.bottomLeft, .bottomRight]
-        view.roundedBackgroundView.cornerRadius = Constants.cornerRadius
+        view.cornerRadius = .zero
+        view.roundingCorners = [.bottomLeft, .bottomRight]
+        view.cornerRadius = Constants.cornerRadius
         view.contentInsets = Constants.delegatedViewContentInsets
     }
 
@@ -103,25 +100,15 @@ final class MultisigOperationCell: UICollectionViewCell {
     }
 
     var delegatedAccountFieldLabel: UILabel {
-        delegatedAccountView.rowContentView.fView
+        delegatedAccountView.wrappedView.fView
     }
 
     var delegatedAccountIconView: UIImageView {
-        delegatedAccountView.rowContentView.sView.imageView
+        delegatedAccountView.wrappedView.sView.imageView
     }
 
     var delegatedAccountDetailsLabel: UILabel {
-        delegatedAccountView.rowContentView.sView.detailsLabel
-    }
-
-    override var isHighlighted: Bool {
-        didSet {
-            if isHighlighted {
-                blurBackgroundView.set(highlighted: true, animated: true)
-            } else {
-                blurBackgroundView.set(highlighted: false, animated: oldValue)
-            }
-        }
+        delegatedAccountView.wrappedView.sView.detailsLabel
     }
 
     override init(frame: CGRect) {
@@ -137,26 +124,21 @@ final class MultisigOperationCell: UICollectionViewCell {
 
 // MARK: - Private
 
-private extension MultisigOperationCell {
+private extension MultisigOperationView {
     func setupLayout() {
-        contentView.addSubview(blurBackgroundView)
-        blurBackgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        contentView.addSubview(signingProgressLabel)
+        addSubview(signingProgressLabel)
         signingProgressLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(Constants.contentInsets.left)
             make.top.equalToSuperview().inset(Constants.contentInsets.top)
         }
 
-        contentView.addSubview(statusView)
+        addSubview(statusView)
         statusView.snp.makeConstraints { make in
             make.centerY.equalTo(signingProgressLabel)
             make.trailing.equalToSuperview().inset(Constants.contentInsets.right)
         }
 
-        contentView.addSubview(operationIconView)
+        addSubview(operationIconView)
         operationIconView.snp.makeConstraints { make in
             make.size.equalTo(Constants.iconSize)
             make.leading.equalTo(signingProgressLabel)
@@ -164,20 +146,20 @@ private extension MultisigOperationCell {
             make.bottom.equalToSuperview().inset(Constants.contentInsets.bottom)
         }
 
-        contentView.addSubview(networkIconView)
+        addSubview(networkIconView)
         networkIconView.snp.makeConstraints { make in
             make.size.equalTo(Constants.networkIconSize)
             make.trailing.bottom.equalTo(operationIconView).offset(Constants.networkIconOffset)
         }
 
-        contentView.addSubview(operationTypeValues)
+        addSubview(operationTypeValues)
         operationTypeValues.snp.makeConstraints { make in
             make.centerY.equalTo(operationIconView)
             make.leading.equalTo(operationIconView.snp.trailing).offset(Constants.typeValuesLeadingOffset)
             make.top.bottom.equalTo(operationIconView)
         }
 
-        contentView.addSubview(amountTimeValues)
+        addSubview(amountTimeValues)
         amountTimeValues.snp.makeConstraints { make in
             make.centerY.equalTo(operationTypeValues)
             make.trailing.equalTo(statusView)
@@ -232,12 +214,14 @@ private extension MultisigOperationCell {
         }
     }
 
-    func updateDelegatedAccountView(model: (text: String, model: DisplayAddressViewModel)?) {
-        if let (fieldText, addressModel) = model {
-            delegatedAccountFieldLabel.text = fieldText
-            delegatedAccountDetailsLabel.text = addressModel.name ?? addressModel.address
+    func updateDelegatedAccountView(delegatedAccountModel: MultisigOperationViewModel.DelegatedAccount?) {
+        if let delegatedAccountModel {
+            delegatedAccountFieldLabel.text = delegatedAccountModel.title
+            delegatedAccountDetailsLabel.lineBreakMode = delegatedAccountModel.model.lineBreakMode
+            delegatedAccountDetailsLabel.text = delegatedAccountModel.model.name
+                ?? delegatedAccountModel.model.address
 
-            addressModel.imageViewModel?.loadImage(
+            delegatedAccountModel.model.imageViewModel?.loadImage(
                 on: delegatedAccountIconView,
                 targetSize: CGSize(width: Constants.addressIconSize, height: Constants.addressIconSize),
                 animated: true
@@ -259,7 +243,7 @@ private extension MultisigOperationCell {
                 make.edges.equalToSuperview()
             }
 
-            contentView.addSubview(borderedContainer)
+            addSubview(borderedContainer)
             borderedContainer.snp.makeConstraints { make in
                 make.leading.trailing.bottom.equalToSuperview()
                 make.height.equalTo(Constants.delegatedAccountViewHeight)
@@ -284,7 +268,7 @@ private extension MultisigOperationCell {
 
 // MARK: - Internal
 
-extension MultisigOperationCell {
+extension MultisigOperationView {
     func bind(viewModel: MultisigOperationViewModel) {
         viewModel.chainIcon.network.icon?.loadImage(
             on: networkIconView,
@@ -302,13 +286,13 @@ extension MultisigOperationCell {
 
         timeLabel.text = viewModel.timeString
 
-        updateDelegatedAccountView(model: viewModel.delegatedAccountModel)
+        updateDelegatedAccountView(delegatedAccountModel: viewModel.delegatedAccountModel)
     }
 }
 
 // MARK: - Constants
 
-private extension MultisigOperationCell {
+private extension MultisigOperationView {
     enum Constants {
         static let iconSize: CGFloat = 32.0
         static let networkIconSize: CGFloat = 16.0

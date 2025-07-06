@@ -3,12 +3,20 @@ import SubstrateSdk
 
 protocol DisplayAddressViewModelFactoryProtocol {
     func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel
+
     func createViewModel(from model: DisplayAddress, using chainFormat: ChainFormat) -> DisplayAddressViewModel
+
     func createViewModel(from address: AccountAddress, name: String?, iconUrl: URL?) -> DisplayAddressViewModel
+
     func createViewModel(
         from pool: NominationPools.SelectedPool,
         chainAsset: ChainAsset
     ) -> DisplayAddressViewModel
+
+    func createViewModel(
+        from formattedCallAccount: FormattedCall.Account,
+        chain: ChainModel
+    ) throws -> DisplayAddressViewModel
 }
 
 extension DisplayAddressViewModelFactoryProtocol {
@@ -17,17 +25,10 @@ extension DisplayAddressViewModelFactoryProtocol {
     }
 }
 
-final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol {
+final class DisplayAddressViewModelFactory {
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var poolIconFactory = NominationPoolsIconFactory()
-
-    func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel {
-        createViewModel(from: model, chainFormat: nil)
-    }
-
-    func createViewModel(from model: DisplayAddress, using chainFormat: ChainFormat) -> DisplayAddressViewModel {
-        createViewModel(from: model, chainFormat: chainFormat)
-    }
+    private lazy var accountIconFactory = IconViewModelFactory()
 
     private func createViewModel(
         from model: DisplayAddress,
@@ -57,7 +58,11 @@ final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtoc
             imageViewModel: imageViewModel
         )
     }
+}
 
+// MARK: - DisplayAddressViewModelFactoryProtocol
+
+extension DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol {
     func createViewModel(from address: AccountAddress, name: String?, iconUrl: URL?) -> DisplayAddressViewModel {
         let imageViewModel: ImageViewModelProtocol?
 
@@ -94,6 +99,44 @@ final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtoc
             address: address ?? "",
             name: pool.name,
             imageViewModel: poolIcon
+        )
+    }
+
+    func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel {
+        createViewModel(from: model, chainFormat: nil)
+    }
+
+    func createViewModel(from model: DisplayAddress, using chainFormat: ChainFormat) -> DisplayAddressViewModel {
+        createViewModel(from: model, chainFormat: chainFormat)
+    }
+
+    func createViewModel(
+        from formattedCallAccount: FormattedCall.Account,
+        chain: ChainModel
+    ) throws -> DisplayAddressViewModel {
+        let accountAddress = try formattedCallAccount.accountId.toAddress(using: chain.chainFormat)
+
+        let name: String?
+        let imageViewModel: ImageViewModelProtocol?
+
+        switch formattedCallAccount {
+        case let .local(localAccount):
+            imageViewModel = accountIconFactory.createDrawableIconViewModel(
+                from: localAccount.walletIdenticonData
+            )
+            name = localAccount.chainAccount.name
+        case let .remote(accountId):
+            imageViewModel = accountIconFactory.createIdentifiableDrawableIconViewModel(
+                from: accountId,
+                chainFormat: chain.chainFormat
+            )
+            name = nil
+        }
+
+        return DisplayAddressViewModel(
+            address: accountAddress,
+            name: name,
+            imageViewModel: imageViewModel
         )
     }
 }
