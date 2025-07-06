@@ -100,10 +100,7 @@ private extension MultisigOperationConfirmViewModelFactory {
     ) -> BalanceViewModelProtocol {
         let assetInfo = chainAsset.asset.displayInfo
 
-        let decimal = Decimal.fromSubstrateAmount(
-            amount,
-            precision: assetInfo.assetPrecision
-        ) ?? 0.0
+        let decimal = amount.decimal(assetInfo: assetInfo)
 
         let balanceViewModel = utilityBalanceViewModelFactory.balanceFromPrice(
             decimal,
