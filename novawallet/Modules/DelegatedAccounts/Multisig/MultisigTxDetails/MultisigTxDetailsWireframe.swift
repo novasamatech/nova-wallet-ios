@@ -46,7 +46,7 @@ private extension MultisigTxDetailsWireframe {
         shareTitle: String,
         locale: Locale
     ) {
-        let title = value.truncatedMiddle(limit: 20)
+        let title = value.mediumTruncated
 
         let copyAction = AlertPresentableAction(
             title: copyTitle,
