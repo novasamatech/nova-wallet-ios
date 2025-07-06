@@ -1914,5 +1914,5 @@
 "operation.details.check.hint" = "Make sure the operation is correct";
 "common.call.hash" = "Call hash";
 "common.full.details" = "Full details";
-"multisig.call.hash.copy" = "Copy call data";
-"multisig.call.hash.share" = "Share call data";
+"multisig.call.hash.copy" = "Copy call hash";
+"multisig.call.hash.share" = "Share call hash";
