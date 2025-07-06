@@ -16,7 +16,7 @@ extension MultisigOperationConfirmViewModel {
         case destination
         case signatory(SignatoryModel)
         case signatories(SignatoriesModel)
-        case fullDetails
+        case fullDetails(FullDetailsModel)
     }
 
     struct Action {
@@ -54,4 +54,6 @@ extension MultisigOperationConfirmViewModel {
     struct SignatoriesModel {
         let signatories: SectionField<SignatoryListViewModel>
     }
+
+    typealias FullDetailsModel = SectionField<String>
 }

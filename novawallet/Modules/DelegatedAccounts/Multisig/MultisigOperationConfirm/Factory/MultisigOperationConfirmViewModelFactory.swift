@@ -180,6 +180,15 @@ private extension MultisigOperationConfirmViewModelFactory {
         return .signatories(.init(signatories: .init(title: title, value: listViewModel)))
     }
 
+    func createFullDetailsSection(locale: Locale) -> MultisigOperationConfirmViewModel.Section {
+        let model = MultisigOperationConfirmViewModel.FullDetailsModel(
+            title: R.string.localizable.commonFullDetails(preferredLanguages: locale.rLanguages),
+            value: ""
+        )
+
+        return .fullDetails(model)
+    }
+
     func createSignatoriesViewModels(
         from signatories: [Multisig.Signatory],
         chain: ChainModel,
@@ -402,11 +411,13 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             chain: params.chain,
             locale: locale
         )
+        let fullDetailsSection = createFullDetailsSection(locale: locale)
 
         let sections = [
             originSection,
             signatorySection,
-            signatoriesSection
+            signatoriesSection,
+            fullDetailsSection
         ].compactMap { $0 }
 
         let actions = createActions(

@@ -162,6 +162,15 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
         // TODO: Implement when call formatting is available
     }
 
+    func actionFullDetails() {
+        guard let pendingOperation else { return }
+
+        wireframe.showFullDetails(
+            from: view,
+            for: pendingOperation
+        )
+    }
+
     func actionShowCurrentSignatory() {
         guard
             let multisigContext = multisigWallet.multisigAccount?.multisig,

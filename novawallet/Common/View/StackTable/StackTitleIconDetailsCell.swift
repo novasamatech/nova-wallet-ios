@@ -24,6 +24,8 @@ final class StackTitleIconDetailsCell: RowView<GenericPairValueView<UILabel, Ico
     }
 
     private func configure() {
+        preferredHeight = 44.0
+
         titleLabel.apply(style: .footnoteSecondary)
         valueLabel.apply(style: .footnoteSecondary)
 

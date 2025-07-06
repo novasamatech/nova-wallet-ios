@@ -11,7 +11,7 @@ final class WalletInfoControl: RowView<
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        preferredHeight = 48
+        preferredHeight = 48.0
     }
 
     func bind(viewModel: WalletInfoView<WalletView>.ViewModel) {

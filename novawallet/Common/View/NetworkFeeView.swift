@@ -23,6 +23,7 @@ class NetworkFeeView: TitleAmountView {
         super.init(frame: frame)
 
         applyLocalization()
+        setupStyle()
     }
 
     @available(*, unavailable)
@@ -32,5 +33,12 @@ class NetworkFeeView: TitleAmountView {
 
     private func applyLocalization() {
         titleLabel.text = title.value(for: locale)
+    }
+
+    private func setupStyle() {
+        titleView.iconWidth = .zero
+        titleView.detailsView.iconWidth = .zero
+        titleView.imageView.isHidden = true
+        titleView.detailsView.imageView.isHidden = true
     }
 }

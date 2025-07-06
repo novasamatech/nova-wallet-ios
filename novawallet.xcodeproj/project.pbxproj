@@ -1716,6 +1716,7 @@
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
+		2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
@@ -1848,6 +1849,19 @@
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
 		2DDEE0E92CEDCEA9002E9289 /* DAppBrowserTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */; };
 		2DDEE0EB2CEDD43A002E9289 /* DAppBrowserTabMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */; };
+		2DDF94BD2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */; };
+		2DDF94BF2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */; };
+		2DDF94C12E192344009B7F19 /* MultisigTxDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */; };
+		2DDF94C32E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C22E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift */; };
+		2DDF94C52E1924CB009B7F19 /* MultisigTxDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C42E1924CB009B7F19 /* MultisigTxDetailsViewController.swift */; };
+		2DDF94C82E1955C1009B7F19 /* MultisigTxDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94C72E1955C1009B7F19 /* MultisigTxDetails.swift */; };
+		2DDF94CB2E195B33009B7F19 /* MultisigTxDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94CA2E195B33009B7F19 /* MultisigTxDetailsViewModelFactory.swift */; };
+		2DDF94CD2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94CC2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift */; };
+		2DDF94CF2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */; };
+		2DDF94D12E197872009B7F19 /* MultisigTxDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */; };
+		2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */; };
+		2DDF94D52E19BC0D009B7F19 /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
+		2DDF94DB2E19C70B009B7F19 /* StackDepositCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */; };
 		2DE302ED2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */; };
 		2DE302EF2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */; };
 		2DE302F12C32EAE80082FB5C /* SystemProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE302F02C32EAE80082FB5C /* SystemProperties.swift */; };
@@ -7867,6 +7881,19 @@
 		2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel14.xcdatamodel; sourceTree = "<group>"; };
 		2DDEE0E82CEDCEA9002E9289 /* DAppBrowserTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTab.swift; sourceTree = "<group>"; };
 		2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabMapper.swift; sourceTree = "<group>"; };
+		2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsProtocols.swift; sourceTree = "<group>"; };
+		2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsInteractor.swift; sourceTree = "<group>"; };
+		2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsPresenter.swift; sourceTree = "<group>"; };
+		2DDF94C22E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewLayout.swift; sourceTree = "<group>"; };
+		2DDF94C42E1924CB009B7F19 /* MultisigTxDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewController.swift; sourceTree = "<group>"; };
+		2DDF94C72E1955C1009B7F19 /* MultisigTxDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetails.swift; sourceTree = "<group>"; };
+		2DDF94CA2E195B33009B7F19 /* MultisigTxDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewModelFactory.swift; sourceTree = "<group>"; };
+		2DDF94CC2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewModel.swift; sourceTree = "<group>"; };
+		2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsWireframe.swift; sourceTree = "<group>"; };
+		2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigTxDetailsViewFactory.swift; sourceTree = "<group>"; };
+		2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeCall+JSON.swift"; sourceTree = "<group>"; };
+		2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Truncation.swift"; sourceTree = "<group>"; };
+		2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDepositCell.swift; sourceTree = "<group>"; };
 		2DE302EC2C32E4D10082FB5C /* CustomNetworkBaseInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNetworkBaseInteractorError.swift; sourceTree = "<group>"; };
 		2DE302EE2C32E70A0082FB5C /* SystemPropertiesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPropertiesOperationFactory.swift; sourceTree = "<group>"; };
 		2DE302F02C32EAE80082FB5C /* SystemProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemProperties.swift; sourceTree = "<group>"; };
@@ -14134,6 +14161,7 @@
 				0CA8AF202D85E6E300DB4E6A /* RuntimeCallBuilding.swift */,
 				0CA8AF222D85E8E800DB4E6A /* RuntimeCallOrigin.swift */,
 				0CA8AF262D85F16900DB4E6A /* RuntimeCall+Init.swift */,
+				2DDF94D22E199E8C009B7F19 /* RuntimeCall+JSON.swift */,
 				0CA8AF2E2D86364100DB4E6A /* RuntimeCallCollecting.swift */,
 			);
 			path = Builder;
@@ -15746,6 +15774,7 @@
 		2D3C71A62E087C9000DF9E49 /* Multisig */ = {
 			isa = PBXGroup;
 			children = (
+				2DDF94BB2E192296009B7F19 /* MultisigTxDetails */,
 				0C521C1A2E17BF3100ABAC97 /* PendingOperationProxy */,
 				2DFF39D82E18056200529984 /* MultisigCallDataImport */,
 				0C85F5BF2E140CFA003789DC /* Operation */,
@@ -16849,6 +16878,48 @@
 				2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */,
 			);
 			path = WalletView;
+			sourceTree = "<group>";
+		};
+		2DDF94BB2E192296009B7F19 /* MultisigTxDetails */ = {
+			isa = PBXGroup;
+			children = (
+				2DDF94C62E1955B1009B7F19 /* Model */,
+				2DDF94C92E195B23009B7F19 /* Factory */,
+				2DDF94D92E19C6EA009B7F19 /* View */,
+				2DDF94BC2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift */,
+				2DDF94BE2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift */,
+				2DDF94C02E192344009B7F19 /* MultisigTxDetailsPresenter.swift */,
+				2DDF94C22E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift */,
+				2DDF94C42E1924CB009B7F19 /* MultisigTxDetailsViewController.swift */,
+				2DDF94CE2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift */,
+			);
+			path = MultisigTxDetails;
+			sourceTree = "<group>";
+		};
+		2DDF94C62E1955B1009B7F19 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2DDF94C72E1955C1009B7F19 /* MultisigTxDetails.swift */,
+				2DDF94CC2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2DDF94C92E195B23009B7F19 /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				2DDF94CA2E195B33009B7F19 /* MultisigTxDetailsViewModelFactory.swift */,
+				2DDF94D02E197872009B7F19 /* MultisigTxDetailsViewFactory.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
+		2DDF94D92E19C6EA009B7F19 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2DDF94DA2E19C70B009B7F19 /* StackDepositCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2DEDF68B2C36F41A007D5F4A /* View */ = {
@@ -22270,6 +22341,7 @@
 				0C992C3C2B53ADF300ACC129 /* Array+Operations.swift */,
 				0C5FA9A62B8313950077934C /* String+Search.swift */,
 				0C803D082C9B7D8400AEB35B /* String+Trimming.swift */,
+				2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -28797,6 +28869,7 @@
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,
 				0CCD18B42BA1EDC30068D73A /* EquilibriumTokenExtras.swift in Sources */,
 				778215CD2B914EC4006C7D13 /* NotificationContentResult.swift in Sources */,
+				2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */,
 				77AE4FA42B905CE700426519 /* Currency.swift in Sources */,
 				770898622BA23A7C00FACD2B /* PushNotificationNamespace.swift in Sources */,
 				778215D32B91D81B006C7D13 /* Locale+Localization.swift in Sources */,
@@ -29190,6 +29263,7 @@
 				84DD261729ACA9680032A598 /* BagList.swift in Sources */,
 				84FD3DB52540ED0900A234E3 /* Block.swift in Sources */,
 				0C0F6DC82D404BA700943A7C /* MythosStakeModel.swift in Sources */,
+				2DDF94CF2E1977CA009B7F19 /* MultisigTxDetailsWireframe.swift in Sources */,
 				888A3B6728F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift in Sources */,
 				8494D86B25247F9600614D8F /* Decimal+String.swift in Sources */,
 				88D1F1B62981781700316A1A /* GradientBannerTableViewCell.swift in Sources */,
@@ -29664,6 +29738,7 @@
 				84C5ADDD2813248B006D7388 /* WalletDisplayAddress.swift in Sources */,
 				844DAADF28ABCBF6008E11DA /* LedgerTransport.swift in Sources */,
 				84BCC71A2924B53500354DE0 /* EvmRemoteSubscription.swift in Sources */,
+				2DDF94BD2E1922AF009B7F19 /* MultisigTxDetailsProtocols.swift in Sources */,
 				8466781E27ED982C007935D3 /* PhishingAddressValidatorFactory.swift in Sources */,
 				0C1CCC412B60138F00A6EA17 /* XcmDeliveryRequest.swift in Sources */,
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
@@ -30218,6 +30293,7 @@
 				849976C427B286AF00B14A6C /* MetamaskMessage.swift in Sources */,
 				0CB261DB2A98943800287305 /* NPoolsUnstakeBaseError.swift in Sources */,
 				847A25BD28D7C0E7006AC9F5 /* TokenTransferedEvent.swift in Sources */,
+				2DDF94BF2E1922E1009B7F19 /* MultisigTxDetailsInteractor.swift in Sources */,
 				8401F24F24E524900081D8F8 /* String+Helpers.swift in Sources */,
 				F4113B3F260C77FF00DF4DBA /* StakingRewardPayoutsViewLayout.swift in Sources */,
 				AEA0C8A8267B6B3200F9666F /* SelectedValidatorListPresenter.swift in Sources */,
@@ -30385,6 +30461,7 @@
 				84FB298426393D0900BE0FCD /* YourValidatorListViewModelFactory.swift in Sources */,
 				0CCCDF8A2B661D5300473D42 /* HydraOmnipoolQuoteRemoteState.swift in Sources */,
 				842E9E942A2A277D00759972 /* StakingDashboardLocalStorageSubscriber.swift in Sources */,
+				2DDF94C52E1924CB009B7F19 /* MultisigTxDetailsViewController.swift in Sources */,
 				8489A6D827FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift in Sources */,
 				2DB5B1172D3FEF600075EB3F /* CollectionViewRotationHandling.swift in Sources */,
 				0CB64E602B00AD83008F268F /* GetTokenOptionsWireframe.swift in Sources */,
@@ -30564,6 +30641,7 @@
 				887404BA2983DDA800EE270A /* SessionStorage.swift in Sources */,
 				2D6F51A92CDD2C3100564C00 /* AssetListFlowLayout+Types.swift in Sources */,
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
+				2DDF94D32E199E8C009B7F19 /* RuntimeCall+JSON.swift in Sources */,
 				0CED71B32D995D4300F79C02 /* XcmV5WeightMessagesFactory.swift in Sources */,
 				0C2B18AE2BFE378B00206EDE /* CloudBackupSyncService+Create.swift in Sources */,
 				846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */,
@@ -30590,6 +30668,7 @@
 				0C77B55F2A83717000B5AE08 /* StaticValidatorListViewController.swift in Sources */,
 				AEE4E34825E90C6000D6DF31 /* RewardCalculatorService.swift in Sources */,
 				F40D0AF2260CCE5800CBD43B /* StakingPayoutBaseTableCell.swift in Sources */,
+				2DDF94D12E197872009B7F19 /* MultisigTxDetailsViewFactory.swift in Sources */,
 				8490145824A9406D008F705E /* LegalData.swift in Sources */,
 				8472C601265D7A1F00E2481B /* WebSocketProviderSource.swift in Sources */,
 				8425EA9025EA7E5800C307C9 /* ElectedValidatorInfo.swift in Sources */,
@@ -30957,6 +31036,7 @@
 				844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */,
 				2A9F8D52274E4EC4003720E0 /* AccountCreateViewController.swift in Sources */,
 				84113B91255B2CA0009BD21A /* MainTransitionHelper.swift in Sources */,
+				2DDF94C82E1955C1009B7F19 /* MultisigTxDetails.swift in Sources */,
 				84B6349D28F4A06D00503306 /* Preimage.swift in Sources */,
 				8428768524AE046300D91AD8 /* LanguageSelectionProtocols.swift in Sources */,
 				2D96D8482DECBA5100159E91 /* PayCardNavigation.swift in Sources */,
@@ -31328,6 +31408,7 @@
 				84963D6C26F91810003FE8E4 /* RemoteSubscriptionService.swift in Sources */,
 				8444D137267117A200AF6D8C /* BifrostBonusService.swift in Sources */,
 				0CAB674C2D49136100E3A844 /* StakingClaimRewardsProtocols.swift in Sources */,
+				2DDF94CD2E195BAE009B7F19 /* MultisigTxDetailsViewModel.swift in Sources */,
 				84BB3D00267D364D00676FFE /* CompoundOperationWrapper+Dependency.swift in Sources */,
 				8467FD5524EFD254005D486C /* StorageFacadeProtocol.swift in Sources */,
 				0C0F6E4C2D488E3800943A7C /* MythosStakingBaseState.swift in Sources */,
@@ -31498,6 +31579,7 @@
 				F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */,
 				D9046DBA27451ED700C29F2E /* ParallelContributionSource.swift in Sources */,
 				0CE629DE2AA9B6BF00E250BD /* RewardDestinationViewModelFactory.swift in Sources */,
+				2DDF94DB2E19C70B009B7F19 /* StackDepositCell.swift in Sources */,
 				2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */,
 				0CB313652C0F0D0900353724 /* CloudBackupEnterPasswordSetInteractor.swift in Sources */,
 				77C976222AF39F180049272C /* TokenOperationTableViewCell.swift in Sources */,
@@ -31562,6 +31644,7 @@
 				0CFF73F22DA96D04009889FC /* AssetExchangeFeeConstants.swift in Sources */,
 				8443CA4A289D04E900FA4A95 /* TransactionSigningPresenting.swift in Sources */,
 				0C3AD3082DF04D3500387C0E /* AssetTypeExtras.swift in Sources */,
+				2DDF94C12E192344009B7F19 /* MultisigTxDetailsPresenter.swift in Sources */,
 				8475B47B289870A4009B90BC /* ProcessStepView.swift in Sources */,
 				0C0F6D772D3A5C9500943A7C /* StartStakingInfoMythosInteractor.swift in Sources */,
 				8465DA41298F05D500C7CFF1 /* GovernanceTrackViewModelFactory.swift in Sources */,
@@ -31647,6 +31730,7 @@
 				0CF4ADFD2CEC0A54009C51FA /* HydraExchangeMetaOperation.swift in Sources */,
 				842A735E27DB2EC4006EE1EA /* OperationDetailsModel.swift in Sources */,
 				2DFF39DE2E180B9900529984 /* MultisigCallDataImportViewСontroller.swift in Sources */,
+				2DDF94CB2E195B33009B7F19 /* MultisigTxDetailsViewModelFactory.swift in Sources */,
 				2DD018BF2D635AEA0063F9BB /* TextHeightCalculationContext.swift in Sources */,
 				844DAADD28ABC5E2008E11DA /* LedgerDevice.swift in Sources */,
 				8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */,
@@ -33648,6 +33732,7 @@
 				DDA07514BEF3E2FD6EE1BB4E /* InAppUpdatesViewLayout.swift in Sources */,
 				32009DBB90D19ACD6D7B7A5C /* InAppUpdatesViewFactory.swift in Sources */,
 				77AB555D2AA24BA90058814E /* OperationDetailsPoolRewardView.swift in Sources */,
+				2DDF94C32E19249E009B7F19 /* MultisigTxDetailsViewLayout.swift in Sources */,
 				5D532A958C5C961391177C4A /* DelegationListProtocols.swift in Sources */,
 				886A277E29E93995003B269F /* EquilibriumAccountInfo.swift in Sources */,
 				F65CC130E018157C0778B074 /* DelegationListWireframe.swift in Sources */,
@@ -34234,6 +34319,7 @@
 				74A93B3225BF8541B69F88EF /* CloudBackupAddWalletPresenter.swift in Sources */,
 				1CD99FC2F2D45A3BF6AA1E00 /* CloudBackupAddWalletInteractor.swift in Sources */,
 				9202CBF07DA49C807A8687FA /* CloudBackupAddWalletViewFactory.swift in Sources */,
+				2DDF94D52E19BC0D009B7F19 /* String+Truncation.swift in Sources */,
 				1DE0BC8BC9D9462C58C4C39F /* CloudBackupRemindProtocols.swift in Sources */,
 				CFD1B4635D0ED2DC7DAD1EC1 /* CloudBackupRemindPresenter.swift in Sources */,
 				9065800EAB4A8B807C713220 /* CloudBackupRemindInteractor.swift in Sources */,

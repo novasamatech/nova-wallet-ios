@@ -13,6 +13,7 @@ protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
     func actionShowDelegate()
     func actionShowCurrentSignatory()
     func actionShowSignatory(with identifier: String)
+    func actionFullDetails()
 }
 
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
@@ -31,10 +32,14 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, ModalAlertPresenting {
+protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable {
     func showAddCallData(
         from view: ControllerBackedProtocol?,
         for operation: Multisig.PendingOperation
+    )
+    func showFullDetails(
+        from view: ControllerBackedProtocol?,
+        for operation: Multisig.PendingOperationProxyModel
     )
     func close(from view: ControllerBackedProtocol?)
 }
