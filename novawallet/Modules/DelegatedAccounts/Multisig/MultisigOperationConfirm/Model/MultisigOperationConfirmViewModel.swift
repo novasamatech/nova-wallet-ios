@@ -2,6 +2,7 @@ import Foundation
 
 struct MultisigOperationConfirmViewModel {
     let title: String
+    let amount: BalanceViewModelProtocol?
     let sections: [Section]
     let actions: [Action]
 
@@ -13,7 +14,7 @@ struct MultisigOperationConfirmViewModel {
 extension MultisigOperationConfirmViewModel {
     enum Section {
         case origin(OriginModel)
-        case destination
+        case recipient(RecipientModel)
         case signatory(SignatoryModel)
         case signatories(SignatoriesModel)
         case fullDetails(FullDetailsModel)
@@ -43,7 +44,11 @@ extension MultisigOperationConfirmViewModel {
     struct OriginModel {
         let network: SectionField<NetworkViewModel>
         let wallet: SectionField<StackCellViewModel>
-        let onBehalfOf: SectionField<DisplayAddressViewModel>?
+        let delegatedAccount: SectionField<DisplayAddressViewModel>?
+    }
+
+    struct RecipientModel {
+        let recipient: SectionField<DisplayAddressViewModel>
     }
 
     struct SignatoryModel {

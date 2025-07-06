@@ -58,7 +58,7 @@ private extension MultisigOperationConfirmPresenter {
             multisigWallet: multisigWallet,
             signatories: signatories,
             fee: fee,
-            feeAsset: chainAsset,
+            chainAsset: chainAsset,
             assetPrice: priceData,
             confirmClosure: { [weak self] in
                 self?.view?.didReceive(loading: true)
@@ -93,6 +93,14 @@ private extension MultisigOperationConfirmPresenter {
         )
 
         view?.didReceive(feeViewModel: viewModel)
+    }
+
+    func presentOptions(for accountId: AccountId) {
+        guard let address = try? accountId.toAddress(using: chain.chainFormat) else {
+            return
+        }
+
+        presentOptions(for: address)
     }
 
     func presentOptions(for address: AccountAddress) {
@@ -142,24 +150,31 @@ private extension MultisigOperationConfirmPresenter {
     }
 }
 
+// MARK: - MultisigOperationConfirmPresenterProtocol
+
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterProtocol {
     func actionShowSender() {
-        guard
-            let multisigContext = multisigWallet.multisigAccount?.multisig,
-            let address = try? multisigContext.accountId.toAddress(using: chain.chainFormat)
-        else {
+        guard let multisigContext = multisigWallet.multisigAccount?.multisig else {
             return
         }
 
-        presentOptions(for: address)
+        presentOptions(for: multisigContext.accountId)
     }
 
-    func actionShowReceiver() {
-        // TODO: Implement when call formatting is available
+    func actionShowRecipient() {
+        guard case let .transfer(transfer) = pendingOperation?.formattedModel?.definition else {
+            return
+        }
+
+        presentOptions(for: transfer.account.accountId)
     }
 
-    func actionShowDelegate() {
-        // TODO: Implement when call formatting is available
+    func actionShowDelegated() {
+        guard let delegatedAccount = pendingOperation?.formattedModel?.delegatedAccount else {
+            return
+        }
+
+        presentOptions(for: delegatedAccount.accountId)
     }
 
     func actionFullDetails() {
@@ -172,14 +187,11 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
     }
 
     func actionShowCurrentSignatory() {
-        guard
-            let multisigContext = multisigWallet.multisigAccount?.multisig,
-            let address = try? multisigContext.signatory.toAddress(using: chain.chainFormat)
-        else {
+        guard let multisigContext = multisigWallet.multisigAccount?.multisig else {
             return
         }
 
-        presentOptions(for: address)
+        presentOptions(for: multisigContext.signatory)
     }
 
     func actionShowSignatory(with identifier: String) {
@@ -190,6 +202,8 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
         interactor.setup()
     }
 }
+
+// MARK: - MultisigOperationConfirmInteractorOutputProtocol
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorOutputProtocol {
     func didReceiveOperation(_ operation: Multisig.PendingOperationProxyModel?) {

@@ -100,6 +100,16 @@ private extension MultisigOperationConfirmViewController {
             action: #selector(actionMultisigWallet),
             for: .touchUpInside
         )
+        rootView.delegatedAccountCell.addTarget(
+            self,
+            action: #selector(actionDelegatedAccount),
+            for: .touchUpInside
+        )
+        rootView.recipientCell.addTarget(
+            self,
+            action: #selector(actionRecipient),
+            for: .touchUpInside
+        )
         rootView.signatoryWalletCell.addTarget(
             self,
             action: #selector(actionCurrentSignatory),
@@ -154,6 +164,14 @@ private extension MultisigOperationConfirmViewController {
 
     @objc func actionMultisigWallet() {
         presenter.actionShowSender()
+    }
+
+    @objc func actionDelegatedAccount() {
+        presenter.actionShowDelegated()
+    }
+
+    @objc func actionRecipient() {
+        presenter.actionShowRecipient()
     }
 
     @objc func actionCurrentSignatory() {
