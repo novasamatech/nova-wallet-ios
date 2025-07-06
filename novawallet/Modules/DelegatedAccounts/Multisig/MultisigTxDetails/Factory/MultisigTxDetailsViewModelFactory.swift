@@ -158,10 +158,7 @@ private extension MultisigTxDetailsViewModelFactory {
     ) -> BalanceViewModelProtocol {
         let assetInfo = depositAsset.asset.displayInfo
 
-        let depositDecimal = Decimal.fromSubstrateAmount(
-            deposit,
-            precision: assetInfo.assetPrecision
-        ) ?? 0.0
+        let depositDecimal = deposit.decimal(assetInfo: assetInfo)
 
         let balanceViewModel = utilityBalanceViewModelFactory.balanceFromPrice(
             depositDecimal,

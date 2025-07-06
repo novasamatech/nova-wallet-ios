@@ -1716,6 +1716,7 @@
 		2D8684582BFF8CE600A663D2 /* BaseExportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8684572BFF8CE600A663D2 /* BaseExportPresenter.swift */; };
 		2D86845E2BFF9DA000A663D2 /* BackupAttentionInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845D2BFF9DA000A663D2 /* BackupAttentionInteractor.swift */; };
 		2D8684602C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D86845F2C0086A500A663D2 /* ManualBackupKeyListViewModelFactory.swift */; };
+		2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF94D42E19BC0D009B7F19 /* String+Truncation.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
@@ -28868,6 +28869,7 @@
 				7778FE402B90F42D0023E801 /* PriceDataMapper.swift in Sources */,
 				0CCD18B42BA1EDC30068D73A /* EquilibriumTokenExtras.swift in Sources */,
 				778215CD2B914EC4006C7D13 /* NotificationContentResult.swift in Sources */,
+				2D87C1992E1A6C3500396A3B /* String+Truncation.swift in Sources */,
 				77AE4FA42B905CE700426519 /* Currency.swift in Sources */,
 				770898622BA23A7C00FACD2B /* PushNotificationNamespace.swift in Sources */,
 				778215D32B91D81B006C7D13 /* Locale+Localization.swift in Sources */,
