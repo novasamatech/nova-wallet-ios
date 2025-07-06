@@ -62,7 +62,7 @@ private extension MultisigOperationsViewController {
                 for: indexPath
             )!
 
-            cell.bind(viewModel: viewModel)
+            cell.view.view.bind(viewModel: viewModel)
 
             return cell
         }
@@ -81,7 +81,6 @@ private extension MultisigOperationsViewController {
             )
 
             headerView?.titleLabel.apply(style: .regularBodyPrimary)
-            headerView?.contentInsets.left = .zero
             headerView?.bind(title: headerModel)
 
             return headerView

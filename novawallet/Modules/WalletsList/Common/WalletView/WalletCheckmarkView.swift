@@ -57,7 +57,7 @@ final class WalletCheckmarkView<T: WalletViewProtocol>: GenericTitleValueView<T,
         walletView.bind(viewModel: viewModel.walletViewModel)
 
         if viewModel.checked {
-            checkMarkView.image = R.image.iconPositiveCheckmarkFilled()?.tinted(
+            checkMarkView.image = R.image.iconCheckmarkFilled()?.tinted(
                 with: R.color.colorIconPositive()!
             )
         } else {

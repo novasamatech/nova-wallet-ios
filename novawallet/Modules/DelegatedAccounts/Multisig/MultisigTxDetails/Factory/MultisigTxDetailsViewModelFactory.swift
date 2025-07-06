@@ -21,16 +21,13 @@ protocol MultisigTxDetailsViewModelFactoryProtocol {
 final class MultisigTxDetailsViewModelFactory {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let iconViewModelFactory: IconViewModelFactoryProtocol
 
     init(
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
-        utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        iconViewModelFactory: IconViewModelFactoryProtocol = IconViewModelFactory()
+        utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol
     ) {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
-        self.iconViewModelFactory = iconViewModelFactory
     }
 }
 
@@ -43,8 +40,8 @@ private extension MultisigTxDetailsViewModelFactory {
         assetPrice: PriceData?,
         locale: Locale
     ) throws -> MultisigTxDetailsViewModel.Section {
-        let depositorViewModel = try createDepositorViewModel(
-            using: multisigTxDetails.depositor,
+        let depositorViewModel = try displayAddressViewModelFactory.createViewModel(
+            from: multisigTxDetails.depositor,
             chain: depositAsset.chain
         )
         let depositorField = MultisigTxDetailsViewModel.SectionField(
@@ -119,35 +116,6 @@ private extension MultisigTxDetailsViewModelFactory {
         )
 
         return .callJson(field)
-    }
-
-    func createDepositorViewModel(
-        using account: MultisigTxDetails.Account,
-        chain: ChainModel
-    ) throws -> DisplayAddressViewModel {
-        switch account {
-        case let .local(localAccount):
-            let imageViewModel = iconViewModelFactory.createDrawableIconViewModel(
-                from: localAccount.walletIdenticonData
-            )
-
-            return DisplayAddressViewModel(
-                address: try localAccount.chainAccount.accountId.toAddress(using: chain.chainFormat),
-                name: localAccount.chainAccount.name,
-                imageViewModel: imageViewModel
-            )
-        case let .remote(accountId):
-            let imageViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
-                from: accountId,
-                chainFormat: chain.chainFormat
-            )
-
-            return DisplayAddressViewModel(
-                address: try accountId.toAddress(using: chain.chainFormat),
-                name: nil,
-                imageViewModel: imageViewModel
-            )
-        }
     }
 
     func createDepositViewModel(

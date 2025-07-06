@@ -17,7 +17,8 @@ final class MultisigOperationConfirmPresenter {
     var signatoryBalance: AssetBalance?
     var signatoryWallet: MetaAccountModel?
     var fee: ExtrinsicFeeProtocol?
-    var priceData: PriceData?
+    var utilityAssetPriceData: PriceData?
+    var transferAssetPriceData: PriceData?
 
     var multisigContext: DelegatedAccount.MultisigAccountModel? {
         multisigWallet.multisigAccount?.multisig
@@ -59,7 +60,8 @@ private extension MultisigOperationConfirmPresenter {
             signatories: signatories,
             fee: fee,
             chainAsset: chainAsset,
-            assetPrice: priceData,
+            utilityAssetPrice: utilityAssetPriceData,
+            transferAssetPrice: transferAssetPriceData,
             confirmClosure: { [weak self] in
                 self?.view?.didReceive(loading: true)
                 self?.interactor.confirm()
@@ -88,11 +90,25 @@ private extension MultisigOperationConfirmPresenter {
         let viewModel = viewModelFactory.createFeeFieldViewModel(
             fee: fee,
             feeAsset: chainAsset,
-            assetPrice: priceData,
+            assetPrice: utilityAssetPriceData,
             locale: selectedLocale
         )
 
         view?.didReceive(feeViewModel: viewModel)
+    }
+
+    func provideAmountViewModel() {
+        guard let definition = pendingOperation?.formattedModel?.definition else {
+            return
+        }
+
+        let viewModel = viewModelFactory.createAmountViewModel(
+            from: definition,
+            priceData: transferAssetPriceData,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(amount: viewModel)
     }
 
     func presentOptions(for accountId: AccountId) {
@@ -240,8 +256,14 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         provideFeeViewModel()
     }
 
-    func didReceivePriceData(_ priceData: PriceData?) {
-        self.priceData = priceData
+    func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
+        utilityAssetPriceData = priceData
+
+        provideFeeViewModel()
+    }
+
+    func didReceiveTransferAssetPrice(_ priceData: PriceData?) {
+        transferAssetPriceData = priceData
 
         provideFeeViewModel()
     }

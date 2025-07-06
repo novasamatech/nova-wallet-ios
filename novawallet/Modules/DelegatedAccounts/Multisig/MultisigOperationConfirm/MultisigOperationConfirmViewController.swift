@@ -224,8 +224,14 @@ extension MultisigOperationConfirmViewController: MultisigOperationConfirmViewPr
         setupActions()
     }
 
-    func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>) {
+    func didReceive(
+        feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>
+    ) {
         rootView.bind(fee: feeViewModel)
+    }
+
+    func didReceive(amount: BalanceViewModelProtocol?) {
+        rootView.bind(amount: amount)
     }
 
     func didReceive(loading: Bool) {

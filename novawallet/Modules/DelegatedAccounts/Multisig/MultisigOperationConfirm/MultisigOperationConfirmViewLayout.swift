@@ -197,6 +197,12 @@ extension MultisigOperationConfirmViewLayout {
         feeCell.rowContentView.bind(viewModel: viewModel.value)
     }
 
+    func bind(amount: BalanceViewModelProtocol?) {
+        guard let amount else { return }
+
+        amountView.bind(viewModel: amount)
+    }
+
     func bindReject(title: String) {
         confirmButton.actionButton.imageWithTitleView?.title = title
         confirmButton.actionButton.applyDestructiveEnabledStyle()

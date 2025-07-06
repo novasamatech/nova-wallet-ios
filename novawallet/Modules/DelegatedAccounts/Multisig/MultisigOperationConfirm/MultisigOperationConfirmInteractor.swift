@@ -29,7 +29,8 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     private var assetInfo: AssetStorageInfo?
     private var assetRemoteSubscriptionId: UUID?
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: StreamableProvider<PriceData>?
+    private var utilityAssetPriceProvider: StreamableProvider<PriceData>?
+    private var transferAssetPriceProvider: StreamableProvider<PriceData>?
     private var callProcessingStore = CancellableCallStore()
 
     init(
@@ -251,8 +252,8 @@ private extension MultisigOperationConfirmInteractor {
         }
     }
 
-    func setupChainAssetPriceSubscription() {
-        clear(streamableProvider: &priceProvider)
+    func setupUtilityAssetPriceSubscription() {
+        clear(streamableProvider: &utilityAssetPriceProvider)
 
         guard
             let asset = chain.utilityAsset(),
@@ -261,7 +262,23 @@ private extension MultisigOperationConfirmInteractor {
             return
         }
 
-        priceProvider = subscribeToPrice(
+        utilityAssetPriceProvider = subscribeToPrice(
+            for: priceId,
+            currency: selectedCurrency
+        )
+    }
+
+    func setupTransferAssetPriceSubscriptionIfNeeded() {
+        clear(streamableProvider: &transferAssetPriceProvider)
+
+        guard
+            case let .transfer(transfer) = operation.formattedModel?.definition,
+            let priceId = transfer.asset.asset.priceId
+        else {
+            return
+        }
+
+        transferAssetPriceProvider = subscribeToPrice(
             for: priceId,
             currency: selectedCurrency
         )
@@ -333,7 +350,8 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
 
         deriveAssetInfoAndProvideBalance()
 
-        setupChainAssetPriceSubscription()
+        setupUtilityAssetPriceSubscription()
+        setupTransferAssetPriceSubscriptionIfNeeded()
     }
 
     func confirm() {
@@ -387,14 +405,14 @@ extension MultisigOperationConfirmInteractor: WalletLocalStorageSubscriber, Wall
 extension MultisigOperationConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(
         result: Result<PriceData?, any Error>,
-        priceId _: AssetModel.PriceId
+        priceId: AssetModel.PriceId
     ) {
-        switch result {
-        case let .success(priceData):
-            presenter?.didReceivePriceData(priceData)
-        case let .failure(error):
-            logger.error("Can't load local price: \(error)")
-            presenter?.didReceivePriceData(nil)
+        let priceData = try? result.get()
+
+        if priceId == chain.utilityAsset()?.priceId {
+            presenter?.didReceiveUtilityAssetPrice(priceData)
+        } else {
+            presenter?.didReceiveTransferAssetPrice(priceData)
         }
     }
 }
@@ -407,6 +425,7 @@ extension MultisigOperationConfirmInteractor: SelectedCurrencyDepending {
             return
         }
 
-        setupChainAssetPriceSubscription()
+        setupUtilityAssetPriceSubscription()
+        setupTransferAssetPriceSubscriptionIfNeeded()
     }
 }
