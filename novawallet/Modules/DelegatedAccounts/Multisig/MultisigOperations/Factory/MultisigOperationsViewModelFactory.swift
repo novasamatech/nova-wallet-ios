@@ -120,7 +120,7 @@ private extension MultisigOperationsViewModelFactory {
             return .signed(
                 TitleIconViewModel(
                     title: R.string.localizable.multisigOperationStatusSigned(preferredLanguages: languages),
-                    icon: R.image.iconPositiveCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
+                    icon: R.image.iconCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
                 )
             )
         } else {
