@@ -48,18 +48,10 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         )
     }
 
-    override func didSetupSignatories() {
-        estimateFee()
-    }
-
-    override func didUpdateOperation() {
-        estimateFee()
-    }
-
     override func didProcessCall() {
         logger.debug("Did process call")
 
-        estimateFee()
+        doEstimateFee()
     }
 
     override func doConfirm() {
@@ -105,12 +97,8 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             }
         }
     }
-}
-
-// MARK: - Private
-
-private extension MultisigOperationApproveInteractor {
-    func estimateFee() {
+    
+    override func doEstimateFee() {
         guard
             let call,
             let multisig = multisigWallet.multisigAccount?.multisig,
@@ -152,7 +140,11 @@ private extension MultisigOperationApproveInteractor {
             }
         }
     }
+}
 
+// MARK: - Private
+
+private extension MultisigOperationApproveInteractor {
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
         definition: Multisig.MultisigDefinition,

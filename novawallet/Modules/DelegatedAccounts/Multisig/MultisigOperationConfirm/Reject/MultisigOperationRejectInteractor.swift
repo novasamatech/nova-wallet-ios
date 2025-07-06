@@ -8,14 +8,6 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         feeCallStore.cancel()
     }
 
-    override func didSetupSignatories() {
-        estimateFee()
-    }
-
-    override func didUpdateOperation() {
-        estimateFee()
-    }
-
     override func didProcessCall() {
         logger.debug("Did process call")
     }
@@ -53,12 +45,8 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
             }
         }
     }
-}
-
-// MARK: - Private
-
-private extension MultisigOperationRejectInteractor {
-    func estimateFee() {
+    
+    override func doEstimateFee() {
         guard
             let multisig = multisigWallet.multisigAccount?.multisig,
             let definition = operation.operation.multisigDefinition,
@@ -90,7 +78,11 @@ private extension MultisigOperationRejectInteractor {
             }
         }
     }
+}
 
+// MARK: - Private
+
+private extension MultisigOperationRejectInteractor {
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
         definition: Multisig.MultisigDefinition,

@@ -43,6 +43,7 @@ struct MultisigOperationConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            dataValidatingFactory: <#any BaseDataValidatingFactoryProtocol#>,
             chain: chain,
             multisigWallet: multisigWallet,
             localizationManager: localizationManager,

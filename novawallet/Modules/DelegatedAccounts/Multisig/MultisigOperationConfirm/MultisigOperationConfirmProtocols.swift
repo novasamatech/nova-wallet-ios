@@ -20,6 +20,7 @@ protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
     func setup()
     func confirm()
+    func estimateFee()
 }
 
 protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {

@@ -73,19 +73,15 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         clearBalanceRemoteSubscription()
     }
 
-    func didSetupSignatories() {
-        fatalError("Must be overriden by subsclass")
-    }
-
-    func didUpdateOperation() {
-        fatalError("Must be overriden by subsclass")
-    }
-
     func didProcessCall() {
         fatalError("Must be overriden by subsclass")
     }
 
     func doConfirm() {
+        fatalError("Must be overriden by subsclass")
+    }
+    
+    func doEstimateFee() {
         fatalError("Must be overriden by subsclass")
     }
 }
@@ -335,6 +331,14 @@ private extension MultisigOperationConfirmInteractor {
             completion: nil
         )
     }
+    
+    func didSetupSignatories() {
+        estimateFee()
+    }
+
+    func didUpdateOperation() {
+        estimateFee()
+    }
 }
 
 // MARK: - MultisigOperationConfirmInteractorInputProtocol
@@ -356,6 +360,10 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
 
     func confirm() {
         doConfirm()
+    }
+    
+    func estimateFee() {
+        doEstimateFee()
     }
 }
 

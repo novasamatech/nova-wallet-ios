@@ -6,6 +6,7 @@ final class MultisigOperationConfirmPresenter {
     let wireframe: MultisigOperationConfirmWireframeProtocol
     let interactor: MultisigOperationConfirmInteractorInputProtocol
     let viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol
+    let dataValidatingFactory: BaseDataValidatingFactoryProtocol
     let logger: LoggerProtocol
 
     let chain: ChainModel
@@ -28,6 +29,7 @@ final class MultisigOperationConfirmPresenter {
         interactor: MultisigOperationConfirmInteractorInputProtocol,
         wireframe: MultisigOperationConfirmWireframeProtocol,
         viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol,
+        dataValidatingFactory: BaseDataValidatingFactoryProtocol,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
         localizationManager: LocalizationManagerProtocol,
@@ -36,6 +38,7 @@ final class MultisigOperationConfirmPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.dataValidatingFactory = dataValidatingFactory
         self.chain = chain
         self.multisigWallet = multisigWallet
         self.logger = logger
@@ -82,6 +85,26 @@ private extension MultisigOperationConfirmPresenter {
         )
 
         view?.didReceive(viewModel: viewModel)
+    }
+    
+    func confirm() {
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
+                fee: fee,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.refreshFee()
+            }
+        ]).runValidation { [weak self] in
+            self?.interactor.confirm()
+        }
+        
+    }
+    
+    func refreshFee() {
+        fee = nil
+        provideFeeViewModel()
+        interactor.estimateFee()
     }
 
     func provideFeeViewModel() {
