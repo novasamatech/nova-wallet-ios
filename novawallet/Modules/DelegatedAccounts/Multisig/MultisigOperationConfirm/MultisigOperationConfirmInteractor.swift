@@ -29,7 +29,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     private var assetInfo: AssetStorageInfo?
     private var assetRemoteSubscriptionId: UUID?
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var chainAssetPriceProvider: StreamableProvider<PriceData>?
+    private var utilityAssetPriceProvider: StreamableProvider<PriceData>?
     private var transferAssetPriceProvider: StreamableProvider<PriceData>?
     private var callProcessingStore = CancellableCallStore()
 
@@ -253,7 +253,7 @@ private extension MultisigOperationConfirmInteractor {
     }
 
     func setupUtilityAssetPriceSubscription() {
-        clear(streamableProvider: &chainAssetPriceProvider)
+        clear(streamableProvider: &utilityAssetPriceProvider)
 
         guard
             let asset = chain.utilityAsset(),
@@ -262,7 +262,7 @@ private extension MultisigOperationConfirmInteractor {
             return
         }
 
-        chainAssetPriceProvider = subscribeToPrice(
+        utilityAssetPriceProvider = subscribeToPrice(
             for: priceId,
             currency: selectedCurrency
         )
