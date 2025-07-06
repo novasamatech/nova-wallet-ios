@@ -3,7 +3,10 @@ import Foundation_iOS
 
 final class MultisigOperationsViewFactory {
     static func createView() -> MultisigOperationsViewProtocol? {
-        guard let selectedWallet = SelectedWalletSettings.shared.value else {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared
+        else {
             return nil
         }
 
@@ -34,7 +37,12 @@ final class MultisigOperationsViewFactory {
             operationQueue: operationQueue
         )
 
-        let viewModelFactory = MultisigOperationsViewModelFactory()
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+        let viewModelFactory = MultisigOperationsViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
 
         let localizationManager = LocalizationManager.shared
 

@@ -17,20 +17,20 @@ final class MultisigOperationsViewModelFactory {
     private let timeFormatter: LocalizableResource<DateFormatter>
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
-    private let balanceViewModelFactory: BalanceViewModelFactoryProtocol?
+    private let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
     init(
         timeFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistory,
         sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.shortDate,
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol? = nil
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
         self.timeFormatter = timeFormatter
         self.sectionDateFormatter = sectionDateFormatter
         self.networkViewModelFactory = networkViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 }
 
@@ -74,7 +74,7 @@ private extension MultisigOperationsViewModelFactory {
                 using: chain.chainFormat
             ) {
                 return R.string.localizable.walletHistoryTransferOutgoingDetails(
-                    address,
+                    address.truncated,
                     preferredLanguages: locale.rLanguages
                 )
             } else {
@@ -124,10 +124,41 @@ private extension MultisigOperationsViewModelFactory {
         }
     }
 
-    func createDelegatedAccountModel(
-        displayAddress: DisplayAddress
-    ) -> DisplayAddressViewModel {
-        displayAddressViewModelFactory.createViewModel(from: displayAddress)
+    func createAmount(
+        from callDefinition: FormattedCall.Definition?,
+        chain _: ChainModel,
+        locale: Locale
+    ) -> String? {
+        guard case let .transfer(transfer) = callDefinition else { return nil }
+
+        let amount = transfer.amount
+
+        let amountDecimal = amount.decimal(assetInfo: transfer.asset.assetDisplayInfo)
+
+        return balanceViewModelFactoryFacade.spendingAmountFromPrice(
+            targetAssetInfo: transfer.asset.assetDisplayInfo,
+            amount: amountDecimal,
+            priceData: nil
+        ).value(for: locale).amount
+    }
+
+    func createDelegatedAccount(
+        from delegatedAccount: FormattedCall.Account?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> MultisigOperationViewModel.DelegatedAccount? {
+        guard
+            let delegatedAccount,
+            let displayAddressModel = try? displayAddressViewModelFactory.createViewModel(
+                from: delegatedAccount,
+                chain: chain
+            )
+        else { return nil }
+
+        return MultisigOperationViewModel.DelegatedAccount(
+            title: R.string.localizable.delegatedAccountOnBehalfOf(preferredLanguages: locale.rLanguages),
+            model: displayAddressModel
+        )
     }
 
     func createViewModel(
@@ -148,6 +179,11 @@ private extension MultisigOperationsViewModelFactory {
             locale: locale
         )
 
+        let amount = createAmount(
+            from: operationModel.formattedModel?.definition,
+            chain: chain,
+            locale: locale
+        )
         let operationDate = Date(timeIntervalSince1970: TimeInterval(operationModel.timestamp))
         let timeString = timeFormatter.value(for: locale).string(from: operationDate)
 
@@ -162,6 +198,12 @@ private extension MultisigOperationsViewModelFactory {
             locale: locale
         )
 
+        let delegatedAccount = createDelegatedAccount(
+            from: operationModel.formattedModel?.delegatedAccount,
+            chain: chain,
+            locale: locale
+        )
+
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
         let operationIcon = StaticImageViewModel(image: R.image.iconUnknownOperation()!)
 
@@ -171,11 +213,11 @@ private extension MultisigOperationsViewModelFactory {
             iconViewModel: operationIcon,
             operationTitle: title,
             operationSubtitle: subtitle,
-            amount: nil,
+            amount: amount,
             timeString: timeString,
             signingProgress: signingProgress,
             status: status,
-            delegatedAccountModel: nil
+            delegatedAccountModel: delegatedAccount
         )
     }
 

@@ -55,43 +55,6 @@ private extension MultisigOperationConfirmViewModelFactory {
         )
     }
 
-    func createAccountViewModel(
-        using account: FormattedCall.Account,
-        chain: ChainModel
-    ) -> DisplayAddressViewModel? {
-        switch account {
-        case let .local(localMetaAccount):
-            guard let address = try? localMetaAccount.chainAccount.accountId.toAddress(
-                using: chain.chainFormat
-            ) else { return nil }
-
-            let icon = iconViewModelFactory.createDrawableIconViewModel(
-                from: localMetaAccount.walletIdenticonData
-            )
-
-            return DisplayAddressViewModel(
-                address: address,
-                name: localMetaAccount.chainAccount.name,
-                imageViewModel: icon
-            )
-        case let .remote(accountId):
-            guard let address = try? accountId.toAddress(
-                using: chain.chainFormat
-            ) else { return nil }
-
-            let icon = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
-                from: accountId,
-                chainFormat: chain.chainFormat
-            )
-
-            return DisplayAddressViewModel(
-                address: address,
-                name: nil,
-                imageViewModel: icon
-            )
-        }
-    }
-
     func createBalanceViewModel(
         for amount: BigUInt,
         chainAsset: ChainAsset,
@@ -132,8 +95,8 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         if
             let delegatedAccount,
-            let delegatedViewModel = createAccountViewModel(
-                using: delegatedAccount,
+            let delegatedViewModel = try? displayAddressViewModelFactory.createViewModel(
+                from: delegatedAccount,
                 chain: chain
             ) {
             delegatedField = MultisigOperationConfirmViewModel.SectionField(
@@ -158,8 +121,8 @@ private extension MultisigOperationConfirmViewModelFactory {
     ) -> MultisigOperationConfirmViewModel.Section? {
         guard
             case let .transfer(transfer) = callDefinition,
-            let recipientViewModel = createAccountViewModel(
-                using: transfer.account,
+            let recipientViewModel = try? displayAddressViewModelFactory.createViewModel(
+                from: transfer.account,
                 chain: chain
             )
         else { return nil }
