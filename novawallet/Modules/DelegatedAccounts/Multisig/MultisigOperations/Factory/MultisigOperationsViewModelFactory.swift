@@ -16,6 +16,7 @@ final class MultisigOperationsViewModelFactory {
     private let calendar = Calendar.current
     private let sectionDateFormatter: LocalizableResource<DateFormatter>
     private let timeFormatter: LocalizableResource<DateFormatter>
+    private let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     private let networkViewModelFactory: NetworkViewModelFactoryProtocol
     private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     private let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
@@ -23,12 +24,14 @@ final class MultisigOperationsViewModelFactory {
     init(
         timeFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistory,
         sectionDateFormatter: LocalizableResource<DateFormatter> = DateFormatter.txHistoryDate.localizableResource(),
+        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
         balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
         self.timeFormatter = timeFormatter
         self.sectionDateFormatter = sectionDateFormatter
+        self.assetIconViewModelFactory = assetIconViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
@@ -162,6 +165,25 @@ private extension MultisigOperationsViewModelFactory {
         )
     }
 
+    func createOperationIcon(
+        for callDefinition: FormattedCall.Definition?,
+        chain: ChainModel
+    ) -> ImageViewModelProtocol {
+        guard let callDefinition else {
+            return StaticImageViewModel(image: R.image.iconUnknownOperation()!)
+        }
+
+        switch callDefinition {
+        case .transfer:
+            return StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
+        case let .general(generalCall):
+            return assetIconViewModelFactory.createAssetIconViewModel(
+                for: chain.utilityChainAsset()?.asset.icon,
+                with: .white
+            )
+        }
+    }
+
     func createViewModel(
         from operationModel: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
@@ -206,7 +228,11 @@ private extension MultisigOperationsViewModelFactory {
         )
 
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
-        let operationIcon = StaticImageViewModel(image: R.image.iconUnknownOperation()!)
+
+        let operationIcon = createOperationIcon(
+            for: operationModel.formattedModel?.definition,
+            chain: chain
+        )
 
         return MultisigOperationViewModel(
             identifier: operationModel.identifier,
