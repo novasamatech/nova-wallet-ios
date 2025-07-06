@@ -1,9 +1,46 @@
 import UIKit
+import SubstrateSdk
 
 final class DelegatedSignValidationInteractor {
     weak var presenter: DelegatedSignValidationInteractorOutputProtocol?
+
+    let call: JSON
+    let resolution: ExtrinsicSenderResolution.ResolvedDelegate
+    let validationSequenceFactory: DSValidationSequenceFactoryProtocol
+    let operationQueue: OperationQueue
+
+    init(
+        call: JSON,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        validationSequenceFactory: DSValidationSequenceFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
+        self.call = call
+        self.resolution = resolution
+        self.validationSequenceFactory = validationSequenceFactory
+        self.operationQueue = operationQueue
+    }
 }
 
 extension DelegatedSignValidationInteractor: DelegatedSignValidationInteractorInputProtocol {
-    func setup() {}
+    func setup() {
+        // TODO: Refactor to single path
+        guard let path = resolution.paths?.values.first else {
+            return
+        }
+
+        let wrapper = validationSequenceFactory.createWrapper(
+            for: call,
+            resolvedPath: path,
+            chainId: resolution.chain.chainId
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter?.didReceive(validationSequenceResult: result)
+        }
+    }
 }

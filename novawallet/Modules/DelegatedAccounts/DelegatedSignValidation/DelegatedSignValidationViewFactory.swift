@@ -1,15 +1,35 @@
 import Foundation
+import SubstrateSdk
 
 struct DelegatedSignValidationViewFactory {
-    static func createView() -> DelegatedSignValidationViewProtocol? {
-        let interactor = DelegatedSignValidationInteractor()
-        let wireframe = DelegatedSignValidationWireframe()
+    static func createView(
+        from view: ControllerBackedProtocol,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        call: JSON,
+        completionClosure: @escaping DelegatedSignValidationCompletion
+    ) -> DelegatedSignValidationPresenterProtocol? {
+        let wireframe = DelegatedSignValidationWireframe(
+            completionClosure: completionClosure
+        )
 
-        let presenter = DelegatedSignValidationPresenter(interactor: interactor, wireframe: wireframe)
+        let interactor = DelegatedSignValidationInteractor(
+            call: call,
+            resolution: resolution,
+            validationSequenceFactory: DSValidationSequenceFactory(
+                chainRegistry: ChainRegistryFacade.sharedRegistry
+            ),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
 
-        presenter.view = view
+        let presenter = DelegatedSignValidationPresenter(
+            view: view,
+            interactor: interactor,
+            wireframe: wireframe,
+            logger: Logger.shared
+        )
+
         interactor.presenter = presenter
 
-        return view
+        return presenter
     }
 }

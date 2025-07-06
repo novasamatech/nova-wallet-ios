@@ -7,22 +7,28 @@ final class DelegatedSignValidationWireframe: DelegatedSignValidationWireframePr
         self.completionClosure = completionClosure
     }
 
-    func proceed(with sequence: DelegatedSignValidationSequence) {
+    func proceed(from view: ControllerBackedProtocol, with sequence: DelegatedSignValidationSequence) {
         executeValidation(
             at: 0,
-            from: sequence,
+            sequence: sequence,
+            view: view,
             state: DelegatedSignValidationSharedData()
         )
+    }
+
+    func completeWithError() {
+        completionClosure(false)
     }
 }
 
 private extension DelegatedSignValidationWireframe {
     func executeValidation(
         at index: Int,
-        from sequence: DelegatedSignValidationSequence,
+        sequence: DelegatedSignValidationSequence,
+        view: ControllerBackedProtocol,
         state: DelegatedSignValidationSharedData
     ) {
-        guard index < sequence.count else {
+        guard index < sequence.nodes.count else {
             completionClosure(true)
             return
         }
@@ -31,24 +37,27 @@ private extension DelegatedSignValidationWireframe {
             if result {
                 self?.executeValidation(
                     at: index + 1,
-                    from: sequence,
+                    sequence: sequence,
+                    view: view,
                     state: state
                 )
             } else {
-                completionClosure(false)
+                self?.completionClosure(false)
             }
         }
 
         switch sequence.nodes[index] {
         case let .fee(node):
             executeFeeValidation(
-                for: node,
+                node: node,
+                view: view,
                 state: state,
                 validationCompletion: nextClosure
             )
         case let .multisigOperation(node):
             executeMultisigOperationValidation(
-                for: node,
+                node: node,
+                view: view,
                 state: state,
                 validationCompletion: nextClosure
             )
@@ -58,16 +67,22 @@ private extension DelegatedSignValidationWireframe {
 
 private extension DelegatedSignValidationWireframe {
     func executeFeeValidation(
-        for node: DelegatedSignValidationSequence.FeeNode,
+        node: DelegatedSignValidationSequence.FeeNode,
+        view: ControllerBackedProtocol,
         state: DelegatedSignValidationSharedData,
         validationCompletion: @escaping DelegatedSignValidationCompletion
     ) {
         switch node.delegationType {
         case .proxy:
-            executeProxyFeeValidation(node: node, validationCompletion: validationCompletion)
+            executeProxyFeeValidation(
+                node: node,
+                view: view,
+                validationCompletion: validationCompletion
+            )
         case .multisig:
             executeMultisigSignatoryFeeValidation(
                 node: node,
+                view: view,
                 state: state,
                 validationCompletion: validationCompletion
             )
@@ -76,11 +91,13 @@ private extension DelegatedSignValidationWireframe {
 
     func executeProxyFeeValidation(
         node _: DelegatedSignValidationSequence.FeeNode,
+        view _: ControllerBackedProtocol,
         validationCompletion _: @escaping DelegatedSignValidationCompletion
     ) {}
 
     func executeMultisigSignatoryFeeValidation(
         node _: DelegatedSignValidationSequence.FeeNode,
+        view _: ControllerBackedProtocol,
         state _: DelegatedSignValidationSharedData,
         validationCompletion _: @escaping DelegatedSignValidationCompletion
     ) {}
@@ -88,7 +105,8 @@ private extension DelegatedSignValidationWireframe {
 
 private extension DelegatedSignValidationWireframe {
     func executeMultisigOperationValidation(
-        for _: DelegatedSignValidationSequence.MultisigOperationNode,
+        node _: DelegatedSignValidationSequence.MultisigOperationNode,
+        view _: ControllerBackedProtocol,
         state _: DelegatedSignValidationSharedData,
         validationCompletion _: @escaping DelegatedSignValidationCompletion
     ) {}

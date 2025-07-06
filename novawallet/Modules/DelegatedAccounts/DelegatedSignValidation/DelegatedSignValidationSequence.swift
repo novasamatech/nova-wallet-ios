@@ -3,13 +3,13 @@ import SubstrateSdk
 
 struct DelegatedSignValidationSequence {
     struct FeeNode {
-        let account: MetaAccountChainResponse
+        let account: MetaChainAccountResponse
         let call: AnyRuntimeCall
         let delegationType: DelegationType
     }
 
     struct MultisigOperationNode {
-        let signatory: MetaAccountChainResponse
+        let signatory: MetaChainAccountResponse
         let call: RuntimeCall<MultisigPallet.AsMultiCall<AnyRuntimeCall>>
     }
 
@@ -19,4 +19,19 @@ struct DelegatedSignValidationSequence {
     }
 
     let nodes: [Node]
+}
+
+final class DelegatedSignValidationSequenceBuilder {
+    var nodes: [DelegatedSignValidationSequence.Node] = []
+
+    @discardableResult
+    func adding(node: DelegatedSignValidationSequence.Node) -> Self {
+        nodes.append(node)
+
+        return self
+    }
+
+    func build() -> DelegatedSignValidationSequence {
+        DelegatedSignValidationSequence(nodes: nodes)
+    }
 }

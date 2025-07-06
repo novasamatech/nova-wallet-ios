@@ -8,12 +8,11 @@ protocol DelegatedSignValidationInteractorInputProtocol: AnyObject {
 
 protocol DelegatedSignValidationInteractorOutputProtocol: AnyObject {
     func didReceive(
-        validationSequenceResult: Result<DelegatedSignValidationSequence, DelegatedSignValidationInteractorError >
+        validationSequenceResult: Result<DelegatedSignValidationSequence, Error>
     )
 }
 
 protocol DelegatedSignValidationWireframeProtocol: AnyObject {
-    func proceed(with sequence: DelegatedSignValidationSequence)
+    func proceed(from view: ControllerBackedProtocol, with sequence: DelegatedSignValidationSequence)
+    func completeWithError()
 }
-
-enum DelegatedSignValidationInteractorError: Error {}

@@ -20,11 +20,15 @@ extension MultisigPallet {
 
         func runtimeCall() -> RuntimeCall<Self> {
             RuntimeCall(
-                moduleName: "Multisig",
-                callName: "as_multi",
+                moduleName: MultisigPallet.asMultiPath.moduleName,
+                callName: MultisigPallet.asMultiPath.callName,
                 args: self
             )
         }
+    }
+
+    static var asMultiPath: CallCodingPath {
+        CallCodingPath(moduleName: Self.name, callName: "as_multi")
     }
 
     struct AsMultiThreshold1Call<C: Codable>: Codable {
@@ -38,11 +42,15 @@ extension MultisigPallet {
 
         func runtimeCall() -> RuntimeCall<Self> {
             RuntimeCall(
-                moduleName: "Multisig",
-                callName: "as_multi_threshold_1",
+                moduleName: MultisigPallet.asMultiThreshold1Path.moduleName,
+                callName: MultisigPallet.asMultiThreshold1Path.callName,
                 args: self
             )
         }
+    }
+
+    static var asMultiThreshold1Path: CallCodingPath {
+        CallCodingPath(moduleName: Self.name, callName: "as_multi_threshold_1")
     }
 
     struct CancelAsMultiCall: Codable {
