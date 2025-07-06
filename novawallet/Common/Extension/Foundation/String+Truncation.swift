@@ -1,18 +1,26 @@
 import Foundation
 
 extension String {
-    func truncatedMiddle(
-        limit: Int,
-        replacementSymbol: String = "..."
-    ) -> String {
-        guard count > limit else { return self }
+    var truncated: String {
+        truncated(prefix: 4, suffix: 5)
+    }
 
-        let headCharactersCount = Int(ceil(Float(limit - replacementSymbol.count) / 2.0))
+    var shortTruncated: String {
+        truncated
+    }
 
-        let tailCharactersCount = Int(floor(Float(limit - replacementSymbol.count) / 2.0))
+    var mediumTruncated: String {
+        truncated(prefix: 6, suffix: 7)
+    }
 
-        return String(prefix(headCharactersCount))
-            + replacementSymbol
-            + String(suffix(tailCharactersCount))
+    func truncated(prefix: Int, suffix: Int) -> String {
+        guard count > prefix + suffix else {
+            return self
+        }
+
+        let prefixString = self.prefix(prefix)
+        let suffixString = self.suffix(suffix)
+
+        return "\(prefixString)...\(suffixString)"
     }
 }

@@ -80,7 +80,7 @@ private extension MultisigTxDetailsInteractor {
 
     func provideCallDisplayString() {
         guard
-            let callJson = pendingOperation.formattedModel?.decoded.toCallJSON()
+            let callJson = pendingOperation.formattedModel?.decoded.toDisplayRepresentation()
         else {
             return
         }
