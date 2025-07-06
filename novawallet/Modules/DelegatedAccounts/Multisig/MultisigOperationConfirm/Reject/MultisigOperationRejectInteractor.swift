@@ -23,8 +23,8 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
     override func doConfirm() {
         guard
             let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
-            let extrinsicOperationFactory,
+            let definition = operation.operation.multisigDefinition,
+            let extrinsicSubmissionMonitor,
             let signer else {
             return
         }
@@ -32,11 +32,11 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         let builderClosure = createExtrinsicClosure(
             for: multisig,
             definition: definition,
-            callHash: operation.callHash
+            callHash: operation.operation.callHash
         )
 
-        let submissionWrapper = extrinsicOperationFactory.submit(
-            builderClosure,
+        let submissionWrapper = extrinsicSubmissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
             signer: signer
         )
 
@@ -47,7 +47,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didCompleteSubmission()
+                self?.presenter?.didCompleteSubmission(with: .reject)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submissionError(error))
             }
@@ -55,11 +55,13 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
     }
 }
 
+// MARK: - Private
+
 private extension MultisigOperationRejectInteractor {
     func estimateFee() {
         guard
             let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
+            let definition = operation.operation.multisigDefinition,
             let operationFactory = extrinsicOperationFactory else {
             return
         }
@@ -69,7 +71,7 @@ private extension MultisigOperationRejectInteractor {
         let builderClosure = createExtrinsicClosure(
             for: multisig,
             definition: definition,
-            callHash: operation.callHash
+            callHash: operation.operation.callHash
         )
 
         let feeWrapper = operationFactory.estimateFeeOperation(builderClosure)

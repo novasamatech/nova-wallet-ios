@@ -10,19 +10,21 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     private var callWeight: Substrate.Weight?
 
     init(
-        operation: Multisig.PendingOperation,
+        operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
-        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
+        pendingOperationProvider: MultisigOperationProviderProxyProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         callWeightEstimator: CallWeightEstimatingFactoryProtocol,
         operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.callWeightEstimator = callWeightEstimator
@@ -31,15 +33,17 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             operation: operation,
             chain: chain,
             multisigWallet: multisigWallet,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             balanceRemoteSubscriptionFactory: balanceRemoteSubscriptionFactory,
             signatoryRepository: signatoryRepository,
-            pendingMultisigLocalSubscriptionFactory: pendingMultisigLocalSubscriptionFactory,
+            pendingOperationProvider: pendingOperationProvider,
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: signingWrapperFactory,
             assetInfoOperationFactory: assetInfoOperationFactory,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
+            currencyManager: currencyManager,
             logger: logger
         )
     }
@@ -62,8 +66,8 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         guard
             let call,
             let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
-            let extrinsicOperationFactory,
+            let definition = operation.operation.multisigDefinition,
+            let extrinsicSubmissionMonitor,
             let signer else {
             return
         }
@@ -79,8 +83,8 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             }
         )
 
-        let submissionWrapper = extrinsicOperationFactory.submit(
-            builderClosure,
+        let submissionWrapper = extrinsicSubmissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
             signer: signer
         )
 
@@ -95,7 +99,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.presenter?.didCompleteSubmission()
+                self?.presenter?.didCompleteSubmission(with: .approve)
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submissionError(error))
             }
@@ -103,12 +107,14 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     }
 }
 
+// MARK: - Private
+
 private extension MultisigOperationApproveInteractor {
     func estimateFee() {
         guard
             let call,
             let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
+            let definition = operation.operation.multisigDefinition,
             let operationFactory = extrinsicOperationFactory else {
             return
         }

@@ -5,7 +5,7 @@ import Foundation_iOS
 
 protocol MultisigOperationsViewModelFactoryProtocol {
     func createListViewModel(
-        from operations: [Multisig.PendingOperation],
+        from operations: [Multisig.PendingOperationProxyModel],
         chains: [ChainModel.Id: ChainModel],
         wallet: MetaAccountModel,
         for locale: Locale
@@ -37,28 +37,50 @@ final class MultisigOperationsViewModelFactory {
 // MARK: - Private
 
 private extension MultisigOperationsViewModelFactory {
-    func createOperationTitle(from call: Substrate.CallData?, locale: Locale) -> String {
-        let languages = locale.rLanguages
-
+    func createOperationTitle(
+        from call: FormattedCall?,
+        locale: Locale
+    ) -> String {
         guard let call else {
             return R.string.localizable.multisigOperationTypeUnknown(
-                preferredLanguages: languages
+                preferredLanguages: locale.rLanguages
             )
         }
 
-        // TODO: Implement proper operation type extraction logic
-
-        return "Operation title"
+        switch call.definition {
+        case let .general(general):
+            return general.callPath.callName.displayCall
+        case .transfer:
+            return R.string.localizable.transferTitle(
+                preferredLanguages: locale.rLanguages
+            )
+        }
     }
 
-    func createOperationSubTitle(from call: Substrate.CallData?, locale: Locale) -> String? {
-        guard let call else { return nil }
+    func createOperationSubtitle(
+        from call: FormattedCall?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> String? {
+        guard let call else {
+            return nil
+        }
 
-        let languages = locale.rLanguages
-
-        // TODO: Implement proper operation subtitle extraction logic
-
-        return "Operation subtitle"
+        switch call.definition {
+        case let .general(general):
+            return general.callPath.moduleName.displayCall
+        case let .transfer(transfer):
+            if let address = try? transfer.account.accountId.toAddress(
+                using: chain.chainFormat
+            ) {
+                return R.string.localizable.walletHistoryTransferOutgoingDetails(
+                    address,
+                    preferredLanguages: locale.rLanguages
+                )
+            } else {
+                return nil
+            }
+        }
     }
 
     func createSigningProgress(
@@ -86,17 +108,19 @@ private extension MultisigOperationsViewModelFactory {
         let signedByUser = definition.signedBy(accountId: multisigContext.signatory)
         let createdByUser = definition.createdBy(accountId: multisigContext.signatory)
 
-        return if signedByUser {
-            .signed(
+        if createdByUser {
+            return .createdByUser(
+                R.string.localizable.multisigOperationStatusCreated(preferredLanguages: languages)
+            )
+        } else if signedByUser {
+            return .signed(
                 TitleIconViewModel(
                     title: R.string.localizable.multisigOperationStatusSigned(preferredLanguages: languages),
                     icon: R.image.iconPositiveCheckmarkFilled()!.tinted(with: R.color.colorIconPositive()!)
                 )
             )
-        } else if createdByUser {
-            .createdByUser(R.string.localizable.multisigOperationStatusCreated(preferredLanguages: languages))
         } else {
-            nil
+            return nil
         }
     }
 
@@ -107,20 +131,24 @@ private extension MultisigOperationsViewModelFactory {
     }
 
     func createViewModel(
-        from operation: Multisig.PendingOperation,
+        from operationModel: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         wallet: MetaAccountModel,
         for locale: Locale
     ) -> MultisigOperationViewModel? {
         guard
             let multisigContext = wallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition
+            let definition = operationModel.operation.multisigDefinition
         else { return nil }
 
-        let title = createOperationTitle(from: operation.call, locale: locale)
-        let subtitle = createOperationSubTitle(from: operation.call, locale: locale)
+        let title = createOperationTitle(from: operationModel.formattedModel, locale: locale)
+        let subtitle = createOperationSubtitle(
+            from: operationModel.formattedModel,
+            chain: chain,
+            locale: locale
+        )
 
-        let operationDate = Date(timeIntervalSince1970: TimeInterval(operation.timestamp))
+        let operationDate = Date(timeIntervalSince1970: TimeInterval(operationModel.timestamp))
         let timeString = timeFormatter.value(for: locale).string(from: operationDate)
 
         let signingProgress = createSigningProgress(
@@ -135,13 +163,10 @@ private extension MultisigOperationsViewModelFactory {
         )
 
         let chainIcon = networkViewModelFactory.createDiffableViewModel(from: chain)
-        let operationIcon = StaticImageViewModel(image: R.image.iconOutgoingTransfer()!)
-
-        // TODO: Implement proper logic to determine if the operation is delegated
-        var delegatedAccountModel: (String, DisplayAddressViewModel)?
+        let operationIcon = StaticImageViewModel(image: R.image.iconUnknownOperation()!)
 
         return MultisigOperationViewModel(
-            identifier: operation.identifier,
+            identifier: operationModel.identifier,
             chainIcon: chainIcon,
             iconViewModel: operationIcon,
             operationTitle: title,
@@ -150,12 +175,12 @@ private extension MultisigOperationsViewModelFactory {
             timeString: timeString,
             signingProgress: signingProgress,
             status: status,
-            delegatedAccountModel: delegatedAccountModel
+            delegatedAccountModel: nil
         )
     }
 
     func createSections(
-        from operations: [Multisig.PendingOperation],
+        from operations: [Multisig.PendingOperationProxyModel],
         chains: [ChainModel.Id: ChainModel],
         wallet: MetaAccountModel,
         for locale: Locale
@@ -172,16 +197,16 @@ private extension MultisigOperationsViewModelFactory {
     }
 
     func createSection(
-        for operations: (Date, [Multisig.PendingOperation]),
+        for operations: (Date, [Multisig.PendingOperationProxyModel]),
         chains: [ChainModel.Id: ChainModel],
         wallet: MetaAccountModel,
         locale: Locale
     ) -> MultisigOperationSection {
-        let operationsViewModels: [MultisigOperationViewModel] = operations.1.compactMap { operation in
-            guard let chain = chains[operation.chainId] else { return nil }
+        let operationsViewModels: [MultisigOperationViewModel] = operations.1.compactMap { operationModel in
+            guard let chain = chains[operationModel.operation.chainId] else { return nil }
 
             return createViewModel(
-                from: operation,
+                from: operationModel,
                 chain: chain,
                 wallet: wallet,
                 for: locale
@@ -196,7 +221,9 @@ private extension MultisigOperationsViewModelFactory {
         )
     }
 
-    func groupOperationsByDate(_ operations: [Multisig.PendingOperation]) -> [(Date, [Multisig.PendingOperation])] {
+    func groupOperationsByDate(
+        _ operations: [Multisig.PendingOperationProxyModel]
+    ) -> [(Date, [Multisig.PendingOperationProxyModel])] {
         let operationsByDay = Dictionary(grouping: operations) { operation -> DateComponents in
             let date = Date(timeIntervalSince1970: TimeInterval(operation.timestamp))
 
@@ -206,7 +233,7 @@ private extension MultisigOperationsViewModelFactory {
         }
 
         let sortedOperations = operationsByDay
-            .compactMap { (key, value) -> (Date, [Multisig.PendingOperation])? in
+            .compactMap { (key, value) -> (Date, [Multisig.PendingOperationProxyModel])? in
                 var mutComponents = key
                 mutComponents.calendar = Calendar.current
 
@@ -214,7 +241,7 @@ private extension MultisigOperationsViewModelFactory {
 
                 return (date, value)
             }
-            .sorted { $0.0 < $1.0 }
+            .sorted { $0.0 > $1.0 }
 
         return sortedOperations
     }
@@ -224,7 +251,7 @@ private extension MultisigOperationsViewModelFactory {
 
 extension MultisigOperationsViewModelFactory: MultisigOperationsViewModelFactoryProtocol {
     func createListViewModel(
-        from operations: [Multisig.PendingOperation],
+        from operations: [Multisig.PendingOperationProxyModel],
         chains: [ChainModel.Id: ChainModel],
         wallet: MetaAccountModel,
         for locale: Locale

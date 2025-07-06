@@ -5,25 +5,23 @@ import SubstrateSdk
 final class MultisigOperationsInteractor: AnyProviderAutoCleaning {
     weak var presenter: MultisigOperationsInteractorOutputProtocol?
 
-    let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+    let pendingOperationsProvider: MultisigOperationProviderProxyProtocol
 
     private let wallet: MetaAccountModel
     private let chainRegistry: ChainRegistryProtocol
-
-    private var operationsProvider: StreamableProvider<Multisig.PendingOperation>?
 
     private let operationQueue: OperationQueue
 
     init(
         wallet: MetaAccountModel,
+        pendingOperationsProvider: MultisigOperationProviderProxyProtocol,
         chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue,
-        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+        operationQueue: OperationQueue
     ) {
         self.wallet = wallet
+        self.pendingOperationsProvider = pendingOperationsProvider
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
-        self.pendingMultisigLocalSubscriptionFactory = pendingMultisigLocalSubscriptionFactory
     }
 }
 
@@ -36,8 +34,11 @@ private extension MultisigOperationsInteractor {
             return
         }
 
-        clear(streamableProvider: &operationsProvider)
-        operationsProvider = subscribePendingOperations(for: multisigAccount.accountId)
+        pendingOperationsProvider.subscribePendingOperations(
+            for: multisigAccount.accountId,
+            chainId: nil,
+            handler: self
+        )
     }
 
     func subscribeChains() {
@@ -62,10 +63,9 @@ extension MultisigOperationsInteractor: MultisigOperationsInteractorInputProtoco
 
 // MARK: - MultisigOperationsLocalStorageSubscriber
 
-extension MultisigOperationsInteractor: MultisigOperationsLocalStorageSubscriber,
-    MultisigOperationsLocalSubscriptionHandler {
+extension MultisigOperationsInteractor: MultisigOperationProviderHandlerProtocol {
     func handleMultisigPendingOperations(
-        result: Result<[DataProviderChange<Multisig.PendingOperation>], Error>
+        result: Result<[DataProviderChange<Multisig.PendingOperationProxyModel>], Error>
     ) {
         switch result {
         case let .success(changes):

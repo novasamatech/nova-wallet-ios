@@ -66,7 +66,7 @@ enum MultisigPallet {
                 )
             }
 
-            accountId = try jsonList[0].map(to: AccountId.self, with: context)
+            accountId = try jsonList[0].map(to: BytesCodable.self, with: context).wrappedValue
             callHash = try jsonList[1].map(to: BytesCodable.self, with: context).wrappedValue
         }
     }
