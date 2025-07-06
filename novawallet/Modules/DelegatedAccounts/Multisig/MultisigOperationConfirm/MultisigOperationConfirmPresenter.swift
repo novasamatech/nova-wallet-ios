@@ -6,7 +6,7 @@ final class MultisigOperationConfirmPresenter {
     let wireframe: MultisigOperationConfirmWireframeProtocol
     let interactor: MultisigOperationConfirmInteractorInputProtocol
     let viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol
-    let dataValidatingFactory: BaseDataValidatingFactoryProtocol
+    let dataValidatingFactory: MultisigDataValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     let chain: ChainModel
@@ -29,7 +29,7 @@ final class MultisigOperationConfirmPresenter {
         interactor: MultisigOperationConfirmInteractorInputProtocol,
         wireframe: MultisigOperationConfirmWireframeProtocol,
         viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol,
-        dataValidatingFactory: BaseDataValidatingFactoryProtocol,
+        dataValidatingFactory: MultisigDataValidatorFactoryProtocol,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
         localizationManager: LocalizationManagerProtocol,
@@ -66,8 +66,7 @@ private extension MultisigOperationConfirmPresenter {
             utilityAssetPrice: utilityAssetPriceData,
             transferAssetPrice: transferAssetPriceData,
             confirmClosure: { [weak self] in
-                self?.view?.didReceive(loading: true)
-                self?.interactor.confirm()
+                self?.confirm()
             },
             callDataAddClosure: {
                 [weak self] in
@@ -88,14 +87,31 @@ private extension MultisigOperationConfirmPresenter {
     }
     
     func confirm() {
+        guard let asset = chain.utilityChainAsset()?.asset else {
+            return
+        }
+        
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 fee: fee,
                 locale: selectedLocale
             ) { [weak self] in
                 self?.refreshFee()
-            }
+            },
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: signatoryBalance?.transferable,
+                fee: fee,
+                asset: asset.displayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.exsitentialDepositIsNotViolated(
+                spendingAmount: fee?.amountForCurrentAccount,
+                totalAmount: signatoryBalance?.totalInPlank,
+                minimumBalance: balanceExistence?.minBalance,
+                locale: selectedLocale
+            )
         ]).runValidation { [weak self] in
+            self?.view?.didReceive(loading: true)
             self?.interactor.confirm()
         }
         

@@ -35,7 +35,7 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable {
+protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable, MultisigErrorPresentable {
     func showAddCallData(
         from view: ControllerBackedProtocol?,
         for operation: Multisig.PendingOperation
