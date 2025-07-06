@@ -130,7 +130,6 @@ private extension MultisigOperationsViewModelFactory {
 
     func createAmount(
         from callDefinition: FormattedCall.Definition?,
-        chain _: ChainModel,
         locale: Locale
     ) -> String? {
         guard case let .transfer(transfer) = callDefinition else { return nil }
@@ -204,7 +203,6 @@ private extension MultisigOperationsViewModelFactory {
 
         let amount = createAmount(
             from: operationModel.formattedModel?.definition,
-            chain: chain,
             locale: locale
         )
         let operationDate = Date(timeIntervalSince1970: TimeInterval(operationModel.timestamp))

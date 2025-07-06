@@ -14,23 +14,29 @@ protocol MultisigOperationConfirmViewModelFactoryProtocol {
         assetPrice: PriceData?,
         locale: Locale
     ) -> MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>
+
+    func createAmountViewModel(
+        from callDefinition: FormattedCall.Definition,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol?
 }
 
 final class MultisigOperationConfirmViewModelFactory {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     let iconViewModelFactory: IconViewModelFactoryProtocol
 
     init(
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol,
         iconViewModelFactory: IconViewModelFactoryProtocol = IconViewModelFactory()
     ) {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
-        self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
         self.iconViewModelFactory = iconViewModelFactory
     }
 }
@@ -65,8 +71,9 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         let decimal = amount.decimal(assetInfo: assetInfo)
 
-        let balanceViewModel = utilityBalanceViewModelFactory.balanceFromPrice(
-            decimal,
+        let balanceViewModel = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset.displayInfo,
+            amount: decimal,
             priceData: assetPrice
         ).value(for: locale)
 
@@ -201,6 +208,24 @@ private extension MultisigOperationConfirmViewModelFactory {
             assetPrice: assetPrice,
             locale: locale
         )
+    }
+
+    func createAmount(
+        from callDefinition: FormattedCall.Definition?,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        guard case let .transfer(transfer) = callDefinition else { return nil }
+
+        let amount = transfer.amount
+
+        let amountDecimal = amount.decimal(assetInfo: transfer.asset.assetDisplayInfo)
+
+        return balanceViewModelFactoryFacade.spendingAmountFromPrice(
+            targetAssetInfo: transfer.asset.assetDisplayInfo,
+            amount: amountDecimal,
+            priceData: priceData
+        ).value(for: locale)
     }
 
     func createSignatoriesSection(
@@ -459,7 +484,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             signatories: params.signatories,
             fee: params.fee,
             feeAsset: params.chainAsset,
-            assetPrice: params.assetPrice,
+            assetPrice: params.utilityAssetPrice,
             locale: locale
         )
         let signatoriesSection = createSignatoriesSection(
@@ -489,20 +514,15 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
 
         let title = createTitle(for: params.pendingOperation.formattedModel, locale: locale)
 
-        var amount: BalanceViewModelProtocol?
-
-        if case let .transfer(transfer) = params.pendingOperation.formattedModel?.definition {
-            amount = createBalanceViewModel(
-                for: transfer.amount,
-                chainAsset: params.chainAsset,
-                assetPrice: params.assetPrice,
-                locale: locale
-            )
-        }
+        var amountViewModel = createAmount(
+            from: params.pendingOperation.formattedModel?.definition,
+            priceData: params.transferAssetPrice,
+            locale: locale
+        )
 
         return MultisigOperationConfirmViewModel(
             title: title,
-            amount: amount,
+            amount: amountViewModel,
             sections: sections,
             actions: actions
         )
@@ -526,5 +546,17 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         )
 
         return feeField
+    }
+
+    func createAmountViewModel(
+        from callDefinition: FormattedCall.Definition,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        createAmount(
+            from: callDefinition,
+            priceData: priceData,
+            locale: locale
+        )
     }
 }

@@ -2,6 +2,7 @@ import Foundation
 
 protocol MultisigOperationConfirmViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: MultisigOperationConfirmViewModel)
+    func didReceive(amount: BalanceViewModelProtocol?)
     func didReceive(feeViewModel: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>)
     func didReceive(loading: Bool)
 }
@@ -27,7 +28,8 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence)
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?)
-    func didReceivePriceData(_ priceData: PriceData?)
+    func didReceiveUtilityAssetPrice(_ priceData: PriceData?)
+    func didReceiveTransferAssetPrice(_ priceData: PriceData?)
     func didCompleteSubmission(with submissionType: MultisigSubmissionType)
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
