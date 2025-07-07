@@ -12,6 +12,8 @@ protocol MultisigOperationProviderProxyProtocol: AnyObject {
         identifier: String,
         handler: MultisigOperationProviderHandlerProtocol
     )
+
+    func createSnapshot() -> MultisigProviderProxySnapshotProtocol
 }
 
 protocol MultisigOperationProviderHandlerProtocol: AnyObject {
@@ -36,14 +38,14 @@ extension MultisigOperationProviderHandlerProtocol {
     ) {}
 }
 
-final class MultisigOperationProviderProxy: AnyProviderAutoCleaning {
+final class MultisigOperationProviderProxy: AnyProviderAutoCleaning, MultisigProviderProxySnapshotApplicable {
     let callFormattingFactory: CallFormattingOperationFactoryProtocol
     let operationQueue: OperationQueue
     let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
 
     weak var handler: MultisigOperationProviderHandlerProtocol?
 
-    private var formattingCache = InMemoryCache<Substrate.CallHash, FormattedCall>()
+    var formattingCache = InMemoryCache<Substrate.CallHash, FormattedCall>()
 
     private var provider: StreamableProvider<Multisig.PendingOperation>?
 
@@ -155,6 +157,10 @@ private extension MultisigOperationProviderProxy {
 }
 
 extension MultisigOperationProviderProxy: MultisigOperationProviderProxyProtocol {
+    func createSnapshot() -> MultisigProviderProxySnapshotProtocol {
+        MultisigProviderProxySnapshot(formattingCache: formattingCache)
+    }
+
     func subscribePendingOperations(
         for accountId: AccountId,
         chainId: ChainModel.Id?,

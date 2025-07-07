@@ -393,7 +393,7 @@ private extension MultisigOperationConfirmViewModelFactory {
     }
 
     func createActions(
-        for pendingOperation: Multisig.PendingOperation,
+        for pendingOperation: Multisig.PendingOperationProxyModel,
         multisigWallet: MetaAccountModel,
         locale: Locale,
         confirmClosure: @escaping () -> Void,
@@ -401,13 +401,14 @@ private extension MultisigOperationConfirmViewModelFactory {
     ) -> [MultisigOperationConfirmViewModel.Action] {
         guard
             let multisigContext = multisigWallet.multisigAccount?.multisig,
-            let definition = pendingOperation.multisigDefinition
+            let definition = pendingOperation.operation.multisigDefinition
         else { return [] }
 
         var actions: [MultisigOperationConfirmViewModel.Action] = []
 
-        let hasCallData = pendingOperation.call != nil
-        let createdBySignatory = pendingOperation.isCreator(accountId: multisigContext.signatory)
+        let hasCall = pendingOperation.operation.call != nil
+            || pendingOperation.formattedModel?.decoded != nil
+        let createdBySignatory = pendingOperation.operation.isCreator(accountId: multisigContext.signatory)
         let approved = definition.approvals.count >= multisigContext.threshold
         let willExecute = (multisigContext.threshold - definition.approvals.count) == 1
 
@@ -418,7 +419,7 @@ private extension MultisigOperationConfirmViewModelFactory {
                 actionClosure: confirmClosure
             )
             actions.append(action)
-        } else if !createdBySignatory, hasCallData {
+        } else if !createdBySignatory, hasCall {
             let title = if willExecute {
                 R.string.localizable.commonApproveAndExecute(preferredLanguages: locale.rLanguages)
             } else {
@@ -432,7 +433,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             actions.append(action)
         }
 
-        if !hasCallData {
+        if !hasCall {
             let action = MultisigOperationConfirmViewModel.Action(
                 title: R.string.localizable.enterCallDataDetailsButtonTitle(preferredLanguages: locale.rLanguages),
                 type: .addCallData,
@@ -505,7 +506,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         ].compactMap { $0 }
 
         let actions = createActions(
-            for: params.pendingOperation.operation,
+            for: params.pendingOperation,
             multisigWallet: params.multisigWallet,
             locale: locale,
             confirmClosure: params.confirmClosure,

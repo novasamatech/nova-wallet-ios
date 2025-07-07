@@ -4,7 +4,8 @@ import Foundation_iOS
 
 struct MultisigOperationConfirmViewFactory {
     static func createView(
-        for operation: Multisig.PendingOperationProxyModel
+        for operation: Multisig.PendingOperationProxyModel,
+        flowState: MultisigOperationsFlowState
     ) -> MultisigOperationConfirmViewProtocol? {
         guard
             let chain = ChainRegistryFacade.sharedRegistry.getChain(
@@ -17,7 +18,8 @@ struct MultisigOperationConfirmViewFactory {
                 for: operation,
                 multisigWallet: multisigWallet,
                 chain: chain,
-                currencyManager: currencyManager
+                currencyManager: currencyManager,
+                flowState: flowState
             )
         else {
             return nil
@@ -65,7 +67,8 @@ struct MultisigOperationConfirmViewFactory {
         for operation: Multisig.PendingOperationProxyModel,
         multisigWallet: MetaAccountModel,
         chain: ChainModel,
-        currencyManager: CurrencyManagerProtocol
+        currencyManager: CurrencyManagerProtocol,
+        flowState: MultisigOperationsFlowState
     ) -> MultisigOperationConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -102,6 +105,8 @@ struct MultisigOperationConfirmViewFactory {
             ),
             operationQueue: operationQueue
         )
+
+        flowState.providerSnapshot.apply(to: pendingOperationsProvider)
 
         return if operation.operation.isCreator(accountId: multisig.signatory) {
             MultisigOperationRejectInteractor(
