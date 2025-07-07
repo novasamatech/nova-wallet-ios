@@ -3,12 +3,6 @@ import UIKit_iOS
 import SnapKit
 
 final class AccountManagementHeaderView: UIView {
-    enum MessageType {
-        case hint
-        case banner
-        case none
-    }
-
     let textBackgroundView: TriangularedView = {
         let view = TriangularedView()
         view.sideLength = 10.0
@@ -48,19 +42,9 @@ final class AccountManagementHeaderView: UIView {
         }
     }
 
-    var messageType: MessageType {
-        get {
-            if hintView != nil {
-                return .hint
-            } else if bannerView != nil {
-                return .banner
-            } else {
-                return .none
-            }
-        }
-
-        set {
-            switch newValue {
+    private var messageType: AccountManageWalletViewModel.MessageType = .none {
+        didSet {
+            switch messageType {
             case .hint:
                 clearBannerView()
                 setupHintView()
@@ -89,12 +73,26 @@ final class AccountManagementHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bindHint(text: String, icon: UIImage?) {
-        hintView?.bindHint(text: text, icon: icon)
-    }
+    func bind(viewModel: AccountManageWalletViewModel) {
+        messageType = viewModel.messageType
 
-    func bind(bannerViewModel: LedgerMigrationBannerView.ViewModel) {
-        bannerView?.bind(viewModel: bannerViewModel)
+        switch viewModel.messageType {
+        case let .hint(text, icon):
+            hintView?.bindHint(text: text, icon: icon)
+        case let .banner(bannerViewModel):
+            bannerView?.bind(viewModel: bannerViewModel)
+        case .none:
+            break
+        }
+
+        guard let context = viewModel.context else { return }
+
+        switch context {
+        case let .multisig(multisigContext):
+            hintView?.bindDelegate(viewModel: multisigContext.signatory)
+        case let .proxied(proxiedContext):
+            hintView?.bindDelegate(viewModel: proxiedContext.proxy)
+        }
     }
 
     func apply(bannerStyle: LedgerMigrationBannerView.Style) {
