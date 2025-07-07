@@ -1877,11 +1877,15 @@
 "common.depositor" = "Người gửi tiền";
 "common.multisig.deposit" = "Đặt cọc đa chữ ký";
 "common.call.data" = "Dữ liệu cuộc gọi";
+"operation.details.check.hint" = "Hãy chắc chắn rằng thao tác là đúng";
 "delegated.account.on.behalf.of" = "Thay mặt cho";
 "common.hide" = "Ẩn";
 "common.show" = "Hiển thị";
 "multisig.operation.signatories.progress.format" = "Người ký (%li của %li)";
+"call.data.validation.error.title" = "Dữ liệu cuộc gọi không hợp lệ";
 "enter.call.data.details.button.title" = "Nhập dữ liệu cuộc gọi để xem chi tiết";
+"enter.call.data" = "Nhập dữ liệu cuộc gọi";
+"multisig.wallet.details.threshold" = "Ngưỡng %li trên %li";
 "feature.unsupported.sheet.message.card" = "Để quản lý Thẻ ghi nợ, vui lòng chuyển sang loại ví khác.";
 "feature.unsupported.sheet.message.sell" = "Để bán tiền điện tử lấy tiền pháp định, vui lòng chuyển sang loại ví khác.";
 "multisig.transactions.to.sign" = "Giao dịch cần ký";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "Phê duyệt & Thực hiện";
 "multisig.transaction.reject.sheet.message" = "Giao dịch sẽ bị từ chối. Tiền gửi multisig sẽ được trả lại cho %@.";
 "multisig.operations.empty.text" = "Chưa có giao dịch nào.\nCác yêu cầu ký sẽ hiển thị ở đây";
+"multisig.call.hash.share" = "Chia sẻ mã hash cuộc gọi";
+"multisig.call.hash.copy" = "Sao chép mã hash cuộc gọi";
+"common.full.details" = "Chi tiết đầy đủ";
+"common.call.hash" = "Gọi hash";
+"call.data.validation.hash.matching.error.message" = "Dữ liệu cuộc gọi này cho thao tác khác với call hash %@";
+"call.data.validation.error.message" = "Dữ liệu cuộc gọi bạn đã cung cấp không hợp lệ hoặc có định dạng sai. Vui lòng đảm bảo dữ liệu chính xác và thử lại.";

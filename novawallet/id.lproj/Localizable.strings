@@ -1877,11 +1877,15 @@
 "common.depositor" = "Penyetor";
 "common.multisig.deposit" = "Deposit multisig";
 "common.call.data" = "Data pemanggilan";
+"operation.details.check.hint" = "Pastikan operasi ini benar";
 "delegated.account.on.behalf.of" = "Atas nama";
 "common.hide" = "Sembunyikan";
 "common.show" = "Tampilkan";
 "multisig.operation.signatories.progress.format" = "Penandatangan (%li dari %li)";
+"call.data.validation.error.title" = "Data pemanggilan tidak valid";
 "enter.call.data.details.button.title" = "Masukkan data pemanggilan untuk melihat detail";
+"enter.call.data" = "Masukkan data pemanggilan";
+"multisig.wallet.details.threshold" = "Ambang batas %li dari %li";
 "feature.unsupported.sheet.message.card" = "Untuk mengelola Kartu Debit Anda, silakan beralih ke jenis dompet yang berbeda.";
 "feature.unsupported.sheet.message.sell" = "Untuk menjual crypto untuk fiat, silakan beralih ke jenis dompet yang berbeda.";
 "multisig.transactions.to.sign" = "Transaksi untuk ditandatangani";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "Setujui & Eksekusi";
 "multisig.transaction.reject.sheet.message" = "Transaksi akan ditolak. Deposit multisig akan dikembalikan ke %@.";
 "multisig.operations.empty.text" = "Belum ada transaksi.\nPermintaan penandatanganan akan muncul di sini";
+"multisig.call.hash.share" = "Bagikan hash panggilan";
+"multisig.call.hash.copy" = "Salin hash panggilan";
+"common.full.details" = "Detail lengkap";
+"common.call.hash" = "Panggilan hash";
+"call.data.validation.hash.matching.error.message" = "Data pemanggilan ini untuk operasi lain dengan hash panggilan %@";
+"call.data.validation.error.message" = "Data panggilan yang Anda berikan tidak valid atau memiliki format yang salah. Pastikan data tersebut benar dan coba lagi.";

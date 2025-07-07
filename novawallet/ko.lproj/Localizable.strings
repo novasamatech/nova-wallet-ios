@@ -1877,11 +1877,15 @@
 "common.depositor" = "입금자";
 "common.multisig.deposit" = "다중 서명 예치금";
 "common.call.data" = "호출 데이터";
+"operation.details.check.hint" = "작업이 올바른지 확인하십시오";
 "delegated.account.on.behalf.of" = "다른 사람을 대신하여";
 "common.hide" = "숨기기";
 "common.show" = "표시";
 "multisig.operation.signatories.progress.format" = "서명자 (%li 중 %li)";
+"call.data.validation.error.title" = "잘못된 호출 데이터";
 "enter.call.data.details.button.title" = "세부 정보를 보려면 호출 데이터를 입력하십시오";
+"enter.call.data" = "호출 데이터 입력";
+"multisig.wallet.details.threshold" = "임계값 %li 중 %li";
 "feature.unsupported.sheet.message.card" = "데빗 카드를 관리하려면 다른 종류의 지갑으로 전환하십시오.";
 "feature.unsupported.sheet.message.sell" = "암호화폐를 법정 화폐로 판매하려면 다른 종류의 지갑으로 전환하십시오.";
 "multisig.transactions.to.sign" = "서명할 거래";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "승인 및 실행";
 "multisig.transaction.reject.sheet.message" = "거래가 거부됩니다. 멀티시그 예치금은 %@에게 반환됩니다.";
 "multisig.operations.empty.text" = "아직 거래 내역이 없습니다.\n서명 요청이 여기에 표시됩니다";
+"multisig.call.hash.share" = "통화 해시 공유";
+"multisig.call.hash.copy" = "호출 해시 복사";
+"common.full.details" = "전체 세부 정보";
+"common.call.hash" = "호출 해시";
+"call.data.validation.hash.matching.error.message" = "이 호출 데이터는 호출 해시 %@의 다른 작업에 대한 것입니다";
+"call.data.validation.error.message" = "제공하신 통화 데이터가 유효하지 않거나 형식이 올바르지 않습니다. 올바른지 확인한 후 다시 시도해 주세요.";

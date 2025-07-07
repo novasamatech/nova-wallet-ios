@@ -1877,11 +1877,15 @@
 "common.depositor" = "Yatıran";
 "common.multisig.deposit" = "Çoklu imza depozitosu";
 "common.call.data" = "Arama verisi";
+"operation.details.check.hint" = "İşlemin doğru olduğundan emin olun";
 "delegated.account.on.behalf.of" = "Adına";
 "common.hide" = "Gizle";
 "common.show" = "Göster";
 "multisig.operation.signatories.progress.format" = "İmza yetkilileri (%li / %li)";
+"call.data.validation.error.title" = "Geçersiz arama verisi";
 "enter.call.data.details.button.title" = "Detayları görmek için arama verisi girin";
+"enter.call.data" = "Arama verisini girin";
+"multisig.wallet.details.threshold" = "Eşik %li / %li";
 "feature.unsupported.sheet.message.card" = "Debit Kartınızı yönetmek için lütfen farklı bir cüzdan türüne geçin.";
 "feature.unsupported.sheet.message.sell" = "Kriptoyu fiat ile satmak için lütfen farklı bir cüzdan türüne geçin.";
 "multisig.transactions.to.sign" = "İmzalanacak işlemler";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "Onayla ve Gerçekleştir";
 "multisig.transaction.reject.sheet.message" = "İşlem reddedilecek. Çoklu imza depozitosu %@'e geri dönecek.";
 "multisig.operations.empty.text" = "Henüz işlem yok.\nİmzalama istekleri burada görünecek";
+"multisig.call.hash.share" = "Arama karmasını paylaş";
+"multisig.call.hash.copy" = "Çağrı karmasını kopyala";
+"common.full.details" = "Tam detaylar";
+"common.call.hash" = "Çağrı hash'i";
+"call.data.validation.hash.matching.error.message" = "Bu arama verisi, çağrı hash %@ ile başka bir işlem için";
+"call.data.validation.error.message" = "Sağladığınız çağrı verileri geçersiz veya yanlış formatta. Lütfen doğru olduğundan emin olun ve tekrar deneyin.";
