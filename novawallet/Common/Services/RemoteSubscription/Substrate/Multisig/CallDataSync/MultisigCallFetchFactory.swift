@@ -29,7 +29,8 @@ private extension MultisigCallFetchFactory {
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> [Multisig.PendingOperation.Key: MultisigCallFromEvent] {
         guard
-            let blockNumberData = BigUInt.fromHexString(block.header.number) else {
+            let blockNumberData = BigUInt.fromHexString(block.header.number)
+        else {
             return [:]
         }
 
@@ -120,13 +121,15 @@ private extension MultisigCallFetchFactory {
         let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
         let context = codingFactory.createRuntimeJsonContext()
 
-        let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall<JSON>>>
-        maybeCallMappingResult = try nestedCallMapper.mapRuntimeCall(
+        let callMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall<JSON>>>?
+        callMappingResult = try? nestedCallMapper.mapRuntimeCall(
             call: call,
             context: context
         )
 
-        let foundCalls = maybeCallMappingResult.node.calls.map(\.args.call)
+        guard let callMappingResult else { return nil }
+
+        let foundCalls = callMappingResult.node.calls.map(\.args.call)
 
         for foundCall in foundCalls {
             let encoder = codingFactory.createEncoder()
