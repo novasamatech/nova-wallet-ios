@@ -1,15 +1,16 @@
 import UIKit
 import SubstrateSdk
 
-final class ProxySignValidationInteractor {
-    weak var presenter: ProxySignValidationInteractorOutputProtocol?
+final class DSFeeValidationInteractor {
+    weak var presenter: DSFeeValidationInteractorOutputProtocol?
 
     let selectedAccount: MetaChainAccountResponse
     let extrinsicService: ExtrinsicServiceProtocol
     let runtimeProvider: RuntimeProviderProtocol
     let assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol
     let balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol
-    let calls: [JSON]
+    let validationSharedData: DelegatedSignValidationSharedData
+    let call: AnyRuntimeCall
     let operationQueue: OperationQueue
     let chainAsset: ChainAsset
 
@@ -23,7 +24,8 @@ final class ProxySignValidationInteractor {
         runtimeProvider: RuntimeProviderProtocol,
         balanceQueryFactory: WalletRemoteQueryWrapperFactoryProtocol,
         assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
-        calls: [JSON],
+        call: AnyRuntimeCall,
+        validationSharedData: DelegatedSignValidationSharedData,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -32,7 +34,8 @@ final class ProxySignValidationInteractor {
         self.balanceQueryFactory = balanceQueryFactory
         self.runtimeProvider = runtimeProvider
         self.assetInfoOperationFactory = assetInfoOperationFactory
-        self.calls = calls
+        self.call = call
+        self.validationSharedData = validationSharedData
         self.operationQueue = operationQueue
     }
 
@@ -42,8 +45,15 @@ final class ProxySignValidationInteractor {
     }
 
     private func provideBalance() {
+        let accountId = selectedAccount.chainAccount.accountId
+
+        if let balance = validationSharedData.accounts.fetchValue(for: accountId) {
+            presenter?.didReceiveBalance(balance)
+            return
+        }
+
         let wrapper = balanceQueryFactory.queryBalance(
-            for: selectedAccount.chainAccount.accountId,
+            for: accountId,
             chainAsset: chainAsset
         )
 
@@ -85,18 +95,9 @@ final class ProxySignValidationInteractor {
         }
     }
 
-    private func provideFee(for calls: [JSON], codingFactory: RuntimeCoderFactoryProtocol) {
+    private func provideFee(for runtimeCall: AnyRuntimeCall) {
         let extrinsicClosure: ExtrinsicBuilderClosure = { builder in
-            let context = codingFactory.createRuntimeJsonContext()
-
-            return try calls.reduce(builder) { accumBuilder, call in
-                let runtimeCall = try call.map(
-                    to: RuntimeCall<JSON>.self,
-                    with: context.toRawContext()
-                )
-
-                return try accumBuilder.adding(call: runtimeCall)
-            }
+            try builder.adding(call: runtimeCall)
         }
 
         extrinsicService.estimateFee(
@@ -114,27 +115,18 @@ final class ProxySignValidationInteractor {
     }
 }
 
-extension ProxySignValidationInteractor: ProxySignValidationInteractorInputProtocol {
+extension DSFeeValidationInteractor: DSFeeValidationInteractorInputProtocol {
     func setup() {
         provideBalanceExistense()
         provideBalance()
 
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        execute(
-            operation: codingFactoryOperation,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            guard let calls = self?.calls else {
-                return
-            }
+        provideFee(for: call)
+    }
 
-            switch result {
-            case let .success(codingFactory):
-                self?.provideFee(for: calls, codingFactory: codingFactory)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(error)
-            }
-        }
+    func updateBalanceForNextValidation(_ balance: AssetBalance) {
+        validationSharedData.accounts.store(
+            value: balance,
+            for: selectedAccount.chainAccount.accountId
+        )
     }
 }

@@ -3,6 +3,8 @@ import Foundation
 final class DelegatedSignValidationWireframe: DelegatedSignValidationWireframeProtocol {
     let completionClosure: DelegatedSignValidationCompletion
 
+    private var flowHolder: AnyObject?
+
     init(completionClosure: @escaping DelegatedSignValidationCompletion) {
         self.completionClosure = completionClosure
     }
@@ -34,6 +36,8 @@ private extension DelegatedSignValidationWireframe {
         }
 
         let nextClosure: (Bool) -> Void = { [weak self] result in
+            self?.flowHolder = nil
+
             if result {
                 self?.executeValidation(
                     at: index + 1,
@@ -61,6 +65,13 @@ private extension DelegatedSignValidationWireframe {
                 state: state,
                 validationCompletion: nextClosure
             )
+        case let .confirmation(node):
+            executeOperationConfirmation(
+                node: node,
+                view: view,
+                state: state,
+                validationCompletion: nextClosure
+            )
         }
     }
 }
@@ -77,6 +88,7 @@ private extension DelegatedSignValidationWireframe {
             executeProxyFeeValidation(
                 node: node,
                 view: view,
+                state: state,
                 validationCompletion: validationCompletion
             )
         case .multisig:
@@ -90,10 +102,26 @@ private extension DelegatedSignValidationWireframe {
     }
 
     func executeProxyFeeValidation(
-        node _: DelegatedSignValidationSequence.FeeNode,
-        view _: ControllerBackedProtocol,
-        validationCompletion _: @escaping DelegatedSignValidationCompletion
-    ) {}
+        node: DelegatedSignValidationSequence.FeeNode,
+        view: ControllerBackedProtocol,
+        state: DelegatedSignValidationSharedData,
+        validationCompletion: @escaping DelegatedSignValidationCompletion
+    ) {
+        guard let presenter = ProxySignValidationViewFactory.createPresenter(
+            from: view,
+            callSender: node.account,
+            call: node.call,
+            validationSharedData: state,
+            completionClosure: validationCompletion
+        ) else {
+            completionClosure(false)
+            return
+        }
+
+        flowHolder = presenter
+
+        presenter.setup()
+    }
 
     func executeMultisigSignatoryFeeValidation(
         node _: DelegatedSignValidationSequence.FeeNode,
@@ -110,4 +138,25 @@ private extension DelegatedSignValidationWireframe {
         state _: DelegatedSignValidationSharedData,
         validationCompletion _: @escaping DelegatedSignValidationCompletion
     ) {}
+}
+
+private extension DelegatedSignValidationWireframe {
+    func executeOperationConfirmation(
+        node: DelegatedSignValidationSequence.OperationConfirmNode,
+        view: ControllerBackedProtocol,
+        state _: DelegatedSignValidationSharedData,
+        validationCompletion: @escaping DelegatedSignValidationCompletion
+    ) {
+        let confirmationPresenter = DelegatedSignConfirmationViewFactory.createPresenter(
+            from: node.account.metaId,
+            delegationType: node.delegationType,
+            delegateAccountResponse: node.account.chainAccount,
+            completionClosure: validationCompletion,
+            viewController: view.controller
+        )
+
+        flowHolder = confirmationPresenter
+
+        confirmationPresenter.setup()
+    }
 }

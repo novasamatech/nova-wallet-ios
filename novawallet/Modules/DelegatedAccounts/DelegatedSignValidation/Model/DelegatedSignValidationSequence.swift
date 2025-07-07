@@ -13,9 +13,16 @@ struct DelegatedSignValidationSequence {
         let call: RuntimeCall<MultisigPallet.AsMultiCall<AnyRuntimeCall>>
     }
 
+    struct OperationConfirmNode {
+        let account: MetaChainAccountResponse
+        let call: AnyRuntimeCall
+        let delegationType: DelegationType
+    }
+
     enum Node {
         case fee(FeeNode)
         case multisigOperation(MultisigOperationNode)
+        case confirmation(OperationConfirmNode)
     }
 
     let nodes: [Node]

@@ -3,22 +3,29 @@ import SubstrateSdk
 import Foundation_iOS
 
 struct ProxySignValidationViewFactory {
-    static func createView(
-        from viewController: UIViewController,
-        resolvedProxy: ExtrinsicSenderResolution.ResolvedDelegate,
-        calls: [JSON],
+    static func createPresenter(
+        from view: ControllerBackedProtocol,
+        callSender: MetaChainAccountResponse,
+        call: AnyRuntimeCall,
+        validationSharedData: DelegatedSignValidationSharedData,
         completionClosure: @escaping DelegatedSignValidationCompletion
-    ) -> ProxySignValidationPresenterProtocol? {
+    ) -> DSFeeValidationPresenterProtocol? {
         guard
-            let utilityChainAsset = resolvedProxy.chain.utilityChainAsset(),
+            let chain = ChainRegistryFacade.sharedRegistry.getChain(
+                for: callSender.chainAccount.chainId
+            ),
+            let utilityChainAsset = chain.utilityChainAsset(),
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(resolvedProxy: resolvedProxy, calls: calls) else {
+            let interactor = createInteractor(
+                callSender: callSender,
+                chain: chain,
+                call: call,
+                validationSharedData: validationSharedData
+            ) else {
             return nil
         }
 
         let wireframe = ProxySignValidationWireframe()
-
-        let view = ControllerBacked(controller: viewController)
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
@@ -35,7 +42,7 @@ struct ProxySignValidationViewFactory {
             view: view,
             interactor: interactor,
             wireframe: wireframe,
-            proxyName: resolvedProxy.delegateAccount?.chainAccount.name ?? "",
+            proxyName: callSender.chainAccount.name,
             dataValidationFactory: dataValidatorFactory,
             chainAsset: utilityChainAsset,
             completionClosure: completionClosure,
@@ -49,14 +56,14 @@ struct ProxySignValidationViewFactory {
     }
 
     static func createInteractor(
-        resolvedProxy: ExtrinsicSenderResolution.ResolvedDelegate,
-        calls: [JSON]
-    ) -> ProxySignValidationInteractor? {
+        callSender: MetaChainAccountResponse,
+        chain: ChainModel,
+        call: AnyRuntimeCall,
+        validationSharedData: DelegatedSignValidationSharedData
+    ) -> DSFeeValidationInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let chain = resolvedProxy.chain
 
         guard
-            let proxyAccount = resolvedProxy.delegateAccount,
             let chainAsset = chain.utilityChainAsset(),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -69,7 +76,7 @@ struct ProxySignValidationViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             userStorageFacade: UserDataStorageFacade.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(account: proxyAccount.chainAccount, chain: chain)
+        ).createService(account: callSender.chainAccount, chain: chain)
 
         let assetInfoOperationFactory = AssetStorageInfoOperationFactory()
 
@@ -84,13 +91,14 @@ struct ProxySignValidationViewFactory {
         )
 
         return .init(
-            selectedAccount: proxyAccount,
+            selectedAccount: callSender,
             chainAsset: chainAsset,
             extrinsicService: extrinsicService,
             runtimeProvider: runtimeProvider,
             balanceQueryFactory: balanceQueryFactory,
             assetInfoOperationFactory: assetInfoOperationFactory,
-            calls: calls,
+            call: call,
+            validationSharedData: validationSharedData,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

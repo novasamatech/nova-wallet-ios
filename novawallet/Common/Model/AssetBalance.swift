@@ -45,6 +45,19 @@ struct AssetBalance: Equatable {
         )
     }
 
+    func spending(amount: BigUInt) -> Self {
+        .init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeInPlank.subtractOrZero(amount),
+            reservedInPlank: reservedInPlank,
+            frozenInPlank: frozenInPlank,
+            edCountMode: edCountMode,
+            transferrableMode: transferrableMode,
+            blocked: blocked
+        )
+    }
+
     func regularTransferrableBalance() -> BigUInt {
         Self.transferrableBalance(
             from: freeInPlank,
