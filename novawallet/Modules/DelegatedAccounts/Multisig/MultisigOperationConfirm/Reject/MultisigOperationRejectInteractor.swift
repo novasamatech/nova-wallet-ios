@@ -45,7 +45,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
             }
         }
     }
-    
+
     override func doEstimateFee() {
         guard
             let multisig = multisigWallet.multisigAccount?.multisig,

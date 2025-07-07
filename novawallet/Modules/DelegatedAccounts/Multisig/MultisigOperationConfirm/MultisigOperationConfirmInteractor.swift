@@ -80,7 +80,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     func doConfirm() {
         fatalError("Must be overriden by subsclass")
     }
-    
+
     func doEstimateFee() {
         fatalError("Must be overriden by subsclass")
     }
@@ -331,7 +331,7 @@ private extension MultisigOperationConfirmInteractor {
             completion: nil
         )
     }
-    
+
     func didSetupSignatories() {
         estimateFee()
     }
@@ -361,7 +361,7 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     func confirm() {
         doConfirm()
     }
-    
+
     func estimateFee() {
         doEstimateFee()
     }

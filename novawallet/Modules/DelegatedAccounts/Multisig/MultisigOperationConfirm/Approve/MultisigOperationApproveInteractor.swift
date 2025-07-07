@@ -97,7 +97,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             }
         }
     }
-    
+
     override func doEstimateFee() {
         guard
             let call,

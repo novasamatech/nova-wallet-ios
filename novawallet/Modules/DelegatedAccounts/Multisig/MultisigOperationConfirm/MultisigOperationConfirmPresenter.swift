@@ -85,12 +85,12 @@ private extension MultisigOperationConfirmPresenter {
 
         view?.didReceive(viewModel: viewModel)
     }
-    
+
     func confirm() {
         guard let asset = chain.utilityChainAsset()?.asset else {
             return
         }
-        
+
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 fee: fee,
@@ -114,9 +114,8 @@ private extension MultisigOperationConfirmPresenter {
             self?.view?.didReceive(loading: true)
             self?.interactor.confirm()
         }
-        
     }
-    
+
     func refreshFee() {
         fee = nil
         provideFeeViewModel()
