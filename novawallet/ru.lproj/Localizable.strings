@@ -1877,11 +1877,15 @@
 "common.depositor" = "Депозитор";
 "common.multisig.deposit" = "Депозит мультиподписи";
 "common.call.data" = "Данные вызова";
+"operation.details.check.hint" = "Убедитесь, что операция корректна";
 "delegated.account.on.behalf.of" = "От имени";
 "common.hide" = "Скрыть";
 "common.show" = "Показать";
 "multisig.operation.signatories.progress.format" = "Подписанты (%li из %li)";
+"call.data.validation.error.title" = "Некорректные данные вызова";
 "enter.call.data.details.button.title" = "Введите данные вызова, чтобы просмотреть детали";
+"enter.call.data" = "Введите данные вызова";
+"multisig.wallet.details.threshold" = "Порог %li из %li";
 "feature.unsupported.sheet.message.card" = "Чтобы управлять своей дебетовой картой, пожалуйста, переключитесь на другой тип кошелька.";
 "feature.unsupported.sheet.message.sell" = "Чтобы продать криптовалюту за фиат, пожалуйста, переключитесь на другой тип кошелька.";
 "multisig.transactions.to.sign" = "Транзакции для подписи";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "Одобрить и выполнить";
 "multisig.transaction.reject.sheet.message" = "Транзакция будет отклонена. Депозит мультиподписи будет возвращен %@.";
 "multisig.operations.empty.text" = "Транзакций пока нет.\nЗапросы на подпись будут отображаться здесь";
+"multisig.call.hash.share" = "Поделиться хешем вызова";
+"multisig.call.hash.copy" = "Копировать хеш вызова";
+"common.full.details" = "Полная информация";
+"common.call.hash" = "Хэш вызова";
+"call.data.validation.hash.matching.error.message" = "Эти данные вызова для другой операции с хэшом вызова %@";
+"call.data.validation.error.message" = "Предоставленные вами данные вызова недействительны или имеют неправильный формат. Пожалуйста, убедитесь, что они верны, и попробуйте снова.";

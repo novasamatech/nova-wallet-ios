@@ -1877,11 +1877,15 @@
 "common.depositor" = "預金者";
 "common.multisig.deposit" = "マルチシグ預金";
 "common.call.data" = "コールデータ";
+"operation.details.check.hint" = "操作が正しいことを確認してください";
 "delegated.account.on.behalf.of" = "代表して";
 "common.hide" = "非表示";
 "common.show" = "表示";
 "multisig.operation.signatories.progress.format" = "署名者 (%li/%li)";
+"call.data.validation.error.title" = "無効なコールデータ";
 "enter.call.data.details.button.title" = "詳細を表示するにはコールデータを入力してください";
+"enter.call.data" = "コールデータを入力";
+"multisig.wallet.details.threshold" = "%li分の%liの閾値";
 "feature.unsupported.sheet.message.card" = "デビットカードを管理するには、異なるタイプのウォレットに切り替えてください。";
 "feature.unsupported.sheet.message.sell" = "仮想通貨をフィアットに売却するには、異なるタイプのウォレットに切り替えてください。";
 "multisig.transactions.to.sign" = "署名すべきトランザクション";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "承認と実行";
 "multisig.transaction.reject.sheet.message" = "トランザクションは拒否されます。マルチシグのデポジットは%@に返されます。";
 "multisig.operations.empty.text" = "まだ取引はありません。\n署名リクエストがここに表示されます";
+"multisig.call.hash.share" = "通話ハッシュを共有";
+"multisig.call.hash.copy" = "コールハッシュをコピー";
+"common.full.details" = "詳細";
+"common.call.hash" = "コールハッシュ";
+"call.data.validation.hash.matching.error.message" = "このコールデータは別の操作用のもので、コールハッシュ%@によります";
+"call.data.validation.error.message" = "ご提供いただいた通話データが無効、または形式が正しくありません。内容をご確認のうえ、再度お試しください。";

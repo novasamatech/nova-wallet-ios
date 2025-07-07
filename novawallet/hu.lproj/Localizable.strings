@@ -1877,11 +1877,15 @@
 "common.depositor" = "Letétbe helyező";
 "common.multisig.deposit" = "Multisig letét";
 "common.call.data" = "Hívás adatok";
+"operation.details.check.hint" = "Győződjön meg róla, hogy a művelet helyes";
 "delegated.account.on.behalf.of" = "Nevében";
 "common.hide" = "Elrejt";
 "common.show" = "Megjelenít";
 "multisig.operation.signatories.progress.format" = "Aláírók (%li a %li-ből)";
+"call.data.validation.error.title" = "Érvénytelen hívás adatok";
 "enter.call.data.details.button.title" = "Adja meg a hívás adatokat a részletek megtekintéséhez";
+"enter.call.data" = "Adja meg a hívás adatokat";
+"multisig.wallet.details.threshold" = "Küszöb %li a %li-ből";
 "feature.unsupported.sheet.message.card" = "A bankkártya kezeléséhez kérjük, váltson más típusú tárcára.";
 "feature.unsupported.sheet.message.sell" = "Kriptopénz eladása fiat pénzért, kérjük, váltson más típusú tárcára.";
 "multisig.transactions.to.sign" = "Aláírásra váró tranzakciók";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "Jóváhagyás és végrehajtás";
 "multisig.transaction.reject.sheet.message" = "A tranzakció elutasításra kerül. A multisig letét visszakerül %@-hoz.";
 "multisig.operations.empty.text" = "Még nincsenek tranzakciók.\nAz aláírási kérelmek itt fognak megjelenni";
+"multisig.call.hash.share" = "Hívás hash megosztása";
+"multisig.call.hash.copy" = "Hívás hash másolása";
+"common.full.details" = "Minden részlet";
+"common.call.hash" = "Hívási hash";
+"call.data.validation.hash.matching.error.message" = "Ez a hívás adatkészlet egy másik művelethez, hívás hash: %@";
+"call.data.validation.error.message" = "A megadott hívásadatok érvénytelenek vagy nem megfelelő formátumúak. Kérjük, ellenőrizze, hogy helyesek-e, és próbálja újra.";
