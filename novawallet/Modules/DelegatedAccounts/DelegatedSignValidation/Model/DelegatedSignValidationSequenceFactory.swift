@@ -99,6 +99,13 @@ private extension DSValidationSequenceFactory {
             resolvedPath: resolvedPath,
             context: context
         )
+        
+        addConfirmationNode(
+            of: .multisig,
+            call: call,
+            sender: callSender,
+            sequenceBuilder: sequenceBuilder
+        )
 
         let validationNode = DelegatedSignValidationSequence.MultisigOperationNode(
             signatory: callSender,
@@ -198,6 +205,13 @@ private extension DSValidationSequenceFactory {
         )
 
         if depth == 0 {
+            addConfirmationNode(
+                of: delegationType,
+                call: call,
+                sender: callSender,
+                sequenceBuilder: sequenceBuilder
+            )
+            
             addFeeNode(
                 of: delegationType,
                 call: call,
@@ -220,6 +234,21 @@ private extension DSValidationSequenceFactory {
         )
 
         sequenceBuilder.adding(node: .fee(feeNode))
+    }
+    
+    func addConfirmationNode(
+        of type: DelegationType,
+        call: AnyRuntimeCall,
+        sender: MetaChainAccountResponse,
+        sequenceBuilder: DelegatedSignValidationSequenceBuilder
+    ) {
+        let feeNode = DelegatedSignValidationSequence.OperationConfirmNode(
+            account: sender,
+            call: call,
+            delegationType: type
+        )
+
+        sequenceBuilder.adding(node: .confirmation(feeNode))
     }
 
     func ensureDelegationClass(
