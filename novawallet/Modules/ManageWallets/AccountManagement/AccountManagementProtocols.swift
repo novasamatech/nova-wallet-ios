@@ -4,10 +4,8 @@ import Foundation_iOS
 
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
-    func set(nameViewModel: InputViewModelProtocol)
-    func set(walletType: WalletsListSectionViewModel.SectionType)
-    func setDelegate(viewModel: AccountDelegateViewModel)
-    func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)
+    func didReceive(walletViewModel: AccountManageWalletViewModel)
+    func didReceive(nameViewModel: InputViewModelProtocol)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {

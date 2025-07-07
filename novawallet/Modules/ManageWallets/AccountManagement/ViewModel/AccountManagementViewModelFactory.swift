@@ -1,0 +1,226 @@
+import Foundation
+import UIKit
+
+protocol AccountManagementViewModelFactoryProtocol {
+    func createViewModel(
+        wallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel?,
+        chains: [ChainModel.Id: ChainModel],
+        legacyLedgerAction: @escaping () -> Void,
+        locale: Locale
+    ) -> AccountManageWalletViewModel
+}
+
+final class AccountManagementViewModelFactory {
+    let iconViewModelFactory: IconViewModelFactoryProtocol
+
+    init(iconViewModelFactory: IconViewModelFactoryProtocol = IconViewModelFactory()) {
+        self.iconViewModelFactory = iconViewModelFactory
+    }
+}
+
+// MARK: - Private
+
+private extension AccountManagementViewModelFactory {
+    func createMessageType(
+        for wallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
+        legacyLedgerAction: @escaping () -> Void,
+        locale: Locale
+    ) -> AccountManageWalletViewModel.MessageType {
+        switch wallet.type {
+        case .secrets:
+            .none
+        case .watchOnly:
+            .hint(
+                text: R.string.localizable.accountManagementWatchOnlyHint(
+                    preferredLanguages: locale.rLanguages
+                ),
+                icon: R.image.iconWatchOnly()
+            )
+        case .paritySigner:
+            .hint(
+                text: R.string.localizable.paritySignerDetailsHint(
+                    ParitySignerType.legacy.getName(for: locale),
+                    preferredLanguages: locale.rLanguages
+                ),
+                icon: R.image.iconParitySigner()
+            )
+        case .polkadotVault:
+            .hint(
+                text: R.string.localizable.paritySignerDetailsHint(
+                    ParitySignerType.vault.getName(for: locale),
+                    preferredLanguages: locale.rLanguages
+                ),
+                icon: R.image.iconPolkadotVault()
+            )
+        case .ledger:
+            if chains.contains(where: { $0.value.supportsGenericLedgerApp }) {
+                .banner(.createLedgerMigrationDownload(for: locale, action: legacyLedgerAction))
+            } else {
+                .hint(
+                    text: R.string.localizable.ledgerDetailsHint(
+                        preferredLanguages: locale.rLanguages
+                    ),
+                    icon: R.image.iconLedger()
+                )
+            }
+        case .proxied:
+            .hint(
+                text: R.string.localizable.proxyDetailsHint(
+                    preferredLanguages: locale.rLanguages
+                ),
+                icon: R.image.iconProxiedWallet()
+            )
+        case .multisig:
+            .hint(
+                text: R.string.localizable.multisigDetailsHint(
+                    preferredLanguages: locale.rLanguages
+                ),
+                icon: R.image.iconMultisig()
+            )
+        case .genericLedger:
+            .hint(
+                text: R.string.localizable.ledgerDetailsHint(
+                    preferredLanguages: locale.rLanguages
+                ),
+                icon: R.image.iconLedger()
+            )
+        }
+    }
+
+    func createContext(
+        wallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel?,
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> AccountManageWalletViewModel.WalletContext? {
+        guard let delegateWallet else { return nil }
+
+        switch wallet.type {
+        case .multisig:
+            guard let multisigContext = createMultisigContext(
+                delegateWallet: delegateWallet,
+                multisigWallet: wallet,
+                chains: chains,
+                locale: locale
+            ) else { return nil }
+
+            return .multisig(multisigContext)
+
+        case .proxied:
+            let proxyWalletViewModel = createDelegateViewModel(
+                delegatedWallet: wallet,
+                delegateWallet: delegateWallet,
+                locale: locale
+            )
+
+            return .proxied(.init(proxy: proxyWalletViewModel))
+        default:
+            return nil
+        }
+    }
+
+    func createMultisigContext(
+        delegateWallet: MetaAccountModel,
+        multisigWallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
+        locale: Locale
+    ) -> AccountManageWalletViewModel.WalletContext.Multisig? {
+        guard
+            let multisigAccountType = multisigWallet.multisigAccount,
+            let multisigAccount = multisigAccountType.anyChainMultisig
+        else { return nil }
+
+        let chainFormat: ChainFormat = switch multisigAccountType {
+        case let .singleChain(chainAccount):
+            if let chain = chains[chainAccount.chainId] {
+                chain.chainFormat
+            } else {
+                .defaultSubstrateFormat
+            }
+        case .universal:
+            .defaultSubstrateFormat
+        }
+
+        let signatoryViewmodel = createDelegateViewModel(
+            delegatedWallet: multisigWallet,
+            delegateWallet: delegateWallet,
+            locale: locale
+        )
+
+        let otherSignatories = multisigAccount.otherSignatories
+
+        let otherSignatoriesViewModels: [WalletInfoView<WalletView>.ViewModel] = otherSignatories.compactMap {
+            guard let address = try? $0.toAddress(using: chainFormat) else { return nil }
+
+            let iconViewModel = iconViewModelFactory.createIdentifiableDrawableIconViewModel(
+                from: $0,
+                chainFormat: chainFormat
+            )
+            let walletInfo = WalletView.ViewModel.WalletInfo(
+                icon: iconViewModel,
+                name: address,
+                lineBreakMode: .byTruncatingMiddle
+            )
+
+            return .init(
+                wallet: walletInfo,
+                type: .noInfo
+            )
+        }
+
+        return .init(
+            signatory: signatoryViewmodel,
+            otherSignatories: otherSignatoriesViewModels
+        )
+    }
+
+    func createDelegateViewModel(
+        delegatedWallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel,
+        locale: Locale
+    ) -> AccountDelegateViewModel {
+        let icon = delegateWallet.walletIdenticonData().flatMap {
+            iconViewModelFactory.createDrawableIconViewModel(from: $0)
+        }
+
+        let type = delegatedWallet.proxy?.type.title(locale: locale) ?? ""
+
+        return .init(
+            name: delegateWallet.name,
+            icon: icon,
+            type: type
+        )
+    }
+}
+
+// MARK: - AccountManagementViewModelFactoryProtocol
+
+extension AccountManagementViewModelFactory: AccountManagementViewModelFactoryProtocol {
+    func createViewModel(
+        wallet: MetaAccountModel,
+        delegateWallet: MetaAccountModel?,
+        chains: [ChainModel.Id: ChainModel],
+        legacyLedgerAction: @escaping () -> Void,
+        locale: Locale
+    ) -> AccountManageWalletViewModel {
+        let messageType = createMessageType(
+            for: wallet,
+            chains: chains,
+            legacyLedgerAction: legacyLedgerAction,
+            locale: locale
+        )
+        let context = createContext(
+            wallet: wallet,
+            delegateWallet: delegateWallet,
+            chains: chains,
+            locale: locale
+        )
+
+        return AccountManageWalletViewModel(
+            messageType: messageType,
+            context: context
+        )
+    }
+}
