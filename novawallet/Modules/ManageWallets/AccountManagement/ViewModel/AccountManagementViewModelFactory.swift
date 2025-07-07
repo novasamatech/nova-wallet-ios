@@ -74,9 +74,7 @@ private extension AccountManagementViewModelFactory {
             )
         case .multisig:
             .hint(
-                text: R.string.localizable.multisigDetailsHint(
-                    preferredLanguages: locale.rLanguages
-                ),
+                text: createMultisigHintText(multisigWallet: wallet, locale: locale),
                 icon: R.image.iconMultisig()
             )
         case .genericLedger:
@@ -87,6 +85,27 @@ private extension AccountManagementViewModelFactory {
                 icon: R.image.iconLedger()
             )
         }
+    }
+
+    func createMultisigHintText(
+        multisigWallet: MetaAccountModel,
+        locale: Locale
+    ) -> String {
+        let baseText = R.string.localizable.multisigDetailsHint(
+            preferredLanguages: locale.rLanguages
+        )
+
+        guard let multisigAccount = multisigWallet.multisigAccount?.multisig else {
+            return baseText
+        }
+
+        let thresholdText = R.string.localizable.multisigWalletDetailsThreshold(
+            multisigAccount.threshold,
+            multisigAccount.getAllSignatories().count,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return [thresholdText, baseText].joined(separator: "\n\n")
     }
 
     func createContext(
