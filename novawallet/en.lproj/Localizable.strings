@@ -1916,3 +1916,4 @@
 "common.full.details" = "Full details";
 "multisig.call.hash.copy" = "Copy call hash";
 "multisig.call.hash.share" = "Share call hash";
+"multisig.wallet.details.threshold" = "Threshold %d out of %d";
