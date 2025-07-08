@@ -1877,11 +1877,15 @@
 "common.depositor" = "存款人";
 "common.multisig.deposit" = "多签存款";
 "common.call.data" = "调用数据";
+"operation.details.check.hint" = "确保操作正确";
 "delegated.account.on.behalf.of" = "代表";
 "common.hide" = "隐藏";
 "common.show" = "显示";
 "multisig.operation.signatories.progress.format" = "签署人 (%li / %li)";
+"call.data.validation.error.title" = "无效的调用数据";
 "enter.call.data.details.button.title" = "输入调用数据以查看详细信息";
+"enter.call.data" = "输入调用数据";
+"multisig.wallet.details.threshold" = "阈值 %li 中的 %li";
 "feature.unsupported.sheet.message.card" = "要管理您的借记卡，请切换到不同类型的钱包。";
 "feature.unsupported.sheet.message.sell" = "要将加密货币出售为法币，请切换到不同类型的钱包。";
 "multisig.transactions.to.sign" = "待签署的交易";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "批准并执行";
 "multisig.transaction.reject.sheet.message" = "交易将会被拒绝。多重签名存款将返还给 %@。";
 "multisig.operations.empty.text" = "暂无交易。\n签名请求将显示在此处";
+"multisig.call.hash.share" = "分享通话哈希值";
+"multisig.call.hash.copy" = "复制通话哈希值";
+"common.full.details" = "完整详情";
+"common.call.hash" = "调用哈希";
+"call.data.validation.hash.matching.error.message" = "此调用数据用于另一个调用哈希为 %@ 的操作";
+"call.data.validation.error.message" = "您提供的通话数据无效或格式错误。请确保其正确后再试一次。";

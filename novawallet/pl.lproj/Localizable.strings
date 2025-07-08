@@ -1877,11 +1877,15 @@
 "common.depositor" = "Depozytariusz";
 "common.multisig.deposit" = "Depozyt multisig";
 "common.call.data" = "Dane wywołania";
+"operation.details.check.hint" = "Upewnij się, że operacja jest poprawna";
 "delegated.account.on.behalf.of" = "W imieniu";
 "common.hide" = "Ukryj";
 "common.show" = "Pokaż";
 "multisig.operation.signatories.progress.format" = "Sygnatariusze (%li z %li)";
+"call.data.validation.error.title" = "Nieprawidłowe dane wywołania";
 "enter.call.data.details.button.title" = "Wprowadź dane wywołania, aby zobaczyć szczegóły";
+"enter.call.data" = "Wprowadź dane wywołania";
+"multisig.wallet.details.threshold" = "Próg %li z %li";
 "feature.unsupported.sheet.message.card" = "Aby zarządzać kartą debetową, przełącz się na inny typ portfela.";
 "feature.unsupported.sheet.message.sell" = "Aby sprzedać kryptowaluty za fiat, przełącz się na inny typ portfela.";
 "multisig.transactions.to.sign" = "Transakcje do podpisania";
@@ -1907,3 +1911,9 @@
 "common.approve.and.execute" = "Zatwierdź i wykonaj";
 "multisig.transaction.reject.sheet.message" = "Transakcja zostanie odrzucona. Depozyt multisig zostanie zwrócony do %@.";
 "multisig.operations.empty.text" = "Brak transakcji.\nTutaj będą wyświetlane prośby o podpis";
+"multisig.call.hash.share" = "Udostępnij hash połączenia";
+"multisig.call.hash.copy" = "Kopiuj hash połączenia";
+"common.full.details" = "Pełne szczegóły";
+"common.call.hash" = "Hash połączenia";
+"call.data.validation.hash.matching.error.message" = "Te dane wywołania dla innej operacji z hashem wywołania %@";
+"call.data.validation.error.message" = "Podane dane połączenia są nieprawidłowe lub mają niewłaściwy format. Upewnij się, że są poprawne i spróbuj ponownie.";
