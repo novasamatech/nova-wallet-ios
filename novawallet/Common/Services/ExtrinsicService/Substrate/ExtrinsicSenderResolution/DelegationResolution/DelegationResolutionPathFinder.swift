@@ -210,6 +210,7 @@ extension DelegationResolution.PathFinder {
         ) throws -> JSON {
             let otherSignatories = signatories
                 .filter { $0 != delegation.delegate }
+                .sorted { $0.lexicographicallyPrecedes($1) }
                 .map { BytesCodable(wrappedValue: $0) }
 
             return if threshold == 1 {
