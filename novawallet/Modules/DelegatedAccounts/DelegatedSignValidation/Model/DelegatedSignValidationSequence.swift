@@ -11,6 +11,7 @@ struct DelegatedSignValidationSequence {
     struct MultisigOperationNode {
         let signatory: MetaChainAccountResponse
         let call: RuntimeCall<MultisigPallet.AsMultiCall<AnyRuntimeCall>>
+        let multisig: ChainAccountResponse
     }
 
     struct OperationConfirmNode {

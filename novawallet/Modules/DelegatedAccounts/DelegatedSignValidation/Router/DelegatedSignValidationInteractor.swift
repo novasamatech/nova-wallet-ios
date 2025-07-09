@@ -36,6 +36,7 @@ extension DelegatedSignValidationInteractor: DelegatedSignValidationInteractorIn
 
         let wrapper = validationSequenceFactory.createWrapper(
             for: call,
+            callOrigin: resolution.delegatedAccount,
             resolvedPath: path,
             chainId: resolution.chain.chainId
         )

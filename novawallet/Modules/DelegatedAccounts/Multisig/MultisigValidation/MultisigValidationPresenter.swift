@@ -64,33 +64,7 @@ final class MultisigValidationPresenter {
 // MARK: - Private
 
 private extension MultisigValidationPresenter {
-    func completeValidation() {
-        guard let balanceValidationParams = createBalanceValidationParams() else {
-            return
-        }
-
-        let locale = localizationManager.selectedLocale
-
-        let validators: [DataValidating] = dataValidationFactory.hasSufficientBalance(
-            params: balanceValidationParams,
-            locale: locale
-        )
-
-        DataValidationRunner(validators: validators).runValidation(
-            notifyingOnSuccess: { [weak self] in
-                self?.completionClosure(true)
-            },
-            notifyingOnStop: { [weak self] problem in
-                switch problem {
-                case .error, .warning:
-                    self?.completionClosure(false)
-                case .asyncProcess:
-                    break
-                }
-            },
-            notifyingOnResume: nil
-        )
-    }
+    func completeValidation() {}
 
     func createBalanceValidationParams() -> MultisigBalanceValidationModeParams? {
         guard
