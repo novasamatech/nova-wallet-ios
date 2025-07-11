@@ -27,7 +27,7 @@ protocol StakingBondMoreConfirmationOutputProtocol: AnyObject {
     func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
-
+    func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)
     func didSubmitBonding(result: Result<String, Error>)
 }
 
