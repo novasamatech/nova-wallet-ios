@@ -13076,6 +13076,13 @@
 			path = AssetConversionPallet;
 			sourceTree = "<group>";
 		};
+		0C2285D82E2116C00093FD44 /* MultisigOperation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MultisigOperation;
+			sourceTree = "<group>";
+		};
 		0C23529C2BCCDFB0004D2548 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -26372,6 +26379,7 @@
 		90CB0F3D548FF309C66FFDFA /* DelegatedSignValidation */ = {
 			isa = PBXGroup;
 			children = (
+				0C2285D82E2116C00093FD44 /* MultisigOperation */,
 				0C66E9502E1DD6E700FEDD57 /* MultisigFee */,
 				0C7D95892E1B34FF00CABA86 /* ProxyFee */,
 				AC6B93411E3444BFB71691BE /* FeeValidation */,

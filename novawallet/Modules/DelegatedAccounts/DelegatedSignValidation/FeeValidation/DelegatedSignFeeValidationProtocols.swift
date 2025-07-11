@@ -6,7 +6,10 @@ protocol DSFeeValidationPresenterProtocol: AnyObject {
 
 protocol DSFeeValidationInteractorInputProtocol: AnyObject {
     func setup()
-    func updateBalanceForNextValidation(_ balance: AssetBalance)
+    func updateDataForNextValidation(
+        balance: AssetBalance,
+        fee: ExtrinsicFeeProtocol?
+    )
 }
 
 protocol DSFeeValidationInteractorOutputProtocol: AnyObject {

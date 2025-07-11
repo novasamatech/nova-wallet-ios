@@ -123,10 +123,15 @@ extension DSFeeValidationInteractor: DSFeeValidationInteractorInputProtocol {
         provideFee(for: call)
     }
 
-    func updateBalanceForNextValidation(_ balance: AssetBalance) {
+    func updateDataForNextValidation(
+        balance: AssetBalance,
+        fee: ExtrinsicFeeProtocol?
+    ) {
         validationSharedData.accounts.store(
             value: balance,
             for: selectedAccount.chainAccount.accountId
         )
+
+        validationSharedData.paidFee = fee
     }
 }

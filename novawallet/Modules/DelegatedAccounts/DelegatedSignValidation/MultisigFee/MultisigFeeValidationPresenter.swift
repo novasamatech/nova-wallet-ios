@@ -58,9 +58,12 @@ final class MultisigFeeValidationPresenter: DSFeeValidationPresenter {
             notifyingOnSuccess: { [weak self] in
                 guard let self else { return }
 
-                if let fee = fee.amountForCurrentAccount {
-                    let newBalance = balance.spending(amount: fee)
-                    interactor.updateBalanceForNextValidation(newBalance)
+                if let feeAmount = fee.amountForCurrentAccount {
+                    let newBalance = balance.spending(amount: feeAmount)
+                    interactor.updateDataForNextValidation(
+                        balance: newBalance,
+                        fee: fee
+                    )
                 }
 
                 completionClosure(true)
