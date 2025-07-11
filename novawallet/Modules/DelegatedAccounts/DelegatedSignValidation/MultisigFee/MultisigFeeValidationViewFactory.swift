@@ -1,7 +1,7 @@
-import UIKit
+import Foundation
 import Foundation_iOS
 
-struct ProxySignValidationViewFactory {
+enum MultisigFeeValidationViewFactory {
     static func createPresenter(
         from view: ControllerBackedProtocol,
         callSender: MetaChainAccountResponse,
@@ -24,11 +24,11 @@ struct ProxySignValidationViewFactory {
             return nil
         }
 
-        let wireframe = ProxySignValidationWireframe()
+        let wireframe = MultisigSignValidationWireframe()
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
-        let dataValidatorFactory = ProxyDataValidatorFactory(
+        let dataValidatorFactory = MultisigDataValidatorFactory(
             presentable: wireframe,
             balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
                 priceAssetInfoFactory: priceAssetInfoFactory
@@ -37,11 +37,11 @@ struct ProxySignValidationViewFactory {
 
         dataValidatorFactory.view = view
 
-        let presenter = ProxySignValidationPresenter(
+        let presenter = MultisigFeeValidationPresenter(
             view: view,
             interactor: interactor,
             wireframe: wireframe,
-            proxyName: callSender.chainAccount.name,
+            signatoryName: callSender.chainAccount.name,
             dataValidationFactory: dataValidatorFactory,
             chainAsset: utilityChainAsset,
             completionClosure: completionClosure,

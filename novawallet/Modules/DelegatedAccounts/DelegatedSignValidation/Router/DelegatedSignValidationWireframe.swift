@@ -124,11 +124,26 @@ private extension DelegatedSignValidationWireframe {
     }
 
     func executeMultisigSignatoryFeeValidation(
-        node _: DelegatedSignValidationSequence.FeeNode,
-        view _: ControllerBackedProtocol,
-        state _: DelegatedSignValidationSharedData,
-        validationCompletion _: @escaping DelegatedSignValidationCompletion
-    ) {}
+        node: DelegatedSignValidationSequence.FeeNode,
+        view: ControllerBackedProtocol,
+        state: DelegatedSignValidationSharedData,
+        validationCompletion: @escaping DelegatedSignValidationCompletion
+    ) {
+        guard let presenter = MultisigFeeValidationViewFactory.createPresenter(
+            from: view,
+            callSender: node.account,
+            call: node.call,
+            validationSharedData: state,
+            completionClosure: validationCompletion
+        ) else {
+            completionClosure(false)
+            return
+        }
+
+        flowHolder = presenter
+
+        presenter.setup()
+    }
 }
 
 private extension DelegatedSignValidationWireframe {

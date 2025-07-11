@@ -13,7 +13,6 @@ struct MultisigDepositValidationParams {
 struct MultisigFeeValidationParams {
     let balance: Balance?
     let fee: ExtrinsicFeeProtocol?
-    let minBalance: Balance?
     let signatoryName: String
     let assetInfo: AssetBalanceDisplayInfo
 }
@@ -85,7 +84,7 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
 
                 return viewModelFactory.amountFromValue(
                     targetAssetInfo: params.assetInfo,
-                    value: depositDecimal
+                    value: feeDecimal
                 ).value(for: locale)
             }
 
@@ -127,11 +126,7 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
                 assetInfo: params.assetInfo
             ) ?? 0
 
-            let minBalanceDecimal = params.minBalance?.decimal(
-                assetInfo: params.assetInfo
-            ) ?? 0
-
-            let needToAddDecimal = feeDecimal + minBalanceDecimal - balanceDecimal
+            let needToAddDecimal = feeDecimal - balanceDecimal
 
             let needToAddModel = viewModelFactory.amountFromValue(
                 targetAssetInfo: params.assetInfo,
@@ -156,10 +151,9 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
                 return true
             }
 
-            let minBalance = params.minBalance ?? 0
             let available = params.balance ?? 0
 
-            return available >= fee + minBalance
+            return available >= fee
         })
     }
 
