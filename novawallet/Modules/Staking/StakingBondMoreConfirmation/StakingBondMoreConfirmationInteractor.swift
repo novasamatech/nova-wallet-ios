@@ -133,10 +133,12 @@ extension StakingBondMoreConfirmationInteractor: StakingBondMoreConfirmationInte
 
         let bondExtra = callFactory.bondExtra(amount: amountValue)
 
+        let extrinsicClosure: ExtrinsicBuilderClosure = { builder in
+            try builder.adding(call: bondExtra)
+        }
+
         extrinsicService.submit(
-            { builder in
-                try builder.adding(call: bondExtra)
-            },
+            extrinsicClosure,
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] result in
