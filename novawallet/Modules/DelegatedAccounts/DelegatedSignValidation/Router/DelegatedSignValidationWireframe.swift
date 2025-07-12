@@ -148,11 +148,25 @@ private extension DelegatedSignValidationWireframe {
 
 private extension DelegatedSignValidationWireframe {
     func executeMultisigOperationValidation(
-        node _: DelegatedSignValidationSequence.MultisigOperationNode,
-        view _: ControllerBackedProtocol,
-        state _: DelegatedSignValidationSharedData,
-        validationCompletion _: @escaping DelegatedSignValidationCompletion
-    ) {}
+        node: DelegatedSignValidationSequence.MultisigOperationNode,
+        view: ControllerBackedProtocol,
+        state: DelegatedSignValidationSharedData,
+        validationCompletion: @escaping DelegatedSignValidationCompletion
+    ) {
+        guard let presenter = MultisigOpValidationViewFactory.createPresenter(
+            from: view,
+            validationNode: node,
+            validationState: state,
+            completionClosure: validationCompletion
+        ) else {
+            completionClosure(false)
+            return
+        }
+
+        flowHolder = presenter
+
+        presenter.setup()
+    }
 }
 
 private extension DelegatedSignValidationWireframe {

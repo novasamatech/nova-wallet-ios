@@ -73,4 +73,6 @@ enum MultisigPallet {
             callHash = try jsonList[1].map(to: BytesCodable.self, with: context).wrappedValue
         }
     }
+
+    typealias Threshold = UInt16
 }

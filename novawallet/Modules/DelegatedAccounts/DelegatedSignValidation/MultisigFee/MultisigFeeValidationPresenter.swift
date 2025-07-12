@@ -59,11 +59,7 @@ final class MultisigFeeValidationPresenter: DSFeeValidationPresenter {
                 guard let self else { return }
 
                 if let feeAmount = fee.amountForCurrentAccount {
-                    let newBalance = balance.spending(amount: feeAmount)
-                    interactor.updateDataForNextValidation(
-                        balance: newBalance,
-                        fee: fee
-                    )
+                    interactor.payFee(feeAmount, from: balance)
                 }
 
                 completionClosure(true)

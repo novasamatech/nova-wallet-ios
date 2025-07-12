@@ -24,4 +24,30 @@ extension RuntimeCodingServiceProtocol {
             dependencies: [codingFactoryOperation]
         )
     }
+
+    func createEncodingWrapper<T: Encodable>(for value: T, of type: String) -> CompoundOperationWrapper<Data> {
+        let codingFactoryOperation = fetchCoderFactoryOperation()
+
+        let encodingOperation = ClosureOperation<Data> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            let encoder = try codingFactory.createEncoder()
+            let context = codingFactory.createRuntimeJsonContext()
+
+            try encoder.append(
+                value,
+                ofType: type,
+                with: context.toRawContext()
+            )
+
+            return try encoder.encode()
+        }
+
+        encodingOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: encodingOperation,
+            dependencies: [codingFactoryOperation]
+        )
+    }
 }

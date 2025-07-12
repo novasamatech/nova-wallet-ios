@@ -12,7 +12,7 @@ extension MultisigPallet {
             case maxWeight = "max_weight"
         }
 
-        @StringCodable var threshold: UInt16
+        @StringCodable var threshold: MultisigPallet.Threshold
         let otherSignatories: [BytesCodable]
         @NullCodable var maybeTimepoint: MultisigTimepoint?
         let call: C
