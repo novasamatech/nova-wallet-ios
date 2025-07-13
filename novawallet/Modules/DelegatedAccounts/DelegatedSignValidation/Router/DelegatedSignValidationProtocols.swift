@@ -19,4 +19,5 @@ protocol DelegatedSignValidationWireframeProtocol: AnyObject {
 
 enum DelegatedSignValidationInteractorError: Error {
     case missingDelegationPath
+    case missingDelegateAccount
 }

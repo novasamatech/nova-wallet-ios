@@ -30,11 +30,23 @@ class ProxyResolutionCallWrapper: DelegationResolutionCallWrapper {
     ) throws -> ReduceResult {
         let context = coderFactory.createRuntimeJsonContext()
 
+        let allCalls = builder.getCalls()
+
         guard let delegatedPath = solution.getFirstMatchingDelegatedPath(
-            for: builder.getCalls(),
+            for: allCalls,
             context: context
         ) else {
             throw ProxyResolutionCallWrapperError.noSinglePath
+        }
+
+        // fast path in case no batch
+
+        guard allCalls.count > 1 else {
+            return ReduceResult(
+                updatedBuilder: builder,
+                remainedPathComponents: delegatedPath.components,
+                lastCallOrigin: delegatedAccount.accountId
+            )
         }
 
         let newBuilder = try builder.wrappingCalls { callJson in

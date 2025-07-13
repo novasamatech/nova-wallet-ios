@@ -34,9 +34,20 @@ extension DelegatedSignValidationInteractor: DelegatedSignValidationInteractorIn
             return
         }
 
+        guard let delegateAccount = resolution.delegateAccount else {
+            presenter?.didReceive(
+                validationSequenceResult: .failure(
+                    DelegatedSignValidationInteractorError.missingDelegateAccount
+                )
+            )
+
+            return
+        }
+
         let wrapper = validationSequenceFactory.createWrapper(
             for: call,
-            callOrigin: resolution.delegatedAccount,
+            extrinsicSender: delegateAccount,
+            unwrappedCallOrigin: resolution.delegatedAccount,
             resolvedPath: path,
             chainId: resolution.chain.chainId
         )

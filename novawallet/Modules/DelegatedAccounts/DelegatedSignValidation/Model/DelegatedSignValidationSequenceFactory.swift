@@ -5,7 +5,8 @@ import Operation_iOS
 protocol DSValidationSequenceFactoryProtocol {
     func createWrapper(
         for call: JSON,
-        callOrigin: ChainAccountResponse,
+        extrinsicSender: MetaChainAccountResponse,
+        unwrappedCallOrigin: ChainAccountResponse,
         resolvedPath: DelegationResolution.PathFinderPath,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<DelegatedSignValidationSequence>
@@ -17,9 +18,18 @@ enum DSValidationSequenceFactoryError: Error {
 }
 
 final class DSValidationSequenceFactory {
-    struct RuntimeCallWithOrigin {
-        let callOrigin: ChainAccountResponse
-        let call: AnyRuntimeCall
+    struct ProcessingData {
+        let extrinsicSender: MetaChainAccountResponse
+        let unwrappedCallOrigin: ChainAccountResponse
+        let currentCall: AnyRuntimeCall
+
+        func replacing(call: AnyRuntimeCall) -> ProcessingData {
+            .init(
+                extrinsicSender: extrinsicSender,
+                unwrappedCallOrigin: unwrappedCallOrigin,
+                currentCall: call
+            )
+        }
     }
 
     let chainRegistry: ChainRegistryProtocol
@@ -31,16 +41,16 @@ final class DSValidationSequenceFactory {
 
 private extension DSValidationSequenceFactory {
     func process(
-        callWithOrigin: RuntimeCallWithOrigin,
+        processingData: ProcessingData,
         depth: Int,
         sequenceBuilder: DelegatedSignValidationSequenceBuilder,
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
         context: RuntimeJsonContext
     ) throws {
-        switch callWithOrigin.call.path {
+        switch processingData.currentCall.path {
         case MultisigPallet.asMultiPath:
             try processAsMulti(
-                callWithOrigin: callWithOrigin,
+                processingData: processingData,
                 depth: depth,
                 sequenceBuilder: sequenceBuilder,
                 resolvedPath: resolvedPath,
@@ -48,7 +58,7 @@ private extension DSValidationSequenceFactory {
             )
         case MultisigPallet.asMultiThreshold1Path:
             try processAsMultiThreshold1(
-                callWithOrigin: callWithOrigin,
+                processingData: processingData,
                 depth: depth,
                 sequenceBuilder: sequenceBuilder,
                 resolvedPath: resolvedPath,
@@ -56,26 +66,43 @@ private extension DSValidationSequenceFactory {
             )
         case Proxy.ProxyCall.callPath:
             try processProxy(
-                callWithOrigin: callWithOrigin,
+                processingData: processingData,
                 depth: depth,
                 sequenceBuilder: sequenceBuilder,
                 resolvedPath: resolvedPath,
                 context: context
             )
         default:
-            guard depth < resolvedPath.count else {
+            guard
+                depth == resolvedPath.count else {
+                throw DSValidationSequenceFactoryError.unexpectedDelegationType(
+                    depth: depth,
+                    type: resolvedPath[depth].delegationValue.delegationType
+                )
+
                 return
             }
 
-            throw DSValidationSequenceFactoryError.unexpectedDelegationType(
-                depth: depth,
-                type: resolvedPath[depth].delegationValue.delegationType
-            )
+            if depth == 0 {
+                addConfirmationNode(
+                    of: .proxy,
+                    call: processingData.currentCall,
+                    sender: processingData.extrinsicSender,
+                    sequenceBuilder: sequenceBuilder
+                )
+
+                addFeeNode(
+                    of: .proxy,
+                    call: processingData.currentCall,
+                    sender: processingData.extrinsicSender,
+                    sequenceBuilder: sequenceBuilder
+                )
+            }
         }
     }
 
     func processAsMulti(
-        callWithOrigin: RuntimeCallWithOrigin,
+        processingData: ProcessingData,
         depth: Int,
         sequenceBuilder: DelegatedSignValidationSequenceBuilder,
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
@@ -96,19 +123,16 @@ private extension DSValidationSequenceFactory {
         let callOrigin: ChainAccountResponse = if depth + 1 < resolvedPath.count - 1 {
             resolvedPath[depth + 1].account.chainAccount
         } else {
-            callWithOrigin.callOrigin
+            processingData.unwrappedCallOrigin
         }
 
-        let callArgs = try callWithOrigin.call.args.map(
+        let callArgs = try processingData.currentCall.args.map(
             to: MultisigPallet.AsMultiCall<AnyRuntimeCall>.self,
             with: context.toRawContext()
         )
 
         try process(
-            callWithOrigin: RuntimeCallWithOrigin(
-                callOrigin: callWithOrigin.callOrigin,
-                call: callArgs.call
-            ),
+            processingData: processingData.replacing(call: callArgs.call),
             depth: depth + 1,
             sequenceBuilder: sequenceBuilder,
             resolvedPath: resolvedPath,
@@ -133,7 +157,7 @@ private extension DSValidationSequenceFactory {
         if depth == 0 {
             addFeeNode(
                 of: .multisig,
-                call: callWithOrigin.call,
+                call: processingData.currentCall,
                 sender: callSender,
                 sequenceBuilder: sequenceBuilder
             )
@@ -141,7 +165,7 @@ private extension DSValidationSequenceFactory {
     }
 
     func processAsMultiThreshold1(
-        callWithOrigin: RuntimeCallWithOrigin,
+        processingData: ProcessingData,
         depth: Int,
         sequenceBuilder: DelegatedSignValidationSequenceBuilder,
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
@@ -159,16 +183,13 @@ private extension DSValidationSequenceFactory {
 
         let callSender = resolvedPath[depth].account
 
-        let callArgs = try callWithOrigin.call.args.map(
+        let callArgs = try processingData.currentCall.args.map(
             to: MultisigPallet.AsMultiThreshold1Call<AnyRuntimeCall>.self,
             with: context.toRawContext()
         )
 
         try process(
-            callWithOrigin: RuntimeCallWithOrigin(
-                callOrigin: callWithOrigin.callOrigin,
-                call: callArgs.call
-            ),
+            processingData: processingData.replacing(call: callArgs.call),
             depth: depth + 1,
             sequenceBuilder: sequenceBuilder,
             resolvedPath: resolvedPath,
@@ -178,7 +199,7 @@ private extension DSValidationSequenceFactory {
         if depth == 0 {
             addFeeNode(
                 of: .multisig,
-                call: callWithOrigin.call,
+                call: processingData.currentCall,
                 sender: callSender,
                 sequenceBuilder: sequenceBuilder
             )
@@ -186,7 +207,7 @@ private extension DSValidationSequenceFactory {
     }
 
     func processProxy(
-        callWithOrigin: RuntimeCallWithOrigin,
+        processingData: ProcessingData,
         depth: Int,
         sequenceBuilder: DelegatedSignValidationSequenceBuilder,
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
@@ -203,9 +224,8 @@ private extension DSValidationSequenceFactory {
         }
 
         let callSender = resolvedPath[depth].account
-        let delegationType = resolvedPath[depth].delegationValue.delegationType
 
-        let callArgs = try callWithOrigin.call.args.map(
+        let callArgs = try processingData.currentCall.args.map(
             to: Proxy.ProxyCall.self,
             with: context.toRawContext()
         )
@@ -216,10 +236,7 @@ private extension DSValidationSequenceFactory {
         )
 
         try process(
-            callWithOrigin: RuntimeCallWithOrigin(
-                callOrigin: callWithOrigin.callOrigin,
-                call: nestedCall
-            ),
+            processingData: processingData.replacing(call: nestedCall),
             depth: depth + 1,
             sequenceBuilder: sequenceBuilder,
             resolvedPath: resolvedPath,
@@ -228,15 +245,15 @@ private extension DSValidationSequenceFactory {
 
         if depth == 0 {
             addConfirmationNode(
-                of: delegationType,
-                call: callWithOrigin.call,
+                of: .proxy,
+                call: processingData.currentCall,
                 sender: callSender,
                 sequenceBuilder: sequenceBuilder
             )
 
             addFeeNode(
-                of: delegationType,
-                call: callWithOrigin.call,
+                of: .proxy,
+                call: processingData.currentCall,
                 sender: callSender,
                 sequenceBuilder: sequenceBuilder
             )
@@ -244,7 +261,7 @@ private extension DSValidationSequenceFactory {
     }
 
     func addFeeNode(
-        of type: DelegationType,
+        of delegationClass: DelegationClass,
         call: AnyRuntimeCall,
         sender: MetaChainAccountResponse,
         sequenceBuilder: DelegatedSignValidationSequenceBuilder
@@ -252,14 +269,14 @@ private extension DSValidationSequenceFactory {
         let feeNode = DelegatedSignValidationSequence.FeeNode(
             account: sender,
             call: call,
-            delegationType: type
+            delegationClass: delegationClass
         )
 
         sequenceBuilder.adding(node: .fee(feeNode))
     }
 
     func addConfirmationNode(
-        of type: DelegationType,
+        of delegationClass: DelegationClass,
         call: AnyRuntimeCall,
         sender: MetaChainAccountResponse,
         sequenceBuilder: DelegatedSignValidationSequenceBuilder
@@ -267,7 +284,7 @@ private extension DSValidationSequenceFactory {
         let feeNode = DelegatedSignValidationSequence.OperationConfirmNode(
             account: sender,
             call: call,
-            delegationType: type
+            delegationClass: delegationClass
         )
 
         sequenceBuilder.adding(node: .confirmation(feeNode))
@@ -296,7 +313,8 @@ private extension DSValidationSequenceFactory {
 extension DSValidationSequenceFactory: DSValidationSequenceFactoryProtocol {
     func createWrapper(
         for call: JSON,
-        callOrigin: ChainAccountResponse,
+        extrinsicSender: MetaChainAccountResponse,
+        unwrappedCallOrigin: ChainAccountResponse,
         resolvedPath: DelegationResolution.PathFinderPath,
         chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<DelegatedSignValidationSequence> {
@@ -315,13 +333,14 @@ extension DSValidationSequenceFactory: DSValidationSequenceFactoryProtocol {
                 // the call is unwrapped top down but components are from bottom to top
                 let components = resolvedPath.components.reversed()
 
-                let callWithOrigin = RuntimeCallWithOrigin(
-                    callOrigin: callOrigin,
-                    call: runtimeCall
+                let processingData = ProcessingData(
+                    extrinsicSender: extrinsicSender,
+                    unwrappedCallOrigin: unwrappedCallOrigin,
+                    currentCall: runtimeCall
                 )
 
                 try self.process(
-                    callWithOrigin: callWithOrigin,
+                    processingData: processingData,
                     depth: 0,
                     sequenceBuilder: builder,
                     resolvedPath: Array(components),

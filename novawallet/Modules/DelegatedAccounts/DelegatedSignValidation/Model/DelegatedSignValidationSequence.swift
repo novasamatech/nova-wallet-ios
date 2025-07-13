@@ -5,7 +5,7 @@ struct DelegatedSignValidationSequence {
     struct FeeNode {
         let account: MetaChainAccountResponse
         let call: AnyRuntimeCall
-        let delegationType: DelegationType
+        let delegationClass: DelegationClass
     }
 
     struct MultisigOperationNode {
@@ -17,7 +17,7 @@ struct DelegatedSignValidationSequence {
     struct OperationConfirmNode {
         let account: MetaChainAccountResponse
         let call: AnyRuntimeCall
-        let delegationType: DelegationType
+        let delegationClass: DelegationClass
     }
 
     enum Node {

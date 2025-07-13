@@ -83,7 +83,7 @@ private extension DelegatedSignValidationWireframe {
         state: DelegatedSignValidationSharedData,
         validationCompletion: @escaping DelegatedSignValidationCompletion
     ) {
-        switch node.delegationType {
+        switch node.delegationClass {
         case .proxy:
             executeProxyFeeValidation(
                 node: node,
@@ -178,7 +178,7 @@ private extension DelegatedSignValidationWireframe {
     ) {
         let confirmationPresenter = DelegatedSignConfirmationViewFactory.createPresenter(
             from: node.account.metaId,
-            delegationType: node.delegationType,
+            delegationClass: node.delegationClass,
             delegateAccountResponse: node.account.chainAccount,
             completionClosure: validationCompletion,
             viewController: view.controller
