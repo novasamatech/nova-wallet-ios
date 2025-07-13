@@ -1,0 +1,70 @@
+import Foundation
+import SubstrateSdk
+
+enum ProxyResolutionCallWrapperError: Error {
+    case noSinglePath
+}
+
+class ProxyResolutionCallWrapper: DelegationResolutionCallWrapper {
+    let delegatedAccount: ChainAccountResponse
+    let delegateAccountId: AccountId
+
+    init(
+        delegatedAccount: ChainAccountResponse,
+        delegateAccountId: AccountId
+    ) {
+        self.delegatedAccount = delegatedAccount
+        self.delegateAccountId = delegateAccountId
+    }
+
+    /*
+     *  For proxy the implementation wraps with proxy.proxy original calls and
+     *  then creates a batch of them. That is valid since all wrapped calls
+     *  share the same set of proxy types and can be dispatched from the single origin
+     *  provided by the batch call.
+     */
+    override func reduceCallsIntoSingle(
+        using solution: DelegationResolution.PathFinderResult,
+        builder: ExtrinsicBuilderProtocol,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) throws -> ReduceResult {
+        let context = coderFactory.createRuntimeJsonContext()
+
+        guard let delegatedPath = solution.getFirstMatchingDelegatedPath(
+            for: builder.getCalls(),
+            context: context
+        ) else {
+            throw ProxyResolutionCallWrapperError.noSinglePath
+        }
+
+        let newBuilder = try builder.wrappingCalls { callJson in
+            let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+
+            guard
+                let delegatePath = solution.callToPath[callPath],
+                let component = delegatePath.components.first else {
+                return callJson
+            }
+
+            let delegationKey = DelegationResolution.DelegationKey(
+                delegate: component.account.chainAccount.accountId,
+                delegated: delegatedAccount.accountId
+            )
+
+            return try component.delegationValue.wrapCall(
+                callJson,
+                delegation: delegationKey,
+                context: context
+            )
+        }
+
+        let remainedComponents = Array(delegatedPath.components.dropFirst(1))
+
+        return ReduceResult(
+            updatedBuilder: newBuilder,
+            remainedPathComponents: remainedComponents,
+            lastCallOrigin: delegateAccountId
+        )
+    }
+}

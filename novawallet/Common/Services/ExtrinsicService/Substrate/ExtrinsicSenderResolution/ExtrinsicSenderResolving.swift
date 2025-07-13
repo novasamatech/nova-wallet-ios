@@ -10,7 +10,7 @@ enum ExtrinsicSenderResolution {
     struct ResolvedDelegate {
         let delegateAccount: MetaChainAccountResponse?
         let delegatedAccount: ChainAccountResponse
-        let path: DelegationResolution.PathFinderPath?
+        let paths: [JSON: DelegationResolution.PathFinderPath]
         let allWallets: [MetaAccountModel]
         let chain: ChainModel
         let failures: [ResolutionDelegateFailure]
