@@ -115,4 +115,5 @@ extension WalletCheckmarkView: WalletViewProtocol {
     }
 }
 
+extension WalletInfoControl: StackTableViewCellProtocol {}
 extension WalletInfoCheckmarkControl: StackTableViewCellProtocol {}

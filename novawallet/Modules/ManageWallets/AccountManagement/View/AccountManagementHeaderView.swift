@@ -87,12 +87,7 @@ final class AccountManagementHeaderView: UIView {
 
         guard let context = viewModel.context else { return }
 
-        switch context {
-        case let .multisig(multisigContext):
-            hintView?.bindDelegate(viewModel: multisigContext.signatory)
-        case let .proxied(proxiedContext):
-            hintView?.bindDelegate(viewModel: proxiedContext.proxy)
-        }
+        hintView?.bindContext(viewModel: context)
     }
 
     func apply(bannerStyle: LedgerMigrationBannerView.Style) {

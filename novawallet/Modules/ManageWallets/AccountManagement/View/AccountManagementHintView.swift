@@ -20,6 +20,12 @@ final class AccountManagementHintView: UIView {
 
     let contentInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
 
+    lazy var contentView = UIView.vStack(spacing: 12, [
+        iconDetailsView,
+        delegateViewContainer,
+        multisigContextView
+    ])
+
     lazy var delegateViewContainer = UIView.hStack([
         FlexibleSpaceView(),
         delegateView
@@ -35,6 +41,8 @@ final class AccountManagementHintView: UIView {
         $0.spacing = 4
         $0.fView.spacing = 4
     }
+
+    let multisigContextView = StackSignatoryInfoTableView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,16 +63,12 @@ final class AccountManagementHintView: UIView {
             make.edges.equalToSuperview()
         }
 
-        let contentView = UIView.vStack(spacing: 12, [
-            iconDetailsView,
-            delegateViewContainer
-        ])
-
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(contentInsets)
         }
         delegateViewContainer.isHidden = true
+        multisigContextView.isHidden = true
 
         delegateView.snp.makeConstraints { make in
             make.leading.equalTo(iconDetailsView.detailsLabel.snp.leading)
@@ -78,7 +82,7 @@ final class AccountManagementHintView: UIView {
 
     private var delegateIcon: ImageViewModelProtocol?
 
-    func bindDelegate(viewModel: AccountDelegateViewModel) {
+    private func bindDelegate(viewModel: AccountDelegateViewModel) {
         delegateViewContainer.isHidden = false
         delegateView.fView.detailsLabel.text = viewModel.name
         delegateView.sView.text = viewModel.type
@@ -91,5 +95,31 @@ final class AccountManagementHintView: UIView {
         )
 
         delegateIcon = viewModel.icon
+    }
+
+    private func bindMultisigSignatories(viewModels: [WalletInfoView<WalletView>.ViewModel]) {
+        multisigContextView.isHidden = false
+        multisigContextView.bind(with: viewModels)
+    }
+
+    func bindContext(viewModel: AccountManageWalletViewModel.WalletContext) {
+        switch viewModel {
+        case let .multisig(multisigContext):
+            bindDelegate(viewModel: multisigContext.signatory)
+            bindMultisigSignatories(viewModels: multisigContext.otherSignatories)
+
+            contentView.invalidateIntrinsicContentSize()
+            contentView.setNeedsLayout()
+        case let .proxied(proxiedContext):
+            bindDelegate(viewModel: proxiedContext.proxy)
+        }
+    }
+}
+
+// MARK: - Constants
+
+private extension AccountManagementHintView {
+    enum Constants {
+        static let signatoryCellHeight: CGFloat = 18.0
     }
 }

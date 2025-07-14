@@ -1721,6 +1721,7 @@
 		2D87C19E2E1B03DB00396A3B /* MultisigErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C19D2E1B03DB00396A3B /* MultisigErrorPresentable.swift */; };
 		2D87C1A02E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */; };
 		2D87C1A22E1BE95300396A3B /* AccountManagementViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */; };
+		2D87C1A42E1C12A200396A3B /* StackSignatoryInfoTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D87C1A32E1C12A200396A3B /* StackSignatoryInfoTableView.swift */; };
 		2D8851DE2D0888690099B078 /* UIViewController+PresentCardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */; };
 		2D8A52A72DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */; };
 		2D8BA36F2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */; };
@@ -7765,6 +7766,7 @@
 		2D87C19D2E1B03DB00396A3B /* MultisigErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigErrorPresentable.swift; sourceTree = "<group>"; };
 		2D87C19F2E1BE37200396A3B /* AccountManageWalletTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManageWalletTypeViewModel.swift; sourceTree = "<group>"; };
 		2D87C1A12E1BE95300396A3B /* AccountManagementViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManagementViewModelFactory.swift; sourceTree = "<group>"; };
+		2D87C1A32E1C12A200396A3B /* StackSignatoryInfoTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackSignatoryInfoTableView.swift; sourceTree = "<group>"; };
 		2D8851D92D0888690099B078 /* UIViewController+PresentCardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PresentCardLayout.swift"; sourceTree = "<group>"; };
 		2D8A52A62DF942CB00DD47F9 /* MultisigPendingOperationsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigPendingOperationsUpdatingService.swift; sourceTree = "<group>"; };
 		2D8BA36E2C99A6ED002ED440 /* SwipeGovDetailsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGovDetailsInteractorError.swift; sourceTree = "<group>"; };
@@ -24218,6 +24220,7 @@
 				AE398397272B62C100BC8A85 /* ChainAccountListSectionView.swift */,
 				84E258A22892CEA100DC8A51 /* AccountManagementHeaderView.swift */,
 				772AB2292B3E157B0099DB73 /* AccountManagementHintView.swift */,
+				2D87C1A32E1C12A200396A3B /* StackSignatoryInfoTableView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -32119,6 +32122,7 @@
 				2D5A61C92C0E5C68006D58E3 /* NetworksListTableViewCell.swift in Sources */,
 				88A5318028B9328E00AF18F5 /* YourWalletsViewSectionModel.swift in Sources */,
 				842EBB312890A76A00B952D8 /* WalletSelectionViewController.swift in Sources */,
+				2D87C1A42E1C12A200396A3B /* StackSignatoryInfoTableView.swift in Sources */,
 				0C0F6DF02D42878800943A7C /* ParaStkStakableCollatorsOperationFactory.swift in Sources */,
 				8427495728FEBFA400B2B70B /* ConvictionVoting+ConstantPath.swift in Sources */,
 				845B823829C9031800D187CB /* EtherscanPagination.swift in Sources */,
