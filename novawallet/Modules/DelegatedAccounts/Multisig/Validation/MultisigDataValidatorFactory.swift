@@ -29,7 +29,7 @@ protocol MultisigDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
     ) -> DataValidating
 
     func operationNotExists(
-        _ hasOperation: Bool,
+        _ noOperation: Bool,
         multisigName: String,
         locale: Locale
     ) -> DataValidating
@@ -158,7 +158,7 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
     }
 
     func operationNotExists(
-        _ hasOperation: Bool,
+        _ noOperation: Bool,
         multisigName: String,
         locale: Locale
     ) -> DataValidating {
@@ -172,7 +172,7 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
                 locale: locale
             )
         }, preservesCondition: {
-            !hasOperation
+            noOperation
         })
     }
 }
