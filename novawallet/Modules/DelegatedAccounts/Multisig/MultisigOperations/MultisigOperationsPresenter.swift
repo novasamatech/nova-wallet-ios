@@ -60,9 +60,12 @@ extension MultisigOperationsPresenter: MultisigOperationsPresenterProtocol {
     func selectOperation(with id: String) {
         guard let operation = operations[id] else { return }
 
+        let flowState = interactor.createFlowState()
+
         wireframe.showOperationDetails(
             from: view,
-            operation: operation
+            operation: operation,
+            flowState: flowState
         )
     }
 }

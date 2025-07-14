@@ -59,6 +59,10 @@ extension MultisigOperationsInteractor: MultisigOperationsInteractorInputProtoco
         subscribeToOperations()
         subscribeChains()
     }
+
+    func createFlowState() -> MultisigOperationsFlowState {
+        MultisigOperationsFlowState(providerSnapshot: pendingOperationsProvider.createSnapshot())
+    }
 }
 
 // MARK: - MultisigOperationsLocalStorageSubscriber
