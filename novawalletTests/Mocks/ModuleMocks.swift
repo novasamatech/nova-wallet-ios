@@ -34486,6 +34486,7 @@ import Cuckoo
 
 import BigInt
 import Foundation_iOS
+import Operation_iOS
 
 
  class MockStakingBondMoreViewProtocol: StakingBondMoreViewProtocol, Cuckoo.ProtocolMock {
@@ -35215,6 +35216,21 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveStakingMigratedToHold(result: result))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingBondMoreInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -35252,6 +35268,11 @@ import Foundation_iOS
 	    func didReceiveStakingLedger<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<StakingLedger?, Error>)> where M1.MatchedType == Result<StakingLedger?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<StakingLedger?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Bool, Error>)> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreInteractorOutputProtocol.self, method: "didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -35306,6 +35327,12 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<Bool, Error>), Void> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -35348,6 +35375,12 @@ import Foundation_iOS
     
     
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36409,6 +36442,21 @@ import Foundation_iOS
     
     
     
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveStakingMigratedToHold(result: result))
+        
+    }
+    
+    
+    
      func didSubmitBonding(result: Result<String, Error>)  {
         
     return cuckoo_manager.call("didSubmitBonding(result: Result<String, Error>)",
@@ -36459,6 +36507,11 @@ import Foundation_iOS
 	    func didReceiveStakingLedger<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<StakingLedger?, Error>)> where M1.MatchedType == Result<StakingLedger?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<StakingLedger?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Bool, Error>)> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationOutputProtocol.self, method: "didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didSubmitBonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<String, Error>)> where M1.MatchedType == Result<String, Error> {
@@ -36519,6 +36572,12 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
+	    func didReceiveStakingMigratedToHold<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<Bool, Error>), Void> where M1.MatchedType == Result<Bool, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<Bool, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveStakingMigratedToHold(result: Result<Bool, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didSubmitBonding<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<String, Error>), Void> where M1.MatchedType == Result<String, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<String, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didSubmitBonding(result: Result<String, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -36566,6 +36625,12 @@ import Foundation_iOS
     
     
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
