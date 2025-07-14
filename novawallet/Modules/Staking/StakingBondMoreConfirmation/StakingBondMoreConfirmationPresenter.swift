@@ -21,12 +21,14 @@ final class StakingBondMoreConfirmationPresenter {
     private var fee: ExtrinsicFeeProtocol?
     private var stashAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
+    private var isStakingMigratedToHolds: Bool = false
 
     private var availableAmountToStake: Decimal? {
-        let free = freeBalance ?? 0
-        let bond = bondBalance ?? 0
-
-        return free >= bond ? free - bond : 0
+        Staking.getAvailableAmountToStake(
+            from: freeBalance ?? 0,
+            bonded: bondBalance ?? 0,
+            isStakingMigratedToHolds: isStakingMigratedToHolds
+        )
     }
 
     init(
@@ -198,6 +200,15 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
             }
         case let .failure(error):
             logger?.error("Did receive staking ledger error: \(error)")
+        }
+    }
+
+    func didReceiveStakingMigratedToHold(result: Result<Bool, Error>) {
+        switch result {
+        case let .success(value):
+            isStakingMigratedToHolds = value
+        case let .failure(error):
+            logger?.error("Did receive staking migrated to holds error: \(error)")
         }
     }
 
