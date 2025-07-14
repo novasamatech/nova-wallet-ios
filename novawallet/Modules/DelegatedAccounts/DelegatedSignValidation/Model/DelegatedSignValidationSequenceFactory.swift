@@ -146,14 +146,6 @@ private extension DSValidationSequenceFactory {
             sequenceBuilder: sequenceBuilder
         )
 
-        let validationNode = DelegatedSignValidationSequence.MultisigOperationNode(
-            signatory: callSender,
-            call: callArgs.runtimeCall(),
-            multisig: callOrigin
-        )
-
-        sequenceBuilder.adding(node: .multisigOperation(validationNode))
-
         if depth == 0 {
             addFeeNode(
                 of: .multisig,
@@ -162,6 +154,14 @@ private extension DSValidationSequenceFactory {
                 sequenceBuilder: sequenceBuilder
             )
         }
+
+        let validationNode = DelegatedSignValidationSequence.MultisigOperationNode(
+            signatory: callSender,
+            call: callArgs.runtimeCall(),
+            multisig: callOrigin
+        )
+
+        sequenceBuilder.adding(node: .multisigOperation(validationNode))
     }
 
     func processAsMultiThreshold1(

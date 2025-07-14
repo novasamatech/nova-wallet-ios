@@ -97,7 +97,7 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
     ) {
         let languages = locale.rLanguages
 
-        let title = R.string.localizable.multisigValidationNotEnoughTokensTitle(
+        let title = R.string.localizable.multisigValidationAlreadyExistsTitle(
             preferredLanguages: languages
         )
 
