@@ -239,9 +239,13 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
             }
         }
 
+        // Calls must be batched before passing to validation as we require a single call
+        let allCalls = substrateContext.extrinsicMemo.restoreBuilder().getCalls()
+
         guard
             let viewController = presentationController,
-            let call = substrateContext.extrinsicMemo.restoreBuilder().getCalls().first,
+            allCalls.count == 1,
+            let call = allCalls.first,
             let confirmationPresenter = DelegatedSignValidationViewFactory.createView(
                 from: ControllerBacked(controller: viewController),
                 resolution: resolution,
