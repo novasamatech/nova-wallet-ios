@@ -14,6 +14,8 @@ protocol DelegationResolutionNodeProtocol {
         for callPath: CallCodingPath,
         at overallDepth: UInt
     ) -> DelegationResolutionNodeProtocol?
+
+    func merging(other: DelegationResolutionNodeProtocol) -> DelegationResolutionNodeProtocol
 }
 
 protocol DelegationResolutionNodeSourceProtocol {
@@ -53,8 +55,12 @@ extension DelegationResolution.Graph {
             return DelegationResolution.PathFinder.ProxyDelegationValue(proxyType: proxyType)
         }
 
-        func adding(type: Proxy.ProxyType) -> ProxyResolutionNode {
-            .init(proxyTypes: proxyTypes.union([type]))
+        func merging(other: DelegationResolutionNodeProtocol) -> DelegationResolutionNodeProtocol {
+            guard let otherProxyNode = other as? ProxyResolutionNode else {
+                return self
+            }
+
+            return ProxyResolutionNode(proxyTypes: proxyTypes.union(otherProxyNode.proxyTypes))
         }
     }
 }
@@ -86,6 +92,12 @@ extension DelegationResolution.Graph {
                 threshold: threshold,
                 signatories: signatories
             )
+        }
+
+        func merging(
+            other _: DelegationResolutionNodeProtocol
+        ) -> DelegationResolutionNodeProtocol {
+            self
         }
     }
 }

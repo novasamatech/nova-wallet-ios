@@ -15,6 +15,16 @@ extension MultisigPallet {
 }
 
 extension MultisigPallet {
+    static var depositBase: ConstantCodingPath {
+        .init(moduleName: MultisigPallet.name, constantName: "DepositBase")
+    }
+
+    static var depositFactor: ConstantCodingPath {
+        .init(moduleName: MultisigPallet.name, constantName: "DepositFactor")
+    }
+}
+
+extension MultisigPallet {
     static var newMultisigEventPath: EventCodingPath {
         .init(moduleName: MultisigPallet.name, eventName: "NewMultisig")
     }

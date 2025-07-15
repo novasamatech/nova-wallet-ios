@@ -6,6 +6,7 @@ final class MultisigOperationConfirmPresenter {
     let wireframe: MultisigOperationConfirmWireframeProtocol
     let interactor: MultisigOperationConfirmInteractorInputProtocol
     let viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol
+    let dataValidationFactory: MultisigDataValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     let chain: ChainModel
@@ -15,7 +16,6 @@ final class MultisigOperationConfirmPresenter {
     var pendingOperation: Multisig.PendingOperationProxyModel?
     var balanceExistence: AssetBalanceExistence?
     var signatoryBalance: AssetBalance?
-    var signatoryWallet: MetaAccountModel?
     var fee: ExtrinsicFeeProtocol?
     var utilityAssetPriceData: PriceData?
     var transferAssetPriceData: PriceData?
@@ -28,6 +28,7 @@ final class MultisigOperationConfirmPresenter {
         interactor: MultisigOperationConfirmInteractorInputProtocol,
         wireframe: MultisigOperationConfirmWireframeProtocol,
         viewModelFactory: MultisigOperationConfirmViewModelFactoryProtocol,
+        dataValidationFactory: MultisigDataValidatorFactoryProtocol,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
         localizationManager: LocalizationManagerProtocol,
@@ -36,6 +37,7 @@ final class MultisigOperationConfirmPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.dataValidationFactory = dataValidationFactory
         self.chain = chain
         self.multisigWallet = multisigWallet
         self.logger = logger
@@ -63,8 +65,7 @@ private extension MultisigOperationConfirmPresenter {
             utilityAssetPrice: utilityAssetPriceData,
             transferAssetPrice: transferAssetPriceData,
             confirmClosure: { [weak self] in
-                self?.view?.didReceive(loading: true)
-                self?.interactor.confirm()
+                self?.doConfirm()
             },
             callDataAddClosure: {
                 [weak self] in
@@ -162,6 +163,44 @@ private extension MultisigOperationConfirmPresenter {
             from: view
         ) { [weak self] in
             self?.wireframe.close(from: self?.view)
+        }
+    }
+
+    func doConfirm() {
+        guard let utilityChainAsset = chain.utilityChainAsset() else {
+            return
+        }
+
+        let signatoryName = signatories?.findSignatory(
+            for: multisigWallet
+        )?.localAccount?.chainAccount.name
+
+        DataValidationRunner(validators: [
+            dataValidationFactory.has(
+                fee: fee,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.refreshFee()
+            },
+            dataValidationFactory.canPayFee(
+                params: MultisigFeeValidationParams(
+                    balance: signatoryBalance?.transferable,
+                    fee: fee,
+                    signatoryName: signatoryName ?? "",
+                    assetInfo: utilityChainAsset.assetDisplayInfo
+                ),
+                locale: selectedLocale
+            ),
+            dataValidationFactory.notViolatingMinBalancePaying(
+                fee: fee,
+                total: signatoryBalance?.balanceCountingEd,
+                minBalance: balanceExistence?.minBalance,
+                asset: utilityChainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            self?.view?.didReceive(loading: true)
+            self?.interactor.confirm()
         }
     }
 }
@@ -269,8 +308,28 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
     }
 
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError) {
-        view?.didReceive(loading: false)
-        logger.error("Error: \(error)")
+        switch error {
+        case .signatoriesFetchFailed, .callProcessingFailed, .balanceInfoFailed:
+            logger.error("Unexpected error: \(error)")
+        case let .feeError(internalError):
+            logger.error("Fee error: \(internalError)")
+
+            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshFee()
+            }
+        case let .submissionError(internalError):
+            view?.didReceive(loading: false)
+
+            logger.error("Confirmation error: \(internalError)")
+
+            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
+                internalError,
+                view: view,
+                closeAction: .dismiss,
+                locale: selectedLocale,
+                completionClosure: nil
+            )
+        }
     }
 
     func didCompleteSubmission(with submissionType: MultisigSubmissionType) {

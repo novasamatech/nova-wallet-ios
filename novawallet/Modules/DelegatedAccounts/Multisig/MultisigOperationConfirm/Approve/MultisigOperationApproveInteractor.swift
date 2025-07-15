@@ -49,17 +49,60 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     }
 
     override func didSetupSignatories() {
-        estimateFee()
+        doEstimateFee()
     }
 
     override func didUpdateOperation() {
-        estimateFee()
+        doEstimateFee()
     }
 
     override func didProcessCall() {
         logger.debug("Did process call")
 
-        estimateFee()
+        doEstimateFee()
+    }
+
+    override func doEstimateFee() {
+        guard
+            let call,
+            let multisig = multisigWallet.multisigAccount?.multisig,
+            let definition = operation.operation.multisigDefinition,
+            let operationFactory = extrinsicOperationFactory else {
+            return
+        }
+
+        feeCallStore.cancel()
+
+        let callWeightWrapper = fetchCallWeight()
+
+        let builderClosure = createExtrinsicClosure(
+            for: multisig,
+            definition: definition,
+            call: call,
+            callWeightClosure: {
+                try callWeightWrapper.targetOperation.extractNoCancellableResultData()
+            }
+        )
+
+        let feeWrapper = operationFactory.estimateFeeOperation(builderClosure)
+
+        feeWrapper.addDependency(wrapper: callWeightWrapper)
+
+        let totalWrapper = feeWrapper.insertingHead(operations: callWeightWrapper.allOperations)
+
+        executeCancellable(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: feeCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(fee):
+                self?.presenter?.didReceiveFee(fee)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.feeError(error))
+            }
+        }
     }
 
     override func doConfirm() {
@@ -110,49 +153,6 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
 // MARK: - Private
 
 private extension MultisigOperationApproveInteractor {
-    func estimateFee() {
-        guard
-            let call,
-            let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.operation.multisigDefinition,
-            let operationFactory = extrinsicOperationFactory else {
-            return
-        }
-
-        feeCallStore.cancel()
-
-        let callWeightWrapper = fetchCallWeight()
-
-        let builderClosure = createExtrinsicClosure(
-            for: multisig,
-            definition: definition,
-            call: call,
-            callWeightClosure: {
-                try callWeightWrapper.targetOperation.extractNoCancellableResultData()
-            }
-        )
-
-        let feeWrapper = operationFactory.estimateFeeOperation(builderClosure)
-
-        feeWrapper.addDependency(wrapper: callWeightWrapper)
-
-        let totalWrapper = feeWrapper.insertingHead(operations: callWeightWrapper.allOperations)
-
-        executeCancellable(
-            wrapper: totalWrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: feeCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(fee):
-                self?.presenter?.didReceiveFee(fee)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.feeError(error))
-            }
-        }
-    }
-
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
         definition: Multisig.MultisigDefinition,

@@ -7,6 +7,8 @@ protocol AccountDelegationPathValue {
         delegation: DelegationResolution.DelegationKey,
         context: RuntimeJsonContext
     ) throws -> JSON
+
+    var delegationType: DelegationType { get }
 }
 
 extension DelegationResolution {
@@ -56,7 +58,9 @@ extension DelegationResolution {
         ) throws -> PathFinderResult {
             let allCalls = Set(callPaths.keys)
 
-            let callDelegates = callPaths.reduce(into: [CallDelegateKey: DelegationResolution.GraphPath]()) { accum, keyValue in
+            let callDelegates = callPaths.reduce(
+                into: [CallDelegateKey: DelegationResolution.GraphPath]()
+            ) { accum, keyValue in
                 let call = keyValue.key
                 let paths = keyValue.value
 
@@ -184,6 +188,10 @@ extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
         let proxyType: Proxy.ProxyType
 
+        var delegationType: DelegationType {
+            .proxy(proxyType)
+        }
+
         func wrapCall(
             _ call: JSON,
             delegation: DelegationResolution.DelegationKey,
@@ -202,6 +210,10 @@ extension DelegationResolution.PathFinder {
     struct MultisigDelegationValue: AccountDelegationPathValue {
         let threshold: UInt16
         let signatories: [AccountId]
+
+        var delegationType: DelegationType {
+            .multisig
+        }
 
         func wrapCall(
             _ call: JSON,

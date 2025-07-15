@@ -7,6 +7,13 @@ protocol MultisigStorageOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]>
+
+    func fetchPendingOperation(
+        for multisigAccountId: AccountId,
+        callHashClosure: @escaping () throws -> Substrate.CallHash,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<MultisigPallet.MultisigDefinition?>
 }
 
 final class MultisigStorageOperationFactory {
@@ -53,5 +60,42 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
             targetOperation: mapOperation,
             dependencies: dependencies
         )
+    }
+
+    func fetchPendingOperation(
+        for multisigAccountId: AccountId,
+        callHashClosure: @escaping () throws -> Substrate.CallHash,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<MultisigPallet.MultisigDefinition?> {
+        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let wrapper: CompoundOperationWrapper<[StorageResponse<MultisigPallet.MultisigDefinition>]>
+        wrapper = storageRequestFactory.queryItems(
+            engine: connection,
+            keyParams1: {
+                [multisigAccountId]
+            },
+            keyParams2: {
+                let callHash = try callHashClosure()
+                return [callHash]
+            },
+            factory: {
+                try coderFactoryOperation.extractNoCancellableResultData()
+            },
+            storagePath: MultisigPallet.multisigListStoragePath
+        )
+
+        wrapper.addDependency(operations: [coderFactoryOperation])
+
+        let mappingOperation = ClosureOperation<MultisigPallet.MultisigDefinition?> {
+            try wrapper.targetOperation.extractNoCancellableResultData().first?.value
+        }
+
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper
+            .insertingHead(operations: [coderFactoryOperation])
+            .insertingTail(operation: mappingOperation)
     }
 }

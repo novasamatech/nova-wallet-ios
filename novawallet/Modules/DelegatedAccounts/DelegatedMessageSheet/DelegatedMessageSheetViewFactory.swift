@@ -7,7 +7,7 @@ enum DelegatedMessageSheetViewFactory {
     static func createSigningView(
         delegatedId: MetaAccountModel.Id,
         delegateChainAccountResponse: ChainAccountResponse,
-        delegationType: DelegationType,
+        delegationClass: DelegationClass,
         completionClosure: @escaping MessageSheetCallback,
         cancelClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
@@ -28,7 +28,7 @@ enum DelegatedMessageSheetViewFactory {
             wireframe: wireframe
         )
 
-        let sheetContent = switch delegationType {
+        let sheetContent = switch delegationClass {
         case .proxy:
             createProxyContent(proxyName: delegateChainAccountResponse.name)
         case .multisig:
