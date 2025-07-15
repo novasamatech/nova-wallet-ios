@@ -69,7 +69,7 @@ class ProxyResolutionCallWrapper: DelegationResolutionCallWrapper {
                 delegation: delegationKey,
                 context: context
             )
-        }
+        }.batchingCalls(with: coderFactory.metadata)
 
         let remainedComponents = Array(delegatedPath.components.dropFirst(1))
 

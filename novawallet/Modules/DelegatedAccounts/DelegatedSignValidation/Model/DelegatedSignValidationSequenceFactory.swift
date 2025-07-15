@@ -79,8 +79,6 @@ private extension DSValidationSequenceFactory {
                     depth: depth,
                     type: resolvedPath[depth].delegationValue.delegationType
                 )
-
-                return
             }
 
             if depth == 0 {
