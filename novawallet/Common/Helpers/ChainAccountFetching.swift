@@ -5,6 +5,7 @@ struct ChainAccountRequest {
     let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
+    let supportsMultisigs: Bool
 }
 
 struct ChainAccountResponse {
@@ -178,8 +179,14 @@ extension MetaAccountModel {
             } else {
                 return nil
             }
-        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
             return executeFetch(request: request)
+        case .multisig:
+            if request.supportsMultisigs {
+                return executeFetch(request: request)
+            } else {
+                return nil
+            }
         }
     }
 
@@ -336,7 +343,8 @@ extension ChainModel {
             chainId: chainId,
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased,
-            supportsGenericLedger: supportsGenericLedgerApp
+            supportsGenericLedger: supportsGenericLedgerApp,
+            supportsMultisigs: hasMultisig
         )
     }
 
