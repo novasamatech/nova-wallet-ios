@@ -399,12 +399,13 @@ private extension MultisigOperationConfirmViewModelFactory {
     func createActions(
         for pendingOperation: Multisig.PendingOperationProxyModel,
         multisigWallet: MetaAccountModel,
+        chain: ChainModel,
         locale: Locale,
         confirmClosure: @escaping () -> Void,
         callDataAddClosure: @escaping () -> Void
     ) -> [MultisigOperationConfirmViewModel.Action] {
         guard
-            let multisigContext = multisigWallet.multisigAccount?.anyChainMultisig,
+            let multisigContext = multisigWallet.getMultisig(for: chain),
             let definition = pendingOperation.operation.multisigDefinition
         else { return [] }
 
@@ -512,6 +513,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
         let actions = createActions(
             for: params.pendingOperation,
             multisigWallet: params.multisigWallet,
+            chain: params.chain,
             locale: locale,
             confirmClosure: params.confirmClosure,
             callDataAddClosure: params.callDataAddClosure
