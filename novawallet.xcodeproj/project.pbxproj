@@ -324,6 +324,8 @@
 		0C2285E02E23E0140093FD44 /* DelegationResolutionPathResult+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2285DF2E23E0140093FD44 /* DelegationResolutionPathResult+Search.swift */; };
 		0C2285E22E23E14E0093FD44 /* ProxyResolutionCallWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2285E12E23E14E0093FD44 /* ProxyResolutionCallWrapper.swift */; };
 		0C2285E42E244D1E0093FD44 /* DelegationCallWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2285E32E244D1E0093FD44 /* DelegationCallWrapperFactory.swift */; };
+		0C2285CD2E20F5720093FD44 /* Staking+Hold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2285CC2E20F5720093FD44 /* Staking+Hold.swift */; };
+		0C2285D12E21060B0093FD44 /* Staking+Amount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2285D02E21060B0093FD44 /* Staking+Amount.swift */; };
 		0C23529E2BCCDFC2004D2548 /* CloudBackupFileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C23529D2BCCDFC2004D2548 /* CloudBackupFileModel.swift */; };
 		0C2352A02BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C23529F2BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift */; };
 		0C252BBF2B3D3CEB0047308F /* TypeRegistry+Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C252BBE2B3D3CEB0047308F /* TypeRegistry+Node.swift */; };
@@ -6350,6 +6352,8 @@
 		0C2285DF2E23E0140093FD44 /* DelegationResolutionPathResult+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DelegationResolutionPathResult+Search.swift"; sourceTree = "<group>"; };
 		0C2285E12E23E14E0093FD44 /* ProxyResolutionCallWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyResolutionCallWrapper.swift; sourceTree = "<group>"; };
 		0C2285E32E244D1E0093FD44 /* DelegationCallWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationCallWrapperFactory.swift; sourceTree = "<group>"; };
+		0C2285CC2E20F5720093FD44 /* Staking+Hold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Staking+Hold.swift"; sourceTree = "<group>"; };
+		0C2285D02E21060B0093FD44 /* Staking+Amount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Staking+Amount.swift"; sourceTree = "<group>"; };
 		0C23529D2BCCDFC2004D2548 /* CloudBackupFileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupFileModel.swift; sourceTree = "<group>"; };
 		0C23529F2BCCEAC0004D2548 /* CloudBackupFileModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupFileModelConverter.swift; sourceTree = "<group>"; };
 		0C2437D345C3D9B12AEE1E28 /* ParaStkYieldBoostSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupProtocols.swift; sourceTree = "<group>"; };
@@ -21075,6 +21079,8 @@
 			children = (
 				8469D5A528F5E8F20074FEE3 /* Staking.swift */,
 				848FFE9925E6E0E400652AA5 /* Staking+Validator.swift */,
+				0C2285CC2E20F5720093FD44 /* Staking+Hold.swift */,
+				0C2285D02E21060B0093FD44 /* Staking+Amount.swift */,
 			);
 			path = Staking;
 			sourceTree = "<group>";
@@ -33050,6 +33056,7 @@
 				84117076285B0F1F006F4DFB /* XcmAsset.swift in Sources */,
 				0CA8AF1E2D85450800DB4E6A /* DryRun.swift in Sources */,
 				842EBB2B289091B400B952D8 /* WalletSelectionTableViewCell.swift in Sources */,
+				0C2285D12E21060B0093FD44 /* Staking+Amount.swift in Sources */,
 				0CB3135F2C0F051700353724 /* EnterCloudPasswordFlow.swift in Sources */,
 				3DD5BEEA01B8C52530A5FF00 /* NftDetailsViewLayout.swift in Sources */,
 				A2F7908210A0398EDBBA89BD /* NftDetailsViewFactory.swift in Sources */,
@@ -34286,6 +34293,7 @@
 				B1A789A7E8D60223F18AA407 /* StakingSetupProxyPresenter.swift in Sources */,
 				886E599110019177E0489999 /* StakingSetupProxyInteractor.swift in Sources */,
 				450BF207003E4DD3F5FE4D9B /* StakingSetupProxyViewController.swift in Sources */,
+				0C2285CD2E20F5720093FD44 /* Staking+Hold.swift in Sources */,
 				0CBABFEB2CED37E30047F29E /* AssetExchangeQuote.swift in Sources */,
 				5628E716AB0D71B2DC6D3647 /* StakingSetupProxyViewLayout.swift in Sources */,
 				0C521C252E19DAF700ABAC97 /* DelegatedSignValidationSharedData.swift in Sources */,
