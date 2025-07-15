@@ -41,10 +41,16 @@ struct MultisigOperationConfirmViewFactory {
             balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
+        let dataValidatorFactory = MultisigDataValidatorFactory(
+            presentable: wireframe,
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
+
         let presenter = MultisigOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            dataValidationFactory: dataValidatorFactory,
             chain: chain,
             multisigWallet: multisigWallet,
             localizationManager: localizationManager,
@@ -55,6 +61,8 @@ struct MultisigOperationConfirmViewFactory {
             presenter: presenter,
             localizationManager: localizationManager
         )
+
+        dataValidatorFactory.view = view
 
         presenter.view = view
         interactor.presenter = presenter

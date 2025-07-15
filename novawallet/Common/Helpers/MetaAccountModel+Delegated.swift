@@ -108,6 +108,7 @@ extension MetaAccountModel {
         case universal(multisig: DelegatedAccount.MultisigAccountModel)
         case singleChain(chainAccount: ChainAccountModel)
 
+        // TODO: Should depend on chain otherwise there might be misuse across multiple chains
         var multisig: DelegatedAccount.MultisigAccountModel? {
             switch self {
             case let .universal(multisig):

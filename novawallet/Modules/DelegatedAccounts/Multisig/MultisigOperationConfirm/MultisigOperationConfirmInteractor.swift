@@ -88,6 +88,10 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     func doConfirm() {
         fatalError("Must be overriden by subsclass")
     }
+
+    func doEstimateFee() {
+        fatalError("Must be overriden by subsclass")
+    }
 }
 
 // MARK: - Private
@@ -356,6 +360,10 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
 
     func confirm() {
         doConfirm()
+    }
+
+    func refreshFee() {
+        doEstimateFee()
     }
 }
 

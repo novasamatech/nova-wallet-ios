@@ -20,6 +20,7 @@ protocol MultisigOperationConfirmPresenterProtocol: AnyObject {
 protocol MultisigOperationConfirmInteractorInputProtocol: AnyObject {
     func setup()
     func confirm()
+    func refreshFee()
 }
 
 protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
@@ -34,7 +35,9 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
-protocol MultisigOperationConfirmWireframeProtocol: AddressOptionsPresentable {
+protocol MultisigOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
+    AddressOptionsPresentable, MultisigErrorPresentable, ExtrinsicSigningErrorHandling,
+    CommonRetryable, FeeRetryable, MessageSheetPresentable {
     func showAddCallData(
         from view: ControllerBackedProtocol?,
         for operation: Multisig.PendingOperation
