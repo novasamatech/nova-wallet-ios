@@ -1080,6 +1080,10 @@
 		0CD846432BE352D10026B5CA /* PreferredValidatorsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */; };
 		0CD9801F2E268ED0005251E1 /* WalletDelayedExecutionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD9801E2E268ED0005251E1 /* WalletDelayedExecutionRepository.swift */; };
 		0CD980212E268F35005251E1 /* WalletDelayedExecution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980202E268F35005251E1 /* WalletDelayedExecution.swift */; };
+		0CD980232E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980222E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift */; };
+		0CD980242E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980222E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift */; };
+		0CD980262E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980252E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift */; };
+		0CD980282E26D462005251E1 /* WalletDelayedExecutionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980272E26D462005251E1 /* WalletDelayedExecutionProvider.swift */; };
 		0CDEF1642C27E578003878F2 /* ExtrinsicProofOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */; };
 		0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
@@ -7148,6 +7152,9 @@
 		0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredValidatorsProvider.swift; sourceTree = "<group>"; };
 		0CD9801E2E268ED0005251E1 /* WalletDelayedExecutionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDelayedExecutionRepository.swift; sourceTree = "<group>"; };
 		0CD980202E268F35005251E1 /* WalletDelayedExecution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDelayedExecution.swift; sourceTree = "<group>"; };
+		0CD980222E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Extrinsic.swift"; sourceTree = "<group>"; };
+		0CD980252E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotDelegatedCallDelayedExecVerifier.swift; sourceTree = "<group>"; };
+		0CD980272E26D462005251E1 /* WalletDelayedExecutionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDelayedExecutionProvider.swift; sourceTree = "<group>"; };
 		0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofOperationFactory.swift; sourceTree = "<group>"; };
 		0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataRepositoryFactory.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
@@ -14810,6 +14817,8 @@
 			children = (
 				0CD9801E2E268ED0005251E1 /* WalletDelayedExecutionRepository.swift */,
 				0CD980202E268F35005251E1 /* WalletDelayedExecution.swift */,
+				0CD980252E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift */,
+				0CD980272E26D462005251E1 /* WalletDelayedExecutionProvider.swift */,
 			);
 			path = WalletDelayedExecution;
 			sourceTree = "<group>";
@@ -24134,6 +24143,7 @@
 				0C37AFC72B59815500009ECA /* ProxiedSettings.swift */,
 				0CE9338D2C019998000F3EFE /* MetaAccountModelType+ExtrinsicLimit.swift */,
 				0CCA70742CD0B2860082A9C8 /* MetaAccountModel+Async.swift */,
+				0CD980222E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -29062,6 +29072,7 @@
 				0CCD18AF2BA175540068D73A /* NotificationContentResult+UserContent.swift in Sources */,
 				77AE4F972B905B4D00426519 /* ChainModel.swift in Sources */,
 				2D6CC26B2DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift in Sources */,
+				0CD980242E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift in Sources */,
 				2DC694482DF2EEC7004F4584 /* AccountId+Dummy.swift in Sources */,
 				0CEBAD512D5C7433000EBA45 /* Decimal+Conversion.swift in Sources */,
 				778215DD2B95AD8F006C7D13 /* NewReferendumHandler.swift in Sources */,
@@ -30280,6 +30291,7 @@
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
 				8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */,
 				2D6C5FA32CF30C25000D106C /* PersistentTabLocalSubscriptionFactory.swift in Sources */,
+				0CD980282E26D462005251E1 /* WalletDelayedExecutionProvider.swift in Sources */,
 				F4A6C9E4265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift in Sources */,
 				844ADE8028CB35EC00EE29F7 /* AutomationTimeCancelTask.swift in Sources */,
 				8422F2F02888193F00C7B840 /* UsernameViewModel+Handler.swift in Sources */,
@@ -33621,6 +33633,7 @@
 				2D65F6C92CCED77200CC6F72 /* SwapOperationNetworkListPresenter.swift in Sources */,
 				8F131D86B269B7FAB96CF3B5 /* ParaStkYieldBoostStartWireframe.swift in Sources */,
 				84C1DBBE29C2615F00F295A5 /* InflationCurveRewardConfig.swift in Sources */,
+				0CD980262E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift in Sources */,
 				EEDDE41F8445C0CB2E99AFE4 /* ParaStkYieldBoostStartPresenter.swift in Sources */,
 				0C1E331C2D955D0D0070D772 /* ParitySignerTxQrSetupModel.swift in Sources */,
 				84A1742728ED607B0096F943 /* GovernanceOperationProtocols.swift in Sources */,
@@ -34343,6 +34356,7 @@
 				EC606EEBC39CF643AB753ACD /* NotificationsSetupWireframe.swift in Sources */,
 				1A07FDE443FBF49FFEB451FD /* NotificationsSetupPresenter.swift in Sources */,
 				2327570CCE0B64B88A65F121 /* NotificationsSetupInteractor.swift in Sources */,
+				0CD980232E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift in Sources */,
 				ADB55B4083B049CD7ED51F8A /* NotificationsSetupViewController.swift in Sources */,
 				91E4653DFEDBE6605E241144 /* NotificationsSetupViewLayout.swift in Sources */,
 				6688EC06E774363AA868498F /* NotificationsSetupViewFactory.swift in Sources */,

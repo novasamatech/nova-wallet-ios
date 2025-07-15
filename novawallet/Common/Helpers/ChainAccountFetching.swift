@@ -44,6 +44,10 @@ struct MetaAccountDelegationId: Hashable {
     let delegatorId: AccountId
     let chainId: ChainModel.Id?
     let delegationType: DelegationType
+
+    func existsInChainWithId(_ identifier: ChainModel.Id) -> Bool {
+        chainId == nil || chainId == identifier
+    }
 }
 
 enum ChainAccountFetchingError: Error {

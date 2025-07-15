@@ -55,6 +55,12 @@ final class AssetExchangeFacade {
             ],
             feeSupportProvider: feeSupportProvider,
             suffiencyProvider: suffiencyProvider,
+            delayedCallExecProvider: WalletDelayedExecutionProvider(
+                selectedWallet: params.wallet,
+                repository: WalletDelayedExecutionRepository(userStorageFacade: params.userDataStorageFacade),
+                operationQueue: params.operationQueue,
+                logger: Logger.shared
+            ),
             operationQueue: params.operationQueue,
             logger: params.logger
         )
