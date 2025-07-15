@@ -240,7 +240,7 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
         mutex.lock()
         defer { mutex.unlock() }
 
-        let availableAccountIds = Set(availableMetaAccounts.compactMap { $0.multisigAccount?.multisig?.accountId })
+        let availableAccountIds = Set(availableMetaAccounts.compactMap { $0.multisigAccount?.anyChainMultisig?.accountId })
         let relevantEvents = events.filter { availableAccountIds.contains($0.accountId) }
 
         guard !relevantEvents.isEmpty else { return }

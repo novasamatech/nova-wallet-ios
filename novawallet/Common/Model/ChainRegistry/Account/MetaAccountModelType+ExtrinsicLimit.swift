@@ -10,4 +10,13 @@ extension MetaAccountModelType {
             return nil
         }
     }
+
+    var delaysExtrinsicCallExecution: Bool {
+        switch self {
+        case .secrets, .watchOnly, .paritySigner, .ledger, .polkadotVault, .genericLedger, .proxied:
+            false
+        case .multisig:
+            true
+        }
+    }
 }

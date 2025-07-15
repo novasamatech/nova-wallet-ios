@@ -29,7 +29,7 @@ final class MultisigOperationsInteractor: AnyProviderAutoCleaning {
 
 private extension MultisigOperationsInteractor {
     func subscribeToOperations() {
-        guard let multisigAccount = wallet.multisigAccount?.multisig else {
+        guard let multisigAccount = wallet.multisigAccount?.anyChainMultisig else {
             presenter?.didReceive(error: MultisigOperationsInteractorError.walletUnavailable)
             return
         }

@@ -190,7 +190,7 @@ private extension MultisigOperationsViewModelFactory {
         for locale: Locale
     ) -> MultisigOperationViewModel? {
         guard
-            let multisigContext = wallet.multisigAccount?.multisig,
+            let multisigContext = wallet.getMultisig(for: chain),
             let definition = operationModel.operation.multisigDefinition
         else { return nil }
 

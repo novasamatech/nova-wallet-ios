@@ -21,7 +21,7 @@ final class MultisigOperationConfirmPresenter {
     var transferAssetPriceData: PriceData?
 
     var multisigContext: DelegatedAccount.MultisigAccountModel? {
-        multisigWallet.multisigAccount?.multisig
+        multisigWallet.getMultisig(for: chain)
     }
 
     init(
@@ -172,7 +172,8 @@ private extension MultisigOperationConfirmPresenter {
         }
 
         let signatoryName = signatories?.findSignatory(
-            for: multisigWallet
+            for: multisigWallet,
+            chain: chain
         )?.localAccount?.chainAccount.name
 
         DataValidationRunner(validators: [
@@ -209,7 +210,7 @@ private extension MultisigOperationConfirmPresenter {
 
 extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterProtocol {
     func actionShowSender() {
-        guard let multisigContext = multisigWallet.multisigAccount?.multisig else {
+        guard let multisigContext else {
             return
         }
 
@@ -242,7 +243,7 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmPresenterPr
     }
 
     func actionShowCurrentSignatory() {
-        guard let multisigContext = multisigWallet.multisigAccount?.multisig else {
+        guard let multisigContext else {
             return
         }
 

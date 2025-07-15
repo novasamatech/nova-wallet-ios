@@ -98,7 +98,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
 
 private extension MultisigOperationConfirmInteractor {
     func setupSignatories() {
-        guard let multisig = multisigWallet.multisigAccount?.multisig else {
+        guard let multisig = multisigWallet.getMultisig(for: chain) else {
             logger.error("Multisig expected here")
             return
         }
@@ -125,7 +125,8 @@ private extension MultisigOperationConfirmInteractor {
 
     func setupCurrentSignatory(from signatories: [Multisig.Signatory]) {
         guard let signatoryAccount = signatories.findSignatory(
-            for: multisigWallet
+            for: multisigWallet,
+            chain: chain
         )?.localAccount else {
             logger.error("No local signatory found")
             return
@@ -292,7 +293,9 @@ private extension MultisigOperationConfirmInteractor {
         clear(streamableProvider: &balanceProvider)
 
         guard
-            let multisig = multisigWallet.multisigAccount?.multisig,
+            let multisig = multisigWallet.getMultisig(
+                for: chain
+            ),
             let asset = chain.utilityAsset() else {
             logger.error("Multisig and asset expected")
             return
@@ -307,7 +310,7 @@ private extension MultisigOperationConfirmInteractor {
 
     func setupSignatoryRemoteBalanceSubsription() {
         guard
-            let multisig = multisigWallet.multisigAccount?.multisig,
+            let multisig = multisigWallet.getMultisig(for: chain),
             let asset = chain.utilityChainAsset(),
             let assetInfo else {
             logger.error("Multisig, asset and info expected here")
@@ -326,7 +329,7 @@ private extension MultisigOperationConfirmInteractor {
         guard
             let assetInfo,
             let assetRemoteSubscriptionId,
-            let multisig = multisigWallet.multisigAccount?.multisig,
+            let multisig = multisigWallet.getMultisig(for: chain),
             let asset = chain.utilityChainAsset() else {
             return
         }
