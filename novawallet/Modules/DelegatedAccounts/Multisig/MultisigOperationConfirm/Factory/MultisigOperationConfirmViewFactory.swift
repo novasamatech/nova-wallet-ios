@@ -81,7 +81,9 @@ struct MultisigOperationConfirmViewFactory {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let multisig = multisigWallet.multisigAccount?.multisig,
+            let multisig = multisigWallet.getMultisig(
+                for: chain
+            ),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
             return nil

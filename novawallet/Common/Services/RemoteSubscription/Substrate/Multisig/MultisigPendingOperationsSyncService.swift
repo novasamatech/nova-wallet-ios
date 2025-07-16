@@ -92,7 +92,7 @@ private extension MultisigPendingOperationsService {
 
     func setupChainSyncService(for chain: ChainModel) {
         guard
-            let multisigAccount = selectedMetaAccount.multisigAccount?.multisig,
+            let multisigAccount = selectedMetaAccount.getMultisig(for: chain),
             pendingOperationsChainSyncServices[chain.chainId] == nil
         else { return }
 

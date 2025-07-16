@@ -65,7 +65,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     override func doEstimateFee() {
         guard
             let call,
-            let multisig = multisigWallet.multisigAccount?.multisig,
+            let multisig = multisigWallet.getMultisig(for: chain),
             let definition = operation.operation.multisigDefinition,
             let operationFactory = extrinsicOperationFactory else {
             return
@@ -108,7 +108,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     override func doConfirm() {
         guard
             let call,
-            let multisig = multisigWallet.multisigAccount?.multisig,
+            let multisig = multisigWallet.getMultisig(for: chain),
             let definition = operation.operation.multisigDefinition,
             let extrinsicSubmissionMonitor,
             let signer else {

@@ -121,7 +121,7 @@ extension MetaAccountModel: DelegationResolutionNodeSourceProtocol {
             return (key, value)
         } else if
             type == .multisig,
-            let multisig = multisigAccount?.multisig {
+            let multisig = getMultisig(for: chain) {
             let allSignatories = multisig.otherSignatories + [multisig.signatory]
 
             let key = DelegationResolution.DelegationKey(

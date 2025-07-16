@@ -42,8 +42,8 @@ extension Multisig.LocalSignatory {
 }
 
 extension Array where Element == Multisig.Signatory {
-    func findSignatory(for wallet: MetaAccountModel) -> Multisig.Signatory? {
-        guard let multisig = wallet.multisigAccount?.multisig else {
+    func findSignatory(for wallet: MetaAccountModel, chain: ChainModel) -> Multisig.Signatory? {
+        guard let multisig = wallet.getMultisig(for: chain) else {
             return nil
         }
 

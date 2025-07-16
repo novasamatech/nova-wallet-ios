@@ -5,6 +5,7 @@ struct ChainAccountRequest {
     let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
+    let supportsMultisigs: Bool
 }
 
 struct ChainAccountResponse {
@@ -43,6 +44,10 @@ struct MetaAccountDelegationId: Hashable {
     let delegatorId: AccountId
     let chainId: ChainModel.Id?
     let delegationType: DelegationType
+
+    func existsInChainWithId(_ identifier: ChainModel.Id) -> Bool {
+        chainId == nil || chainId == identifier
+    }
 }
 
 enum ChainAccountFetchingError: Error {
@@ -178,8 +183,14 @@ extension MetaAccountModel {
             } else {
                 return nil
             }
-        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
             return executeFetch(request: request)
+        case .multisig:
+            if request.supportsMultisigs {
+                return executeFetch(request: request)
+            } else {
+                return nil
+            }
         }
     }
 
@@ -336,7 +347,8 @@ extension ChainModel {
             chainId: chainId,
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased,
-            supportsGenericLedger: supportsGenericLedgerApp
+            supportsGenericLedger: supportsGenericLedgerApp,
+            supportsMultisigs: hasMultisig
         )
     }
 

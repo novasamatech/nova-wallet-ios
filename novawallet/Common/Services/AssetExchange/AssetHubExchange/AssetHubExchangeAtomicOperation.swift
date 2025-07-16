@@ -123,6 +123,50 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
         return executeWrapper.insertingHead(operations: [codingFactoryOperation])
     }
 
+    func submitWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<Void> {
+        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let callArgs = AssetConversion.CallArgs(
+            assetIn: edge.origin,
+            amountIn: swapLimit.amountIn,
+            assetOut: edge.destination,
+            amountOut: swapLimit.amountOut,
+            receiver: host.selectedAccount.accountId,
+            direction: swapLimit.direction,
+            slippage: swapLimit.slippage
+        )
+
+        let submittionWrapper = host.submissionMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: { builder in
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                return try AssetHubExtrinsicConverter.addingOperation(
+                    to: builder,
+                    chain: self.host.chain,
+                    args: callArgs,
+                    codingFactory: codingFactory
+                )
+            },
+            payingIn: operationArgs.feeAsset,
+            signer: host.signingWrapper,
+            matchingEvents: nil
+        )
+
+        submittionWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<Void> {
+            _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+            return
+        }
+
+        mappingOperation.addDependency(submittionWrapper.targetOperation)
+
+        return submittionWrapper
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: mappingOperation)
+    }
+
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
         let feeWrapper = createFeeWrapper()
 

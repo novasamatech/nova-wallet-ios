@@ -147,6 +147,41 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
         return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
     }
 
+    func submitWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Void> {
+        let paramsWrapper = createExtrinsicParamsWrapper(for: swapLimit)
+
+        let executionWrapper = OperationCombiningService<Void>.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: { builder in
+                    try HydraExchangeExtrinsicConverter.addingOperation(
+                        from: params,
+                        builder: builder
+                    )
+                },
+                payingIn: self.operationArgs.feeAsset,
+                signer: self.host.signingWrapper,
+                matchingEvents: nil
+            )
+
+            let mappingOperation = ClosureOperation<Void> {
+                _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+                return
+            }
+
+            mappingOperation.addDependency(submittionWrapper.targetOperation)
+
+            return submittionWrapper.insertingTail(operation: mappingOperation)
+        }
+
+        executionWrapper.addDependency(wrapper: paramsWrapper)
+
+        return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
+    }
+
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
         let feeWrapper = createFeeWrapper()
 
