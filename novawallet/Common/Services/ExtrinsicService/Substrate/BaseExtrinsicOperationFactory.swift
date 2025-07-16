@@ -148,9 +148,16 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             }
 
         let wrapperOperation = ClosureOperation<SubmitIndexedExtrinsicResult> {
+            // TODO: Move to a better place
+            let sender = try builderWrapper.targetOperation.extractNoCancellableResultData().sender
+
             let indexedResults = zip(indexList, submitOperationList).map { indexedOperation in
+
                 if let result = indexedOperation.1.result {
-                    return SubmitIndexedExtrinsicResult.IndexedResult(index: indexedOperation.0, result: result)
+                    let mappedResult = result.map { txHash in
+                        ExtrinsicSubmitedModel(txHash: txHash, sender: sender)
+                    }
+                    return SubmitIndexedExtrinsicResult.IndexedResult(index: indexedOperation.0, result: mappedResult)
                 } else {
                     return SubmitIndexedExtrinsicResult.IndexedResult(
                         index: indexedOperation.0,

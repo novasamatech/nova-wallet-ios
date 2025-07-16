@@ -54,14 +54,19 @@ struct ExtrinsicRetriableResult<R> {
     }
 }
 
+struct ExtrinsicSubmittedModel {
+    let txHash: String
+    let sender: ExtrinsicSenderResolution
+}
+
 typealias FeeExtrinsicResult = Result<ExtrinsicFeeProtocol, Error>
 typealias FeeIndexedExtrinsicResult = ExtrinsicRetriableResult<ExtrinsicFeeProtocol>
 
 typealias EstimateFeeClosure = (FeeExtrinsicResult) -> Void
 typealias EstimateFeeIndexedClosure = (FeeIndexedExtrinsicResult) -> Void
 
-typealias SubmitExtrinsicResult = Result<String, Error>
-typealias SubmitIndexedExtrinsicResult = ExtrinsicRetriableResult<String>
+typealias SubmitExtrinsicResult = Result<ExtrinsicSubmittedModel, Error>
+typealias SubmitIndexedExtrinsicResult = ExtrinsicRetriableResult<ExtrinsicSubmitedModel>
 
 typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
 typealias ExtrinsicSubmitIndexedClosure = (SubmitIndexedExtrinsicResult) -> Void

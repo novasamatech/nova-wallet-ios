@@ -123,7 +123,7 @@ extension ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         payingIn chainAssetId: ChainAssetId? = nil
-    ) -> CompoundOperationWrapper<String> {
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
         }
@@ -135,7 +135,7 @@ extension ExtrinsicOperationFactoryProtocol {
             payingIn: chainAssetId
         )
 
-        let resultMappingOperation = ClosureOperation<String> {
+        let resultMappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
             guard let result = try submitOperation.targetOperation.extractNoCancellableResultData()
                 .results.first?.result else {
                 throw BaseOperationError.unexpectedDependentResult
