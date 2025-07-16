@@ -1381,6 +1381,7 @@
 		22403E58019260719055E122 /* AdvancedWalletWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DB5EA5195D9433A4B90793 /* AdvancedWalletWireframe.swift */; };
 		2262277544A1D9CB46EF087A /* ParaStkYieldBoostStopProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD0DBD280596DBBC5CE5A8F /* ParaStkYieldBoostStopProtocols.swift */; };
 		2272FB0A01000A46D097634E /* GovernanceUnlockConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E067006C1BC9DFCA5E8DB86 /* GovernanceUnlockConfirmWireframe.swift */; };
+		2292A6682E25C7BE001C0DBB /* DAppBrowserSigningChainResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2292A6672E25C7BC001C0DBB /* DAppBrowserSigningChainResolverTests.swift */; };
 		2327570CCE0B64B88A65F121 /* NotificationsSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0015E49754A7C86A8C9DE67 /* NotificationsSetupInteractor.swift */; };
 		232B205831DF28B772515DF2 /* SwapConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD1FBC9C063951E2520265D /* SwapConfirmWireframe.swift */; };
 		233CB11F486DE1953D977295 /* WalletsListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7073BBC153295FF46FD06FB3 /* WalletsListViewLayout.swift */; };
@@ -1398,6 +1399,11 @@
 		270C21973CB61F0BF3D2D1E3 /* CrowdloanListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02ACCC85B2CCF3D9392CA9B4 /* CrowdloanListProtocols.swift */; };
 		2736BAABAE1389260A0B28D6 /* AssetListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B754B68D6F1D1ED5C8577A5 /* AssetListViewFactory.swift */; };
 		2793D406FD618A892D54EA84 /* CrowdloanContributionConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C92E3ED704CB0BBAB3A669F /* CrowdloanContributionConfirmViewLayout.swift */; };
+		27B8E1662E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E15A2E12A34D00EB1F5B /* UniqueNftSyncService.swift */; };
+		27B8E16A2E12A5FA00EB1F5B /* UniqueDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1692E12A5F600EB1F5B /* UniqueDetailsInteractor.swift */; };
+		27B8E16C2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E16B2E12B04200EB1F5B /* UniqueNftOperationFactory.swift */; };
+		27B8E1772E12B0B800EB1F5B /* UniqueNft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1742E12B0B400EB1F5B /* UniqueNft.swift */; };
+		27B8E17C2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B8E1792E12B14900EB1F5B /* UniqueNftModelConverter.swift */; };
 		27FA1D57A06AA3A030D226B6 /* StakingUnbondConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84638893DC99974E098719E /* StakingUnbondConfirmWireframe.swift */; };
 		286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0F7D4389B932A1F2E17361 /* DAppSearchViewLayout.swift */; };
 		28A05FC8B129FE9016AD784D /* TransferOnChainConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5CED3C58CD433B19978EC4 /* TransferOnChainConfirmInteractor.swift */; };
@@ -7452,6 +7458,7 @@
 		21A2FD02269432066884F5AF /* ParaStkYourCollatorsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYourCollatorsInteractor.swift; sourceTree = "<group>"; };
 		21BCBFCBE606A354CB652289 /* DAppAuthConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmViewController.swift; sourceTree = "<group>"; };
 		22914482F786318D8F6C5E27 /* DAppPhishingViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppPhishingViewLayout.swift; sourceTree = "<group>"; };
+		2292A6672E25C7BC001C0DBB /* DAppBrowserSigningChainResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserSigningChainResolverTests.swift; sourceTree = "<group>"; };
 		22987F2F731F702564980965 /* DAppBrowserWidgetViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetViewFactory.swift; sourceTree = "<group>"; };
 		22A41CE9C1AA18216CF99FD0 /* DAppFavoritesViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppFavoritesViewLayout.swift; sourceTree = "<group>"; };
 		22CA3357C25A248302093251 /* CloudBackupCreateViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupCreateViewLayout.swift; sourceTree = "<group>"; };
@@ -7477,6 +7484,11 @@
 		270B309EC85D8897A4ADD98A /* CustomValidatorListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomValidatorListViewController.swift; sourceTree = "<group>"; };
 		271F8692631AE4CCCD51462D /* NotificationsManagementProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationsManagementProtocols.swift; sourceTree = "<group>"; };
 		27A5489E97F846FE3D5931E5 /* ParaStkYieldBoostStopViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStopViewFactory.swift; sourceTree = "<group>"; };
+		27B8E15A2E12A34D00EB1F5B /* UniqueNftSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueNftSyncService.swift; sourceTree = "<group>"; };
+		27B8E1692E12A5F600EB1F5B /* UniqueDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueDetailsInteractor.swift; sourceTree = "<group>"; };
+		27B8E16B2E12B04200EB1F5B /* UniqueNftOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueNftOperationFactory.swift; sourceTree = "<group>"; };
+		27B8E1742E12B0B400EB1F5B /* UniqueNft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueNft.swift; sourceTree = "<group>"; };
+		27B8E1792E12B14900EB1F5B /* UniqueNftModelConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueNftModelConverter.swift; sourceTree = "<group>"; };
 		27D5AF2F7609ADE855308089 /* AccountExportPasswordViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordViewController.swift; sourceTree = "<group>"; };
 		28294C13CF8F62D2FE4D0427 /* SwapSlippageViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapSlippageViewFactory.swift; sourceTree = "<group>"; };
 		285212895DBAB0098F302DF9 /* ParaStkYieldBoostStopWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStopWireframe.swift; sourceTree = "<group>"; };
@@ -15472,6 +15484,17 @@
 			path = AccountManagement;
 			sourceTree = "<group>";
 		};
+		27B8E1562E12A24600EB1F5B /* UniqueNetwork */ = {
+			isa = PBXGroup;
+			children = (
+				27B8E16B2E12B04200EB1F5B /* UniqueNftOperationFactory.swift */,
+				27B8E1792E12B14900EB1F5B /* UniqueNftModelConverter.swift */,
+				27B8E1742E12B0B400EB1F5B /* UniqueNft.swift */,
+				27B8E15A2E12A34D00EB1F5B /* UniqueNftSyncService.swift */,
+			);
+			path = UniqueNetwork;
+			sourceTree = "<group>";
+		};
 		288677D19FEB54E369E6B619 /* Slippage */ = {
 			isa = PBXGroup;
 			children = (
@@ -23099,6 +23122,7 @@
 		8499FED027BFA30800712589 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				27B8E1562E12A24600EB1F5B /* UniqueNetwork */,
 				0C38B50A2B7DC3F500882A8B /* KodaDot */,
 				0C8AF7B02B36A86900005AC9 /* Pdc20 */,
 				84E8AC7327BB972500402635 /* RMRK */,
@@ -23705,6 +23729,7 @@
 		84B7C69D289BFA79001A3566 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				2292A6672E25C7BC001C0DBB /* DAppBrowserSigningChainResolverTests.swift */,
 				84B7C69E289BFA79001A3566 /* DAppBrowserTests.swift */,
 			);
 			path = DAppBrowser;
@@ -27622,6 +27647,7 @@
 				CD6B5B187E83839481846C7E /* NftDetailsInteractor.swift */,
 				D8C4C48E50DC14085258AB6D /* NftDetailsViewController.swift */,
 				A0F285548A6F98B3EB3F170C /* NftDetailsViewLayout.swift */,
+				27B8E1692E12A5F600EB1F5B /* UniqueDetailsInteractor.swift */,
 				B3CC9CAB00B604CD1AC5B4D8 /* NftDetailsViewFactory.swift */,
 				843CE3A927D22B5200436F4E /* UniquesDetailsInteractor.swift */,
 				84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */,
@@ -28695,9 +28721,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletTests/Pods-novawalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -28751,9 +28781,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawalletIntegrationTests/Pods-novawalletAll-novawalletIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -28790,9 +28824,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -29318,6 +29356,7 @@
 				7728E58B2A123AEE007901E0 /* ReferendumsSearchOperationFactory.swift in Sources */,
 				2D65F6D52CCF938D00CC6F72 /* AppearanceIconsOptions+Init.swift in Sources */,
 				844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */,
+				27B8E1662E12A34D00EB1F5B /* UniqueNftSyncService.swift in Sources */,
 				0CF3A6C92CE9423000F93C49 /* RouteView.swift in Sources */,
 				F4CE0F9A27343FFD0094CD8A /* AcalaContributionConfirmVC.swift in Sources */,
 				8493D0E126FF4F5000A28008 /* ScaleCoder+Extension.swift in Sources */,
@@ -31975,6 +32014,7 @@
 				849632072555CE9D00B8E316 /* ExportSeedData.swift in Sources */,
 				847EA1D62A1CA47500F1CBD8 /* SubqueryMultistaking.swift in Sources */,
 				0CED3A0C2BD1762D00B1E994 /* CloudBackupServiceFacadeProtocol.swift in Sources */,
+				27B8E16A2E12A5FA00EB1F5B /* UniqueDetailsInteractor.swift in Sources */,
 				8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */,
 				8427495528FEB92700B2B70B /* GovernanceLockStateFactory.swift in Sources */,
 				0C2200692ACA80BB0067BA61 /* AssetHubSwapQuoteBuilder.swift in Sources */,
@@ -32218,6 +32258,7 @@
 				7796C7012A177D9000D56094 /* ReferendumsSection+Lens.swift in Sources */,
 				E2F9D7BDDE961B162EF100AB /* StakingMainViewFactory.swift in Sources */,
 				88DC3E21292CAA0100DBCE4D /* RoundedView+Style.swift in Sources */,
+				27B8E16C2E12B04400EB1F5B /* UniqueNftOperationFactory.swift in Sources */,
 				848DAF00282294E600D56F55 /* ParachainStaking.swift in Sources */,
 				0C59E8FA2AA76A4A001E11F3 /* OperationDetailsDirectStakingProvider.swift in Sources */,
 				0C7104A22C2D0A6200487E64 /* LedgerTxConfirmationParams.swift in Sources */,
@@ -33728,6 +33769,7 @@
 				845938842A03D34F00292BFF /* WCSessionDetailsInteractorError.swift in Sources */,
 				2DA85A6B2C7F36CF00591900 /* CardTopUpTransferSetupProtocols.swift in Sources */,
 				38D0977931828C7894579968 /* GovernanceUnlockSetupInteractor.swift in Sources */,
+				27B8E1772E12B0B800EB1F5B /* UniqueNft.swift in Sources */,
 				16098DABB1C9C058C1965F1D /* GovernanceUnlockSetupViewController.swift in Sources */,
 				8493FF38291A59D800F09F1B /* ReferendumMetadataMapper.swift in Sources */,
 				0E71EA5AE04940824AEA01C7 /* GovernanceUnlockSetupViewLayout.swift in Sources */,
@@ -33885,6 +33927,7 @@
 				C6E220DA6AD9A938083179CB /* AddDelegationInteractor.swift in Sources */,
 				0CA7CEF82CE0D575004328F2 /* TokensPalletDepositEventMatcher.swift in Sources */,
 				8E74A13BA73160F88B2B0948 /* AddDelegationViewController.swift in Sources */,
+				27B8E17C2E12B14B00EB1F5B /* UniqueNftModelConverter.swift in Sources */,
 				CEED39FF1C586C00B56B1F0C /* AddDelegationViewLayout.swift in Sources */,
 				2D389B0E2C86E94A00256C7B /* SwipeGovEmptyStateView.swift in Sources */,
 				7D3D51706CD51AA9101DCE42 /* AddDelegationViewFactory.swift in Sources */,
@@ -34785,6 +34828,7 @@
 				84452F5D25D5CB3B00F47EC5 /* FileManagerTests.swift in Sources */,
 				84B7C72D289BFA79001A3566 /* ValidatorSearchTests.swift in Sources */,
 				841B45292603D91800C08693 /* EraValidatorsServiceStub.swift in Sources */,
+				2292A6682E25C7BE001C0DBB /* DAppBrowserSigningChainResolverTests.swift in Sources */,
 				84F47D652667804100F7647A /* CrowdloanBonusServiceStub.swift in Sources */,
 				0C41D20E2BF77F85000950EE /* CloudBackupSyncTests.swift in Sources */,
 				8828C05828B4A67000555CB6 /* Prism.swift in Sources */,
