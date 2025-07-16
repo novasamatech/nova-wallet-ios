@@ -166,6 +166,8 @@ extension PendingMultisigChainSyncService: MultisigPendingOperationsSubscriber {
         callHash: Substrate.CallHash,
         multisigDefinition: MultisigDefinitionWithTime?
     ) {
+        logger.debug("Update definition: \(String(describing: multisigDefinition))")
+
         let updateDefinitionWrapper = localSyncFactory.createUpdateDefinitionWrapper(
             for: callHash,
             multisigDefinition
