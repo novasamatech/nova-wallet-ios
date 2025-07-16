@@ -15,9 +15,7 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
         switch wallet.type {
         case .watchOnly, .paritySigner, .polkadotVault, .secrets:
             true
-        case .multisig:
-            wallet.chainAccounts.contains { $0.chainId == chain.chainId }
-        case .proxied:
+        case .proxied, .multisig:
             wallet.fetch(for: chain.accountRequest()) != nil
         case .ledger:
             supportedLedgerChains.contains(chain.chainId)
