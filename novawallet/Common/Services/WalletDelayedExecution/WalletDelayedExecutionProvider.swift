@@ -22,6 +22,7 @@ final class WalletDelayedExecutionProvider {
     let logger: LoggerProtocol
 
     private let mutex = NSLock()
+    private var isActive: Bool = false
 
     private let callStore = CancellableCallStore()
 
@@ -78,6 +79,12 @@ extension WalletDelayedExecutionProvider: WalletDelayedExecutionProviding {
             self.mutex.unlock()
         }
 
+        guard !isActive else {
+            return
+        }
+
+        isActive = true
+
         fetchAndSetupVerifier()
     }
 
@@ -87,6 +94,12 @@ extension WalletDelayedExecutionProvider: WalletDelayedExecutionProviding {
         defer {
             mutex.unlock()
         }
+
+        guard isActive else {
+            return
+        }
+
+        isActive = false
 
         callStore.cancel()
     }

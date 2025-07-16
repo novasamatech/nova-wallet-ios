@@ -322,7 +322,9 @@ extension SwapConfirmPresenter {
             fee: fee
         )
 
-        wireframe.showSwapExecution(from: view, model: executionModel)
+        view?.didReceiveStartLoading()
+
+        interactor.initiateSwapSubmission(of: executionModel)
     }
 }
 
@@ -422,6 +424,30 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
                 self?.view?.didReceiveStartLoading()
             }
         )
+    }
+}
+
+extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
+    func didCompleteSwapSubmission(with result: Result<Void, Error>) {
+        switch result {
+        case .success:
+            wireframe.complete(on: view)
+        case let .failure(error):
+            view?.didReceiveStopLoading()
+
+            logger.error("Swap failed: \(error)")
+
+            _ = wireframe.handleExtrinsicSigningErrorPresentation(
+                error,
+                view: view,
+                closeAction: .dismissAllModals,
+                completionClosure: nil
+            )
+        }
+    }
+
+    func didDecideMonitoredExecution(for model: SwapExecutionModel) {
+        wireframe.showSwapExecution(from: view, model: model)
     }
 }
 

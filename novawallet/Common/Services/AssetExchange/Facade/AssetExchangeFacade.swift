@@ -5,7 +5,8 @@ final class AssetExchangeFacade {
         for params: AssetExchangeGraphProvidingParams,
         feeSupportProvider: AssetsExchangeFeeSupportProviding,
         exchangesStateMediator: AssetsExchangeStateMediating,
-        pathCostEstimator: AssetsExchangePathCostEstimating
+        pathCostEstimator: AssetsExchangePathCostEstimating,
+        delayedCallExecProvider: WalletDelayedExecutionProviding
     ) -> AssetsExchangeGraphProviding {
         let suffiencyProvider = AssetExchangeSufficiencyProvider()
 
@@ -55,12 +56,7 @@ final class AssetExchangeFacade {
             ],
             feeSupportProvider: feeSupportProvider,
             suffiencyProvider: suffiencyProvider,
-            delayedCallExecProvider: WalletDelayedExecutionProvider(
-                selectedWallet: params.wallet,
-                repository: WalletDelayedExecutionRepository(userStorageFacade: params.userDataStorageFacade),
-                operationQueue: params.operationQueue,
-                logger: Logger.shared
-            ),
+            delayedCallExecProvider: delayedCallExecProvider,
             operationQueue: params.operationQueue,
             logger: params.logger
         )

@@ -1084,6 +1084,7 @@
 		0CD980242E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980222E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift */; };
 		0CD980262E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980252E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift */; };
 		0CD980282E26D462005251E1 /* WalletDelayedExecutionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980272E26D462005251E1 /* WalletDelayedExecutionProvider.swift */; };
+		0CD9802A2E27883A005251E1 /* AssetExchangeFee+InitialAmount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD980292E27883A005251E1 /* AssetExchangeFee+InitialAmount.swift */; };
 		0CDEF1642C27E578003878F2 /* ExtrinsicProofOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */; };
 		0CDEF1662C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */; };
 		0CE150502A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1504F2A6FAC1200B61CC1 /* NominationPoolsPoolSubscriptionService.swift */; };
@@ -7155,6 +7156,7 @@
 		0CD980222E26AE76005251E1 /* MetaAccountModel+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Extrinsic.swift"; sourceTree = "<group>"; };
 		0CD980252E26D2C5005251E1 /* NotDelegatedCallDelayedExecVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotDelegatedCallDelayedExecVerifier.swift; sourceTree = "<group>"; };
 		0CD980272E26D462005251E1 /* WalletDelayedExecutionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDelayedExecutionProvider.swift; sourceTree = "<group>"; };
+		0CD980292E27883A005251E1 /* AssetExchangeFee+InitialAmount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetExchangeFee+InitialAmount.swift"; sourceTree = "<group>"; };
 		0CDEF1632C27E578003878F2 /* ExtrinsicProofOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicProofOperationFactory.swift; sourceTree = "<group>"; };
 		0CDEF1652C27EC83003878F2 /* RuntimeMetadataRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataRepositoryFactory.swift; sourceTree = "<group>"; };
 		0CDFFCC54A504417F4ACE7AA /* NftListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListInteractor.swift; sourceTree = "<group>"; };
@@ -14053,6 +14055,7 @@
 				0C2DA8A72CC2679E001F79C8 /* AssetsExchangeGraph.swift */,
 				0C11D85D2CCA470D003EC46D /* AssetsExchangeRouteManager.swift */,
 				0C746DBB2CCE5E9900E9178B /* AssetExchangeExecutionManager.swift */,
+				0CD980292E27883A005251E1 /* AssetExchangeFee+InitialAmount.swift */,
 				0C6108482CD889A000909928 /* AssetsExchange.swift */,
 				0C61084A2CD88F9B00909928 /* AssetsExchangeService.swift */,
 				0C2A3C922CDC813B00A0E2B3 /* AssetsExchangeOperationFactory.swift */,
@@ -33415,6 +33418,7 @@
 				1812D5012A1765CB38D32A4A /* WalletsListPresenter.swift in Sources */,
 				A265CC9857E951EB71E5E831 /* WalletsListInteractor.swift in Sources */,
 				28B4C94DBAF461CBF18B1B63 /* WalletsListViewController.swift in Sources */,
+				0CD9802A2E27883A005251E1 /* AssetExchangeFee+InitialAmount.swift in Sources */,
 				0C27F3822DA6C74100191FFF /* SystePallet+ConstantPath.swift in Sources */,
 				77C9BCC42ACD570100022EA2 /* SwapAssetsOperationInteractor.swift in Sources */,
 				233CB11F486DE1953D977295 /* WalletsListViewLayout.swift in Sources */,

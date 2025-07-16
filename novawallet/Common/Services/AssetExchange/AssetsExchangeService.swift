@@ -16,6 +16,10 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
         operationStartClosure: @escaping (Int) -> Void
     ) -> CompoundOperationWrapper<Balance>
 
+    func submitSingleOperationWrapper(
+        using estimation: AssetExchangeFee
+    ) -> CompoundOperationWrapper<Void>
+
     func subscribeRequoteService(
         for target: AnyObject,
         ignoreIfAlreadyAdded: Bool,
@@ -139,6 +143,14 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
                 notifyingIn: queue,
                 operationStartClosure: operationStartClosure
             )
+        }
+    }
+
+    func submitSingleOperationWrapper(
+        using estimation: AssetExchangeFee
+    ) -> CompoundOperationWrapper<Void> {
+        prepareWrapper {
+            $0.createSingleOperationSubmitWrapper(for: estimation)
         }
     }
 

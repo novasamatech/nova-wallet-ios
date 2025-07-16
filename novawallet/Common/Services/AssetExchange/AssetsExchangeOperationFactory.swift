@@ -10,11 +10,16 @@ protocol AssetsExchangeOperationFactoryProtocol {
         notifyingIn queue: DispatchQueue,
         operationStartClosure: @escaping (Int) -> Void
     ) -> CompoundOperationWrapper<Balance>
+
+    func createSingleOperationSubmitWrapper(
+        for fee: AssetExchangeFee
+    ) -> CompoundOperationWrapper<Void>
 }
 
 enum AssetsExchangeOperationFactoryError: Error {
     case noRoute
     case feesOperationsMismatch
+    case singleOperationExpected
 }
 
 final class AssetsExchangeOperationFactory {
@@ -328,6 +333,35 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
             let operation = LongrunOperation(longrun: AnyLongrun(longrun: executionManager))
 
             return CompoundOperationWrapper(targetOperation: operation)
+        } catch {
+            return .createWithError(error)
+        }
+    }
+
+    func createSingleOperationSubmitWrapper(
+        for fee: AssetExchangeFee
+    ) -> CompoundOperationWrapper<Void> {
+        do {
+            let atomicOperations = try prepareAtomicOperations(
+                for: fee.route,
+                slippage: fee.slippage,
+                feeAssetId: fee.feeAssetId
+            )
+
+            guard
+                atomicOperations.count == 1,
+                let atomicOperation = atomicOperations.first else {
+                throw AssetsExchangeOperationFactoryError.singleOperationExpected
+            }
+
+            let initialAmount = try fee.getInitialAmountIn()
+
+            let swapLimit = atomicOperation.swapLimit.replacingAmountIn(
+                initialAmount,
+                shouldReplaceBuyWithSell: false
+            )
+
+            return atomicOperation.submitWrapper(for: swapLimit)
         } catch {
             return .createWithError(error)
         }

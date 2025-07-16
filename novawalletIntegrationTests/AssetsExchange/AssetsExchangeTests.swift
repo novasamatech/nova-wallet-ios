@@ -225,6 +225,13 @@ final class AssetsExchangeTests: XCTestCase {
             logger: params.logger
         )
         
+        let delayedCallExecProvider = WalletDelayedExecutionProvider(
+            selectedWallet: params.wallet,
+            repository: WalletDelayedExecutionRepository(userStorageFacade: params.userDataStorageFacade),
+            operationQueue: params.operationQueue,
+            logger: params.logger
+        )
+        
         let pathCostEstimator = MockAssetsExchangePathCostEstimator()
         
         let graphProvider = AssetsExchangeGraphProvider(
@@ -272,12 +279,14 @@ final class AssetsExchangeTests: XCTestCase {
             ],
             feeSupportProvider: feeSupportProvider,
             suffiencyProvider: AssetExchangeSufficiencyProvider(),
+            delayedCallExecProvider: delayedCallExecProvider,
             operationQueue: params.operationQueue,
             logger: params.logger
         )
 
         graphProvider.setup()
         feeSupportProvider.setup()
+        delayedCallExecProvider.setup()
         
         var actualGraph: AssetsExchangeGraphProtocol?
         
