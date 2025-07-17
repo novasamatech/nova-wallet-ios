@@ -47,8 +47,12 @@ extension ExtrinsicSubmissionDelayedCompleter: ExtrinsicSubmissionCompliting {
             return false
         }
 
-        MainTransitionHelper.transitToMainTabBarController(
+        MainTransitionHelper.transitToMainTabBar(
+            selectingIndex: MainTabBarIndex.wallet,
             closing: controller,
+            postTransitionClosure: { tabBar in
+                tabBar.presentDelayedOperationCreated()
+            },
             animated: true
         )
 

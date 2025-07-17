@@ -370,6 +370,7 @@
 		0C2BE78A2E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */; };
 		0C2BE78C2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */; };
 		0C2BE78E2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78D2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift */; };
+		0C2BE7902E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78F2E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift */; };
 		0C2D1E3B2D96E1920030E43C /* LedgerDeviceModel+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+ViewModel.swift */; };
 		0C2D1E3D2D9708350030E43C /* LedgerDeviceDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2D1E3C2D9708350030E43C /* LedgerDeviceDisplayInfo.swift */; };
 		0C2DA89A2CC21419001F79C8 /* GraphQuotableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8992CC21419001F79C8 /* GraphQuotableEdge.swift */; };
@@ -6417,6 +6418,7 @@
 		0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmissionRegularCompleter.swift; sourceTree = "<group>"; };
 		0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmissionDelayedCompleter.swift; sourceTree = "<group>"; };
 		0C2BE78D2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicSenderResolution+Delayed.swift"; sourceTree = "<group>"; };
+		0C2BE78F2E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainTabBarController+TransactionsToSign.swift"; sourceTree = "<group>"; };
 		0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LedgerDeviceModel+ViewModel.swift"; sourceTree = "<group>"; };
 		0C2D1E3C2D9708350030E43C /* LedgerDeviceDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDeviceDisplayInfo.swift; sourceTree = "<group>"; };
 		0C2DA8992CC21419001F79C8 /* GraphQuotableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQuotableEdge.swift; sourceTree = "<group>"; };
@@ -22803,6 +22805,7 @@
 				0C7071282C1F600F0080DDCD /* OnLauchAction.swift */,
 				0C70712A2C1F60F50080DDCD /* OnLaunchActionsQueue.swift */,
 				0CF6928D2C23EBEA000FC395 /* SharedSyncStatus.swift */,
+				0C2BE78F2E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift */,
 			);
 			path = MainTabBar;
 			sourceTree = "<group>";
@@ -30458,6 +30461,7 @@
 				0CF9767B2CF09B86001D2801 /* SwapExecutionViewModelFactory.swift in Sources */,
 				0C59E8E12AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift in Sources */,
 				2D4F55012CCA60E900B65B76 /* AssetsSearchCollectionManager.swift in Sources */,
+				0C2BE7902E294A1100E7FFC2 /* MainTabBarController+TransactionsToSign.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8455F19C2A1DF088003F072D /* ChainsStore+Multistaking.swift in Sources */,
 				0C3976602C2DBDAF00998DD6 /* ChainRegistryProtocol+Ledger.swift in Sources */,

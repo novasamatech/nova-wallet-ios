@@ -2,6 +2,45 @@ import UIKit
 import UIKit_iOS
 
 struct MainTransitionHelper {
+    static func transitToMainTabBar(
+        selectingIndex: Int = MainTabBarViewFactory.walletIndex,
+        closing controller: UIViewController,
+        postTransitionClosure: ((MainTabBarViewController) -> Void)?,
+        animated: Bool
+    ) {
+        if let presentingController = controller.presentingViewController {
+            presentingController.dismiss(animated: animated, completion: nil)
+        }
+
+        guard let tabBarController = UIApplication.shared.tabBarController else {
+            return
+        }
+
+        let presentPostTransitionClosure = {
+            guard let postTransitionClosure else { return }
+            postTransitionClosure(tabBarController)
+        }
+
+        let navigationController = tabBarController.selectedViewController as? UINavigationController
+
+        guard tabBarController.selectedIndex != selectingIndex else {
+            navigationController?.popToRootViewController(animated: animated)
+            presentPostTransitionClosure()
+
+            return
+        }
+
+        navigationController?.popToRootViewController(animated: false)
+
+        tabBarController.selectedIndex = selectingIndex
+
+        if animated {
+            TransitionAnimator(type: .reveal).animate(view: tabBarController.view, completionBlock: nil)
+        }
+
+        presentPostTransitionClosure()
+    }
+
     static func transitToMainTabBarController(
         selectingIndex: Int = MainTabBarViewFactory.walletIndex,
         closing controller: UIViewController,

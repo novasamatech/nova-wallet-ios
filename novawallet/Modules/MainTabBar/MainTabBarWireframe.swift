@@ -85,6 +85,22 @@ private extension MainTabBarWireframe {
         )
     }
 
+    func openTransactionsToSign(in controller: UITabBarController) {
+        controller.selectedIndex = MainTabBarIndex.wallet
+        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
+        let navigationController = viewController as? UINavigationController
+        navigationController?.popToRootViewController(animated: true)
+
+        guard let transactionsToSignView = MultisigOperationsViewFactory.createView() else {
+            return
+        }
+
+        navigationController?.pushViewController(
+            transactionsToSignView.controller,
+            animated: true
+        )
+    }
+
     func canPresentScreenWithoutBreakingFlow(on view: UIViewController) -> Bool {
         guard let tabBarController = view.topModalViewController as? UITabBarController else {
             // some flow is currently presented modally
@@ -324,5 +340,21 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
 
             settingsNavigationController?.pushViewController(cloudBackupSettings.controller, animated: true)
         }
+    }
+
+    func presentDelayedOperationCreated(from view: MainTabBarViewProtocol?) {
+        guard let tabBarController = view?.controller as? UITabBarController else {
+            return
+        }
+
+        let bottomSheet = DelegatedMessageSheetViewFactory.createMultisigOpCreated { [weak self] in
+            self?.openTransactionsToSign(in: tabBarController)
+        }
+
+        guard let controllerToPresent = bottomSheet?.controller else {
+            return
+        }
+
+        view?.controller.present(controllerToPresent, animated: true)
     }
 }
