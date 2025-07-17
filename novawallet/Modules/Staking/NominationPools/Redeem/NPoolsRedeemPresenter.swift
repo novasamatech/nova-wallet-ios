@@ -254,7 +254,6 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
             let willHaveStaking = totalPoints > 0 || (poolMember?.unbondingEras ?? []).count > 1
             let action: ExtrinsicSubmissionPresentingAction = willHaveStaking ? .dismiss : .popBaseAndDismiss
 
-            // TODO: Fix MS navigation
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,

@@ -8,10 +8,10 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
         alertPresenting: ModalAlertPresenting,
         sender _: ExtrinsicSenderResolution?,
         completionAction: ExtrinsicSubmissionPresentingAction,
-        locale: Locale
+        locale: Locale?
     ) -> Bool {
         let title = R.string.localizable
-            .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
+            .commonTransactionSubmitted(preferredLanguages: locale?.rLanguages)
 
         switch completionAction {
         case .dismiss:
@@ -39,6 +39,13 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
             alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
         case .popBaseAndDismiss:
             MainTransitionHelper.dismissAndPopBack(from: view) { presenter in
+                alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
+            }
+        case let .dismissWithPostNavigation(closure):
+            let presenter = view?.controller.navigationController?.presentingViewController
+
+            presenter?.dismiss(animated: true) {
+                closure()
                 alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
             }
         }

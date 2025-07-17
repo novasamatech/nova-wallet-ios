@@ -13,6 +13,5 @@ protocol ParaStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresenta
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: CollatorStkUnstakeConfirmViewProtocol?, locale: Locale)
-}
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

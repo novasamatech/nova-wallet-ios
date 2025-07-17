@@ -206,9 +206,13 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
 
         switch result {
-        case .success:
-            // TODO: MS Navigation
-            wireframe.complete(from: view)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: view.localizationManager?.selectedLocale
+            )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,

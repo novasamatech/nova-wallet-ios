@@ -183,8 +183,12 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
 
         view?.didStopLoading()
 
-        // TODO: MS navigation
-        wireframe.complete(from: view)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: sender,
+            completionAction: .dismiss,
+            locale: view?.selectedLocale
+        )
     }
 
     func didFailPayout(error: Error) {

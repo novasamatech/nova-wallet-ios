@@ -29,10 +29,7 @@ protocol ControllerAccountConfirmationInteractorOutputProtocol: AnyObject {
 }
 
 protocol ControllerAccountConfirmationWireframeProtocol: AddressOptionsPresentable,
-    ErrorPresentable,
-    AlertPresentable,
-    StakingErrorPresentable,
-    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(from view: ControllerAccountConfirmationViewProtocol?)
+    ErrorPresentable, AlertPresentable, StakingErrorPresentable,
+    MessageSheetPresentable, ModalAlertPresenting, ExtrinsicSigningErrorHandling, ExtrinsicSubmissionPresenting {
     func close(view: ControllerBackedProtocol?)
 }

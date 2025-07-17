@@ -21,10 +21,5 @@ protocol MythosStakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentabl
     AddressOptionsPresentable,
     MythosStakingErrorPresentable,
     MessageSheetPresentable,
-    ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {
-    func complete(
-        view: CollatorStakingRedeemViewProtocol?,
-        redeemedAll: Bool,
-        locale: Locale
-    )
-}
+    ModalAlertPresenting,
+    ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

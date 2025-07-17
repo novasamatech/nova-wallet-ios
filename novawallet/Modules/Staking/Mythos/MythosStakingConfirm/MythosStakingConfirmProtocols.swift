@@ -16,5 +16,9 @@ protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentab
     MythosStakingErrorPresentable,
     ExtrinsicSigningErrorHandling,
     ExtrinsicSubmissionPresenting {
-    func complete(on view: CollatorStakingConfirmViewProtocol?, locale: Locale)
+    func complete(
+        on view: CollatorStakingConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution,
+        locale: Locale
+    )
 }

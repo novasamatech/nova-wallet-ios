@@ -230,9 +230,13 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            // TODO: MS navigation
-            wireframe.complete(on: view, locale: selectedLocale)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
         case let .failure(error):
             applyCurrentState()
             refreshFee()

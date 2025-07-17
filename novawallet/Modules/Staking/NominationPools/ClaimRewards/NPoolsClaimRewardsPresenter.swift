@@ -249,7 +249,6 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
 
         switch submissionResult {
         case let .success(model):
-            // TODO: Fix MS navigation
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,

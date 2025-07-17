@@ -321,8 +321,12 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
 
         view?.didStopLoading()
 
-        // TODO: MS navigation
-        wireframe.complete(from: view)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: submission.sender,
+            completionAction: .dismiss,
+            locale: view?.selectedLocale
+        )
     }
 
     func didFailNomination(error: Error) {

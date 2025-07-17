@@ -64,7 +64,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             switch result {
             case .success:
                 self.eventCenter.notify(with: WalletTransactionListUpdated())
-                self.submitionPresenter?.didCompleteSubmition()
+                self.submitionPresenter?.didCompleteSubmition(by: nil)
             case let .failure(error):
                 self.presenter?.didReceiveError(error)
             }
@@ -112,7 +112,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                 switch result {
                 case let .success(txHash):
                     guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
-                        submitionPresenter?.didCompleteSubmition()
+                        submitionPresenter?.didCompleteSubmition(by: nil)
                         return
                     }
 
@@ -131,7 +131,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
                         persistExtrinsicAndComplete(details: details, type: transferType)
                     } else {
-                        submitionPresenter?.didCompleteSubmition()
+                        submitionPresenter?.didCompleteSubmition(by: nil)
                     }
 
                 case let .failure(error):

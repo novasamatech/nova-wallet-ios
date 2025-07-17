@@ -40,6 +40,5 @@ protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol SelectValidatorsConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, StakingErrorPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(from view: SelectValidatorsConfirmViewProtocol?)
-}
+    AddressOptionsPresentable, StakingErrorPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

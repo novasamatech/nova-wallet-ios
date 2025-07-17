@@ -29,5 +29,9 @@ protocol ParaStkStakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentabl
     AddressOptionsPresentable,
     FeeRetryable,
     MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: CollatorStakingConfirmViewProtocol?, locale: Locale)
+    func complete(
+        on view: CollatorStakingConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution,
+        locale: Locale
+    )
 }

@@ -32,12 +32,13 @@ protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {
 }
 
 protocol SwapConfirmInteractorOutProtocol: SwapBaseInteractorOutputProtocol {
-    func didCompleteSwapSubmission(with result: Result<Void, Error>)
+    func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>)
     func didDecideMonitoredExecution(for model: SwapExecutionModel)
 }
 
 protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptionsPresentable,
-    ShortTextInfoPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
+    ShortTextInfoPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {
     func showSwapExecution(
         from view: SwapConfirmViewProtocol?,
         model: SwapExecutionModel
@@ -54,6 +55,4 @@ protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptions
         operations: [AssetExchangeMetaOperationProtocol],
         fee: AssetExchangeFee
     )
-
-    func complete(on view: SwapConfirmViewProtocol?)
 }

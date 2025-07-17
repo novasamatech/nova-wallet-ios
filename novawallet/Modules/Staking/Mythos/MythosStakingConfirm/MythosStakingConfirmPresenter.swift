@@ -240,9 +240,8 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            // TODO: MS navigation
-            wireframe.complete(on: view, locale: selectedLocale)
+        case let .success(model):
+            wireframe.complete(on: view, sender: model.sender, locale: selectedLocale)
         case let .failure(error):
             logger.error("Submission error: \(error)")
 

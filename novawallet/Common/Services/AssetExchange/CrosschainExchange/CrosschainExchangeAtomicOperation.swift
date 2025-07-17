@@ -149,8 +149,8 @@ final class CrosschainExchangeAtomicOperation {
         for originAccount: ChainAccountResponse,
         resolutionOperation: BaseOperation<XcmTransferParties>,
         amountClosure: @escaping () throws -> Balance
-    ) -> CompoundOperationWrapper<Void> {
-        OperationCombiningService<Void>.compoundNonOptionalWrapper(
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        OperationCombiningService<ExtrinsicSubmittedModel>.compoundNonOptionalWrapper(
             operationQueue: host.operationQueue
         ) {
             let transferParties = try resolutionOperation.extractNoCancellableResultData()
@@ -212,7 +212,7 @@ extension CrosschainExchangeAtomicOperation: AssetExchangeAtomicOperationProtoco
         return submitWrapper.insertingHead(operations: resolutionWrapper.allOperations)
     }
 
-    func submitWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Void> {
+    func submitWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         guard
             let originChain = host.allChains[edge.origin.chainId],
             let destinationChain = host.allChains[edge.destination.chainId],

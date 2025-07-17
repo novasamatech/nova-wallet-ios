@@ -162,7 +162,6 @@ extension NominationPoolBondMoreConfirmPresenter: NominationPoolBondMoreConfirmI
 
         switch submissionResult {
         case let .success(model):
-            // TODO: MS navigation
             wireframe?.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,

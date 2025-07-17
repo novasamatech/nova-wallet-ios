@@ -57,10 +57,11 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
     }
 
     private func persistExtrinsicAndComplete(
-        details: PersistExtrinsicDetails
+        details: PersistExtrinsicDetails,
+        sender: ExtrinsicSenderResolution
     ) {
         guard let utilityAsset = originChainAsset.chain.utilityAssets().first else {
-            submitionPresenter?.didCompleteSubmition()
+            submitionPresenter?.didCompleteSubmition(by: sender)
             return
         }
 
@@ -75,7 +76,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition()
+                self?.submitionPresenter?.didCompleteSubmition(by: sender)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -115,7 +116,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                 switch result {
                 case let .success(result):
                     guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
-                        submitionPresenter?.didCompleteSubmition()
+                        submitionPresenter?.didCompleteSubmition(by: result.submittedModel.sender)
                         return
                     }
 
@@ -128,9 +129,9 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                             fee: originFee?.amount
                         )
 
-                        persistExtrinsicAndComplete(details: details)
+                        persistExtrinsicAndComplete(details: details, sender: result.submittedModel.sender)
                     } else {
-                        submitionPresenter?.didCompleteSubmition()
+                        submitionPresenter?.didCompleteSubmition(by: result.submittedModel.sender)
                     }
 
                 case let .failure(error):

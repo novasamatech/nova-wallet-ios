@@ -185,7 +185,6 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
 extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputProtocol {
     func didReceiveVotingCompletion(_ sender: ExtrinsicSenderResolution) {
-        // TODO: MS navigation
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(

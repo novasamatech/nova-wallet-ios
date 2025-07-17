@@ -37,6 +37,5 @@ protocol ParaStkRebondWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: ParaStkRebondViewProtocol?, locale: Locale)
-}
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

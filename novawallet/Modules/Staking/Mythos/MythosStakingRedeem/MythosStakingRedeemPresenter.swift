@@ -244,11 +244,13 @@ extension MythosStakingRedeemPresenter: MythosStakingRedeemInteractorOutputProto
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            // TODO: MS navigation
-            wireframe.complete(
-                view: view,
-                redeemedAll: isRedeemAll(),
+        case let .success(model):
+            let action: ExtrinsicSubmissionPresentingAction = isRedeemAll() ? .popBaseAndDismiss : .dismiss
+
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: action,
                 locale: selectedLocale
             )
         case let .failure(error):

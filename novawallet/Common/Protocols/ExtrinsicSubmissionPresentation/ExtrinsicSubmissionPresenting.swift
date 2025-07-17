@@ -6,6 +6,7 @@ enum ExtrinsicSubmissionPresentingAction {
     case pop
     case popBack
     case popBaseAndDismiss
+    case dismissWithPostNavigation(() -> Void)
 }
 
 protocol ExtrinsicSubmissionCompliting {
@@ -14,7 +15,7 @@ protocol ExtrinsicSubmissionCompliting {
         alertPresenting: ModalAlertPresenting,
         sender: ExtrinsicSenderResolution?,
         completionAction: ExtrinsicSubmissionPresentingAction,
-        locale: Locale
+        locale: Locale?
     ) -> Bool
 }
 
@@ -23,7 +24,7 @@ protocol ExtrinsicSubmissionPresenting: AnyObject {
         from view: ControllerBackedProtocol?,
         sender: ExtrinsicSenderResolution?,
         completionAction: ExtrinsicSubmissionPresentingAction,
-        locale: Locale
+        locale: Locale?
     )
 
     var completionHandlers: [ExtrinsicSubmissionCompliting] { get }
@@ -41,7 +42,7 @@ extension ExtrinsicSubmissionPresenting where Self: ModalAlertPresenting {
         from view: ControllerBackedProtocol?,
         sender: ExtrinsicSenderResolution?,
         completionAction: ExtrinsicSubmissionPresentingAction,
-        locale: Locale
+        locale: Locale?
     ) {
         for completer in completionHandlers {
             if completer.handleCompletion(

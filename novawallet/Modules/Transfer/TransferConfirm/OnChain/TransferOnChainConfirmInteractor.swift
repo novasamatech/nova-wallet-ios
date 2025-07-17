@@ -56,7 +56,8 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
     }
 
     private func persistExtrinsicAndComplete(
-        details: PersistTransferDetails
+        details: PersistTransferDetails,
+        sender: ExtrinsicSenderResolution
     ) {
         persistExtrinsicService.saveTransfer(
             source: .substrate,
@@ -67,7 +68,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition()
+                self?.submitionPresenter?.didCompleteSubmition(by: sender)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -111,7 +112,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                     switch result {
                     case let .success(submittedModel):
                         guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
-                            submitionPresenter?.didCompleteSubmition()
+                            submitionPresenter?.didCompleteSubmition(by: submittedModel.sender)
                             return
                         }
 
@@ -128,9 +129,9 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                                 feeAssetId: feeAsset?.asset.assetId
                             )
 
-                            persistExtrinsicAndComplete(details: details)
+                            persistExtrinsicAndComplete(details: details, sender: submittedModel.sender)
                         } else {
-                            submitionPresenter?.didCompleteSubmition()
+                            submitionPresenter?.didCompleteSubmition(by: submittedModel.sender)
                         }
 
                     case let .failure(error):

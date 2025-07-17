@@ -38,7 +38,7 @@ extension ExtrinsicSubmissionDelayedCompleter: ExtrinsicSubmissionCompliting {
         alertPresenting _: ModalAlertPresenting,
         sender: ExtrinsicSenderResolution?,
         completionAction _: ExtrinsicSubmissionPresentingAction,
-        locale _: Locale
+        locale _: Locale?
     ) -> Bool {
         guard
             let sender,

@@ -13,7 +13,7 @@ protocol AssetsExchangeOperationFactoryProtocol {
 
     func createSingleOperationSubmitWrapper(
         for fee: AssetExchangeFee
-    ) -> CompoundOperationWrapper<Void>
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel>
 }
 
 enum AssetsExchangeOperationFactoryError: Error {
@@ -340,7 +340,7 @@ extension AssetsExchangeOperationFactory: AssetsExchangeOperationFactoryProtocol
 
     func createSingleOperationSubmitWrapper(
         for fee: AssetExchangeFee
-    ) -> CompoundOperationWrapper<Void> {
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         do {
             let atomicOperations = try prepareAtomicOperations(
                 for: fee.route,
