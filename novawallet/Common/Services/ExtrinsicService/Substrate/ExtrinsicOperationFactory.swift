@@ -24,7 +24,7 @@ protocol ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         payingFeeIn chainAssetId: ChainAssetId?
-    ) -> CompoundOperationWrapper<String>
+    ) -> CompoundOperationWrapper<ExtrinsicBuiltModel>
 }
 
 extension ExtrinsicOperationFactoryProtocol {

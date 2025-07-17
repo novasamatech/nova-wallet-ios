@@ -178,13 +178,12 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
         view?.didStartLoading()
     }
 
-    func didCompletePayout(txHashes: [String]) {
-        txHashes.forEach { txHash in
-            logger?.info("Did send payouts: \(txHash)")
-        }
+    func didCompletePayout(by sender: ExtrinsicSenderResolution) {
+        logger?.info("Did send payouts by: \(sender)")
 
         view?.didStopLoading()
 
+        // TODO: MS navigation
         wireframe.complete(from: view)
     }
 

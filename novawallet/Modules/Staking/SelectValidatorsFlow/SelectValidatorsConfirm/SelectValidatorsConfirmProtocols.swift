@@ -32,7 +32,7 @@ protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 
     func didStartNomination()
-    func didCompleteNomination(txHash: String)
+    func didCompleteNomination(submission: ExtrinsicSubmittedModel)
     func didFailNomination(error: Error)
 
     func didReceive(paymentInfo: ExtrinsicFeeProtocol)

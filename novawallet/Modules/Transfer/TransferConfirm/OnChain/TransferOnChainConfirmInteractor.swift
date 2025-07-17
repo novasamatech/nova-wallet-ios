@@ -109,7 +109,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                     guard let self else { return }
 
                     switch result {
-                    case let .success(txHash):
+                    case let .success(submittedModel):
                         guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
                             submitionPresenter?.didCompleteSubmition()
                             return
@@ -117,7 +117,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
 
                         if
                             let callCodingPath = callCodingPath,
-                            let txHashData = try? Data(hexString: txHash) {
+                            let txHashData = try? Data(hexString: submittedModel.txHash) {
                             let details = PersistTransferDetails(
                                 sender: sender,
                                 receiver: recepient,
@@ -130,7 +130,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
 
                             persistExtrinsicAndComplete(details: details)
                         } else {
-                            presenter?.didCompleteSetup()
+                            submitionPresenter?.didCompleteSubmition()
                         }
 
                     case let .failure(error):

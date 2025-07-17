@@ -29,7 +29,7 @@ protocol ParaStkRebondInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ result: Result<ExtrinsicFeeProtocol, Error>)
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveCollatorIdentity(_ identity: AccountIdentity?)
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>)
     func didReceiveError(_ error: Error)
 }
 

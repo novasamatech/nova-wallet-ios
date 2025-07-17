@@ -112,8 +112,16 @@ extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputP
             if let error = result.errors().first {
                 self?.presenter?.didReceiveError(.submitVoteFailed(error))
             } else {
-                let result = result.results.compactMap { try? $0.result.get() }.joined()
-                self?.presenter?.didReceiveVotingHash(result)
+                guard let firstResult = result.results.first?.result else {
+                    return
+                }
+
+                do {
+                    let sender = try firstResult.get().sender
+                    self?.presenter?.didReceiveVotingCompletion(sender)
+                } catch {
+                    self?.presenter?.didReceiveError(.submitVoteFailed(error))
+                }
             }
         }
     }

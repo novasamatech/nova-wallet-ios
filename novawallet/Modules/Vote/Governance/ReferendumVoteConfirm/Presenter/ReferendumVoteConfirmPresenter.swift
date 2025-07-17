@@ -184,7 +184,8 @@ final class ReferendumVoteConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 // MARK: ReferendumVoteConfirmInteractorOutputProtocol
 
 extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmInteractorOutputProtocol {
-    func didReceiveVotingHash(_: String) {
+    func didReceiveVotingCompletion(_: ExtrinsicSenderResolution) {
+        // TODO: MS navigation
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(from: baseView, completionAction: .dismiss, locale: selectedLocale)

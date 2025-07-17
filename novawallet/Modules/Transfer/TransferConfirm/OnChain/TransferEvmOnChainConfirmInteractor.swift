@@ -131,7 +131,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
                         persistExtrinsicAndComplete(details: details, type: transferType)
                     } else {
-                        presenter?.didCompleteSetup()
+                        submitionPresenter?.didCompleteSubmition()
                     }
 
                 case let .failure(error):

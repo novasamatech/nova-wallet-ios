@@ -25,7 +25,7 @@ protocol ControllerAccountConfirmationInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
-    func didConfirmed(result: Result<String, Error>)
+    func didConfirmed(result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol ControllerAccountConfirmationWireframeProtocol: AddressOptionsPresentable,

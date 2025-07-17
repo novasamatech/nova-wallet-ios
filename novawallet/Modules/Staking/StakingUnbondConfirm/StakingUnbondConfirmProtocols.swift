@@ -35,7 +35,7 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveNomination(result: Result<Nomination?, Error>)
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 
-    func didSubmitUnbonding(result: Result<String, Error>)
+    func didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol StakingUnbondConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,

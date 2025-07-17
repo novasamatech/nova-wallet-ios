@@ -169,9 +169,10 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopPresenterProtocol
 }
 
 extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopInteractorOutputProtocol {
-    func didStopAutocompound(with _: String) {
+    func didStopAutocompound(with _: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
+        // TODO: MS navigation
         wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
     }
 

@@ -316,11 +316,12 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         view?.didStartLoading()
     }
 
-    func didCompleteNomination(txHash: String) {
-        logger?.info("Did send nomination: \(txHash)")
+    func didCompleteNomination(submission: ExtrinsicSubmittedModel) {
+        logger?.info("Did send nomination: \(submission)")
 
         view?.didStopLoading()
 
+        // TODO: MS navigation
         wireframe.complete(from: view)
     }
 

@@ -23,7 +23,7 @@ protocol CrowdloanContributionConfirmInteractorInputProtocol: CrowdloanContribut
 }
 
 protocol CrowdloanContributionConfirmInteractorOutputProtocol: CrowdloanContributionInteractorOutputProtocol {
-    func didSubmitContribution(result: Result<String, Error>)
+    func didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>)
     func didReceiveDisplayAddress(result: Result<DisplayAddress, Error>)
     func didReceiveRewardDestinationAddress(_ address: AccountAddress)
 }

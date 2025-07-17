@@ -113,7 +113,7 @@ extension HydraExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
                 let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                switch submittionResult {
+                switch submittionResult.status {
                 case let .success(executionResult):
                     let eventParser = AssetsHydraExchangeDepositParser(logger: self.host.logger)
 

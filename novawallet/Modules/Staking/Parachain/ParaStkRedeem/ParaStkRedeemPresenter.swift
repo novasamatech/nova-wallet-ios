@@ -261,11 +261,12 @@ extension ParaStkRedeemPresenter: ParaStkRedeemInteractorOutputProtocol {
         }
     }
 
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
         case .success:
+            // TODO: MS navigation
             if isRedeemAll() {
                 wireframe.presentExtrinsicSubmission(
                     from: view,

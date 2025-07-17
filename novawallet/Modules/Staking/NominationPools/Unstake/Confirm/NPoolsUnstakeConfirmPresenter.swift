@@ -172,13 +172,14 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmPresenterProtocol {
 }
 
 extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputProtocol {
-    func didReceive(submissionResult: Result<String, Error>) {
+    func didReceive(submissionResult: Result<ExtrinsicSubmittedModel, Error>) {
         logger.debug("Submission result: \(submissionResult)")
 
         view?.didStopLoading()
 
         switch submissionResult {
         case .success:
+            // TODO: Fix MS navigation
             wireframe?.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
         case let .failure(error):
             wireframe?.handleExtrinsicSigningErrorPresentationElseDefault(

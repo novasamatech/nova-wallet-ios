@@ -198,7 +198,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
     }
 
-    func didConfirmed(result: Result<String, Error>) {
+    func didConfirmed(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -207,6 +207,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
 
         switch result {
         case .success:
+            // TODO: MS Navigation
             wireframe.complete(from: view)
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(

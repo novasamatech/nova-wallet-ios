@@ -7,7 +7,7 @@ protocol ExtrinsicSubmitMonitorFactoryProtocol {
         payingIn feeAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus>
+    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission>
 }
 
 extension ExtrinsicSubmitMonitorFactoryProtocol {
@@ -15,7 +15,7 @@ extension ExtrinsicSubmitMonitorFactoryProtocol {
         extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
         payingIn feeAssetId: ChainAssetId? = nil,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
+    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
         submitAndMonitorWrapper(
             extrinsicBuilderClosure: extrinsicBuilderClosure,
             payingIn: feeAssetId,
@@ -27,8 +27,9 @@ extension ExtrinsicSubmitMonitorFactoryProtocol {
 
 final class ExtrinsicSubmissionMonitorFactory {
     struct SubmissionResult {
-        let blockHash: String
-        let extrinsicHash: String
+        let blockHash: BlockHash
+        let extrinsicHash: ExtrinsicHash
+        let sender: ExtrinsicSenderResolution
     }
 
     let submissionService: ExtrinsicServiceProtocol
@@ -53,7 +54,7 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
         payingIn feeAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         matchingEvents: ExtrinsicEventsMatching?
-    ) -> CompoundOperationWrapper<SubstrateExtrinsicStatus> {
+    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
         var subscriptionId: UInt16?
 
         let submissionOperation = AsyncClosureOperation<SubmissionResult>(operationClosure: { completionClosure in
@@ -70,14 +71,15 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
                 notificationClosure: { result in
                     switch result {
                     case let .success(model):
-                        if let blockHash = model.getInBlockOrFinalizedHash() {
+                        if let blockHash = model.statusUpdate.getInBlockOrFinalizedHash() {
                             if let subscriptionId {
                                 self.submissionService.cancelExtrinsicWatch(for: subscriptionId)
                             }
 
                             let response = SubmissionResult(
                                 blockHash: blockHash,
-                                extrinsicHash: model.extrinsicHash
+                                extrinsicHash: model.statusUpdate.extrinsicHash,
+                                sender: model.sender
                             )
 
                             completionClosure(.success(response))
@@ -116,6 +118,23 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
 
         statusWrapper.addDependency(operations: [submissionOperation])
 
-        return statusWrapper.insertingHead(operations: [submissionOperation])
+        let mappingOperation = ClosureOperation<ExtrinsicMonitorSubmission> {
+            let status = try statusWrapper.targetOperation.extractNoCancellableResultData()
+            let submission = try submissionOperation.extractNoCancellableResultData()
+
+            return ExtrinsicMonitorSubmission(
+                extrinsicSubmittedModel: ExtrinsicSubmittedModel(
+                    txHash: submission.extrinsicHash,
+                    sender: submission.sender
+                ),
+                status: status
+            )
+        }
+
+        mappingOperation.addDependency(statusWrapper.targetOperation)
+
+        return statusWrapper
+            .insertingHead(operations: [submissionOperation])
+            .insertingTail(operation: mappingOperation)
     }
 }

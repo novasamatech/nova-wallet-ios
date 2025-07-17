@@ -28,7 +28,7 @@ protocol StakingRebondConfirmationInteractorOutputProtocol: AnyObject {
     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
 
-    func didSubmitRebonding(result: Result<String, Error>)
+    func didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol StakingRebondConfirmationWireframeProtocol: AlertPresentable, ErrorPresentable,

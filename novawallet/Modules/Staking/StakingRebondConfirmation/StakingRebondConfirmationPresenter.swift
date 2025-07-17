@@ -241,7 +241,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         }
     }
 
-    func didSubmitRebonding(result: Result<String, Error>) {
+    func didSubmitRebonding(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -250,6 +250,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
 
         switch result {
         case .success:
+            // TODO: MS navigation
             wireframe.complete(from: view)
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(

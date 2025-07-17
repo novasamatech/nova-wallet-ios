@@ -257,7 +257,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
     }
 
-    func didSubmitBonding(result: Result<String, Error>) {
+    func didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -266,6 +266,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
 
         switch result {
         case .success:
+            // TODO: MS navigation
             wireframe.complete(from: view)
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(

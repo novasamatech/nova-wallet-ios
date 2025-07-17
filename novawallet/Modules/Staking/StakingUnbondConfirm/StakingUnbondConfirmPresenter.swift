@@ -325,7 +325,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         }
     }
 
-    func didSubmitUnbonding(result: Result<String, Error>) {
+    func didSubmitUnbonding(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -334,6 +334,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
 
         switch result {
         case .success:
+            // TODO: MS navigation
             wireframe.complete(from: view)
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(

@@ -120,7 +120,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                     }
 
                     if
-                        let txHashData = try? Data(hexString: result.txHash) {
+                        let txHashData = try? Data(hexString: result.submittedModel.txHash) {
                         let details = PersistExtrinsicDetails(
                             sender: sender,
                             txHash: txHashData,
@@ -130,7 +130,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
                         persistExtrinsicAndComplete(details: details)
                     } else {
-                        submitionPresenter?.didReceiveError(CommonError.dataCorruption)
+                        submitionPresenter?.didCompleteSubmition()
                     }
 
                 case let .failure(error):

@@ -148,25 +148,38 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             }
 
         let wrapperOperation = ClosureOperation<SubmitIndexedExtrinsicResult> {
-            // TODO: Move to a better place
-            let sender = try builderWrapper.targetOperation.extractNoCancellableResultData().sender
+            do {
+                let sender = try builderWrapper.targetOperation.extractNoCancellableResultData().sender
 
-            let indexedResults = zip(indexList, submitOperationList).map { indexedOperation in
+                let indexedResults = zip(indexList, submitOperationList).map { indexedOperation in
 
-                if let result = indexedOperation.1.result {
-                    let mappedResult = result.map { txHash in
-                        ExtrinsicSubmitedModel(txHash: txHash, sender: sender)
+                    if let result = indexedOperation.1.result {
+                        let mappedResult = result.map { txHash in
+                            ExtrinsicSubmittedModel(txHash: txHash, sender: sender)
+                        }
+                        return SubmitIndexedExtrinsicResult.IndexedResult(
+                            index: indexedOperation.0,
+                            result: mappedResult
+                        )
+                    } else {
+                        return SubmitIndexedExtrinsicResult.IndexedResult(
+                            index: indexedOperation.0,
+                            result: .failure(BaseOperationError.parentOperationCancelled)
+                        )
                     }
-                    return SubmitIndexedExtrinsicResult.IndexedResult(index: indexedOperation.0, result: mappedResult)
-                } else {
-                    return SubmitIndexedExtrinsicResult.IndexedResult(
-                        index: indexedOperation.0,
-                        result: .failure(BaseOperationError.parentOperationCancelled)
+                }
+
+                return .init(builderClosure: closure, results: indexedResults)
+            } catch {
+                let indexedResults = indexList.map { index in
+                    SubmitIndexedExtrinsicResult.IndexedResult(
+                        index: index,
+                        result: .failure(error)
                     )
                 }
-            }
 
-            return .init(builderClosure: closure, results: indexedResults)
+                return .init(builderClosure: closure, results: indexedResults)
+            }
         }
 
         submitOperationList.forEach { submitOperation in
@@ -183,7 +196,7 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         payingFeeIn chainAssetId: ChainAssetId?
-    ) -> CompoundOperationWrapper<String> {
+    ) -> CompoundOperationWrapper<ExtrinsicBuiltModel> {
         let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
             try closure(builder)
         }
@@ -199,12 +212,19 @@ extension BaseExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             signingClosure: signingClosure
         )
 
-        let resOperation: ClosureOperation<String> = ClosureOperation {
-            let extrinsic = try builderWrapper.targetOperation.extractNoCancellableResultData()
-                .extrinsics
-                .first!
+        let resOperation: ClosureOperation<ExtrinsicBuiltModel> = ClosureOperation {
+            let extrinsicsWithSender = try builderWrapper.targetOperation.extractNoCancellableResultData()
 
-            return extrinsic.toHex(includePrefix: true)
+            guard let extrinsic = extrinsicsWithSender.extrinsics.first else {
+                throw CommonError.dataCorruption
+            }
+
+            let model = ExtrinsicBuiltModel(
+                extrinsic: extrinsic.toHex(includePrefix: true),
+                sender: extrinsicsWithSender.sender
+            )
+
+            return model
         }
         builderWrapper.allOperations.forEach {
             resOperation.addDependency($0)

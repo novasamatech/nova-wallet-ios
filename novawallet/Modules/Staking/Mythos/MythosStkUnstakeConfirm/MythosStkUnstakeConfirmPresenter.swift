@@ -325,11 +325,12 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
         }
     }
 
-    func didReceiveSubmissionResult(_ result: Result<ExtrinsicHash, Error>) {
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
         case .success:
+            // TODO: MS navigation
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 completionAction: .dismiss,

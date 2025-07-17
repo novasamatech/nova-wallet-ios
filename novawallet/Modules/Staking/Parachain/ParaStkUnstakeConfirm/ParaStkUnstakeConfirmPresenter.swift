@@ -226,11 +226,12 @@ extension ParaStkUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterProt
 }
 
 extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputProtocol {
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
         case .success:
+            // TODO: MS navigation
             wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
             applyCurrentState()

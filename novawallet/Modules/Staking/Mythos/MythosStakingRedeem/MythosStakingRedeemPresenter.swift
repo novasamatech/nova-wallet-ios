@@ -240,11 +240,12 @@ extension MythosStakingRedeemPresenter: MythosStakingRedeemInteractorOutputProto
         }
     }
 
-    func didReceiveSubmissionResult(_ result: Result<String, Error>) {
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
         case .success:
+            // TODO: MS navigation
             wireframe.complete(
                 view: view,
                 redeemedAll: isRedeemAll(),

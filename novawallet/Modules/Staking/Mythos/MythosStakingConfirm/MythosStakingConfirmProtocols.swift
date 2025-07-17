@@ -5,7 +5,7 @@ protocol MythosStakingConfirmInteractorInputProtocol: MythosStakingBaseInteracto
 }
 
 protocol MythosStakingConfirmInteractorOutputProtocol: MythosStakingBaseInteractorOutputProtocol {
-    func didReceiveSubmissionResult(_ result: Result<String, Error>)
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol MythosStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,

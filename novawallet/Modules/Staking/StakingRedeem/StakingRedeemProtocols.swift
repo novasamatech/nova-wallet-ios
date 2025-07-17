@@ -30,7 +30,7 @@ protocol StakingRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)
 
-    func didSubmitRedeeming(result: Result<String, Error>)
+    func didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol StakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,

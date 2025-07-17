@@ -312,7 +312,7 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmPre
 }
 
 extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInteractorOutputProtocol {
-    func didSubmitContribution(result: Result<String, Error>) {
+    func didSubmitContribution(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
