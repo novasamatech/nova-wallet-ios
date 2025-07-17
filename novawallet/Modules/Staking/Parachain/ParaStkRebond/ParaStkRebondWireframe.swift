@@ -3,6 +3,12 @@ import Foundation
 final class ParaStkRebondWireframe: ParaStkRebondWireframeProtocol,
     ModalAlertPresenting, ExtrinsicSubmissionPresenting {
     func complete(on view: ParaStkRebondViewProtocol?, locale: Locale) {
-        presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: locale)
+        // TODO: MS navigation
+        presentExtrinsicSubmission(
+            from: view,
+            sender: nil,
+            completionAction: .dismiss,
+            locale: locale
+        )
     }
 }

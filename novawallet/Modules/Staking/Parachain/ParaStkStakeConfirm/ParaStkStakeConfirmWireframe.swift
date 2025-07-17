@@ -7,15 +7,18 @@ final class ParaStkStakeConfirmWireframe: ParaStkStakeConfirmWireframeProtocol,
         let navigationController = view?.controller.navigationController
         let viewControllers = navigationController?.viewControllers ?? []
 
+        // TODO: MS navigation
         if viewControllers.contains(where: { $0 is StartStakingInfoViewProtocol }) {
             presentExtrinsicSubmission(
                 from: view,
+                sender: nil,
                 completionAction: .popBaseAndDismiss,
                 locale: locale
             )
         } else {
             presentExtrinsicSubmission(
                 from: view,
+                sender: nil,
                 completionAction: .dismiss,
                 locale: locale
             )

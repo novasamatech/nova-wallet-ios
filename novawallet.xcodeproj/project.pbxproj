@@ -367,6 +367,9 @@
 		0C2B18B22BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B12BFE48BD00206EDE /* CloudBackupUpdateApplicationFactory+Create.swift */; };
 		0C2B18B42BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B18B32BFEFD2A00206EDE /* CloudBackupConflictsResolver.swift */; };
 		0C2BE7872E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7862E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift */; };
+		0C2BE78A2E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */; };
+		0C2BE78C2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */; };
+		0C2BE78E2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2BE78D2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift */; };
 		0C2D1E3B2D96E1920030E43C /* LedgerDeviceModel+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+ViewModel.swift */; };
 		0C2D1E3D2D9708350030E43C /* LedgerDeviceDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2D1E3C2D9708350030E43C /* LedgerDeviceDisplayInfo.swift */; };
 		0C2DA89A2CC21419001F79C8 /* GraphQuotableEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2DA8992CC21419001F79C8 /* GraphQuotableEdge.swift */; };
@@ -6411,6 +6414,9 @@
 		0C2B583DB30C6C818B0F952D /* ParaStkRebondWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkRebondWireframe.swift; sourceTree = "<group>"; };
 		0C2BD7CE1EF80FCD3569BD44 /* SwapRouteDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwapRouteDetailsProtocols.swift; sourceTree = "<group>"; };
 		0C2BE7862E28F44C00E7FFC2 /* ExtrinsicMonitorSubmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicMonitorSubmission.swift; sourceTree = "<group>"; };
+		0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmissionRegularCompleter.swift; sourceTree = "<group>"; };
+		0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmissionDelayedCompleter.swift; sourceTree = "<group>"; };
+		0C2BE78D2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicSenderResolution+Delayed.swift"; sourceTree = "<group>"; };
 		0C2D1E3A2D96E1920030E43C /* LedgerDeviceModel+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LedgerDeviceModel+ViewModel.swift"; sourceTree = "<group>"; };
 		0C2D1E3C2D9708350030E43C /* LedgerDeviceDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerDeviceDisplayInfo.swift; sourceTree = "<group>"; };
 		0C2DA8992CC21419001F79C8 /* GraphQuotableEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphQuotableEdge.swift; sourceTree = "<group>"; };
@@ -13206,6 +13212,16 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0C2BE7882E28F90800E7FFC2 /* ExtrinsicSubmissionPresentation */ = {
+			isa = PBXGroup;
+			children = (
+				84D6E2F9283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift */,
+				0C2BE7892E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift */,
+				0C2BE78B2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift */,
+			);
+			path = ExtrinsicSubmissionPresentation;
+			sourceTree = "<group>";
+		};
 		0C2DA8AB2CC2B120001F79C8 /* AssetsExchange */ = {
 			isa = PBXGroup;
 			children = (
@@ -13463,6 +13479,7 @@
 				0C495B972B452AF600B8D339 /* DelegationResolution */,
 				0C8AF7AB2B3437E700005AC9 /* ExtrinsicSenderResolving.swift */,
 				0C8AF7AE2B343C6B00005AC9 /* ExtrinsicSenderResolutionFactory.swift */,
+				0C2BE78D2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift */,
 			);
 			path = ExtrinsicSenderResolution;
 			sourceTree = "<group>";
@@ -22240,6 +22257,7 @@
 		8490142624A935FE008F705E /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				0C2BE7882E28F90800E7FFC2 /* ExtrinsicSubmissionPresentation */,
 				2D5A77352D8D4B8C003838D3 /* Ramp */,
 				0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */,
 				843910D8253F8DFB00E3C217 /* StatusPresentable.swift */,
@@ -22271,7 +22289,6 @@
 				842A738327DDF55A006EE1EA /* OperationIdOptionsPresentable.swift */,
 				8487583D27F070B300495306 /* ApplicationSettingsPresentable.swift */,
 				8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */,
-				84D6E2F9283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift */,
 				84FA7C1B284F8EB400B648E1 /* PendingExtrinsicInteracting.swift */,
 				84F1A072286A5DDA007DB053 /* CommonRetryable.swift */,
 				84E2589E2892B5AF00DC8A51 /* WalletSwitchPresentable.swift */,
@@ -30453,6 +30470,7 @@
 				84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */,
 				2D3C71AD2E08804800DF9E49 /* MultisigEventMatcher.swift in Sources */,
 				8473B4762A20722E003DE213 /* StakingDashboardRelaychainMapper.swift in Sources */,
+				0C2BE78E2E2903F100E7FFC2 /* ExtrinsicSenderResolution+Delayed.swift in Sources */,
 				0CEBAD502D5C5FDE000EBA45 /* CollatorStakingRewardService.swift in Sources */,
 				2D5D0CE92D54A24C000E32F6 /* BannerBackgroundView.swift in Sources */,
 				849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */,
@@ -32557,6 +32575,7 @@
 				0C277DA22D829EC0004FF053 /* XcmDynamicChain.swift in Sources */,
 				0C37AFC12B56EBC000009ECA /* MaxNominationsOperationFactory.swift in Sources */,
 				0C0E0A952B3E89D200865F10 /* ExtrinsicWrapperResult.swift in Sources */,
+				0C2BE78A2E28F98900E7FFC2 /* ExtrinsicSubmissionRegularCompleter.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				2D6287372C917E3900060814 /* VotingPowerMapper.swift in Sources */,
 				2D7E4A192C406FED00455509 /* CustomNetworkDTO.swift in Sources */,
@@ -33939,6 +33958,7 @@
 				0C66102D2A73828800E44634 /* RelaychainStakingSharedState.swift in Sources */,
 				4CBA0A25DB544214C4A02F0B /* InAppUpdatesWireframe.swift in Sources */,
 				D6A2790F5C9E2AAA137E52CC /* InAppUpdatesPresenter.swift in Sources */,
+				0C2BE78C2E28F99900E7FFC2 /* ExtrinsicSubmissionDelayedCompleter.swift in Sources */,
 				34D6FF85BEA25EFD1D15D460 /* InAppUpdatesInteractor.swift in Sources */,
 				0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */,
 				841E54A07ACD3AD160A1250A /* InAppUpdatesViewController.swift in Sources */,

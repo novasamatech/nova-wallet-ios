@@ -9,6 +9,8 @@ protocol AccountDelegationPathValue {
     ) throws -> JSON
 
     var delegationType: DelegationType { get }
+
+    func delaysCallExecution() -> Bool
 }
 
 extension DelegationResolution {
@@ -205,6 +207,10 @@ extension DelegationResolution.PathFinder {
             .runtimeCall()
             .toScaleCompatibleJSON(with: context.toRawContext())
         }
+
+        func delaysCallExecution() -> Bool {
+            false
+        }
     }
 
     struct MultisigDelegationValue: AccountDelegationPathValue {
@@ -243,6 +249,10 @@ extension DelegationResolution.PathFinder {
                 .runtimeCall()
                 .toScaleCompatibleJSON(with: context.toRawContext())
             }
+        }
+
+        func delaysCallExecution() -> Bool {
+            threshold > 1
         }
     }
 }

@@ -265,17 +265,18 @@ extension ParaStkRedeemPresenter: ParaStkRedeemInteractorOutputProtocol {
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            // TODO: MS navigation
+        case let .success(model):
             if isRedeemAll() {
                 wireframe.presentExtrinsicSubmission(
                     from: view,
+                    sender: model.sender,
                     completionAction: .popBaseAndDismiss,
                     locale: selectedLocale
                 )
             } else {
                 wireframe.presentExtrinsicSubmission(
                     from: view,
+                    sender: model.sender,
                     completionAction: .dismiss,
                     locale: selectedLocale
                 )

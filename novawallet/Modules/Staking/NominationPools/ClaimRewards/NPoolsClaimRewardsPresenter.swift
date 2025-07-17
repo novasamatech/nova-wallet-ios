@@ -248,10 +248,11 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         view?.didStopLoading()
 
         switch submissionResult {
-        case .success:
+        case let .success(model):
             // TODO: Fix MS navigation
             wireframe.presentExtrinsicSubmission(
                 from: view,
+                sender: model.sender,
                 completionAction: .dismiss,
                 locale: selectedLocale
             )

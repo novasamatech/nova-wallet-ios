@@ -54,6 +54,21 @@ struct ExtrinsicRetriableResult<R> {
     }
 }
 
+extension ExtrinsicRetriableResult where R == ExtrinsicSubmittedModel {
+    func senders() -> [ExtrinsicSenderResolution] {
+        let senders: [ExtrinsicSenderResolution] = results.compactMap { indexedResult in
+            switch indexedResult.result {
+            case let .success(model):
+                return model.sender
+            case .failure:
+                return nil
+            }
+        }
+
+        return senders
+    }
+}
+
 struct ExtrinsicSubmittedModel {
     let txHash: String
     let sender: ExtrinsicSenderResolution

@@ -248,11 +248,15 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartInteractorOutpu
         }
     }
 
-    func didScheduleYieldBoost(for _: ExtrinsicSubmittedModel) {
+    func didScheduleYieldBoost(for model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
-        // TODO: MS navigation
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: model.sender,
+            completionAction: .dismiss,
+            locale: selectedLocale
+        )
     }
 
     func didReceiveConfirmation(error: ParaStkYieldBoostStartError) {

@@ -178,9 +178,13 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputPro
         view?.didStopLoading()
 
         switch submissionResult {
-        case .success:
-            // TODO: Fix MS navigation
-            wireframe?.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
+        case let .success(model):
+            wireframe?.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
         case let .failure(error):
             wireframe?.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,

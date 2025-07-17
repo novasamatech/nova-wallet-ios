@@ -29,7 +29,13 @@ final class GovRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWirefram
     }
 
     func complete(on view: GovernanceRemoveVotesConfirmViewProtocol?, locale: Locale) {
-        presentExtrinsicSubmission(from: view, completionAction: .popBack, locale: locale)
+        // TODO: MS navigation
+        presentExtrinsicSubmission(
+            from: view,
+            sender: nil,
+            completionAction: .popBack,
+            locale: locale
+        )
     }
 
     func skip(on view: GovernanceRemoveVotesConfirmViewProtocol?) {

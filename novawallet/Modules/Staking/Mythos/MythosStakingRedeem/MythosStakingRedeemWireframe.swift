@@ -8,8 +8,10 @@ final class MythosStakingRedeemWireframe: MythosStakingRedeemWireframeProtocol, 
     ) {
         let action: ExtrinsicSubmissionPresentingAction = redeemedAll ? .popBaseAndDismiss : .dismiss
 
+        // TODO: MS navigation
         presentExtrinsicSubmission(
             from: view,
+            sender: nil,
             completionAction: action,
             locale: locale
         )

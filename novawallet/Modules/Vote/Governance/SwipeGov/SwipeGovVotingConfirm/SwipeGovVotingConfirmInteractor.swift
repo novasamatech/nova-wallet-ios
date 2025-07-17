@@ -117,6 +117,13 @@ extension SwipeGovVotingConfirmInteractor: SwipeGovVotingConfirmInteractorInputP
             let errors = result.errors()
 
             guard let error = errors.first else {
+                if
+                    let delayedCallSender = result.senders().first(
+                        where: { $0.delayedCallExecution() }
+                    ) {
+                    self?.presenter?.didReceiveSuccessBatchVoting(delayedCallSender)
+                }
+
                 return
             }
 
@@ -184,7 +191,7 @@ private extension SwipeGovVotingConfirmInteractor {
             items.forEach { self?.clearedItems[$0.referendumId] = $0 }
 
             if self?.clearedItems.keys == self?.votingItems.keys {
-                self?.presenter?.didReceiveSuccessBatchVoting()
+                self?.presenter?.didReceiveSuccessBatchVoting(nil)
             }
         }
     }

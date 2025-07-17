@@ -263,10 +263,10 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputP
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            // TODO: MS navigation
+        case let .success(model):
             wireframe.presentExtrinsicSubmission(
                 from: view,
+                sender: model.sender,
                 completionAction: .dismiss,
                 locale: selectedLocale
             )
