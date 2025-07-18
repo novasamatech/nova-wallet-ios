@@ -12,16 +12,13 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
         case let .preferred(value):
             value
         case let .general(locale):
-            R.string.localizable.commonTransactionSubmitted(
-                preferredLanguages: locale?.rLanguages
-            )
+            R.string.localizable.commonTransactionSubmitted(preferredLanguages: locale?.rLanguages)
         }
 
         switch params.preferredCompletionAction {
         case .dismiss:
             let presenter = view?.controller.navigationController?.presentingViewController
 
-            // TODO: Check strong capture here
             presenter?.dismiss(animated: true) {
                 alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
             }
