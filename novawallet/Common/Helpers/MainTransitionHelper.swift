@@ -1,52 +1,39 @@
 import UIKit
 import UIKit_iOS
 
-struct MainTransitionHelper {
-    static func transitToMainTabBar(
-        selectingIndex: Int = MainTabBarViewFactory.walletIndex,
-        closing controller: UIViewController,
-        postTransitionClosure: ((MainTabBarViewController) -> Void)?,
-        animated: Bool
-    ) {
-        if let presentingController = controller.presentingViewController {
-            presentingController.dismiss(animated: animated, completion: nil)
-        }
+enum MainTransitionPostProcessing {
+    case flowStatus(FlowStatusPresentingClosure)
+    case postTransition((MainTabBarViewController) -> Void)
+    case nothing
+}
 
-        guard let tabBarController = UIApplication.shared.tabBarController else {
-            return
-        }
-
-        let presentPostTransitionClosure = {
-            guard let postTransitionClosure else { return }
-            postTransitionClosure(tabBarController)
-        }
-
-        let navigationController = tabBarController.selectedViewController as? UINavigationController
-
-        guard tabBarController.selectedIndex != selectingIndex else {
-            navigationController?.popToRootViewController(animated: animated)
-            presentPostTransitionClosure()
-
-            return
-        }
-
-        navigationController?.popToRootViewController(animated: false)
-
-        tabBarController.selectedIndex = selectingIndex
-
-        if animated {
-            TransitionAnimator(type: .reveal).animate(view: tabBarController.view, completionBlock: nil)
-        }
-
-        presentPostTransitionClosure()
-    }
-
+enum MainTransitionHelper {
     static func transitToMainTabBarController(
         selectingIndex: Int = MainTabBarViewFactory.walletIndex,
         closing controller: UIViewController,
         flowStatusClosure: FlowStatusPresentingClosure? = nil,
         animated: Bool
     ) {
+        let postProcessing = if let flowStatusClosure {
+            MainTransitionPostProcessing.flowStatus(flowStatusClosure)
+        } else {
+            MainTransitionPostProcessing.nothing
+        }
+
+        transitToMainTabBarController(
+            selectingIndex: selectingIndex,
+            closing: controller,
+            postProcessing: postProcessing,
+            animated: animated
+        )
+    }
+
+    static func transitToMainTabBarController(
+        selectingIndex: Int = MainTabBarViewFactory.walletIndex,
+        closing controller: UIViewController,
+        postProcessing: MainTransitionPostProcessing,
+        animated: Bool
+    ) {
         if let presentingController = controller.presentingViewController {
             presentingController.dismiss(animated: animated, completion: nil)
         }
@@ -55,16 +42,22 @@ struct MainTransitionHelper {
             return
         }
 
-        let presentFlowStatusClosure = {
-            guard let flowStatusClosure else { return }
-            tabBarController.presentStatusAlert(flowStatusClosure)
+        let postProcessingClosure = {
+            switch postProcessing {
+            case let .flowStatus(closure):
+                tabBarController.presentStatusAlert(closure)
+            case let .postTransition(closure):
+                closure(tabBarController)
+            case .nothing:
+                break
+            }
         }
 
         let navigationController = tabBarController.selectedViewController as? UINavigationController
 
         guard tabBarController.selectedIndex != selectingIndex else {
             navigationController?.popToRootViewController(animated: animated)
-            presentFlowStatusClosure()
+            postProcessingClosure()
 
             return
         }
@@ -77,7 +70,7 @@ struct MainTransitionHelper {
             TransitionAnimator(type: .reveal).animate(view: tabBarController.view, completionBlock: nil)
         }
 
-        presentFlowStatusClosure()
+        postProcessingClosure()
     }
 
     static func dismissAndPopBack(
