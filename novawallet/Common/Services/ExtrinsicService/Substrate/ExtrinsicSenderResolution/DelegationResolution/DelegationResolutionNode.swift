@@ -16,6 +16,8 @@ protocol DelegationResolutionNodeProtocol {
     ) -> DelegationResolutionNodeProtocol?
 
     func merging(other: DelegationResolutionNodeProtocol) -> DelegationResolutionNodeProtocol
+
+    func delaysCallExecution() -> Bool
 }
 
 protocol DelegationResolutionNodeSourceProtocol {
@@ -62,6 +64,10 @@ extension DelegationResolution.Graph {
 
             return ProxyResolutionNode(proxyTypes: proxyTypes.union(otherProxyNode.proxyTypes))
         }
+
+        func delaysCallExecution() -> Bool {
+            false
+        }
     }
 }
 
@@ -98,6 +104,10 @@ extension DelegationResolution.Graph {
             other _: DelegationResolutionNodeProtocol
         ) -> DelegationResolutionNodeProtocol {
             self
+        }
+
+        func delaysCallExecution() -> Bool {
+            threshold > 1
         }
     }
 }

@@ -12,7 +12,7 @@ protocol XcmTransactServiceProtocol {
     func submitTransferWrapper(
         _ transferRequest: XcmTransferRequest,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<Void>
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel>
 }
 
 final class XcmTransactService {
@@ -90,16 +90,16 @@ extension XcmTransactService: XcmTransactServiceProtocol {
     func submitTransferWrapper(
         _ transferRequest: XcmTransferRequest,
         signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<Void> {
-        let submitOperation = AsyncClosureOperation<Void> { completion in
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        let submitOperation = AsyncClosureOperation<ExtrinsicSubmittedModel> { completion in
             self.transferService.submit(
                 request: transferRequest,
                 signer: signer,
                 runningIn: self.workingQueue
             ) { result in
                 switch result {
-                case .success:
-                    completion(.success(()))
+                case let .success(model):
+                    completion(.success(model.submittedModel))
                 case let .failure(error):
                     completion(.failure(error))
                 }

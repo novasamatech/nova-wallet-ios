@@ -6,13 +6,12 @@ protocol ParaStkUnstakeConfirmInteractorInputProtocol: ParaStkBaseUnstakeInterac
 }
 
 protocol ParaStkUnstakeConfirmInteractorOutputProtocol: ParaStkBaseUnstakeInteractorOutputProtocol {
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol ParaStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: CollatorStkUnstakeConfirmViewProtocol?, locale: Locale)
-}
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

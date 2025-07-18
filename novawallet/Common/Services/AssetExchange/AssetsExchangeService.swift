@@ -18,7 +18,7 @@ protocol AssetsExchangeServiceProtocol: ApplicationServiceProtocol {
 
     func submitSingleOperationWrapper(
         using estimation: AssetExchangeFee
-    ) -> CompoundOperationWrapper<Void>
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel>
 
     func subscribeRequoteService(
         for target: AnyObject,
@@ -148,7 +148,7 @@ extension AssetsExchangeService: AssetsExchangeServiceProtocol {
 
     func submitSingleOperationWrapper(
         using estimation: AssetExchangeFee
-    ) -> CompoundOperationWrapper<Void> {
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         prepareWrapper {
             $0.createSingleOperationSubmitWrapper(for: estimation)
         }

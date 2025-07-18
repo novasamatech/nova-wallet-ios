@@ -3,7 +3,7 @@ protocol MythosStkUnstakeConfirmInteractorInputProtocol: MythosStkUnstakeInterac
 }
 
 protocol MythosStkUnstakeConfirmInteractorOutputProtocol: MythosStkUnstakeInteractorOutputProtocol {
-    func didReceiveSubmissionResult(_ result: Result<ExtrinsicHash, Error>)
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol MythosStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,

@@ -81,13 +81,13 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
 }
 
 extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirmInteractorOutputProtocol {
-    private func handleSuccessSubmission() {
+    private func handleSuccessSubmission(by sender: ExtrinsicSenderResolution?) {
         let selectedIds = Set(selectedTracks.map(\.trackId))
         let currentsIds = Set((votesResult?.value?.votes.delegatings ?? [:]).keys)
 
         let allRemoved = selectedIds == currentsIds
 
-        wireframe.complete(on: view, allRemoved: allRemoved, locale: selectedLocale)
+        wireframe.complete(on: view, sender: sender, allRemoved: allRemoved, locale: selectedLocale)
     }
 
     func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult) {
@@ -95,7 +95,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
 
         let handlers = MultiExtrinsicResultActions(
             onSuccess: { [weak self] in
-                self?.handleSuccessSubmission()
+                self?.handleSuccessSubmission(by: result.senders().first)
             }, onErrorRetry: { [weak self] closure, indexes in
                 self?.view?.didStartLoading()
 

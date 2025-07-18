@@ -89,7 +89,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                switch submittionResult {
+                switch submittionResult.status {
                 case let .success(executionResult):
                     let eventParser = AssetConversionEventParser(logger: self.host.logger)
 
@@ -125,7 +125,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
 
     func submitWrapper(
         for swapLimit: AssetExchangeSwapLimit
-    ) -> CompoundOperationWrapper<Void> {
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
         let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
 
         let callArgs = AssetConversion.CallArgs(
@@ -155,9 +155,9 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
 
         submittionWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mappingOperation = ClosureOperation<Void> {
-            _ = try submittionWrapper.targetOperation.extractNoCancellableResultData()
-            return
+        let mappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
+            let model = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+            return model.extrinsicSubmittedModel
         }
 
         mappingOperation.addDependency(submittionWrapper.targetOperation)

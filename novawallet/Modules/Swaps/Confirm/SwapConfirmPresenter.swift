@@ -428,10 +428,15 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 }
 
 extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
-    func didCompleteSwapSubmission(with result: Result<Void, Error>) {
+    func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>) {
         switch result {
-        case .success:
-            wireframe.complete(on: view)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: selectedLocale
+            )
         case let .failure(error):
             view?.didReceiveStopLoading()
 

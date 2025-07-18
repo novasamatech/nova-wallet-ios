@@ -18,6 +18,7 @@ protocol MainTabBarPresenterProtocol: AnyObject {
     func viewDidAppear()
     func activateStatusAction()
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
+    func presentDelayedOperationCreated()
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
@@ -72,6 +73,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     )
 
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?)
+
+    func presentDelayedOperationCreated(from view: MainTabBarViewProtocol?)
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {

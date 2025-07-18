@@ -28,12 +28,11 @@ protocol StakingBondMoreConfirmationOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
     func didReceiveStakingMigratedToHold(result: Result<Bool, Error>)
-    func didSubmitBonding(result: Result<String, Error>)
+    func didSubmitBonding(result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol StakingBondMoreConfirmationWireframeProtocol: AlertPresentable, ErrorPresentable,
     StakingErrorPresentable,
     AddressOptionsPresentable,
-    MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(from view: StakingBondMoreConfirmationViewProtocol?)
-}
+    MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

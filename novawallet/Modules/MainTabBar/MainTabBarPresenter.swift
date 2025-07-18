@@ -26,6 +26,10 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure) {
         closure(wireframe, view)
     }
+
+    func presentDelayedOperationCreated() {
+        wireframe.presentDelayedOperationCreated(from: view)
+    }
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {

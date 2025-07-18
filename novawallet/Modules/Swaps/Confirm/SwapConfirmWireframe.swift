@@ -69,11 +69,4 @@ final class SwapConfirmWireframe: SwapConfirmWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
-
-    func complete(on view: SwapConfirmViewProtocol?) {
-        // TODO: Figure out actual navigation
-        let presenter = view?.controller.presentingViewController
-
-        presenter?.dismiss(animated: true)
-    }
 }
