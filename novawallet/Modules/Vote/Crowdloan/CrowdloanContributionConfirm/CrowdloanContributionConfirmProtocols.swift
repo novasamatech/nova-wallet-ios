@@ -29,6 +29,5 @@ protocol CrowdloanContributionConfirmInteractorOutputProtocol: CrowdloanContribu
 }
 
 protocol CrowdloanContributionConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CrowdloanErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
-    func complete(on view: CrowdloanContributionConfirmViewProtocol?)
-}
+    CrowdloanErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {}

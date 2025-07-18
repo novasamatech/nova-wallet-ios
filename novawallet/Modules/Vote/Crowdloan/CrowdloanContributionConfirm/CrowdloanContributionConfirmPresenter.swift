@@ -316,8 +316,13 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            wireframe.complete(on: view)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .pop,
+                locale: selectedLocale
+            )
         case let .failure(error):
             guard let view = view else {
                 return
