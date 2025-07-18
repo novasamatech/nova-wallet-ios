@@ -42,9 +42,7 @@ class StakingUnbondConfirmTests: XCTestCase {
         stub(wireframe) { stub in
             when(stub).presentExtrinsicSubmission(
                 from: any(),
-                sender: any(),
-                completionAction: any(),
-                locale: any()
+                params: any()
             ).then { _ in
                 completionExpectation.fulfill()
             }

@@ -823,16 +823,16 @@ import UIKit
     
     
     
-     func handleCompletion(from view: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?) -> Bool {
+     func handleCompletion(from view: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool {
         
-    return cuckoo_manager.call("handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?) -> Bool",
-            parameters: (view, alertPresenting, sender, completionAction, locale),
-            escapingParameters: (view, alertPresenting, sender, completionAction, locale),
+    return cuckoo_manager.call("handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool",
+            parameters: (view, alertPresenting, params),
+            escapingParameters: (view, alertPresenting, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.handleCompletion(from: view, alertPresenting: alertPresenting, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.handleCompletion(from: view, alertPresenting: alertPresenting, params: params))
         
     }
     
@@ -845,9 +845,9 @@ import UIKit
 	    }
 	    
 	    
-	    func handleCompletion<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable>(from view: M1, alertPresenting: M2, sender: M3, completionAction: M4, locale: M5) -> Cuckoo.ProtocolStubFunction<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Bool> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ModalAlertPresenting, M3.OptionalMatchedType == ExtrinsicSenderResolution, M4.MatchedType == ExtrinsicSubmissionPresentingAction, M5.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: alertPresenting) { $0.1 }, wrap(matchable: sender) { $0.2 }, wrap(matchable: completionAction) { $0.3 }, wrap(matchable: locale) { $0.4 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockExtrinsicSubmissionCompliting.self, method: "handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?) -> Bool", parameterMatchers: matchers))
+	    func handleCompletion<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, alertPresenting: M2, params: M3) -> Cuckoo.ProtocolStubFunction<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams), Bool> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ModalAlertPresenting, M3.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: alertPresenting) { $0.1 }, wrap(matchable: params) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExtrinsicSubmissionCompliting.self, method: "handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -867,9 +867,9 @@ import UIKit
 	
 	    
 	    @discardableResult
-	    func handleCompletion<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable>(from view: M1, alertPresenting: M2, sender: M3, completionAction: M4, locale: M5) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Bool> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ModalAlertPresenting, M3.OptionalMatchedType == ExtrinsicSenderResolution, M4.MatchedType == ExtrinsicSubmissionPresentingAction, M5.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: alertPresenting) { $0.1 }, wrap(matchable: sender) { $0.2 }, wrap(matchable: completionAction) { $0.3 }, wrap(matchable: locale) { $0.4 }]
-	        return cuckoo_manager.verify("handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?) -> Bool", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func handleCompletion<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, alertPresenting: M2, params: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams), Bool> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ModalAlertPresenting, M3.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ModalAlertPresenting, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: alertPresenting) { $0.1 }, wrap(matchable: params) { $0.2 }]
+	        return cuckoo_manager.verify("handleCompletion(from: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -883,7 +883,7 @@ import UIKit
     
     
     
-     func handleCompletion(from view: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?) -> Bool  {
+     func handleCompletion(from view: ControllerBackedProtocol?, alertPresenting: ModalAlertPresenting, params: ExtrinsicSubmissionPresentingParams) -> Bool  {
         return DefaultValueRegistry.defaultValue(for: (Bool).self)
     }
     
@@ -930,16 +930,16 @@ import UIKit
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -957,9 +957,9 @@ import UIKit
 	    }
 	    
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockExtrinsicSubmissionPresenting.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExtrinsicSubmissionPresenting.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -984,9 +984,9 @@ import UIKit
 	
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -1009,7 +1009,7 @@ import UIKit
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -28524,16 +28524,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -28571,9 +28571,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -28622,9 +28622,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -28671,7 +28671,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -37064,16 +37064,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -37111,9 +37111,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingBondMoreConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -37162,9 +37162,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -37211,7 +37211,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41713,16 +41713,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -41760,9 +41760,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -41811,9 +41811,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -41860,7 +41860,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -43003,16 +43003,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -43050,9 +43050,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRebondConfirmationWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -43101,9 +43101,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -43150,7 +43150,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -45483,16 +45483,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -45530,9 +45530,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRedeemWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -45581,9 +45581,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -45630,7 +45630,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -46739,16 +46739,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -46786,9 +46786,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -46837,9 +46837,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -46886,7 +46886,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -51326,16 +51326,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -51373,9 +51373,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingUnbondConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -51424,9 +51424,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -51473,7 +51473,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -56130,16 +56130,16 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)  {
         
-    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
-            parameters: (view, sender, completionAction, locale),
-            escapingParameters: (view, sender, completionAction, locale),
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)",
+            parameters: (view, params),
+            escapingParameters: (view, params),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, params: params))
         
     }
     
@@ -56177,9 +56177,9 @@ import Foundation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -56228,9 +56228,9 @@ import Foundation_iOS
 	    }
 	    
 	    @discardableResult
-	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, params: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ExtrinsicSubmissionPresentingParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSubmissionPresentingParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: params) { $0.1 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -56277,7 +56277,7 @@ import Foundation_iOS
     
     
     
-     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, params: ExtrinsicSubmissionPresentingParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
