@@ -37,7 +37,12 @@ class StakingRewardDestConfirmTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub).complete(from: any()).then { _ in
+            when(stub).presentExtrinsicSubmission(
+                from: any(),
+                sender: any(),
+                completionAction: any(),
+                locale: any()
+            ).then { _ in
                 completionExpectation.fulfill()
             }
         }
