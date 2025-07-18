@@ -7,6 +7,8 @@ enum ExtrinsicSubmissionPresentingAction {
     case popBack
     case popBaseAndDismiss
     case dismissWithPostNavigation(() -> Void)
+    case popToViewController(UIViewController)
+    case popRootAndPush(UIViewController)
 }
 
 protocol ExtrinsicSubmissionCompliting {

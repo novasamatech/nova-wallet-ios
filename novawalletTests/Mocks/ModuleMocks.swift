@@ -56050,24 +56050,23 @@ import Foundation_iOS
     
 
     
-
-    
-
     
     
-    
-     func complete(on view: CrowdloanContributionConfirmViewProtocol?)  {
-        
-    return cuckoo_manager.call("complete(on: CrowdloanContributionConfirmViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.complete(on: view))
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return cuckoo_manager.getter("completionHandlers",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.completionHandlers)
+        }
         
     }
+    
+
+    
+
     
     
     
@@ -56099,6 +56098,51 @@ import Foundation_iOS
         
     }
     
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)  {
+        
+    return cuckoo_manager.call("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)",
+            parameters: (title, view, closure),
+            escapingParameters: (title, view, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentMultilineSuccessNotification(title, from: view, completion: closure))
+        
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)  {
+        
+    return cuckoo_manager.call("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)",
+            parameters: (view, sender, completionAction, locale),
+            escapingParameters: (view, sender, completionAction, locale),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentExtrinsicSubmission(from: view, sender: sender, completionAction: completionAction, locale: locale))
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanContributionConfirmWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -56108,10 +56152,10 @@ import Foundation_iOS
 	    }
 	    
 	    
-	    func complete<M1: Cuckoo.OptionalMatchable>(on view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanContributionConfirmViewProtocol?)> where M1.OptionalMatchedType == CrowdloanContributionConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanContributionConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "complete(on: CrowdloanContributionConfirmViewProtocol?)", parameterMatchers: matchers))
+	    var completionHandlers: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCrowdloanContributionConfirmWireframeProtocol, [ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers")
 	    }
+	    
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
@@ -56121,6 +56165,21 @@ import Foundation_iOS
 	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, ControllerBackedProtocol?, (() -> Void)?)> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmWireframeProtocol.self, method: "presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -56137,13 +56196,12 @@ import Foundation_iOS
 	    }
 	
 	    
-	
 	    
-	    @discardableResult
-	    func complete<M1: Cuckoo.OptionalMatchable>(on view: M1) -> Cuckoo.__DoNotUse<(CrowdloanContributionConfirmViewProtocol?), Void> where M1.OptionalMatchedType == CrowdloanContributionConfirmViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanContributionConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("complete(on: CrowdloanContributionConfirmViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    var completionHandlers: Cuckoo.VerifyReadOnlyProperty<[ExtrinsicSubmissionCompliting]> {
+	        return .init(manager: cuckoo_manager, name: "completionHandlers", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
+	    
+	
 	    
 	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -56157,20 +56215,41 @@ import Foundation_iOS
 	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentMultilineSuccessNotification<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable>(_ title: M1, from view: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(String, ControllerBackedProtocol?, (() -> Void)?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == ControllerBackedProtocol, M3.OptionalMatchedType == (() -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, ControllerBackedProtocol?, (() -> Void)?)>] = [wrap(matchable: title) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("presentMultilineSuccessNotification(_: String, from: ControllerBackedProtocol?, completion: (() -> Void)?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentExtrinsicSubmission<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, sender: M2, completionAction: M3, locale: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.OptionalMatchedType == ExtrinsicSenderResolution, M3.MatchedType == ExtrinsicSubmissionPresentingAction, M4.OptionalMatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ExtrinsicSenderResolution?, ExtrinsicSubmissionPresentingAction, Locale?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: sender) { $0.1 }, wrap(matchable: completionAction) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return cuckoo_manager.verify("presentExtrinsicSubmission(from: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class CrowdloanContributionConfirmWireframeProtocolStub: CrowdloanContributionConfirmWireframeProtocol {
-    
-
-    
-
+        
     
     
-    
-     func complete(on view: CrowdloanContributionConfirmViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
+     var completionHandlers: [ExtrinsicSubmissionCompliting] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ExtrinsicSubmissionCompliting]).self)
+        }
+        
     }
+    
+
+    
+
     
     
     
@@ -56181,6 +56260,24 @@ import Foundation_iOS
     
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentMultilineSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentExtrinsicSubmission(from view: ControllerBackedProtocol?, sender: ExtrinsicSenderResolution?, completionAction: ExtrinsicSubmissionPresentingAction, locale: Locale?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

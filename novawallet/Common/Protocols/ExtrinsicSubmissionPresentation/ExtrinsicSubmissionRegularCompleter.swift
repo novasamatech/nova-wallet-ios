@@ -48,6 +48,20 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
                 closure()
                 alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
             }
+        case let .popRootAndPush(viewController):
+            let presenter = view?.controller.navigationController
+
+            presenter?.popToRootViewController(animated: false)
+
+            presenter?.pushViewController(viewController, animated: true)
+
+            alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
+        case let .popToViewController(viewController):
+            let presenter = view?.controller.navigationController
+
+            presenter?.popToViewController(viewController, animated: true)
+
+            alertPresenting.presentSuccessNotification(title, from: presenter, completion: nil)
         }
 
         return true
