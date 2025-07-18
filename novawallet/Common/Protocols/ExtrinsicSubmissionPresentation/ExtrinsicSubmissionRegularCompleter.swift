@@ -6,14 +6,18 @@ extension ExtrinsicSubmissionRegularCompleter: ExtrinsicSubmissionCompliting {
     func handleCompletion(
         from view: ControllerBackedProtocol?,
         alertPresenting: ModalAlertPresenting,
-        sender _: ExtrinsicSenderResolution?,
-        completionAction: ExtrinsicSubmissionPresentingAction,
-        locale: Locale?
+        params: ExtrinsicSubmissionPresentingParams
     ) -> Bool {
-        let title = R.string.localizable
-            .commonTransactionSubmitted(preferredLanguages: locale?.rLanguages)
+        let title = switch params.title {
+        case let .preferred(value):
+            value
+        case let .general(locale):
+            R.string.localizable.commonTransactionSubmitted(
+                preferredLanguages: locale?.rLanguages
+            )
+        }
 
-        switch completionAction {
+        switch params.preferredCompletionAction {
         case .dismiss:
             let presenter = view?.controller.navigationController?.presentingViewController
 

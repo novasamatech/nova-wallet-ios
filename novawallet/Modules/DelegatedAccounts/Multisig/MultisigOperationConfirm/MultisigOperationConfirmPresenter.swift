@@ -133,7 +133,7 @@ private extension MultisigOperationConfirmPresenter {
         )
     }
 
-    func showSuccessApprove() {
+    func showSuccessApprove(with model: ExtrinsicSubmittedModel) {
         guard
             let multisigContext,
             let definition = pendingOperation?.operation.multisigDefinition
@@ -149,21 +149,27 @@ private extension MultisigOperationConfirmPresenter {
             )
         }
 
-        wireframe.presentSuccessNotification(
-            text,
-            from: view
-        ) { [weak self] in
-            self?.wireframe.close(from: self?.view)
-        }
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            params: .init(
+                title: .preferred(text),
+                sender: model.sender,
+                preferredCompletionAction: .dismiss
+            )
+        )
     }
 
-    func showSuccessReject() {
-        wireframe.presentSuccessNotification(
-            R.string.localizable.commonTransactionRejected(preferredLanguages: selectedLocale.rLanguages),
-            from: view
-        ) { [weak self] in
-            self?.wireframe.close(from: self?.view)
-        }
+    func showSuccessReject(with model: ExtrinsicSubmittedModel) {
+        let text = R.string.localizable.commonTransactionRejected(preferredLanguages: selectedLocale.rLanguages)
+
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            params: .init(
+                title: .preferred(text),
+                sender: model.sender,
+                preferredCompletionAction: .dismiss
+            )
+        )
     }
 
     func doConfirm() {
@@ -333,14 +339,17 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         }
     }
 
-    func didCompleteSubmission(with submissionType: MultisigSubmissionType) {
+    func didCompleteSubmission(
+        with model: ExtrinsicSubmittedModel,
+        submissionType: MultisigSubmissionType
+    ) {
         view?.didReceive(loading: false)
 
         switch submissionType {
         case .approve:
-            showSuccessApprove()
+            showSuccessApprove(with: model)
         case .reject:
-            showSuccessReject()
+            showSuccessReject(with: model)
         }
     }
 }

@@ -31,13 +31,18 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?)
     func didReceiveUtilityAssetPrice(_ priceData: PriceData?)
     func didReceiveTransferAssetPrice(_ priceData: PriceData?)
-    func didCompleteSubmission(with submissionType: MultisigSubmissionType)
+    func didCompleteSubmission(
+        with model: ExtrinsicSubmittedModel,
+        submissionType: MultisigSubmissionType
+    )
+
     func didReceiveError(_ error: MultisigOperationConfirmInteractorError)
 }
 
 protocol MultisigOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     AddressOptionsPresentable, MultisigErrorPresentable, ExtrinsicSigningErrorHandling,
-    CommonRetryable, FeeRetryable, MessageSheetPresentable {
+    CommonRetryable, FeeRetryable, MessageSheetPresentable,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {
     func showAddCallData(
         from view: ControllerBackedProtocol?,
         for operation: Multisig.PendingOperation

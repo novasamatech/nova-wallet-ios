@@ -36,12 +36,10 @@ extension ExtrinsicSubmissionDelayedCompleter: ExtrinsicSubmissionCompliting {
     func handleCompletion(
         from view: ControllerBackedProtocol?,
         alertPresenting _: ModalAlertPresenting,
-        sender: ExtrinsicSenderResolution?,
-        completionAction _: ExtrinsicSubmissionPresentingAction,
-        locale _: Locale?
+        params: ExtrinsicSubmissionPresentingParams
     ) -> Bool {
         guard
-            let sender,
+            let sender = params.sender,
             let delayedCallWallet = sender.firstDelayedCallWallet(),
             let controller = view?.controller else {
             return false
