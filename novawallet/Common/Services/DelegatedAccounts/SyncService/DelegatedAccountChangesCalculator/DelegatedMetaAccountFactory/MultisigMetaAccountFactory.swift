@@ -130,7 +130,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
             let multisigAccountType = metaAccount.info.multisigAccount,
-            multisigAccountType.multisig?.status == .revoked
+            multisigAccountType.anyChainMultisig?.status == .revoked
         else {
             return metaAccount
         }
@@ -143,7 +143,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
             let multisigType = metaAccount.info.multisigAccount,
-            let oldStatus = multisigType.multisig?.status
+            let oldStatus = multisigType.anyChainMultisig?.status
         else { return metaAccount }
 
         let info = metaAccount.info
@@ -171,7 +171,9 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier? {
-        guard let multisig = metaAccount.info.multisigAccount?.multisig else {
+        guard let multisig = metaAccount.info.getMultisig(
+            for: chainModel
+        ) else {
             return nil
         }
 
@@ -188,7 +190,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         return switch localMultisigAccountType {
         case let .singleChain(chainAccount):
             chainAccount.chainId == chainModel.chainId
-        case let .universal(localMultisig):
+        case .universal:
             true
         }
     }

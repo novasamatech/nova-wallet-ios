@@ -12,7 +12,7 @@ protocol SwipeGovVotingConfirmInteractorInputProtocol: ReferendumVoteInteractorI
 }
 
 protocol SwipeGovVotingConfirmInteractorOutputProtocol: BaseReferendumVoteConfirmInteractorOutputProtocol {
-    func didReceiveSuccessBatchVoting()
+    func didReceiveSuccessBatchVoting(_ sender: ExtrinsicSenderResolution?)
 }
 
 protocol SwipeGovVotingConfirmWireframeProtocol: BaseReferendumVoteConfirmWireframeProtocol {}

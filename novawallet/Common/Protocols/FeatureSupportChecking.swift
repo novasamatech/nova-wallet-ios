@@ -60,7 +60,7 @@ private extension FeatureSupportChecking where Self: MessageSheetPresentable {
         unsupportedClosure: @escaping () -> Void
     ) {
         guard
-            let multisigContext = multisigMetaAccount.multisigAccount?.multisig,
+            let multisigContext = multisigMetaAccount.multisigAccount?.anyChainMultisig,
             multisigContext.threshold == 1
         else {
             unsupportedClosure()

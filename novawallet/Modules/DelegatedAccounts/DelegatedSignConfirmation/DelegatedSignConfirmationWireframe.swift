@@ -3,16 +3,16 @@ import Foundation
 final class DelegatedSignConfirmationWireframe: DelegatedSignConfirmationWireframeProtocol {
     let delegatedAccountId: MetaAccountModel.Id
     let delegateAccountResponse: ChainAccountResponse
-    let delegationType: DelegationType
+    let delegationClass: DelegationClass
 
     init(
         delegatedAccountId: MetaAccountModel.Id,
         delegateAccountResponse: ChainAccountResponse,
-        delegationType: DelegationType
+        delegationClass: DelegationClass
     ) {
         self.delegatedAccountId = delegatedAccountId
         self.delegateAccountResponse = delegateAccountResponse
-        self.delegationType = delegationType
+        self.delegationClass = delegationClass
     }
 
     func showConfirmation(
@@ -22,7 +22,7 @@ final class DelegatedSignConfirmationWireframe: DelegatedSignConfirmationWirefra
         guard let delegatedConfirmationView = DelegatedMessageSheetViewFactory.createSigningView(
             delegatedId: delegatedAccountId,
             delegateChainAccountResponse: delegateAccountResponse,
-            delegationType: delegationType,
+            delegationClass: delegationClass,
             completionClosure: { completionClosure(true) },
             cancelClosure: { completionClosure(false) }
         ) else {

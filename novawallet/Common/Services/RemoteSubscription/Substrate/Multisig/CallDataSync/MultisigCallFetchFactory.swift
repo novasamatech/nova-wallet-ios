@@ -1,13 +1,14 @@
 import Foundation
 import Operation_iOS
 import SubstrateSdk
+import BigInt
 
 protocol MultisigCallFetchFactoryProtocol {
     func createCallFetchWrapper(
         for events: [MultisigEvent],
         at blockHash: Data,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallOrHash]>
+    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallFromEvent]>
 }
 
 final class MultisigCallFetchFactory {
@@ -21,13 +22,21 @@ final class MultisigCallFetchFactory {
 // MARK: - Private
 
 private extension MultisigCallFetchFactory {
-    func extractMultisigCallDataOrHash(
+    func extractMultisigCalls(
         from block: Block,
         matching multisigEvents: Set<MultisigEvent>,
         chainId: ChainModel.Id,
         using codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> [Multisig.PendingOperation.Key: MultisigCallOrHash] {
-        try multisigEvents.reduce(into: [:]) { acc, multisigEvent in
+    ) throws -> [Multisig.PendingOperation.Key: MultisigCallFromEvent] {
+        guard
+            let blockNumberData = BigUInt.fromHexString(block.header.number)
+        else {
+            return [:]
+        }
+
+        let blockNumber = BlockNumber(blockNumberData)
+
+        return try multisigEvents.reduce(into: [:]) { acc, multisigEvent in
             let extrinsicIndex = Int(multisigEvent.extrinsicIndex)
 
             guard block.extrinsics.count > extrinsicIndex else { return }
@@ -38,8 +47,7 @@ private extension MultisigCallFetchFactory {
             let key = Multisig.PendingOperation.Key(
                 callHash: multisigEvent.callHash,
                 chainId: chainId,
-                multisigAccountId: multisigEvent.accountId,
-                signatoryAccountId: multisigEvent.signatory
+                multisigAccountId: multisigEvent.accountId
             )
 
             let callOrHash: MultisigCallOrHash = if let call = try matchAsMultiCallData(
@@ -52,7 +60,34 @@ private extension MultisigCallFetchFactory {
                 .callHash(multisigEvent.callHash)
             }
 
-            acc[key] = callOrHash
+            let timepoint = matchTimepoint(
+                for: multisigEvent,
+                blockNumber: blockNumber,
+                extrinsicIndex: ExtrinsicIndex(extrinsicIndex)
+            )
+
+            acc[key] = MultisigCallFromEvent(
+                callOrHash: callOrHash,
+                timepoint: timepoint,
+                blockNumber: blockNumber,
+                extrinsicIndex: ExtrinsicIndex(extrinsicIndex)
+            )
+        }
+    }
+
+    func matchTimepoint(
+        for event: MultisigEvent,
+        blockNumber: BlockNumber,
+        extrinsicIndex: ExtrinsicIndex
+    ) -> MultisigPallet.EventTimePoint {
+        switch event.eventType {
+        case let .approval(approval):
+            return approval.timepoint
+        case .newMultisig:
+            return MultisigPallet.EventTimePoint(
+                height: blockNumber,
+                index: extrinsicIndex
+            )
         }
     }
 
@@ -86,13 +121,15 @@ private extension MultisigCallFetchFactory {
         let nestedCallMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
         let context = codingFactory.createRuntimeJsonContext()
 
-        let maybeCallMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall<JSON>>>
-        maybeCallMappingResult = try nestedCallMapper.mapRuntimeCall(
+        let callMappingResult: NestedExtrinsicCallMapResult<RuntimeCall<MultisigPallet.AsMultiCall<JSON>>>?
+        callMappingResult = try? nestedCallMapper.mapRuntimeCall(
             call: call,
             context: context
         )
 
-        let foundCalls = maybeCallMappingResult.node.calls.map(\.args.call)
+        guard let callMappingResult else { return nil }
+
+        let foundCalls = callMappingResult.node.calls.map(\.args.call)
 
         for foundCall in foundCalls {
             let encoder = codingFactory.createEncoder()
@@ -118,7 +155,7 @@ extension MultisigCallFetchFactory: MultisigCallFetchFactoryProtocol {
         for events: [MultisigEvent],
         at blockHash: Data,
         chainId: ChainModel.Id
-    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
+    ) -> CompoundOperationWrapper<[Multisig.PendingOperation.Key: MultisigCallFromEvent]> {
         do {
             let connection = try chainRegistry.getConnectionOrError(for: chainId)
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
@@ -131,11 +168,11 @@ extension MultisigCallFetchFactory: MultisigCallFetchFactoryProtocol {
                 parameters: [blockHash.toHex(includePrefix: true)]
             )
 
-            let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: MultisigCallOrHash]> {
+            let callExtractionOperation = ClosureOperation<[Multisig.PendingOperation.Key: MultisigCallFromEvent]> {
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
                 let signedBlock = try blockFetchOperation.extractNoCancellableResultData()
 
-                return try self.extractMultisigCallDataOrHash(
+                return try self.extractMultisigCalls(
                     from: signedBlock.block,
                     matching: Set(events),
                     chainId: chainId,

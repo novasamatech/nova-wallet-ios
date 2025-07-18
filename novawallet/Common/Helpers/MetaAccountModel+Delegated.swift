@@ -12,6 +12,22 @@ extension MetaAccountModel {
         }
     }
 
+    func getMultisig(for chain: ChainModel) -> DelegatedAccount.MultisigAccountModel? {
+        guard let multisig else {
+            return chainAccounts.first {
+                $0.multisig != nil && $0.chainId == chain.chainId
+            }?.multisig
+        }
+
+        if !chain.isEthereumBased, substrateAccountId != nil {
+            return multisig
+        } else if chain.isEthereumBased, ethereumAddress != nil {
+            return multisig
+        } else {
+            return nil
+        }
+    }
+
     var proxy: DelegatedAccount.ProxyAccountModel? {
         guard type == .proxied,
               let chainAccount = chainAccounts.first(where: { $0.proxy != nil }) else {
@@ -95,7 +111,7 @@ extension MetaAccountModel {
     func delegatedAccountStatus() -> DelegatedAccount.Status? {
         if let proxyAccount = proxy {
             proxyAccount.status
-        } else if let multisigAccount = multisigAccount?.multisig {
+        } else if let multisigAccount = multisigAccount?.anyChainMultisig {
             multisigAccount.status
         } else {
             nil
@@ -108,7 +124,7 @@ extension MetaAccountModel {
         case universal(multisig: DelegatedAccount.MultisigAccountModel)
         case singleChain(chainAccount: ChainAccountModel)
 
-        var multisig: DelegatedAccount.MultisigAccountModel? {
+        var anyChainMultisig: DelegatedAccount.MultisigAccountModel? {
             switch self {
             case let .universal(multisig):
                 multisig

@@ -7,7 +7,7 @@ enum DelegatedMessageSheetViewFactory {
     static func createSigningView(
         delegatedId: MetaAccountModel.Id,
         delegateChainAccountResponse: ChainAccountResponse,
-        delegationType: DelegationType,
+        delegationClass: DelegationClass,
         completionClosure: @escaping MessageSheetCallback,
         cancelClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
@@ -28,7 +28,7 @@ enum DelegatedMessageSheetViewFactory {
             wireframe: wireframe
         )
 
-        let sheetContent = switch delegationType {
+        let sheetContent = switch delegationClass {
         case .proxy:
             createProxyContent(proxyName: delegateChainAccountResponse.name)
         case .multisig:
@@ -109,6 +109,57 @@ enum DelegatedMessageSheetViewFactory {
 
         let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
         view?.controller.preferredContentSize = CGSize(width: 0.0, height: 284.0)
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        view?.controller.modalTransitioningFactory = factory
+        view?.controller.modalPresentationStyle = .custom
+
+        return view
+    }
+
+    static func createMultisigOpCreated(
+        viewDetailsCallback: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.multisigTransactionCreatedSheetTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            let marker = AttributedReplacementStringDecorator.marker
+            let template = R.string.localizable.multisigTransactionCreatedSheetMessage(
+                marker,
+                preferredLanguages: locale.rLanguages
+            )
+
+            let replacement = R.string.localizable.multisigTransactionsToSign(preferredLanguages: locale.rLanguages)
+
+            let decorator = AttributedReplacementStringDecorator(
+                pattern: marker,
+                replacements: [replacement],
+                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+            )
+
+            return decorator.decorate(attributedString: NSAttributedString(string: template))
+        }
+
+        let viewDetailsAction = MessageSheetAction(
+            title: LocalizableResource { locale in
+                R.string.localizable.commonViewDetails(preferredLanguages: locale.rLanguages)
+            },
+            handler: viewDetailsCallback
+        )
+
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
+            title: title,
+            message: message,
+            graphics: R.image.imageMultisig(),
+            content: nil,
+            mainAction: viewDetailsAction,
+            secondaryAction: .cancelAction(for: {})
+        )
+
+        let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: true)
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 312.0)
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         view?.controller.modalTransitioningFactory = factory

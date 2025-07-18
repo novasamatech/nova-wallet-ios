@@ -1,4 +1,5 @@
 import UIKit
+import UIKit_iOS
 
 final class MultisigOperationsViewLayout: UIView {
     let backgroundView = MultigradientView.background
@@ -22,17 +23,12 @@ final class MultisigOperationsViewLayout: UIView {
         return view
     }()
 
-    let emptyStateView: UIView = .create { view in
-        view.isHidden = true
-    }
+    var emptyStateView: EmptyStateView?
 
-    let emptyStateImageView: UIImageView = .create { _ in
-        // TODO: configure image
-    }
-
-    let emptyStateTitleLabel: UILabel = .create { view in
-        view.apply(style: .footnoteSecondary)
-        view.textAlignment = .center
+    var locale: Locale? {
+        didSet {
+            setupLocalization()
+        }
     }
 
     override init(frame: CGRect) {
@@ -62,40 +58,53 @@ private extension MultisigOperationsViewLayout {
             make.edges.equalToSuperview()
         }
 
-        addSubview(emptyStateView)
-        emptyStateView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(32)
-        }
-
-        emptyStateView.addSubview(emptyStateImageView)
-        emptyStateImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.size.equalTo(64)
-        }
-
-        emptyStateView.addSubview(emptyStateTitleLabel)
-        emptyStateTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(emptyStateImageView.snp.bottom).offset(16)
-            make.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
-        }
-
         addSubview(navBarBlurView)
         navBarBlurView.snp.makeConstraints { make in
             make.leading.top.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top)
         }
     }
+
+    func createEmptyStateView() -> EmptyStateView {
+        let view = EmptyStateView()
+
+        view.image = R.image.iconHistoryEmptyDark()
+        view.verticalSpacing = 0
+        view.titleColor = R.color.colorTextSecondary()!
+        view.titleFont = .regularFootnote
+
+        return view
+    }
+
+    func setupLocalization() {
+        emptyStateView?.title = R.string.localizable.multisigOperationsEmptyText(
+            preferredLanguages: locale?.rLanguages
+        )
+    }
 }
 
 // MARK: - Internal
 
 extension MultisigOperationsViewLayout {
-    func showEmptyState(_ show: Bool) {
-        emptyStateView.isHidden = !show
-        collectionView.isHidden = show
+    func showContent() {
+        emptyStateView?.removeFromSuperview()
+        emptyStateView = nil
+        collectionView.isHidden = false
+    }
+
+    func showEmptyState() {
+        let emptyStateView = createEmptyStateView()
+
+        addSubview(emptyStateView)
+        collectionView.isHidden = true
+
+        emptyStateView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        self.emptyStateView = emptyStateView
+
+        setupLocalization()
     }
 }
 
@@ -103,7 +112,7 @@ extension MultisigOperationsViewLayout {
 
 extension MultisigOperationsViewLayout {
     enum Constants {
-        static let contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+        static let contentInsets = UIEdgeInsets(top: 16.0, left: .zero, bottom: 16.0, right: .zero)
         static let itemSpacing: CGFloat = 8.0
     }
 }

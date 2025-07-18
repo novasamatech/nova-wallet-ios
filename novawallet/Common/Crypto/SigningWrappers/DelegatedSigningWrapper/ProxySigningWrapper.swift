@@ -3,14 +3,13 @@ import Foundation
 final class ProxySigningWrapper: DelegatedSigningWrapper {
     override func presentFlow(
         for data: Data,
-        delegatedMetaId: MetaAccountModel.Id,
+        delegatedMetaId _: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
     ) {
-        uiPresenter.presentProxyFlow(
+        uiPresenter.presentDelegatedSigningFlow(
             for: data,
-            proxiedId: delegatedMetaId,
             resolution: resolution,
             substrateContext: substrateContext,
             completion: completion

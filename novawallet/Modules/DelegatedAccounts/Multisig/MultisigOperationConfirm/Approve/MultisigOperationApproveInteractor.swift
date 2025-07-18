@@ -10,19 +10,21 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
     private var callWeight: Substrate.Weight?
 
     init(
-        operation: Multisig.PendingOperation,
+        operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
         signatoryRepository: MultisigSignatoryRepositoryProtocol,
-        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
+        pendingOperationProvider: MultisigOperationProviderProxyProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
         chainRegistry: ChainRegistryProtocol,
         callWeightEstimator: CallWeightEstimatingFactoryProtocol,
         operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.callWeightEstimator = callWeightEstimator
@@ -31,84 +33,40 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             operation: operation,
             chain: chain,
             multisigWallet: multisigWallet,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             balanceRemoteSubscriptionFactory: balanceRemoteSubscriptionFactory,
             signatoryRepository: signatoryRepository,
-            pendingMultisigLocalSubscriptionFactory: pendingMultisigLocalSubscriptionFactory,
+            pendingOperationProvider: pendingOperationProvider,
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: signingWrapperFactory,
             assetInfoOperationFactory: assetInfoOperationFactory,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
+            currencyManager: currencyManager,
             logger: logger
         )
     }
 
     override func didSetupSignatories() {
-        estimateFee()
+        doEstimateFee()
     }
 
     override func didUpdateOperation() {
-        estimateFee()
+        doEstimateFee()
     }
 
     override func didProcessCall() {
         logger.debug("Did process call")
 
-        estimateFee()
+        doEstimateFee()
     }
 
-    override func doConfirm() {
+    override func doEstimateFee() {
         guard
             let call,
-            let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
-            let extrinsicOperationFactory,
-            let signer else {
-            return
-        }
-
-        let callWeightWrapper = fetchCallWeight()
-
-        let builderClosure = createExtrinsicClosure(
-            for: multisig,
-            definition: definition,
-            call: call,
-            callWeightClosure: {
-                try callWeightWrapper.targetOperation.extractNoCancellableResultData()
-            }
-        )
-
-        let submissionWrapper = extrinsicOperationFactory.submit(
-            builderClosure,
-            signer: signer
-        )
-
-        submissionWrapper.addDependency(wrapper: callWeightWrapper)
-
-        let totalWrapper = submissionWrapper.insertingHead(operations: callWeightWrapper.allOperations)
-
-        execute(
-            wrapper: totalWrapper,
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.presenter?.didCompleteSubmission()
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.submissionError(error))
-            }
-        }
-    }
-}
-
-private extension MultisigOperationApproveInteractor {
-    func estimateFee() {
-        guard
-            let call,
-            let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
+            let multisig = multisigWallet.getMultisig(for: chain),
+            let definition = operation.operation.multisigDefinition,
             let operationFactory = extrinsicOperationFactory else {
             return
         }
@@ -147,6 +105,57 @@ private extension MultisigOperationApproveInteractor {
         }
     }
 
+    override func doConfirm() {
+        guard
+            let call,
+            let multisig = multisigWallet.getMultisig(for: chain),
+            let definition = operation.operation.multisigDefinition,
+            let extrinsicSubmissionMonitor,
+            let signer else {
+            return
+        }
+
+        let callWeightWrapper = fetchCallWeight()
+
+        let builderClosure = createExtrinsicClosure(
+            for: multisig,
+            definition: definition,
+            call: call,
+            callWeightClosure: {
+                try callWeightWrapper.targetOperation.extractNoCancellableResultData()
+            }
+        )
+
+        let submissionWrapper = extrinsicSubmissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
+            signer: signer
+        )
+
+        submissionWrapper.addDependency(wrapper: callWeightWrapper)
+
+        let totalWrapper = submissionWrapper.insertingHead(operations: callWeightWrapper.allOperations)
+
+        execute(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(model):
+                self?.presenter?.didCompleteSubmission(
+                    with: model.extrinsicSubmittedModel,
+                    submissionType: .approve
+                )
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.submissionError(error))
+            }
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension MultisigOperationApproveInteractor {
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
         definition: Multisig.MultisigDefinition,

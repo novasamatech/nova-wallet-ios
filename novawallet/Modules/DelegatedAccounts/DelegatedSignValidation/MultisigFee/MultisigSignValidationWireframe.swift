@@ -1,0 +1,5 @@
+import Foundation
+
+protocol MultisigSignValidationWireframeProtocol: DSFeeValidationWireframeProtocol, MultisigErrorPresentable {}
+
+final class MultisigSignValidationWireframe: MultisigSignValidationWireframeProtocol {}

@@ -3,7 +3,10 @@ import Foundation_iOS
 
 final class MultisigOperationsViewFactory {
     static func createView() -> MultisigOperationsViewProtocol? {
-        guard let selectedWallet = SelectedWalletSettings.shared.value else {
+        guard
+            let selectedWallet = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared
+        else {
             return nil
         }
 
@@ -11,14 +14,35 @@ final class MultisigOperationsViewFactory {
 
         let wireframe = MultisigOperationsWireframe()
 
-        let interactor = MultisigOperationsInteractor(
-            wallet: selectedWallet,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: operationQueue,
-            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared
+        let walletsRepository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
         )
 
-        let viewModelFactory = MultisigOperationsViewModelFactory()
+        let pendingOperationsProvider = MultisigOperationProviderProxy(
+            pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
+            callFormattingFactory: CallFormattingOperationFactory(
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                walletRepository: walletsRepository
+            ),
+            operationQueue: operationQueue
+        )
+
+        let interactor = MultisigOperationsInteractor(
+            wallet: selectedWallet,
+            pendingOperationsProvider: pendingOperationsProvider,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: operationQueue
+        )
+
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+        let viewModelFactory = MultisigOperationsViewModelFactory(
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
+        )
 
         let localizationManager = LocalizationManager.shared
 

@@ -7,6 +7,10 @@ protocol AccountDelegationPathValue {
         delegation: DelegationResolution.DelegationKey,
         context: RuntimeJsonContext
     ) throws -> JSON
+
+    var delegationType: DelegationType { get }
+
+    func delaysCallExecution() -> Bool
 }
 
 extension DelegationResolution {
@@ -56,7 +60,9 @@ extension DelegationResolution {
         ) throws -> PathFinderResult {
             let allCalls = Set(callPaths.keys)
 
-            let callDelegates = callPaths.reduce(into: [CallDelegateKey: DelegationResolution.GraphPath]()) { accum, keyValue in
+            let callDelegates = callPaths.reduce(
+                into: [CallDelegateKey: DelegationResolution.GraphPath]()
+            ) { accum, keyValue in
                 let call = keyValue.key
                 let paths = keyValue.value
 
@@ -184,24 +190,36 @@ extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
         let proxyType: Proxy.ProxyType
 
+        var delegationType: DelegationType {
+            .proxy(proxyType)
+        }
+
         func wrapCall(
             _ call: JSON,
             delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
             try Proxy.ProxyCall(
-                real: .accoundId(delegation.delegate),
+                real: .accoundId(delegation.delegated),
                 forceProxyType: proxyType,
                 call: call
             )
             .runtimeCall()
             .toScaleCompatibleJSON(with: context.toRawContext())
         }
+
+        func delaysCallExecution() -> Bool {
+            false
+        }
     }
 
     struct MultisigDelegationValue: AccountDelegationPathValue {
         let threshold: UInt16
         let signatories: [AccountId]
+
+        var delegationType: DelegationType {
+            .multisig
+        }
 
         func wrapCall(
             _ call: JSON,
@@ -210,6 +228,7 @@ extension DelegationResolution.PathFinder {
         ) throws -> JSON {
             let otherSignatories = signatories
                 .filter { $0 != delegation.delegate }
+                .sorted { $0.lexicographicallyPrecedes($1) }
                 .map { BytesCodable(wrappedValue: $0) }
 
             return if threshold == 1 {
@@ -230,6 +249,10 @@ extension DelegationResolution.PathFinder {
                 .runtimeCall()
                 .toScaleCompatibleJSON(with: context.toRawContext())
             }
+        }
+
+        func delaysCallExecution() -> Bool {
+            threshold > 1
         }
     }
 }

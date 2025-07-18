@@ -2,16 +2,35 @@ import Foundation
 import BigInt
 import Foundation_iOS
 
+struct MultisigDepositValidationParams {
+    let deposit: Balance?
+    let balance: Balance?
+    let payedFee: Balance?
+    let signatoryName: String
+    let assetInfo: AssetBalanceDisplayInfo
+}
+
+struct MultisigFeeValidationParams {
+    let balance: Balance?
+    let fee: ExtrinsicFeeProtocol?
+    let signatoryName: String
+    let assetInfo: AssetBalanceDisplayInfo
+}
+
 protocol MultisigDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
-    func hasSufficientBalance(
-        params: MultisigBalanceValidationModeParams,
+    func canReserveDeposit(
+        params: MultisigDepositValidationParams,
         locale: Locale
-    ) -> [DataValidating]
+    ) -> DataValidating
+
+    func canPayFee(
+        params: MultisigFeeValidationParams,
+        locale: Locale
+    ) -> DataValidating
 
     func operationNotExists(
-        callHash: Substrate.CallHash,
-        callHashSet: Set<Substrate.CallHash>?,
-        accountName: String,
+        _ noOperation: Bool,
+        multisigName: String,
         locale: Locale
     ) -> DataValidating
 }
@@ -32,11 +51,11 @@ final class MultisigDataValidatorFactory {
     }
 }
 
-// MARK: - Private
+// MARK: - MultisigDataValidatorFactoryProtocol
 
-private extension MultisigDataValidatorFactory {
-    func canPayDeposit(
-        params: MultisigBalanceValidationParams,
+extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
+    func canReserveDeposit(
+        params: MultisigDepositValidationParams,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -45,37 +64,53 @@ private extension MultisigDataValidatorFactory {
                 let viewModelFactory = self?.balanceViewModelFactoryFacade
             else { return }
 
-            let balanceDecimal = params.available.decimal(assetInfo: params.asset)
-            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset) ?? 0
+            let balanceDecimal = params.balance?.decimal(assetInfo: params.assetInfo) ?? 0
+            let depositDecimal = params.deposit?.decimal(assetInfo: params.assetInfo) ?? 0
 
-            let remainingDecimal = depositDecimal - balanceDecimal
+            let needToAdd = depositDecimal - balanceDecimal
 
-            let remainingModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: remainingDecimal
+            let needToAddModel = viewModelFactory.amountFromValue(
+                targetAssetInfo: params.assetInfo,
+                value: needToAdd
             ).value(for: locale)
 
             let depositModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
+                targetAssetInfo: params.assetInfo,
                 value: depositDecimal
             ).value(for: locale)
 
-            self?.presentable.presentNotEnoughBalanceForDeposit(
-                from: view,
+            let feeModel = params.payedFee.map { actualFee in
+                let feeDecimal = actualFee.decimal(assetInfo: params.assetInfo)
+
+                return viewModelFactory.amountFromValue(
+                    targetAssetInfo: params.assetInfo,
+                    value: feeDecimal
+                ).value(for: locale)
+            }
+
+            let errorParams = MultisigNotEnoughForDeposit(
                 deposit: depositModel,
-                remaining: remainingModel,
-                accountName: params.metaAccountResponse.chainAccount.name,
+                fee: feeModel,
+                needToAdd: needToAddModel,
+                signatoryName: params.signatoryName
+            )
+
+            self?.presentable.presentNotEnoughBalanceForDepositAndFee(
+                from: view,
+                params: errorParams,
                 locale: locale
             )
         }, preservesCondition: {
             guard let deposit = params.deposit else { return false }
 
-            return params.available >= deposit
+            let available = params.balance ?? 0
+
+            return available >= deposit
         })
     }
 
     func canPayFee(
-        params: MultisigBalanceValidationParams,
+        params: MultisigFeeValidationParams,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -83,123 +118,48 @@ private extension MultisigDataValidatorFactory {
                 return
             }
 
-            let balanceDecimal = params.available.decimal(assetInfo: params.asset)
-            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset) ?? 0
+            let balanceDecimal = params.balance?.decimal(
+                assetInfo: params.assetInfo
+            ) ?? 0
 
-            let remainingDecimal = feeDecimal - balanceDecimal
+            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(
+                assetInfo: params.assetInfo
+            ) ?? 0
 
-            let remainingModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: remainingDecimal
+            let needToAddDecimal = feeDecimal - balanceDecimal
+
+            let needToAddModel = viewModelFactory.amountFromValue(
+                targetAssetInfo: params.assetInfo,
+                value: needToAddDecimal
             ).value(for: locale)
 
             let feeModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
+                targetAssetInfo: params.assetInfo,
                 value: feeDecimal
             ).value(for: locale)
 
             self?.presentable.presentNotEnoughBalanceForFee(
                 from: view,
                 fee: feeModel,
-                remaining: remainingModel,
-                accountName: params.metaAccountResponse.chainAccount.name,
+                needToAdd: needToAddModel,
+                signatoryName: params.signatoryName,
                 locale: locale
             )
 
         }, preservesCondition: {
-            guard let fee = params.fee else { return false }
+            guard let fee = params.fee?.amountForCurrentAccount else {
+                return true
+            }
 
-            guard let feeAmountInPlank = fee.amountForCurrentAccount else { return true }
+            let available = params.balance ?? 0
 
-            return feeAmountInPlank <= params.available
-        })
-    }
-}
-
-// MARK: - MultisigDataValidatorFactoryProtocol
-
-extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
-    func hasSufficientBalance(
-        params: MultisigBalanceValidationModeParams,
-        locale: Locale
-    ) -> [DataValidating] {
-        switch params {
-        case let .rootSigner(signerParams):
-            [
-                hasSufficientBalance(
-                    params: signerParams,
-                    locale: locale
-                )
-            ]
-        case let .delegatedSigner(rootSignerParams, signatoryParams):
-            [
-                canPayDeposit(
-                    params: signatoryParams,
-                    locale: locale
-                ),
-                canPayFee(
-                    params: rootSignerParams,
-                    locale: locale
-                )
-            ]
-        }
-    }
-
-    func hasSufficientBalance(
-        params: MultisigBalanceValidationParams,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard
-                let view = self?.view,
-                let viewModelFactory = self?.balanceViewModelFactoryFacade
-            else { return }
-
-            let balanceDecimal = params.available.decimal(assetInfo: params.asset)
-            let depositDecimal = params.deposit?.decimal(assetInfo: params.asset) ?? 0
-            let feeDecimal = params.fee?.amountForCurrentAccount?.decimal(assetInfo: params.asset) ?? 0
-
-            let remainingDecimal = (depositDecimal + feeDecimal) - balanceDecimal
-
-            let remainingModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: remainingDecimal
-            ).value(for: locale)
-
-            let depositModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: depositDecimal
-            ).value(for: locale)
-
-            let feeModel = viewModelFactory.amountFromValue(
-                targetAssetInfo: params.asset,
-                value: feeDecimal
-            ).value(for: locale)
-
-            self?.presentable.presentNotEnoughBalanceForDepositAndFee(
-                from: view,
-                deposit: depositModel,
-                fee: feeModel,
-                remaining: remainingModel,
-                accountName: params.metaAccountResponse.chainAccount.name,
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard
-                let deposit = params.deposit,
-                let fee = params.fee
-            else { return false }
-
-            guard let feeAmountInPlank = fee.amountForCurrentAccount else { return true }
-
-            return params.available >= deposit + feeAmountInPlank
+            return available >= fee
         })
     }
 
     func operationNotExists(
-        callHash: Substrate.CallHash,
-        callHashSet: Set<Substrate.CallHash>?,
-        accountName: String,
+        _ noOperation: Bool,
+        multisigName: String,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -208,15 +168,11 @@ extension MultisigDataValidatorFactory: MultisigDataValidatorFactoryProtocol {
             }
             self?.presentable.presentOperationAlreadyAdded(
                 from: view,
-                accountName: accountName,
+                multisigName: multisigName,
                 locale: locale
             )
         }, preservesCondition: {
-            guard let callHashSet else {
-                return false
-            }
-
-            return !callHashSet.contains(callHash)
+            noOperation
         })
     }
 }

@@ -9,12 +9,6 @@ enum AssetListModelHelpers {
         return ListDifferenceCalculator(initialItems: [], sortBlock: sortingBlock)
     }
 
-    static func createPendingOperationDiffCalculator() -> ListDifferenceCalculator<Multisig.PendingOperation> {
-        let sortingBlock = AssetListModelHelpers.pendingOperationSortingBlock
-
-        return ListDifferenceCalculator(initialItems: [], sortBlock: sortingBlock)
-    }
-
     static func createAssetGroupModel(
         token: MultichainToken,
         assets: [AssetListAssetModel]

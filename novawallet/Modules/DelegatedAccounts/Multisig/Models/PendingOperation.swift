@@ -1,13 +1,13 @@
 import SubstrateSdk
 import Operation_iOS
+import BigInt
 
 extension Multisig {
     struct PendingOperation: Codable {
         let call: Substrate.CallData?
         let callHash: Substrate.CallHash
-        let timestamp: Int
+        let timestamp: UInt64
         let multisigAccountId: AccountId
-        let signatory: AccountId
         let chainId: ChainModel.Id
         let multisigDefinition: MultisigDefinition?
 
@@ -18,15 +18,18 @@ extension Multisig {
 
     struct MultisigDefinition: Codable, Equatable {
         let timepoint: MultisigTimepoint
+        let deposit: BigUInt
         let depositor: AccountId
         let approvals: [AccountId]
 
         init(
             timepoint: MultisigTimepoint,
+            deposit: BigUInt,
             depositor: AccountId,
             approvals: [AccountId]
         ) {
             self.timepoint = timepoint
+            self.deposit = deposit
             self.depositor = depositor
             self.approvals = approvals
         }
@@ -36,6 +39,7 @@ extension Multisig {
                 height: onChainModel.timepoint.height,
                 index: onChainModel.timepoint.index
             )
+            deposit = onChainModel.deposit
             depositor = onChainModel.depositor
             approvals = onChainModel.approvals.map(\.wrappedValue)
         }
@@ -68,14 +72,12 @@ extension Multisig.PendingOperation {
         let callHash: Substrate.CallHash
         let chainId: ChainModel.Id
         let multisigAccountId: AccountId
-        let signatoryAccountId: AccountId
 
         func stringValue() -> String {
             [
-                callHash.toHexString(),
+                callHash.toHex(),
                 chainId,
-                multisigAccountId.toHexString(),
-                signatoryAccountId.toHexString()
+                multisigAccountId.toHex()
             ].joined(with: .slash)
         }
     }
@@ -84,8 +86,7 @@ extension Multisig.PendingOperation {
         Key(
             callHash: callHash,
             chainId: chainId,
-            multisigAccountId: multisigAccountId,
-            signatoryAccountId: signatory
+            multisigAccountId: multisigAccountId
         )
     }
 }
@@ -96,7 +97,9 @@ extension Multisig.PendingOperation {
     func updating(with operation: Multisig.PendingOperation) -> Self {
         var updatedValue = self
 
-        updatedValue = updatedValue.replacingDefinition(with: operation.multisigDefinition)
+        updatedValue = updatedValue
+            .replacingDefinition(with: operation.multisigDefinition)
+            .replacingTimestamp(with: operation.timestamp)
 
         if let callUpdate = operation.call, call == nil {
             updatedValue = updatedValue.replacingCall(with: callUpdate)
@@ -111,7 +114,6 @@ extension Multisig.PendingOperation {
             callHash: callHash,
             timestamp: timestamp,
             multisigAccountId: multisigAccountId,
-            signatory: signatory,
             chainId: chainId,
             multisigDefinition: definition
         )
@@ -123,7 +125,17 @@ extension Multisig.PendingOperation {
             callHash: callHash,
             timestamp: timestamp,
             multisigAccountId: multisigAccountId,
-            signatory: signatory,
+            chainId: chainId,
+            multisigDefinition: multisigDefinition
+        )
+    }
+
+    func replacingTimestamp(with newTimestamp: UInt64) -> Self {
+        .init(
+            call: call,
+            callHash: callHash,
+            timestamp: newTimestamp,
+            multisigAccountId: multisigAccountId,
             chainId: chainId,
             multisigDefinition: multisigDefinition
         )

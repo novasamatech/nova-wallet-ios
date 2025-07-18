@@ -5,25 +5,23 @@ import SubstrateSdk
 final class MultisigOperationsInteractor: AnyProviderAutoCleaning {
     weak var presenter: MultisigOperationsInteractorOutputProtocol?
 
-    let pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+    let pendingOperationsProvider: MultisigOperationProviderProxyProtocol
 
     private let wallet: MetaAccountModel
     private let chainRegistry: ChainRegistryProtocol
-
-    private var operationsProvider: StreamableProvider<Multisig.PendingOperation>?
 
     private let operationQueue: OperationQueue
 
     init(
         wallet: MetaAccountModel,
+        pendingOperationsProvider: MultisigOperationProviderProxyProtocol,
         chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue,
-        pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol
+        operationQueue: OperationQueue
     ) {
         self.wallet = wallet
+        self.pendingOperationsProvider = pendingOperationsProvider
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
-        self.pendingMultisigLocalSubscriptionFactory = pendingMultisigLocalSubscriptionFactory
     }
 }
 
@@ -31,13 +29,16 @@ final class MultisigOperationsInteractor: AnyProviderAutoCleaning {
 
 private extension MultisigOperationsInteractor {
     func subscribeToOperations() {
-        guard let multisigAccount = wallet.multisigAccount?.multisig else {
+        guard let multisigAccount = wallet.multisigAccount?.anyChainMultisig else {
             presenter?.didReceive(error: MultisigOperationsInteractorError.walletUnavailable)
             return
         }
 
-        clear(streamableProvider: &operationsProvider)
-        operationsProvider = subscribePendingOperations(for: multisigAccount.accountId)
+        pendingOperationsProvider.subscribePendingOperations(
+            for: multisigAccount.accountId,
+            chainId: nil,
+            handler: self
+        )
     }
 
     func subscribeChains() {
@@ -58,14 +59,17 @@ extension MultisigOperationsInteractor: MultisigOperationsInteractorInputProtoco
         subscribeToOperations()
         subscribeChains()
     }
+
+    func createFlowState() -> MultisigOperationsFlowState {
+        MultisigOperationsFlowState(providerSnapshot: pendingOperationsProvider.createSnapshot())
+    }
 }
 
 // MARK: - MultisigOperationsLocalStorageSubscriber
 
-extension MultisigOperationsInteractor: MultisigOperationsLocalStorageSubscriber,
-    MultisigOperationsLocalSubscriptionHandler {
+extension MultisigOperationsInteractor: MultisigOperationProviderHandlerProtocol {
     func handleMultisigPendingOperations(
-        result: Result<[DataProviderChange<Multisig.PendingOperation>], Error>
+        result: Result<[DataProviderChange<Multisig.PendingOperationProxyModel>], Error>
     ) {
         switch result {
         case let .success(changes):

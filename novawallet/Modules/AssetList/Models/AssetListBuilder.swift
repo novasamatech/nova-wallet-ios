@@ -5,7 +5,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
     let resultClosure: (AssetListBuilderResult) -> Void
 
     private(set) var nftList: ListDifferenceCalculator<NftModel>
-    private(set) var pendingOperations: ListDifferenceCalculator<Multisig.PendingOperation>
+    private(set) var pendingOperations: [String: Multisig.PendingOperation]
     private(set) var locksResult: Result<[AssetLock], Error>?
     private(set) var holdsResult: Result<[AssetHold], Error>?
 
@@ -19,7 +19,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
     ) {
         self.resultClosure = resultClosure
         nftList = AssetListModelHelpers.createNftDiffCalculator()
-        pendingOperations = AssetListModelHelpers.createPendingOperationDiffCalculator()
+        pendingOperations = [:]
 
         super.init(workingQueue: workingQueue, callbackQueue: callbackQueue, rebuildPeriod: rebuildPeriod)
     }
@@ -52,7 +52,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
             balances: balances,
             externalBalanceResult: externalBalancesResult,
             nfts: nftList.allItems,
-            pendingOperations: pendingOperations.allItems,
+            pendingOperations: Array(pendingOperations.values),
             locksResult: locksResult,
             holdsResult: holdsResult
         )
@@ -71,7 +71,9 @@ final class AssetListBuilder: AssetListBaseBuilder {
     }
 
     func rebuildPendingOperationsOnly() {
-        let model = currentModel.replacing(pendingOperations: pendingOperations.allItems)
+        let model = currentModel.replacing(
+            pendingOperations: Array(pendingOperations.values)
+        )
         currentModel = model
 
         let result = AssetListBuilderResult(
@@ -104,7 +106,7 @@ final class AssetListBuilder: AssetListBaseBuilder {
         super.resetStorages()
 
         nftList = AssetListModelHelpers.createNftDiffCalculator()
-        pendingOperations = AssetListModelHelpers.createPendingOperationDiffCalculator()
+        pendingOperations = [:]
         locksResult = nil
         currentModel = .init()
     }
@@ -129,7 +131,7 @@ extension AssetListBuilder {
 
     func applyPendingOperationsChanges(_ changes: [DataProviderChange<Multisig.PendingOperation>]) {
         workingQueue.async { [weak self] in
-            self?.pendingOperations.apply(changes: changes)
+            self?.pendingOperations = changes.mergeToDict(self?.pendingOperations ?? [:])
 
             self?.rebuildPendingOperationsOnly()
         }
@@ -137,7 +139,7 @@ extension AssetListBuilder {
 
     func applyPendingOperationsReset() {
         workingQueue.async { [weak self] in
-            self?.pendingOperations = AssetListModelHelpers.createPendingOperationDiffCalculator()
+            self?.pendingOperations = [:]
 
             self?.rebuildPendingOperationsOnly()
         }

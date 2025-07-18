@@ -28,9 +28,7 @@ private extension MultisigSignatoryRepository {
             let localDict = wallets.reduce(
                 into: [AccountId: [MetaChainAccountResponse]]()
             ) { accum, wallet in
-                guard
-                    let model = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
-                    signatories.contains(model.chainAccount.accountId) else {
+                guard let model = wallet.fetchMetaChainAccount(for: chain.accountRequest()) else {
                     return
                 }
 
@@ -40,19 +38,46 @@ private extension MultisigSignatoryRepository {
                 accum[accountId] = (currentList ?? []) + [model]
             }
 
-            return localDict.mapValues { accounts in
-                let sortedAccounts = accounts.sorted { account1, account2 in
-                    let order1 = account1.chainAccount.type.signingDelegateOrder
-                    let order2 = account2.chainAccount.type.signingDelegateOrder
+            return localDict.reduce(
+                into: [AccountId: MetaChainAccountResponse]()
+            ) { accum, keyValue in
+                let accountId = keyValue.key
+                let accounts = keyValue.value
 
-                    return order1 < order2
+                guard signatories.contains(accountId) else { return }
+
+                let sortedAccounts = accounts.sorted(by: self.accountsSortBlock)
+
+                accum[accountId] = sortedAccounts[0]
+            }.mapValues { account in
+                var delegate: Multisig.LocalSignatory.Delegate?
+
+                if
+                    let delegationId = account.delegationId,
+                    let delegateAccount = localDict[delegationId.delegateAccountId]?
+                    .sorted(by: self.accountsSortBlock)
+                    .first {
+                    delegate = Multisig.LocalSignatory.Delegate(
+                        metaAccount: delegateAccount,
+                        delegationType: delegationId.delegationType
+                    )
                 }
 
-                return .local(Multisig.LocalSignatory(metaAccount: sortedAccounts[0]))
+                return Multisig.Signatory.local(.init(metaAccount: account, delegate: delegate))
             }
         }
 
         return CompoundOperationWrapper(targetOperation: searchOperation)
+    }
+
+    func accountsSortBlock(
+        lhs: MetaChainAccountResponse,
+        rhs: MetaChainAccountResponse
+    ) -> Bool {
+        let order1 = lhs.chainAccount.type.signingDelegateOrder
+        let order2 = rhs.chainAccount.type.signingDelegateOrder
+
+        return order1 < order2
     }
 }
 

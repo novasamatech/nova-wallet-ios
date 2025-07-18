@@ -3,7 +3,7 @@ import UIKit
 final class DelegatedSignConfirmationViewFactory {
     static func createPresenter(
         from delegatedAccountId: MetaAccountModel.Id,
-        delegationType: DelegationType,
+        delegationClass: DelegationClass,
         delegateAccountResponse: ChainAccountResponse,
         completionClosure: @escaping DelegatedSignConfirmationCompletion,
         viewController: UIViewController
@@ -22,7 +22,7 @@ final class DelegatedSignConfirmationViewFactory {
         let wireframe = DelegatedSignConfirmationWireframe(
             delegatedAccountId: delegatedAccountId,
             delegateAccountResponse: delegateAccountResponse,
-            delegationType: delegationType
+            delegationClass: delegationClass
         )
 
         let view = ControllerBacked(controller: viewController)

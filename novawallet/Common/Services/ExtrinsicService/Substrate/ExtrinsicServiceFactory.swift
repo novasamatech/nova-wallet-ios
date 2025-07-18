@@ -28,6 +28,10 @@ protocol ExtrinsicServiceFactoryProtocol {
         extensions: [ExtrinsicSignedExtending],
         customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicOperationFactoryProtocol
+
+    func createExtrinsicSubmissionMonitor(
+        with extrinsicService: ExtrinsicServiceProtocol
+    ) -> ExtrinsicSubmitMonitorFactoryProtocol
 }
 
 extension ExtrinsicServiceFactoryProtocol {
@@ -123,13 +127,15 @@ final class ExtrinsicServiceFactory {
     private let userStorageFacade: StorageFacadeProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
     private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    private let logger: LoggerProtocol
 
     init(
         runtimeRegistry: RuntimeProviderProtocol,
         engine: JSONRPCEngine,
         operationQueue: OperationQueue,
         userStorageFacade: StorageFacadeProtocol,
-        substrateStorageFacade: StorageFacadeProtocol
+        substrateStorageFacade: StorageFacadeProtocol,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
@@ -142,6 +148,7 @@ final class ExtrinsicServiceFactory {
         self.operationQueue = operationQueue
         self.userStorageFacade = userStorageFacade
         self.substrateStorageFacade = substrateStorageFacade
+        self.logger = logger
     }
 }
 
@@ -315,6 +322,23 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
+        )
+    }
+
+    func createExtrinsicSubmissionMonitor(
+        with extrinsicService: ExtrinsicServiceProtocol
+    ) -> ExtrinsicSubmitMonitorFactoryProtocol {
+        let statusService = ExtrinsicStatusService(
+            connection: engine,
+            runtimeProvider: runtimeRegistry,
+            eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
+            logger: logger
+        )
+
+        return ExtrinsicSubmissionMonitorFactory(
+            submissionService: extrinsicService,
+            statusService: statusService,
+            operationQueue: operationQueue
         )
     }
 }

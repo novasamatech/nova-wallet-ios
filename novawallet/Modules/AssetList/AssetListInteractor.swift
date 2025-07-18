@@ -181,7 +181,7 @@ private extension AssetListInteractor {
 
         guard
             selectedWalletSettings.value.type == .multisig,
-            let multisigAccount = selectedWalletSettings.value.multisigAccount?.multisig
+            let multisigAccount = selectedWalletSettings.value.multisigAccount?.anyChainMultisig
         else { return }
 
         multisigOperationsSubscription = subscribePendingOperations(for: multisigAccount.accountId)

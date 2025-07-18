@@ -45,6 +45,36 @@ struct AssetBalance: Equatable {
         )
     }
 
+    func spending(amount: Balance) -> Self {
+        .init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeInPlank.subtractOrZero(amount),
+            reservedInPlank: reservedInPlank,
+            frozenInPlank: frozenInPlank,
+            edCountMode: edCountMode,
+            transferrableMode: transferrableMode,
+            blocked: blocked
+        )
+    }
+
+    func reserving(balance: Balance) -> Self {
+        guard freeInPlank >= balance else {
+            return self
+        }
+
+        return .init(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: freeInPlank - balance,
+            reservedInPlank: reservedInPlank + balance,
+            frozenInPlank: frozenInPlank,
+            edCountMode: edCountMode,
+            transferrableMode: transferrableMode,
+            blocked: blocked
+        )
+    }
+
     func regularTransferrableBalance() -> BigUInt {
         Self.transferrableBalance(
             from: freeInPlank,
@@ -54,7 +84,7 @@ struct AssetBalance: Equatable {
         )
     }
 
-    func regularReservableBalance(for existentialDeposit: BigUInt) -> BigUInt {
+    func regularReservableBalance(for existentialDeposit: Balance) -> Balance {
         Self.reservableBalance(
             from: freeInPlank,
             frozen: frozenInPlank,
@@ -86,9 +116,9 @@ struct AssetBalance: Equatable {
     ) -> BigUInt {
         switch mode {
         case .regular:
-            free - max(existentialDeposit, frozen)
+            free.subtractOrZero(max(existentialDeposit, frozen))
         case .fungibleTrait:
-            free - existentialDeposit
+            free.subtractOrZero(existentialDeposit)
         }
     }
 }

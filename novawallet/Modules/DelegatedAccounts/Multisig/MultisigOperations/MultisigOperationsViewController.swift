@@ -62,7 +62,7 @@ private extension MultisigOperationsViewController {
                 for: indexPath
             )!
 
-            cell.bind(viewModel: viewModel)
+            cell.view.view.bind(viewModel: viewModel)
 
             return cell
         }
@@ -81,7 +81,6 @@ private extension MultisigOperationsViewController {
             )
 
             headerView?.titleLabel.apply(style: .regularBodyPrimary)
-            headerView?.contentInsets.left = .zero
             headerView?.bind(title: headerModel)
 
             return headerView
@@ -94,6 +93,7 @@ private extension MultisigOperationsViewController {
         title = R.string.localizable.multisigTransactionsToSign(
             preferredLanguages: selectedLocale.rLanguages
         )
+        rootView.locale = selectedLocale
     }
 
     func applySnapshot(
@@ -160,11 +160,10 @@ extension MultisigOperationsViewController: MultisigOperationsViewProtocol {
 
         switch viewModel {
         case .empty:
-            rootView.showEmptyState(true)
+            rootView.showEmptyState()
             applySnapshot(with: [])
-
         case let .sections(sections):
-            rootView.showEmptyState(false)
+            rootView.showContent()
             applySnapshot(with: sections)
         }
     }

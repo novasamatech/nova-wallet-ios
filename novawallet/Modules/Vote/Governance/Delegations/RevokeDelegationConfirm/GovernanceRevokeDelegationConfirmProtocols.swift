@@ -31,7 +31,8 @@ protocol GovernanceRevokeDelegationConfirmInteractorOutputProtocol: GovernanceDe
 
 protocol GovernanceRevokeDelegationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     FeeRetryable, ExtrinsicSigningErrorHandling, MessageSheetPresentable, AddressOptionsPresentable,
-    GovernanceErrorPresentable, MultiExtrinsicRetryable {
+    GovernanceErrorPresentable, MultiExtrinsicRetryable,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {
     func showTracks(
         from view: GovernanceRevokeDelegationConfirmViewProtocol?,
         tracks: [GovernanceTrackInfoLocal],
@@ -40,6 +41,7 @@ protocol GovernanceRevokeDelegationConfirmWireframeProtocol: AlertPresentable, E
 
     func complete(
         on view: GovernanceRevokeDelegationConfirmViewProtocol?,
+        sender: ExtrinsicSenderResolution?,
         allRemoved: Bool,
         locale: Locale
     )

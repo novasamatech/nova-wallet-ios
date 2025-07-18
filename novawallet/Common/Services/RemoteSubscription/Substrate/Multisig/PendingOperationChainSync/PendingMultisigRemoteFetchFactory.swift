@@ -11,6 +11,8 @@ final class PendingMultisigRemoteFetchFactory {
     private let chain: ChainModel
     private let chainRegistry: ChainRegistryProtocol
     private let pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol
+    private let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    private let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
     private let operationManager: OperationManagerProtocol
 
     init(
@@ -18,12 +20,16 @@ final class PendingMultisigRemoteFetchFactory {
         chain: ChainModel,
         chainRegistry: ChainRegistryProtocol,
         pendingCallHashesOperationFactory: MultisigStorageOperationFactoryProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
+        blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.multisigAccount = multisigAccount
         self.chain = chain
         self.chainRegistry = chainRegistry
         self.pendingCallHashesOperationFactory = pendingCallHashesOperationFactory
+        self.blockTimeOperationFactory = blockTimeOperationFactory
+        self.blockNumberOperationFactory = blockNumberOperationFactory
         self.operationManager = operationManager
     }
 }
@@ -31,7 +37,7 @@ final class PendingMultisigRemoteFetchFactory {
 // MARK: - Private
 
 private extension PendingMultisigRemoteFetchFactory {
-    func createCallHashFetchWrapper() -> CompoundOperationWrapper<CallHashFetchResult> {
+    func createOnchainOperationsFetchWrapper() -> CompoundOperationWrapper<OnchainOperations> {
         do {
             let connection = try chainRegistry.getConnectionOrError(for: chain.chainId)
             let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
@@ -46,9 +52,9 @@ private extension PendingMultisigRemoteFetchFactory {
         }
     }
 
-    func createOperationInfoFetchWrapper(
-        dependsOn callHashesWrapper: CompoundOperationWrapper<CallHashFetchResult>
-    ) -> CompoundOperationWrapper<OffChainInfoFetchResult> {
+    func createOffchainOperationsFetchWrapper(
+        dependsOn onchainOperationsWrapper: CompoundOperationWrapper<OnchainOperations>
+    ) -> CompoundOperationWrapper<OffchainOperations> {
         OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: operationManager
         ) { [weak self] in
@@ -56,7 +62,7 @@ private extension PendingMultisigRemoteFetchFactory {
                 throw BaseOperationError.parentOperationCancelled
             }
 
-            let callHashes = try callHashesWrapper
+            let callHashes = try onchainOperationsWrapper
                 .targetOperation
                 .extractNoCancellableResultData()
                 .keys
@@ -76,43 +82,45 @@ private extension PendingMultisigRemoteFetchFactory {
         }
     }
 
-    func createCallsDecodingWrapper(
-        dependsOn callDataWrapper: CompoundOperationWrapper<OffChainInfoFetchResult>
-    ) -> CompoundOperationWrapper<OffChainInfoDecodingResult> {
-        let mapOperation = ClosureOperation<OffChainInfoDecodingResult> {
-            let offChainOperationInfo = try callDataWrapper.targetOperation.extractNoCancellableResultData()
-
-            return offChainOperationInfo.compactMapValues {
-                Multisig.OffChainMultisigInfo(
-                    callHash: $0.callHash,
-                    call: $0.callData,
-                    timestamp: $0.timestamp
-                )
-            }
-        }
-
-        return CompoundOperationWrapper(targetOperation: mapOperation)
-    }
-
     func createPendingOperations(
-        with callHashes: CallHashFetchResult,
-        info: OffChainInfoDecodingResult
+        with onchainOperations: OnchainOperations,
+        offchainOperations: OffchainOperations,
+        blockTime: BlockTime,
+        blockNumber: BlockNumber
     ) -> MultisigPendingOperationsMap {
-        callHashes.reduce(into: [:]) { acc, keyValue in
+        onchainOperations.reduce(into: [:]) { acc, keyValue in
             let callHash = keyValue.key
             let operationDefinition = keyValue.value
 
+            let timestamp = if let timestamp = offchainOperations[callHash]?.timestamp {
+                UInt64(timestamp)
+            } else {
+                BlockTimestampEstimator.estimateTimestamp(
+                    for: operationDefinition.timepoint.height,
+                    currentBlock: blockNumber,
+                    blockTimeInMillis: blockTime
+                )
+            }
+
             let operation = Multisig.PendingOperation(
-                call: info[callHash]?.call,
+                call: offchainOperations[callHash]?.callData,
                 callHash: callHash,
-                timestamp: 0,
+                timestamp: timestamp,
                 multisigAccountId: multisigAccount.accountId,
-                signatory: multisigAccount.signatory,
                 chainId: chain.chainId,
                 multisigDefinition: .init(from: operationDefinition)
             )
 
             acc[operation.createKey()] = operation
+        }
+    }
+
+    func createBlockTimeWrapper() -> CompoundOperationWrapper<BlockTime> {
+        do {
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chain.chainId)
+            return blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider)
+        } catch {
+            return .createWithError(error)
         }
     }
 }
@@ -121,33 +129,40 @@ private extension PendingMultisigRemoteFetchFactory {
 
 extension PendingMultisigRemoteFetchFactory: PendingMultisigRemoteFetchFactoryProtocol {
     func createFetchWrapper() -> CompoundOperationWrapper<MultisigPendingOperationsMap> {
-        let callHashFetchWrapper = createCallHashFetchWrapper()
-        let callDataFetchWrapper = createOperationInfoFetchWrapper(dependsOn: callHashFetchWrapper)
-        let callsDecodingWrapper = createCallsDecodingWrapper(dependsOn: callDataFetchWrapper)
+        let onchainOperationsWrapper = createOnchainOperationsFetchWrapper()
+        let offchainOperationsWrapper = createOffchainOperationsFetchWrapper(dependsOn: onchainOperationsWrapper)
+        let blockTimeWrapper = createBlockTimeWrapper()
+        let blockNumberWrapper = blockNumberOperationFactory.createWrapper(for: chain.chainId)
 
         let mapOperation: BaseOperation<MultisigPendingOperationsMap>
         mapOperation = ClosureOperation { [weak self] in
             guard let self else { throw BaseOperationError.parentOperationCancelled }
 
+            let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+            let blockNumber = try blockNumberWrapper.targetOperation.extractNoCancellableResultData()
+
             return createPendingOperations(
-                with: try callHashFetchWrapper.targetOperation.extractNoCancellableResultData(),
-                info: try callsDecodingWrapper.targetOperation.extractNoCancellableResultData()
+                with: try onchainOperationsWrapper.targetOperation.extractNoCancellableResultData(),
+                offchainOperations: try offchainOperationsWrapper.targetOperation.extractNoCancellableResultData(),
+                blockTime: blockTime,
+                blockNumber: blockNumber
             )
         }
 
-        callDataFetchWrapper.addDependency(wrapper: callHashFetchWrapper)
-        callsDecodingWrapper.addDependency(wrapper: callDataFetchWrapper)
-        mapOperation.addDependency(callsDecodingWrapper.targetOperation)
+        offchainOperationsWrapper.addDependency(wrapper: onchainOperationsWrapper)
+        mapOperation.addDependency(offchainOperationsWrapper.targetOperation)
+        mapOperation.addDependency(blockTimeWrapper.targetOperation)
+        mapOperation.addDependency(blockNumberWrapper.targetOperation)
 
-        return callsDecodingWrapper
-            .insertingHead(operations: callDataFetchWrapper.allOperations)
-            .insertingHead(operations: callHashFetchWrapper.allOperations)
+        return offchainOperationsWrapper
+            .insertingHead(operations: blockTimeWrapper.allOperations)
+            .insertingHead(operations: blockNumberWrapper.allOperations)
+            .insertingHead(operations: onchainOperationsWrapper.allOperations)
             .insertingTail(operation: mapOperation)
     }
 }
 
 // MARK: - Private types
 
-private typealias CallHashFetchResult = [Substrate.CallHash: MultisigPallet.MultisigDefinition]
-private typealias OffChainInfoFetchResult = [Substrate.CallHash: OffChainMultisigInfo]
-private typealias OffChainInfoDecodingResult = [Substrate.CallHash: Multisig.OffChainMultisigInfo]
+private typealias OnchainOperations = [Substrate.CallHash: MultisigPallet.MultisigDefinition]
+private typealias OffchainOperations = [Substrate.CallHash: OffChainMultisigInfo]

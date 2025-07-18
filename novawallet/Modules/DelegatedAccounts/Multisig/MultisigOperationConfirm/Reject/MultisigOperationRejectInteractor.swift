@@ -9,11 +9,11 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
     }
 
     override func didSetupSignatories() {
-        estimateFee()
+        doEstimateFee()
     }
 
     override func didUpdateOperation() {
-        estimateFee()
+        doEstimateFee()
     }
 
     override func didProcessCall() {
@@ -22,9 +22,9 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
 
     override func doConfirm() {
         guard
-            let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
-            let extrinsicOperationFactory,
+            let multisig = multisigWallet.getMultisig(for: chain),
+            let definition = operation.operation.multisigDefinition,
+            let extrinsicSubmissionMonitor,
             let signer else {
             return
         }
@@ -32,11 +32,11 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         let builderClosure = createExtrinsicClosure(
             for: multisig,
             definition: definition,
-            callHash: operation.callHash
+            callHash: operation.operation.callHash
         )
 
-        let submissionWrapper = extrinsicOperationFactory.submit(
-            builderClosure,
+        let submissionWrapper = extrinsicSubmissionMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
             signer: signer
         )
 
@@ -46,20 +46,21 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case .success:
-                self?.presenter?.didCompleteSubmission()
+            case let .success(model):
+                self?.presenter?.didCompleteSubmission(
+                    with: model.extrinsicSubmittedModel,
+                    submissionType: .reject
+                )
             case let .failure(error):
                 self?.presenter?.didReceiveError(.submissionError(error))
             }
         }
     }
-}
 
-private extension MultisigOperationRejectInteractor {
-    func estimateFee() {
+    override func doEstimateFee() {
         guard
-            let multisig = multisigWallet.multisigAccount?.multisig,
-            let definition = operation.multisigDefinition,
+            let multisig = multisigWallet.getMultisig(for: chain),
+            let definition = operation.operation.multisigDefinition,
             let operationFactory = extrinsicOperationFactory else {
             return
         }
@@ -69,7 +70,7 @@ private extension MultisigOperationRejectInteractor {
         let builderClosure = createExtrinsicClosure(
             for: multisig,
             definition: definition,
-            callHash: operation.callHash
+            callHash: operation.operation.callHash
         )
 
         let feeWrapper = operationFactory.estimateFeeOperation(builderClosure)
@@ -88,7 +89,11 @@ private extension MultisigOperationRejectInteractor {
             }
         }
     }
+}
 
+// MARK: - Private
+
+private extension MultisigOperationRejectInteractor {
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
         definition: Multisig.MultisigDefinition,

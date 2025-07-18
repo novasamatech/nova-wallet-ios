@@ -11,11 +11,18 @@ struct MultisigOperationViewModel {
     let timeString: String
     let signingProgress: String
     let status: Status?
-    let delegatedAccountModel: (text: String, model: DisplayAddressViewModel)?
+    let delegatedAccountModel: DelegatedAccount?
 
     enum Status: Hashable {
         case createdByUser(String)
         case signed(TitleIconViewModel)
+    }
+}
+
+extension MultisigOperationViewModel {
+    struct DelegatedAccount {
+        let title: String
+        let model: DisplayAddressViewModel
     }
 }
 

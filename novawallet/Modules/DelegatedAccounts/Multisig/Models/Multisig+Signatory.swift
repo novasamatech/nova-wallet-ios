@@ -7,6 +7,7 @@ extension Multisig {
 
     struct LocalSignatory {
         let metaAccount: MetaChainAccountResponse
+        let delegate: Delegate?
     }
 
     enum Signatory {
@@ -33,9 +34,16 @@ extension Multisig {
     }
 }
 
+extension Multisig.LocalSignatory {
+    struct Delegate {
+        let metaAccount: MetaChainAccountResponse
+        let delegationType: DelegationType
+    }
+}
+
 extension Array where Element == Multisig.Signatory {
-    func findSignatory(for wallet: MetaAccountModel) -> Multisig.Signatory? {
-        guard let multisig = wallet.multisigAccount?.multisig else {
+    func findSignatory(for wallet: MetaAccountModel, chain: ChainModel) -> Multisig.Signatory? {
+        guard let multisig = wallet.getMultisig(for: chain) else {
             return nil
         }
 

@@ -14,6 +14,10 @@ protocol DelegationResolutionNodeProtocol {
         for callPath: CallCodingPath,
         at overallDepth: UInt
     ) -> DelegationResolutionNodeProtocol?
+
+    func merging(other: DelegationResolutionNodeProtocol) -> DelegationResolutionNodeProtocol
+
+    func delaysCallExecution() -> Bool
 }
 
 protocol DelegationResolutionNodeSourceProtocol {
@@ -53,8 +57,16 @@ extension DelegationResolution.Graph {
             return DelegationResolution.PathFinder.ProxyDelegationValue(proxyType: proxyType)
         }
 
-        func adding(type: Proxy.ProxyType) -> ProxyResolutionNode {
-            .init(proxyTypes: proxyTypes.union([type]))
+        func merging(other: DelegationResolutionNodeProtocol) -> DelegationResolutionNodeProtocol {
+            guard let otherProxyNode = other as? ProxyResolutionNode else {
+                return self
+            }
+
+            return ProxyResolutionNode(proxyTypes: proxyTypes.union(otherProxyNode.proxyTypes))
+        }
+
+        func delaysCallExecution() -> Bool {
+            false
         }
     }
 }
@@ -87,6 +99,16 @@ extension DelegationResolution.Graph {
                 signatories: signatories
             )
         }
+
+        func merging(
+            other _: DelegationResolutionNodeProtocol
+        ) -> DelegationResolutionNodeProtocol {
+            self
+        }
+
+        func delaysCallExecution() -> Bool {
+            threshold > 1
+        }
     }
 }
 
@@ -109,7 +131,7 @@ extension MetaAccountModel: DelegationResolutionNodeSourceProtocol {
             return (key, value)
         } else if
             type == .multisig,
-            let multisig = multisigAccount?.multisig {
+            let multisig = getMultisig(for: chain) {
             let allSignatories = multisig.otherSignatories + [multisig.signatory]
 
             let key = DelegationResolution.DelegationKey(

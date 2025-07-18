@@ -10,8 +10,8 @@ protocol CopyPresentable {
 }
 
 extension CopyPresentable where Self: AlertPresentable {
-    private func copyAddress(
-        from view: ControllerBackedProtocol,
+    func copyValue(
+        from view: ControllerBackedProtocol?,
         value: String,
         locale: Locale
     ) {
@@ -20,7 +20,7 @@ extension CopyPresentable where Self: AlertPresentable {
         let title = R.string.localizable.commonCopied(preferredLanguages: locale.rLanguages)
         let controller = ModalAlertFactory.createSuccessAlert(title)
 
-        view.controller.present(
+        view?.controller.present(
             controller,
             animated: true,
             completion: nil
@@ -40,7 +40,7 @@ extension CopyPresentable where Self: AlertPresentable {
             title: copyTitle,
             style: .normal
         ) { [weak self] in
-            self?.copyAddress(from: view, value: value, locale: locale)
+            self?.copyValue(from: view, value: value, locale: locale)
         }
 
         let viewModel = AlertPresentableViewModel(

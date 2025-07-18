@@ -205,7 +205,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         }
     }
 
-    func didSubmitRewardDest(result: Result<String, Error>) {
+    func didSubmitRewardDest(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -213,8 +213,13 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         }
 
         switch result {
-        case .success:
-            wireframe.complete(from: view)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: view.selectedLocale
+            )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,

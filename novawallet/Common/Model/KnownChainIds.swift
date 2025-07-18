@@ -5,6 +5,8 @@ enum KnowChainId {
     static let kusamaAssetHub = "48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
     static let polkadot = "91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
     static let polkadotAssetHub = "68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f"
+
+    static let unique = "84322d9cddbf35088f1e54e9a85c967a41a56a4f43445768125e61af166c7d31"
     static let acala = "fc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c"
     static let edgeware = "742a2ca70c2fda6cee4f8df98d64c4c670a052d9568058982dad9d5a7a135c5b"
     static let karura = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
@@ -29,6 +31,7 @@ enum KnowChainId {
     static let hydra = "afdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d"
     static let polimec = "7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd"
     static let avail = "b91746b45e0346cc2f815a520b9c6cb4d5c0902af848db0a80f85932d2e8276a"
+
     static let availTuringTestnet = "d3d2f3a3495dc597434a99d7d449ebad6616db45e4e4f178f31cc6fa14378b70"
     static let vara = "fe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763"
     static let mythos = "f6ee56e9c5277df5b4ce6ae9983ee88f3cbed27d31beeb98f9f84f997a1ab0b9"
