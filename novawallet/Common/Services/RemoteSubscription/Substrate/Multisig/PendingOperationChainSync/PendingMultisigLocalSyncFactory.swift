@@ -144,25 +144,13 @@ private extension PendingMultisigLocalSyncFactory {
             multisigAccountId: multisigAccount.accountId
         )
 
-        let fetchOperation = pendingOperationsRepository.fetchOperation(by: key.stringValue(), options: .init())
         let saveOperation = pendingOperationsRepository.saveOperation({
             []
         }, {
-            let multisigOp = try fetchOperation.extractNoCancellableResultData()
-
-            if let multisigOp, !multisigOp.isDiscoveredButPendingOnchain {
-                return [key.stringValue()]
-            } else {
-                return []
-            }
+            [key.stringValue()]
         })
 
-        saveOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: [fetchOperation]
-        )
+        return CompoundOperationWrapper(targetOperation: saveOperation)
     }
 }
 
