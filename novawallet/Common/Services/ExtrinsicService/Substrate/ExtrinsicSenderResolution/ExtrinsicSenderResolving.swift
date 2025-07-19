@@ -14,6 +14,46 @@ enum ExtrinsicSenderResolution {
         let allWallets: [MetaAccountModel]
         let chain: ChainModel
         let failures: [ResolutionDelegateFailure]
+
+        var canSignWithDelegate: Bool {
+            guard failures.isEmpty, let delegateAccount else {
+                return false
+            }
+
+            return !delegateAccount.chainAccount.delegated
+        }
+
+        func getNonResolvedProxiedWallet() -> MetaAccountModel? {
+            guard !canSignWithDelegate else {
+                return nil
+            }
+
+            if let delegateAccount {
+                guard delegateAccount.chainAccount.isProxied else {
+                    return nil
+                }
+
+                return allWallets.first(where: { $0.metaId == delegateAccount.metaId })
+            } else if delegatedAccount.isProxied {
+                return allWallets.first(where: { $0.metaId == delegatedAccount.metaId })
+            } else {
+                return nil
+            }
+        }
+
+        func getNotEnoughPermissionProxyWallet() -> MetaAccountModel? {
+            guard
+                let proxiedWallet = getNonResolvedProxiedWallet(),
+                let proxyModel = proxiedWallet.proxy else {
+                return nil
+            }
+
+            let accountRequest = chain.accountRequest()
+
+            return allWallets.first {
+                $0.fetch(for: accountRequest)?.accountId == proxyModel.accountId
+            }
+        }
     }
 
     case current(ChainAccountResponse)

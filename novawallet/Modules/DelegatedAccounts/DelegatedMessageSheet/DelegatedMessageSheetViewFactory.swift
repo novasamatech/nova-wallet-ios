@@ -57,7 +57,7 @@ enum DelegatedMessageSheetViewFactory {
         )
 
         view.allowsSwipeDown = false
-        view.controller.preferredContentSize = CGSize(width: 0, height: 348)
+        view.controller.preferredContentSize = CGSize(width: 0, height: 358)
 
         presenter.view = view
 
@@ -108,7 +108,7 @@ enum DelegatedMessageSheetViewFactory {
         )
 
         let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
-        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 284.0)
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 294.0)
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         view?.controller.modalTransitioningFactory = factory

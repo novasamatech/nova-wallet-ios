@@ -60,4 +60,5 @@ enum MultisigOperationConfirmInteractorError {
     case balanceInfoFailed(Error)
     case feeError(Error)
     case submissionError(Error)
+    case noOperationExists
 }

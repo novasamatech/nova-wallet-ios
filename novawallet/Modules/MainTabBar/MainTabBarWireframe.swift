@@ -95,6 +95,8 @@ private extension MainTabBarWireframe {
             return
         }
 
+        transactionsToSignView.controller.hidesBottomBarWhenPushed = true
+
         navigationController?.pushViewController(
             transactionsToSignView.controller,
             animated: true

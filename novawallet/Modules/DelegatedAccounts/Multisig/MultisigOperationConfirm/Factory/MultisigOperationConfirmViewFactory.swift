@@ -8,10 +8,7 @@ struct MultisigOperationConfirmViewFactory {
         flowState: MultisigOperationsFlowState
     ) -> MultisigOperationConfirmViewProtocol? {
         guard
-            let chain = ChainRegistryFacade.sharedRegistry.getChain(
-                for: operation.operation.chainId
-            ),
-            let asset = chain.utilityAsset(),
+            let chain = ChainRegistryFacade.sharedRegistry.getChain(for: operation.operation.chainId),
             let multisigWallet = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
@@ -118,11 +115,16 @@ struct MultisigOperationConfirmViewFactory {
 
         flowState.providerSnapshot.apply(to: pendingOperationsProvider)
 
+        let remoteOperationFactory = MultisigStorageOperationFactory(
+            operationQueue: operationQueue
+        )
+
         return if operation.operation.isCreator(accountId: multisig.signatory) {
             MultisigOperationRejectInteractor(
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,
+                remoteOperationFactory: remoteOperationFactory,
                 priceLocalSubscriptionFactory: PriceProviderFactory.shared,
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,
@@ -141,6 +143,7 @@ struct MultisigOperationConfirmViewFactory {
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,
+                remoteOperationFactory: remoteOperationFactory,
                 priceLocalSubscriptionFactory: PriceProviderFactory.shared,
                 walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
                 balanceRemoteSubscriptionFactory: walletRemoteWrapper,

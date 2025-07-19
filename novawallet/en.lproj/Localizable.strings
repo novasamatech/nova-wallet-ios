@@ -1917,3 +1917,5 @@
 "multisig.call.hash.copy" = "Copy call hash";
 "multisig.call.hash.share" = "Share call hash";
 "multisig.wallet.details.threshold" = "Threshold %d out of %d";
+"multisig.transaction.not.exist.title" = "Cannot perform this transaction";
+"multisig.transaction.not.exist.message" = "This transaction has already been rejected or executed.";

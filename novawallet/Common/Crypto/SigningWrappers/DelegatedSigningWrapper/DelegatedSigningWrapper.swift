@@ -8,7 +8,7 @@ enum DelegatedSigningWrapperError: Error {
     case closed
 }
 
-class DelegatedSigningWrapper {
+final class DelegatedSigningWrapper {
     let uiPresenter: TransactionSigningPresenting
     let metaId: String
 
@@ -21,21 +21,30 @@ class DelegatedSigningWrapper {
     }
 
     func presentFlow(
-        for _: Data,
+        for data: Data,
         delegatedMetaId _: MetaAccountModel.Id,
-        resolution _: ExtrinsicSenderResolution.ResolvedDelegate,
-        substrateContext _: ExtrinsicSigningContext.Substrate,
-        completion _: @escaping TransactionSigningClosure
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        substrateContext: ExtrinsicSigningContext.Substrate,
+        completion: @escaping TransactionSigningClosure
     ) {
-        fatalError("This method should be overridden in subclasses")
+        uiPresenter.presentDelegatedSigningFlow(
+            for: data,
+            resolution: resolution,
+            substrateContext: substrateContext,
+            completion: completion
+        )
     }
 
     func presentNotEnoughPermissionsFlow(
-        for _: String,
-        resolution _: ExtrinsicSenderResolution.ResolvedDelegate,
-        completion _: @escaping TransactionSigningClosure
+        for metaId: String,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        completion: @escaping TransactionSigningClosure
     ) {
-        fatalError("This method should be overridden in subclasses")
+        uiPresenter.presentNotEnoughProxyPermissionsFlow(
+            for: metaId,
+            resolution: resolution,
+            completion: completion
+        )
     }
 }
 
@@ -74,7 +83,7 @@ private extension DelegatedSigningWrapper {
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate
     ) throws -> IRSignatureProtocol {
-        if resolution.failures.isEmpty, resolution.delegateAccount != nil {
+        if resolution.canSignWithDelegate {
             try signWithUiFlow { completionClosure in
                 self.presentFlow(
                     for: originalData,

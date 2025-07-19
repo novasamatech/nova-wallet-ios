@@ -20,10 +20,9 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
         logger.debug("Did process call")
     }
 
-    override func doConfirm() {
+    override func doConfirm(with definition: MultisigPallet.MultisigDefinition) {
         guard
             let multisig = multisigWallet.getMultisig(for: chain),
-            let definition = operation.operation.multisigDefinition,
             let extrinsicSubmissionMonitor,
             let signer else {
             return
@@ -31,7 +30,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
 
         let builderClosure = createExtrinsicClosure(
             for: multisig,
-            definition: definition,
+            timepoint: definition.timepoint,
             callHash: operation.operation.callHash
         )
 
@@ -69,7 +68,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
 
         let builderClosure = createExtrinsicClosure(
             for: multisig,
-            definition: definition,
+            timepoint: definition.timepoint.toSubmissionModel(),
             callHash: operation.operation.callHash
         )
 
@@ -96,7 +95,7 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
 private extension MultisigOperationRejectInteractor {
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
-        definition: Multisig.MultisigDefinition,
+        timepoint: MultisigPallet.MultisigTimepoint,
         callHash: Substrate.CallHash
     ) -> ExtrinsicBuilderClosure {
         { builder in
@@ -107,7 +106,7 @@ private extension MultisigOperationRejectInteractor {
             let wrappedCall = MultisigPallet.CancelAsMultiCall(
                 threshold: UInt16(multisig.threshold),
                 otherSignatories: otherSignatories,
-                timepoint: definition.timepoint.toSubmissionModel(),
+                timepoint: timepoint,
                 callHash: callHash
             ).runtimeCall()
 

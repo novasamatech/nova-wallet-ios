@@ -162,7 +162,7 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
     }
 
     func presentNotEnoughProxyPermissionsFlow(
-        for metaId: String,
+        for _: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     ) {
@@ -170,14 +170,11 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
             completion(.failure(DelegatedSigningWrapperError.closed))
         }
 
-        let accountRequest = resolution.chain.accountRequest()
-
         guard
-            let proxiedWallet = resolution.allWallets.first(where: { $0.metaId == metaId }),
-            let proxyModel = proxiedWallet.proxy,
-            let proxyWallet = resolution.allWallets.first(
-                where: { $0.fetch(for: accountRequest)?.accountId == proxyModel.accountId }
-            ) else {
+            let proxyWallet = resolution.getNotEnoughPermissionProxyWallet(),
+            let proxiedWallet = resolution.getNonResolvedProxiedWallet(),
+            let proxyModel = proxiedWallet.proxy else {
+            completion(.failure(CommonError.dataCorruption))
             return
         }
 
@@ -187,7 +184,7 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
 
         guard
             let notEnoughProxyPermissionView = DelegatedMessageSheetViewFactory.createNotEnoughPermissionsView(
-                proxiedName: resolution.delegatedAccount.name,
+                proxiedName: proxiedWallet.name,
                 proxyName: proxyWallet.name,
                 type: type,
                 completionCallback: completionClosure

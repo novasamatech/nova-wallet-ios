@@ -93,10 +93,15 @@ extension MultisigOperationsViewLayout {
     }
 
     func showEmptyState() {
+        collectionView.isHidden = true
+
+        guard emptyStateView == nil else {
+            return
+        }
+
         let emptyStateView = createEmptyStateView()
 
         addSubview(emptyStateView)
-        collectionView.isHidden = true
 
         emptyStateView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

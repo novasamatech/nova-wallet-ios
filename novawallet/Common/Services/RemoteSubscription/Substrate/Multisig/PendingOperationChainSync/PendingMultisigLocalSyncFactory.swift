@@ -137,18 +137,20 @@ private extension PendingMultisigLocalSyncFactory {
         )
     }
 
-    func removeOperation(with callHash: Substrate.CallHash) -> BaseOperation<Void> {
+    func removeWrapperIfNotPending(with callHash: Substrate.CallHash) -> CompoundOperationWrapper<Void> {
         let key = Multisig.PendingOperation.Key(
             callHash: callHash,
             chainId: chain.chainId,
             multisigAccountId: multisigAccount.accountId
         )
 
-        return pendingOperationsRepository.saveOperation({
+        let saveOperation = pendingOperationsRepository.saveOperation({
             []
         }, {
             [key.stringValue()]
         })
+
+        return CompoundOperationWrapper(targetOperation: saveOperation)
     }
 }
 
@@ -195,7 +197,7 @@ extension PendingMultisigLocalSyncFactory: PendingMultisigLocalSyncFactoryProtoc
         if let multisigDefinition {
             updateDefinition(for: callHash, multisigDefinition: multisigDefinition)
         } else {
-            CompoundOperationWrapper(targetOperation: removeOperation(with: callHash))
+            removeWrapperIfNotPending(with: callHash)
         }
     }
 
