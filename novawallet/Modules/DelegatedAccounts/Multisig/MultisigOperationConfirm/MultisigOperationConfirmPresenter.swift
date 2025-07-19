@@ -336,6 +336,8 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
                 locale: selectedLocale,
                 completionClosure: nil
             )
+        case .noOperationExists:
+            wireframe.presentOperationNotExist(from: view, locale: selectedLocale)
         }
     }
 

@@ -521,7 +521,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
 
         let title = createTitle(for: params.pendingOperation.formattedModel, locale: locale)
 
-        var amountViewModel = createAmount(
+        let amountViewModel = createAmount(
             from: params.pendingOperation.formattedModel?.definition,
             priceData: params.transferAssetPrice,
             locale: locale

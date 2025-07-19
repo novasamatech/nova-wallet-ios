@@ -8,6 +8,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let pendingOperationProvider: MultisigOperationProviderProxyProtocol
+    let remoteOperationFactory: MultisigStorageOperationFactoryProtocol
 
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
@@ -37,6 +38,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        remoteOperationFactory: MultisigStorageOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
@@ -53,6 +55,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         self.operation = operation
         self.chain = chain
         self.multisigWallet = multisigWallet
+        self.remoteOperationFactory = remoteOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.balanceRemoteSubscriptionFactory = balanceRemoteSubscriptionFactory
@@ -85,7 +88,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         fatalError("Must be overriden by subsclass")
     }
 
-    func doConfirm() {
+    func doConfirm(with _: MultisigPallet.MultisigDefinition) {
         fatalError("Must be overriden by subsclass")
     }
 
@@ -362,7 +365,40 @@ extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractor
     }
 
     func confirm() {
-        doConfirm()
+        do {
+            let callHash = operation.operation.callHash
+            let chainId = operation.operation.chainId
+            let connection = try chainRegistry.getConnectionOrError(for: chainId)
+            let runtimeProvider = try chainRegistry.getRuntimeProviderOrError(for: chainId)
+
+            let opDefinitionWrapper = remoteOperationFactory.fetchPendingOperation(
+                for: operation.operation.multisigAccountId,
+                callHashClosure: {
+                    callHash
+                },
+                connection: connection,
+                runtimeProvider: runtimeProvider
+            )
+
+            execute(
+                wrapper: opDefinitionWrapper,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(optDefinition):
+                    if let definition = optDefinition {
+                        self?.doConfirm(with: definition)
+                    } else {
+                        self?.presenter?.didReceiveError(.noOperationExists)
+                    }
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(.submissionError(error))
+                }
+            }
+        } catch {
+            presenter?.didReceiveError(.submissionError(error))
+        }
     }
 
     func refreshFee() {
