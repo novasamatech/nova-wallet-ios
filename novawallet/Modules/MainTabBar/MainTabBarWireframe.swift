@@ -94,7 +94,7 @@ private extension MainTabBarWireframe {
         guard let transactionsToSignView = MultisigOperationsViewFactory.createView() else {
             return
         }
-        
+
         transactionsToSignView.controller.hidesBottomBarWhenPushed = true
 
         navigationController?.pushViewController(
