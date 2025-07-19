@@ -718,6 +718,7 @@
 		0C883A742CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A732CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift */; };
 		0C883A762CE25E6800CAB4C8 /* HydraSwapEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */; };
 		0C883A782CE2640000CAB4C8 /* AssetConversionEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A772CE2640000CAB4C8 /* AssetConversionEventParser.swift */; };
+		0C88B37C2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C88B37B2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
 		0C893E6F2A65702A00781503 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
@@ -6770,6 +6771,7 @@
 		0C883A732CE241CB00CAB4C8 /* AssetConversionEventsMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionEventsMatching.swift; sourceTree = "<group>"; };
 		0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapEventParser.swift; sourceTree = "<group>"; };
 		0C883A772CE2640000CAB4C8 /* AssetConversionEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionEventParser.swift; sourceTree = "<group>"; };
+		0C88B37B2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+MultisigType.swift"; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
 		0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominationPools+CodingPath.swift"; sourceTree = "<group>"; };
@@ -16516,6 +16518,7 @@
 				2D6CC2512DD1C81400FF5FA8 /* DelegatedMetaAccountFactory.swift */,
 				2D6CC25A2DD1F22200FF5FA8 /* ProxyMetaAccountFactory.swift */,
 				2D6CC25C2DD1F22F00FF5FA8 /* MultisigMetaAccountFactory.swift */,
+				0C88B37B2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift */,
 			);
 			path = DelegatedMetaAccountFactory;
 			sourceTree = "<group>";
@@ -34574,6 +34577,7 @@
 				C25AA1549353E61CAED8E3D4 /* NetworksListInteractor.swift in Sources */,
 				B7AA65C6A2A013A46B99B9D2 /* NetworksListViewController.swift in Sources */,
 				A09631A9C63D7099075D3C8F /* NetworksListViewLayout.swift in Sources */,
+				0C88B37C2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift in Sources */,
 				782C073E35DE4CEA38B610E0 /* NetworksListViewFactory.swift in Sources */,
 				0C19CCA52CC6EDAE007F8ED8 /* AssetsExchangeBaseProvider.swift in Sources */,
 				DCC44FA06F0EFD6D41277098 /* NetworkDetailsProtocols.swift in Sources */,
