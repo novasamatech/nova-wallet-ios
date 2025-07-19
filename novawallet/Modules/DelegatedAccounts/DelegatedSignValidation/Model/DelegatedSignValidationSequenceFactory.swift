@@ -106,15 +106,15 @@ private extension DSValidationSequenceFactory {
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
         context: RuntimeJsonContext
     ) throws {
+        guard depth < resolvedPath.count else {
+            return
+        }
+
         try ensureDelegationClass(
             depth: depth,
             resolvedPath: resolvedPath,
             expectedClass: .multisig
         )
-
-        guard depth < resolvedPath.count else {
-            return
-        }
 
         let callSender = resolvedPath[depth].account
 
@@ -169,15 +169,15 @@ private extension DSValidationSequenceFactory {
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
         context: RuntimeJsonContext
     ) throws {
+        guard depth < resolvedPath.count else {
+            return
+        }
+
         try ensureDelegationClass(
             depth: depth,
             resolvedPath: resolvedPath,
             expectedClass: .multisig
         )
-
-        guard depth < resolvedPath.count else {
-            return
-        }
 
         let callSender = resolvedPath[depth].account
 
@@ -211,15 +211,15 @@ private extension DSValidationSequenceFactory {
         resolvedPath: [DelegationResolution.PathFinderPath.Component],
         context: RuntimeJsonContext
     ) throws {
+        guard depth < resolvedPath.count else {
+            return
+        }
+
         try ensureDelegationClass(
             depth: depth,
             resolvedPath: resolvedPath,
             expectedClass: .proxy
         )
-
-        guard depth < resolvedPath.count else {
-            return
-        }
 
         let callSender = resolvedPath[depth].account
 
