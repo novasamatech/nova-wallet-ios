@@ -115,7 +115,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        for wallet: MetaAccountModel,
+        for _: MetaAccountModel,
         action: RampActionType,
         delegate: RampFlowStartingDelegate?
     ) {
@@ -132,16 +132,10 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         )
 
         if action == .offRamp {
-            checkingSupport(
-                of: .sell,
-                for: wallet,
-                sheetPresentingView: view
-            ) {
-                view?.controller.presentWithCardLayout(
-                    navigationController,
-                    animated: true
-                )
-            }
+            view?.controller.presentWithCardLayout(
+                navigationController,
+                animated: true
+            )
         } else {
             view?.controller.presentWithCardLayout(
                 navigationController,

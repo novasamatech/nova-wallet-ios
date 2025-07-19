@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 
 enum SupportCheckingFeatureType {
-    case sell
+    case sell(ChainAsset)
     case card
 }
 

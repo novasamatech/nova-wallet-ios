@@ -719,6 +719,7 @@
 		0C883A762CE25E6800CAB4C8 /* HydraSwapEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */; };
 		0C883A782CE2640000CAB4C8 /* AssetConversionEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C883A772CE2640000CAB4C8 /* AssetConversionEventParser.swift */; };
 		0C88B37C2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C88B37B2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift */; };
+		0C88B37F2E2C5963001D33A3 /* FeatureSupportChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C88B37E2E2C5963001D33A3 /* FeatureSupportChecker.swift */; };
 		0C893E6A2A65591C00781503 /* PoolsMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */; };
 		0C893E6D2A6562B400781503 /* NominationPools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6C2A6562B400781503 /* NominationPools.swift */; };
 		0C893E6F2A65702A00781503 /* NominationPools+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */; };
@@ -6774,6 +6775,7 @@
 		0C883A752CE25E6800CAB4C8 /* HydraSwapEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapEventParser.swift; sourceTree = "<group>"; };
 		0C883A772CE2640000CAB4C8 /* AssetConversionEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetConversionEventParser.swift; sourceTree = "<group>"; };
 		0C88B37B2E2C4F8B001D33A3 /* MetaAccountModel+MultisigType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+MultisigType.swift"; sourceTree = "<group>"; };
+		0C88B37E2E2C5963001D33A3 /* FeatureSupportChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureSupportChecker.swift; sourceTree = "<group>"; };
 		0C893E692A65591C00781503 /* PoolsMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolsMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		0C893E6C2A6562B400781503 /* NominationPools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationPools.swift; sourceTree = "<group>"; };
 		0C893E6E2A65702A00781503 /* NominationPools+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominationPools+CodingPath.swift"; sourceTree = "<group>"; };
@@ -13931,6 +13933,15 @@
 				0C521C012E15210400ABAC97 /* MultisigOperationRejectInteractor.swift */,
 			);
 			path = Reject;
+			sourceTree = "<group>";
+		};
+		0C88B37D2E2C5948001D33A3 /* FeatureSupportChecking */ = {
+			isa = PBXGroup;
+			children = (
+				2DFF39B92E1539A800529984 /* FeatureSupportChecking.swift */,
+				0C88B37E2E2C5963001D33A3 /* FeatureSupportChecker.swift */,
+			);
+			path = FeatureSupportChecking;
 			sourceTree = "<group>";
 		};
 		0C893E6B2A65629E00781503 /* NominationPools */ = {
@@ -22261,10 +22272,10 @@
 		8490142624A935FE008F705E /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				0C88B37D2E2C5948001D33A3 /* FeatureSupportChecking */,
 				0C2BE7882E28F90800E7FFC2 /* ExtrinsicSubmissionPresentation */,
 				2D5A77352D8D4B8C003838D3 /* Ramp */,
 				0C29B5372A4C68A500E35C6D /* AnimationUpdatibleView.swift */,
-				2DFF39B92E1539A800529984 /* FeatureSupportChecking.swift */,
 				843910D8253F8DFB00E3C217 /* StatusPresentable.swift */,
 				842876B524AE05C700D91AD8 /* EmailPresentable.swift */,
 				8428766824ADF27D00D91AD8 /* AuthorizationPresentable.swift */,
@@ -32707,6 +32718,7 @@
 				84D9C8EF28AD97E7007FB23B /* SupportedLedgerApps.swift in Sources */,
 				0C6FE7FB2D4C898E00E5B651 /* CollatorStkYourCollatorsProtocols.swift in Sources */,
 				8482F62A280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift in Sources */,
+				0C88B37F2E2C5963001D33A3 /* FeatureSupportChecker.swift in Sources */,
 				840DC8422880AF440039A054 /* ChainAssetSelectionViewController.swift in Sources */,
 				880855F228D09A0B004255E7 /* CrowdloanContributionData.swift in Sources */,
 				777DC2DF2B2364A90060CB2C /* UIView+cutting.swift in Sources */,
