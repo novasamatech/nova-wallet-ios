@@ -71,6 +71,10 @@ extension ChainAccountResponse {
         type == .proxied || type == .multisig
     }
 
+    var isProxied: Bool {
+        type == .proxied
+    }
+
     var chainFormat: ChainFormat {
         isEthereumBased
             ? .ethereum

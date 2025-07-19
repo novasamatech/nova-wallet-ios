@@ -511,7 +511,6 @@
 		0C463FD02A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */; };
 		0C495B8C2B3FE15500B8D339 /* ExtrinsicDelegateSenderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8B2B3FE15500B8D339 /* ExtrinsicDelegateSenderResolver.swift */; };
 		0C495B902B4290A900B8D339 /* Proxy+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B8F2B4290A900B8D339 /* Proxy+Call.swift */; };
-		0C495B922B429BCC00B8D339 /* ProxySigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */; };
 		0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */; };
 		0C495B952B44709000B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */; };
 		0C495B992B452B5300B8D339 /* DelegationResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C495B982B452B5300B8D339 /* DelegationResolution.swift */; };
@@ -1836,7 +1835,6 @@
 		2DB5B1122D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */; };
 		2DB5B1152D3FECB00075EB3F /* BrowserNavigationTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */; };
 		2DB5B1172D3FEF600075EB3F /* CollectionViewRotationHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB5B1162D3FEF600075EB3F /* CollectionViewRotationHandling.swift */; };
-		2DB71F2F2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */; };
 		2DBB28852CD2811200DFA0AD /* QRCodeWithLogoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */; };
 		2DBB28872CD2934500DFA0AD /* AssetIconURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */; };
 		2DBB28892CD42ACB00DFA0AD /* QRCreationOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */; };
@@ -6567,7 +6565,6 @@
 		0C463FCF2A592ACD003E71C9 /* PartialInterpolatingMotionEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialInterpolatingMotionEffect.swift; sourceTree = "<group>"; };
 		0C495B8B2B3FE15500B8D339 /* ExtrinsicDelegateSenderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicDelegateSenderResolver.swift; sourceTree = "<group>"; };
 		0C495B8F2B4290A900B8D339 /* Proxy+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Proxy+Call.swift"; sourceTree = "<group>"; };
-		0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySigningWrapper.swift; sourceTree = "<group>"; };
 		0C495B932B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSenderResolutionStub.swift; sourceTree = "<group>"; };
 		0C495B982B452B5300B8D339 /* DelegationResolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationResolution.swift; sourceTree = "<group>"; };
 		0C495B9A2B452CD600B8D339 /* DelegationResolutionGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationResolutionGraph.swift; sourceTree = "<group>"; };
@@ -7925,7 +7922,6 @@
 		2DB5B1112D3FDF3E0075EB3F /* BrowserNavigationTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTaskFactory.swift; sourceTree = "<group>"; };
 		2DB5B1142D3FECB00075EB3F /* BrowserNavigationTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserNavigationTask.swift; sourceTree = "<group>"; };
 		2DB5B1162D3FEF600075EB3F /* CollectionViewRotationHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewRotationHandling.swift; sourceTree = "<group>"; };
-		2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSigningWrapper.swift; sourceTree = "<group>"; };
 		2DBB28842CD2811200DFA0AD /* QRCodeWithLogoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeWithLogoFactory.swift; sourceTree = "<group>"; };
 		2DBB28862CD2934500DFA0AD /* AssetIconURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIconURLFactory.swift; sourceTree = "<group>"; };
 		2DBB28882CD42ACB00DFA0AD /* QRCreationOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperation.swift; sourceTree = "<group>"; };
@@ -16541,8 +16537,6 @@
 			isa = PBXGroup;
 			children = (
 				2D6CE4382DE490F900B94DBA /* DelegatedSigningWrapper.swift */,
-				2DB71F2E2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift */,
-				0C495B912B429BCC00B8D339 /* ProxySigningWrapper.swift */,
 			);
 			path = DelegatedSigningWrapper;
 			sourceTree = "<group>";
@@ -29637,7 +29631,6 @@
 				0CA719892B78AACD000B086E /* HydraRouter+Call.swift in Sources */,
 				0CEB6B512CA6B31800609DC2 /* VoteCardOverlayView.swift in Sources */,
 				0C0E0AA32B3F01FD00865F10 /* UniquesPallet.swift in Sources */,
-				0C495B922B429BCC00B8D339 /* ProxySigningWrapper.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
@@ -34642,7 +34635,6 @@
 				59E3304ED1BBA3CB2699C957 /* SwipeGovPresenter.swift in Sources */,
 				0C12BC372CEA7DCB00AB919D /* AssetExchangePrice.swift in Sources */,
 				7C54DE318B0675170102B7AD /* SwipeGovViewController.swift in Sources */,
-				2DB71F2F2DBB8B5700E5A4DD /* MultisigSigningWrapper.swift in Sources */,
 				735E83BE57E30FBFD1382474 /* SwipeGovViewLayout.swift in Sources */,
 				EA5757C027BC51F64C28A4D3 /* SwipeGovViewFactory.swift in Sources */,
 				5EBDCC76C4957F83D1DACAD5 /* SwipeGovSetupProtocols.swift in Sources */,
