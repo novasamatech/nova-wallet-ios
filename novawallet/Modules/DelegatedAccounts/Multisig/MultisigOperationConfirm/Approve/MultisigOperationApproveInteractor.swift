@@ -13,6 +13,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        remoteOperationFactory: MultisigStorageOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
@@ -33,6 +34,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
             operation: operation,
             chain: chain,
             multisigWallet: multisigWallet,
+            remoteOperationFactory: remoteOperationFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             balanceRemoteSubscriptionFactory: balanceRemoteSubscriptionFactory,
@@ -77,7 +79,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
 
         let builderClosure = createExtrinsicClosure(
             for: multisig,
-            definition: definition,
+            timepoint: definition.timepoint.toSubmissionModel(),
             call: call,
             callWeightClosure: {
                 try callWeightWrapper.targetOperation.extractNoCancellableResultData()
@@ -105,11 +107,10 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
         }
     }
 
-    override func doConfirm() {
+    override func doConfirm(with definition: MultisigPallet.MultisigDefinition) {
         guard
             let call,
             let multisig = multisigWallet.getMultisig(for: chain),
-            let definition = operation.operation.multisigDefinition,
             let extrinsicSubmissionMonitor,
             let signer else {
             return
@@ -119,7 +120,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
 
         let builderClosure = createExtrinsicClosure(
             for: multisig,
-            definition: definition,
+            timepoint: definition.timepoint,
             call: call,
             callWeightClosure: {
                 try callWeightWrapper.targetOperation.extractNoCancellableResultData()
@@ -158,7 +159,7 @@ final class MultisigOperationApproveInteractor: MultisigOperationConfirmInteract
 private extension MultisigOperationApproveInteractor {
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
-        definition: Multisig.MultisigDefinition,
+        timepoint: MultisigPallet.MultisigTimepoint,
         call: AnyRuntimeCall,
         callWeightClosure: @escaping () throws -> Substrate.Weight
     ) -> ExtrinsicBuilderClosure {
@@ -171,7 +172,7 @@ private extension MultisigOperationApproveInteractor {
             let wrappedCall = MultisigPallet.AsMultiCall(
                 threshold: UInt16(multisig.threshold),
                 otherSignatories: otherSignatories,
-                maybeTimepoint: definition.timepoint.toSubmissionModel(),
+                maybeTimepoint: timepoint,
                 call: call,
                 maxWeight: weight
             ).runtimeCall()

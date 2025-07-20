@@ -23,11 +23,15 @@ private extension MultisigMetaAccountFactory {
     ) -> MultisigMetaAccountType? {
         let signatoryAccountId = discoveredMultisig.signatory
 
-        let signatoryWallet = metaAccounts.first { wallet in
-            wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId
+        let signatoryWallets: [MetaAccountModel] = metaAccounts.compactMap { wallet in
+            guard wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId else {
+                return nil
+            }
+
+            return wallet.info
         }
 
-        guard let signatoryWallet else {
+        guard !signatoryWallets.isEmpty else {
             return nil
         }
 
@@ -39,10 +43,10 @@ private extension MultisigMetaAccountFactory {
             status: .new
         )
 
-        if signatoryWallet.info.chainAccounts.isEmpty {
-            if signatoryWallet.info.substrateAccountId == multisigModel.signatory {
+        if signatoryWallets.allSupportUniversalMultisig() {
+            if signatoryWallets.allMatchSubstrateAccount(multisigModel.signatory) {
                 return .universalSubstrate(multisigModel)
-            } else if signatoryWallet.info.ethereumAddress == multisigModel.signatory {
+            } else if signatoryWallets.allMatchEthereumAccount(multisigModel.signatory) {
                 return .universalEvm(multisigModel)
             } else {
                 return nil

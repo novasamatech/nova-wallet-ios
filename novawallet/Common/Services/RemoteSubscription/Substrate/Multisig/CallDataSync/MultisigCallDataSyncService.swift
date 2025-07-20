@@ -32,7 +32,7 @@ final class MultisigCallDataSyncService: AnyProviderAutoCleaning {
             if oldValue.isEmpty, !availableMetaAccounts.isEmpty {
                 updateSubscriptionsIfNeeded()
             } else if availableMetaAccounts.isEmpty {
-                stopSyncUp()
+                doClearSubscriptions()
             }
         }
     }
@@ -60,6 +60,8 @@ final class MultisigCallDataSyncService: AnyProviderAutoCleaning {
 
 private extension MultisigCallDataSyncService {
     func updateSubscriptionsIfNeeded() {
+        logger.debug("Setuping events subscription")
+
         let availableChainIds = Set(availableChains.keys)
         let subscribedChainIds = eventsUpdatingService.subscribedChainIds
 
@@ -183,6 +185,19 @@ private extension MultisigCallDataSyncService {
             logger.error("Unexpected error: \(error)")
         }
     }
+
+    func doClearSubscriptions() {
+        eventsUpdatingService.clearAllSubscriptions()
+        availableChains = [:]
+        availableMetaAccounts = []
+
+        logger.debug("Did stop multisig events monitoring")
+    }
+
+    func doStopSyncUp() {
+        clear(streamableProvider: &metaAccountsProvider)
+        doClearSubscriptions()
+    }
 }
 
 // MARK: - MultisigCallDataSyncServiceProtocol
@@ -222,10 +237,7 @@ extension MultisigCallDataSyncService: MultisigCallDataSyncServiceProtocol {
         mutex.lock()
         defer { mutex.unlock() }
 
-        clear(streamableProvider: &metaAccountsProvider)
-        eventsUpdatingService.clearAllSubscriptions()
-        availableChains = [:]
-        availableMetaAccounts = []
+        doStopSyncUp()
     }
 }
 
@@ -240,7 +252,11 @@ extension MultisigCallDataSyncService: MultisigEventsSubscriber {
         mutex.lock()
         defer { mutex.unlock() }
 
-        let availableAccountIds = Set(availableMetaAccounts.compactMap { $0.multisigAccount?.anyChainMultisig?.accountId })
+        let accountIdsList = availableMetaAccounts.compactMap {
+            $0.multisigAccount?.anyChainMultisig?.accountId
+        }
+
+        let availableAccountIds = Set(accountIdsList)
         let relevantEvents = events.filter { availableAccountIds.contains($0.accountId) }
 
         guard !relevantEvents.isEmpty else { return }

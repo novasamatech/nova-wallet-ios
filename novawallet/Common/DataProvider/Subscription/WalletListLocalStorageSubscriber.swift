@@ -117,8 +117,6 @@ extension WalletListLocalStorageSubscriber {
         }
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<ManagedMetaAccountModel>]) in
-            let wallet = changes.reduceToLastChange()
-
             self?.walletListLocalSubscriptionHandler.handleWallets(result: .success(changes), of: type)
             return
         }

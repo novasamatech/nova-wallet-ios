@@ -14,6 +14,10 @@ extension Multisig {
         func isCreator(accountId: AccountId) -> Bool {
             multisigDefinition?.depositor == accountId
         }
+
+        var hasDefinition: Bool {
+            multisigDefinition != nil
+        }
     }
 
     struct MultisigDefinition: Codable, Equatable {

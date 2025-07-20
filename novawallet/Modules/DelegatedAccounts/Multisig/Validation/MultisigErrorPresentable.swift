@@ -27,6 +27,11 @@ protocol MultisigErrorPresentable: BaseErrorPresentable {
         multisigName: String,
         locale: Locale
     )
+
+    func presentOperationNotExist(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
+    )
 }
 
 extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -103,6 +108,27 @@ extension MultisigErrorPresentable where Self: AlertPresentable & ErrorPresentab
 
         let message = R.string.localizable.multisigValidationAlreadyExistsMessage(
             multisigName,
+            preferredLanguages: languages
+        )
+
+        let closeAction = R.string.localizable.commonClose(
+            preferredLanguages: languages
+        )
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentOperationNotExist(
+        from view: ControllerBackedProtocol?,
+        locale: Locale
+    ) {
+        let languages = locale.rLanguages
+
+        let title = R.string.localizable.multisigTransactionNotExistTitle(
+            preferredLanguages: languages
+        )
+
+        let message = R.string.localizable.multisigTransactionNotExistMessage(
             preferredLanguages: languages
         )
 

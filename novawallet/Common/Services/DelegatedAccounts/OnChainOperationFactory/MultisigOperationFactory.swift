@@ -22,6 +22,13 @@ final class MultisigStorageOperationFactory {
     init(storageRequestFactory: StorageRequestFactoryProtocol) {
         self.storageRequestFactory = storageRequestFactory
     }
+
+    init(operationQueue: OperationQueue) {
+        storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+    }
 }
 
 extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtocol {
