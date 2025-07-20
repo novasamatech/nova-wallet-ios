@@ -74,7 +74,15 @@ private extension DAppSignBytesChainResolver {
                  .multisig:
                 let prefixMatchingChains = chains.filter { $0.addressPrefix == addressPrefix }
 
-                return prefixMatchingChains
+                let prefixChain = prefixMatchingChains
+                    .sorted { $0.order < $1.order }
+                    .first { wallet.fetch(for: $0.accountRequest())?.accountId == accountId }
+
+                if let prefixChain {
+                    return prefixChain
+                }
+
+                return chains
                     .sorted { $0.order < $1.order }
                     .first { wallet.fetch(for: $0.accountRequest())?.accountId == accountId }
             case .polkadotVault:

@@ -147,7 +147,7 @@ struct MessageSheetViewFactory {
         case .multisig:
             icon = R.image.imageMultisig()
             message = LocalizableResource { locale in
-                R.string.localizable.proxySigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
+                R.string.localizable.multisigSigningIsNotSupportedMessage(preferredLanguages: locale.rLanguages)
             }
         }
 
