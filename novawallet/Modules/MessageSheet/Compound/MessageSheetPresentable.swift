@@ -81,7 +81,7 @@ extension MessageSheetPresentable {
 
     func presentFeatureUnsupportedView(
         from presentationView: ControllerBackedProtocol,
-        type: SupportCheckingFeatureType,
+        type: UnsupportedFeatureType,
         walletType: FeatureUnsupportedWalletType,
         completion: @escaping () -> Void
     ) {

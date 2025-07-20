@@ -42,7 +42,7 @@ struct MessageSheetViewFactory {
     }
 
     static func createFeatureNotSupportedView(
-        type: SupportCheckingFeatureType,
+        type: UnsupportedFeatureType,
         walletType: FeatureUnsupportedWalletType,
         completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {

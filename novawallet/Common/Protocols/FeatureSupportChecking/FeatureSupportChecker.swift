@@ -1,10 +1,16 @@
 import Foundation
 import Operation_iOS
 
-typealias FeatureSupportCheckerClosure = (Bool) -> Void
+typealias FeatureSupportCheckerClosure = (OperationCheckCommonResult) -> Void
 
 protocol FeatureSupportCheckerProtocol {
     func checkSellSupport(
+        for wallet: MetaAccountModel,
+        chainAsset: ChainAsset,
+        completion: @escaping FeatureSupportCheckerClosure
+    )
+
+    func checkBuySupport(
         for wallet: MetaAccountModel,
         chainAsset: ChainAsset,
         completion: @escaping FeatureSupportCheckerClosure
@@ -14,6 +20,38 @@ protocol FeatureSupportCheckerProtocol {
         for wallet: MetaAccountModel,
         completion: @escaping FeatureSupportCheckerClosure
     )
+}
+
+extension FeatureSupportCheckerProtocol {
+    func checkRampSupport(
+        wallet: MetaAccountModel,
+        rampActions: [RampAction],
+        rampType: RampActionType,
+        chainAsset: ChainAsset,
+        completion: @escaping FeatureSupportCheckerClosure
+    ) {
+        let filteredActions = rampActions.filter { $0.type == rampType }
+
+        guard !filteredActions.isEmpty else {
+            completion(.noRampActions)
+            return
+        }
+
+        switch rampType {
+        case .offRamp:
+            checkSellSupport(
+                for: wallet,
+                chainAsset: chainAsset,
+                completion: completion
+            )
+        case .onRamp:
+            checkBuySupport(
+                for: wallet,
+                chainAsset: chainAsset,
+                completion: completion
+            )
+        }
+    }
 }
 
 final class FeatureSupportChecker {
@@ -54,7 +92,7 @@ private extension FeatureSupportChecker {
     func executeAccountExistenceAndDelay(
         wallet: MetaAccountModel,
         chain: ChainModel,
-        completion: @escaping FeatureSupportCheckerClosure
+        completion: @escaping (Bool) -> Void
     ) {
         guard wallet.fetch(for: chain.accountRequest()) != nil else {
             completion(false)
@@ -79,6 +117,44 @@ private extension FeatureSupportChecker {
             }
         }
     }
+
+    func checkSellByWalletTypeSupported(
+        _ wallet: MetaAccountModel,
+        chainAsset: ChainAsset
+    ) -> OperationCheckCommonResult {
+        switch wallet.type {
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .genericLedger:
+            .available
+        case .ledger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                .ledgerNotSupported
+            } else {
+                .available
+            }
+        case .watchOnly:
+            .noSigning
+        case .multisig:
+            .noSellSupport(wallet, chainAsset)
+        }
+    }
+
+    func checkBuyByWalletTypeSupported(
+        _ wallet: MetaAccountModel,
+        chainAsset: ChainAsset
+    ) -> OperationCheckCommonResult {
+        switch wallet.type {
+        case .secrets, .paritySigner, .polkadotVault, .proxied, .multisig, .genericLedger:
+            .available
+        case .ledger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                .ledgerNotSupported
+            } else {
+                .available
+            }
+        case .watchOnly:
+            .noSigning
+        }
+    }
 }
 
 extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
@@ -87,26 +163,60 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
         chainAsset: ChainAsset,
         completion: @escaping FeatureSupportCheckerClosure
     ) {
+        let result = checkSellByWalletTypeSupported(wallet, chainAsset: chainAsset)
+
+        guard result.isAvailable else {
+            completion(result)
+            return
+        }
+
         executeAccountExistenceAndDelay(
             wallet: wallet,
-            chain: chainAsset.chain,
-            completion: completion
-        )
+            chain: chainAsset.chain
+        ) { hasSupport in
+            let result: OperationCheckCommonResult = hasSupport ? .available : .noSellSupport(wallet, chainAsset)
+
+            completion(result)
+        }
     }
 
     func checkCardSupport(
         for wallet: MetaAccountModel,
         completion: @escaping FeatureSupportCheckerClosure
     ) {
-        guard let polkadotChain = chainRegistry.getChain(for: KnowChainId.polkadot) else {
-            completion(false)
+        // to get the card one need to be able to operate in Polkadot without delay
+        guard
+            let polkadotChain = chainRegistry.getChain(for: KnowChainId.polkadot),
+            let dotToken = polkadotChain.utilityChainAsset() else {
+            completion(.noCardSupport(wallet))
+            return
+        }
+
+        // to get the card one need to sell tokens first
+        let result = checkSellByWalletTypeSupported(wallet, chainAsset: dotToken)
+
+        guard result.isAvailable else {
+            completion(result)
             return
         }
 
         executeAccountExistenceAndDelay(
             wallet: wallet,
-            chain: polkadotChain,
-            completion: completion
-        )
+            chain: polkadotChain
+        ) { hasSupport in
+            let result: OperationCheckCommonResult = hasSupport ? .available : .noCardSupport(wallet)
+
+            completion(result)
+        }
+    }
+
+    func checkBuySupport(
+        for wallet: MetaAccountModel,
+        chainAsset: ChainAsset,
+        completion: @escaping FeatureSupportCheckerClosure
+    ) {
+        let result = checkBuyByWalletTypeSupported(wallet, chainAsset: chainAsset)
+
+        completion(result)
     }
 }

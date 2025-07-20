@@ -12,30 +12,6 @@ protocol FeatureSupportChecking {
     )
 }
 
-// MARK: - Multisig check
-
-private extension FeatureSupportChecking where Self: MessageSheetPresentable {
-    func handleHasSupport(
-        _ hasSupport: Bool,
-        wallet: MetaAccountModel,
-        feature: SupportCheckingFeatureType,
-        sheetPresentingView: ControllerBackedProtocol,
-        successClosure: @escaping () -> Void
-    ) {
-        guard !hasSupport else {
-            successClosure()
-            return
-        }
-
-        presentFeatureUnsupportedView(
-            from: sheetPresentingView,
-            type: feature,
-            walletType: .init(walletType: wallet.type),
-            completion: {}
-        )
-    }
-}
-
 extension FeatureSupportChecking where Self: MessageSheetPresentable {
     var featureSupportChecker: FeatureSupportCheckerProtocol {
         FeatureSupportChecker(
@@ -54,29 +30,27 @@ extension FeatureSupportChecking where Self: MessageSheetPresentable {
         guard let sheetPresentingView else { return }
 
         switch feature {
-        case let .sell(chainAsset):
-            featureSupportChecker.checkSellSupport(
-                for: metaAccountModel,
+        case let .ramp(type, chainAsset, all):
+            featureSupportChecker.checkRampSupport(
+                wallet: metaAccountModel,
+                rampActions: all,
+                rampType: type,
                 chainAsset: chainAsset
-            ) { [weak self] hasSupport in
-                self?.handleHasSupport(
-                    hasSupport,
-                    wallet: metaAccountModel,
-                    feature: feature,
-                    sheetPresentingView: sheetPresentingView,
-                    successClosure: successClosure
+            ) { [weak self] result in
+                self?.presentOperationCompletion(
+                    on: sheetPresentingView,
+                    by: result,
+                    successRouteClosure: successClosure
                 )
             }
         case .card:
             featureSupportChecker.checkCardSupport(
                 for: metaAccountModel
-            ) { [weak self] hasSupport in
-                self?.handleHasSupport(
-                    hasSupport,
-                    wallet: metaAccountModel,
-                    feature: feature,
-                    sheetPresentingView: sheetPresentingView,
-                    successClosure: successClosure
+            ) { [weak self] result in
+                self?.presentOperationCompletion(
+                    on: sheetPresentingView,
+                    by: result,
+                    successRouteClosure: successClosure
                 )
             }
         }

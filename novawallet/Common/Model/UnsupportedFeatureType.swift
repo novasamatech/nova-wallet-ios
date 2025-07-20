@@ -2,7 +2,12 @@ import Foundation
 import Foundation_iOS
 
 enum SupportCheckingFeatureType {
-    case sell(ChainAsset)
+    case ramp(type: RampActionType, chainAsset: ChainAsset, all: [RampAction])
+    case card
+}
+
+enum UnsupportedFeatureType {
+    case sell
     case card
 }
 

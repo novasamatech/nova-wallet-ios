@@ -7,6 +7,7 @@ final class GetTokenOptionsInteractor {
     let assetModelObservable: AssetListModelObservable
     let destinationChainAsset: ChainAsset
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
+    let featureChecker: FeatureSupportCheckerProtocol
     let rampProvider: RampProviderProtocol
     let rampType: RampActionType = .onRamp
     let logger: LoggerProtocol
@@ -18,6 +19,7 @@ final class GetTokenOptionsInteractor {
         destinationChainAsset: ChainAsset,
         assetModelObservable: AssetListModelObservable,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
+        featureChecker: FeatureSupportCheckerProtocol,
         rampProvider: RampProviderProtocol,
         logger: LoggerProtocol
     ) {
@@ -25,6 +27,7 @@ final class GetTokenOptionsInteractor {
         self.destinationChainAsset = destinationChainAsset
         self.assetModelObservable = assetModelObservable
         self.xcmTransfersSyncService = xcmTransfersSyncService
+        self.featureChecker = featureChecker
         self.rampProvider = rampProvider
         self.logger = logger
     }
@@ -52,21 +55,27 @@ final class GetTokenOptionsInteractor {
             chainAsset: destinationChainAsset
         ).available
 
-        let buyAvailable = TokenOperation.checkRampOperationsAvailable(
-            for: onRampActions,
+        featureChecker.checkRampSupport(
+            wallet: selectedWallet,
+            rampActions: onRampActions,
             rampType: rampType,
-            walletType: selectedWallet.type,
             chainAsset: destinationChainAsset
-        ).available
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
 
-        let model = GetTokenOptionsModel(
-            availableXcmOrigins: availableXcmOrigins,
-            xcmTransfers: xcmTransfers,
-            receiveAccount: receiveAvailable ? selectedAccount : nil,
-            buyOptions: buyAvailable ? onRampActions : []
-        )
+            let buyAvailable = result.isAvailable
 
-        presenter?.didReceive(model: model)
+            let model = GetTokenOptionsModel(
+                availableXcmOrigins: availableXcmOrigins,
+                xcmTransfers: xcmTransfers,
+                receiveAccount: receiveAvailable ? selectedAccount : nil,
+                buyOptions: buyAvailable ? onRampActions : []
+            )
+
+            presenter?.didReceive(model: model)
+        }
     }
 
     private func determineAvailableXcmOrigins() -> [ChainAsset] {
