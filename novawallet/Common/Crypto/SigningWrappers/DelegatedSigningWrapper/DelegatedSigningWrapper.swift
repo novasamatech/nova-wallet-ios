@@ -36,12 +36,10 @@ final class DelegatedSigningWrapper {
     }
 
     func presentNotEnoughPermissionsFlow(
-        for metaId: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     ) {
         uiPresenter.presentNotEnoughProxyPermissionsFlow(
-            for: metaId,
             resolution: resolution,
             completion: completion
         )
@@ -96,7 +94,6 @@ private extension DelegatedSigningWrapper {
         } else {
             try signWithUiFlow { completionClosure in
                 self.presentNotEnoughPermissionsFlow(
-                    for: self.metaId,
                     resolution: resolution,
                     completion: completionClosure
                 )

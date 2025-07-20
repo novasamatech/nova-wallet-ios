@@ -192,12 +192,7 @@ private extension AssetListInteractor {
             return
         }
 
-        presenter?.didReceive(
-            walletId: selectedMetaAccount.identifier,
-            walletIdenticon: selectedMetaAccount.walletIdenticonData(),
-            walletType: selectedMetaAccount.type,
-            name: selectedMetaAccount.name
-        )
+        presenter?.didReceive(wallet: selectedMetaAccount)
 
         modelBuilder?.applyWallet(selectedMetaAccount)
     }

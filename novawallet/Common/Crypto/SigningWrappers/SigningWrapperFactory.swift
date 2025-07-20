@@ -98,7 +98,6 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .ledger, .genericLedger:
             NoSigningSupportWrapper(type: .ledger)
         case .multisig:
-            // TODO: Implement signing wrapper
             NoSigningSupportWrapper(type: .multisig)
         }
     }
@@ -120,7 +119,6 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .ledger, .genericLedger:
             NoSigningSupportWrapper(type: .ledger)
         case .multisig:
-            // TODO: Implement signing wrapper
             NoSigningSupportWrapper(type: .multisig)
         }
     }

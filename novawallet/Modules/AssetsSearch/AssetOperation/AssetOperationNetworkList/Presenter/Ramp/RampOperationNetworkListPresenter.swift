@@ -56,30 +56,22 @@ final class RampOperationNetworkListPresenter: AssetOperationNetworkListPresente
             accountId: accountId
         )
 
-        let checkResult = TokenOperation.checkRampOperationsAvailable(
-            for: rampActions,
-            rampType: rampType,
-            walletType: selectedAccount.type,
-            chainAsset: chainAsset
-        )
+        wireframe.checkingSupport(
+            of: .ramp(
+                type: rampType,
+                chainAsset: chainAsset,
+                all: rampActions
+            ),
+            for: selectedAccount,
+            sheetPresentingView: view
+        ) { [weak self] in
+            guard let self else { return }
 
-        switch checkResult {
-        case let .common(commonCheckResult):
-            wireframe.presentOperationCompletion(
-                on: view,
-                by: commonCheckResult,
-                successRouteClosure: { [weak self] in
-                    guard let self else { return }
-
-                    delegate?.didPickRampParams(
-                        actions: rampActions,
-                        rampType: rampType,
-                        chainAsset: chainAsset
-                    )
-                }
+            delegate?.didPickRampParams(
+                actions: rampActions,
+                rampType: rampType,
+                chainAsset: chainAsset
             )
-        case .noRampOptions:
-            break
         }
     }
 }

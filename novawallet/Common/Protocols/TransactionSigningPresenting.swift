@@ -26,7 +26,6 @@ protocol TransactionSigningPresenting: AnyObject {
     )
 
     func presentNotEnoughProxyPermissionsFlow(
-        for metaId: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     )
@@ -162,7 +161,6 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
     }
 
     func presentNotEnoughProxyPermissionsFlow(
-        for _: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     ) {
