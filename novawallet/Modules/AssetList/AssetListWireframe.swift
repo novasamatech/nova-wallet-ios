@@ -115,7 +115,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        for _: MetaAccountModel,
         action: RampActionType,
         delegate: RampFlowStartingDelegate?
     ) {

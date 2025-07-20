@@ -153,7 +153,6 @@ protocol AssetListWireframeProtocol: AnyObject,
 
     func showRamp(
         from view: (any AssetListViewProtocol)?,
-        for wallet: MetaAccountModel,
         action: RampActionType,
         delegate: RampFlowStartingDelegate?
     )

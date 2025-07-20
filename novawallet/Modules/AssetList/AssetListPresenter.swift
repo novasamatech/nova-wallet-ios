@@ -555,7 +555,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
             wireframe.showRamp(
                 from: view,
-                for: wallet,
                 action: .onRamp,
                 delegate: self
             )
@@ -582,7 +581,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
 
             wireframe.showRamp(
                 from: view,
-                for: wallet,
                 action: rampAction,
                 delegate: self
             )
