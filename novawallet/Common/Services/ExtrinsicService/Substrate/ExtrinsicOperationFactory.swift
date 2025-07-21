@@ -359,14 +359,12 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         extrinsicsOperation.addDependency(codingFactoryOperation)
         extrinsicsOperation.addDependency(feeInstallerWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation]
-            + partialBuildersWrapper.allOperations
-            + senderResolverWrapper.allOperations
-            + [senderResolutionOperation]
-            + nonceWrapper.allOperations
-            + feeInstallerWrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
+        return feeInstallerWrapper
+            .insertingHead(operations: nonceWrapper.allOperations)
+            .insertingHead(operations: [senderResolutionOperation])
+            .insertingHead(operations: senderResolverWrapper.allOperations)
+            .insertingHead(operations: partialBuildersWrapper.allOperations)
+            .insertingTail(operation: extrinsicsOperation)
     }
 
     override func createDummySigner(for cryptoType: MultiassetCryptoType) throws -> DummySigner {
