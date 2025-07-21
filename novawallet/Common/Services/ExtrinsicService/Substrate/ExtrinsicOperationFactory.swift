@@ -364,6 +364,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             .insertingHead(operations: [senderResolutionOperation])
             .insertingHead(operations: senderResolverWrapper.allOperations)
             .insertingHead(operations: partialBuildersWrapper.allOperations)
+            .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: extrinsicsOperation)
     }
 
