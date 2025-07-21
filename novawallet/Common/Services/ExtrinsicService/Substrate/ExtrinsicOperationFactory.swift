@@ -160,6 +160,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
     let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    let nonceOperationFactory: TransactionNonceOperationFactoryProtocol
 
     init(
         chain: ChainModel,
@@ -168,6 +169,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         engine: JSONRPCEngine,
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        nonceOperationFactory: TransactionNonceOperationFactoryProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol? = nil,
         blockHashOperationFactory: BlockHashOperationFactoryProtocol,
@@ -177,6 +179,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         self.senderResolvingFactory = senderResolvingFactory
         self.customExtensions = customExtensions
         self.metadataHashOperationFactory = metadataHashOperationFactory
+        self.nonceOperationFactory = nonceOperationFactory
         self.eraOperationFactory = eraOperationFactory ?? MortalEraOperationFactory(chain: chain)
         self.blockHashOperationFactory = blockHashOperationFactory
 
@@ -187,28 +190,6 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
             operationManager: operationManager,
             usesStateCallForFee: chain.feeViaRuntimeCall
         )
-    }
-
-    private func createNonceOperation(
-        in chain: ChainModel,
-        accountIdClosure: @escaping () throws -> AccountId
-    ) -> BaseOperation<UInt32> {
-        let operation = JSONRPCListOperation<UInt32>(
-            engine: engine,
-            method: RPCMethod.getExtrinsicNonce
-        )
-
-        operation.configurationBlock = {
-            do {
-                let accountId = try accountIdClosure()
-                let address = try accountId.toAddress(using: chain.chainFormat)
-                operation.parameters = [address]
-            } catch {
-                operation.result = .failure(error)
-            }
-        }
-
-        return operation
     }
 
     private func createPartialBuildersWrapper(
@@ -351,13 +332,13 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         senderResolutionOperation.addDependency(senderResolverWrapper.targetOperation)
         senderResolutionOperation.addDependency(codingFactoryOperation)
 
-        let nonceOperation = createNonceOperation(in: chain) {
+        let nonceWrapper = nonceOperationFactory.createWrapper(for: chain, connection: engine) {
             let (senderResolution, _) = try senderResolutionOperation.extractNoCancellableResultData()
 
             return senderResolution.account.accountId
         }
 
-        nonceOperation.addDependency(senderResolutionOperation)
+        nonceWrapper.addDependency(operations: [senderResolutionOperation])
 
         let feeInstallerWrapper = feeEstimationRegistry.createFeeInstallerWrapper(payingIn: chainAssetId) {
             try senderResolutionOperation.extractNoCancellableResultData().sender.account
@@ -366,14 +347,14 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         feeInstallerWrapper.addDependency(operations: [senderResolutionOperation])
 
         let extrinsicsOperation = createExtrinsicsOperation(
-            dependingOn: nonceOperation,
+            dependingOn: nonceWrapper.targetOperation,
             senderResolutionOperation: senderResolutionOperation,
             codingFactoryOperation: codingFactoryOperation,
             feeInstallerOperation: feeInstallerWrapper.targetOperation,
             signingClosure: signingClosure
         )
 
-        extrinsicsOperation.addDependency(nonceOperation)
+        extrinsicsOperation.addDependency(nonceWrapper.targetOperation)
         extrinsicsOperation.addDependency(senderResolutionOperation)
         extrinsicsOperation.addDependency(codingFactoryOperation)
         extrinsicsOperation.addDependency(feeInstallerWrapper.targetOperation)
@@ -381,7 +362,8 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         let dependencies = [codingFactoryOperation]
             + partialBuildersWrapper.allOperations
             + senderResolverWrapper.allOperations
-            + [senderResolutionOperation, nonceOperation]
+            + [senderResolutionOperation]
+            + nonceWrapper.allOperations
             + feeInstallerWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
