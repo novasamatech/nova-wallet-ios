@@ -76,6 +76,11 @@ extension XcmV3 {
         @StringCodable var index: UInt64
     }
 
+    struct GeneralKeyValue: Equatable, Codable {
+        @StringCodable var length: Int
+        let data: H256
+    }
+
     enum Junction: Equatable, Codable {
         static let parachainField = "Parachain"
         static let accountId32Field = "AccountId32"
@@ -93,7 +98,7 @@ extension XcmV3 {
         case accountKey20(AccountId20Value)
         case palletInstance(_ index: UInt8)
         case generalIndex(_ index: BigUInt)
-        case generalKey(_ key: Data)
+        case generalKey(_ key: GeneralKeyValue)
         case onlyChild
         case globalConsensus(NetworkId)
 
@@ -119,7 +124,7 @@ extension XcmV3 {
                 let index = try container.decode(StringScaleMapper<UInt8>.self).value
                 self = .palletInstance(index)
             case Self.generalKeyField:
-                let key = try container.decode(BytesCodable.self).wrappedValue
+                let key = try container.decode(GeneralKeyValue.self)
                 self = .generalKey(key)
             case Self.generalIndexField:
                 let index = try container.decode(StringScaleMapper<BigUInt>.self).value
@@ -163,7 +168,7 @@ extension XcmV3 {
                 try container.encode(StringScaleMapper(value: index))
             case let .generalKey(key):
                 try container.encode(Self.generalKeyField)
-                try container.encode(BytesCodable(wrappedValue: key))
+                try container.encode(key)
             case .onlyChild:
                 try container.encode(Self.onlyChildKey)
                 try container.encode(JSON.null)
