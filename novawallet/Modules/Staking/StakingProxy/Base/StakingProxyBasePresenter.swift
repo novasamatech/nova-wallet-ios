@@ -118,7 +118,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
             dataValidatingFactory.hasSufficientBalance(
                 available: (assetBalance?.regularTransferrableBalance() ?? 0) + (proxyDeposit?.current ?? 0),
                 deposit: proxyDeposit?.new,
-                fee: fee?.amountForCurrentAccount,
+                fee: fee,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
