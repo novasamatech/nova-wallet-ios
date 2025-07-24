@@ -72,6 +72,8 @@ final class FeatureSupportChecker {
     }
 }
 
+// MARK: - Private
+
 private extension FeatureSupportChecker {
     func createDelayedCallWalletWrapper(
         for wallet: MetaAccountModel,
@@ -121,20 +123,20 @@ private extension FeatureSupportChecker {
     func checkSellByWalletTypeSupported(
         _ wallet: MetaAccountModel,
         chainAsset: ChainAsset
-    ) -> OperationCheckCommonResult {
+    ) -> FeatureSupportCheckResult {
         switch wallet.type {
-        case .secrets, .paritySigner, .polkadotVault, .proxied, .genericLedger:
-            .available
+        case .secrets, .paritySigner, .polkadotVault, .genericLedger:
+            .commonResult(.available)
         case .ledger:
             if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                .ledgerNotSupported
+                .commonResult(.ledgerNotSupported)
             } else {
-                .available
+                .commonResult(.available)
             }
         case .watchOnly:
-            .noSigning
-        case .multisig:
-            .noSellSupport(wallet, chainAsset)
+            .commonResult(.noSigning)
+        case .multisig, .proxied:
+            .delayedExecutionCheckRequired
         }
     }
 
@@ -157,26 +159,28 @@ private extension FeatureSupportChecker {
     }
 }
 
+// MARK: - FeatureSupportCheckerProtocol
+
 extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
     func checkSellSupport(
         for wallet: MetaAccountModel,
         chainAsset: ChainAsset,
         completion: @escaping FeatureSupportCheckerClosure
     ) {
-        let result = checkSellByWalletTypeSupported(wallet, chainAsset: chainAsset)
+        let checkResult = checkSellByWalletTypeSupported(wallet, chainAsset: chainAsset)
 
-        guard result.isAvailable else {
+        switch checkResult {
+        case let .commonResult(result):
             completion(result)
-            return
-        }
+        case .delayedExecutionCheckRequired:
+            executeAccountExistenceAndDelay(
+                wallet: wallet,
+                chain: chainAsset.chain
+            ) { hasSupport in
+                let result: OperationCheckCommonResult = hasSupport ? .available : .noSellSupport(wallet, chainAsset)
 
-        executeAccountExistenceAndDelay(
-            wallet: wallet,
-            chain: chainAsset.chain
-        ) { hasSupport in
-            let result: OperationCheckCommonResult = hasSupport ? .available : .noSellSupport(wallet, chainAsset)
-
-            completion(result)
+                completion(result)
+            }
         }
     }
 
@@ -193,20 +197,20 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
         }
 
         // to get the card one need to sell tokens first
-        let result = checkSellByWalletTypeSupported(wallet, chainAsset: dotToken)
+        let sellCheckResult = checkSellByWalletTypeSupported(wallet, chainAsset: dotToken)
 
-        guard result.isAvailable else {
+        switch sellCheckResult {
+        case let .commonResult(result):
             completion(result)
-            return
-        }
+        case .delayedExecutionCheckRequired:
+            executeAccountExistenceAndDelay(
+                wallet: wallet,
+                chain: polkadotChain
+            ) { hasSupport in
+                let result: OperationCheckCommonResult = hasSupport ? .available : .noCardSupport(wallet)
 
-        executeAccountExistenceAndDelay(
-            wallet: wallet,
-            chain: polkadotChain
-        ) { hasSupport in
-            let result: OperationCheckCommonResult = hasSupport ? .available : .noCardSupport(wallet)
-
-            completion(result)
+                completion(result)
+            }
         }
     }
 
@@ -219,4 +223,11 @@ extension FeatureSupportChecker: FeatureSupportCheckerProtocol {
 
         completion(result)
     }
+}
+
+// MARK: - Private types
+
+private enum FeatureSupportCheckResult {
+    case commonResult(OperationCheckCommonResult)
+    case delayedExecutionCheckRequired
 }
