@@ -53,7 +53,7 @@ extension MultisigOperationConfirmViewModel {
 
     struct SignatoryModel {
         let wallet: SectionField<StackCellViewModel>
-        let fee: SectionField<BalanceViewModelProtocol?>
+        let fee: SectionField<BalanceViewModelProtocol?>?
     }
 
     struct SignatoriesModel {

@@ -147,7 +147,7 @@ private extension MultisigOperationConfirmViewModelFactory {
     }
 
     func createSignatorySection(
-        for pendingOperation: Multisig.PendingOperation,
+        for pendingOperation: Multisig.PendingOperationProxyModel,
         multisigWallet: MetaAccountModel,
         signatories: [Multisig.Signatory],
         fee: ExtrinsicFeeProtocol?,
@@ -159,7 +159,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             let multisigContext = multisigWallet.getMultisig(
                 for: feeAsset.chain
             ),
-            let definition = pendingOperation.multisigDefinition,
+            let definition = pendingOperation.operation.multisigDefinition,
             let signatory = signatories.first(
                 where: { $0.localAccount?.chainAccount.accountId == multisigContext.signatory }
             ),
@@ -178,16 +178,28 @@ private extension MultisigOperationConfirmViewModelFactory {
             title: R.string.localizable.commonSignatory(preferredLanguages: locale.rLanguages),
             value: walletViewModel
         )
-        let feeViewModel = createFeeViewModel(
-            fee: fee,
-            feeAsset: feeAsset,
-            assetPrice: assetPrice,
-            locale: locale
+
+        let operationProperties = createOperationProperties(
+            for: pendingOperation,
+            multisigContext: multisigContext,
+            definition: definition
         )
-        let feeField = MultisigOperationConfirmViewModel.SectionField(
-            title: R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages),
-            value: feeViewModel
-        )
+
+        var feeField: MultisigOperationConfirmViewModel.SectionField<BalanceViewModelProtocol?>?
+
+        if operationProperties.canShowFee {
+            let feeViewModel = createFeeViewModel(
+                fee: fee,
+                feeAsset: feeAsset,
+                assetPrice: assetPrice,
+                locale: locale
+            )
+            feeField = MultisigOperationConfirmViewModel.SectionField(
+                title: R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages),
+                value: feeViewModel
+            )
+        }
+
         let signatoryModel = MultisigOperationConfirmViewModel.SignatoryModel(
             wallet: signatoryField,
             fee: feeField
@@ -411,21 +423,21 @@ private extension MultisigOperationConfirmViewModelFactory {
 
         var actions: [MultisigOperationConfirmViewModel.Action] = []
 
-        let hasCall = pendingOperation.operation.call != nil
-            || pendingOperation.formattedModel?.decoded != nil
-        let createdBySignatory = pendingOperation.operation.isCreator(accountId: multisigContext.signatory)
-        let approved = definition.approvals.count >= multisigContext.threshold
-        let willExecute = (multisigContext.threshold - definition.approvals.count) == 1
+        let operationProperties = createOperationProperties(
+            for: pendingOperation,
+            multisigContext: multisigContext,
+            definition: definition
+        )
 
-        if createdBySignatory, !approved {
+        if operationProperties.canReject {
             let action = MultisigOperationConfirmViewModel.Action(
                 title: R.string.localizable.commonReject(preferredLanguages: locale.rLanguages),
                 type: .reject,
                 actionClosure: confirmClosure
             )
             actions.append(action)
-        } else if !createdBySignatory, hasCall {
-            let title = if willExecute {
+        } else if operationProperties.canApprove {
+            let title = if operationProperties.willExecute {
                 R.string.localizable.commonApproveAndExecute(preferredLanguages: locale.rLanguages)
             } else {
                 R.string.localizable.commonApprove(preferredLanguages: locale.rLanguages)
@@ -438,7 +450,7 @@ private extension MultisigOperationConfirmViewModelFactory {
             actions.append(action)
         }
 
-        if !hasCall {
+        if !operationProperties.hasCall {
             let action = MultisigOperationConfirmViewModel.Action(
                 title: R.string.localizable.enterCallDataDetailsButtonTitle(preferredLanguages: locale.rLanguages),
                 type: .addCallData,
@@ -450,7 +462,7 @@ private extension MultisigOperationConfirmViewModelFactory {
         return actions
     }
 
-    private func createTitle(for formattedCall: FormattedCall?, locale: Locale) -> String {
+    func createTitle(for formattedCall: FormattedCall?, locale: Locale) -> String {
         switch formattedCall?.definition {
         case let .general(general):
             return general.callPath.callName.displayCall
@@ -463,6 +475,25 @@ private extension MultisigOperationConfirmViewModelFactory {
                 preferredLanguages: locale.rLanguages
             )
         }
+    }
+
+    func createOperationProperties(
+        for pendingOperation: Multisig.PendingOperationProxyModel,
+        multisigContext: DelegatedAccount.MultisigAccountModel,
+        definition: Multisig.MultisigDefinition
+    ) -> OperationProperties {
+        let hasCall = pendingOperation.operation.call != nil
+            || pendingOperation.formattedModel?.decoded != nil
+        let createdBySignatory = pendingOperation.operation.isCreator(accountId: multisigContext.signatory)
+        let approved = definition.approvals.count >= multisigContext.threshold
+        let willExecute = (multisigContext.threshold - definition.approvals.count) == 1
+
+        return OperationProperties(
+            hasCall: hasCall,
+            createdBySignatory: createdBySignatory,
+            approved: approved,
+            willExecute: willExecute
+        )
     }
 }
 
@@ -485,7 +516,7 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             locale: locale
         )
         let signatorySection = createSignatorySection(
-            for: params.pendingOperation.operation,
+            for: params.pendingOperation,
             multisigWallet: params.multisigWallet,
             signatories: params.signatories,
             fee: params.fee,
@@ -565,5 +596,26 @@ extension MultisigOperationConfirmViewModelFactory: MultisigOperationConfirmView
             priceData: priceData,
             locale: locale
         )
+    }
+}
+
+// MARK: - Private types
+
+private struct OperationProperties {
+    let hasCall: Bool
+    let createdBySignatory: Bool
+    let approved: Bool
+    let willExecute: Bool
+
+    var canShowFee: Bool {
+        canApprove || canReject
+    }
+    
+    var canApprove: Bool {
+        !createdBySignatory && hasCall
+    }
+    
+    var canReject: Bool {
+        createdBySignatory && !approved
     }
 }
