@@ -77,8 +77,15 @@ extension XcmV3 {
     }
 
     struct GeneralKeyValue: Equatable, Codable {
+        static let keySize = 32
+
         @StringCodable var length: Int
-        let data: H256
+        @BytesCodable var data: Data
+
+        init(length: Int, partialData: Data) {
+            self.length = length
+            data = (partialData + Data(repeating: 0, count: Self.keySize)).prefix(Self.keySize)
+        }
     }
 
     enum Junction: Equatable, Codable {

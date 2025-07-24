@@ -37,7 +37,7 @@ extension XcmV3.AbsoluteLocation {
 
             let model = XcmV3.GeneralKeyValue(
                 length: generalKey.count,
-                data: H256(partialData: generalKey)
+                partialData: generalKey
             )
 
             junctions.append(.generalKey(model))

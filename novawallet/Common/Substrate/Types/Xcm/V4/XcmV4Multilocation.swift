@@ -36,7 +36,7 @@ extension XcmV4.AbsoluteLocation {
             let generalKey = try Data(hexString: generalKeyString)
             let model = XcmV3.GeneralKeyValue(
                 length: generalKey.count,
-                data: H256(partialData: generalKey)
+                partialData: generalKey
             )
             junctions.append(.generalKey(model))
         } else if let generalIndexString = path.generalIndex?.stringValue {
