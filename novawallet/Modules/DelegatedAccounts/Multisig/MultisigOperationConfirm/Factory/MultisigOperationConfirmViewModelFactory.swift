@@ -610,11 +610,11 @@ private struct OperationProperties {
     var canShowFee: Bool {
         canApprove || canReject
     }
-    
+
     var canApprove: Bool {
         !createdBySignatory && hasCall
     }
-    
+
     var canReject: Bool {
         createdBySignatory && !approved
     }
