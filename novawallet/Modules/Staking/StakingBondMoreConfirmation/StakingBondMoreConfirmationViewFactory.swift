@@ -110,7 +110,8 @@ struct StakingBondMoreConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: OperationManagerFacade.sharedManager,
+            runtimeProvider: runtimeRegistry,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

@@ -64,8 +64,6 @@ class BondMoreConfirmTests: XCTestCase {
 
         let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
 
-        let operationManager = OperationManager()
-
         let metaAccount = AccountGenerator.generateMetaAccount()
         let accountResponse = metaAccount.fetch(for: chain.accountRequest())!
         let selectedAddress = accountResponse.toAddress()!
@@ -99,6 +97,8 @@ class BondMoreConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
+        
+        let runtimeProvider = MockRuntimeProviderProtocol().applyDefault(for: KnowChainId.westend)
 
         let interactor = StakingBondMoreConfirmationInteractor(
             selectedAccount: accountResponse,
@@ -110,7 +110,8 @@ class BondMoreConfirmTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceSubscriptionFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

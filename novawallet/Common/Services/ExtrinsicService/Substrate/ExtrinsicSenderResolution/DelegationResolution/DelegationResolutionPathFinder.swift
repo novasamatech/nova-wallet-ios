@@ -190,7 +190,7 @@ extension DelegationResolution.PathFinder {
             context: RuntimeJsonContext
         ) throws -> JSON {
             try Proxy.ProxyCall(
-                real: .accoundId(delegation.delegate),
+                real: .accoundId(delegation.delegated),
                 forceProxyType: proxyType,
                 call: call
             )
