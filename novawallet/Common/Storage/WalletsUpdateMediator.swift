@@ -156,26 +156,42 @@ final class WalletUpdateMediator {
                 accum[wallet.identifier] = nil
             }
 
+            // If we have multiple selected wallets by any reason, we will select only one that is non-delegated
+            let currentSelectedWallets = newState.values.filter { $0.isSelected }
+
+            if currentSelectedWallets.count > 1 {
+                let selectedKeyWallet = currentSelectedWallets.first(where: { !$0.info.isDelegated() })
+
+                newState = newState.mapValues { wallet in
+                    if let selectedKeyWallet, wallet.identifier == selectedKeyWallet.identifier {
+                        wallet.replacingSelection(true)
+                    } else {
+                        wallet.replacingSelection(false)
+                    }
+                }
+            }
+
+            // We want to keep persisted wallet selection state.
+            // Selected wallet update will be done using SelectedWalletSettings
             let newUpdatedWallets = changes.newOrUpdatedItems.compactMap { wallet in
                 newState[wallet.identifier]
             }
 
-            if let selectedWallet = newState.values.first(where: { $0.isSelected }) {
-                let newChanges = SyncChanges(newOrUpdatedItems: newUpdatedWallets, removedItems: changes.removedItems)
-                return ProcessingResult(changes: newChanges, selectedWallet: selectedWallet)
+            let newChanges = SyncChanges<ManagedMetaAccountModel>(
+                newOrUpdatedItems: newUpdatedWallets,
+                removedItems: changes.removedItems
+            )
+            let newSelectedWallet = if let selectedWallet = newState.values.first(where: { $0.isSelected }) {
+                selectedWallet
             } else {
                 // if no selected wallets then select existing not delegated wallet
-                let newSelectedWallet = newState.values.first { !$0.info.isDelegated() }.map {
-                    ManagedMetaAccountModel(info: $0.info, isSelected: true, order: $0.order)
-                }
-
-                let newChanges = SyncChanges(
-                    newOrUpdatedItems: newUpdatedWallets + (newSelectedWallet.map { [$0] } ?? []),
-                    removedItems: changes.removedItems
-                )
-
-                return ProcessingResult(changes: newChanges, selectedWallet: newSelectedWallet)
+                newState.values.first { !$0.info.isDelegated() }
             }
+
+            return ProcessingResult(
+                changes: newChanges,
+                selectedWallet: newSelectedWallet
+            )
         }
     }
 
@@ -187,7 +203,11 @@ final class WalletUpdateMediator {
             let result = try processingOperation.extractNoCancellableResultData()
 
             if settings.value == nil || result.selectedWallet?.info != settings.value {
-                settings.setup()
+                if let selectedWallet = result.selectedWallet?.info {
+                    settings.save(value: selectedWallet)
+                } else {
+                    settings.setup()
+                }
 
                 return true
             } else {
