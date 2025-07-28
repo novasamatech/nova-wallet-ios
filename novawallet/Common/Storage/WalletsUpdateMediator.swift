@@ -15,11 +15,6 @@ protocol WalletUpdateMediating {
 }
 
 final class WalletUpdateMediator {
-    struct ProcessingResult {
-        let changes: SyncChanges<ManagedMetaAccountModel>
-        let selectedWallet: ManagedMetaAccountModel?
-    }
-
     let selectedWalletSettings: SelectedWalletSettings
     let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let walletsCleaner: WalletStorageCleaning
@@ -37,8 +32,12 @@ final class WalletUpdateMediator {
         self.walletsCleaner = walletsCleaner
         self.operationQueue = operationQueue
     }
+}
 
-    private static func nonDelegatedWalletReachable(
+// MARK: - Private
+
+private extension WalletUpdateMediator {
+    static func nonDelegatedWalletReachable(
         from delegatedWallet: ManagedMetaAccountModel,
         wallets: [ManagedMetaAccountModel],
         removeIds: Set<MetaAccountModel.Id>
@@ -81,7 +80,7 @@ final class WalletUpdateMediator {
         return false
     }
 
-    private static func includeDelegatedAccountsToRemoveSet(
+    static func includeDelegatedAccountsToRemoveSet(
         starting removeIds: Set<MetaAccountModel.Id>,
         wallets: [ManagedMetaAccountModel]
     ) -> Set<MetaAccountModel.Id> {
@@ -108,7 +107,7 @@ final class WalletUpdateMediator {
         return newRemovedIds
     }
 
-    private func delegatedAccountRemovalOperation(
+    func delegatedAccountRemovalOperation(
         dependingOn allWalletsOperation: BaseOperation<[ManagedMetaAccountModel]>,
         changesClosure: @escaping () throws -> SyncChanges<ManagedMetaAccountModel>
     ) -> BaseOperation<SyncChanges<ManagedMetaAccountModel>> {
@@ -144,7 +143,7 @@ final class WalletUpdateMediator {
 
             // we want to change selected wallet if current one is removed or revoked as delegated account
             newState = changes.newOrUpdatedItems.reduce(into: newState) { accum, wallet in
-                let selected = if wallet.isSelected, wallet.info.delegatedAccountStatus() == .revoked {
+                let selected = if wallet.info.delegatedAccountStatus() == .revoked {
                     false
                 } else {
                     accum[wallet.identifier]?.isSelected ?? wallet.isSelected
@@ -190,7 +189,7 @@ final class WalletUpdateMediator {
 
             return ProcessingResult(
                 changes: newChanges,
-                selectedWallet: newSelectedWallet
+                walletToSelect: newSelectedWallet?.replacingSelection(true)
             )
         }
     }
@@ -202,8 +201,8 @@ final class WalletUpdateMediator {
         ClosureOperation<Bool> {
             let result = try processingOperation.extractNoCancellableResultData()
 
-            if settings.value == nil || result.selectedWallet?.info != settings.value {
-                if let selectedWallet = result.selectedWallet?.info {
+            if settings.value == nil || result.walletToSelect?.info != settings.value {
+                if let selectedWallet = result.walletToSelect?.info {
                     settings.save(value: selectedWallet)
                 } else {
                     settings.setup()
@@ -216,6 +215,8 @@ final class WalletUpdateMediator {
         }
     }
 }
+
+// MARK: - WalletUpdateMediating
 
 extension WalletUpdateMediator: WalletUpdateMediating {
     func saveChanges(
@@ -261,7 +262,7 @@ extension WalletUpdateMediator: WalletUpdateMediating {
         let resultOperation = ClosureOperation<WalletUpdateMediatingResult> {
             try saveOperation.extractNoCancellableResultData()
             let isWalletSwitched = try selectedWalletUpdateOperation.extractNoCancellableResultData()
-            let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().selectedWallet
+            let currentWallet = try newSelectedWalletOperation.extractNoCancellableResultData().walletToSelect
 
             return .init(selectedWallet: currentWallet, isWalletSwitched: isWalletSwitched)
         }
@@ -282,5 +283,14 @@ extension WalletUpdateMediator: WalletUpdateMediating {
             targetOperation: resultOperation,
             dependencies: dependencies
         )
+    }
+}
+
+// MARK: - Private types
+
+private extension WalletUpdateMediator {
+    struct ProcessingResult {
+        let changes: SyncChanges<ManagedMetaAccountModel>
+        let walletToSelect: ManagedMetaAccountModel?
     }
 }
