@@ -10,7 +10,7 @@ final class DelegatedSignConfirmationViewFactory {
     ) -> DelegatedSignConfirmationPresenterProtocol {
         let repository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
-        ).createProxiedSettingsRepository()
+        ).createDelegatedAccountSettingsRepository()
 
         let interactor = DelegatedSignConfirmationInteractor(
             delegatedAccountId: delegatedAccountId,

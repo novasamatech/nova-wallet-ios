@@ -121,6 +121,9 @@ struct MultisigOperationConfirmViewFactory {
 
         return if operation.operation.isCreator(accountId: multisig.signatory) {
             MultisigOperationRejectInteractor(
+                settingsRepository: AccountRepositoryFactory(
+                    storageFacade: UserDataStorageFacade.shared
+                ).createDelegatedAccountSettingsRepository(),
                 operation: operation,
                 chain: chain,
                 multisigWallet: multisigWallet,

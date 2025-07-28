@@ -1,11 +1,61 @@
 import Foundation
 import SubstrateSdk
+import Operation_iOS
 
 final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteractor {
+    let settingsRepository: AnyDataProviderRepository<DelegatedAccountSettings>
+
     let feeCallStore = CancellableCallStore()
+
+    init(
+        settingsRepository: AnyDataProviderRepository<DelegatedAccountSettings>,
+        operation: Multisig.PendingOperationProxyModel,
+        chain: ChainModel,
+        multisigWallet: MetaAccountModel,
+        remoteOperationFactory: MultisigStorageOperationFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol,
+        signatoryRepository: MultisigSignatoryRepositoryProtocol,
+        pendingOperationProvider: MultisigOperationProviderProxyProtocol,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
+        assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol,
+        logger: LoggerProtocol
+    ) {
+        self.settingsRepository = settingsRepository
+
+        super.init(
+            operation: operation,
+            chain: chain,
+            multisigWallet: multisigWallet,
+            remoteOperationFactory: remoteOperationFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            balanceRemoteSubscriptionFactory: balanceRemoteSubscriptionFactory,
+            signatoryRepository: signatoryRepository,
+            pendingOperationProvider: pendingOperationProvider,
+            extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: signingWrapperFactory,
+            assetInfoOperationFactory: assetInfoOperationFactory,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue,
+            currencyManager: currencyManager,
+            logger: logger
+        )
+    }
 
     deinit {
         feeCallStore.cancel()
+    }
+
+    override func setup() {
+        super.setup()
+
+        provideSettings()
     }
 
     override func didSetupSignatories() {
@@ -93,6 +143,28 @@ final class MultisigOperationRejectInteractor: MultisigOperationConfirmInteracto
 // MARK: - Private
 
 private extension MultisigOperationRejectInteractor {
+    func provideSettings() {
+        let metaId = multisigWallet.metaId
+
+        let fetchOperation = settingsRepository.fetchOperation(
+            by: { metaId },
+            options: .init(includesProperties: true, includesSubentities: true)
+        )
+
+        execute(
+            operation: fetchOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(settings):
+                self?.presenter?.didReceive(needsConfirmation: settings?.confirmsOperation ?? true)
+            case let .failure(error):
+                self?.logger.error("Unexpected error: \(error)")
+            }
+        }
+    }
+
     func createExtrinsicClosure(
         for multisig: DelegatedAccount.MultisigAccountModel,
         timepoint: MultisigPallet.MultisigTimepoint,

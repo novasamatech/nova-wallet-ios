@@ -12,6 +12,7 @@ final class MultisigOperationConfirmPresenter {
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
 
+    var needsConfirmation: Bool?
     var signatories: [Multisig.Signatory]?
     var pendingOperation: Multisig.PendingOperationProxyModel?
     var balanceExistence: AssetBalanceExistence?
@@ -173,6 +174,33 @@ private extension MultisigOperationConfirmPresenter {
     }
 
     func doConfirm() {
+        validateConfirmation { [weak self] in
+            guard let self else { return }
+
+            if let needsConfirmation, needsConfirmation {
+                guard
+                    let depositorAccountId = pendingOperation?.operation.multisigDefinition?.depositor,
+                    let depositor = signatories?.first(where: { $0.accountId == depositorAccountId })?.localAccount
+                else {
+                    return
+                }
+
+                wireframe.showConfirmOperationSheet(
+                    from: view,
+                    multisigAccountId: multisigWallet.metaId,
+                    depositorAccount: depositor
+                ) {
+                    self.view?.didReceive(loading: true)
+                    self.interactor.confirm()
+                }
+            } else {
+                view?.didReceive(loading: true)
+                interactor.confirm()
+            }
+        }
+    }
+
+    func validateConfirmation(onSuccess: @escaping () -> Void) {
         guard let utilityChainAsset = chain.utilityChainAsset() else {
             return
         }
@@ -205,10 +233,7 @@ private extension MultisigOperationConfirmPresenter {
                 asset: utilityChainAsset.assetDisplayInfo,
                 locale: selectedLocale
             )
-        ]).runValidation { [weak self] in
-            self?.view?.didReceive(loading: true)
-            self?.interactor.confirm()
-        }
+        ]).runValidation { onSuccess() }
     }
 }
 
@@ -354,6 +379,10 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         case .reject:
             showSuccessReject(with: model)
         }
+    }
+
+    func didReceive(needsConfirmation: Bool) {
+        self.needsConfirmation = needsConfirmation
     }
 }
 
