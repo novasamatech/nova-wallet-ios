@@ -47,24 +47,20 @@ final class SelectedWalletSettings: PersistentValueSettings<MetaAccountModel> {
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         let options = RepositoryFetchOptions(includesProperties: true, includesSubentities: true)
-        let maybeCurrentAccountOperation = internalValue.map {
-            repository.fetchOperation(by: $0.identifier, options: options)
-        }
 
+        let fetchAllOperation = repository.fetchAllOperation(with: options)
         let newAccountOperation = repository.fetchOperation(by: value.identifier, options: options)
 
         let saveOperation = repository.saveOperation({
             var accountsToSave: [ManagedMetaAccountModel] = []
 
-            if let currentAccount = try maybeCurrentAccountOperation?.extractNoCancellableResultData() {
-                accountsToSave.append(
-                    ManagedMetaAccountModel(
-                        info: currentAccount.info,
-                        isSelected: false,
-                        order: currentAccount.order
-                    )
-                )
-            }
+            // We want to be sure that we have only one selected account persisted
+            try fetchAllOperation
+                .extractNoCancellableResultData()
+                .filter { $0.isSelected }
+                .forEach {
+                    accountsToSave.append($0.replacingSelection(false))
+                }
 
             if let newAccount = try newAccountOperation.extractNoCancellableResultData() {
                 accountsToSave.append(
@@ -85,9 +81,7 @@ final class SelectedWalletSettings: PersistentValueSettings<MetaAccountModel> {
 
         var dependencies: [Operation] = [newAccountOperation]
 
-        if let currentAccountOperation = maybeCurrentAccountOperation {
-            dependencies.append(currentAccountOperation)
-        }
+        dependencies.append(fetchAllOperation)
 
         dependencies.forEach { saveOperation.addDependency($0) }
 
