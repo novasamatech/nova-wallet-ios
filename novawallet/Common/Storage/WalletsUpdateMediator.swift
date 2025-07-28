@@ -137,27 +137,27 @@ final class WalletUpdateMediator {
         ClosureOperation<ProcessingResult> {
             let changes = try changesOperation.extractNoCancellableResultData()
 
-            // we want to change selected wallet if current one is removed or revoked as delegated account
-
-            let newUpdatedWallets = changes.newOrUpdatedItems.map { wallet in
-                if wallet.isSelected, wallet.info.delegatedAccountStatus() == .revoked {
-                    return ManagedMetaAccountModel(info: wallet.info, isSelected: false, order: wallet.order)
-                } else {
-                    return wallet
-                }
-            }
-
             let allWallets = try allWalletsOperation.extractNoCancellableResultData()
             var newState = allWallets.reduce(into: [MetaAccountModel.Id: ManagedMetaAccountModel]()) { accum, wallet in
                 accum[wallet.identifier] = wallet
             }
 
-            newState = newUpdatedWallets.reduce(into: newState) { accum, wallet in
-                accum[wallet.identifier] = wallet
+            // we want to change selected wallet if current one is removed or revoked as delegated account
+            newState = changes.newOrUpdatedItems.reduce(into: newState) { accum, wallet in
+                let selected = if wallet.isSelected, wallet.info.delegatedAccountStatus() == .revoked {
+                    false
+                } else {
+                    accum[wallet.identifier]?.isSelected ?? wallet.isSelected
+                }
+                accum[wallet.identifier] = wallet.replacingSelection(selected)
             }
 
             newState = changes.removedItems.reduce(into: newState) { accum, wallet in
                 accum[wallet.identifier] = nil
+            }
+
+            let newUpdatedWallets = changes.newOrUpdatedItems.compactMap { wallet in
+                newState[wallet.identifier]
             }
 
             if let selectedWallet = newState.values.first(where: { $0.isSelected }) {
