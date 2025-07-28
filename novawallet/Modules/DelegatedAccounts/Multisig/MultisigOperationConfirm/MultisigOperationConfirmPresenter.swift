@@ -177,6 +177,11 @@ private extension MultisigOperationConfirmPresenter {
         validateConfirmation { [weak self] in
             guard let self else { return }
 
+            let confirmClosure = {
+                self.view?.didReceive(loading: true)
+                self.interactor.confirm()
+            }
+
             if let needsConfirmation, needsConfirmation {
                 guard
                     let depositorAccountId = pendingOperation?.operation.multisigDefinition?.depositor,
@@ -190,12 +195,10 @@ private extension MultisigOperationConfirmPresenter {
                     multisigAccountId: multisigWallet.metaId,
                     depositorAccount: depositor
                 ) {
-                    self.view?.didReceive(loading: true)
-                    self.interactor.confirm()
+                    confirmClosure()
                 }
             } else {
-                view?.didReceive(loading: true)
-                interactor.confirm()
+                confirmClosure()
             }
         }
     }
