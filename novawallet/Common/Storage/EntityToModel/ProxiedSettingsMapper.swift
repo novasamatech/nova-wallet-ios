@@ -3,10 +3,10 @@ import Operation_iOS
 import CoreData
 
 final class DelegatedAccountSettingsMapper {
-    var entityIdentifierFieldName: String { #keyPath(CDProxiedSettings.identifier) }
+    var entityIdentifierFieldName: String { #keyPath(CDDelegatedAccountSettings.identifier) }
 
     typealias DataProviderModel = DelegatedAccountSettings
-    typealias CoreDataEntity = CDProxiedSettings
+    typealias CoreDataEntity = CDDelegatedAccountSettings
 }
 
 extension DelegatedAccountSettingsMapper: CoreDataMapperProtocol {
