@@ -1478,6 +1478,11 @@
 		2D0673962E142401006392EB /* MultisigErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673952E142401006392EB /* MultisigErrorPresentable.swift */; };
 		2D0673982E150D95006392EB /* MultisigOpValidationViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673972E150D95006392EB /* MultisigOpValidationViewFactory.swift */; };
 		2D06739A2E15159D006392EB /* MultisigOpValidationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0673992E15159D006392EB /* MultisigOpValidationWireframe.swift */; };
+		2D06CC292E38F4FD0093CA84 /* AppAttestClientHashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */; };
+		2D06CC2B2E38F5170093CA84 /* AppAttestLocalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */; };
+		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
+		2D06CC2F2E38F53E0093CA84 /* HttpAuthRequestModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */; };
+		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
@@ -7573,6 +7578,11 @@
 		2D0673952E142401006392EB /* MultisigErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigErrorPresentable.swift; sourceTree = "<group>"; };
 		2D0673972E150D95006392EB /* MultisigOpValidationViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOpValidationViewFactory.swift; sourceTree = "<group>"; };
 		2D0673992E15159D006392EB /* MultisigOpValidationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigOpValidationWireframe.swift; sourceTree = "<group>"; };
+		2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestClientHashing.swift; sourceTree = "<group>"; };
+		2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestLocalSettings.swift; sourceTree = "<group>"; };
+		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
+		2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpAuthRequestModifier.swift; sourceTree = "<group>"; };
+		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
@@ -15695,6 +15705,18 @@
 			path = Validation;
 			sourceTree = "<group>";
 		};
+		2D06CC272E38F4E80093CA84 /* AppAttest */ = {
+			isa = PBXGroup;
+			children = (
+				2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */,
+				2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */,
+				2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */,
+				2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */,
+				2D06CC302E38F5990093CA84 /* AppAttestService.swift */,
+			);
+			path = AppAttest;
+			sourceTree = "<group>";
+		};
 		2D07803F2D12C68E003E35B1 /* MessageHandlers */ = {
 			isa = PBXGroup;
 			children = (
@@ -19168,6 +19190,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2D06CC272E38F4E80093CA84 /* AppAttest */,
 				0CD9801D2E268EA4005251E1 /* WalletDelayedExecution */,
 				0C521C0E2E1728C500ABAC97 /* CallFormatting */,
 				2D32D7322DCBBF490016354C /* DelegatedAccounts */,
@@ -29757,6 +29780,7 @@
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
 				0C12BC482CEB996700AB919D /* XcmV4Multilocation.swift in Sources */,
 				0C12BC492CEB996700AB919D /* XcmV4Junction.swift in Sources */,
+				2D06CC2F2E38F53E0093CA84 /* HttpAuthRequestModifier.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */,
 				0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */,
@@ -33222,6 +33246,7 @@
 				77DF40492B7FE7B700ABDB53 /* ChainNotificationSettingsViewLayout.swift in Sources */,
 				4014ED301AA53DA0B07B4221 /* DAppPhishingPresenter.swift in Sources */,
 				02BFBFE7B9D131B0FF27ABE7 /* DAppPhishingViewController.swift in Sources */,
+				2D06CC2B2E38F5170093CA84 /* AppAttestLocalSettings.swift in Sources */,
 				2DF95D2F2D785DBF001D8785 /* CustomPatternHapticPlayer.swift in Sources */,
 				8321399396FA5B25BC93A090 /* DAppPhishingViewLayout.swift in Sources */,
 				0C1666862D7FEF90005E6CD3 /* XcmModelFactory.swift in Sources */,
@@ -33588,6 +33613,7 @@
 				CDED41B125E1D5128736B933 /* ParitySignerTxScanViewLayout.swift in Sources */,
 				0CF606CF2D7B2E2E0041B7AE /* XcmV3Instruction.swift in Sources */,
 				0CAC03062B4D86E000DDEC3A /* LocalizableControllerBackedView.swift in Sources */,
+				2D06CC292E38F4FD0093CA84 /* AppAttestClientHashing.swift in Sources */,
 				561F5B387B0A1682CE5DE7E4 /* ParitySignerTxScanViewFactory.swift in Sources */,
 				0CE75D402DDA102500D3DEE4 /* InternalLinkFactoryProtocol.swift in Sources */,
 				4C165167688A2791643AC667 /* LedgerDiscoverProtocols.swift in Sources */,
@@ -33609,6 +33635,7 @@
 				845B07F929162D24005785D3 /* Gov1LocalMappingFactory.swift in Sources */,
 				88E74E8A29538C1F008031A3 /* NovaAccountShareFactoryProtocol.swift in Sources */,
 				77EFFC932A72A288009E28F8 /* StakingTypeBaseBannerView.swift in Sources */,
+				2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
 				7796C6FD2A174E6300D56094 /* StakingRewardFiltersPeriod+Title.swift in Sources */,
 				D71B2C6056D803C196DF4CDA /* LedgerNetworkSelectionPresenter.swift in Sources */,
@@ -34147,6 +34174,7 @@
 				77A502F12B63E3830062FA51 /* ProxyAccountSubscription.swift in Sources */,
 				0C0F6D8D2D3A943C00943A7C /* CollatorStakingServiceFactory.swift in Sources */,
 				C98A02D4DEAC6E4CACB9E47E /* StakingRebagConfirmProtocols.swift in Sources */,
+				2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */,
 				B09F155D14D146377FB2952A /* StakingRebagConfirmWireframe.swift in Sources */,
 				840AE2E329C9A715008FF665 /* OptionStringCodable+Empty.swift in Sources */,
 				29404996F9C572C11738632F /* StakingRebagConfirmPresenter.swift in Sources */,
