@@ -1871,8 +1871,11 @@
 "common.view.details" = "Pokaż szczegóły";
 "common.approve" = "Zatwierdź";
 "multisig.validation.already.exists.title" = "Operacja już istnieje";
+"multisig.signing.is.not.supported.message" = "Portfele multisig nie obsługują podpisywania dowolnych wiadomości — tylko transakcje";
 "multisig.call.data.copy" = "Skopiuj dane wywołania";
 "multisig.call.data.share" = "Udostępnij dane wywołania";
+"multisig.transaction.not.exist.title" = "Nie można wykonać tej transakcji";
+"multisig.transaction.not.exist.message" = "Ta transakcja została już odrzucona lub wykonana.";
 "multisig.deposit.info.message" = "Depozyt pozostaje zablokowany na koncie depozytariusza do momentu wykonania lub odrzucenia operacji multisig.";
 "common.depositor" = "Depozytariusz";
 "common.multisig.deposit" = "Depozyt multisig";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@ nie ma wystarczającego salda, aby umieścić depozyt multisig w wysokości %@. Musisz dodać do swojego salda jeszcze %@.";
 "multisig.validation.not.enough.for.fee.message" = "%@ potrzebuje co najmniej %@, aby zapłacić tę opłatę transakcyjną i pozostać powyżej minimalnego salda sieciowego. Musisz dodać do swojego salda jeszcze %@.";
 "multisig.validation.insuffisient.balance.message" = "%@ nie ma wystarczającego salda, aby zapłacić opłatę sieciową w wysokości %@ i umieścić depozyt multisig w wysokości %@. Musisz dodać do swojego salda jeszcze %@.";
-"feature.unsupported.sheet.title.sell" = "Sprzedaż nie jest obsługiwana dla %@";
-"feature.unsupported.sheet.title.card" = "Karta debetowa nie jest obsługiwana dla %@";
+"feature.unsupported.sheet.title.sell" = "Sprzedaż nie jest obsługiwana dla portfeli %@";
+"feature.unsupported.sheet.title.card" = "Karta debetowa nie jest obsługiwana dla portfeli %@";
 "multisig.transaction.created.sheet.message" = "Inni sygnatariusze mogą teraz potwierdzić transakcję. Możesz śledzić jej status w %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova automatycznie przełączyła się na Twój portfel multisig, abyś mógł zobaczyć oczekujące transakcje.";
 "multisig.other.signatories" = "Inni sygnatariusze";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Hash połączenia";
 "call.data.validation.hash.matching.error.message" = "Te dane wywołania dla innej operacji z hashem wywołania %@";
 "call.data.validation.error.message" = "Podane dane połączenia są nieprawidłowe lub mają niewłaściwy format. Upewnij się, że są poprawne i spróbuj ponownie.";
+"feature.unsupported.sheet.title.sell.proxied" = "Sprzedaż nie jest obsługiwana dla tego portfela Proxied";
+"feature.unsupported.sheet.title.card.proxied" = "Karta debetowa nie jest obsługiwana dla tego portfela pośredniego";
+"feature.unsupported.sheet.message.sell.proxied" = "Aby sprzedać kryptowaluty za walutę tradycyjną, przełącz się na inny portfel.";

@@ -1871,8 +1871,11 @@
 "common.view.details" = "Просмотреть детали";
 "common.approve" = "Одобрить";
 "multisig.validation.already.exists.title" = "Операция уже существует";
+"multisig.signing.is.not.supported.message" = "Мультиподпись кошельки не поддерживают подписание произвольных сообщений — только транзакции";
 "multisig.call.data.copy" = "Скопировать данные вызова";
 "multisig.call.data.share" = "Поделиться данными вызова";
+"multisig.transaction.not.exist.title" = "Невозможно выполнить эту транзакцию";
+"multisig.transaction.not.exist.message" = "Эта транзакция уже была отклонена или выполнена.";
 "multisig.deposit.info.message" = "Депозит остаётся заблокированным на счету депозита до тех пор, пока операция мультиподписи не будет выполнена или отклонена.";
 "common.depositor" = "Депозитор";
 "common.multisig.deposit" = "Депозит мультиподписи";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "У %@ недостаточно средств для размещения депозита мультиподписи в размере %@. Вам необходимо добавить ещё %@ на ваш баланс.";
 "multisig.validation.not.enough.for.fee.message" = "%@ необходимо иметь как минимум %@, чтобы оплатить комиссию за эту транзакцию и остаться выше минимального сетевого баланса. Вам необходимо добавить ещё %@ на ваш баланс.";
 "multisig.validation.insuffisient.balance.message" = "У %@ недостаточно средств для оплаты сетевого сбора в размере %@ и размещения депозита мультиподписи в размере %@. Вам необходимо добавить ещё %@ на ваш баланс.";
-"feature.unsupported.sheet.title.sell" = "Продажа не поддерживается для %@";
-"feature.unsupported.sheet.title.card" = "Дебетовая карта не поддерживается для %@";
+"feature.unsupported.sheet.title.sell" = "Продажа не поддерживается для %@ кошельков";
+"feature.unsupported.sheet.title.card" = "Дебетовая карта не поддерживается для %@ кошельков";
 "multisig.transaction.created.sheet.message" = "Другие подписанты теперь могут подтвердить транзакцию. Вы можете отслеживать её статус в %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova автоматически переключилась на ваш кошелек с мультиподписью, чтобы вы могли просматривать ожидающие транзакции.";
 "multisig.other.signatories" = "Другие подписанты";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Хэш вызова";
 "call.data.validation.hash.matching.error.message" = "Эти данные вызова для другой операции с хэшом вызова %@";
 "call.data.validation.error.message" = "Предоставленные вами данные вызова недействительны или имеют неправильный формат. Пожалуйста, убедитесь, что они верны, и попробуйте снова.";
+"feature.unsupported.sheet.title.sell.proxied" = "Продажа не поддерживается для этого проксид кошелька";
+"feature.unsupported.sheet.title.card.proxied" = "Дебетовая карта не поддерживается для этого проксид кошелька";
+"feature.unsupported.sheet.message.sell.proxied" = "Чтобы продать криптовалюту за фиатные деньги, пожалуйста, переключитесь на другой кошелек.";

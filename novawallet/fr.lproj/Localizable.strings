@@ -1871,8 +1871,11 @@
 "common.view.details" = "Voir les détails";
 "common.approve" = "Approuver";
 "multisig.validation.already.exists.title" = "Opération déjà existante";
+"multisig.signing.is.not.supported.message" = "Les portefeuilles multisig ne prennent pas en charge la signature de messages arbitraires — uniquement les transactions";
 "multisig.call.data.copy" = "Copier les données d'appel";
 "multisig.call.data.share" = "Partager les données d'appel";
+"multisig.transaction.not.exist.title" = "Impossible d'effectuer cette transaction";
+"multisig.transaction.not.exist.message" = "Cette transaction a déjà été rejetée ou exécutée.";
 "multisig.deposit.info.message" = "Le dépôt reste bloqué sur le compte du déposant jusqu'à ce que l'opération multisig soit exécutée ou rejetée.";
 "common.depositor" = "Déposant";
 "common.multisig.deposit" = "Dépôt multisig";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@ n'a pas assez de solde pour placer un dépôt multisig de %@. Vous devez ajouter %@ à votre solde.";
 "multisig.validation.not.enough.for.fee.message" = "%@ a besoin d'au moins %@ pour payer ces frais de transaction et rester au-dessus du solde réseau minimum. Vous devez ajouter %@ à votre solde.";
 "multisig.validation.insuffisient.balance.message" = "%@ n'a pas assez de solde pour payer les frais de réseau de %@ et placer un dépôt multisig de %@. Vous devez ajouter %@ à votre solde.";
-"feature.unsupported.sheet.title.sell" = "La vente n'est pas prise en charge pour %@";
-"feature.unsupported.sheet.title.card" = "La carte de débit n'est pas prise en charge pour %@";
+"feature.unsupported.sheet.title.sell" = "La vente n'est pas prise en charge pour les portefeuilles %@";
+"feature.unsupported.sheet.title.card" = "La carte de débit n'est pas prise en charge pour les portefeuilles %@";
 "multisig.transaction.created.sheet.message" = "Les autres signataires peuvent maintenant confirmer la transaction. Vous pouvez suivre son statut dans le %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova a automatiquement changé pour votre portefeuille multisig afin que vous puissiez voir les transactions en attente.";
 "multisig.other.signatories" = "Autres signataires";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Hachage d’appel";
 "call.data.validation.hash.matching.error.message" = "Ces données d'appel pour une autre opération avec le hash d'appel %@";
 "call.data.validation.error.message" = "Les données d'appel que vous avez fournies sont invalides ou ont un format incorrect. Veuillez vérifier qu'elles sont correctes et réessayer.";
+"feature.unsupported.sheet.title.sell.proxied" = "La vente n'est pas prise en charge pour ce portefeuille proxied.";
+"feature.unsupported.sheet.title.card.proxied" = "La carte de débit n'est pas prise en charge pour ce portefeuille proxied.";
+"feature.unsupported.sheet.message.sell.proxied" = "Pour vendre des cryptomonnaies contre de la monnaie fiduciaire, veuillez changer de portefeuille.";

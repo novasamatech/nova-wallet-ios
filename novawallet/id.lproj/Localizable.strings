@@ -1871,8 +1871,11 @@
 "common.view.details" = "Lihat rincian";
 "common.approve" = "Setujui";
 "multisig.validation.already.exists.title" = "Operasi sudah ada";
+"multisig.signing.is.not.supported.message" = "Dompet multisig tidak mendukung penandatanganan pesan sembarangan — hanya transaksi saja";
 "multisig.call.data.copy" = "Salin data pemanggilan";
 "multisig.call.data.share" = "Bagikan data pemanggilan";
+"multisig.transaction.not.exist.title" = "Tidak dapat melakukan transaksi ini";
+"multisig.transaction.not.exist.message" = "Transaksi ini telah ditolak atau dieksekusi.";
 "multisig.deposit.info.message" = "Deposit tetap terkunci di akun penyetor hingga operasi multisig dieksekusi atau ditolak.";
 "common.depositor" = "Penyetor";
 "common.multisig.deposit" = "Deposit multisig";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@ tidak memiliki saldo yang cukup untuk menempatkan deposit multisig sebesar %@. Anda perlu menambah %@ lagi ke saldo Anda.";
 "multisig.validation.not.enough.for.fee.message" = "%@ memerlukan setidaknya %@ untuk membayar biaya transaksi ini dan tetap berada di atas saldo minimum jaringan. Anda perlu menambah %@ lagi ke saldo Anda.";
 "multisig.validation.insuffisient.balance.message" = "%@ tidak memiliki saldo yang cukup untuk membayar biaya jaringan sebesar %@ dan menempatkan deposit multisig sebesar %@. Anda perlu menambah %@ lagi ke saldo Anda.";
-"feature.unsupported.sheet.title.sell" = "Penjualan tidak didukung untuk %@";
-"feature.unsupported.sheet.title.card" = "Kartu Debit tidak didukung untuk %@";
+"feature.unsupported.sheet.title.sell" = "Jual tidak didukung untuk dompet %@";
+"feature.unsupported.sheet.title.card" = "Kartu Debit tidak didukung untuk dompet %@";
 "multisig.transaction.created.sheet.message" = "Tanda tangan lainnya sekarang dapat mengonfirmasi transaksi. Anda dapat melacak statusnya di %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova secara otomatis beralih ke dompet multisig Anda agar Anda dapat melihat transaksi yang tertunda.";
 "multisig.other.signatories" = "Penandatangan lainnya";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Panggilan hash";
 "call.data.validation.hash.matching.error.message" = "Data pemanggilan ini untuk operasi lain dengan hash panggilan %@";
 "call.data.validation.error.message" = "Data panggilan yang Anda berikan tidak valid atau memiliki format yang salah. Pastikan data tersebut benar dan coba lagi.";
+"feature.unsupported.sheet.title.sell.proxied" = "Penjualan tidak didukung untuk dompet Proxied ini";
+"feature.unsupported.sheet.title.card.proxied" = "Kartu Debit tidak didukung untuk dompet Proxied ini";
+"feature.unsupported.sheet.message.sell.proxied" = "Untuk menjual kripto menjadi fiat, silakan beralih ke dompet lain.";

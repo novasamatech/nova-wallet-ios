@@ -1871,8 +1871,11 @@
 "common.view.details" = "詳細を表示";
 "common.approve" = "承認";
 "multisig.validation.already.exists.title" = "操作は既に存在します";
+"multisig.signing.is.not.supported.message" = "マルチシグウォレットは任意のメッセージの署名をサポートしていません — トランザクションのみ";
 "multisig.call.data.copy" = "コールデータをコピー";
 "multisig.call.data.share" = "コールデータを共有";
+"multisig.transaction.not.exist.title" = "このトランザクションを実行できません";
+"multisig.transaction.not.exist.message" = "このトランザクションはすでに拒否または実行されています。";
 "multisig.deposit.info.message" = "この預金は、マルチシグ操作が実行または拒否されるまで預金者のアカウントにロックされます。";
 "common.depositor" = "預金者";
 "common.multisig.deposit" = "マルチシグ預金";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@は%@のマルチシグ預金をするのに十分な残高がありません。残高にさらに%@を追加してください。";
 "multisig.validation.not.enough.for.fee.message" = "%@はこのトランザクション手数料を支払い、最低ネットワーク残高を上回るには少なくとも%@が必要です。残高にさらに%@を追加してください。";
 "multisig.validation.insuffisient.balance.message" = "%@は%@のネットワーク手数料を支払い、%@のマルチシグ預金をするのに十分な残高がありません。残高にさらに%@を追加してください。";
-"feature.unsupported.sheet.title.sell" = "%@の売却はサポートされていません";
-"feature.unsupported.sheet.title.card" = "%@のデビットカードはサポートされていません";
+"feature.unsupported.sheet.title.sell" = "%@ ウォレットでは売却はサポートされていません";
+"feature.unsupported.sheet.title.card" = "デビットカードは%@ウォレットではサポートされていません";
 "multisig.transaction.created.sheet.message" = "他の署名者がトランザクションを確認できます。%@でその状態を追跡できます。";
 "multisig.transactioncreated.sheet.proxied.hint" = "Novaは自動であなたのマルチシグウォレットに切り替えましたので、保留中のトランザクションを確認できます。";
 "multisig.other.signatories" = "他の署名者";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "コールハッシュ";
 "call.data.validation.hash.matching.error.message" = "このコールデータは別の操作用のもので、コールハッシュ%@によります";
 "call.data.validation.error.message" = "ご提供いただいた通話データが無効、または形式が正しくありません。内容をご確認のうえ、再度お試しください。";
+"feature.unsupported.sheet.title.sell.proxied" = "このプロキシウォレットでは売却はサポートされていません";
+"feature.unsupported.sheet.title.card.proxied" = "デビットカードはこのプロキシウォレットではサポートされていません";
+"feature.unsupported.sheet.message.sell.proxied" = "暗号資産を法定通貨に換金するには、別のウォレットに切り替えてください。";
