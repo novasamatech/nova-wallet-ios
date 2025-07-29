@@ -32,4 +32,22 @@ final class MultisigOperationConfirmWireframe: MultisigOperationConfirmWireframe
             animated: true
         )
     }
+
+    func showConfirmOperationSheet(
+        from view: ControllerBackedProtocol?,
+        multisigAccountId: MetaAccountModel.Id,
+        depositorAccount: MetaChainAccountResponse,
+        completionClosure: @escaping MessageSheetCallback
+    ) {
+        guard let confirmRejectSheet = DelegatedMessageSheetViewFactory.createMultisigRejectView(
+            multisigAccountId: multisigAccountId,
+            depositorAccount: depositorAccount,
+            completionClosure: completionClosure,
+            cancelClosure: {}
+        ) else {
+            return
+        }
+
+        view?.controller.present(confirmRejectSheet.controller, animated: true)
+    }
 }

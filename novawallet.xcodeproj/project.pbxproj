@@ -7804,6 +7804,7 @@
 		2D6CC2692DD2836600FF5FA8 /* MetaAccountModel+Delegated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Delegated.swift"; sourceTree = "<group>"; };
 		2D6CC26D2DD3980900FF5FA8 /* ChainDelegatedAccountFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainDelegatedAccountFetchOperationFactory.swift; sourceTree = "<group>"; };
 		2D6CC2712DD3BC6B00FF5FA8 /* DelegatedAccountFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedAccountFetchOperationFactory.swift; sourceTree = "<group>"; };
+		2D6CCF5E2E3807E7001A94C8 /* MultiassetUserDataModel16.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel16.xcdatamodel; sourceTree = "<group>"; };
 		2D6CE4382DE490F900B94DBA /* DelegatedSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatedSigningWrapper.swift; sourceTree = "<group>"; };
 		2D6F51A12CDB8C7400564C00 /* GovernanceChainSelectionViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceChainSelectionViewFactory.swift; sourceTree = "<group>"; };
 		2D6F51A42CDBCFAC00564C00 /* AssetListStyleSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListStyleSwitcher.swift; sourceTree = "<group>"; };
@@ -35973,6 +35974,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2D6CCF5E2E3807E7001A94C8 /* MultiassetUserDataModel16.xcdatamodel */,
 				2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */,
 				2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */,
 				0C6C47D42CA96C8A000ADA96 /* MultiassetUserDataModel13.xcdatamodel */,
@@ -35990,7 +35992,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */;
+			currentVersion = 2D6CCF5E2E3807E7001A94C8 /* MultiassetUserDataModel16.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

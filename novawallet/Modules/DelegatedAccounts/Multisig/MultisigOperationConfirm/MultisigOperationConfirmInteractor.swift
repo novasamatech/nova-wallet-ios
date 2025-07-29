@@ -76,6 +76,20 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         clearBalanceRemoteSubscription()
     }
 
+    func setup() {
+        setupSignatories()
+
+        pendingOperationProvider.subscribePendingOperation(
+            identifier: operation.operation.identifier,
+            handler: self
+        )
+
+        deriveAssetInfoAndProvideBalance()
+
+        setupUtilityAssetPriceSubscription()
+        setupTransferAssetPriceSubscriptionIfNeeded()
+    }
+
     func didSetupSignatories() {
         fatalError("Must be overriden by subsclass")
     }
@@ -350,20 +364,6 @@ private extension MultisigOperationConfirmInteractor {
 // MARK: - MultisigOperationConfirmInteractorInputProtocol
 
 extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractorInputProtocol {
-    func setup() {
-        setupSignatories()
-
-        pendingOperationProvider.subscribePendingOperation(
-            identifier: operation.operation.identifier,
-            handler: self
-        )
-
-        deriveAssetInfoAndProvideBalance()
-
-        setupUtilityAssetPriceSubscription()
-        setupTransferAssetPriceSubscriptionIfNeeded()
-    }
-
     func confirm() {
         do {
             let callHash = operation.operation.callHash
