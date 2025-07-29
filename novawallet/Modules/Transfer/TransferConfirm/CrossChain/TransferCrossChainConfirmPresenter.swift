@@ -328,11 +328,18 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 }
 
 extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
-    func didCompleteSubmition() {
+    func didCompleteSubmition(by sender: ExtrinsicSenderResolution) {
         view?.didStopLoading()
-        wireframe.complete(on: view, locale: selectedLocale) { [originChainAsset, transferCompletion] in
-            transferCompletion?(originChainAsset)
-        }
+
+        // Note: that transferCompletion is not called for delayed transfers
+        wireframe.presentExtrinsicSubmission(
+            from: view,
+            sender: sender,
+            completionAction: .dismissWithPostNavigation { [originChainAsset, transferCompletion] in
+                transferCompletion?(originChainAsset)
+            },
+            locale: selectedLocale
+        )
     }
 }
 

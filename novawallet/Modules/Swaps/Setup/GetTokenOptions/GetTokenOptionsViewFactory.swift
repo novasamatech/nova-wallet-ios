@@ -66,11 +66,18 @@ enum GetTokenOptionsViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let featureChecker = FeatureSupportChecker(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            userStorageFacade: UserDataStorageFacade.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         return GetTokenOptionsInteractor(
             selectedWallet: selectedWallet,
             destinationChainAsset: destinationChainAsset,
             assetModelObservable: assetModelObservable,
             xcmTransfersSyncService: xcmTransfersSyncService,
+            featureChecker: featureChecker,
             rampProvider: RampAggregator.defaultAggregator(),
             logger: Logger.shared
         )

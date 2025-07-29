@@ -117,9 +117,12 @@ extension DelegationResolution {
             from wallets: [DelegationResolutionNodeSourceProtocol],
             chain: ChainModel
         ) -> Graph {
-            var delegationValues: [DelegationKey: DelegationResolutionNodeProtocol] = wallets
+            let delegationValues: [DelegationKey: DelegationResolutionNodeProtocol] = wallets
                 .compactMap { $0.extractDelegationResolutionNode(for: chain) }
-                .reduce(into: [:]) { $0[$1.0] = $1.1 }
+                .reduce(into: [:]) { accum, keyValue in
+                    let prev = accum[keyValue.0]
+                    accum[keyValue.0] = prev?.merging(other: keyValue.1) ?? keyValue.1
+                }
 
             return Graph(delegationValues: delegationValues)
         }

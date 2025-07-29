@@ -3,12 +3,12 @@ import Foundation
 
 final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     let feeResult: Result<ExtrinsicFeeProtocol, Error>
-    let txHash: Result<String, Error>
+    let submittedModelResult: Result<ExtrinsicSubmittedModel, Error>
 
     init(feeResult: Result<ExtrinsicFeeProtocol, Error>,
-         txHash: Result<String, Error>) {
+         submittedModelResult: Result<ExtrinsicSubmittedModel, Error>) {
         self.feeResult = feeResult
-        self.txHash = txHash
+        self.submittedModelResult = submittedModelResult
     }
 
     func estimateFee(
@@ -58,18 +58,23 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         completion completionClosure: @escaping ExtrinsicSubmitClosure
     ) {
         queue.async {
-            completionClosure(self.txHash)
+            completionClosure(self.submittedModelResult)
         }
     }
 
     func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
+        payingIn chainAssetId: ChainAssetId?,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping ExtrinsicSubmitClosure
+        completion completionClosure: @escaping ExtrinsicBuiltClosure
     ) {
+        let builtResult = submittedModelResult.map { model in
+            ExtrinsicBuiltModel(extrinsic: model.txHash, sender: model.sender)
+        }
+        
         queue.async {
-            completionClosure(self.txHash)
+            completionClosure(builtResult)
         }
     }
 
@@ -81,7 +86,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
-        let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: txHash)
+        let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: submittedModelResult)
         let submissionResult = SubmitIndexedExtrinsicResult(builderClosure: nil, results: [result])
 
         completionClosure(submissionResult)
@@ -94,7 +99,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
-        let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: txHash)
+        let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: submittedModelResult)
         let submissionResult = SubmitIndexedExtrinsicResult(builderClosure: nil, results: [result])
 
         completionClosure(submissionResult)
@@ -110,9 +115,16 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     ) {
         _ = subscriptionIdClosure(0)
 
-        switch txHash {
+        switch submittedModelResult {
         case let .success(value):
-            notificationClosure(.success(.init(extrinsicHash: value, extrinsicStatus: .inBlock(value))))
+            let model = ExtrinsicSubscribedStatusModel(
+                statusUpdate: ExtrinsicStatusUpdate(
+                    extrinsicHash: value.txHash,
+                    extrinsicStatus: .inBlock(value.txHash)
+                ),
+                sender: value.sender
+            )
+            notificationClosure(.success(model))
         case let .failure(error):
             notificationClosure(.failure(error))
         }
@@ -127,6 +139,16 @@ extension ExtrinsicServiceStub {
         let fee = ExtrinsicFee(amount: 10000000000, payer: nil, weight: .init(refTime: 10005000, proofSize: 0))
 
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
-        return ExtrinsicServiceStub(feeResult: .success(fee), txHash: .success(txHash))
+        
+        let chainAccount = AccountGenerator.generateSubstrateChainAccountResponse(
+            for: KnowChainId.westend
+        )
+        
+        let submittedModel = ExtrinsicSubmittedModel(
+            txHash: txHash,
+            sender: .current(chainAccount)
+        )
+        
+        return ExtrinsicServiceStub(feeResult: .success(fee), submittedModelResult: .success(submittedModel))
     }
 }

@@ -89,7 +89,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-                switch submittionResult {
+                switch submittionResult.status {
                 case let .success(executionResult):
                     let eventParser = AssetConversionEventParser(logger: self.host.logger)
 
@@ -121,6 +121,50 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
         executeWrapper.addDependency(operations: [codingFactoryOperation])
 
         return executeWrapper.insertingHead(operations: [codingFactoryOperation])
+    }
+
+    func submitWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let callArgs = AssetConversion.CallArgs(
+            assetIn: edge.origin,
+            amountIn: swapLimit.amountIn,
+            assetOut: edge.destination,
+            amountOut: swapLimit.amountOut,
+            receiver: host.selectedAccount.accountId,
+            direction: swapLimit.direction,
+            slippage: swapLimit.slippage
+        )
+
+        let submittionWrapper = host.submissionMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: { builder in
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                return try AssetHubExtrinsicConverter.addingOperation(
+                    to: builder,
+                    chain: self.host.chain,
+                    args: callArgs,
+                    codingFactory: codingFactory
+                )
+            },
+            payingIn: operationArgs.feeAsset,
+            signer: host.signingWrapper,
+            matchingEvents: nil
+        )
+
+        submittionWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
+            let model = try submittionWrapper.targetOperation.extractNoCancellableResultData()
+            return model.extrinsicSubmittedModel
+        }
+
+        mappingOperation.addDependency(submittionWrapper.targetOperation)
+
+        return submittionWrapper
+            .insertingHead(operations: [codingFactoryOperation])
+            .insertingTail(operation: mappingOperation)
     }
 
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {

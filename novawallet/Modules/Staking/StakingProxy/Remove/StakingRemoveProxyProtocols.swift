@@ -10,7 +10,7 @@ protocol StakingRemoveProxyInteractorOutputProtocol: AnyObject {
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(fee: ExtrinsicFeeProtocol?)
     func didReceive(price: PriceData?)
-    func didSubmit()
+    func didSubmit(model: ExtrinsicSubmittedModel)
 }
 
 enum StakingRemoveProxyError: Error {

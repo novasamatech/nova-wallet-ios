@@ -253,7 +253,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         }
     }
 
-    func didSubmitRedeeming(result: Result<String, Error>) {
+    func didSubmitRedeeming(result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         guard let view = view else {
@@ -261,8 +261,13 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         }
 
         switch result {
-        case .success:
-            wireframe.complete(from: view)
+        case let .success(model):
+            wireframe.presentExtrinsicSubmission(
+                from: view,
+                sender: model.sender,
+                completionAction: .dismiss,
+                locale: view.localizationManager?.selectedLocale
+            )
         case let .failure(error):
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,

@@ -18,6 +18,7 @@ protocol MainTabBarPresenterProtocol: AnyObject {
     func viewDidAppear()
     func activateStatusAction()
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
+    func presentDelayedOperationCreated()
 }
 
 protocol MainTabBarInteractorInputProtocol: AnyObject {
@@ -41,7 +42,10 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
 protocol MainTabBarWireframeProtocol: AlertPresentable,
     AuthorizationAccessible,
     ModalAlertPresenting,
-    BrowserOpening {
+    BrowserOpening,
+    MessageSheetPresentable,
+    FeatureSupportChecking
+{
     func presentAccountImport(on view: MainTabBarViewProtocol?, source: SecretSource)
 
     func presentWalletMigration(on view: MainTabBarViewProtocol?, message: WalletMigrationMessage.Start)
@@ -72,6 +76,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     )
 
     func presentCloudBackupSettings(from view: MainTabBarViewProtocol?)
+
+    func presentDelayedOperationCreated(from view: MainTabBarViewProtocol?)
 }
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {

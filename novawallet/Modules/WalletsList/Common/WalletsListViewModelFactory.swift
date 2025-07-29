@@ -268,7 +268,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
     ) -> WalletsListViewModel? {
         guard
             let multisigAccountType = wallet.info.multisigAccount,
-            let multisig = multisigAccountType.multisig,
+            let multisig = multisigAccountType.anyChainMultisig,
             let signatoryWallet = wallets.first(where: { $0.info.isSignatory(for: multisigAccountType) })
         else { return nil }
 
@@ -307,8 +307,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         return WalletsListViewModel(
             identifier: wallet.identifier,
             walletViewModel: viewModel,
-            isSelected: isSelected(wallet: wallet),
-            isSelectable: false
+            isSelected: isSelected(wallet: wallet)
         )
     }
 

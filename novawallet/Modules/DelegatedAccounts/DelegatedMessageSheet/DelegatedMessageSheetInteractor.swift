@@ -2,14 +2,14 @@ import Foundation
 import Operation_iOS
 
 final class DelegatedMessageSheetInteractor {
-    let repository: AnyDataProviderRepository<ProxiedSettings>
+    let repository: AnyDataProviderRepository<DelegatedAccountSettings>
     let operationQueue: OperationQueue
     let metaId: MetaAccountModel.Id
     let logger: LoggerProtocol
 
     init(
         metaId: MetaAccountModel.Id,
-        repository: AnyDataProviderRepository<ProxiedSettings>,
+        repository: AnyDataProviderRepository<DelegatedAccountSettings>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -21,7 +21,7 @@ final class DelegatedMessageSheetInteractor {
 
     private func performSave(for metaId: MetaAccountModel.Id, completion: @escaping () -> Void) {
         let saveOperation = repository.saveOperation({
-            let model = ProxiedSettings(identifier: metaId, confirmsOperation: false)
+            let model = DelegatedAccountSettings(identifier: metaId, confirmsOperation: false)
             return [model]
         }, {
             []

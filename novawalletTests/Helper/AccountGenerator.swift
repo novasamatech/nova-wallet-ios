@@ -78,4 +78,21 @@ enum AccountGenerator {
             multisig: model
         )
     }
+    
+    static func generateSubstrateChainAccountResponse(
+        for chainId: ChainModel.Id
+    ) -> ChainAccountResponse {
+        ChainAccountResponse(
+            metaId: UUID().uuidString,
+            chainId: chainId,
+            accountId: AccountId.zeroAccountId(of: SubstrateConstants.accountIdLength),
+            publicKey: AccountId.zeroAccountId(of: SubstrateConstants.accountIdLength),
+            name: "Extrinsic Test",
+            cryptoType: .sr25519,
+            addressPrefix: ChainModel.AddressPrefix(SubstrateConstants.genericAddressPrefix),
+            isEthereumBased: false,
+            isChainAccount: false,
+            type: .watchOnly
+        )
+    }
 }

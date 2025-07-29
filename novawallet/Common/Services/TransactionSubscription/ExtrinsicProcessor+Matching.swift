@@ -427,7 +427,9 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> AssetsParsingResult {
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
-        let callResult: NestedExtrinsicCallMapResult<RuntimeCall<PalletAssets.TransferCall>> = try callMapper.mapRuntimeCall(
+
+        let callResult: NestedExtrinsicCallMapResult<RuntimeCall<PalletAssets.TransferCall>>
+        callResult = try callMapper.mapRuntimeCall(
             call: extrinsic.call,
             context: context
         )

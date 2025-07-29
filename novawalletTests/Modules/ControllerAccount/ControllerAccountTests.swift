@@ -95,6 +95,7 @@ class ControllerAccountTests: XCTestCase {
             substrateAccountId: controllerId,
             ethereumAccountId: nil,
             walletIdenticonData: nil,
+            delegationId: nil,
             chainAccount: controllerAccount
         )
 

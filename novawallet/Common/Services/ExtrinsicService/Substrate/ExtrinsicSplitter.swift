@@ -25,26 +25,15 @@ enum ExtrinsicSplitterError: Error {
 final class ExtrinsicSplitter {
     static let extrinsicSizePercent: BigRational = .percent(of: 80)
 
-    typealias CallConverter = (RuntimeJsonContext?) throws -> JSON
-
-    struct InternalCall {
-        let path: CallCodingPath
-        let args: CallConverter
-
-        func toRuntimeCall(using context: RuntimeJsonContext?) throws -> RuntimeCall<JSON> {
-            let argsModel = try args(context)
-
-            return .init(moduleName: path.moduleName, callName: path.callName, args: argsModel)
-        }
-    }
-
     let chain: ChainModel
     let chainRegistry: ChainRegistryProtocol
     let maxCallsPerExtrinsic: Int?
 
     private let blockLimitOperationFactory: BlockLimitOperationFactoryProtocol
 
-    private var internalCalls: [InternalCall] = []
+    private let callWeightEstimator = CallWeightEstimatingFactory()
+
+    private var internalCalls: [RuntimeCallCollecting] = []
 
     init(
         chain: ChainModel,
@@ -96,67 +85,23 @@ final class ExtrinsicSplitter {
             .insertingTail(operation: mappingOperation)
     }
 
-    func estimateWeightForCallTypesWrapper(
-        using operationFactory: ExtrinsicOperationFactoryProtocol,
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<[CallCodingPath: Substrate.Weight]> {
-        let callTypes = internalCalls.reduce(into: [CallCodingPath: InternalCall]()) { accum, call in
-            if accum[call.path] == nil {
-                accum[call.path] = call
-            }
-        }
-
-        let targetCalls = Array(callTypes.values)
-
-        guard !targetCalls.isEmpty else {
-            return CompoundOperationWrapper.createWithResult([:])
-        }
-
-        let closure: ExtrinsicBuilderIndexedClosure = { builder, index in
-            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
-            let runtimeCall = try targetCalls[index].toRuntimeCall(using: runtimeContext)
-
-            return try builder.adding(call: runtimeCall)
-        }
-
-        let feeWrapper = operationFactory.estimateFeeOperation(closure, numberOfExtrinsics: callTypes.count)
-
-        let mapOperation = ClosureOperation<[CallCodingPath: Substrate.Weight]> {
-            let feeResults = try feeWrapper.targetOperation.extractNoCancellableResultData().results
-
-            return try zip(targetCalls, feeResults).reduce(into: [CallCodingPath: Substrate.Weight]()) { accum, pair in
-                let callPath = pair.0.path
-                let feeResult = pair.1.result
-
-                let fee = try feeResult.get()
-                accum[callPath] = fee.weight
-            }
-        }
-
-        mapOperation.addDependency(feeWrapper.targetOperation)
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: feeWrapper.allOperations)
-    }
-
     private func extrinsicsSplitOperation(
         dependingOn blockLimitOperation: BaseOperation<Substrate.Weight>,
         callTypeWeightOperation: BaseOperation<[CallCodingPath: Substrate.Weight]>,
-        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        internalCalls: [InternalCall],
+        internalCalls: [RuntimeCallCollecting],
         maxCallsPerExtrinsic: Int?
     ) -> ClosureOperation<ExtrinsicSplittingResult> {
         ClosureOperation<ExtrinsicSplittingResult> {
             let callTypeWeight = try callTypeWeightOperation.extractNoCancellableResultData()
             let blockLimit = try blockLimitOperation.extractNoCancellableResultData()
-            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
 
-            var extrinsics: [[InternalCall]] = []
-            var targetCalls: [InternalCall] = []
+            var extrinsics: [[RuntimeCallCollecting]] = []
+            var targetCalls: [RuntimeCallCollecting] = []
             var totalWeight: Substrate.Weight = .zero
 
             try internalCalls.forEach { internalCall in
-                guard let callWeight = callTypeWeight[internalCall.path] else {
-                    throw ExtrinsicSplitterError.weightNotFound(path: internalCall.path)
+                guard let callWeight = callTypeWeight[internalCall.callPath] else {
+                    throw ExtrinsicSplitterError.weightNotFound(path: internalCall.callPath)
                 }
 
                 guard callWeight.fits(in: blockLimit) else {
@@ -196,8 +141,7 @@ final class ExtrinsicSplitter {
 
                 var innerBuilder = builder
                 for internalCall in internalCalls {
-                    let runtimeCall = try internalCall.toRuntimeCall(using: runtimeContext)
-                    innerBuilder = try innerBuilder.adding(call: runtimeCall)
+                    innerBuilder = try internalCall.addingToExtrinsic(builder: innerBuilder)
                 }
 
                 return innerBuilder
@@ -208,40 +152,33 @@ final class ExtrinsicSplitter {
     }
 
     private func createFastPathWrapper(
-        for internalCall: InternalCall,
-        runtimeProvider: RuntimeProviderProtocol
+        for internalCall: RuntimeCallCollecting
     ) -> CompoundOperationWrapper<ExtrinsicSplittingResult> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
         let mappingOperation = ClosureOperation<ExtrinsicSplittingResult> {
-            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
-
             let closure: ExtrinsicBuilderIndexedClosure = { builder, index in
                 guard index == 0 else {
                     throw ExtrinsicSplitterError.invalidExtrinsicIndex(index: index, totalExtrinsics: 1)
                 }
 
-                var innerBuilder = builder
-                let runtimeCall = try internalCall.toRuntimeCall(using: runtimeContext)
-                innerBuilder = try innerBuilder.adding(call: runtimeCall)
-
-                return innerBuilder
+                return try internalCall.addingToExtrinsic(builder: builder)
             }
 
             return .init(closure: closure, numberOfExtrinsics: 1)
         }
 
-        mappingOperation.addDependency(codingFactoryOperation)
-
-        return .init(targetOperation: mappingOperation, dependencies: [codingFactoryOperation])
+        return .init(targetOperation: mappingOperation)
     }
 }
 
 extension ExtrinsicSplitter: ExtrinsicSplitting {
     func adding<T>(call: T) -> Self where T: RuntimeCallable {
-        let internalCall = InternalCall(path: .init(moduleName: call.moduleName, callName: call.callName)) { context in
-            try call.args.toScaleCompatibleJSON(with: context?.toRawContext())
-        }
+        let internalCall = RuntimeCallCollector(
+            call: RuntimeCall(
+                moduleName: call.moduleName,
+                callName: call.callName,
+                args: call.args
+            )
+        )
 
         internalCalls.append(internalCall)
 
@@ -255,37 +192,28 @@ extension ExtrinsicSplitter: ExtrinsicSplitting {
             return CompoundOperationWrapper.createWithError(ExtrinsicSplitterError.noCalls)
         }
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
         guard internalCalls.count > 1 else {
-            return createFastPathWrapper(for: firstInnerCall, runtimeProvider: runtimeProvider)
+            return createFastPathWrapper(for: firstInnerCall)
         }
-
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let blockLimitWrapper = createBlockLimitWrapper()
 
-        let callTypeWeightWrapper = estimateWeightForCallTypesWrapper(
-            using: operationFactory,
-            dependingOn: codingFactoryOperation
+        let callTypeWeightWrapper = callWeightEstimator.estimateWeight(
+            for: internalCalls,
+            operationFactory: operationFactory
         )
 
         let extrinsicsSplitOperation = extrinsicsSplitOperation(
             dependingOn: blockLimitWrapper.targetOperation,
             callTypeWeightOperation: callTypeWeightWrapper.targetOperation,
-            codingFactoryOperation: codingFactoryOperation,
             internalCalls: internalCalls,
             maxCallsPerExtrinsic: maxCallsPerExtrinsic
         )
 
-        callTypeWeightWrapper.addDependency(operations: [codingFactoryOperation])
         extrinsicsSplitOperation.addDependency(blockLimitWrapper.targetOperation)
         extrinsicsSplitOperation.addDependency(callTypeWeightWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation] + blockLimitWrapper.allOperations +
-            callTypeWeightWrapper.allOperations
+        let dependencies = blockLimitWrapper.allOperations + callTypeWeightWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: extrinsicsSplitOperation, dependencies: dependencies)
     }

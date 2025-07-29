@@ -259,13 +259,14 @@ extension MythosStkClaimRewardsPresenter: MythosStkClaimRewardsInteractorOutputP
         }
     }
 
-    func didReceiveSubmissionResult(_ result: Result<String, Error>) {
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
+        case let .success(model):
             wireframe.presentExtrinsicSubmission(
                 from: view,
+                sender: model.sender,
                 completionAction: .dismiss,
                 locale: selectedLocale
             )

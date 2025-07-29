@@ -181,6 +181,11 @@ extension UILabel.Style {
         font: .regularBody
     )
 
+    static let regularBodyPrimary = UILabel.Style(
+        textColor: R.color.colorTextPrimary(),
+        font: .regularBody
+    )
+
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline

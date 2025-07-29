@@ -54,20 +54,60 @@ struct ExtrinsicRetriableResult<R> {
     }
 }
 
+extension ExtrinsicRetriableResult where R == ExtrinsicSubmittedModel {
+    func senders() -> [ExtrinsicSenderResolution] {
+        let senders: [ExtrinsicSenderResolution] = results.compactMap { indexedResult in
+            switch indexedResult.result {
+            case let .success(model):
+                return model.sender
+            case .failure:
+                return nil
+            }
+        }
+
+        return senders
+    }
+}
+
+struct ExtrinsicSubmittedModel {
+    let txHash: String
+    let sender: ExtrinsicSenderResolution
+}
+
+struct ExtrinsicSubscribedStatusModel {
+    let statusUpdate: ExtrinsicStatusUpdate
+    let sender: ExtrinsicSenderResolution
+
+    var extrinsicSubmittedModel: ExtrinsicSubmittedModel {
+        ExtrinsicSubmittedModel(
+            txHash: statusUpdate.extrinsicHash,
+            sender: sender
+        )
+    }
+}
+
+struct ExtrinsicBuiltModel {
+    let extrinsic: String
+    let sender: ExtrinsicSenderResolution
+}
+
 typealias FeeExtrinsicResult = Result<ExtrinsicFeeProtocol, Error>
 typealias FeeIndexedExtrinsicResult = ExtrinsicRetriableResult<ExtrinsicFeeProtocol>
 
 typealias EstimateFeeClosure = (FeeExtrinsicResult) -> Void
 typealias EstimateFeeIndexedClosure = (FeeIndexedExtrinsicResult) -> Void
 
-typealias SubmitExtrinsicResult = Result<String, Error>
-typealias SubmitIndexedExtrinsicResult = ExtrinsicRetriableResult<String>
+typealias SubmitExtrinsicResult = Result<ExtrinsicSubmittedModel, Error>
+typealias SubmitIndexedExtrinsicResult = ExtrinsicRetriableResult<ExtrinsicSubmittedModel>
 
 typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
 typealias ExtrinsicSubmitIndexedClosure = (SubmitIndexedExtrinsicResult) -> Void
 
+typealias ExtrinsicBuiltResult = Result<ExtrinsicBuiltModel, Error>
+typealias ExtrinsicBuiltClosure = (ExtrinsicBuiltResult) -> Void
+
 typealias ExtrinsicSubscriptionIdClosure = (UInt16) -> Bool
-typealias ExtrinsicSubscriptionStatusClosure = (Result<ExtrinsicStatusUpdate, Error>) -> Void
+typealias ExtrinsicSubscriptionStatusClosure = (Result<ExtrinsicSubscribedStatusModel, Error>) -> Void
 
 typealias ExtrinsicBuilderClosure = (ExtrinsicBuilderProtocol) throws -> (ExtrinsicBuilderProtocol)
 typealias ExtrinsicBuilderIndexedClosure = (ExtrinsicBuilderProtocol, Int) throws -> (ExtrinsicBuilderProtocol)

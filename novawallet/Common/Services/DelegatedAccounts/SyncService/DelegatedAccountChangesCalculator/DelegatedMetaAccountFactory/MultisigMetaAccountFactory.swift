@@ -23,11 +23,15 @@ private extension MultisigMetaAccountFactory {
     ) -> MultisigMetaAccountType? {
         let signatoryAccountId = discoveredMultisig.signatory
 
-        let signatoryWallet = metaAccounts.first { wallet in
-            wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId
+        let signatoryWallets: [MetaAccountModel] = metaAccounts.compactMap { wallet in
+            guard wallet.info.fetch(for: chainModel.accountRequest())?.accountId == signatoryAccountId else {
+                return nil
+            }
+
+            return wallet.info
         }
 
-        guard let signatoryWallet else {
+        guard !signatoryWallets.isEmpty else {
             return nil
         }
 
@@ -39,10 +43,10 @@ private extension MultisigMetaAccountFactory {
             status: .new
         )
 
-        if signatoryWallet.info.chainAccounts.isEmpty {
-            if signatoryWallet.info.substrateAccountId == multisigModel.signatory {
+        if signatoryWallets.allSupportUniversalMultisig() {
+            if signatoryWallets.allMatchSubstrateAccount(multisigModel.signatory) {
                 return .universalSubstrate(multisigModel)
-            } else if signatoryWallet.info.ethereumAddress == multisigModel.signatory {
+            } else if signatoryWallets.allMatchEthereumAccount(multisigModel.signatory) {
                 return .universalEvm(multisigModel)
             } else {
                 return nil
@@ -130,7 +134,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func renew(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
             let multisigAccountType = metaAccount.info.multisigAccount,
-            multisigAccountType.multisig?.status == .revoked
+            multisigAccountType.anyChainMultisig?.status == .revoked
         else {
             return metaAccount
         }
@@ -143,7 +147,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     func markAsRevoked(_ metaAccount: ManagedMetaAccountModel) -> ManagedMetaAccountModel {
         guard
             let multisigType = metaAccount.info.multisigAccount,
-            let oldStatus = multisigType.multisig?.status
+            let oldStatus = multisigType.anyChainMultisig?.status
         else { return metaAccount }
 
         let info = metaAccount.info
@@ -171,7 +175,9 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
     }
 
     func extractDelegateIdentifier(from metaAccount: ManagedMetaAccountModel) -> DelegateIdentifier? {
-        guard let multisig = metaAccount.info.multisigAccount?.multisig else {
+        guard let multisig = metaAccount.info.getMultisig(
+            for: chainModel
+        ) else {
             return nil
         }
 
@@ -188,7 +194,7 @@ extension MultisigMetaAccountFactory: DelegatedMetaAccountFactoryProtocol {
         return switch localMultisigAccountType {
         case let .singleChain(chainAccount):
             chainAccount.chainId == chainModel.chainId
-        case let .universal(localMultisig):
+        case .universal:
             true
         }
     }

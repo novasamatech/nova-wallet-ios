@@ -39,6 +39,5 @@ protocol GovernanceRemoveVotesConfirmWireframeProtocol: AlertPresentable, ErrorP
         tracks: [GovernanceTrackInfoLocal]
     )
 
-    func complete(on view: GovernanceRemoveVotesConfirmViewProtocol?, locale: Locale)
     func skip(on view: GovernanceRemoveVotesConfirmViewProtocol?)
 }

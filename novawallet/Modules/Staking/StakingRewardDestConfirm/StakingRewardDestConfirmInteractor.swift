@@ -119,10 +119,12 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
         do {
             let setPayeeCall = try callFactory.setRewardDestination(rewardDestination, stashItem: stashItem)
 
+            let builderClosure: ExtrinsicBuilderClosure = { builder in
+                try builder.adding(call: setPayeeCall)
+            }
+
             extrinsicService.submit(
-                { builder in
-                    try builder.adding(call: setPayeeCall)
-                },
+                builderClosure,
                 signer: signingWrapper,
                 runningIn: .main
             ) { [weak self] result in

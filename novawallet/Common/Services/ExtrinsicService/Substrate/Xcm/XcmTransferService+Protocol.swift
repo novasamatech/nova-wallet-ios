@@ -9,7 +9,7 @@ typealias XcmTransferCrosschainFeeResult = Result<XcmFeeModelProtocol, Error>
 typealias XcmTransferCrosschainFeeClosure = (XcmTransferCrosschainFeeResult) -> Void
 
 struct XcmSubmitExtrinsic {
-    let txHash: String
+    let submittedModel: ExtrinsicSubmittedModel
     let callPath: CallCodingPath
 }
 
@@ -127,9 +127,12 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             submitWrapper.targetOperation.completionBlock = {
                 do {
-                    let txHash = try submitWrapper.targetOperation.extractNoCancellableResultData()
+                    let submittedModel = try submitWrapper.targetOperation.extractNoCancellableResultData()
                     let collector = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
-                    let extrinsicResult = XcmSubmitExtrinsic(txHash: txHash, callPath: collector.callPath)
+                    let extrinsicResult = XcmSubmitExtrinsic(
+                        submittedModel: submittedModel,
+                        callPath: collector.callPath
+                    )
 
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .success(extrinsicResult))
                 } catch {
