@@ -54,6 +54,28 @@ struct MessageSheetViewFactory {
         let message: LocalizableResource<String>
 
         switch type {
+        case .sell where walletType == .proxied:
+            title = LocalizableResource<String> { locale in
+                R.string.localizable.featureUnsupportedSheetTitleSellProxied(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+            message = LocalizableResource { locale in
+                R.string.localizable.featureUnsupportedSheetMessageSellProxied(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+        case .card where walletType == .proxied:
+            title = LocalizableResource<String> { locale in
+                R.string.localizable.featureUnsupportedSheetTitleCardProxied(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+            message = LocalizableResource { locale in
+                R.string.localizable.featureUnsupportedSheetMessageCard(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
         case .sell:
             title = LocalizableResource<String> { locale in
                 R.string.localizable.featureUnsupportedSheetTitleSell(
