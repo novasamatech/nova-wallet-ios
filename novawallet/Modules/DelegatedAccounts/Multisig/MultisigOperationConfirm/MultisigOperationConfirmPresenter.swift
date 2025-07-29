@@ -182,22 +182,23 @@ private extension MultisigOperationConfirmPresenter {
                 self.interactor.confirm()
             }
 
-            if let needsConfirmation, needsConfirmation {
-                guard
-                    let depositorAccountId = pendingOperation?.operation.multisigDefinition?.depositor,
-                    let depositor = signatories?.first(where: { $0.accountId == depositorAccountId })?.localAccount
-                else {
-                    return
-                }
+            guard let needsConfirmation, needsConfirmation else {
+                confirmClosure()
+                return
+            }
 
-                wireframe.showConfirmOperationSheet(
-                    from: view,
-                    multisigAccountId: multisigWallet.metaId,
-                    depositorAccount: depositor
-                ) {
-                    confirmClosure()
-                }
-            } else {
+            guard
+                let depositorAccountId = pendingOperation?.operation.multisigDefinition?.depositor,
+                let depositor = signatories?.first(where: { $0.accountId == depositorAccountId })?.localAccount
+            else {
+                return
+            }
+
+            wireframe.showConfirmOperationSheet(
+                from: view,
+                multisigAccountId: multisigWallet.metaId,
+                depositorAccount: depositor
+            ) {
                 confirmClosure()
             }
         }
