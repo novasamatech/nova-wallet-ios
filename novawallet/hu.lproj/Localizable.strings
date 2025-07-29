@@ -1871,8 +1871,11 @@
 "common.view.details" = "Részletek megtekintése";
 "common.approve" = "Jóváhagyás";
 "multisig.validation.already.exists.title" = "Művelet már létezik";
+"multisig.signing.is.not.supported.message" = "A multisig pénztárcák nem támogatják tetszőleges üzenetek aláírását — csak a tranzakciókat";
 "multisig.call.data.copy" = "Hívás adatok másolása";
 "multisig.call.data.share" = "Hívás adatok megosztása";
+"multisig.transaction.not.exist.title" = "Ezt a tranzakciót nem lehet végrehajtani";
+"multisig.transaction.not.exist.message" = "Ez a tranzakció már elutasítva vagy végrehajtva lett.";
 "multisig.deposit.info.message" = "A letét zárolva marad a letétbe helyező számláján, amíg a multisig művelet végrehajtásra nem kerül, vagy el nem utasítják.";
 "common.depositor" = "Letétbe helyező";
 "common.multisig.deposit" = "Multisig letét";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@ nem rendelkezik elegendő egyenleggel a multisig letét %@ elhelyezéséhez. Még %@ forintot kell hozzáadnia az egyenlegéhez.";
 "multisig.validation.not.enough.for.fee.message" = "%@ legalább %@ forintra van szüksége a tranzakciós díj megfizetéséhez és a minimális hálózati egyenleg felett maradáshoz. Még %@ forintot kell hozzáadnia az egyenlegéhez.";
 "multisig.validation.insuffisient.balance.message" = "%@ nem rendelkezik elegendő egyenleggel a hálózati díj %@ megfizetéséhez és a multisig letét %@ elhelyezéséhez. Még %@ forintot kell hozzáadnia az egyenlegéhez.";
-"feature.unsupported.sheet.title.sell" = "Az eladás nem támogatott ehhez: %@";
-"feature.unsupported.sheet.title.card" = "A bankkártya nem támogatott ehhez: %@";
+"feature.unsupported.sheet.title.sell" = "Az eladás nem támogatott a %@ pénztárcák esetében";
+"feature.unsupported.sheet.title.card" = "A bankkártya nem támogatott a %@ pénztárcákhoz";
 "multisig.transaction.created.sheet.message" = "Más aláírók most megerősíthetik a tranzakciót. Követheti státuszát a %@-ban.";
 "multisig.transactioncreated.sheet.proxied.hint" = "A Nova automatikusan átváltott a multisig tárcájára, így megtekintheti a függő tranzakciókat.";
 "multisig.other.signatories" = "Más aláírók";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Hívási hash";
 "call.data.validation.hash.matching.error.message" = "Ez a hívás adatkészlet egy másik művelethez, hívás hash: %@";
 "call.data.validation.error.message" = "A megadott hívásadatok érvénytelenek vagy nem megfelelő formátumúak. Kérjük, ellenőrizze, hogy helyesek-e, és próbálja újra.";
+"feature.unsupported.sheet.title.sell.proxied" = "Az eladás nem támogatott ennél a Proxyzott tárcánál";
+"feature.unsupported.sheet.title.card.proxied" = "A bankkártya nem támogatott ennél a közvetített pénztárcánál";
+"feature.unsupported.sheet.message.sell.proxied" = "A kripto fiat pénzre váltásához kérjük, váltson másik pénztárcára.";

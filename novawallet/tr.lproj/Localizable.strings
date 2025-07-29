@@ -1871,8 +1871,11 @@
 "common.view.details" = "Detayları Görüntüle";
 "common.approve" = "Onayla";
 "multisig.validation.already.exists.title" = "İşlem zaten mevcut";
+"multisig.signing.is.not.supported.message" = "Çoklu imza cüzdanları rastgele mesaj imzalamayı desteklemez — sadece işlemler";
 "multisig.call.data.copy" = "Arama verisini kopyala";
 "multisig.call.data.share" = "Arama verisini paylaş";
+"multisig.transaction.not.exist.title" = "Bu işlem gerçekleştirilemiyor";
+"multisig.transaction.not.exist.message" = "Bu işlem zaten reddedildi veya gerçekleştirildi.";
 "multisig.deposit.info.message" = "Depozito, çoklu imza işlemi gerçekleşene veya reddedilene kadar yatıranın hesabında kilitli kalır.";
 "common.depositor" = "Yatıran";
 "common.multisig.deposit" = "Çoklu imza depozitosu";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@, %@ çoklu imza depozitosunu yatırmak için yeterli bakiyeye sahip değil. Bakiyenize %@ daha eklemeniz gerekiyor.";
 "multisig.validation.not.enough.for.fee.message" = "%@, bu işlem ücretini ödemek ve minimum ağ bakiyesinin üzerinde kalmak için en az %@ ihtiyaç duyar. Bakiyenize %@ daha eklemeniz gerekiyor.";
 "multisig.validation.insuffisient.balance.message" = "%@, %@ ağ ücretini ödemek ve %@ çoklu imza depozitosunu yatırmak için yeterli bakiyeye sahip değil. Bakiyenize %@ daha eklemeniz gerekiyor.";
-"feature.unsupported.sheet.title.sell" = "Satış %@ için desteklenmiyor";
-"feature.unsupported.sheet.title.card" = "Debit Kart %@ için desteklenmiyor";
+"feature.unsupported.sheet.title.sell" = "%@ cüzdanları için Satış desteklenmiyor";
+"feature.unsupported.sheet.title.card" = "Banka Kartı, %@ cüzdanları için desteklenmiyor";
 "multisig.transaction.created.sheet.message" = "Diğer imza yetkilileri şimdi işlemi onaylayabilir. Durumunu %@ içinde takip edebilirsiniz.";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova, bekleyen işlemleri görebilmeniz için otomatik olarak çoklu imza cüzdanınıza geçti.";
 "multisig.other.signatories" = "Diğer imza yetkilileri";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Çağrı hash'i";
 "call.data.validation.hash.matching.error.message" = "Bu arama verisi, çağrı hash %@ ile başka bir işlem için";
 "call.data.validation.error.message" = "Sağladığınız çağrı verileri geçersiz veya yanlış formatta. Lütfen doğru olduğundan emin olun ve tekrar deneyin.";
+"feature.unsupported.sheet.title.sell.proxied" = "Bu Vekil cüzdan için Satış desteklenmiyor";
+"feature.unsupported.sheet.title.card.proxied" = "Bu Vekil cüzdan için Banka Kartı desteklenmiyor";
+"feature.unsupported.sheet.message.sell.proxied" = "Kriptoyu itibari para ile satmak için lütfen farklı bir cüzdana geçin.";

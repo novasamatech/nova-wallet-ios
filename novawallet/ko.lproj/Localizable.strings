@@ -1871,8 +1871,11 @@
 "common.view.details" = "세부 사항 보기";
 "common.approve" = "승인";
 "multisig.validation.already.exists.title" = "작업이 이미 존재합니다";
+"multisig.signing.is.not.supported.message" = "멀티시그 지갑은 임의 메시지 서명을 지원하지 않으며, 거래만 가능합니다";
 "multisig.call.data.copy" = "호출 데이터 복사";
 "multisig.call.data.share" = "호출 데이터 공유";
+"multisig.transaction.not.exist.title" = "이 거래를 수행할 수 없음";
+"multisig.transaction.not.exist.message" = "이 거래는 이미 거부되었거나 실행되었습니다.";
 "multisig.deposit.info.message" = "예치금은 다중 서명 작업이 실행되거나 거부될 때까지 입금자 계정에 잠겨 있습니다.";
 "common.depositor" = "입금자";
 "common.multisig.deposit" = "다중 서명 예치금";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@는 %@의 다중 서명 예치금을 마련할 충분한 잔액이 없습니다. 잔액에 %@를 더 추가해야 합니다.";
 "multisig.validation.not.enough.for.fee.message" = "%@는 이 거래 수수료를 지불하고 최소 네트워크 잔액을 유지하기 위해 최소 %@가 필요합니다. 잔액에 %@를 더 추가해야 합니다.";
 "multisig.validation.insuffisient.balance.message" = "%@는 %@의 네트워크 수수료를 지불하고 %@의 다중 서명 예치금을 마련할 충분한 잔액이 없습니다. 잔액에 %@를 더 추가해야 합니다.";
-"feature.unsupported.sheet.title.sell" = "판매는 %@에 대해 지원되지 않음";
-"feature.unsupported.sheet.title.card" = "데빗 카드는 %@에 대해 지원되지 않음";
+"feature.unsupported.sheet.title.sell" = "%@ 지갑에서는 판매가 지원되지 않습니다.";
+"feature.unsupported.sheet.title.card" = "직불카드는 %@ 지갑에서 지원되지 않습니다";
 "multisig.transaction.created.sheet.message" = "다른 서명자들이 이제 거래를 확인할 수 있습니다. %@에서 상태를 추적할 수 있습니다";
 "multisig.transactioncreated.sheet.proxied.hint" = "자동으로 귀하의 다중 서명 지갑으로 전환되어 보류 중인 거래를 볼 수 있습니다.";
 "multisig.other.signatories" = "다른 서명자";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "호출 해시";
 "call.data.validation.hash.matching.error.message" = "이 호출 데이터는 호출 해시 %@의 다른 작업에 대한 것입니다";
 "call.data.validation.error.message" = "제공하신 통화 데이터가 유효하지 않거나 형식이 올바르지 않습니다. 올바른지 확인한 후 다시 시도해 주세요.";
+"feature.unsupported.sheet.title.sell.proxied" = "이 프록시 지갑에서는 판매가 지원되지 않습니다.";
+"feature.unsupported.sheet.title.card.proxied" = "이 프록시 지갑에서는 직불카드가 지원되지 않습니다.";
+"feature.unsupported.sheet.message.sell.proxied" = "암호화폐를 법정화폐로 판매하려면 다른 지갑으로 전환해 주세요.";
