@@ -47,7 +47,7 @@ extension ExtrinsicServiceFactoryProtocol {
             accountId: accountId,
             publicKey: accountId,
             name: "",
-            cryptoType: .sr25519,
+            cryptoType: chain.isEthereumBased ? .ethereumEcdsa : .sr25519,
             addressPrefix: chain.addressPrefix,
             isEthereumBased: chain.isEthereumBased,
             isChainAccount: false,
