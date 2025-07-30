@@ -123,7 +123,7 @@ class StakingProxyBasePresenter: StakingSetupProxyBasePresenterProtocol {
                 locale: selectedLocale
             ),
             dataValidatingFactory.exsitentialDepositIsNotViolated(
-                spendingAmount: fee?.amountForCurrentAccount,
+                spendingAmount: fee?.amountForCurrentAccount ?? 0,
                 totalAmount: assetBalance?.freeInPlank,
                 minimumBalance: existensialDeposit,
                 locale: selectedLocale

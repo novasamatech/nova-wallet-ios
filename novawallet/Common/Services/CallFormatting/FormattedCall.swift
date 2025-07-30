@@ -39,6 +39,15 @@ struct FormattedCall {
                 nil
             }
         }
+
+        var amountAsset: ChainAsset? {
+            switch self {
+            case let .transfer(transfer):
+                transfer.asset
+            case .general:
+                nil
+            }
+        }
     }
 
     let definition: Definition
