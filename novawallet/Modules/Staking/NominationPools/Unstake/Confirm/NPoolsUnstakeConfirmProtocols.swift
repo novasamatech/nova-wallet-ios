@@ -19,7 +19,7 @@ protocol NPoolsUnstakeConfirmInteractorInputProtocol: NPoolsUnstakeBaseInteracto
 }
 
 protocol NPoolsUnstakeConfirmInteractorOutputProtocol: NPoolsUnstakeBaseInteractorOutputProtocol {
-    func didReceive(submissionResult: Result<String, Error>)
+    func didReceive(submissionResult: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol NPoolsUnstakeConfirmWireframeProtocol: NPoolsUnstakeBaseWireframeProtocol, AddressOptionsPresentable,

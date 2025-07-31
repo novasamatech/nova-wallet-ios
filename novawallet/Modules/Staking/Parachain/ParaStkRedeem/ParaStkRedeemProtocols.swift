@@ -13,7 +13,7 @@ protocol ParaStkRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>)
     func didReceiveError(_ error: Error)
 }
 

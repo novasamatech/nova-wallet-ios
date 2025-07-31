@@ -17,12 +17,24 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
     let interactor: AssetListInteractorInputProtocol
     let viewModelFactory: AssetListViewModelFactoryProtocol
 
-    private(set) var walletId: MetaAccountModel.Id?
+    private var wallet: MetaAccountModel?
+
     private var walletIdenticon: Data?
-    private var walletType: MetaAccountModelType?
+
+    private var walletId: MetaAccountModel.Id? {
+        wallet?.identifier
+    }
+
+    private var walletType: MetaAccountModelType? {
+        wallet?.type
+    }
+
     private var name: String?
+
     private var hidesZeroBalances: Bool?
     private var hasWalletsUpdates: Bool = false
+
+    private var organizerViewModel: AssetListOrganizerViewModel?
 
     private(set) var walletConnectSessionsCount: Int = 0
 
@@ -407,14 +419,20 @@ private extension AssetListPresenter {
         )
     }
 
-    func provideNftViewModel() {
-        guard !model.nfts.isEmpty else {
-            view?.didReceiveNft(viewModel: nil)
+    func provideOrganizerViewModel() {
+        let viewModel = viewModelFactory.createOrganizerViewModel(
+            from: model.nfts,
+            operations: model.pendingOperations,
+            locale: selectedLocale
+        )
+
+        guard organizerViewModel != viewModel else {
             return
         }
 
-        let nftViewModel = viewModelFactory.createNftsViewModel(from: model.nfts, locale: selectedLocale)
-        view?.didReceiveNft(viewModel: nftViewModel)
+        organizerViewModel = viewModel
+
+        view?.didReceiveOrganizer(viewModel: viewModel)
     }
 
     func updateAssetsView() {
@@ -426,8 +444,8 @@ private extension AssetListPresenter {
         provideHeaderViewModel()
     }
 
-    func updateNftView() {
-        provideNftViewModel()
+    func updateOrganizerView() {
+        provideOrganizerViewModel()
     }
 
     func presentAssetDetails(for chainAssetId: ChainAssetId) {
@@ -447,6 +465,22 @@ private extension AssetListPresenter {
 // MARK: AssetListPresenterProtocol
 
 extension AssetListPresenter: AssetListPresenterProtocol {
+    func selectOrganizerItem(at index: Int) {
+        guard
+            let organizerViewModel,
+            organizerViewModel.items.count > index
+        else { return }
+
+        let item = organizerViewModel.items[index]
+
+        switch item {
+        case .nfts:
+            wireframe.showNfts(from: view)
+        case .pendingTransactions:
+            wireframe.showMultisigOperations(from: view)
+        }
+    }
+
     func setup() {
         if let bannersModule {
             provideBanners(state: bannersModule.bannersState)
@@ -463,10 +497,6 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         presentAssetDetails(for: chainAssetId)
     }
 
-    func selectNfts() {
-        wireframe.showNfts(from: view)
-    }
-
     func refresh() {
         interactor.refresh()
         bannersModule?.refresh()
@@ -481,7 +511,12 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func presentCard() {
-        wireframe.showCard(from: view)
+        guard let wallet else { return }
+
+        wireframe.showCard(
+            from: view,
+            wallet: wallet
+        )
     }
 
     func presentLocks() {
@@ -516,8 +551,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             )
         }
         let buyTokensClosure: BuyTokensClosure = { [weak self] in
-            self?.wireframe.showRamp(
-                from: self?.view,
+            guard let self, let wallet else { return }
+
+            wireframe.showRamp(
+                from: view,
                 action: .onRamp,
                 delegate: self
             )
@@ -540,8 +577,10 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             delegate: self,
             locale: selectedLocale
         ) { [weak self] rampAction in
-            self?.wireframe.showRamp(
-                from: self?.view,
+            guard let self, let wallet else { return }
+
+            wireframe.showRamp(
+                from: view,
                 action: rampAction,
                 delegate: self
             )
@@ -585,26 +624,21 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         switch result.changeKind {
         case .reload:
             updateAssetsView()
-        case .nfts:
-            updateNftView()
+        case .nfts, .pendingOperations:
+            updateOrganizerView()
         }
     }
 
-    func didReceive(
-        walletId: MetaAccountModel.Id,
-        walletIdenticon: Data?,
-        walletType: MetaAccountModelType,
-        name: String
-    ) {
-        self.walletId = walletId
-        self.walletIdenticon = walletIdenticon
-        self.walletType = walletType
-        self.name = name
+    func didReceive(wallet: MetaAccountModel) {
+        self.wallet = wallet
+
+        name = wallet.name
+        walletIdenticon = wallet.walletIdenticonData()
 
         model = .init()
 
         updateAssetsView()
-        updateNftView()
+        updateOrganizerView()
     }
 
     func didChange(name: String) {
@@ -736,7 +770,7 @@ extension AssetListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateAssetsView()
-            updateNftView()
+            updateOrganizerView()
             bannersModule?.updateLocale(selectedLocale)
         }
     }
@@ -761,5 +795,6 @@ extension AssetListPresenter: IconAppearanceDepending {
         guard let view, view.isSetup else { return }
 
         provideAssetViewModels()
+        updateOrganizerView()
     }
 }

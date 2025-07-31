@@ -245,17 +245,18 @@ extension NPoolsRedeemPresenter: NPoolsRedeemInteractorOutputProtocol {
         provideFee()
     }
 
-    func didReceive(submissionResult: Result<String, Error>) {
+    func didReceive(submissionResult: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch submissionResult {
-        case .success:
+        case let .success(model):
             let totalPoints = poolMember?.points ?? 0
             let willHaveStaking = totalPoints > 0 || (poolMember?.unbondingEras ?? []).count > 1
             let action: ExtrinsicSubmissionPresentingAction = willHaveStaking ? .dismiss : .popBaseAndDismiss
 
             wireframe.presentExtrinsicSubmission(
                 from: view,
+                sender: model.sender,
                 completionAction: action,
                 locale: selectedLocale
             )

@@ -56,7 +56,8 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
     }
 
     private func persistExtrinsicAndComplete(
-        details: PersistTransferDetails
+        details: PersistTransferDetails,
+        sender: ExtrinsicSenderResolution
     ) {
         persistExtrinsicService.saveTransfer(
             source: .substrate,
@@ -67,7 +68,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition()
+                self?.submitionPresenter?.didCompleteSubmition(by: sender)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -109,15 +110,15 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                     guard let self else { return }
 
                     switch result {
-                    case let .success(txHash):
+                    case let .success(submittedModel):
                         guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
-                            submitionPresenter?.didCompleteSubmition()
+                            submitionPresenter?.didCompleteSubmition(by: submittedModel.sender)
                             return
                         }
 
                         if
                             let callCodingPath = callCodingPath,
-                            let txHashData = try? Data(hexString: txHash) {
+                            let txHashData = try? Data(hexString: submittedModel.txHash) {
                             let details = PersistTransferDetails(
                                 sender: sender,
                                 receiver: recepient,
@@ -128,9 +129,9 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                                 feeAssetId: feeAsset?.asset.assetId
                             )
 
-                            persistExtrinsicAndComplete(details: details)
+                            persistExtrinsicAndComplete(details: details, sender: submittedModel.sender)
                         } else {
-                            presenter?.didCompleteSetup()
+                            submitionPresenter?.didCompleteSubmition(by: submittedModel.sender)
                         }
 
                     case let .failure(error):

@@ -28,10 +28,6 @@ final class GovRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWirefram
         view?.controller.present(tracksView.controller, animated: true)
     }
 
-    func complete(on view: GovernanceRemoveVotesConfirmViewProtocol?, locale: Locale) {
-        presentExtrinsicSubmission(from: view, completionAction: .popBack, locale: locale)
-    }
-
     func skip(on view: GovernanceRemoveVotesConfirmViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }

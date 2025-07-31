@@ -7,6 +7,7 @@ final class AssetsExchangeGraphProvider {
     let feeSupportProvider: AssetsExchangeFeeSupportProviding
     let suffiencyProvider: AssetExchangeSufficiencyProviding
     let supportedExchangeProviders: [AssetsExchangeProviding]
+    let delayedCallExecProvider: WalletDelayedExecutionProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -25,6 +26,7 @@ final class AssetsExchangeGraphProvider {
         supportedExchangeProviders: [AssetsExchangeProviding],
         feeSupportProvider: AssetsExchangeFeeSupportProviding,
         suffiencyProvider: AssetExchangeSufficiencyProviding,
+        delayedCallExecProvider: WalletDelayedExecutionProviding,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -33,6 +35,7 @@ final class AssetsExchangeGraphProvider {
         self.supportedExchangeProviders = supportedExchangeProviders
         self.feeSupportProvider = feeSupportProvider
         self.suffiencyProvider = suffiencyProvider
+        self.delayedCallExecProvider = delayedCallExecProvider
         self.operationQueue = operationQueue
         self.logger = logger
 
@@ -112,7 +115,8 @@ final class AssetsExchangeGraphProvider {
             selectedWallet: selectedWallet,
             chainRegistry: chainRegistry,
             sufficiencyProvider: suffiencyProvider,
-            feeSupport: feeSupporting ?? CompoundAssetExchangeFeeSupport(supporters: [])
+            feeSupport: feeSupporting ?? CompoundAssetExchangeFeeSupport(supporters: []),
+            delayedCallExecVerifier: delayedCallExecProvider.getCurrentState()
         )
 
         let graph = AssetsExchangeGraph(model: graphModel, filter: AnyGraphEdgeFilter(filter: filter))
@@ -145,6 +149,15 @@ extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
             self?.feeSupporting = newState
             self?.rebuildGraph()
         }
+
+        delayedCallExecProvider.setup()
+
+        delayedCallExecProvider.subscribeDelayedExecVerifier(
+            self,
+            notifyingIn: syncQueue
+        ) { [weak self] _ in
+            self?.rebuildGraph()
+        }
     }
 
     func throttle() {
@@ -154,6 +167,8 @@ extension AssetsExchangeGraphProvider: AssetsExchangeGraphProviding {
         }
 
         feeSupportProvider.unsubscribe(self)
+
+        delayedCallExecProvider.unsubscribe(self)
 
         syncQueue.async {
             self.clearCurrentRequests()

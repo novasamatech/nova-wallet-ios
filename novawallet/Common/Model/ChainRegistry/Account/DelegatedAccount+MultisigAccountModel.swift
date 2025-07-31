@@ -8,6 +8,14 @@ extension DelegatedAccount {
         let otherSignatories: [AccountId]
         let threshold: Int
         let status: Status
+
+        func getAllSignatoriesInOrder() -> [AccountId] {
+            ([signatory] + otherSignatories).sorted { $0.lexicographicallyPrecedes($1) }
+        }
+
+        func getOtherSignatoriesInOrder() -> [AccountId] {
+            otherSignatories.sorted { $0.lexicographicallyPrecedes($1) }
+        }
     }
 }
 

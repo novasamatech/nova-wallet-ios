@@ -1597,16 +1597,16 @@ import Operation_iOS
     
     
     
-     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings> {
+     func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings> {
         
-    return cuckoo_manager.call("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>",
+    return cuckoo_manager.call("createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createProxiedSettingsRepository())
+            defaultCall: __defaultImplStub!.createDelegatedAccountSettingsRepository())
         
     }
     
@@ -1644,9 +1644,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", parameterMatchers: matchers))
 	    }
 	    
-	    func createProxiedSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<ProxiedSettings>> {
+	    func createDelegatedAccountSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DelegatedAccountSettings>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1696,9 +1696,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func createProxiedSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<ProxiedSettings>> {
+	    func createDelegatedAccountSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<DelegatedAccountSettings>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -1742,8 +1742,8 @@ import Operation_iOS
     
     
     
-     func createProxiedSettingsRepository() -> AnyDataProviderRepository<ProxiedSettings>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ProxiedSettings>).self)
+     func createDelegatedAccountSettingsRepository() -> AnyDataProviderRepository<DelegatedAccountSettings>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DelegatedAccountSettings>).self)
     }
     
 }

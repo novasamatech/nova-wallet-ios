@@ -71,9 +71,8 @@ extension MythosStakingConfirmInteractor: MythosStakingConfirmInteractorInputPro
             runningCallbackIn: .main
         ) { [weak self] result in
             do {
-                let status = try result.getSuccessExtrinsicStatus()
-
-                self?.presenter?.didReceiveSubmissionResult(.success(status.extrinsicHash))
+                let model = try result.getSuccessSubmittedModel()
+                self?.presenter?.didReceiveSubmissionResult(.success(model))
             } catch {
                 self?.sharedOperation?.markComposing()
                 self?.presenter?.didReceiveSubmissionResult(.failure(error))

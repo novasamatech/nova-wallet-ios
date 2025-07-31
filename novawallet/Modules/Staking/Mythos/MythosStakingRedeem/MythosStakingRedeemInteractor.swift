@@ -166,8 +166,8 @@ extension MythosStakingRedeemInteractor: MythosStakingRedeemInteractorInputProto
             runningCallbackIn: .main
         ) { [weak self] result in
             do {
-                let txHash = try result.getSuccessExtrinsicStatus().extrinsicHash
-                self?.presenter?.didReceiveSubmissionResult(.success(txHash))
+                let model = try result.getSuccessSubmittedModel()
+                self?.presenter?.didReceiveSubmissionResult(.success(model))
             } catch {
                 self?.setupDataRetrieval()
                 self?.presenter?.didReceiveSubmissionResult(.failure(error))

@@ -64,8 +64,8 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 chainId: accountResponse.chainId,
                 ledgerWalletType: .legacy
             )
-        case .proxied:
-            ProxySigningWrapper(
+        case .proxied, .multisig:
+            DelegatedSigningWrapper(
                 metaId: metaId,
                 uiPresenter: uiPresenter
             )
@@ -75,11 +75,6 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 metaId: metaId,
                 chainId: accountResponse.chainId,
                 ledgerWalletType: .generic
-            )
-        case .multisig:
-            MultisigSigningWrapper(
-                metaId: metaId,
-                uiPresenter: uiPresenter
             )
         }
     }
@@ -103,7 +98,6 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .ledger, .genericLedger:
             NoSigningSupportWrapper(type: .ledger)
         case .multisig:
-            // TODO: Implement signing wrapper
             NoSigningSupportWrapper(type: .multisig)
         }
     }
@@ -125,7 +119,6 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .ledger, .genericLedger:
             NoSigningSupportWrapper(type: .ledger)
         case .multisig:
-            // TODO: Implement signing wrapper
             NoSigningSupportWrapper(type: .multisig)
         }
     }

@@ -138,8 +138,13 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
                 runningIn: .main
             ) { [weak self] submission in
                 do {
-                    let txHashes = try submission.results.map { try $0.result.get() }
-                    self?.presenter?.didCompletePayout(txHashes: txHashes)
+                    let senders = try submission.results.map { try $0.result.get().sender }
+
+                    guard let sender = senders.first else {
+                        return
+                    }
+
+                    self?.presenter?.didCompletePayout(by: sender)
                 } catch {
                     self?.presenter?.didFailPayout(error: error)
                 }

@@ -4,7 +4,7 @@ import UIKit_iOS
 protocol RampAssetOperationWireframeProtocol: AssetsSearchWireframeProtocol,
     MessageSheetPresentable,
     RampPresentable,
-    AlertPresentable {
+    AlertPresentable, FeatureSupportChecking {
     func showSelectNetwork(
         from view: ControllerBackedProtocol?,
         multichainToken: MultichainToken,

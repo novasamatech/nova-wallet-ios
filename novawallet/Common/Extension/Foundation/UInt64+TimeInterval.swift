@@ -7,4 +7,8 @@ extension UInt64 {
 
         return TimeInterval(fullSeconds) + milliseconds
     }
+
+    var millisecondsToSeconds: UInt64 {
+        self / 1000
+    }
 }

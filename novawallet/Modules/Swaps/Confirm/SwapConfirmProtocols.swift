@@ -27,10 +27,18 @@ protocol SwapConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {}
+protocol SwapConfirmInteractorInputProtocol: SwapBaseInteractorInputProtocol {
+    func initiateSwapSubmission(of model: SwapExecutionModel)
+}
+
+protocol SwapConfirmInteractorOutProtocol: SwapBaseInteractorOutputProtocol {
+    func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>)
+    func didDecideMonitoredExecution(for model: SwapExecutionModel)
+}
 
 protocol SwapConfirmWireframeProtocol: SwapBaseWireframeProtocol, AddressOptionsPresentable,
-    ShortTextInfoPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling {
+    ShortTextInfoPresentable, MessageSheetPresentable, ExtrinsicSigningErrorHandling,
+    ModalAlertPresenting, ExtrinsicSubmissionPresenting {
     func showSwapExecution(
         from view: SwapConfirmViewProtocol?,
         model: SwapExecutionModel

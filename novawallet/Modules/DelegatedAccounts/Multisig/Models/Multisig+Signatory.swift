@@ -1,0 +1,56 @@
+import Foundation
+
+extension Multisig {
+    struct RemoteSignatory {
+        let accountId: AccountId
+    }
+
+    struct LocalSignatory {
+        let metaAccount: MetaChainAccountResponse
+        let delegate: Delegate?
+    }
+
+    enum Signatory {
+        case local(LocalSignatory)
+        case remote(RemoteSignatory)
+
+        var accountId: AccountId {
+            switch self {
+            case let .local(model):
+                model.metaAccount.chainAccount.accountId
+            case let .remote(model):
+                model.accountId
+            }
+        }
+
+        var localAccount: MetaChainAccountResponse? {
+            switch self {
+            case let .local(signatory):
+                signatory.metaAccount
+            case .remote:
+                nil
+            }
+        }
+    }
+}
+
+extension Multisig.LocalSignatory {
+    struct Delegate {
+        let metaAccount: MetaChainAccountResponse
+        let delegationType: DelegationType
+    }
+}
+
+extension Array where Element == Multisig.Signatory {
+    func findSignatory(for wallet: MetaAccountModel, chain: ChainModel) -> Multisig.Signatory? {
+        guard let multisig = wallet.getMultisig(for: chain) else {
+            return nil
+        }
+
+        return findSignatory(by: multisig.signatory)
+    }
+
+    func findSignatory(by accountId: AccountId) -> Multisig.Signatory? {
+        first { $0.accountId == accountId }
+    }
+}

@@ -117,8 +117,8 @@ extension StartStakingConfirmInteractor: StartStakingConfirmInteractorInputProto
             amount: stakingAmount
         ) { [weak self] result in
             switch result {
-            case let .success(hash):
-                self?.presenter?.didReceiveConfirmation(hash: hash)
+            case let .success(submittedModel):
+                self?.presenter?.didReceiveConfirmation(model: submittedModel)
             case let .failure(error):
                 self?.sharedOperation?.markComposing()
                 self?.presenter?.didReceive(error: .confirmation(error))

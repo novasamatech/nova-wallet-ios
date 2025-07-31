@@ -27,6 +27,7 @@ final class ServiceCoordinator {
     let walletNotificationService: WalletNotificationServiceProtocol
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+    let pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -39,7 +40,8 @@ final class ServiceCoordinator {
         dappMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
-        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+        pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.substrateBalancesService = substrateBalancesService
@@ -52,6 +54,7 @@ final class ServiceCoordinator {
         self.walletNotificationService = walletNotificationService
         self.syncModeUpdateService = syncModeUpdateService
         self.pushNotificationsFacade = pushNotificationsFacade
+        self.pendingMultisigSyncService = pendingMultisigSyncService
     }
 }
 
@@ -63,6 +66,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
             syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
+            pendingMultisigSyncService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
@@ -92,6 +96,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         syncModeUpdateService.setup()
         walletNotificationService.setup()
         pushNotificationsFacade.setup()
+        pendingMultisigSyncService.setup()
     }
 
     func throttle() {
@@ -105,6 +110,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         syncModeUpdateService.throttle()
         walletNotificationService.throttle()
         pushNotificationsFacade.throttle()
+        pendingMultisigSyncService.throttle()
     }
 }
 
@@ -229,7 +235,8 @@ extension ServiceCoordinator {
             dappMediator: DAppInteractionFactory.createMediator(for: urlHandlingFacade),
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService,
-            pushNotificationsFacade: PushNotificationsServiceFacade.shared
+            pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            pendingMultisigSyncService: MultisigPendingOperationsService.shared
         )
     }
 }

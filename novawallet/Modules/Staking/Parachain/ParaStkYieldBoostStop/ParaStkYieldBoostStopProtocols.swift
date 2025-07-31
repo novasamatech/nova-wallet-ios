@@ -20,7 +20,7 @@ protocol ParaStkYieldBoostStopInteractorInputProtocol: ParaStkYieldBoostCancelIn
 
 protocol ParaStkYieldBoostStopInteractorOutputProtocol: ParaStkYieldBoostCancelInteractorOutputProtocol,
     ParaStkYieldBoostCommonInteractorOutputProtocol {
-    func didStopAutocompound(with hash: String)
+    func didStopAutocompound(with model: ExtrinsicSubmittedModel)
     func didReceiveStopAutocompound(error: ParaStkYieldBoostStopError)
 }
 

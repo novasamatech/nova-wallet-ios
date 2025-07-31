@@ -236,12 +236,12 @@ extension MythosStakingConfirmPresenter: CollatorStakingConfirmPresenterProtocol
 }
 
 extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputProtocol {
-    func didReceiveSubmissionResult(_ result: Result<String, Error>) {
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            wireframe.complete(on: view, locale: selectedLocale)
+        case let .success(model):
+            wireframe.complete(on: view, sender: model.sender, locale: selectedLocale)
         case let .failure(error):
             logger.error("Submission error: \(error)")
 

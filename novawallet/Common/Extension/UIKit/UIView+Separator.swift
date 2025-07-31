@@ -8,11 +8,12 @@ extension UIView {
         return view
     }
 
+    @discardableResult
     func addBottomSeparator(
         _ height: CGFloat = 1,
         color: UIColor = R.color.colorDivider()!,
         horizontalSpace: CGFloat = 0
-    ) {
+    ) -> UIView {
         let separator = UIView.createSeparator(color: color)
         addSubview(separator)
 
@@ -21,5 +22,7 @@ extension UIView {
             $0.bottom.equalToSuperview()
             $0.height.equalTo(height)
         }
+
+        return separator
     }
 }
