@@ -1483,6 +1483,15 @@
 		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
 		2D06CC2F2E38F53E0093CA84 /* HttpAuthRequestModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */; };
 		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
+		2D06CC342E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */; };
+		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
+		2D06CC382E3BBC450093CA84 /* AppAttestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC372E3BBC450093CA84 /* AppAttestMessage.swift */; };
+		2D06CC3B2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */; };
+		2D06CC3F2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */; };
+		2D06CC412E3BD8BD0093CA84 /* DAppAttestRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */; };
+		2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
+		2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
+		2D06CC462E3BFA1C0093CA84 /* DAppAttestationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
@@ -7583,6 +7592,14 @@
 		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
 		2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpAuthRequestModifier.swift; sourceTree = "<group>"; };
 		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
+		2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAttestInteractor.swift; sourceTree = "<group>"; };
+		2D06CC352E3BBC280093CA84 /* AppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestError.swift; sourceTree = "<group>"; };
+		2D06CC372E3BBC450093CA84 /* AppAttestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestMessage.swift; sourceTree = "<group>"; };
+		2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestChallengeResponse.swift; sourceTree = "<group>"; };
+		2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestVerificationFactory.swift; sourceTree = "<group>"; };
+		2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestRequest.swift; sourceTree = "<group>"; };
+		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
+		2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestationProvider.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
@@ -15715,6 +15732,28 @@
 				2D06CC302E38F5990093CA84 /* AppAttestService.swift */,
 			);
 			path = AppAttest;
+			sourceTree = "<group>";
+		};
+		2D06CC322E3A817A0093CA84 /* Attest */ = {
+			isa = PBXGroup;
+			children = (
+				2D06CC392E3BCBA70093CA84 /* Model */,
+				2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */,
+				2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */,
+				2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */,
+			);
+			path = Attest;
+			sourceTree = "<group>";
+		};
+		2D06CC392E3BCBA70093CA84 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2D06CC372E3BBC450093CA84 /* AppAttestMessage.swift */,
+				2D06CC352E3BBC280093CA84 /* AppAttestError.swift */,
+				2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */,
+				2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		2D07803F2D12C68E003E35B1 /* MessageHandlers */ = {
@@ -26007,6 +26046,7 @@
 			children = (
 				8860F3E7289D7CF400C0BF86 /* Atomic.swift */,
 				8846FFA529C850CE00796A7E /* AsciiDataString.swift */,
+				2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */,
 			);
 			path = PropertyWrappers;
 			sourceTree = "<group>";
@@ -26710,6 +26750,7 @@
 				842BDB1F278C21FC00AB4B5A /* StateMachine */,
 				84D2F1AD2774CEBD0040C680 /* View */,
 				8496ADD8276AFF3400306B24 /* Model */,
+				2D06CC322E3A817A0093CA84 /* Attest */,
 				D02E38ABE379CA48E63328C4 /* DAppBrowserProtocols.swift */,
 				19F47911F8734C007135137D /* DAppBrowserWireframe.swift */,
 				1FF860B3465854DCBC02DFB3 /* DAppBrowserPresenter.swift */,
@@ -29207,6 +29248,7 @@
 				77D5569D2BAC3CBD009AC873 /* LocalizationManagerExtensions.swift in Sources */,
 				7778FE582B910A760023E801 /* MoneyPresentable.swift in Sources */,
 				77AE4F982B905B5C00426519 /* AssetModel.swift in Sources */,
+				2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */,
 				7778FE492B9104EE0023E801 /* PriceAssetInfoFactory.swift in Sources */,
 				77AF376B2BA2C1A800FD1A8E /* ReferendumStatusExtensions.swift in Sources */,
 				0CCD18D42BA1F4550068D73A /* PrimitiveBalanceViewModelFactory.swift in Sources */,
@@ -29425,10 +29467,12 @@
 				8490147424A94A37008F705E /* RootProtocol.swift in Sources */,
 				842876A424AE049B00D91AD8 /* SelectableSubtitleListViewModel.swift in Sources */,
 				AEE5FB1426457A98002B8FDC /* StakingRewardDestSetupInteractor.swift in Sources */,
+				2D06CC342E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift in Sources */,
 				842D1E7D24D0686D00C30A7A /* TriangularedButton+Inspectable.swift in Sources */,
 				0C0CB3882AC5688100EAC516 /* AssetConversionPallet.swift in Sources */,
 				845D8ED92977F18300F22133 /* GovernanceDelegateStats.swift in Sources */,
 				84CF00C327F6C1E4004DB322 /* CustomAssetMapper.swift in Sources */,
+				2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */,
 				0C0CB37F2AC540B200EAC516 /* AssetConversion.swift in Sources */,
 				2DF6F5F82C5D7DEE000D9CDD /* Decimal+Rounding.swift in Sources */,
 				7746854F2B3BDD4F002E0A0F /* WalletChanged.swift in Sources */,
@@ -29436,6 +29480,7 @@
 				880CC0B029E7F194008C7F65 /* EquillibriumLocksUpdater.swift in Sources */,
 				843910DB253F90C400E3C217 /* NovaWindow.swift in Sources */,
 				84DD5F4C263DE82C00425ACF /* DataValidationRunner.swift in Sources */,
+				2D06CC382E3BBC450093CA84 /* AppAttestMessage.swift in Sources */,
 				84D6D7FC27A7F4B40094FC33 /* AssetListNetworkView.swift in Sources */,
 				0CFF821B2D8AF98F00DB17A4 /* XcmDynamicCrosschainFeeCalculator.swift in Sources */,
 				84D8F16B24D8263300AF43E9 /* ModalPickerFactory.swift in Sources */,
@@ -30355,6 +30400,7 @@
 				8428768624AE046300D91AD8 /* LanguageSelectionPresenter.swift in Sources */,
 				84CA407A2A036886004BB71E /* PlainBaseTableViewCell.swift in Sources */,
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
+				2D06CC412E3BD8BD0093CA84 /* DAppAttestRequest.swift in Sources */,
 				2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */,
 				0C0F6E2B2D46177300943A7C /* CollatorStakingErrorPresentable.swift in Sources */,
 				0CE8621D2D64E87E00245992 /* StakingRewardsLocalHandler.swift in Sources */,
@@ -31259,6 +31305,7 @@
 				849067C8299BCB0100B2983E /* GovernanceRevokeDelegationConfirmPresenter+Protocol.swift in Sources */,
 				8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */,
 				0CAB7DA12C4714CD0070CE4D /* StakingActivityProviding.swift in Sources */,
+				2D06CC462E3BFA1C0093CA84 /* DAppAttestationProvider.swift in Sources */,
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
 				84A5915C292B390800BCCF8F /* EvmTransactionBuilder.swift in Sources */,
 				7725EB442B2AC9BA007E1A8A /* DelegatedAccountsChangesCalculator.swift in Sources */,
@@ -32366,6 +32413,7 @@
 				2D6F51B12CE11EB100564C00 /* SpendAssetOperationNetworkBuilder.swift in Sources */,
 				84F6B6502619E1ED0038F10D /* Int+Operations.swift in Sources */,
 				8487010E2907DF2F00F2C0C3 /* MultiValueView+Style.swift in Sources */,
+				2D06CC3F2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift in Sources */,
 				84770F2A291F864500852A33 /* GovernanceUnlockInitData.swift in Sources */,
 				7719018C2AE0E70B00D9C918 /* SwapDataValidatorFactory.swift in Sources */,
 				85547F698B551ACD387D84E2 /* SelectValidatorsStartViewController.swift in Sources */,
@@ -32786,6 +32834,7 @@
 				9081D43697D992F51E057ED2 /* CrowdloanContributionSetupPresenter.swift in Sources */,
 				8489A6DE27FEA1930040C066 /* StakingUnbondingItemView.swift in Sources */,
 				F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */,
+				2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */,
 				830A27C5447348F1D202D996 /* CrowdloanContributionSetupInteractor.swift in Sources */,
 				2DFF39CA2E16724000529984 /* SignatoryListView.swift in Sources */,
 				84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */,
@@ -34062,6 +34111,7 @@
 				0C7104922C2BDA4700487E64 /* GenericWalletConfirmInteractorError.swift in Sources */,
 				8863C7B029D49CB70068AD54 /* Web3NameViewModelFactory.swift in Sources */,
 				0C70712B2C1F60F50080DDCD /* OnLaunchActionsQueue.swift in Sources */,
+				2D06CC3B2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift in Sources */,
 				CFE7FE8F69D10E2B9E8DA791 /* GovernanceUnavailableTracksViewFactory.swift in Sources */,
 				4346F9B838284C40D4F1058B /* CommonDelegationTracksProtocols.swift in Sources */,
 				8329367F06C83BA7A0B12A34 /* CommonDelegationTracksPresenter.swift in Sources */,

@@ -1,0 +1,407 @@
+import Foundation
+import Operation_iOS
+
+protocol DAppAttestationProviderProtocol {
+    func createAttestWrapper(
+        for baseURL: String,
+        for bodyDataClosure: @escaping () throws -> Data?
+    ) -> CompoundOperationWrapper<AssertionDAppCallFactory>
+}
+
+final class DAppAttestationProvider {
+    private let appAttestService: AppAttestServiceProtocol
+    private let remoteAttestationFactory: DAppRemoteAttestFactoryProtocol
+    private let attestationRepository: AnyDataProviderRepository<AppAttestBrowserLocalSettings>
+    private let operationQueue: OperationQueue
+    private let syncQueue: DispatchQueue
+    private let logger: LoggerProtocol
+    
+    private let attestationCancellable = CancellableCallStore()
+    
+    private var attestedKeyId: AppAttestKeyId?
+    private var pendingRequests: [UUID: PendingRequest] = [:]
+    private var pendingAssertions: [UUID: CancellableCallStore] = [:]
+    
+    init(
+        appAttestService: AppAttestServiceProtocol,
+        remoteAttestationFactory: DAppRemoteAttestFactoryProtocol,
+        attestationRepository: AnyDataProviderRepository<AppAttestBrowserLocalSettings>,
+        operationQueue: OperationQueue,
+        syncQueue: DispatchQueue,
+        logger: LoggerProtocol = Logger.shared
+    ) {
+        self.appAttestService = appAttestService
+        self.remoteAttestationFactory = remoteAttestationFactory
+        self.attestationRepository = attestationRepository
+        self.operationQueue = operationQueue
+        self.syncQueue = syncQueue
+        self.logger = logger
+    }
+}
+
+// MARK: - Private
+
+private extension DAppAttestationProvider {
+    func saveLocalSettingsWrapper(
+        _ settingsClosure: @escaping () throws -> AppAttestBrowserLocalSettings
+    ) -> CompoundOperationWrapper<Void> {
+        let saveOperation = attestationRepository.saveOperation({
+            let settings = try settingsClosure()
+            return [settings]
+        }, {
+            []
+        })
+        
+        return CompoundOperationWrapper(targetOperation: saveOperation)
+    }
+
+    // MARK: - Persistence
+    
+    func loadAttestationIfNeeded(using baseURL: String) {
+        guard !attestationCancellable.hasCall, attestedKeyId == nil else {
+            return
+        }
+        
+        guard appAttestService.isSupported else {
+            logger.warning("Attestation is not supported")
+            return
+        }
+        
+        let settingsOperation = loadLocalSettingsOperation(for: baseURL)
+        
+        let attestationWrapper = OperationCombiningService<AppAttestKeyId>.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let settings = try settingsOperation.extractNoCancellableResultData()
+            let isAttested = settings?.isAttested ?? false
+            
+            if let settings, isAttested {
+                return CompoundOperationWrapper.createWithResult(settings.keyId)
+            }
+            
+            return self.createAttestationWrapper(for: settings?.keyId, baseURLString: baseURL)
+        }
+        
+        attestationWrapper.addDependency(operations: [settingsOperation])
+        
+        let totalWrapper = attestationWrapper.insertingHead(operations: [settingsOperation])
+        
+        logger.debug("Will start attestation")
+        
+        executeCancellable(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: attestationCancellable,
+            runningCallbackIn: syncQueue
+        ) { [weak self] result in
+            switch result {
+            case let .success(keyId):
+                self?.logger.debug("Attestation succeeded")
+                self?.attestedKeyId = keyId
+                self?.handleResolved(keyId: keyId, baseURL: baseURL)
+            case let .failure(error):
+                self?.logger.debug("Attestation failed: \(error)")
+                self?.handleAttestation(error: error, baseURL: baseURL)
+            }
+        }
+    }
+    
+    func handleResolved(
+        keyId: AppAttestKeyId,
+        baseURL: String
+    ) {
+        let allRequests = pendingRequests
+        pendingRequests = [:]
+        
+        allRequests.forEach { requestId, request in
+            fetchAssertion(
+                for: requestId,
+                bodyData: request.bodyData,
+                baseURLString: baseURL,
+                keyId: keyId,
+                runningCompletionIn: request.queue,
+                completion: request.resultClosure
+            )
+        }
+    }
+    
+    func handleAttestation(
+        error: Error,
+        baseURL: String
+    ) {
+        checkErrorAndDiscardKeyIfNeeded(error, baseURLString: baseURL)
+        
+        let allRequests = pendingRequests.values
+        pendingRequests = [:]
+        
+        allRequests.forEach { request in
+            request.queue.async {
+                request.resultClosure(.failure(error))
+            }
+        }
+    }
+
+    func createAttestationWrapper(
+        for keyId: AppAttestKeyId?,
+        baseURLString: String
+    ) -> CompoundOperationWrapper<AppAttestKeyId> {
+        guard let baseURL = URL(string: baseURLString) else {
+            return .createWithError(AppAttestError.invalidURL)
+        }
+        
+        let challengeOperation = remoteAttestationFactory.createGetChallengeOperation(using: baseURL)
+        
+        let attestationWrapper = appAttestService.createAttestationWrapper(
+            for: {
+                try challengeOperation.extractNoCancellableResultData()
+            },
+            using: keyId
+        )
+        
+        attestationWrapper.addDependency(operations: [challengeOperation])
+        
+        let attestationInitSaveWrapper = saveLocalSettingsWrapper {
+            let appAttestModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
+            return AppAttestBrowserLocalSettings(
+                baseURL: baseURLString,
+                keyId: appAttestModel.keyId,
+                isAttested: false
+            )
+        }
+        
+        attestationInitSaveWrapper.addDependency(wrapper: attestationWrapper)
+        
+        let remoteAttestationOperation = remoteAttestationFactory.createAttestationOperation(using: baseURL) {
+            try attestationInitSaveWrapper.targetOperation.extractNoCancellableResultData()
+            
+            let attestationModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
+            
+            return DAppAttestRequest(
+                challenge: attestationModel.challenge,
+                attestation: attestationModel.result,
+                appIntegrityId: attestationModel.keyId
+            )
+        }
+        
+        remoteAttestationOperation.addDependency(attestationInitSaveWrapper.targetOperation)
+        
+        let attestationSaveIfSuccessWrapper = saveLocalSettingsWrapper {
+            _ = try remoteAttestationOperation.extractNoCancellableResultData()
+            
+            let attestationModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
+            
+            return AppAttestBrowserLocalSettings(
+                baseURL: baseURLString,
+                keyId: attestationModel.keyId,
+                isAttested: true
+            )
+        }
+        
+        attestationSaveIfSuccessWrapper.addDependency(operations: [remoteAttestationOperation])
+        
+        let resultOperation = ClosureOperation<AppAttestKeyId> {
+            _ = try attestationSaveIfSuccessWrapper.targetOperation.extractNoCancellableResultData()
+            let attestationModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
+            
+            return attestationModel.keyId
+        }
+        
+        resultOperation.addDependency(attestationSaveIfSuccessWrapper.targetOperation)
+        
+        let preSaveDependencies = [challengeOperation]
+            + attestationWrapper.allOperations
+            + attestationInitSaveWrapper.allOperations
+        let remoteDependencies = [remoteAttestationOperation]
+            + attestationSaveIfSuccessWrapper.allOperations
+        
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: preSaveDependencies + remoteDependencies
+        )
+    }
+    
+    func loadLocalSettingsOperation(for baseURL: String) -> BaseOperation<AppAttestBrowserLocalSettings?> {
+        attestationRepository.fetchOperation(
+            by: { baseURL },
+            options: .init()
+        )
+    }
+    
+    func fetchAssertion(
+        for requestId: UUID,
+        bodyData: Data?,
+        baseURLString: String,
+        keyId: AppAttestKeyId,
+        runningCompletionIn queue: DispatchQueue,
+        completion: @escaping (Result<AssertionDAppCallFactory, Error>) -> Void
+    ) {
+        guard let baseURL = URL(string: baseURLString) else {
+            return
+        }
+        
+        let fullURL = baseURL.appending(path: Constants.assertionEndpoint)
+        
+        let callStore = CancellableCallStore()
+        pendingAssertions[requestId] = callStore
+        
+        let challengeOperation = remoteAttestationFactory.createGetChallengeOperation(using: fullURL)
+        let assertionWrapper = appAttestService.createAssertionWrapper(
+            challengeClosure: { try challengeOperation.extractNoCancellableResultData() },
+            dataClosure: { bodyData },
+            keyId: keyId
+        )
+        
+        assertionWrapper.addDependency(operations: [challengeOperation])
+        
+        let totalWrapper = assertionWrapper.insertingHead(operations: [challengeOperation])
+        
+        logger.debug("Will start assertion: \(requestId)")
+        
+        executeCancellable(
+            wrapper: totalWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: syncQueue
+        ) { [weak self] result in
+            self?.pendingAssertions[requestId] = nil
+            
+            switch result {
+            case let .success(model):
+                self?.logger.debug("Assertion succeeded: \(requestId)")
+                
+                queue.async {
+                    completion(.success(AppAttestAssertionModelResult.supported(model)))
+                }
+            case let .failure(error):
+                self?.logger.debug("Assertion failed: \(error)")
+                
+                self?.checkErrorAndDiscardKeyIfNeeded(error, baseURLString: baseURLString)
+                
+                queue.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    func doAssertion(
+        for requestId: UUID,
+        for baseURLString: String,
+        bodyData: Data?,
+        queue: DispatchQueue,
+        completion: @escaping (Result<AssertionDAppCallFactory, Error>) -> Void
+    ) {
+        guard appAttestService.isSupported else {
+            queue.async {
+                completion(.success(AppAttestAssertionModelResult.unsupported))
+            }
+            
+            return
+        }
+        
+        if let attestedKeyId {
+            fetchAssertion(
+                for: requestId,
+                bodyData: bodyData,
+                baseURLString: baseURLString,
+                keyId: attestedKeyId,
+                runningCompletionIn: queue,
+                completion: completion
+            )
+        } else {
+            pendingRequests[requestId] = .init(
+                resultClosure: completion,
+                bodyData: bodyData,
+                queue: queue
+            )
+            
+            loadAttestationIfNeeded(using: baseURLString)
+        }
+    }
+    
+    func checkErrorAndDiscardKeyIfNeeded(
+        _ error: Error,
+        baseURLString: String
+    ) {
+        if
+            let serviceError = error as? AppAttestServiceError,
+            case .invalidKeyId = serviceError
+        {
+            let removeOperation = attestationRepository.saveOperation(
+                { [] },
+                { [baseURLString] }
+            )
+            
+            execute(
+                operation: removeOperation,
+                inOperationQueue: operationQueue,
+                runningCallbackIn: syncQueue
+            ) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.attestedKeyId = nil
+                case let .failure(error):
+                    self?.logger.error("Unexpected error: \(error)")
+                }
+            }
+        }
+    }
+    
+    func cancelAssertion(for requestId: UUID) {
+        pendingRequests[requestId] = nil
+        pendingAssertions[requestId]?.cancel()
+        pendingAssertions[requestId] = nil
+    }
+}
+
+// MARK: - DAppAttestationProviderProtocol
+
+extension DAppAttestationProvider: DAppAttestationProviderProtocol {
+    func createAttestWrapper(
+        for baseURL: String,
+        for bodyDataClosure: @escaping () throws -> Data?
+    ) -> CompoundOperationWrapper<AssertionDAppCallFactory> {
+        let requestId = UUID()
+        
+        let operation = AsyncClosureOperation<AssertionDAppCallFactory>(
+            operationClosure: { [weak self] completion in
+                let bodyData = try bodyDataClosure()
+                
+                self?.syncQueue.async {
+                    self?.doAssertion(
+                        for: requestId,
+                        for: baseURL,
+                        bodyData: bodyData,
+                        queue: .global(),
+                        completion: completion
+                    )
+                }
+            },
+            cancelationClosure: { [weak self] in
+                self?.syncQueue.async {
+                    self?.cancelAssertion(for: requestId)
+                }
+            }
+        )
+        
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+}
+
+// MARK: - Private types
+
+private extension DAppAttestationProvider {
+    struct PendingRequest {
+        let resultClosure: (Result<AssertionDAppCallFactory, Error>) -> Void
+        let bodyData: Data?
+        let queue: DispatchQueue
+    }
+}
+
+// MARK: - Constants
+
+private extension DAppAttestationProvider {
+    enum Constants {
+        static let assertionEndpoint = "app-attest/signatures"
+    }
+}

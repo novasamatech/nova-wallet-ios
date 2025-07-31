@@ -12,7 +12,7 @@ struct AppAttestModel {
 
 enum AppAttestAssertionModelResult {
     case supported(AppAttestAssertionModel)
-    case unsupported(bodyData: Data?)
+    case unsupported
 }
 
 struct AppAttestAssertionModel {

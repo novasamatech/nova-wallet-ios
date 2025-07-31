@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 import Foundation_iOS
 
-final class DAppBrowserInteractor {
+class DAppBrowserInteractor {
     struct QueueMessage {
         let host: String
         let transportName: String
@@ -71,6 +71,57 @@ final class DAppBrowserInteractor {
             )
         }
     }
+
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
+
+            self?.verifyPhishing(for: host) { isNotPhishing in
+                if isNotPhishing {
+                    let queueMessage = QueueMessage(
+                        host: host,
+                        transportName: name,
+                        underliningMessage: message
+                    )
+                    self?.messageQueue.append(queueMessage)
+
+                    self?.processMessageIfNeeded()
+                }
+            }
+        }
+    }
+
+    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
+        transports.map { transport in
+            let bridgeOperation = transport.createBridgeScriptOperation()
+            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
+            let transportName = transport.name
+
+            let mapOperation = ClosureOperation<DAppTransportModel> {
+                guard let subscriptionScript = maybeSubscriptionScript else {
+                    throw DAppBrowserStateError.unexpected(
+                        reason: "Selected wallet doesn't have an address for this network"
+                    )
+                }
+
+                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
+
+                return DAppTransportModel(
+                    name: transportName,
+                    handlerNames: [transportName],
+                    scripts: [bridgeScript, subscriptionScript]
+                )
+            }
+
+            mapOperation.addDependency(bridgeOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
+        }
+    }
 }
 
 // MARK: Private
@@ -121,34 +172,6 @@ private extension DAppBrowserInteractor {
             }
 
             provideModel()
-        }
-    }
-
-    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
-        transports.map { transport in
-            let bridgeOperation = transport.createBridgeScriptOperation()
-            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
-            let transportName = transport.name
-
-            let mapOperation = ClosureOperation<DAppTransportModel> {
-                guard let subscriptionScript = maybeSubscriptionScript else {
-                    throw DAppBrowserStateError.unexpected(
-                        reason: "Selected wallet doesn't have an address for this network"
-                    )
-                }
-
-                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
-
-                return DAppTransportModel(
-                    name: transportName,
-                    handlerNames: [transportName],
-                    scripts: [bridgeScript, subscriptionScript]
-                )
-            }
-
-            mapOperation.addDependency(bridgeOperation)
-
-            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
         }
     }
 
@@ -402,29 +425,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func process(host: String) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.verifyPhishing(for: host, completion: nil)
-        }
-    }
-
-    func process(
-        message: Any,
-        host: String,
-        transport name: String
-    ) {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
-
-            self?.verifyPhishing(for: host) { isNotPhishing in
-                if isNotPhishing {
-                    let queueMessage = QueueMessage(
-                        host: host,
-                        transportName: name,
-                        underliningMessage: message
-                    )
-                    self?.messageQueue.append(queueMessage)
-
-                    self?.processMessageIfNeeded()
-                }
-            }
         }
     }
 

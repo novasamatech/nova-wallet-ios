@@ -1,30 +1,47 @@
 import Foundation
 
-enum HttpAuthRequestModifierError: Error {
+enum AssertionDAppCallFactoryError: Error {
     case invalidAuthData
+    case assertionUnsupported
 }
 
-protocol HttpAuthRequestModifier {
-    func visit(request: inout URLRequest) throws
+struct AssertionVerificationDAppModel: Encodable {
+    @Base64Codable var challenge: Data
+    let appIntegrityId: AppAttestKeyId
+    @Base64Codable var signature: AppAttestAssertion
+    let platform: String = "iOS"
 }
 
-extension AppAttestAssertionModelResult: HttpAuthRequestModifier {
-    func visit(request: inout URLRequest) throws {
-        switch self {
-        case let .supported(model):
-            request.httpBody = model.bodyData
+protocol AssertionDAppCallFactory {
+    func createDAppResponse() throws -> DAppScriptResponse
+}
 
-            request.setValue(model.bundleId, forHTTPHeaderField: "Auth-iOS-Package")
-            request.setValue(model.assertion.base64EncodedString(), forHTTPHeaderField: "Auth-Payload")
-            request.setValue(model.challenge.base64EncodedString(), forHTTPHeaderField: "Auth-Challenge")
-            request.setValue(model.keyId, forHTTPHeaderField: "Auth-iOS-KeyId")
-
-        case let .unsupported(bodyData):
-            #if F_DEV
-                request.httpBody = bodyData
-            #else
-                throw HttpAuthRequestModifierError.invalidAuthData
-            #endif
+extension AppAttestAssertionModelResult: AssertionDAppCallFactory {
+    func createDAppResponse() throws -> DAppScriptResponse {
+        guard case let .supported(appAttestAssertionModel) = self else {
+            throw AssertionDAppCallFactoryError.assertionUnsupported
         }
+        
+        let verificationModel = AssertionVerificationDAppModel(
+            challenge: appAttestAssertionModel.challenge,
+            appIntegrityId: appAttestAssertionModel.keyId,
+            signature: appAttestAssertionModel.assertion
+        )
+        
+        let encoder = JSONEncoder()
+        
+        let jsonData = try? encoder.encode(verificationModel)
+        
+        guard
+            let jsonData,
+            let dataString = String(data: jsonData, encoding: .utf8)
+        else { throw AssertionDAppCallFactoryError.invalidAuthData }
+        
+        let content = String(
+            format: "window.verifySignature(%@)",
+            dataString
+        )
+
+        return DAppScriptResponse(content: content)
     }
 }
