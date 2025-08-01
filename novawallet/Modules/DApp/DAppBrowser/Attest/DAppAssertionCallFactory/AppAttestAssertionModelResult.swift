@@ -1,9 +1,5 @@
 import Foundation
 
-protocol DAppAssertionCallFactory {
-    func createDAppResponse() throws -> DAppScriptResponse
-}
-
 enum AppAttestAssertionModelResult {
     case supported(AppAttestAssertionModel)
     case unsupported

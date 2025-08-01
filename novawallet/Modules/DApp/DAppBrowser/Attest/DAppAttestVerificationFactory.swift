@@ -39,6 +39,57 @@ final class DAppRemoteAttestFactory {
             resultFactory: responseFactory
         )
     }
+
+    func createNetworkResulfFactoryBlock<T: Decodable>() -> NetworkResultFactoryBlock<T> {
+        { data, response, error in
+            if let error {
+                return .failure(error)
+            }
+
+            if
+                let httpUrlResponse = response as? HTTPURLResponse,
+                NetworkOperationHelper.createError(from: httpUrlResponse) != nil {
+                let responseFactory = DAppAttestErrorResponseFactory(code: httpUrlResponse.statusCode)
+                return .failure(DAppAttestError.serverError(responseFactory))
+            }
+
+            if let data {
+                do {
+                    let response = try JSONDecoder().decode(
+                        T.self,
+                        from: data
+                    )
+
+                    return .success(response)
+                } catch {
+                    return .failure(error)
+                }
+            }
+
+            return .failure(AppAttestError.invalidResponse)
+        }
+    }
+
+    func createNetworkResulfFactoryBlock() -> NetworkResultFactoryBlock<Void> {
+        { data, response, error in
+            if let error {
+                return .failure(error)
+            }
+
+            if
+                let httpUrlResponse = response as? HTTPURLResponse,
+                NetworkOperationHelper.createError(from: httpUrlResponse) != nil {
+                let responseFactory = DAppAttestErrorResponseFactory(code: httpUrlResponse.statusCode)
+                return .failure(DAppAttestError.serverError(responseFactory))
+            }
+
+            if data != nil {
+                return .success(())
+            }
+
+            return .failure(AppAttestError.invalidResponse)
+        }
+    }
 }
 
 // MARK: - DAppAttestVerificationFactoryProtocol
@@ -47,24 +98,7 @@ extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
     func createGetChallengeOperation(using baseURL: URL) -> BaseOperation<Data> {
         let fullURL = baseURL.appending(path: Constants.challengesEndpoint)
 
-        let block: NetworkResultFactoryBlock<Data> = { data, _, error in
-            if let error {
-                return .failure(error)
-            } else if let data {
-                do {
-                    let response = try JSONDecoder().decode(
-                        AppAttestChallengeResponse.self,
-                        from: data
-                    )
-
-                    return .success(response.challenge)
-                } catch {
-                    return .failure(error)
-                }
-            } else {
-                return .failure(AppAttestError.invalidResponse)
-            }
-        }
+        let block: NetworkResultFactoryBlock<Data> = createNetworkResulfFactoryBlock()
 
         let responseFactory = AnyNetworkResultFactory(block: block)
 
@@ -82,15 +116,7 @@ extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
     ) -> BaseOperation<Void> {
         let fullURL = baseURL.appending(path: Constants.attestationsEndpoint)
 
-        let block: NetworkResultFactoryBlock<Void> = { data, _, error in
-            if let error {
-                .failure(error)
-            } else if let data {
-                .success(())
-            } else {
-                .failure(AppAttestError.invalidResponse)
-            }
-        }
+        let block = createNetworkResulfFactoryBlock()
 
         return createGenericRequestOperation(
             for: fullURL,

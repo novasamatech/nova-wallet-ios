@@ -136,14 +136,17 @@ private extension DAppBrowserAppAttestInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(dAppCallFactory):
-                do {
-                    let response = try dAppCallFactory.createDAppResponse()
-                    self?.presenter?.didReceive(response: response)
-                } catch {
-                    self?.logger?.error("Failed to generate DAapp response: \(error)")
-                }
+                self?.sendDAppResponse(using: dAppCallFactory)
             case let .failure(error):
-                self?.logger?.error("Failed to process app attest request: \(error)")
+                guard
+                    let attestError = error as? DAppAttestError,
+                    case let .serverError(dAppCallFactory) = attestError
+                else {
+                    self?.logger?.error("Failed to process app attest request: \(error)")
+                    return
+                }
+
+                self?.sendDAppResponse(using: dAppCallFactory)
             }
         }
     }
@@ -160,6 +163,15 @@ private extension DAppBrowserAppAttestInteractor {
         } else {
             nil
         }
+    }
+
+    func sendDAppResponse(using factory: DAppAssertionCallFactory) {
+        guard let response = try? factory.createDAppResponse() else {
+            logger?.error("Failed to generate DAapp response")
+            return
+        }
+
+        presenter?.didReceive(response: response)
     }
 }
 
