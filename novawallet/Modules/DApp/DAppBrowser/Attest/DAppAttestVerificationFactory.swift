@@ -53,11 +53,7 @@ extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
                 from: data
             )
 
-            guard let challengeData = Data(base64Encoded: response.challenge) else {
-                throw AppAttestError.invalidChallengeFormat
-            }
-
-            return challengeData
+            return response.challenge.data(using: .utf8) ?? Data(response.challenge.bytes)
         }
 
         return createGenericRequestOperation(
