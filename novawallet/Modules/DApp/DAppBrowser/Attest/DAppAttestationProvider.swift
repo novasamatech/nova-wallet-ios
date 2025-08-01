@@ -50,9 +50,7 @@ private extension DAppAttestationProvider {
         let saveOperation = attestationRepository.saveOperation({
             let settings = try settingsClosure()
             return [settings]
-        }, {
-            []
-        })
+        }, { [] })
 
         return CompoundOperationWrapper(targetOperation: saveOperation)
     }
@@ -280,7 +278,6 @@ private extension DAppAttestationProvider {
                 }
             case let .failure(error):
                 self?.logger.debug("Assertion failed: \(error)")
-
                 self?.checkErrorAndDiscardKeyIfNeeded(error, baseURLString: baseURLString)
 
                 queue.async {
@@ -301,7 +298,6 @@ private extension DAppAttestationProvider {
             queue.async {
                 completion(.success(AppAttestAssertionModelResult.unsupported))
             }
-
             return
         }
 
@@ -320,7 +316,6 @@ private extension DAppAttestationProvider {
                 bodyData: bodyData,
                 queue: queue
             )
-
             loadAttestationIfNeeded(using: baseURLString)
         }
     }
@@ -400,9 +395,5 @@ private extension DAppAttestationProvider {
         let resultClosure: (Result<DAppAssertionCallFactory, Error>) -> Void
         let bodyData: Data?
         let queue: DispatchQueue
-    }
-
-    enum Constants {
-        static let assertionEndpoint = "app-attest/signatures"
     }
 }
