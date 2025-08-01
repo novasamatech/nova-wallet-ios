@@ -71,13 +71,12 @@ private extension DAppAttestationProvider {
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             let settings = try settingsOperation.extractNoCancellableResultData()
-            let isAttested = settings?.isAttested ?? false
-
-            if let settings, isAttested {
-                return CompoundOperationWrapper.createWithResult(settings.keyId)
+            
+            guard let settings, settings.isAttested else {
+                return self.createAttestationWrapper(for: settings?.keyId, baseURLString: baseURL)
             }
-
-            return self.createAttestationWrapper(for: settings?.keyId, baseURLString: baseURL)
+            
+            return CompoundOperationWrapper.createWithResult(settings.keyId)
         }
 
         attestationWrapper.addDependency(operations: [settingsOperation])

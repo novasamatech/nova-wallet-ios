@@ -53,20 +53,20 @@ final class DAppRemoteAttestFactory {
                 return .failure(DAppAttestError.serverError(responseFactory))
             }
 
-            if let data {
-                do {
-                    let response = try JSONDecoder().decode(
-                        T.self,
-                        from: data
-                    )
-
-                    return .success(response)
-                } catch {
-                    return .failure(error)
-                }
+            guard let data else {
+                return .failure(AppAttestError.invalidResponse)
             }
+            
+            do {
+                let response = try JSONDecoder().decode(
+                    T.self,
+                    from: data
+                )
 
-            return .failure(AppAttestError.invalidResponse)
+                return .success(response)
+            } catch {
+                return .failure(error)
+            }
         }
     }
 
@@ -83,11 +83,11 @@ final class DAppRemoteAttestFactory {
                 return .failure(DAppAttestError.serverError(responseFactory))
             }
 
-            if data != nil {
-                return .success(())
+            guard data != nil else {
+                return .failure(AppAttestError.invalidResponse)
             }
-
-            return .failure(AppAttestError.invalidResponse)
+            
+            return .success(())
         }
     }
 }

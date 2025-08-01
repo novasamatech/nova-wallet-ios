@@ -74,71 +74,6 @@ class DAppBrowserInteractor {
             )
         }
     }
-
-    func process(
-        message: Any,
-        host: String,
-        transport name: String
-    ) {
-        // MARK: Integrity check
-
-        guard !attestHandler.canHandle(transportName: name) else {
-            attestHandler.handle(message: message)
-            return
-        }
-
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
-
-            self?.verifyPhishing(for: host) { isNotPhishing in
-                if isNotPhishing {
-                    let queueMessage = QueueMessage(
-                        host: host,
-                        transportName: name,
-                        underliningMessage: message
-                    )
-                    self?.messageQueue.append(queueMessage)
-
-                    self?.processMessageIfNeeded()
-                }
-            }
-        }
-    }
-
-    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
-        var wrappers = transports.map { transport in
-            let bridgeOperation = transport.createBridgeScriptOperation()
-            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
-            let transportName = transport.name
-
-            let mapOperation = ClosureOperation<DAppTransportModel> {
-                guard let subscriptionScript = maybeSubscriptionScript else {
-                    throw DAppBrowserStateError.unexpected(
-                        reason: "Selected wallet doesn't have an address for this network"
-                    )
-                }
-
-                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
-
-                return DAppTransportModel(
-                    name: transportName,
-                    handlerNames: [transportName],
-                    scripts: [bridgeScript, subscriptionScript]
-                )
-            }
-
-            mapOperation.addDependency(bridgeOperation)
-
-            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
-        }
-
-        // MARK: Integrity check
-
-        let attestModel = attestHandler.createTransportModel()
-        wrappers.append(.createWithResult(attestModel))
-
-        return wrappers
-    }
 }
 
 // MARK: Private
@@ -480,6 +415,71 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         } else {
             proceedWithTabUpdate(with: newQuery)
         }
+    }
+    
+    func process(
+        message: Any,
+        host: String,
+        transport name: String
+    ) {
+        // MARK: Integrity check
+
+        guard !attestHandler.canHandle(transportName: name) else {
+            attestHandler.handle(message: message)
+            return
+        }
+
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
+
+            self?.verifyPhishing(for: host) { isNotPhishing in
+                guard isNotPhishing else { return }
+                
+                let queueMessage = QueueMessage(
+                    host: host,
+                    transportName: name,
+                    underliningMessage: message
+                )
+                self?.messageQueue.append(queueMessage)
+
+                self?.processMessageIfNeeded()
+            }
+        }
+    }
+
+    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
+        var wrappers = transports.map { transport in
+            let bridgeOperation = transport.createBridgeScriptOperation()
+            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
+            let transportName = transport.name
+
+            let mapOperation = ClosureOperation<DAppTransportModel> {
+                guard let subscriptionScript = maybeSubscriptionScript else {
+                    throw DAppBrowserStateError.unexpected(
+                        reason: "Selected wallet doesn't have an address for this network"
+                    )
+                }
+
+                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
+
+                return DAppTransportModel(
+                    name: transportName,
+                    handlerNames: [transportName],
+                    scripts: [bridgeScript, subscriptionScript]
+                )
+            }
+
+            mapOperation.addDependency(bridgeOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
+        }
+
+        // MARK: Integrity check
+
+        let attestModel = attestHandler.createTransportModel()
+        wrappers.append(.createWithResult(attestModel))
+
+        return wrappers
     }
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
