@@ -2,7 +2,7 @@ import UIKit
 import Operation_iOS
 import Foundation_iOS
 
-class DAppBrowserInteractor {
+final class DAppBrowserInteractor {
     struct QueueMessage {
         let host: String
         let transportName: String
@@ -416,7 +416,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             proceedWithTabUpdate(with: newQuery)
         }
     }
-    
+
     func process(
         message: Any,
         host: String,
@@ -434,7 +434,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
             self?.verifyPhishing(for: host) { isNotPhishing in
                 guard isNotPhishing else { return }
-                
+
                 let queueMessage = QueueMessage(
                     host: host,
                     transportName: name,

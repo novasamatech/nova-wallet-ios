@@ -56,7 +56,7 @@ final class DAppRemoteAttestFactory {
             guard let data else {
                 return .failure(AppAttestError.invalidResponse)
             }
-            
+
             do {
                 let response = try JSONDecoder().decode(
                     T.self,
@@ -86,7 +86,7 @@ final class DAppRemoteAttestFactory {
             guard data != nil else {
                 return .failure(AppAttestError.invalidResponse)
             }
-            
+
             return .success(())
         }
     }
