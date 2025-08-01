@@ -146,16 +146,16 @@ private extension DAppAttestationProvider {
             return .createWithError(AppAttestError.invalidURL)
         }
 
-        let challengeOperation = remoteAttestationFactory.createGetChallengeOperation(using: baseURL)
+        let challengeWrapper = remoteAttestationFactory.createGetChallengeWrapper(using: baseURL)
 
         let attestationWrapper = appAttestService.createAttestationWrapper(
             for: {
-                try challengeOperation.extractNoCancellableResultData()
+                try challengeWrapper.targetOperation.extractNoCancellableResultData()
             },
             using: keyId
         )
 
-        attestationWrapper.addDependency(operations: [challengeOperation])
+        attestationWrapper.addDependency(wrapper: challengeWrapper)
 
         let attestationInitSaveWrapper = saveLocalSettingsWrapper {
             let appAttestModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
@@ -205,7 +205,7 @@ private extension DAppAttestationProvider {
 
         resultOperation.addDependency(attestationSaveIfSuccessWrapper.targetOperation)
 
-        let preSaveDependencies = [challengeOperation]
+        let preSaveDependencies = challengeWrapper.allOperations
             + attestationWrapper.allOperations
             + attestationInitSaveWrapper.allOperations
         let remoteDependencies = [remoteAttestationOperation]
@@ -239,16 +239,16 @@ private extension DAppAttestationProvider {
         let callStore = CancellableCallStore()
         pendingAssertions[requestId] = callStore
 
-        let challengeOperation = remoteAttestationFactory.createGetChallengeOperation(using: baseURL)
+        let challengeWrapper = remoteAttestationFactory.createGetChallengeWrapper(using: baseURL)
         let assertionWrapper = appAttestService.createAssertionWrapper(
-            challengeClosure: { try challengeOperation.extractNoCancellableResultData() },
+            challengeClosure: { try challengeWrapper.targetOperation.extractNoCancellableResultData() },
             dataClosure: { bodyData },
             keyId: keyId
         )
 
-        assertionWrapper.addDependency(operations: [challengeOperation])
+        assertionWrapper.addDependency(wrapper: challengeWrapper)
 
-        let totalWrapper = assertionWrapper.insertingHead(operations: [challengeOperation])
+        let totalWrapper = assertionWrapper.insertingHead(operations: challengeWrapper.allOperations)
 
         logger.debug("Will start assertion: \(requestId)")
 

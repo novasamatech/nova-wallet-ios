@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 protocol DAppRemoteAttestFactoryProtocol {
-    func createGetChallengeOperation(using baseURL: URL) -> BaseOperation<Data>
+    func createGetChallengeWrapper(using baseURL: URL) -> CompoundOperationWrapper<Data>
 
     func createAttestationOperation(
         using baseURL: URL,
@@ -48,7 +48,7 @@ final class DAppRemoteAttestFactory {
 
             if
                 let httpUrlResponse = response as? HTTPURLResponse,
-                NetworkOperationHelper.createError(from: httpUrlResponse) != nil {
+                httpUrlResponse.statusCode >= 400 {
                 let responseFactory = DAppAttestErrorResponseFactory(code: httpUrlResponse.statusCode)
                 return .failure(DAppAttestError.serverError(responseFactory))
             }
@@ -78,7 +78,7 @@ final class DAppRemoteAttestFactory {
 
             if
                 let httpUrlResponse = response as? HTTPURLResponse,
-                NetworkOperationHelper.createError(from: httpUrlResponse) != nil {
+                httpUrlResponse.statusCode >= 400 {
                 let responseFactory = DAppAttestErrorResponseFactory(code: httpUrlResponse.statusCode)
                 return .failure(DAppAttestError.serverError(responseFactory))
             }
@@ -95,18 +95,31 @@ final class DAppRemoteAttestFactory {
 // MARK: - DAppAttestVerificationFactoryProtocol
 
 extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
-    func createGetChallengeOperation(using baseURL: URL) -> BaseOperation<Data> {
+    func createGetChallengeWrapper(using baseURL: URL) -> CompoundOperationWrapper<Data> {
         let fullURL = baseURL.appending(path: Constants.challengesEndpoint)
 
-        let block: NetworkResultFactoryBlock<Data> = createNetworkResulfFactoryBlock()
+        let block: NetworkResultFactoryBlock<AppAttestChallengeResponse> = createNetworkResulfFactoryBlock()
 
         let responseFactory = AnyNetworkResultFactory(block: block)
 
-        return createGenericRequestOperation(
+        let requestOperation = createGenericRequestOperation(
             for: fullURL,
             bodyParamsClosure: { nil },
             method: HttpMethod.post.rawValue,
             responseFactory: responseFactory
+        )
+
+        let mapOperation = ClosureOperation<Data> {
+            let result = try requestOperation.extractNoCancellableResultData()
+
+            return result.challenge
+        }
+
+        mapOperation.addDependency(requestOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [requestOperation]
         )
     }
 
