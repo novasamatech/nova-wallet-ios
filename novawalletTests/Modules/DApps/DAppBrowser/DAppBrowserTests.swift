@@ -70,6 +70,25 @@ class DAppBrowserTests: XCTestCase {
             from: dAppURL,
             metaId: walletSettings.value.metaId
         )!
+        
+        let appAttestService = AppAttestService()
+        let remoteAttestationFactory = DAppRemoteAttestFactory()
+
+        let mapper = AnyCoreDataMapper(AppAttestBrowserSettingsMapper())
+
+        let coreDataRepository: CoreDataRepository<AppAttestBrowserSettings, CDAppAttestBrowserSettings> = storageFacade.createRepository(mapper: mapper)
+
+        let attestationProvider = DAppAttestationProvider(
+            appAttestService: appAttestService,
+            remoteAttestationFactory: remoteAttestationFactory,
+            attestationRepository: AnyDataProviderRepository(coreDataRepository),
+            operationQueue: operationQueue
+        )
+
+        let attestHandler = DAppAttestHandler(
+            attestationProvider: attestationProvider,
+            operationQueue: operationQueue
+        )
 
         let interactor = DAppBrowserInteractor(
             transports: [transport],
@@ -85,6 +104,7 @@ class DAppBrowserTests: XCTestCase {
             sequentialPhishingVerifier: phishingVerifier,
             tabManager: tabManager,
             applicationHandler: ApplicationHandler(),
+            attestHandler: attestHandler,
             logger: Logger.shared
         )
 
