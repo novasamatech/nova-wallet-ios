@@ -14,8 +14,8 @@ extension DAppAttestErrorResponseFactory: DAppAssertionCallFactory {
     func createDAppResponse() throws -> DAppScriptResponse {
         let content =
             """
-            window.verifySignature({
-                code: \(code),
+            window.verificationFailedOnClient({
+                error: \(code),
                 message: "\(message ?? "")"
             })
             """
