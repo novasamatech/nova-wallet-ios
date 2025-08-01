@@ -50,7 +50,7 @@ final class DAppBrowserAppAttestInteractor: DAppBrowserInteractor {
         transport name: String
     ) {
         if name == Constants.jsInterfaceName {
-            handleAppAttestMessage(message, host: host)
+            handleIntegrityCheckMessage(message)
             return
         }
 
@@ -94,24 +94,42 @@ private extension DAppBrowserAppAttestInteractor {
         return DAppBrowserScript(content: content, insertionPoint: .atDocStart)
     }
 
-    func handleAppAttestMessage(_ message: Any, host: String) {
-        guard let parsedMessage = parseAppAttestMessage(message) else {
-            logger?.error("Failed to parse app attest message")
+    func handleIntegrityCheckMessage(_ message: Any) {
+        guard let parsedMessage = parseIntegrityCheckMessage(message) else {
+            logger?.error("Failed to parse app attest request")
             return
         }
 
-        logger?.debug("Received app attest message: \(parsedMessage.messageType.rawValue)")
+        logger?.debug("Received app attest request for URL: \(parsedMessage.baseURL)")
 
-        switch parsedMessage.messageType {
-        case .requestIntegrityCheck:
-            handleIntegrityCheckRequest(message: parsedMessage, host: host)
+        let wrapper = attestationProvider.createAttestWrapper(
+            for: parsedMessage.baseURL,
+            with: { nil }
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(dAppCallFactory):
+                do {
+                    let response = try dAppCallFactory.createDAppResponse()
+                    self?.presenter?.didReceive(response: response)
+                } catch {
+                    self?.logger?.error("Failed to generate DAapp response: \(error)")
+                }
+            case let .failure(error):
+                self?.logger?.error("Failed to process app attest request: \(error)")
+            }
         }
     }
 
-    func parseAppAttestMessage(_ message: Any) -> AppAttestMessage? {
+    func parseIntegrityCheckMessage(_ message: Any) -> IntegrityCheckMessage? {
         guard
             let dict = message as? NSDictionary,
-            let parsedMessage = try? dict.map(to: AppAttestMessage.self)
+            let parsedMessage = try? dict.map(to: IntegrityCheckMessage.self)
         else {
             return nil
         }
@@ -121,6 +139,7 @@ private extension DAppBrowserAppAttestInteractor {
 }
 
 // MARK: - Constants
+
 private extension DAppBrowserAppAttestInteractor {
     enum Constants {
         static let jsInterfaceName = "IntegrityProvider"

@@ -533,10 +533,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     func dAppTransport(
-        _ transport: DAppBrowserTransportProtocol,
+        _: DAppBrowserTransportProtocol,
         didReceiveResponse response: DAppScriptResponse
     ) {
-        presenter?.didReceive(response: response, forTransport: transport.name)
+        presenter?.didReceive(response: response)
     }
 
     func dAppTransport(_: DAppBrowserTransportProtocol, didReceiveAuth request: DAppAuthRequest) {

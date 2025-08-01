@@ -3,7 +3,7 @@ import Operation_iOS
 
 protocol DAppRemoteAttestFactoryProtocol {
     func createGetChallengeOperation(using baseURL: URL) -> BaseOperation<Data>
-    
+
     func createAttestationOperation(
         using baseURL: URL,
         _ dataClosure: @escaping () throws -> DAppAttestRequest
@@ -24,16 +24,16 @@ final class DAppRemoteAttestFactory {
                 HttpContentType.json.rawValue,
                 forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
             )
-            
+
             let bodyParams = try bodyParamsClosure()
-            
+
             if let bodyParams {
                 request.httpBody = try JSONEncoder().encode(bodyParams)
             }
-            
+
             return request
         }
-        
+
         return NetworkOperation(
             requestFactory: requestFactory,
             resultFactory: AnyNetworkResultFactory(factory: responseFactory)
@@ -46,20 +46,20 @@ final class DAppRemoteAttestFactory {
 extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
     func createGetChallengeOperation(using baseURL: URL) -> BaseOperation<Data> {
         let fullURL = baseURL.appending(path: Constants.challengesEndpoint)
-        
+
         let responseFactory = AnyNetworkResultFactory<Data> { data in
             let response = try JSONDecoder().decode(
                 AppAttestChallengeResponse.self,
                 from: data
             )
-            
+
             guard let challengeData = Data(base64Encoded: response.challenge) else {
                 throw AppAttestError.invalidChallengeFormat
             }
-            
+
             return challengeData
         }
-        
+
         return createGenericRequestOperation(
             for: fullURL,
             bodyParamsClosure: { nil },
@@ -67,13 +67,13 @@ extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
             responseFactory: responseFactory
         )
     }
-    
+
     func createAttestationOperation(
         using baseURL: URL,
         _ dataClosure: @escaping () throws -> DAppAttestRequest
     ) -> BaseOperation<Void> {
         let fullURL = baseURL.appending(path: Constants.attestationsEndpoint)
-        
+
         return createGenericRequestOperation(
             for: fullURL,
             bodyParamsClosure: { try dataClosure() },

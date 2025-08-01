@@ -1481,7 +1481,7 @@
 		2D06CC292E38F4FD0093CA84 /* AppAttestClientHashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */; };
 		2D06CC2B2E38F5170093CA84 /* AppAttestLocalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */; };
 		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
-		2D06CC2F2E38F53E0093CA84 /* HttpAuthRequestModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */; };
+		2D06CC2F2E38F53E0093CA84 /* AssertionDAppCallFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2E2E38F53E0093CA84 /* AssertionDAppCallFactory.swift */; };
 		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
 		2D06CC342E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */; };
 		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
@@ -7590,7 +7590,7 @@
 		2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestClientHashing.swift; sourceTree = "<group>"; };
 		2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestLocalSettings.swift; sourceTree = "<group>"; };
 		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
-		2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpAuthRequestModifier.swift; sourceTree = "<group>"; };
+		2D06CC2E2E38F53E0093CA84 /* AssertionDAppCallFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssertionDAppCallFactory.swift; sourceTree = "<group>"; };
 		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
 		2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAttestInteractor.swift; sourceTree = "<group>"; };
 		2D06CC352E3BBC280093CA84 /* AppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestError.swift; sourceTree = "<group>"; };
@@ -15728,7 +15728,6 @@
 				2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */,
 				2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */,
 				2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */,
-				2D06CC2E2E38F53E0093CA84 /* HttpAuthRequestModifier.swift */,
 				2D06CC302E38F5990093CA84 /* AppAttestService.swift */,
 			);
 			path = AppAttest;
@@ -15741,6 +15740,7 @@
 				2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */,
 				2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */,
 				2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */,
+				2D06CC2E2E38F53E0093CA84 /* AssertionDAppCallFactory.swift */,
 			);
 			path = Attest;
 			sourceTree = "<group>";
@@ -29825,7 +29825,7 @@
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
 				0C12BC482CEB996700AB919D /* XcmV4Multilocation.swift in Sources */,
 				0C12BC492CEB996700AB919D /* XcmV4Junction.swift in Sources */,
-				2D06CC2F2E38F53E0093CA84 /* HttpAuthRequestModifier.swift in Sources */,
+				2D06CC2F2E38F53E0093CA84 /* AssertionDAppCallFactory.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */,
 				0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */,
