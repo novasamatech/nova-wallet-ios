@@ -11,7 +11,7 @@ protocol DAppAttestationProviderProtocol {
 final class DAppAttestationProvider {
     private let appAttestService: AppAttestServiceProtocol
     private let remoteAttestationFactory: DAppRemoteAttestFactoryProtocol
-    private let attestationRepository: AnyDataProviderRepository<AppAttestBrowserLocalSettings>
+    private let attestationRepository: AnyDataProviderRepository<AppAttestBrowserSettings>
     private let operationQueue: OperationQueue
     private let syncQueue: DispatchQueue
     private let logger: LoggerProtocol
@@ -25,16 +25,15 @@ final class DAppAttestationProvider {
     init(
         appAttestService: AppAttestServiceProtocol,
         remoteAttestationFactory: DAppRemoteAttestFactoryProtocol,
-        attestationRepository: AnyDataProviderRepository<AppAttestBrowserLocalSettings>,
+        attestationRepository: AnyDataProviderRepository<AppAttestBrowserSettings>,
         operationQueue: OperationQueue,
-        syncQueue: DispatchQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.appAttestService = appAttestService
         self.remoteAttestationFactory = remoteAttestationFactory
         self.attestationRepository = attestationRepository
         self.operationQueue = operationQueue
-        self.syncQueue = syncQueue
+        syncQueue = DispatchQueue(label: "io.novawallet.dappattestationprovider.\(UUID().uuidString)")
         self.logger = logger
     }
 }
@@ -43,7 +42,7 @@ final class DAppAttestationProvider {
 
 private extension DAppAttestationProvider {
     func saveLocalSettingsWrapper(
-        _ settingsClosure: @escaping () throws -> AppAttestBrowserLocalSettings
+        _ settingsClosure: @escaping () throws -> AppAttestBrowserSettings
     ) -> CompoundOperationWrapper<Void> {
         let saveOperation = attestationRepository.saveOperation({
             let settings = try settingsClosure()
@@ -162,7 +161,7 @@ private extension DAppAttestationProvider {
 
         let attestationInitSaveWrapper = saveLocalSettingsWrapper {
             let appAttestModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
-            return AppAttestBrowserLocalSettings(
+            return AppAttestBrowserSettings(
                 baseURL: baseURLString,
                 keyId: appAttestModel.keyId,
                 isAttested: false
@@ -190,7 +189,7 @@ private extension DAppAttestationProvider {
 
             let attestationModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
 
-            return AppAttestBrowserLocalSettings(
+            return AppAttestBrowserSettings(
                 baseURL: baseURLString,
                 keyId: attestationModel.keyId,
                 isAttested: true
@@ -220,7 +219,7 @@ private extension DAppAttestationProvider {
         )
     }
 
-    func loadLocalSettingsOperation(for baseURL: String) -> BaseOperation<AppAttestBrowserLocalSettings?> {
+    func loadLocalSettingsOperation(for baseURL: String) -> BaseOperation<AppAttestBrowserSettings?> {
         attestationRepository.fetchOperation(
             by: { baseURL },
             options: .init()

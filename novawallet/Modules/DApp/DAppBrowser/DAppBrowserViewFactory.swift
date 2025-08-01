@@ -90,23 +90,67 @@ struct DAppBrowserViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let interactor = DAppBrowserInteractor(
-            transports: transports,
-            selectedTab: selectedTab,
-            wallet: wallet,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            securedLayer: SecurityLayerService.shared,
-            dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
-            dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
-            dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
-            dAppsFavoriteRepository: favoritesRepository,
-            operationQueue: operationQueue,
-            sequentialPhishingVerifier: phishingVerifier,
-            tabManager: DAppBrowserTabManager.shared,
-            applicationHandler: ApplicationHandler(),
-            logger: logger
-        )
+        if requiresAttestation(for: selectedTab) {
+            let appAttestService = AppAttestService()
+            let remoteAttestationFactory = DAppRemoteAttestFactory()
 
-        return interactor
+            let mapper = AnyCoreDataMapper(AppAttestBrowserSettingsMapper())
+
+            let coreDataRepository: CoreDataRepository<AppAttestBrowserSettings, CDAppAttestBrowserSettings> = storageFacade.createRepository(mapper: mapper)
+
+            let attestationProvider = DAppAttestationProvider(
+                appAttestService: appAttestService,
+                remoteAttestationFactory: remoteAttestationFactory,
+                attestationRepository: AnyDataProviderRepository(coreDataRepository),
+                operationQueue: operationQueue
+            )
+
+            return DAppBrowserAppAttestInteractor(
+                transports: transports,
+                selectedTab: selectedTab,
+                wallet: wallet,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                securedLayer: SecurityLayerService.shared,
+                dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+                dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
+                dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
+                dAppsFavoriteRepository: favoritesRepository,
+                operationQueue: operationQueue,
+                sequentialPhishingVerifier: phishingVerifier,
+                tabManager: DAppBrowserTabManager.shared,
+                applicationHandler: ApplicationHandler(),
+                attestationProvider: attestationProvider,
+                logger: logger
+            )
+        } else {
+            return DAppBrowserInteractor(
+                transports: transports,
+                selectedTab: selectedTab,
+                wallet: wallet,
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                securedLayer: SecurityLayerService.shared,
+                dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+                dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
+                dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
+                dAppsFavoriteRepository: favoritesRepository,
+                operationQueue: operationQueue,
+                sequentialPhishingVerifier: phishingVerifier,
+                tabManager: DAppBrowserTabManager.shared,
+                applicationHandler: ApplicationHandler(),
+                logger: logger
+            )
+        }
+    }
+
+    private static func requiresAttestation(for selectedTab: DAppBrowserTab) -> Bool {
+        let attestingDapps: Set<String> = [
+            "novashots.io"
+        ]
+
+        guard let host = selectedTab.url.host() else {
+            return false
+        }
+
+        return attestingDapps.contains(host)
     }
 }

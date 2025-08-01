@@ -1481,17 +1481,18 @@
 		2D06CC292E38F4FD0093CA84 /* AppAttestClientHashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */; };
 		2D06CC2B2E38F5170093CA84 /* AppAttestLocalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */; };
 		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
-		2D06CC2F2E38F53E0093CA84 /* AssertionDAppCallFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2E2E38F53E0093CA84 /* AssertionDAppCallFactory.swift */; };
+		2D06CC2F2E38F53E0093CA84 /* DAppAssertionCallFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2E2E38F53E0093CA84 /* DAppAssertionCallFactory.swift */; };
 		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
 		2D06CC342E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */; };
 		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
-		2D06CC382E3BBC450093CA84 /* AppAttestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC372E3BBC450093CA84 /* AppAttestMessage.swift */; };
+		2D06CC382E3BBC450093CA84 /* IntegrityCheckMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC372E3BBC450093CA84 /* IntegrityCheckMessage.swift */; };
 		2D06CC3B2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */; };
 		2D06CC3F2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */; };
 		2D06CC412E3BD8BD0093CA84 /* DAppAttestRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */; };
 		2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D06CC462E3BFA1C0093CA84 /* DAppAttestationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */; };
+		2D06CC492E3C95A30093CA84 /* AppAttestBrowserSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC482E3C95A30093CA84 /* AppAttestBrowserSettingsMapper.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
@@ -7590,16 +7591,18 @@
 		2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestClientHashing.swift; sourceTree = "<group>"; };
 		2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestLocalSettings.swift; sourceTree = "<group>"; };
 		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
-		2D06CC2E2E38F53E0093CA84 /* AssertionDAppCallFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssertionDAppCallFactory.swift; sourceTree = "<group>"; };
+		2D06CC2E2E38F53E0093CA84 /* DAppAssertionCallFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAssertionCallFactory.swift; sourceTree = "<group>"; };
 		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
 		2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAttestInteractor.swift; sourceTree = "<group>"; };
 		2D06CC352E3BBC280093CA84 /* AppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestError.swift; sourceTree = "<group>"; };
-		2D06CC372E3BBC450093CA84 /* AppAttestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestMessage.swift; sourceTree = "<group>"; };
+		2D06CC372E3BBC450093CA84 /* IntegrityCheckMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrityCheckMessage.swift; sourceTree = "<group>"; };
 		2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestChallengeResponse.swift; sourceTree = "<group>"; };
 		2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestVerificationFactory.swift; sourceTree = "<group>"; };
 		2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestRequest.swift; sourceTree = "<group>"; };
 		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
 		2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestationProvider.swift; sourceTree = "<group>"; };
+		2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel17.xcdatamodel; sourceTree = "<group>"; };
+		2D06CC482E3C95A30093CA84 /* AppAttestBrowserSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestBrowserSettingsMapper.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
@@ -15740,7 +15743,7 @@
 				2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */,
 				2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */,
 				2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */,
-				2D06CC2E2E38F53E0093CA84 /* AssertionDAppCallFactory.swift */,
+				2D06CC2E2E38F53E0093CA84 /* DAppAssertionCallFactory.swift */,
 			);
 			path = Attest;
 			sourceTree = "<group>";
@@ -15748,7 +15751,7 @@
 		2D06CC392E3BCBA70093CA84 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2D06CC372E3BBC450093CA84 /* AppAttestMessage.swift */,
+				2D06CC372E3BBC450093CA84 /* IntegrityCheckMessage.swift */,
 				2D06CC352E3BBC280093CA84 /* AppAttestError.swift */,
 				2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */,
 				2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */,
@@ -20658,6 +20661,7 @@
 				0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */,
 				2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */,
 				770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */,
+				2D06CC482E3C95A30093CA84 /* AppAttestBrowserSettingsMapper.swift */,
 				0C0F6D6D2D39549100943A7C /* StakingDashboardMythosMapper.swift */,
 			);
 			path = EntityToModel;
@@ -29480,7 +29484,7 @@
 				880CC0B029E7F194008C7F65 /* EquillibriumLocksUpdater.swift in Sources */,
 				843910DB253F90C400E3C217 /* NovaWindow.swift in Sources */,
 				84DD5F4C263DE82C00425ACF /* DataValidationRunner.swift in Sources */,
-				2D06CC382E3BBC450093CA84 /* AppAttestMessage.swift in Sources */,
+				2D06CC382E3BBC450093CA84 /* IntegrityCheckMessage.swift in Sources */,
 				84D6D7FC27A7F4B40094FC33 /* AssetListNetworkView.swift in Sources */,
 				0CFF821B2D8AF98F00DB17A4 /* XcmDynamicCrosschainFeeCalculator.swift in Sources */,
 				84D8F16B24D8263300AF43E9 /* ModalPickerFactory.swift in Sources */,
@@ -29825,7 +29829,7 @@
 				8849AD6229C3532600F4F7FF /* String+Split.swift in Sources */,
 				0C12BC482CEB996700AB919D /* XcmV4Multilocation.swift in Sources */,
 				0C12BC492CEB996700AB919D /* XcmV4Junction.swift in Sources */,
-				2D06CC2F2E38F53E0093CA84 /* AssertionDAppCallFactory.swift in Sources */,
+				2D06CC2F2E38F53E0093CA84 /* DAppAssertionCallFactory.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */,
 				0C61084B2CD88F9B00909928 /* AssetsExchangeService.swift in Sources */,
@@ -31809,6 +31813,7 @@
 				848B3000286EDE3800465BA2 /* ParaIdOperationFactory.swift in Sources */,
 				84F47D4B2666EF1C00F7647A /* KaruraStatementData.swift in Sources */,
 				0CEB6B4D2CA6676900609DC2 /* VoteCardPanState.swift in Sources */,
+				2D06CC492E3C95A30093CA84 /* AppAttestBrowserSettingsMapper.swift in Sources */,
 				2DBB28932CD432FB00DFA0AD /* CopyAddressPresentable.swift in Sources */,
 				84D8753A28EB0A93004065BD /* GovernanceChainSettings.swift in Sources */,
 				8443FE24255586230092893D /* ExportMnemonicConfirmProtocols.swift in Sources */,
@@ -36052,6 +36057,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */,
 				2D6CCF5E2E3807E7001A94C8 /* MultiassetUserDataModel16.xcdatamodel */,
 				2D86FBE32DBA49E600E55B9F /* MultiassetUserDataModel15.xcdatamodel */,
 				2DDEE0E72CEC9704002E9289 /* MultiassetUserDataModel14.xcdatamodel */,
@@ -36070,7 +36076,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 2D6CCF5E2E3807E7001A94C8 /* MultiassetUserDataModel16.xcdatamodel */;
+			currentVersion = 2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

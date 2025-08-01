@@ -49,8 +49,8 @@ final class DAppBrowserAppAttestInteractor: DAppBrowserInteractor {
         host: String,
         transport name: String
     ) {
-        if name == Constants.jsInterfaceName {
-            handleIntegrityCheckMessage(message)
+        if name == Constants.messageHandlerName {
+            handleIntegrityProviderMessage(message)
             return
         }
 
@@ -74,36 +74,48 @@ private extension DAppBrowserAppAttestInteractor {
         let subscriptionScript = createAppAttestSubscriptionScript()
 
         return DAppTransportModel(
-            name: Constants.jsInterfaceName,
-            handlerNames: [Constants.jsInterfaceName],
+            name: Constants.messageHandlerName,
+            handlerNames: [Constants.messageHandlerName],
             scripts: [subscriptionScript]
         )
     }
 
     func createAppAttestSubscriptionScript() -> DAppBrowserScript {
-        let content = """
-        window.addEventListener("message", ({ data, source }) => {
-            if (source !== window) {
-                return;
-            }
+        let content =
+            """
+            window.addEventListener("message", ({ data, source }) => {
+                if (source !== window) {
+                    return;
+                }
 
-            window.webkit.messageHandlers.\(Constants.jsInterfaceName).postMessage(data);
-        });
-        """
+                if (data.origin === "\(Constants.jsInterfaceName)") {
+                    window.webkit.messageHandlers.\(Constants.messageHandlerName).postMessage(data);
+                }
+            });
+            """
 
         return DAppBrowserScript(content: content, insertionPoint: .atDocStart)
     }
 
-    func handleIntegrityCheckMessage(_ message: Any) {
-        guard let parsedMessage = parseIntegrityCheckMessage(message) else {
+    func handleIntegrityProviderMessage(_ message: Any) {
+        guard let parsedMessage = parseIntegrityProviderMessage(message) else {
             logger?.error("Failed to parse app attest request")
             return
         }
 
-        logger?.debug("Received app attest request for URL: \(parsedMessage.baseURL)")
+        switch parsedMessage {
+        case let .integrityCheck(model):
+            performAttestFlow(for: model.baseURL)
+        case let .signatureVerificationError(model):
+            logger?.error(model.error)
+        }
+    }
+
+    func performAttestFlow(for url: String) {
+        logger?.debug("Received app attest request for URL: \(url)")
 
         let wrapper = attestationProvider.createAttestWrapper(
-            for: parsedMessage.baseURL,
+            for: url,
             with: { nil }
         )
 
@@ -126,15 +138,18 @@ private extension DAppBrowserAppAttestInteractor {
         }
     }
 
-    func parseIntegrityCheckMessage(_ message: Any) -> IntegrityCheckMessage? {
-        guard
-            let dict = message as? NSDictionary,
-            let parsedMessage = try? dict.map(to: IntegrityCheckMessage.self)
-        else {
+    func parseIntegrityProviderMessage(_ message: Any) -> IntagrityProviderMessage? {
+        guard let dict = message as? NSDictionary else {
             return nil
         }
 
-        return parsedMessage
+        return if let parsedMessage = try? dict.map(to: IntegrityCheckMessage.self) {
+            .integrityCheck(parsedMessage)
+        } else if let parsedMessage = try? dict.map(to: IntegritySignatureVerificationError.self) {
+            .signatureVerificationError(parsedMessage)
+        } else {
+            nil
+        }
     }
 }
 
@@ -143,5 +158,6 @@ private extension DAppBrowserAppAttestInteractor {
 private extension DAppBrowserAppAttestInteractor {
     enum Constants {
         static let jsInterfaceName = "IntegrityProvider"
+        static let messageHandlerName = "appAttestHandler"
     }
 }
