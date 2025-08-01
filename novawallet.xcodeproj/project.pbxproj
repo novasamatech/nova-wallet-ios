@@ -1498,6 +1498,7 @@
 		2D081FA42E3D2064006019A3 /* DAppAttestErrorResponseFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA22E3D2064006019A3 /* DAppAttestErrorResponseFactory.swift */; };
 		2D081FA52E3D2064006019A3 /* DAppAssertionCallFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA12E3D2064006019A3 /* DAppAssertionCallFactory.swift */; };
 		2D081FA62E3D2064006019A3 /* AppAttestAssertionModelResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA02E3D2064006019A3 /* AppAttestAssertionModelResult.swift */; };
+		2D081FA82E3D2130006019A3 /* DAppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA72E3D2130006019A3 /* DAppAttestError.swift */; };
 		2D0A82EC2CB47E4E0043B330 /* PayCardSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */; };
 		2D0A82EE2CB47F080043B330 /* MessageSheetTimerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */; };
 		2D0A82F02CB5722C0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
@@ -7610,6 +7611,7 @@
 		2D081FA02E3D2064006019A3 /* AppAttestAssertionModelResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestAssertionModelResult.swift; sourceTree = "<group>"; };
 		2D081FA12E3D2064006019A3 /* DAppAssertionCallFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAssertionCallFactory.swift; sourceTree = "<group>"; };
 		2D081FA22E3D2064006019A3 /* DAppAttestErrorResponseFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestErrorResponseFactory.swift; sourceTree = "<group>"; };
+		2D081FA72E3D2130006019A3 /* DAppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestError.swift; sourceTree = "<group>"; };
 		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
@@ -15735,6 +15737,7 @@
 				2D06CC282E38F4FD0093CA84 /* AppAttestClientHashing.swift */,
 				2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */,
 				2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */,
+				2D06CC352E3BBC280093CA84 /* AppAttestError.swift */,
 				2D06CC302E38F5990093CA84 /* AppAttestService.swift */,
 			);
 			path = AppAttest;
@@ -15756,7 +15759,7 @@
 			isa = PBXGroup;
 			children = (
 				2D06CC372E3BBC450093CA84 /* IntegrityCheckMessage.swift */,
-				2D06CC352E3BBC280093CA84 /* AppAttestError.swift */,
+				2D081FA72E3D2130006019A3 /* DAppAttestError.swift */,
 				2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */,
 				2D06CC402E3BD8BD0093CA84 /* DAppAttestRequest.swift */,
 			);
@@ -31607,6 +31610,7 @@
 				84EDF66D29C4F41C002173E6 /* EvmBalanceMessage.swift in Sources */,
 				881CA22529E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift in Sources */,
 				845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */,
+				2D081FA82E3D2130006019A3 /* DAppAttestError.swift in Sources */,
 				0C11D8582CC9FED7003EC46D /* AssetsHydraStableswapExchange.swift in Sources */,
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
 				84C1E7C929EE990800D37668 /* Web3NameProvider.swift in Sources */,
