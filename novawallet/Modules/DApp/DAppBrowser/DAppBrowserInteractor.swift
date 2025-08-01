@@ -23,6 +23,7 @@ class DAppBrowserInteractor {
     let securedLayer: SecurityLayerServiceProtocol
     let tabManager: DAppBrowserTabManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
+    let attestHandler: DAppAttestHandlerProtocol
 
     let operationQueue: OperationQueue
 
@@ -45,6 +46,7 @@ class DAppBrowserInteractor {
         sequentialPhishingVerifier: PhishingSiteVerifing,
         tabManager: DAppBrowserTabManagerProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        attestHandler: DAppAttestHandlerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
@@ -57,6 +59,7 @@ class DAppBrowserInteractor {
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
         self.tabManager = tabManager
         self.applicationHandler = applicationHandler
+        self.attestHandler = attestHandler
         self.securedLayer = securedLayer
 
         if let existingDataSource = currentTab.transportStates?.first?.dataSource {
@@ -77,6 +80,13 @@ class DAppBrowserInteractor {
         host: String,
         transport name: String
     ) {
+        // MARK: Integrity check
+
+        guard !attestHandler.canHandle(transportName: name) else {
+            attestHandler.handle(message: message)
+            return
+        }
+
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
@@ -96,7 +106,7 @@ class DAppBrowserInteractor {
     }
 
     func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
-        transports.map { transport in
+        var wrappers = transports.map { transport in
             let bridgeOperation = transport.createBridgeScriptOperation()
             let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
             let transportName = transport.name
@@ -121,6 +131,13 @@ class DAppBrowserInteractor {
 
             return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
         }
+
+        // MARK: Integrity check
+
+        let attestModel = attestHandler.createTransportModel()
+        wrappers.append(.createWithResult(attestModel))
+
+        return wrappers
     }
 }
 
@@ -412,7 +429,9 @@ private extension DAppBrowserInteractor {
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
         storeTab(currentTab)
+
         applicationHandler.delegate = self
+        attestHandler.delegate = self
 
         setupState()
         provideTabs()
@@ -592,5 +611,13 @@ extension DAppBrowserInteractor: ApplicationHandlerDelegate {
             transportSaveWrapper.allOperations,
             waitUntilFinished: false
         )
+    }
+}
+
+// MARK: - DAppAttestHandlerDelegate
+
+extension DAppBrowserInteractor: DAppAttestHandlerDelegate {
+    func handleResponse(_ response: DAppScriptResponse) {
+        presenter?.didReceive(response: response)
     }
 }

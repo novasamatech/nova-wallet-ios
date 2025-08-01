@@ -14,6 +14,7 @@ final class DAppAttestationProvider {
     private let attestationRepository: AnyDataProviderRepository<AppAttestBrowserSettings>
     private let operationQueue: OperationQueue
     private let syncQueue: DispatchQueue
+    private let bundle: Bundle
     private let logger: LoggerProtocol
 
     private let attestationCancellable = CancellableCallStore()
@@ -27,6 +28,7 @@ final class DAppAttestationProvider {
         remoteAttestationFactory: DAppRemoteAttestFactoryProtocol,
         attestationRepository: AnyDataProviderRepository<AppAttestBrowserSettings>,
         operationQueue: OperationQueue,
+        bundle: Bundle = Bundle.main,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.appAttestService = appAttestService
@@ -34,6 +36,7 @@ final class DAppAttestationProvider {
         self.attestationRepository = attestationRepository
         self.operationQueue = operationQueue
         syncQueue = DispatchQueue(label: "io.novawallet.dappattestationprovider.\(UUID().uuidString)")
+        self.bundle = bundle
         self.logger = logger
     }
 }
@@ -168,15 +171,23 @@ private extension DAppAttestationProvider {
 
         attestationInitSaveWrapper.addDependency(wrapper: attestationWrapper)
 
-        let remoteAttestationOperation = remoteAttestationFactory.createAttestationOperation(using: baseURL) {
+        let remoteAttestationOperation = remoteAttestationFactory.createAttestationOperation(
+            using: baseURL
+        ) { [weak self] in
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+            guard let bundleId = bundle.bundleIdentifier else {
+                throw AppAttestServiceError.bundleIdUnavailable
+            }
+
             try attestationInitSaveWrapper.targetOperation.extractNoCancellableResultData()
 
             let attestationModel = try attestationWrapper.targetOperation.extractNoCancellableResultData()
 
             return DAppAttestRequest(
-                challenge: attestationModel.challenge,
+                challenge: attestationModel.challenge.toHexString(),
                 attestation: attestationModel.result,
-                appIntegrityId: attestationModel.keyId
+                appIntegrityId: attestationModel.keyId,
+                bundleId: bundleId
             )
         }
 

@@ -1,7 +1,8 @@
 import Foundation
 
 struct DAppAttestRequest: Codable {
-    var challenge: Data
+    let challenge: String
     @Base64Codable var attestation: Data
     let appIntegrityId: String
+    let bundleId: String
 }

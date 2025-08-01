@@ -1482,7 +1482,6 @@
 		2D06CC2B2E38F5170093CA84 /* AppAttestLocalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */; };
 		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
 		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
-		2D06CC342E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */; };
 		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
 		2D06CC382E3BBC450093CA84 /* IntegrityCheckMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC372E3BBC450093CA84 /* IntegrityCheckMessage.swift */; };
 		2D06CC3B2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */; };
@@ -1499,6 +1498,7 @@
 		2D081FA52E3D2064006019A3 /* DAppAssertionCallFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA12E3D2064006019A3 /* DAppAssertionCallFactory.swift */; };
 		2D081FA62E3D2064006019A3 /* AppAttestAssertionModelResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA02E3D2064006019A3 /* AppAttestAssertionModelResult.swift */; };
 		2D081FA82E3D2130006019A3 /* DAppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA72E3D2130006019A3 /* DAppAttestError.swift */; };
+		2D081FAA2E3D4CE7006019A3 /* DAppAttestHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D081FA92E3D4CE7006019A3 /* DAppAttestHandling.swift */; };
 		2D0A82EC2CB47E4E0043B330 /* PayCardSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */; };
 		2D0A82EE2CB47F080043B330 /* MessageSheetTimerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */; };
 		2D0A82F02CB5722C0043B330 /* PayCardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */; };
@@ -7595,7 +7595,6 @@
 		2D06CC2A2E38F5170093CA84 /* AppAttestLocalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestLocalSettings.swift; sourceTree = "<group>"; };
 		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
 		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
-		2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAttestInteractor.swift; sourceTree = "<group>"; };
 		2D06CC352E3BBC280093CA84 /* AppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestError.swift; sourceTree = "<group>"; };
 		2D06CC372E3BBC450093CA84 /* IntegrityCheckMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrityCheckMessage.swift; sourceTree = "<group>"; };
 		2D06CC3A2E3BCBB80093CA84 /* AppAttestChallengeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestChallengeResponse.swift; sourceTree = "<group>"; };
@@ -7612,6 +7611,7 @@
 		2D081FA12E3D2064006019A3 /* DAppAssertionCallFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAssertionCallFactory.swift; sourceTree = "<group>"; };
 		2D081FA22E3D2064006019A3 /* DAppAttestErrorResponseFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestErrorResponseFactory.swift; sourceTree = "<group>"; };
 		2D081FA72E3D2130006019A3 /* DAppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestError.swift; sourceTree = "<group>"; };
+		2D081FA92E3D4CE7006019A3 /* DAppAttestHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAttestHandling.swift; sourceTree = "<group>"; };
 		2D0A82EB2CB47E4E0043B330 /* PayCardSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardSheetViewFactory.swift; sourceTree = "<group>"; };
 		2D0A82ED2CB47F080043B330 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		2D0A82EF2CB5722C0043B330 /* PayCardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayCardStatus.swift; sourceTree = "<group>"; };
@@ -15748,7 +15748,7 @@
 			children = (
 				2D081FA32E3D2064006019A3 /* DAppAssertionCallFactory */,
 				2D06CC392E3BCBA70093CA84 /* Model */,
-				2D06CC332E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift */,
+				2D081FA92E3D4CE7006019A3 /* DAppAttestHandling.swift */,
 				2D06CC3E2E3BD32C0093CA84 /* DAppAttestVerificationFactory.swift */,
 				2D06CC452E3BFA1C0093CA84 /* DAppAttestationProvider.swift */,
 			);
@@ -29488,7 +29488,6 @@
 				8490147424A94A37008F705E /* RootProtocol.swift in Sources */,
 				842876A424AE049B00D91AD8 /* SelectableSubtitleListViewModel.swift in Sources */,
 				AEE5FB1426457A98002B8FDC /* StakingRewardDestSetupInteractor.swift in Sources */,
-				2D06CC342E3A81A60093CA84 /* DAppBrowserAttestInteractor.swift in Sources */,
 				842D1E7D24D0686D00C30A7A /* TriangularedButton+Inspectable.swift in Sources */,
 				0C0CB3882AC5688100EAC516 /* AssetConversionPallet.swift in Sources */,
 				845D8ED92977F18300F22133 /* GovernanceDelegateStats.swift in Sources */,
@@ -30619,6 +30618,7 @@
 				F4113B3F260C77FF00DF4DBA /* StakingRewardPayoutsViewLayout.swift in Sources */,
 				AEA0C8A8267B6B3200F9666F /* SelectedValidatorListPresenter.swift in Sources */,
 				840D8918262429C900AB231B /* LocalStorageRequestFactory.swift in Sources */,
+				2D081FAA2E3D4CE7006019A3 /* DAppAttestHandling.swift in Sources */,
 				8463A71F25E39E07003B8160 /* StorageProviderSource.swift in Sources */,
 				84F4A9182550331D000CF0A3 /* SecretSource.swift in Sources */,
 				84FD3DB12540C09800A234E3 /* TransactionHistoryMergeManager.swift in Sources */,
