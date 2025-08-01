@@ -54,8 +54,6 @@ private extension DAppAttestationProvider {
         return CompoundOperationWrapper(targetOperation: saveOperation)
     }
 
-    // MARK: - Persistence
-
     func loadAttestationIfNeeded(using baseURL: String) {
         guard !attestationCancellable.hasCall, attestedKeyId == nil else {
             return
@@ -394,11 +392,7 @@ private extension DAppAttestationProvider {
         let bodyData: Data?
         let queue: DispatchQueue
     }
-}
-
-// MARK: - Constants
-
-private extension DAppAttestationProvider {
+    
     enum Constants {
         static let assertionEndpoint = "app-attest/signatures"
     }
