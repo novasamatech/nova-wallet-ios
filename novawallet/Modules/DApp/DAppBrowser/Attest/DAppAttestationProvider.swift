@@ -236,12 +236,10 @@ private extension DAppAttestationProvider {
             return
         }
 
-        let fullURL = baseURL.appending(path: Constants.assertionEndpoint)
-
         let callStore = CancellableCallStore()
         pendingAssertions[requestId] = callStore
 
-        let challengeOperation = remoteAttestationFactory.createGetChallengeOperation(using: fullURL)
+        let challengeOperation = remoteAttestationFactory.createGetChallengeOperation(using: baseURL)
         let assertionWrapper = appAttestService.createAssertionWrapper(
             challengeClosure: { try challengeOperation.extractNoCancellableResultData() },
             dataClosure: { bodyData },
@@ -392,7 +390,7 @@ private extension DAppAttestationProvider {
         let bodyData: Data?
         let queue: DispatchQueue
     }
-    
+
     enum Constants {
         static let assertionEndpoint = "app-attest/signatures"
     }

@@ -48,7 +48,7 @@ extension AppAttestAssertionModelResult: DAppAssertionCallFactory {
 }
 
 private struct AssertionVerificationDAppModel: Encodable {
-    @Base64Codable var challenge: Data
+    @HexCodable var challenge: Data
     let appIntegrityId: AppAttestKeyId
     @Base64Codable var signature: AppAttestAssertion
     let platform: String = "iOS"

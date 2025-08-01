@@ -49,7 +49,7 @@ final class DAppBrowserAppAttestInteractor: DAppBrowserInteractor {
         host: String,
         transport name: String
     ) {
-        if name == Constants.messageHandlerName {
+        if name == Constants.integrityCheckHandler || name == Constants.signatureVerificationErrorHandler {
             handleIntegrityProviderMessage(message)
             return
         }
@@ -71,27 +71,37 @@ final class DAppBrowserAppAttestInteractor: DAppBrowserInteractor {
 
 private extension DAppBrowserAppAttestInteractor {
     func createAppAttestTransport() -> DAppTransportModel {
-        let subscriptionScript = createAppAttestSubscriptionScript()
+        let script = createBridgeScript()
+
+        let handlerNames: Set<String> = [
+            Constants.integrityCheckHandler,
+            Constants.signatureVerificationErrorHandler,
+            Constants.jsInterfaceName
+        ]
 
         return DAppTransportModel(
-            name: Constants.messageHandlerName,
-            handlerNames: [Constants.messageHandlerName],
-            scripts: [subscriptionScript]
+            name: Constants.jsInterfaceName,
+            handlerNames: handlerNames,
+            scripts: [script]
         )
     }
 
-    func createAppAttestSubscriptionScript() -> DAppBrowserScript {
+    func createBridgeScript() -> DAppBrowserScript {
         let content =
             """
-            window.addEventListener("message", ({ data, source }) => {
-                if (source !== window) {
-                    return;
-                }
-
-                if (data.origin === "\(Constants.jsInterfaceName)") {
-                    window.webkit.messageHandlers.\(Constants.messageHandlerName).postMessage(data);
-                }
-            });
+                window.\(Constants.jsInterfaceName) = {
+                    requestIntegrityCheck: function(baseURL) {
+                        window.webkit.messageHandlers.\(Constants.integrityCheckHandler).postMessage({
+                            baseURL: baseURL
+                        });
+                    },
+                    signatureVerificationError: function(code, error) {
+                        window.webkit.messageHandlers.\(Constants.signatureVerificationErrorHandler).postMessage({
+                            code: code,
+                            error: error
+                        });
+                    }
+                };
             """
 
         return DAppBrowserScript(content: content, insertionPoint: .atDocStart)
@@ -158,6 +168,7 @@ private extension DAppBrowserAppAttestInteractor {
 private extension DAppBrowserAppAttestInteractor {
     enum Constants {
         static let jsInterfaceName = "IntegrityProvider"
-        static let messageHandlerName = "appAttestHandler"
+        static let integrityCheckHandler = "requestIntegrityCheck"
+        static let signatureVerificationErrorHandler = "signatureVerificationError"
     }
 }

@@ -144,7 +144,8 @@ struct DAppBrowserViewFactory {
 
     private static func requiresAttestation(for selectedTab: DAppBrowserTab) -> Bool {
         let attestingDapps: Set<String> = [
-            "novashots.io"
+            "novashots.io",
+            "novashots-b7f4d.firebaseapp.com"
         ]
 
         guard let host = selectedTab.url.host() else {

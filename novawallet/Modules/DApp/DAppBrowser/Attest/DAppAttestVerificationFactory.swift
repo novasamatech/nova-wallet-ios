@@ -36,7 +36,7 @@ final class DAppRemoteAttestFactory {
 
         return NetworkOperation(
             requestFactory: requestFactory,
-            resultFactory: AnyNetworkResultFactory(factory: responseFactory)
+            resultFactory: responseFactory
         )
     }
 }
@@ -47,14 +47,26 @@ extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
     func createGetChallengeOperation(using baseURL: URL) -> BaseOperation<Data> {
         let fullURL = baseURL.appending(path: Constants.challengesEndpoint)
 
-        let responseFactory = AnyNetworkResultFactory<Data> { data in
-            let response = try JSONDecoder().decode(
-                AppAttestChallengeResponse.self,
-                from: data
-            )
+        let block: NetworkResultFactoryBlock<Data> = { data, _, error in
+            if let error {
+                return .failure(error)
+            } else if let data {
+                do {
+                    let response = try JSONDecoder().decode(
+                        AppAttestChallengeResponse.self,
+                        from: data
+                    )
 
-            return response.challenge.data(using: .utf8) ?? Data(response.challenge.bytes)
+                    return .success(response.challenge)
+                } catch {
+                    return .failure(error)
+                }
+            } else {
+                return .failure(AppAttestError.invalidResponse)
+            }
         }
+
+        let responseFactory = AnyNetworkResultFactory(block: block)
 
         return createGenericRequestOperation(
             for: fullURL,
@@ -70,11 +82,21 @@ extension DAppRemoteAttestFactory: DAppRemoteAttestFactoryProtocol {
     ) -> BaseOperation<Void> {
         let fullURL = baseURL.appending(path: Constants.attestationsEndpoint)
 
+        let block: NetworkResultFactoryBlock<Void> = { data, _, error in
+            if let error {
+                .failure(error)
+            } else if let data {
+                .success(())
+            } else {
+                .failure(AppAttestError.invalidResponse)
+            }
+        }
+
         return createGenericRequestOperation(
             for: fullURL,
             bodyParamsClosure: { try dataClosure() },
             method: HttpMethod.post.rawValue,
-            responseFactory: AnyNetworkResultFactory<Void> {}
+            responseFactory: AnyNetworkResultFactory(block: block)
         )
     }
 }
