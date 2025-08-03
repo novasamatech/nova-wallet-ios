@@ -14,7 +14,7 @@ enum DelegatedMessageSheetViewFactory {
         let wireframe = MessageSheetWireframe()
 
         let repositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-        let repository = repositoryFactory.createProxiedSettingsRepository()
+        let repository = repositoryFactory.createDelegatedAccountSettingsRepository()
 
         let interactor = DelegatedMessageSheetInteractor(
             metaId: delegatedId,
@@ -167,6 +167,64 @@ enum DelegatedMessageSheetViewFactory {
 
         return view
     }
+
+    static func createMultisigRejectView(
+        multisigAccountId: MetaAccountModel.Id,
+        depositorAccount: MetaChainAccountResponse,
+        completionClosure: @escaping MessageSheetCallback,
+        cancelClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let wireframe = MessageSheetWireframe()
+
+        let repositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let repository = repositoryFactory.createDelegatedAccountSettingsRepository()
+
+        let interactor = DelegatedMessageSheetInteractor(
+            metaId: multisigAccountId,
+            repository: repository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
+        let presenter = DelegatedMessageSheetPresenter(
+            interactor: interactor,
+            wireframe: wireframe
+        )
+
+        let sheetContent = createMultisigRejectContent(depositorName: depositorAccount.chainAccount.name)
+
+        let text = LocalizableResource { locale in
+            R.string.localizable.delegatedSigningCheckmarkTitle(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetCheckmarkContentViewModel>(
+            title: sheetContent.title,
+            message: sheetContent.message,
+            graphics: sheetContent.graphics,
+            content: MessageSheetCheckmarkContentViewModel(checked: false, text: text),
+            mainAction: .continueAction(for: completionClosure),
+            secondaryAction: .cancelAction(for: cancelClosure)
+        )
+
+        let view = DelegatedMessageSheetViewController(
+            presenter: presenter,
+            viewModel: viewModel,
+            localizationManager: LocalizationManager.shared
+        )
+
+        view.allowsSwipeDown = false
+        view.controller.preferredContentSize = CGSize(width: 0, height: 358)
+
+        presenter.view = view
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
+        view.controller.modalTransitioningFactory = factory
+        view.controller.modalPresentationStyle = .custom
+
+        return view
+    }
 }
 
 private extension DelegatedMessageSheetViewFactory {
@@ -216,6 +274,34 @@ private extension DelegatedMessageSheetViewFactory {
             let decorator = AttributedReplacementStringDecorator(
                 pattern: marker,
                 replacements: [signatoryName],
+                attributes: [.foregroundColor: R.color.colorTextPrimary()!]
+            )
+
+            return decorator.decorate(attributedString: NSAttributedString(string: template))
+        }
+
+        return MessageSheetContent(
+            title: title,
+            message: message,
+            graphics: R.image.imageMultisig()
+        )
+    }
+
+    static func createMultisigRejectContent(depositorName: String?) -> MessageSheetContent {
+        let title = LocalizableResource { locale in
+            R.string.localizable.multisigSigningTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            let marker = AttributedReplacementStringDecorator.marker
+            let template = R.string.localizable.multisigTransactionRejectSheetMessage(
+                marker,
+                preferredLanguages: locale.rLanguages
+            )
+
+            let decorator = AttributedReplacementStringDecorator(
+                pattern: marker,
+                replacements: [depositorName].compactMap { $0 },
                 attributes: [.foregroundColor: R.color.colorTextPrimary()!]
             )
 

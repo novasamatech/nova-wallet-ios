@@ -6,7 +6,7 @@ protocol ProxyDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func hasSufficientBalance(
         available: BigUInt,
         deposit: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
@@ -85,7 +85,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
     func hasSufficientBalance(
         available: BigUInt,
         deposit: BigUInt?,
-        fee: BigUInt?,
+        fee: ExtrinsicFeeProtocol?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
@@ -118,7 +118,7 @@ final class ProxyDataValidatorFactory: ProxyDataValidatorFactoryProtocol {
                   let fee = fee else {
                 return false
             }
-            return available >= deposit + fee
+            return available >= deposit + (fee.amountForCurrentAccount ?? 0)
         })
     }
 

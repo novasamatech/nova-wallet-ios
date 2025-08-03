@@ -12,13 +12,15 @@ final class MultisigOperationConfirmPresenter {
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
 
+    var needsConfirmation: Bool?
     var signatories: [Multisig.Signatory]?
     var pendingOperation: Multisig.PendingOperationProxyModel?
     var balanceExistence: AssetBalanceExistence?
     var signatoryBalance: AssetBalance?
     var fee: ExtrinsicFeeProtocol?
+
     var utilityAssetPriceData: PriceData?
-    var transferAssetPriceData: PriceData?
+    var operationAssetPriceData: PriceData?
 
     var multisigContext: DelegatedAccount.MultisigAccountModel? {
         multisigWallet.getMultisig(for: chain)
@@ -63,7 +65,7 @@ private extension MultisigOperationConfirmPresenter {
             fee: fee,
             chainAsset: chainAsset,
             utilityAssetPrice: utilityAssetPriceData,
-            transferAssetPrice: transferAssetPriceData,
+            operationAssetPrice: operationAssetPriceData,
             confirmClosure: { [weak self] in
                 self?.doConfirm()
             },
@@ -105,7 +107,7 @@ private extension MultisigOperationConfirmPresenter {
 
         let viewModel = viewModelFactory.createAmountViewModel(
             from: definition,
-            priceData: transferAssetPriceData,
+            priceData: operationAssetPriceData,
             locale: selectedLocale
         )
 
@@ -173,6 +175,37 @@ private extension MultisigOperationConfirmPresenter {
     }
 
     func doConfirm() {
+        validateConfirmation { [weak self] in
+            guard let self else { return }
+
+            let confirmClosure = {
+                self.view?.didReceive(loading: true)
+                self.interactor.confirm()
+            }
+
+            guard let needsConfirmation, needsConfirmation else {
+                confirmClosure()
+                return
+            }
+
+            guard
+                let depositorAccountId = pendingOperation?.operation.multisigDefinition?.depositor,
+                let depositor = signatories?.first(where: { $0.accountId == depositorAccountId })?.localAccount
+            else {
+                return
+            }
+
+            wireframe.showConfirmOperationSheet(
+                from: view,
+                multisigAccountId: multisigWallet.metaId,
+                depositorAccount: depositor
+            ) {
+                confirmClosure()
+            }
+        }
+    }
+
+    func validateConfirmation(onSuccess: @escaping () -> Void) {
         guard let utilityChainAsset = chain.utilityChainAsset() else {
             return
         }
@@ -205,10 +238,7 @@ private extension MultisigOperationConfirmPresenter {
                 asset: utilityChainAsset.assetDisplayInfo,
                 locale: selectedLocale
             )
-        ]).runValidation { [weak self] in
-            self?.view?.didReceive(loading: true)
-            self?.interactor.confirm()
-        }
+        ]).runValidation { onSuccess() }
     }
 }
 
@@ -308,8 +338,8 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         provideFeeViewModel()
     }
 
-    func didReceiveTransferAssetPrice(_ priceData: PriceData?) {
-        transferAssetPriceData = priceData
+    func didReceiveOperationAssetPrice(_ priceData: PriceData?) {
+        operationAssetPriceData = priceData
 
         provideFeeViewModel()
     }
@@ -354,6 +384,10 @@ extension MultisigOperationConfirmPresenter: MultisigOperationConfirmInteractorO
         case .reject:
             showSuccessReject(with: model)
         }
+    }
+
+    func didReceive(needsConfirmation: Bool) {
+        self.needsConfirmation = needsConfirmation
     }
 }
 

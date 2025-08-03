@@ -1871,8 +1871,11 @@
 "common.view.details" = "Ver detalles";
 "common.approve" = "Aprobar";
 "multisig.validation.already.exists.title" = "La operación ya existe";
+"multisig.signing.is.not.supported.message" = "Las carteras multisig no soportan la firma de mensajes arbitrarios — solo transacciones";
 "multisig.call.data.copy" = "Copiar datos de la llamada";
 "multisig.call.data.share" = "Compartir datos de la llamada";
+"multisig.transaction.not.exist.title" = "No se puede realizar esta transacción";
+"multisig.transaction.not.exist.message" = "Esta transacción ya ha sido rechazada o ejecutada.";
 "multisig.deposit.info.message" = "El depósito permanece bloqueado en la cuenta del depositante hasta que la operación multisig sea ejecutada o rechazada.";
 "common.depositor" = "Depositante";
 "common.multisig.deposit" = "Depósito multisig";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@ no tiene suficiente saldo para colocar un depósito multisig de %@. Necesitas añadir %@ más a tu saldo.";
 "multisig.validation.not.enough.for.fee.message" = "%@ necesita al menos %@ para pagar esta tarifa de transacción y mantenerse por encima del saldo mínimo de red. Necesitas añadir %@ más a tu saldo.";
 "multisig.validation.insuffisient.balance.message" = "%@ no tiene suficiente saldo para pagar la tarifa de red de %@ y colocar un depósito multisig de %@. Necesitas añadir %@ más a tu saldo.";
-"feature.unsupported.sheet.title.sell" = "La venta no es compatible para %@";
-"feature.unsupported.sheet.title.card" = "La tarjeta de débito no es compatible para %@";
+"feature.unsupported.sheet.title.sell" = "La función de venta no está disponible para las billeteras %@";
+"feature.unsupported.sheet.title.card" = "La tarjeta de débito no es compatible con las billeteras %@";
 "multisig.transaction.created.sheet.message" = "Otros firmantes ahora pueden confirmar la transacción. Puedes rastrear su estado en el %@";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova ha cambiado automáticamente a tu billetera multisig para que puedas ver las transacciones pendientes.";
 "multisig.other.signatories" = "Otros firmantes";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "Hash de llamada";
 "call.data.validation.hash.matching.error.message" = "Estos datos de la llamada son para otra operación con hash de llamada %@";
 "call.data.validation.error.message" = "Los datos de llamada que proporcionó no son válidos o tienen un formato incorrecto. Por favor, asegúrese de que sean correctos e inténtelo de nuevo.";
+"feature.unsupported.sheet.title.sell.proxied" = "La función de venta no está disponible para esta billetera con proxied";
+"feature.unsupported.sheet.title.card.proxied" = "La tarjeta de débito no es compatible con esta billetera proxied";
+"feature.unsupported.sheet.message.sell.proxied" = "Para vender criptomonedas por dinero fiat, por favor cambie a una billetera diferente.";

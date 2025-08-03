@@ -38,22 +38,33 @@ private extension MainTabBarWireframe {
     }
 
     func openCardScreen(
-        in controller: UITabBarController,
+        in view: MainTabBarViewProtocol?,
         cardNavigation: PayCardNavigation?
     ) {
-        controller.selectedIndex = MainTabBarIndex.wallet
-        let viewController = controller.viewControllers?[MainTabBarIndex.wallet]
-        let navigationController = viewController as? UINavigationController
-        navigationController?.popToRootViewController(animated: true)
+        guard
+            let view,
+            let tabBarController = view.controller as? UITabBarController
+        else { return }
 
-        guard let cardView = cardScreenNavigationFactory.createCardScreen(using: cardNavigation) else {
-            return
+        checkingSupport(
+            of: .card,
+            for: SelectedWalletSettings.shared.value,
+            sheetPresentingView: view
+        ) { [weak self] in
+            tabBarController.selectedIndex = MainTabBarIndex.wallet
+            let viewController = tabBarController.viewControllers?[MainTabBarIndex.wallet]
+            let navigationController = viewController as? UINavigationController
+            navigationController?.popToRootViewController(animated: true)
+
+            guard let cardView = self?.cardScreenNavigationFactory.createCardScreen(using: cardNavigation) else {
+                return
+            }
+
+            navigationController?.pushViewController(
+                cardView.controller,
+                animated: true
+            )
         }
-
-        navigationController?.pushViewController(
-            cardView.controller,
-            animated: true
-        )
     }
 
     func openAssetDetailsScreen(
@@ -239,7 +250,7 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
             case let .gov(rederendumIndex):
                 openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
             case let .card(cardNavigation):
-                openCardScreen(in: controller, cardNavigation: cardNavigation)
+                openCardScreen(in: view, cardNavigation: cardNavigation)
             default:
                 break
             }

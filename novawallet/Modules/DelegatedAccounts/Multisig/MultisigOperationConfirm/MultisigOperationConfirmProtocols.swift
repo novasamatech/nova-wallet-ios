@@ -30,7 +30,8 @@ protocol MultisigOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalanceExistense(_ existense: AssetBalanceExistence)
     func didReceiveSignatoryBalance(_ assetBalance: AssetBalance?)
     func didReceiveUtilityAssetPrice(_ priceData: PriceData?)
-    func didReceiveTransferAssetPrice(_ priceData: PriceData?)
+    func didReceiveOperationAssetPrice(_ priceData: PriceData?)
+    func didReceive(needsConfirmation: Bool)
     func didCompleteSubmission(
         with model: ExtrinsicSubmittedModel,
         submissionType: MultisigSubmissionType
@@ -50,6 +51,12 @@ protocol MultisigOperationConfirmWireframeProtocol: AlertPresentable, ErrorPrese
     func showFullDetails(
         from view: ControllerBackedProtocol?,
         for operation: Multisig.PendingOperationProxyModel
+    )
+    func showConfirmOperationSheet(
+        from view: ControllerBackedProtocol?,
+        multisigAccountId: MetaAccountModel.Id,
+        depositorAccount: MetaChainAccountResponse,
+        completionClosure: @escaping MessageSheetCallback
     )
     func close(from view: ControllerBackedProtocol?)
 }

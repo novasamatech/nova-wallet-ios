@@ -12,6 +12,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
 
     let chain: ChainModel
     let multisigWallet: MetaAccountModel
+    let operationChainAsset: ChainAsset?
     let assetInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol
     let balanceRemoteSubscriptionFactory: WalletRemoteSubscriptionWrapperProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
@@ -31,13 +32,14 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
     private var assetRemoteSubscriptionId: UUID?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var utilityAssetPriceProvider: StreamableProvider<PriceData>?
-    private var transferAssetPriceProvider: StreamableProvider<PriceData>?
+    private var operationAssetPriceProvider: StreamableProvider<PriceData>?
     private var callProcessingStore = CancellableCallStore()
 
     init(
         operation: Multisig.PendingOperationProxyModel,
         chain: ChainModel,
         multisigWallet: MetaAccountModel,
+        operationChainAsset: ChainAsset?,
         remoteOperationFactory: MultisigStorageOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -55,6 +57,7 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
         self.operation = operation
         self.chain = chain
         self.multisigWallet = multisigWallet
+        self.operationChainAsset = operationChainAsset
         self.remoteOperationFactory = remoteOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -74,6 +77,20 @@ class MultisigOperationConfirmInteractor: AnyProviderAutoCleaning {
 
     deinit {
         clearBalanceRemoteSubscription()
+    }
+
+    func setup() {
+        setupSignatories()
+
+        pendingOperationProvider.subscribePendingOperation(
+            identifier: operation.operation.identifier,
+            handler: self
+        )
+
+        deriveAssetInfoAndProvideBalance()
+
+        setupUtilityAssetPriceSubscription()
+        setupOperationAssetPriceSubscriptionIfNeeded()
     }
 
     func didSetupSignatories() {
@@ -276,17 +293,18 @@ private extension MultisigOperationConfirmInteractor {
         )
     }
 
-    func setupTransferAssetPriceSubscriptionIfNeeded() {
-        clear(streamableProvider: &transferAssetPriceProvider)
+    func setupOperationAssetPriceSubscriptionIfNeeded() {
+        clear(streamableProvider: &operationAssetPriceProvider)
 
         guard
-            case let .transfer(transfer) = operation.formattedModel?.definition,
-            let priceId = transfer.asset.asset.priceId
+            case let amountChainAsset = operation.formattedModel?.definition.amountAsset,
+            amountChainAsset != chain.utilityChainAsset(),
+            let priceId = amountChainAsset?.asset.priceId
         else {
             return
         }
 
-        transferAssetPriceProvider = subscribeToPrice(
+        operationAssetPriceProvider = subscribeToPrice(
             for: priceId,
             currency: selectedCurrency
         )
@@ -350,20 +368,6 @@ private extension MultisigOperationConfirmInteractor {
 // MARK: - MultisigOperationConfirmInteractorInputProtocol
 
 extension MultisigOperationConfirmInteractor: MultisigOperationConfirmInteractorInputProtocol {
-    func setup() {
-        setupSignatories()
-
-        pendingOperationProvider.subscribePendingOperation(
-            identifier: operation.operation.identifier,
-            handler: self
-        )
-
-        deriveAssetInfoAndProvideBalance()
-
-        setupUtilityAssetPriceSubscription()
-        setupTransferAssetPriceSubscriptionIfNeeded()
-    }
-
     func confirm() {
         do {
             let callHash = operation.operation.callHash
@@ -456,10 +460,15 @@ extension MultisigOperationConfirmInteractor: PriceLocalStorageSubscriber, Price
     ) {
         let priceData = try? result.get()
 
-        if priceId == chain.utilityAsset()?.priceId {
-            presenter?.didReceiveUtilityAssetPrice(priceData)
-        } else {
-            presenter?.didReceiveTransferAssetPrice(priceData)
+        guard priceId == chain.utilityAsset()?.priceId else {
+            presenter?.didReceiveOperationAssetPrice(priceData)
+            return
+        }
+
+        presenter?.didReceiveUtilityAssetPrice(priceData)
+
+        if priceId == operationChainAsset?.asset.priceId {
+            presenter?.didReceiveOperationAssetPrice(priceData)
         }
     }
 }
@@ -473,6 +482,6 @@ extension MultisigOperationConfirmInteractor: SelectedCurrencyDepending {
         }
 
         setupUtilityAssetPriceSubscription()
-        setupTransferAssetPriceSubscriptionIfNeeded()
+        setupOperationAssetPriceSubscriptionIfNeeded()
     }
 }

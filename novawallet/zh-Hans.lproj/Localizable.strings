@@ -1871,8 +1871,11 @@
 "common.view.details" = "查看详细信息";
 "common.approve" = "批准";
 "multisig.validation.already.exists.title" = "操作已存在";
+"multisig.signing.is.not.supported.message" = "多签钱包不支持签署任意消息 —— 仅限交易";
 "multisig.call.data.copy" = "复制调用数据";
 "multisig.call.data.share" = "分享调用数据";
+"multisig.transaction.not.exist.title" = "无法执行此交易";
+"multisig.transaction.not.exist.message" = "此交易已被拒绝或执行。";
 "multisig.deposit.info.message" = "存款将在发起人的账户上锁定，直到多签操作被执行或拒绝。";
 "common.depositor" = "存款人";
 "common.multisig.deposit" = "多签存款";
@@ -1899,8 +1902,8 @@
 "multisig.validation.not.enough.for.deposit.message" = "%@ 没有足够的余额放置多签存款 %@。您需要在余额中添加 %@。";
 "multisig.validation.not.enough.for.fee.message" = "%@ 至少需要 %@ 来支付此交易费用，并保持高于最低网络余额。您需要在余额中添加 %@。";
 "multisig.validation.insuffisient.balance.message" = "%@ 没有足够的余额支付 %@ 的网络费用并放置 %@ 的多签存款。您需要在余额中添加 %@。";
-"feature.unsupported.sheet.title.sell" = "不支持 %@ 的出售";
-"feature.unsupported.sheet.title.card" = "不支持 %@ 的借记卡";
+"feature.unsupported.sheet.title.sell" = "%@ 钱包不支持卖出功能";
+"feature.unsupported.sheet.title.card" = "借记卡不支持%@钱包";
 "multisig.transaction.created.sheet.message" = "其他签署人现在可以确认交易。您可以在 %@ 中跟踪其状态。";
 "multisig.transactioncreated.sheet.proxied.hint" = "Nova 已自动切换到您的多签钱包，以便查看待处理交易。";
 "multisig.other.signatories" = "其他签署人";
@@ -1917,3 +1920,6 @@
 "common.call.hash" = "调用哈希";
 "call.data.validation.hash.matching.error.message" = "此调用数据用于另一个调用哈希为 %@ 的操作";
 "call.data.validation.error.message" = "您提供的通话数据无效或格式错误。请确保其正确后再试一次。";
+"feature.unsupported.sheet.title.sell.proxied" = "不支持此代理钱包的卖出功能";
+"feature.unsupported.sheet.title.card.proxied" = "借记卡不支持此代理钱包";
+"feature.unsupported.sheet.message.sell.proxied" = "要将加密货币兑换成法定货币，请切换到其他钱包。";

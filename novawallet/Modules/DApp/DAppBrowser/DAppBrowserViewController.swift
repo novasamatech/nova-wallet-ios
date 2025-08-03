@@ -480,7 +480,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         }
     }
 
-    func didReceive(response: DAppScriptResponse, forTransport _: String) {
+    func didReceive(response: DAppScriptResponse) {
         rootView.webView?.evaluateJavaScript(response.content)
     }
 

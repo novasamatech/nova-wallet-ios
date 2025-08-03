@@ -126,13 +126,15 @@ private extension MultisigOperationConfirmViewLayout {
         prepareTableView(signatoryTableView)
 
         signatoryTableView.addArrangedSubview(signatoryWalletCell)
-        signatoryTableView.addArrangedSubview(feeCell)
 
         signatoryWalletCell.titleLabel.text = viewModel.wallet.title
         signatoryWalletCell.bind(viewModel: viewModel.wallet.value)
 
-        feeCell.rowContentView.titleLabel.text = viewModel.fee.title
-        feeCell.rowContentView.bind(viewModel: viewModel.fee.value)
+        if let feeModel = viewModel.fee {
+            signatoryTableView.addArrangedSubview(feeCell)
+            feeCell.rowContentView.titleLabel.text = feeModel.title
+            feeCell.rowContentView.bind(viewModel: feeModel.value)
+        }
     }
 
     func setupAllSignatoriesSection(with viewModel: MultisigOperationConfirmViewModel.SignatoriesModel) {
