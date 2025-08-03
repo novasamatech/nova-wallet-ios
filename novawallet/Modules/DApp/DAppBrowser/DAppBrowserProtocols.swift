@@ -8,7 +8,7 @@ protocol DAppBrowserTransitionProtocol {
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol, DAppBrowserTransitionProtocol {
     func didReceive(viewModel: DAppBrowserModel)
     func didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)
-    func didReceive(response: DAppScriptResponse, forTransport name: String)
+    func didReceive(response: DAppScriptResponse)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
@@ -72,7 +72,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
     )
-    func didReceive(response: DAppScriptResponse, forTransport name: String)
+    func didReceive(response: DAppScriptResponse)
     func didReceiveConfirmation(
         request: DAppOperationRequest,
         type: DAppSigningType

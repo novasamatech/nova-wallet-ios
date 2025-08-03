@@ -4634,16 +4634,16 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)  {
+     func didReceive(response: DAppScriptResponse)  {
         
-    return cuckoo_manager.call("didReceive(response: DAppScriptResponse, forTransport: String)",
-            parameters: (response, name),
-            escapingParameters: (response, name),
+    return cuckoo_manager.call("didReceive(response: DAppScriptResponse)",
+            parameters: (response),
+            escapingParameters: (response),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(response: response, forTransport: name))
+            defaultCall: __defaultImplStub!.didReceive(response: response))
         
     }
     
@@ -4781,9 +4781,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveTabsCount(viewModel: DAppBrowserTabsButtonViewModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: DAppScriptResponse, forTransport: String)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse)> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], DAppScriptResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
@@ -4860,9 +4860,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppScriptResponse, String), Void> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppScriptResponse), Void> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -4948,7 +4948,7 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)   {
+     func didReceive(response: DAppScriptResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -5973,16 +5973,16 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)  {
+     func didReceive(response: DAppScriptResponse)  {
         
-    return cuckoo_manager.call("didReceive(response: DAppScriptResponse, forTransport: String)",
-            parameters: (response, name),
-            escapingParameters: (response, name),
+    return cuckoo_manager.call("didReceive(response: DAppScriptResponse)",
+            parameters: (response),
+            escapingParameters: (response),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(response: response, forTransport: name))
+            defaultCall: __defaultImplStub!.didReceive(response: response))
         
     }
     
@@ -6120,9 +6120,9 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: DAppScriptResponse, forTransport: String)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse)> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest, DAppSigningType)> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
@@ -6201,9 +6201,9 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppScriptResponse, String), Void> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
-	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppScriptResponse), Void> where M1.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6283,7 +6283,7 @@ import Operation_iOS
     
     
     
-     func didReceive(response: DAppScriptResponse, forTransport name: String)   {
+     func didReceive(response: DAppScriptResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
