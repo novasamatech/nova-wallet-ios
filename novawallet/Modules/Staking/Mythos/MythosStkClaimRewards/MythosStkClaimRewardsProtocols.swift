@@ -21,7 +21,7 @@ protocol MythosStkClaimRewardsInteractorOutputProtocol: AnyObject {
     func didReceiveAutoCompound(_ autoCompound: Percent?)
     func didReceiveClaimStragegy(_ claimStrategy: StakingClaimRewardsStrategy)
     func didReceiveFeeResult(_ result: Result<ExtrinsicFeeProtocol, Error>)
-    func didReceiveSubmissionResult(_ result: Result<String, Error>)
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol MythosStkClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable,

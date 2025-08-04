@@ -21,7 +21,7 @@ protocol StakingConfirmProxyInteractorInputProtocol: StakingProxyBaseInteractorI
 }
 
 protocol StakingConfirmProxyInteractorOutputProtocol: StakingProxyBaseInteractorOutputProtocol {
-    func didSubmit()
+    func didSubmit(model: ExtrinsicSubmittedModel)
     func didReceive(error: StakingConfirmProxyError)
 }
 

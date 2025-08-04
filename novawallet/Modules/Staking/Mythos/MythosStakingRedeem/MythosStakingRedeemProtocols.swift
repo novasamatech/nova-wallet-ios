@@ -13,7 +13,7 @@ protocol MythosStakingRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveFrozen(_ frozenBalance: MythosStakingFrozenBalance)
     func didReceiveFeeResult(_ result: Result<ExtrinsicFeeProtocol, Error>)
-    func didReceiveSubmissionResult(_ result: Result<String, Error>)
+    func didReceiveSubmissionResult(_ result: Result<ExtrinsicSubmittedModel, Error>)
 }
 
 protocol MythosStakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
@@ -21,10 +21,5 @@ protocol MythosStakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentabl
     AddressOptionsPresentable,
     MythosStakingErrorPresentable,
     MessageSheetPresentable,
-    ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {
-    func complete(
-        view: CollatorStakingRedeemViewProtocol?,
-        redeemedAll: Bool,
-        locale: Locale
-    )
-}
+    ModalAlertPresenting,
+    ExtrinsicSubmissionPresenting, ExtrinsicSigningErrorHandling {}

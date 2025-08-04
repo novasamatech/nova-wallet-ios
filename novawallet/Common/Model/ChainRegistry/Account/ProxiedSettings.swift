@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-struct ProxiedSettings: Equatable, Identifiable {
+struct DelegatedAccountSettings: Equatable, Identifiable {
     let identifier: String
     let confirmsOperation: Bool
 }

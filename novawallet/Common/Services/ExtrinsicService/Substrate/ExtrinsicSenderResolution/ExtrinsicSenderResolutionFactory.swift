@@ -28,7 +28,7 @@ final class ExtrinsicSenderResolutionFactory {
     }
 
     private func createDelegateResolver(
-        for proxiedAccount: ChainAccountResponse,
+        for delegatedAccount: ChainAccountResponse,
         chain: ChainModel,
         delegateKeyPath: KeyPath<MetaAccountModel, AccountId?>
     ) -> CompoundOperationWrapper<ExtrinsicSenderResolving> {
@@ -43,15 +43,21 @@ final class ExtrinsicSenderResolutionFactory {
             let wallets = try fetchOperation.extractNoCancellableResultData()
 
             guard let delegateAccountId = wallets.first(
-                where: { $0.metaId == proxiedAccount.metaId }
+                where: { $0.metaId == delegatedAccount.metaId }
             )?[keyPath: delegateKeyPath]
             else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
+            let callWrapper = try DelegatedCallWrapperFactory.createCallWrapper(
+                for: delegatedAccount,
+                delegateAccountId: delegateAccountId
+            )
+
             return ExtrinsicDelegateSenderResolver(
-                delegatedAccount: proxiedAccount,
+                delegatedAccount: delegatedAccount,
                 delegateAccountId: delegateAccountId,
+                callWrapper: callWrapper,
                 wallets: wallets,
                 chain: chain
             )

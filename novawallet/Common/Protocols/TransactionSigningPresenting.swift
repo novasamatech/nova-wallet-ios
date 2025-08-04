@@ -25,23 +25,13 @@ protocol TransactionSigningPresenting: AnyObject {
         completion: @escaping TransactionSigningClosure
     )
 
-    func presentProxyFlow(
-        for data: Data,
-        proxiedId: MetaAccountModel.Id,
-        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
-        substrateContext: ExtrinsicSigningContext.Substrate,
-        completion: @escaping TransactionSigningClosure
-    )
-
     func presentNotEnoughProxyPermissionsFlow(
-        for metaId: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     )
 
-    func presentMultisigFlow(
+    func presentDelegatedSigningFlow(
         for data: Data,
-        multisigAccountId: MetaAccountModel.Id,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         substrateContext: ExtrinsicSigningContext.Substrate,
         completion: @escaping TransactionSigningClosure
@@ -84,71 +74,6 @@ private extension TransactionSigningPresenter {
         controller.presentWithCardLayout(navigationController, animated: true)
     }
 
-    func presentDelegatedFlow(
-        for data: Data,
-        delegatedMetaId: MetaAccountModel.Id,
-        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
-        substrateContext: ExtrinsicSigningContext.Substrate,
-        validationClosure: @escaping (@escaping DelegatedSignValidationCompletion) -> Void,
-        completion: @escaping TransactionSigningClosure
-    ) {
-        guard let delegate = resolution.delegateAccount else {
-            completion(.failure(CommonError.dataCorruption))
-            return
-        }
-
-        let signClosure = createDelegateSigningClosure(
-            for: data,
-            delegate: delegate,
-            substrateContext: substrateContext,
-            completion: completion
-        )
-
-        let cancelClosure: () -> Void = {
-            completion(.failure(DelegatedSigningWrapperError.canceled))
-        }
-
-        let confirmSuccessClosure: () -> Void = {
-            validationClosure { isSuccess in
-                if isSuccess {
-                    signClosure()
-                } else {
-                    cancelClosure()
-                }
-            }
-        }
-
-        guard
-            let presentationController = self.presentationController,
-            let delegationType = resolution.allWallets.first(
-                where: { $0.metaId == delegatedMetaId }
-            )?.delegationId?.delegationType
-        else {
-            completion(.failure(CommonError.dataCorruption))
-            return
-        }
-
-        let confirmationPresenter = DelegatedSignConfirmationViewFactory.createPresenter(
-            from: delegatedMetaId,
-            delegationType: delegationType,
-            delegateAccountResponse: delegate.chainAccount,
-            completionClosure: { [weak self] result in
-                self?.flowHolder = nil
-
-                if result {
-                    confirmSuccessClosure()
-                } else {
-                    cancelClosure()
-                }
-            },
-            viewController: presentationController
-        )
-
-        flowHolder = confirmationPresenter
-
-        confirmationPresenter.setup()
-    }
-
     func createDelegateSigningClosure(
         for data: Data,
         delegate: MetaChainAccountResponse,
@@ -185,33 +110,6 @@ private extension TransactionSigningPresenter {
                     completion(.failure(error))
                 }
             }
-        }
-    }
-
-    func createProxyValidationClosure(
-        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
-        extrinsicMemo: ExtrinsicBuilderMemoProtocol
-    ) -> (@escaping DelegatedSignValidationCompletion) -> Void {
-        { [weak self] completionClosure in
-            guard
-                let strongSelf = self,
-                let presentationController = strongSelf.presentationController,
-                let presenter = ProxySignValidationViewFactory.createView(
-                    from: presentationController,
-                    resolvedProxy: resolution,
-                    calls: extrinsicMemo.restoreBuilder().getCalls(),
-                    completionClosure: { result in
-                        self?.flowHolder = nil
-                        completionClosure(result)
-                    }
-                ) else {
-                completionClosure(false)
-                return
-            }
-
-            strongSelf.flowHolder = presenter
-
-            presenter.setup()
         }
     }
 }
@@ -262,49 +160,7 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
         present(signingView: ledgerView, completion: completion)
     }
 
-    func presentProxyFlow(
-        for data: Data,
-        proxiedId: MetaAccountModel.Id,
-        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
-        substrateContext: ExtrinsicSigningContext.Substrate,
-        completion: @escaping TransactionSigningClosure
-    ) {
-        let validationClosure = createProxyValidationClosure(
-            resolution: resolution,
-            extrinsicMemo: substrateContext.extrinsicMemo
-        )
-
-        presentDelegatedFlow(
-            for: data,
-            delegatedMetaId: proxiedId,
-            resolution: resolution,
-            substrateContext: substrateContext,
-            validationClosure: validationClosure,
-            completion: completion
-        )
-    }
-
-    func presentMultisigFlow(
-        for data: Data,
-        multisigAccountId: MetaAccountModel.Id,
-        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
-        substrateContext: ExtrinsicSigningContext.Substrate,
-        completion: @escaping TransactionSigningClosure
-    ) {
-        // TODO: Implement validation
-
-        presentDelegatedFlow(
-            for: data,
-            delegatedMetaId: multisigAccountId,
-            resolution: resolution,
-            substrateContext: substrateContext,
-            validationClosure: { $0(true) },
-            completion: completion
-        )
-    }
-
     func presentNotEnoughProxyPermissionsFlow(
-        for metaId: String,
         resolution: ExtrinsicSenderResolution.ResolvedDelegate,
         completion: @escaping TransactionSigningClosure
     ) {
@@ -312,14 +168,11 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
             completion(.failure(DelegatedSigningWrapperError.closed))
         }
 
-        let accountRequest = resolution.chain.accountRequest()
-
         guard
-            let proxiedWallet = resolution.allWallets.first(where: { $0.metaId == metaId }),
-            let proxyModel = proxiedWallet.proxy,
-            let proxyWallet = resolution.allWallets.first(
-                where: { $0.fetch(for: accountRequest)?.accountId == proxyModel.accountId }
-            ) else {
+            let proxyWallet = resolution.getNotEnoughPermissionProxyWallet(),
+            let proxiedWallet = resolution.getNonResolvedProxiedWallet(),
+            let proxyModel = proxiedWallet.proxy else {
+            completion(.failure(CommonError.dataCorruption))
             return
         }
 
@@ -329,7 +182,7 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
 
         guard
             let notEnoughProxyPermissionView = DelegatedMessageSheetViewFactory.createNotEnoughPermissionsView(
-                proxiedName: resolution.delegatedAccount.name,
+                proxiedName: proxiedWallet.name,
                 proxyName: proxyWallet.name,
                 type: type,
                 completionCallback: completionClosure
@@ -347,5 +200,59 @@ extension TransactionSigningPresenter: TransactionSigningPresenting {
         }
 
         presentationController.present(notEnoughProxyPermissionView.controller, animated: true)
+    }
+
+    func presentDelegatedSigningFlow(
+        for data: Data,
+        resolution: ExtrinsicSenderResolution.ResolvedDelegate,
+        substrateContext: ExtrinsicSigningContext.Substrate,
+        completion: @escaping TransactionSigningClosure
+    ) {
+        guard let delegate = resolution.delegateAccount else {
+            completion(.failure(CommonError.dataCorruption))
+            return
+        }
+
+        let signClosure = createDelegateSigningClosure(
+            for: data,
+            delegate: delegate,
+            substrateContext: substrateContext,
+            completion: completion
+        )
+
+        let cancelClosure: () -> Void = {
+            completion(.failure(DelegatedSigningWrapperError.canceled))
+        }
+
+        let completionClosure: DelegatedSignValidationCompletion = { [weak self] isSuccess in
+            self?.flowHolder = nil
+
+            if isSuccess {
+                signClosure()
+            } else {
+                cancelClosure()
+            }
+        }
+
+        // Calls must be batched before passing to validation as we require a single call
+        let allCalls = substrateContext.extrinsicMemo.restoreBuilder().getCalls()
+
+        guard
+            let viewController = presentationController,
+            allCalls.count == 1,
+            let call = allCalls.first,
+            let confirmationPresenter = DelegatedSignValidationViewFactory.createView(
+                from: ControllerBacked(controller: viewController),
+                resolution: resolution,
+                call: call,
+                completionClosure: completionClosure
+            ) else {
+            cancelClosure()
+            return
+        }
+
+        flowHolder = confirmationPresenter
+
+        confirmationPresenter.setup()
     }
 }

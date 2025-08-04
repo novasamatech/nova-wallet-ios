@@ -5,6 +5,7 @@ struct ChainAccountRequest {
     let addressPrefix: ChainModel.AddressPrefix
     let isEthereumBased: Bool
     let supportsGenericLedger: Bool
+    let supportsMultisigs: Bool
 }
 
 struct ChainAccountResponse {
@@ -34,6 +35,7 @@ struct MetaChainAccountResponse {
     let substrateAccountId: AccountId?
     let ethereumAccountId: AccountId?
     let walletIdenticonData: Data?
+    let delegationId: MetaAccountDelegationId?
     let chainAccount: ChainAccountResponse
 }
 
@@ -42,6 +44,10 @@ struct MetaAccountDelegationId: Hashable {
     let delegatorId: AccountId
     let chainId: ChainModel.Id?
     let delegationType: DelegationType
+
+    func existsInChainWithId(_ identifier: ChainModel.Id) -> Bool {
+        chainId == nil || chainId == identifier
+    }
 }
 
 enum ChainAccountFetchingError: Error {
@@ -63,6 +69,10 @@ extension MetaChainAccountResponse {
 extension ChainAccountResponse {
     var delegated: Bool {
         type == .proxied || type == .multisig
+    }
+
+    var isProxied: Bool {
+        type == .proxied
     }
 
     var chainFormat: ChainFormat {
@@ -177,8 +187,14 @@ extension MetaAccountModel {
             } else {
                 return nil
             }
-        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly, .multisig:
+        case .secrets, .ledger, .paritySigner, .polkadotVault, .proxied, .watchOnly:
             return executeFetch(request: request)
+        case .multisig:
+            if request.supportsMultisigs {
+                return executeFetch(request: request)
+            } else {
+                return nil
+            }
         }
     }
 
@@ -304,6 +320,7 @@ extension MetaAccountModel {
                 substrateAccountId: substrateAccountId,
                 ethereumAccountId: ethereumAddress,
                 walletIdenticonData: walletIdenticonData(),
+                delegationId: delegationId,
                 chainAccount: $0
             )
         }
@@ -334,7 +351,8 @@ extension ChainModel {
             chainId: chainId,
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased,
-            supportsGenericLedger: supportsGenericLedgerApp
+            supportsGenericLedger: supportsGenericLedgerApp,
+            supportsMultisigs: hasMultisig
         )
     }
 

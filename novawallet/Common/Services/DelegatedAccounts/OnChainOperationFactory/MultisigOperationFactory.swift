@@ -2,14 +2,19 @@ import SubstrateSdk
 import Operation_iOS
 
 protocol MultisigStorageOperationFactoryProtocol {
-    func fetchMultisigStateWrapper(
-        for accountId: AccountId,
+    func fetchPendingOperations(
+        for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<OnChainMultisigs?>
-}
+    ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]>
 
-typealias OnChainMultisigs = (accountId: AccountId, multisigs: [Multisig.MultisigOperation])
+    func fetchPendingOperation(
+        for multisigAccountId: AccountId,
+        callHashClosure: @escaping () throws -> Substrate.CallHash,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<MultisigPallet.MultisigDefinition?>
+}
 
 final class MultisigStorageOperationFactory {
     private let storageRequestFactory: StorageRequestFactoryProtocol
@@ -17,31 +22,41 @@ final class MultisigStorageOperationFactory {
     init(storageRequestFactory: StorageRequestFactoryProtocol) {
         self.storageRequestFactory = storageRequestFactory
     }
+
+    init(operationQueue: OperationQueue) {
+        storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+    }
 }
 
 extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtocol {
-    func fetchMultisigStateWrapper(
-        for accountId: AccountId,
+    func fetchPendingOperations(
+        for multisigAccountId: AccountId,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<OnChainMultisigs?> {
+    ) -> CompoundOperationWrapper<[Substrate.CallHash: MultisigPallet.MultisigDefinition]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<[Multisig.MultisigOperation]>]> = storageRequestFactory.queryItems(
+        let request = MapRemoteStorageRequest(storagePath: MultisigPallet.multisigListStoragePath) {
+            BytesCodable(wrappedValue: multisigAccountId)
+        }
+        let wrapper: CompoundOperationWrapper<[MultisigPallet.CallHashKey: MultisigPallet.MultisigDefinition]>
+        wrapper = storageRequestFactory.queryByPrefix(
             engine: connection,
-            keyParams: { [BytesCodable(wrappedValue: accountId)] },
-            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: Multisig.multisigList
+            request: request,
+            storagePath: MultisigPallet.multisigListStoragePath,
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() }
         )
 
         wrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<OnChainMultisigs?> {
-            let result = try wrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let values = result.first?.value else { return nil }
-
-            return (accountId, values.compactMap { $0 })
+        let mapOperation = ClosureOperation<[Substrate.CallHash: MultisigPallet.MultisigDefinition]> {
+            try wrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+                .reduce(into: [:]) { $0[$1.key.callHash] = $1.value }
         }
 
         mapOperation.addDependency(wrapper.targetOperation)
@@ -52,5 +67,42 @@ extension MultisigStorageOperationFactory: MultisigStorageOperationFactoryProtoc
             targetOperation: mapOperation,
             dependencies: dependencies
         )
+    }
+
+    func fetchPendingOperation(
+        for multisigAccountId: AccountId,
+        callHashClosure: @escaping () throws -> Substrate.CallHash,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<MultisigPallet.MultisigDefinition?> {
+        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let wrapper: CompoundOperationWrapper<[StorageResponse<MultisigPallet.MultisigDefinition>]>
+        wrapper = storageRequestFactory.queryItems(
+            engine: connection,
+            keyParams1: {
+                [multisigAccountId]
+            },
+            keyParams2: {
+                let callHash = try callHashClosure()
+                return [callHash]
+            },
+            factory: {
+                try coderFactoryOperation.extractNoCancellableResultData()
+            },
+            storagePath: MultisigPallet.multisigListStoragePath
+        )
+
+        wrapper.addDependency(operations: [coderFactoryOperation])
+
+        let mappingOperation = ClosureOperation<MultisigPallet.MultisigDefinition?> {
+            try wrapper.targetOperation.extractNoCancellableResultData().first?.value
+        }
+
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper
+            .insertingHead(operations: [coderFactoryOperation])
+            .insertingTail(operation: mappingOperation)
     }
 }

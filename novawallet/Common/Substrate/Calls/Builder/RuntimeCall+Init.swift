@@ -6,6 +6,10 @@ extension RuntimeCall {
         self.init(moduleName: path.moduleName, callName: path.callName, args: args)
     }
 
+    var path: CallCodingPath {
+        CallCodingPath(moduleName: moduleName, callName: callName)
+    }
+
     func anyRuntimeCall(with context: RuntimeJsonContext?) throws -> AnyRuntimeCall {
         let anyArgs = try args.toScaleCompatibleJSON(with: context?.toRawContext())
 

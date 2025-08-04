@@ -83,8 +83,8 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
             runningIn: .main,
             completion: { [weak self] extrinsicParamsResult in
                 switch extrinsicParamsResult {
-                case let .success(extrinsic):
-                    self?.subscribeToRemarkUpdates(extrinsic: extrinsic)
+                case let .success(submittedModel):
+                    self?.subscribeToRemarkUpdates(extrinsic: submittedModel.extrinsic)
                 case let .failure(error):
                     self?.presenter.didReceiveVerifyRemark(result: .failure(error))
                 }

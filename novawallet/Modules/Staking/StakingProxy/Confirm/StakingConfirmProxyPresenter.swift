@@ -153,11 +153,12 @@ extension StakingConfirmProxyPresenter: StakingConfirmProxyPresenterProtocol {
 }
 
 extension StakingConfirmProxyPresenter: StakingConfirmProxyInteractorOutputProtocol {
-    func didSubmit() {
+    func didSubmit(model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(
             from: view,
+            sender: model.sender,
             completionAction: .dismiss,
             locale: selectedLocale
         )

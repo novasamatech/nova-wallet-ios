@@ -5,16 +5,19 @@ final class ExtrinsicDelegateSenderResolver {
     let wallets: [MetaAccountModel]
     let delegatedAccount: ChainAccountResponse
     let delegateAccountId: AccountId
+    let callWrapper: DelegationResolutionCallWrapperProtocol
     let chain: ChainModel
 
     init(
         delegatedAccount: ChainAccountResponse,
         delegateAccountId: AccountId,
+        callWrapper: DelegationResolutionCallWrapperProtocol,
         wallets: [MetaAccountModel],
         chain: ChainModel
     ) {
         self.delegatedAccount = delegatedAccount
         self.delegateAccountId = delegateAccountId
+        self.callWrapper = callWrapper
         self.wallets = wallets
         self.chain = chain
     }
@@ -34,44 +37,32 @@ final class ExtrinsicDelegateSenderResolver {
         from solution: DelegationResolution.PathFinderResult,
         builders: [ExtrinsicBuilderProtocol],
         resolutionFailures: [ExtrinsicSenderResolution.ResolutionDelegateFailure],
-        context: RuntimeJsonContext
+        coderFactory: RuntimeCoderFactoryProtocol
     ) throws -> ExtrinsicSenderBuilderResolution {
-        let newBuilders = try builders.map { builder in
-            try builder.wrappingCalls { callJson in
-                let call = try callJson.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext())
-                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-
-                guard let delegatePath = solution.callToPath[callPath] else {
-                    return callJson
-                }
-
-                let (resultCall, _) = try delegatePath.components.reduce(
-                    (callJson, delegatedAccount.accountId)
-                ) { callAndDelegatedAccount, component in
-                    let call = callAndDelegatedAccount.0
-                    let delegatedAccountId = callAndDelegatedAccount.1
-                    let delegationKey = DelegationResolution.DelegationKey(
-                        delegate: component.account.chainAccount.accountId,
-                        delegated: delegatedAccountId
-                    )
-
-                    let newCall = try component.delegationValue.wrapCall(
-                        call,
-                        delegation: delegationKey,
-                        context: context
-                    )
-
-                    return (newCall, component.account.chainAccount.accountId)
-                }
-
-                return resultCall
-            }
+        let results = try builders.map { builder in
+            try callWrapper.wrapCalls(
+                using: solution,
+                builder: builder,
+                coderFactory: coderFactory
+            )
         }
+
+        let paths = results.reduce(
+            into: [JSON: DelegationResolution.PathFinderPath]()
+        ) { accum, result in
+            guard let callJson = result.builder.getCalls().first else {
+                return
+            }
+
+            accum[callJson] = result.path
+        }
+
+        let builders = results.map(\.builder)
 
         let resolvedDelegate = ExtrinsicSenderResolution.ResolvedDelegate(
             delegateAccount: solution.delegate,
             delegatedAccount: delegatedAccount,
-            paths: solution.callToPath,
+            paths: paths,
             allWallets: wallets,
             chain: chain,
             failures: resolutionFailures
@@ -79,7 +70,7 @@ final class ExtrinsicDelegateSenderResolver {
 
         return ExtrinsicSenderBuilderResolution(
             sender: .delegate(resolvedDelegate),
-            builders: newBuilders
+            builders: builders
         )
     }
 }
@@ -131,7 +122,7 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
                 from: solution,
                 builders: builders,
                 resolutionFailures: resolutionFailures,
-                context: context
+                coderFactory: codingFactory
             )
         } else {
             // if delegate resolution fails we still want to calculate fee and notify about failures
@@ -139,16 +130,13 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
             let resolvedDelegate = ExtrinsicSenderResolution.ResolvedDelegate(
                 delegateAccount: nil,
                 delegatedAccount: delegatedAccount,
-                paths: nil,
+                paths: [:],
                 allWallets: wallets,
                 chain: chain,
                 failures: resolutionFailures
             )
 
-            return ExtrinsicSenderBuilderResolution(
-                sender: .delegate(resolvedDelegate),
-                builders: builders
-            )
+            return ExtrinsicSenderBuilderResolution(sender: .delegate(resolvedDelegate), builders: builders)
         }
     }
 }

@@ -7,6 +7,10 @@ protocol AccountDelegationPathValue {
         delegation: DelegationResolution.DelegationKey,
         context: RuntimeJsonContext
     ) throws -> JSON
+
+    var delegationType: DelegationType { get }
+
+    func delaysCallExecution() -> Bool
 }
 
 extension DelegationResolution {
@@ -56,7 +60,9 @@ extension DelegationResolution {
         ) throws -> PathFinderResult {
             let allCalls = Set(callPaths.keys)
 
-            let callDelegates = callPaths.reduce(into: [CallDelegateKey: DelegationResolution.GraphPath]()) { accum, keyValue in
+            let callDelegates = callPaths.reduce(
+                into: [CallDelegateKey: DelegationResolution.GraphPath]()
+            ) { accum, keyValue in
                 let call = keyValue.key
                 let paths = keyValue.value
 
@@ -184,18 +190,26 @@ extension DelegationResolution.PathFinder {
     struct ProxyDelegationValue: AccountDelegationPathValue {
         let proxyType: Proxy.ProxyType
 
+        var delegationType: DelegationType {
+            .proxy(proxyType)
+        }
+
         func wrapCall(
             _ call: JSON,
             delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
             try Proxy.ProxyCall(
-                real: .accoundId(delegation.delegate),
+                real: .accoundId(delegation.delegated),
                 forceProxyType: proxyType,
                 call: call
             )
             .runtimeCall()
             .toScaleCompatibleJSON(with: context.toRawContext())
+        }
+
+        func delaysCallExecution() -> Bool {
+            false
         }
     }
 
@@ -203,25 +217,42 @@ extension DelegationResolution.PathFinder {
         let threshold: UInt16
         let signatories: [AccountId]
 
+        var delegationType: DelegationType {
+            .multisig
+        }
+
         func wrapCall(
             _ call: JSON,
             delegation: DelegationResolution.DelegationKey,
             context: RuntimeJsonContext
         ) throws -> JSON {
-            // TODO: Add weight support if call is not final and timepoint support if call is not the first one
-            let othersignatories = signatories
+            let otherSignatories = signatories
                 .filter { $0 != delegation.delegate }
+                .sorted { $0.lexicographicallyPrecedes($1) }
                 .map { BytesCodable(wrappedValue: $0) }
 
-            return try Multisig.AsMultiCall(
-                threshold: threshold,
-                otherSignatories: othersignatories,
-                maybeTimepoint: nil,
-                call: call,
-                maxWeight: .zero
-            )
-            .runtimeCall()
-            .toScaleCompatibleJSON(with: context.toRawContext())
+            return if threshold == 1 {
+                try MultisigPallet.AsMultiThreshold1Call(
+                    otherSignatories: otherSignatories,
+                    call: call
+                )
+                .runtimeCall()
+                .toScaleCompatibleJSON(with: context.toRawContext())
+            } else {
+                try MultisigPallet.AsMultiCall(
+                    threshold: threshold,
+                    otherSignatories: otherSignatories,
+                    maybeTimepoint: nil,
+                    call: call,
+                    maxWeight: .zero
+                )
+                .runtimeCall()
+                .toScaleCompatibleJSON(with: context.toRawContext())
+            }
+        }
+
+        func delaysCallExecution() -> Bool {
+            threshold > 1
         }
     }
 }

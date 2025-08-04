@@ -2,8 +2,8 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
-extension Multisig {
-    struct AsMultiCall: Codable {
+extension MultisigPallet {
+    struct AsMultiCall<C: Codable>: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
             case otherSignatories = "other_signatories"
@@ -12,40 +12,64 @@ extension Multisig {
             case maxWeight = "max_weight"
         }
 
-        @StringCodable var threshold: UInt16
+        @StringCodable var threshold: MultisigPallet.Threshold
         let otherSignatories: [BytesCodable]
         @NullCodable var maybeTimepoint: MultisigTimepoint?
-        let call: JSON
-        let maxWeight: Substrate.WeightV2
+        let call: C
+        let maxWeight: Substrate.Weight
 
-        func runtimeCall() throws -> RuntimeCall<Self> {
+        func runtimeCall() -> RuntimeCall<Self> {
             RuntimeCall(
-                moduleName: "Multisig",
-                callName: "as_multi",
+                moduleName: MultisigPallet.asMultiPath.moduleName,
+                callName: MultisigPallet.asMultiPath.callName,
                 args: self
             )
         }
     }
 
-    struct ApproveAsMultiCall: Codable {
+    static var asMultiPath: CallCodingPath {
+        CallCodingPath(moduleName: Self.name, callName: "as_multi")
+    }
+
+    struct AsMultiThreshold1Call<C: Codable>: Codable {
+        enum CodingKeys: String, CodingKey {
+            case otherSignatories = "other_signatories"
+            case call
+        }
+
+        let otherSignatories: [BytesCodable]
+        let call: C
+
+        func runtimeCall() -> RuntimeCall<Self> {
+            RuntimeCall(
+                moduleName: MultisigPallet.asMultiThreshold1Path.moduleName,
+                callName: MultisigPallet.asMultiThreshold1Path.callName,
+                args: self
+            )
+        }
+    }
+
+    static var asMultiThreshold1Path: CallCodingPath {
+        CallCodingPath(moduleName: Self.name, callName: "as_multi_threshold_1")
+    }
+
+    struct CancelAsMultiCall: Codable {
         enum CodingKeys: String, CodingKey {
             case threshold
             case otherSignatories = "other_signatories"
-            case maybeTimepoint = "maybe_timepoint"
+            case timepoint
             case callHash = "call_hash"
-            case maxWeight = "max_weight"
         }
 
         @StringCodable var threshold: UInt16
         let otherSignatories: [BytesCodable]
-        @NullCodable var maybeTimepoint: MultisigTimepoint?
-        let callHash: Data
-        let maxWeight: Substrate.WeightV2
+        let timepoint: MultisigTimepoint
+        @BytesCodable var callHash: Substrate.CallHash
 
-        func runtimeCall() throws -> RuntimeCall<Self> {
+        func runtimeCall() -> RuntimeCall<Self> {
             RuntimeCall(
                 moduleName: "Multisig",
-                callName: "approve_as_multi",
+                callName: "cancel_as_multi",
                 args: self
             )
         }

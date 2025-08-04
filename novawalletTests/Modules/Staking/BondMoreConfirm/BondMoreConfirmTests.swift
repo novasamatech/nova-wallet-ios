@@ -36,7 +36,10 @@ class BondMoreConfirmTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub).complete(from: any()).then { _ in
+            when(stub).presentExtrinsicSubmission(
+                from: any(),
+                params: any()
+            ).then { _ in
                 completionExpectation.fulfill()
             }
         }
@@ -63,8 +66,6 @@ class BondMoreConfirmTests: XCTestCase {
         )
 
         let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
-
-        let operationManager = OperationManager()
 
         let metaAccount = AccountGenerator.generateMetaAccount()
         let accountResponse = metaAccount.fetch(for: chain.accountRequest())!
@@ -99,6 +100,8 @@ class BondMoreConfirmTests: XCTestCase {
                 currencyId: Currency.usd.id
             )
         )
+        
+        let runtimeProvider = MockRuntimeProviderProtocol().applyDefault(for: KnowChainId.westend)
 
         let interactor = StakingBondMoreConfirmationInteractor(
             selectedAccount: accountResponse,
@@ -110,7 +113,8 @@ class BondMoreConfirmTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceSubscriptionFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue,
             currencyManager: CurrencyManagerStub()
         )
 

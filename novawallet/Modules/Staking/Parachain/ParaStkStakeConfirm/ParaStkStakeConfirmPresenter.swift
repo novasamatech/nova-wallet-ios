@@ -293,12 +293,16 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
         }
     }
 
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+    func didCompleteExtrinsicSubmission(for result: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch result {
-        case .success:
-            wireframe.complete(on: view, locale: selectedLocale)
+        case let .success(model):
+            wireframe.complete(
+                on: view,
+                sender: model.sender,
+                locale: selectedLocale
+            )
         case let .failure(error):
             applyCurrentState()
             refreshFee()

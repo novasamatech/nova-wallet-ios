@@ -26,32 +26,6 @@ extension TokenOperation {
             .common(.noSigning)
         }
     }
-
-    static func checkRampOperationsAvailable(
-        for rampActions: [RampAction],
-        rampType: RampActionType,
-        walletType: MetaAccountModelType,
-        chainAsset: ChainAsset
-    ) -> RampAvailableCheckResult {
-        let filteredActions = rampActions.filter { $0.type == rampType }
-
-        guard !filteredActions.isEmpty else {
-            return .noRampOptions
-        }
-
-        return switch walletType {
-        case .secrets, .paritySigner, .polkadotVault, .proxied:
-            .common(.available)
-        case .ledger, .genericLedger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                .common(.ledgerNotSupported)
-            } else {
-                .common(.available)
-            }
-        case .watchOnly, .multisig:
-            .common(.noSigning)
-        }
-    }
 }
 
 typealias TransferAvailableCheckResult = Bool
@@ -62,21 +36,7 @@ enum ReceiveAvailableCheckResult {
     var available: Bool {
         switch self {
         case let .common(operationCheckCommonResult):
-            return operationCheckCommonResult == .available
-        }
-    }
-}
-
-enum RampAvailableCheckResult {
-    case common(OperationCheckCommonResult)
-    case noRampOptions
-
-    var available: Bool {
-        switch self {
-        case let .common(operationCheckCommonResult):
-            return operationCheckCommonResult == .available
-        case .noRampOptions:
-            return false
+            operationCheckCommonResult.isAvailable
         }
     }
 }
@@ -84,5 +44,16 @@ enum RampAvailableCheckResult {
 enum OperationCheckCommonResult {
     case ledgerNotSupported
     case noSigning
+    case noCardSupport(MetaAccountModel)
+    case noSellSupport(MetaAccountModel, ChainAsset)
+    case noRampActions
     case available
+
+    var isAvailable: Bool {
+        if case .available = self {
+            true
+        } else {
+            false
+        }
+    }
 }

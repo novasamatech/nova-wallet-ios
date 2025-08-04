@@ -29,7 +29,7 @@ protocol ParaStkYieldBoostStartInteractorInputProtocol: ParaStkYieldBoostSchedul
 
 protocol ParaStkYieldBoostStartInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
     ParaStkYieldBoostCommonInteractorOutputProtocol {
-    func didScheduleYieldBoost(for extrinsicHash: String)
+    func didScheduleYieldBoost(for model: ExtrinsicSubmittedModel)
     func didReceiveConfirmation(error: ParaStkYieldBoostStartError)
 }
 

@@ -31,11 +31,9 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(rampActions: [RampAction])
 }
 
-protocol AssetDetailsWireframeProtocol:
-    AnyObject,
-    RampActionsPresentable,
-    RampPresentable,
-    AlertPresentable {
+protocol AssetDetailsWireframeProtocol: AnyObject,
+    RampActionsPresentable, RampPresentable, AlertPresentable,
+    MessageSheetPresentable, FeatureSupportChecking {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
     func showReceiveTokens(
         from view: AssetDetailsViewProtocol?,

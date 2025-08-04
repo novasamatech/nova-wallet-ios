@@ -9,10 +9,16 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         payingFeeIn chainAssetId: ChainAssetId?
-    ) -> CompoundOperationWrapper<String> {
-        let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
+    ) -> CompoundOperationWrapper<ExtrinsicBuiltModel> {
+        let extrinsic = Data(repeating: 7, count: 32).toHex(includePrefix: true)
 
-        return CompoundOperationWrapper.createWithResult(txHash)
+        let chainAccount = AccountGenerator.generateSubstrateChainAccountResponse(
+            for: KnowChainId.westend
+        )
+        
+        let builtModel = ExtrinsicBuiltModel(extrinsic: extrinsic, sender: .current(chainAccount))
+        
+        return CompoundOperationWrapper.createWithResult(builtModel)
     }
 
     func submit(
@@ -24,9 +30,18 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
         let results = indexes.map { index in
             let txHash = Data(repeating: UInt8(index), count: 32).toHex(includePrefix: true)
 
+            let chainAccount = AccountGenerator.generateSubstrateChainAccountResponse(
+                for: KnowChainId.westend
+            )
+            
+            let submittedModel = ExtrinsicSubmittedModel(
+                txHash: txHash,
+                sender: .current(chainAccount)
+            )
+            
             return SubmitIndexedExtrinsicResult.IndexedResult(
                 index: index,
-                result: .success(txHash)
+                result: .success(submittedModel)
             )
         }
 

@@ -244,13 +244,14 @@ extension NPoolsClaimRewardsPresenter: NPoolsClaimRewardsInteractorOutputProtoco
         self.existentialDeposit = existentialDeposit
     }
 
-    func didReceive(submissionResult: Result<String, Error>) {
+    func didReceive(submissionResult: Result<ExtrinsicSubmittedModel, Error>) {
         view?.didStopLoading()
 
         switch submissionResult {
-        case .success:
+        case let .success(model):
             wireframe.presentExtrinsicSubmission(
                 from: view,
+                sender: model.sender,
                 completionAction: .dismiss,
                 locale: selectedLocale
             )

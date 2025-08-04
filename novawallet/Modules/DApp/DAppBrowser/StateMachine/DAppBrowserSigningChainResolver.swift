@@ -35,33 +35,63 @@ private extension DAppSignBytesChainResolver {
         return chains.first { $0.chainId == KnowChainId.polkadot }
     }
 
+    func deriveChainForEthereumWallet(
+        for accountId: AccountId,
+        wallet: MetaAccountModel,
+        chains: [ChainModel]
+    ) -> ChainModel? {
+        let ethereumChains = chains.filter { $0.isEthereumBased }
+
+        return ethereumChains
+            .sorted { $0.order < $1.order }
+            .first { wallet.fetch(for: $0.accountRequest())?.accountId == accountId }
+    }
+
     func deriveChainForWallet(
         for address: AccountAddress,
         wallet: MetaAccountModel,
         chains: [ChainModel]
     ) throws -> ChainModel? {
         let accountId = try address.toAccountId()
-        let addressPrefix = try SS58AddressFactory().type(fromAddress: address).uint16Value
 
-        switch wallet.type {
-        case .secrets,
-             .watchOnly,
-             .paritySigner,
-             .ledger,
-             .genericLedger,
-             .proxied,
-             .multisig:
-            let prefixMatchingChains = chains.filter { $0.addressPrefix == addressPrefix }
+        let isEthereumAddress = address.hasPrefix("0x")
+        if isEthereumAddress {
+            return deriveChainForEthereumWallet(
+                for: accountId,
+                wallet: wallet,
+                chains: chains
+            )
+        } else {
+            let addressPrefix = try SS58AddressFactory().type(fromAddress: address).uint16Value
 
-            return prefixMatchingChains
-                .sorted { $0.order < $1.order }
-                .first { wallet.fetch(for: $0.accountRequest())?.accountId == accountId }
-        case .polkadotVault:
-            let walletMatchingChains = chains.filter {
-                wallet.fetch(for: $0.accountRequest())?.accountId == accountId
+            switch wallet.type {
+            case .secrets,
+                 .watchOnly,
+                 .paritySigner,
+                 .ledger,
+                 .genericLedger,
+                 .proxied,
+                 .multisig:
+                let prefixMatchingChains = chains.filter { $0.addressPrefix == addressPrefix }
+
+                let prefixChain = prefixMatchingChains
+                    .sorted { $0.order < $1.order }
+                    .first { wallet.fetch(for: $0.accountRequest())?.accountId == accountId }
+
+                if let prefixChain {
+                    return prefixChain
+                }
+
+                return chains
+                    .sorted { $0.order < $1.order }
+                    .first { wallet.fetch(for: $0.accountRequest())?.accountId == accountId }
+            case .polkadotVault:
+                let walletMatchingChains = chains.filter {
+                    wallet.fetch(for: $0.accountRequest())?.accountId == accountId
+                }
+
+                return deriveChainForPolkadotVaultWallet(for: addressPrefix, chains: walletMatchingChains)
             }
-
-            return deriveChainForPolkadotVaultWallet(for: addressPrefix, chains: walletMatchingChains)
         }
     }
 }

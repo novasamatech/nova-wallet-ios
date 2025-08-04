@@ -14,6 +14,7 @@ struct AssetListBuilderResult {
         let balances: [ChainAssetId: Result<AssetBalance, Error>]
         let externalBalanceResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
         let nfts: [NftModel]
+        let pendingOperations: [Multisig.PendingOperation]
         let locksResult: Result<[AssetLock], Error>?
         let holdsResult: Result<[AssetHold], Error>?
 
@@ -28,6 +29,7 @@ struct AssetListBuilderResult {
             balances: [ChainAssetId: Result<AssetBalance, Error>] = [:],
             externalBalanceResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>? = nil,
             nfts: [NftModel] = [],
+            pendingOperations: [Multisig.PendingOperation] = [],
             locksResult: Result<[AssetLock], Error>? = nil,
             holdsResult: Result<[AssetHold], Error>? = nil
         ) {
@@ -41,6 +43,7 @@ struct AssetListBuilderResult {
             self.balances = balances
             self.externalBalanceResult = externalBalanceResult
             self.nfts = nfts
+            self.pendingOperations = pendingOperations
             self.locksResult = locksResult
             self.holdsResult = holdsResult
         }
@@ -57,6 +60,24 @@ struct AssetListBuilderResult {
                 balances: balances,
                 externalBalanceResult: externalBalanceResult,
                 nfts: nfts,
+                pendingOperations: pendingOperations,
+                locksResult: locksResult
+            )
+        }
+
+        func replacing(pendingOperations: [Multisig.PendingOperation]) -> Model {
+            .init(
+                chainGroups: chainGroups,
+                assetGroups: assetGroups,
+                groupListsByChain: groupListsByChain,
+                groupListsByAsset: groupListsByAsset,
+                priceResult: priceResult,
+                balanceResults: balanceResults,
+                allChains: allChains,
+                balances: balances,
+                externalBalanceResult: externalBalanceResult,
+                nfts: nfts,
+                pendingOperations: pendingOperations,
                 locksResult: locksResult
             )
         }
@@ -81,6 +102,7 @@ struct AssetListBuilderResult {
     enum ChangeKind {
         case reload
         case nfts
+        case pendingOperations
     }
 
     let walletId: MetaAccountModel.Id?

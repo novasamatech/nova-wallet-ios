@@ -90,7 +90,27 @@ struct DAppBrowserViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let interactor = DAppBrowserInteractor(
+        let appAttestService = AppAttestService()
+        let remoteAttestationFactory = DAppRemoteAttestFactory()
+
+        let mapper = AnyCoreDataMapper(AppAttestBrowserSettingsMapper())
+
+        let coreDataRepository: CoreDataRepository<AppAttestBrowserSettings, CDAppAttestBrowserSettings> = storageFacade.createRepository(mapper: mapper)
+
+        let attestationProvider = DAppAttestationProvider(
+            appAttestService: appAttestService,
+            remoteAttestationFactory: remoteAttestationFactory,
+            attestationRepository: AnyDataProviderRepository(coreDataRepository),
+            operationQueue: operationQueue
+        )
+
+        let attestHandler = DAppAttestHandler(
+            attestationProvider: attestationProvider,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        return DAppBrowserInteractor(
             transports: transports,
             selectedTab: selectedTab,
             wallet: wallet,
@@ -104,9 +124,8 @@ struct DAppBrowserViewFactory {
             sequentialPhishingVerifier: phishingVerifier,
             tabManager: DAppBrowserTabManager.shared,
             applicationHandler: ApplicationHandler(),
+            attestHandler: attestHandler,
             logger: logger
         )
-
-        return interactor
     }
 }

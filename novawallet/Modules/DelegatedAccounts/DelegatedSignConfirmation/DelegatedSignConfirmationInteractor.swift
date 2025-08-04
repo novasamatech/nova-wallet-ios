@@ -5,13 +5,13 @@ final class DelegatedSignConfirmationInteractor {
     weak var presenter: DelegatedSignConfirmationInteractorOutputProtocol?
 
     let delegatedAccountId: MetaAccountModel.Id
-    let repository: AnyDataProviderRepository<ProxiedSettings>
+    let repository: AnyDataProviderRepository<DelegatedAccountSettings>
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         delegatedAccountId: MetaAccountModel.Id,
-        repository: AnyDataProviderRepository<ProxiedSettings>,
+        repository: AnyDataProviderRepository<DelegatedAccountSettings>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
