@@ -15,7 +15,7 @@ final class IPAddressProviderTests: XCTestCase {
             DispatchQueue.main.async {
                 do {
                     let addressString = try operation.extractNoCancellableResultData()
-                    XCTAssertTrue(self.validAddress("32.1.2.2"))
+                    XCTAssertTrue(self.validAddress(addressString))
                 } catch {
                     XCTFail("IP Address provider service is not reachable")
                 }
