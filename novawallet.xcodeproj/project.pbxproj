@@ -1914,6 +1914,7 @@
 		2DD83BBE2E42064300E83B4C /* TransakRampURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BBD2E42064300E83B4C /* TransakRampURLFactory.swift */; };
 		2DD83BC02E420AF400E83B4C /* BanxaRampURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BBF2E420AF400E83B4C /* BanxaRampURLFactory.swift */; };
 		2DD83BC42E42A2DF00E83B4C /* MerchantTransactionIdFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BC32E42A2DF00E83B4C /* MerchantTransactionIdFactory.swift */; };
+		2DD83BC72E42A75D00E83B4C /* IPAddressProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BC62E42A75D00E83B4C /* IPAddressProviderTests.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
@@ -8020,6 +8021,7 @@
 		2DD83BBD2E42064300E83B4C /* TransakRampURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakRampURLFactory.swift; sourceTree = "<group>"; };
 		2DD83BBF2E420AF400E83B4C /* BanxaRampURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BanxaRampURLFactory.swift; sourceTree = "<group>"; };
 		2DD83BC32E42A2DF00E83B4C /* MerchantTransactionIdFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantTransactionIdFactory.swift; sourceTree = "<group>"; };
+		2DD83BC62E42A75D00E83B4C /* IPAddressProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAddressProviderTests.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
 		2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManager.swift; sourceTree = "<group>"; };
@@ -20092,6 +20094,7 @@
 				0C59E8EA2AA71C3E001E11F3 /* ExternalAssetBalanceIntegrationTests.swift */,
 				0CCA24642AC6B51200AEF23D /* AssetHubSwapTests.swift */,
 				0C8AF7B52B36C75400005AC9 /* Pdc20OperationTests.swift */,
+				2DD83BC62E42A75D00E83B4C /* IPAddressProviderTests.swift */,
 				0CAC03032B4D0C0100DDEC3A /* WalletRemoteQueryFactoryTests.swift */,
 				0C992C422B54F5D900ACC129 /* EraStakersPagedSearchOperationFactoryTests.swift */,
 				0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */,
@@ -29333,6 +29336,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DD83BC72E42A75D00E83B4C /* IPAddressProviderTests.swift in Sources */,
 				0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */,
 				844133BB2860528500845987 /* XcmTransfersFeeTests.swift in Sources */,
 				0C2F86932A72648D00593C01 /* ActiveNominationPoolsTests.swift in Sources */,
