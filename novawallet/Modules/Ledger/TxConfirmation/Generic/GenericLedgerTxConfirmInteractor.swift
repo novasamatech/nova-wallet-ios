@@ -117,10 +117,9 @@ final class GenericLedgerTxConfirmInteractor: BaseLedgerTxConfirmInteractor {
     ) -> CompoundOperationWrapper<Data> {
         let signatureParamsOperation = ClosureOperation<ExtrinsicSignatureParams> {
             let builder = params.extrinsicMemo.restoreBuilder()
-            let encoder = params.codingFactory.createEncoder()
 
             return try builder.buildExtrinsicSignatureParams(
-                encodingBy: encoder,
+                encodingFactory: params.codingFactory,
                 metadata: params.codingFactory.metadata
             )
         }
