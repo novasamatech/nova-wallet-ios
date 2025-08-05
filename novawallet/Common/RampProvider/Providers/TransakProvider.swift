@@ -100,14 +100,14 @@ private extension TransakProvider {
         let token = chainAsset.asset.symbol
         let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
-        guard let url = buildURLForToken(
-            token,
-            network: network,
+        let urlFactory = TransakRampURLFactory(
+            actionType: .offRamp,
+            pubToken: Self.pubToken,
+            baseURL: Self.baseUrlString,
             address: address,
-            type: .offRamp
-        ) else {
-            return []
-        }
+            token: token,
+            network: network
+        )
 
         let action = RampAction(
             type: .offRamp,
@@ -115,7 +115,7 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )
@@ -136,14 +136,14 @@ private extension TransakProvider {
         let token = chainAsset.asset.symbol
         let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
-        guard let url = buildURLForToken(
-            token,
-            network: network,
+        let urlFactory = TransakRampURLFactory(
+            actionType: .onRamp,
+            pubToken: Self.pubToken,
+            baseURL: Self.baseUrlString,
             address: address,
-            type: .onRamp
-        ) else {
-            return []
-        }
+            token: token,
+            network: network
+        )
 
         let action = RampAction(
             type: .onRamp,
@@ -151,7 +151,7 @@ private extension TransakProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.transakBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )

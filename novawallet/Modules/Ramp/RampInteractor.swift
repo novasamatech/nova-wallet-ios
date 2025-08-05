@@ -12,7 +12,10 @@ final class RampInteractor {
     let eventCenter: EventCenterProtocol
     let action: RampAction
 
+    let operationQueue: OperationQueue
+
     private var messageHandlers: [PayCardMessageHandling] = []
+    private var callStore = CancellableCallStore()
 
     init(
         wallet: MetaAccountModel,
@@ -20,6 +23,7 @@ final class RampInteractor {
         rampProvider: RampProviderProtocol,
         eventCenter: EventCenterProtocol,
         action: RampAction,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.wallet = wallet
@@ -27,7 +31,12 @@ final class RampInteractor {
         self.rampProvider = rampProvider
         self.eventCenter = eventCenter
         self.action = action
+        self.operationQueue = operationQueue
         self.logger = logger
+    }
+
+    deinit {
+        callStore.cancel()
     }
 }
 
@@ -35,16 +44,34 @@ final class RampInteractor {
 
 private extension RampInteractor {
     func provideModel(with hooks: [PayCardHook]) {
+        guard !callStore.hasCall else {
+            return
+        }
+
         let messageNames = hooks.reduce(Set<String>()) { $0.union($1.messageNames) }
         let scripts = hooks.map(\.script)
 
-        let model = RampModel(
-            resource: .init(url: action.url),
-            messageNames: messageNames,
-            scripts: scripts.compactMap { $0 }
-        )
+        let urlWrapper = action.urlFactory.createURLWrapper()
 
-        presenter?.didReceive(model: model)
+        executeCancellable(
+            wrapper: urlWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(url):
+                let model = RampModel(
+                    resource: .init(url: url),
+                    messageNames: messageNames,
+                    scripts: scripts.compactMap { $0 }
+                )
+                let urlString = url.absoluteString
+                self?.presenter?.didReceive(model: model)
+            case let .failure(error):
+                self?.logger.error("Failed to create ramp provider URL: \(error)")
+            }
+        }
     }
 
     func createHooks() -> [RampHook] {

@@ -1907,6 +1907,11 @@
 		2DD018D52D65E3910063F9BB /* PriceChartPeriodControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D42D65E3910063F9BB /* PriceChartPeriodControlViewModel.swift */; };
 		2DD018D82D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D72D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift */; };
 		2DD018DA2D6638440063F9BB /* AssetPriceChartRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */; };
+		2DD83BB82E41248700E83B4C /* RampURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BB72E41248700E83B4C /* RampURLFactory.swift */; };
+		2DD83BBA2E4124A700E83B4C /* MercuryoRampURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BB92E4124A700E83B4C /* MercuryoRampURLFactory.swift */; };
+		2DD83BBC2E41F77C00E83B4C /* IPAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BBB2E41F77C00E83B4C /* IPAddressProvider.swift */; };
+		2DD83BBE2E42064300E83B4C /* TransakRampURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BBD2E42064300E83B4C /* TransakRampURLFactory.swift */; };
+		2DD83BC02E420AF400E83B4C /* BanxaRampURLFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD83BBF2E420AF400E83B4C /* BanxaRampURLFactory.swift */; };
 		2DD9DB8D2BED08C500F68665 /* SingleTitleWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */; };
 		2DD9DB8F2BED227E00F68665 /* WalletViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */; };
 		2DDEE0E62CEC8994002E9289 /* DAppBrowserTabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */; };
@@ -8006,6 +8011,11 @@
 		2DD018D72D65E3CF0063F9BB /* AssetPriceChartViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartViewModelFactory.swift; sourceTree = "<group>"; };
 		2DD018D92D6638440063F9BB /* AssetPriceChartRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPriceChartRenderer.swift; sourceTree = "<group>"; };
 		2DD67B16420C6E889884BF26 /* BackupAttentionViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupAttentionViewFactory.swift; sourceTree = "<group>"; };
+		2DD83BB72E41248700E83B4C /* RampURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampURLFactory.swift; sourceTree = "<group>"; };
+		2DD83BB92E4124A700E83B4C /* MercuryoRampURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoRampURLFactory.swift; sourceTree = "<group>"; };
+		2DD83BBB2E41F77C00E83B4C /* IPAddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPAddressProvider.swift; sourceTree = "<group>"; };
+		2DD83BBD2E42064300E83B4C /* TransakRampURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakRampURLFactory.swift; sourceTree = "<group>"; };
+		2DD83BBF2E420AF400E83B4C /* BanxaRampURLFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BanxaRampURLFactory.swift; sourceTree = "<group>"; };
 		2DD9DB8C2BED08C500F68665 /* SingleTitleWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTitleWalletView.swift; sourceTree = "<group>"; };
 		2DD9DB8E2BED227E00F68665 /* WalletViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewProtocol.swift; sourceTree = "<group>"; };
 		2DDEE0E52CEC8994002E9289 /* DAppBrowserTabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabManager.swift; sourceTree = "<group>"; };
@@ -16219,6 +16229,7 @@
 		2D3EBF2B2D916B8D0023D025 /* Providers */ = {
 			isa = PBXGroup;
 			children = (
+				2DD83BB62E41247B00E83B4C /* RampURLFactory */,
 				8448336627FAAF780077FB55 /* TransakProvider.swift */,
 				888B8E94291D274B00AA78E9 /* MercuryoProvider.swift */,
 				772540332AC41FF7002B3FD4 /* BanxaProvider.swift */,
@@ -17165,6 +17176,25 @@
 				F9C6DF4BF106A135BD3BB1CF /* CustomNetwork */,
 			);
 			path = NetworkManagement;
+			sourceTree = "<group>";
+		};
+		2DD83BB62E41247B00E83B4C /* RampURLFactory */ = {
+			isa = PBXGroup;
+			children = (
+				2DD83BB72E41248700E83B4C /* RampURLFactory.swift */,
+				2DD83BB92E4124A700E83B4C /* MercuryoRampURLFactory.swift */,
+				2DD83BBD2E42064300E83B4C /* TransakRampURLFactory.swift */,
+				2DD83BBF2E420AF400E83B4C /* BanxaRampURLFactory.swift */,
+			);
+			path = RampURLFactory;
+			sourceTree = "<group>";
+		};
+		2DD83BC12E420C1C00E83B4C /* IPAddressProvider */ = {
+			isa = PBXGroup;
+			children = (
+				2DD83BBB2E41F77C00E83B4C /* IPAddressProvider.swift */,
+			);
+			path = IPAddressProvider;
 			sourceTree = "<group>";
 		};
 		2DD9DB902BED2C2C00F68665 /* WalletView */ = {
@@ -22911,6 +22941,7 @@
 		8490150124AB6BEA008F705E /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				2DD83BC12E420C1C00E83B4C /* IPAddressProvider */,
 				0C846B8E2BE5F05A000EBFC2 /* Staking */,
 				84E8BA1029FFB38600FD9F40 /* Ethereum */,
 				84953F642934B2C90033F47D /* Etherscan */,
@@ -31432,6 +31463,7 @@
 				0C0F6DEE2D4286E000943A7C /* CollatorStakingStakableFactory.swift in Sources */,
 				2D7C64572D84402E00FD658E /* UnifiedAddressPopupAddressView+Style.swift in Sources */,
 				77D326E92B98DF380055FE88 /* Payload.swift in Sources */,
+				2DD83BBE2E42064300E83B4C /* TransakRampURLFactory.swift in Sources */,
 				84D184F82A04F9D60060C1BD /* WalletConnectSessionViewModelFactory.swift in Sources */,
 				0C277DA42D829EDC004FF053 /* XcmDynamicAsset.swift in Sources */,
 				0CC2E55E2A6AB2B7004092E7 /* StashItemMapper.swift in Sources */,
@@ -31674,6 +31706,7 @@
 				84A2C90424E07F400020D3B7 /* AccountOperationFactoryError.swift in Sources */,
 				77DAFF662B2979B100D4220C /* ProxyLocalStorageSubscriber.swift in Sources */,
 				77A6F5CB2A30BD71004AFD1A /* BaseKiltTransferAssetRecipientRepository.swift in Sources */,
+				2DD83BBA2E4124A700E83B4C /* MercuryoRampURLFactory.swift in Sources */,
 				2D7C645A2D84420800FD658E /* UnifiedAddressPopupAddressViewModel.swift in Sources */,
 				8442003628EA9DF100C49C4A /* VoteViewFactory.swift in Sources */,
 				770F57882A8A2CE0005FD7C1 /* StakingSelectPoolViewStyles.swift in Sources */,
@@ -32720,6 +32753,7 @@
 				B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */,
 				0CA72A862D4A2CFE00B3FD02 /* CollatorStkBaseUnstakeSetupVC.swift in Sources */,
 				0C0F6D982D3E5DBC00943A7C /* MythosStakingPallet+Candidates.swift in Sources */,
+				2DD83BB82E41248700E83B4C /* RampURLFactory.swift in Sources */,
 				0C992C452B552A5000ACC129 /* StakingUnclaimedRewardsFacade.swift in Sources */,
 				88C7165828C8D3280015D1E9 /* LockCollectionViewCell.swift in Sources */,
 				C0B0DDF638915E8259B1CD67 /* StakingRedeemPresenter.swift in Sources */,
@@ -34023,6 +34057,7 @@
 				0C028E882DC910520060A0E8 /* RampViewController.swift in Sources */,
 				0C028E892DC910520060A0E8 /* SelectRampProviderViewModelFactory.swift in Sources */,
 				0C028E8A2DC910520060A0E8 /* SelectRampProviderViewFactory.swift in Sources */,
+				2DD83BC02E420AF400E83B4C /* BanxaRampURLFactory.swift in Sources */,
 				2D87C1A62E1C698A00396A3B /* MultisigProviderProxySnapshot.swift in Sources */,
 				0C028E8B2DC910520060A0E8 /* SelectRampProviderWireframe.swift in Sources */,
 				0C028E8C2DC910520060A0E8 /* RampInteractor.swift in Sources */,
@@ -34715,6 +34750,7 @@
 				8F957783A62E1CB686DE20B6 /* NetworkNodeProtocols.swift in Sources */,
 				9550165DF9EF3C32A63FC581 /* NetworkNodeWireframe.swift in Sources */,
 				3E0AEF1F86EE2FFF961B45D8 /* NetworkNodeAddInteractor.swift in Sources */,
+				2DD83BBC2E41F77C00E83B4C /* IPAddressProvider.swift in Sources */,
 				26FFA7D4465596728AA9C55F /* NetworkNodeViewController.swift in Sources */,
 				0625D171A289807B621F7214 /* NetworkNodeViewLayout.swift in Sources */,
 				6A2B815B3AA8B31CF77023A7 /* NetworkNodeViewFactory.swift in Sources */,

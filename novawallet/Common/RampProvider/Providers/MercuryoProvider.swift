@@ -108,15 +108,19 @@ private extension MercuryoProvider {
             return []
         }
 
-        guard let callbackUrl = self.callbackUrl,
-              let url = buildURL(
-                  address: address,
-                  token: chainAsset.asset.symbol,
-                  actionType: .onRamp,
-                  callbackUrl: callbackUrl
-              ) else {
+        guard let callbackUrl = self.callbackUrl else {
             return []
         }
+
+        let urlFactory = MercuryoRampURLFactory(
+            actionType: .onRamp,
+            secret: configuration.secret,
+            baseURL: configuration.baseUrl,
+            address: address,
+            token: chainAsset.asset.symbol,
+            widgetId: configuration.widgetId,
+            callBackURL: callbackUrl
+        )
 
         let action = RampAction(
             type: .onRamp,
@@ -124,7 +128,7 @@ private extension MercuryoProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )
@@ -142,15 +146,14 @@ private extension MercuryoProvider {
             return []
         }
 
-        guard let url = buildURL(
+        let urlFactory = MercuryoRampURLFactory(
+            actionType: .onRamp,
+            secret: configuration.secret,
+            baseURL: configuration.baseUrl,
             address: address,
             token: chainAsset.asset.symbol,
-            actionType: .offRamp,
-            callbackUrl: nil
+            widgetId: configuration.widgetId
         )
-        else {
-            return []
-        }
 
         let action = RampAction(
             type: .offRamp,
@@ -158,7 +161,7 @@ private extension MercuryoProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.mercuryoSellActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )
