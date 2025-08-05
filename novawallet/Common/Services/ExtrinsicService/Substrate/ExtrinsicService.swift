@@ -235,6 +235,7 @@ final class ExtrinsicService {
         runtimeRegistry: RuntimeCodingServiceProtocol,
         senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
+        nonceOperationFactory: TransactionNonceOperationFactoryProtocol,
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         extensions: [ExtrinsicSignedExtending],
         engine: JSONRPCEngine,
@@ -247,6 +248,7 @@ final class ExtrinsicService {
             engine: engine,
             feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: nonceOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: operationManager
