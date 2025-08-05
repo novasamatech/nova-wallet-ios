@@ -54,17 +54,28 @@ class WalletRampProvidersTests: XCTestCase {
             TransakProvider()
         }
         
+        let operationQueue = OperationQueue()
+        
         // when
         let expectation = XCTestExpectation()
 
         let actions = provider.buildRampActions(for: chainAsset, accountId: accountId)
             .filter { $0.type == rampActionType }
         
-        XCTAssertEqual(actions[0].url.absoluteString, expectedURL)
-        expectation.fulfill()
+        let urlWrapper = actions[0].urlFactory.createURLWrapper()
+        
+        operationQueue.addOperations(urlWrapper.allOperations, waitUntilFinished: true)
+        
+        do {
+            let url = try urlWrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertEqual(url.absoluteString, expectedURL)
+            expectation.fulfill()
 
-        // then
-        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+            // then
+            wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+        } catch {
+            XCTFail("Can't build ramp provider URL: \(error)")
+        }
     }
     
     func performMercuryoRampTest(rampActionType: RampActionType) throws {
