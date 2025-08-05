@@ -24,17 +24,20 @@ final class MercuryoProvider: BaseURLStringProviding,
         )
     }
 
+    private let ipAddressProvider: IPAddressProviderProtocol
+
+    private var callbackUrl: URL?
+    private let displayURL = "mercuryo.io"
+
     #if F_RELEASE
         let configuration: Configuration = .production
     #else
         let configuration: Configuration = .debug
     #endif
 
-    private var callbackUrl: URL?
-    private let displayURL = "mercuryo.io"
-
     let offRampHookFactory: OffRampHookFactoryProtocol
     let onRampHookFactory: OnRampHookFactoryProtocol
+    let merchantIdFactory: MerchantTransactionIdFactory
 
     var baseUrlString: String {
         configuration.baseUrl
@@ -42,10 +45,14 @@ final class MercuryoProvider: BaseURLStringProviding,
 
     init(
         offRampHookFactory: OffRampHookFactoryProtocol = MercuryoOffRampHookFactory(),
-        onRampHookFactory: OnRampHookFactoryProtocol = MercuryoOnRampHookFactory()
+        onRampHookFactory: OnRampHookFactoryProtocol = MercuryoOnRampHookFactory(),
+        merchantIdFactory: MerchantTransactionIdFactory = UUIDMerchantTransactionIdFactory(),
+        ipAddressProvider: IPAddressProviderProtocol = IPAddressProvider()
     ) {
         self.offRampHookFactory = offRampHookFactory
         self.onRampHookFactory = onRampHookFactory
+        self.merchantIdFactory = merchantIdFactory
+        self.ipAddressProvider = ipAddressProvider
     }
 }
 
@@ -57,45 +64,6 @@ private extension MercuryoProvider {
         fiatPaymentsMethods.append(.others(count: 5))
 
         return fiatPaymentsMethods
-    }
-
-    func buildURL(
-        address: AccountAddress,
-        token: String,
-        actionType: RampActionType,
-        callbackUrl: URL?
-    ) -> URL? {
-        guard let signatureData = [address, configuration.secret].joined().data(using: .utf8) else {
-            return nil
-        }
-        let signature = Data(SHA512.hash(data: signatureData).makeIterator())
-        var components = URLComponents(string: configuration.baseUrl)
-
-        let type = switch actionType {
-        case .onRamp: "buy"
-        case .offRamp: "sell"
-        }
-
-        var queryItems = [
-            URLQueryItem(name: "currency", value: token),
-            URLQueryItem(name: "type", value: type),
-            URLQueryItem(name: "address", value: address),
-            URLQueryItem(name: "widget_id", value: configuration.widgetId),
-            URLQueryItem(name: "signature", value: signature.toHex())
-        ]
-
-        if let callbackUrl {
-            queryItems.append(URLQueryItem(name: "return_url", value: callbackUrl.absoluteString))
-        }
-
-        if actionType == .offRamp {
-            queryItems.append(URLQueryItem(name: "hide_refund_address", value: "true"))
-            queryItems.append(URLQueryItem(name: "refund_address", value: address))
-        }
-
-        components?.queryItems = queryItems
-
-        return components?.url
     }
 
     func buildOnRampActions(
@@ -119,7 +87,9 @@ private extension MercuryoProvider {
             address: address,
             token: chainAsset.asset.symbol,
             widgetId: configuration.widgetId,
-            callBackURL: callbackUrl
+            callBackURL: callbackUrl,
+            ipAddressProvider: ipAddressProvider,
+            merchantIdFactory: merchantIdFactory
         )
 
         let action = RampAction(
@@ -147,12 +117,14 @@ private extension MercuryoProvider {
         }
 
         let urlFactory = MercuryoRampURLFactory(
-            actionType: .onRamp,
+            actionType: .offRamp,
             secret: configuration.secret,
             baseURL: configuration.baseUrl,
             address: address,
             token: chainAsset.asset.symbol,
-            widgetId: configuration.widgetId
+            widgetId: configuration.widgetId,
+            ipAddressProvider: ipAddressProvider,
+            merchantIdFactory: merchantIdFactory
         )
 
         let action = RampAction(

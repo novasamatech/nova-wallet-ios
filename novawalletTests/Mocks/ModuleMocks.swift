@@ -243,6 +243,105 @@ import Operation_iOS
 import Cuckoo
 @testable import novawallet
 
+import Foundation
+import Operation_iOS
+
+
+ class MockIPAddressProviderProtocol: IPAddressProviderProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = IPAddressProviderProtocol
+    
+     typealias Stubbing = __StubbingProxy_IPAddressProviderProtocol
+     typealias Verification = __VerificationProxy_IPAddressProviderProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: IPAddressProviderProtocol?
+
+     func enableDefaultImplementation(_ stub: IPAddressProviderProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createIPAddressOperation() -> BaseOperation<String> {
+        
+    return cuckoo_manager.call("createIPAddressOperation() -> BaseOperation<String>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createIPAddressOperation())
+        
+    }
+    
+
+	 struct __StubbingProxy_IPAddressProviderProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createIPAddressOperation() -> Cuckoo.ProtocolStubFunction<(), BaseOperation<String>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockIPAddressProviderProtocol.self, method: "createIPAddressOperation() -> BaseOperation<String>", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_IPAddressProviderProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createIPAddressOperation() -> Cuckoo.__DoNotUse<(), BaseOperation<String>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createIPAddressOperation() -> BaseOperation<String>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class IPAddressProviderProtocolStub: IPAddressProviderProtocol {
+    
+
+    
+
+    
+    
+    
+     func createIPAddressOperation() -> BaseOperation<String>  {
+        return DefaultValueRegistry.defaultValue(for: (BaseOperation<String>).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 import Foundation_iOS
 
 
@@ -1699,6 +1798,104 @@ import UIKit
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import Foundation
+
+
+ class MockMerchantTransactionIdFactory: MerchantTransactionIdFactory, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = MerchantTransactionIdFactory
+    
+     typealias Stubbing = __StubbingProxy_MerchantTransactionIdFactory
+     typealias Verification = __VerificationProxy_MerchantTransactionIdFactory
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: MerchantTransactionIdFactory?
+
+     func enableDefaultImplementation(_ stub: MerchantTransactionIdFactory) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createTransactionId() -> String {
+        
+    return cuckoo_manager.call("createTransactionId() -> String",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createTransactionId())
+        
+    }
+    
+
+	 struct __StubbingProxy_MerchantTransactionIdFactory: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createTransactionId() -> Cuckoo.ProtocolStubFunction<(), String> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockMerchantTransactionIdFactory.self, method: "createTransactionId() -> String", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_MerchantTransactionIdFactory: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createTransactionId() -> Cuckoo.__DoNotUse<(), String> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createTransactionId() -> String", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class MerchantTransactionIdFactoryStub: MerchantTransactionIdFactory {
+    
+
+    
+
+    
+    
+    
+     func createTransactionId() -> String  {
+        return DefaultValueRegistry.defaultValue(for: (String).self)
     }
     
 }

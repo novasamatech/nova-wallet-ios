@@ -56,37 +56,6 @@ private extension TransakProvider {
         return fiatPaymentsMethods
     }
 
-    func buildURLForToken(
-        _ token: String,
-        network: String,
-        address: String,
-        type: RampActionType
-    ) -> URL? {
-        var components = URLComponents(string: Self.baseUrlString)
-
-        var queryItems = [
-            URLQueryItem(name: "apiKey", value: Self.pubToken),
-            URLQueryItem(name: "network", value: network),
-            URLQueryItem(name: "cryptoCurrencyCode", value: token)
-        ]
-
-        let productsAvailed = switch type {
-        case .offRamp: "SELL"
-        case .onRamp: "BUY"
-        }
-
-        if type == .onRamp {
-            queryItems.append(URLQueryItem(name: "walletAddress", value: address))
-            queryItems.append(URLQueryItem(name: "disableWalletAddressForm", value: "true"))
-        }
-
-        queryItems.append(URLQueryItem(name: "productsAvailed", value: productsAvailed))
-
-        components?.queryItems = queryItems
-
-        return components?.url
-    }
-
     func buildOffRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId

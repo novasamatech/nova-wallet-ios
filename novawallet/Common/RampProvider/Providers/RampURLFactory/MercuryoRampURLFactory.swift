@@ -12,7 +12,8 @@ final class MercuryoRampURLFactory {
     private let widgetId: String
     private let callBackURL: URL?
 
-    private let ipAddressProvider: IPAddressProviderProtocol
+    let ipAddressProvider: IPAddressProviderProtocol
+    let merchantIdFactory: MerchantTransactionIdFactory
 
     init(
         actionType: RampActionType,
@@ -22,7 +23,8 @@ final class MercuryoRampURLFactory {
         token: String,
         widgetId: String,
         callBackURL: URL? = nil,
-        ipAddressProvider: IPAddressProviderProtocol = IPAddressProvider()
+        ipAddressProvider: IPAddressProviderProtocol,
+        merchantIdFactory: MerchantTransactionIdFactory
     ) {
         self.actionType = actionType
         self.secret = secret
@@ -32,6 +34,7 @@ final class MercuryoRampURLFactory {
         self.widgetId = widgetId
         self.callBackURL = callBackURL
         self.ipAddressProvider = ipAddressProvider
+        self.merchantIdFactory = merchantIdFactory
     }
 }
 
@@ -47,13 +50,13 @@ private extension MercuryoRampURLFactory {
             }
 
             let ipAddress = try ipAddressOperation.extractNoCancellableResultData()
-            let merchantTransactionId = UUID().uuidString
+            let transactionId = merchantIdFactory.createTransactionId()
 
             let signatureData = [
                 address,
                 secret,
                 ipAddress,
-                merchantTransactionId
+                transactionId
             ].joined().data(using: .utf8)
 
             guard let signatureData else {
