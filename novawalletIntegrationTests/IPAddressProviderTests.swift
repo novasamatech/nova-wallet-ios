@@ -30,9 +30,9 @@ final class IPAddressProviderTests: XCTestCase {
     }
     
     private func validAddress(_ ipAddress: String) -> Bool {
-        let ipRegex = /^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
+        let regex = /^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
         
-        guard let match = ipAddress.wholeMatch(of: ipRegex) else { return false }
+        guard let match = ipAddress.wholeMatch(of: regex) else { return false }
         
         let octets = [match.1, match.2, match.3, match.4]
         
