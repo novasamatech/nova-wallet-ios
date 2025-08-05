@@ -66,7 +66,7 @@ private extension RampInteractor {
                     messageNames: messageNames,
                     scripts: scripts.compactMap { $0 }
                 )
-                let urlString = url.absoluteString
+
                 self?.presenter?.didReceive(model: model)
             case let .failure(error):
                 self?.logger.error("Failed to create ramp provider URL: \(error)")
