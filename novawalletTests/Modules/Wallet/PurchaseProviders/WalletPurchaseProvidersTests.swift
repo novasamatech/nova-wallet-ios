@@ -4,7 +4,6 @@ import UIKit.UIColor
 import SubstrateSdk
 import Cuckoo
 import Operation_iOS
-import CryptoKit
 
 class WalletRampProvidersTests: XCTestCase {
     let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
