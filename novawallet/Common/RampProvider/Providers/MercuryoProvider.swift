@@ -37,7 +37,7 @@ final class MercuryoProvider: BaseURLStringProviding,
 
     let offRampHookFactory: OffRampHookFactoryProtocol
     let onRampHookFactory: OnRampHookFactoryProtocol
-    let merchantIdFactory: MerchantTransactionIdFactory
+    let merchantIdFactory: MerchantTransactionIdFactoryProtocol
 
     var baseUrlString: String {
         configuration.baseUrl
@@ -46,7 +46,7 @@ final class MercuryoProvider: BaseURLStringProviding,
     init(
         offRampHookFactory: OffRampHookFactoryProtocol = MercuryoOffRampHookFactory(),
         onRampHookFactory: OnRampHookFactoryProtocol = MercuryoOnRampHookFactory(),
-        merchantIdFactory: MerchantTransactionIdFactory = UUIDMerchantTransactionIdFactory(),
+        merchantIdFactory: MerchantTransactionIdFactoryProtocol = UUIDMerchantTransactionIdFactory(),
         ipAddressProvider: IPAddressProviderProtocol = IPAddressProvider()
     ) {
         self.offRampHookFactory = offRampHookFactory

@@ -1,10 +1,10 @@
 import Foundation
 
-protocol MerchantTransactionIdFactory {
+protocol MerchantTransactionIdFactoryProtocol {
     func createTransactionId() -> String
 }
 
-final class UUIDMerchantTransactionIdFactory: MerchantTransactionIdFactory {
+final class UUIDMerchantTransactionIdFactory: MerchantTransactionIdFactoryProtocol {
     func createTransactionId() -> String {
         UUID().uuidString
     }

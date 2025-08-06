@@ -1809,19 +1809,19 @@ import Cuckoo
 import Foundation
 
 
- class MockMerchantTransactionIdFactory: MerchantTransactionIdFactory, Cuckoo.ProtocolMock {
+ class MockMerchantTransactionIdFactoryProtocol: MerchantTransactionIdFactoryProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = MerchantTransactionIdFactory
+     typealias MocksType = MerchantTransactionIdFactoryProtocol
     
-     typealias Stubbing = __StubbingProxy_MerchantTransactionIdFactory
-     typealias Verification = __VerificationProxy_MerchantTransactionIdFactory
+     typealias Stubbing = __StubbingProxy_MerchantTransactionIdFactoryProtocol
+     typealias Verification = __VerificationProxy_MerchantTransactionIdFactoryProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: MerchantTransactionIdFactory?
+    private var __defaultImplStub: MerchantTransactionIdFactoryProtocol?
 
-     func enableDefaultImplementation(_ stub: MerchantTransactionIdFactory) {
+     func enableDefaultImplementation(_ stub: MerchantTransactionIdFactoryProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -1848,7 +1848,7 @@ import Foundation
     }
     
 
-	 struct __StubbingProxy_MerchantTransactionIdFactory: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_MerchantTransactionIdFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -1858,12 +1858,12 @@ import Foundation
 	    
 	    func createTransactionId() -> Cuckoo.ProtocolStubFunction<(), String> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockMerchantTransactionIdFactory.self, method: "createTransactionId() -> String", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockMerchantTransactionIdFactoryProtocol.self, method: "createTransactionId() -> String", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_MerchantTransactionIdFactory: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_MerchantTransactionIdFactoryProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -1886,7 +1886,7 @@ import Foundation
 	}
 }
 
- class MerchantTransactionIdFactoryStub: MerchantTransactionIdFactory {
+ class MerchantTransactionIdFactoryProtocolStub: MerchantTransactionIdFactoryProtocol {
     
 
     

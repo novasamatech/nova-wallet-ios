@@ -13,7 +13,7 @@ final class MercuryoRampURLFactory {
     private let callBackURL: URL?
 
     let ipAddressProvider: IPAddressProviderProtocol
-    let merchantIdFactory: MerchantTransactionIdFactory
+    let merchantIdFactory: MerchantTransactionIdFactoryProtocol
 
     init(
         actionType: RampActionType,
@@ -24,7 +24,7 @@ final class MercuryoRampURLFactory {
         widgetId: String,
         callBackURL: URL? = nil,
         ipAddressProvider: IPAddressProviderProtocol,
-        merchantIdFactory: MerchantTransactionIdFactory
+        merchantIdFactory: MerchantTransactionIdFactoryProtocol
     ) {
         self.actionType = actionType
         self.secret = secret

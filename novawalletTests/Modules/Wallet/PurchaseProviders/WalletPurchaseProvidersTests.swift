@@ -109,7 +109,7 @@ class WalletRampProvidersTests: XCTestCase {
             }
         }
         
-        let merchantIdFactory = MockMerchantTransactionIdFactory()
+        let merchantIdFactory = MockMerchantTransactionIdFactoryProtocol()
         stub(merchantIdFactory) { stub in
             stub.createTransactionId().then {
                 "90A0270B-BB0A-4A91-BB82-AD09EE73EB78"
