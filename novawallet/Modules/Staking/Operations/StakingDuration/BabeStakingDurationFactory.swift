@@ -9,22 +9,22 @@ final class BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol 
 
         let unlockingOperation: BaseOperation<UInt32> = createConstOperation(
             dependingOn: runtimeFactoryOperation,
-            path: .lockUpPeriod
+            path: Staking.lockUpPeriodPath
         )
 
         let eraLengthOperation: BaseOperation<SessionIndex> = createConstOperation(
             dependingOn: runtimeFactoryOperation,
-            path: .eraLength
+            path: Staking.eraLengthPath
         )
 
         let sessionLengthOperation: BaseOperation<SessionIndex> = createConstOperation(
             dependingOn: runtimeFactoryOperation,
-            path: .sessionLength
+            path: BabePallet.sessionLengthPath
         )
 
         let blockTimeOperation: BaseOperation<Moment> = createConstOperation(
             dependingOn: runtimeFactoryOperation,
-            path: .babeBlockTime
+            path: BabePallet.blockTimePath
         )
 
         let mergeOperation = ClosureOperation<StakingDuration> {

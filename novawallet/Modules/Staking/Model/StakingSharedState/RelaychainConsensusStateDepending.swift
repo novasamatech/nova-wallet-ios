@@ -22,6 +22,12 @@ protocol RelaychainConsensusStateDepending {
 }
 
 final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDepending {
+    let chainRegistry: ChainRegistryProtocol
+
+    init(chainRegistry: ChainRegistryProtocol) {
+        self.chainRegistry = chainRegistry
+    }
+
     func createNetworkInfoOperationFactory(
         for chain: ChainModel,
         durationFactory: StakingDurationOperationFactoryProtocol,
@@ -48,24 +54,43 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        switch timeModel {
+        let timelineOperationFactory: RelayStkTimelineParamsOperationFactoryProtocol = switch timeModel {
         case .babe:
-            return BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
+            BabeTimelineParamsOperationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry,
+                storageRequestFactory: storageRequestFactory
+            )
         case let .auraGeneral(blockTimeService):
-            return AuraEraOperationFactory(
-                storageRequestFactory: storageRequestFactory,
+            AuraTimelineParamsOperationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry,
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
-                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod),
+                storageRequestFactory: storageRequestFactory
             )
         case let .azero(blockTimeService):
-            return AuraEraOperationFactory(
-                storageRequestFactory: storageRequestFactory,
+            AuraTimelineParamsOperationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry,
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
-                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod),
+                storageRequestFactory: storageRequestFactory
             )
         }
+
+        return RelayStkEraCountdownOperationFactory(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry,
+            storageRequestFactory: storageRequestFactory,
+            timelineOperationFactory: timelineOperationFactory,
+            eraStartOperationFactory: RelayStkEraStartOperationFactory(
+                chainRegistry: chainRegistry,
+                storageRequestFactory: storageRequestFactory
+            )
+        )
     }
 
     func createStakingDurationOperationFactory(

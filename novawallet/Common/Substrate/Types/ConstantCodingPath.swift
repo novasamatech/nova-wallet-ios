@@ -6,26 +6,6 @@ struct ConstantCodingPath {
 }
 
 extension ConstantCodingPath {
-    static var slashDeferDuration: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Staking", constantName: "SlashDeferDuration")
-    }
-
-    static var maxNominatorRewardedPerValidator: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Staking", constantName: "MaxNominatorRewardedPerValidator")
-    }
-
-    static var lockUpPeriod: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Staking", constantName: "BondingDuration")
-    }
-
-    static var eraLength: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Staking", constantName: "SessionsPerEra")
-    }
-
-    static var maxNominations: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Staking", constantName: "MaxNominations")
-    }
-
     static var existentialDeposit: ConstantCodingPath {
         ConstantCodingPath(moduleName: "Balances", constantName: "ExistentialDeposit")
     }
@@ -36,14 +16,6 @@ extension ConstantCodingPath {
 
     static var paraLeasingOffset: ConstantCodingPath {
         ConstantCodingPath(moduleName: "Slots", constantName: "LeaseOffset")
-    }
-
-    static var babeBlockTime: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Babe", constantName: "ExpectedBlockTime")
-    }
-
-    static var sessionLength: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "Babe", constantName: "EpochDuration")
     }
 
     static var minimumPeriodBetweenBlocks: ConstantCodingPath {

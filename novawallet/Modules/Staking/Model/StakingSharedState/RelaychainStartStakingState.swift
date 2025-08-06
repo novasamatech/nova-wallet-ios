@@ -2,7 +2,7 @@ import Foundation
 
 protocol RelaychainStartStakingStateProtocol: AnyObject {
     var stakingType: StakingType? { get }
-    var consensus: ConsensusType { get }
+    var consensus: RelayStkConsensusType { get }
     var chainAsset: ChainAsset { get }
 
     var recommendsMultipleStakings: Bool { get }
@@ -41,7 +41,7 @@ protocol RelaychainStartStakingStateProtocol: AnyObject {
 
 final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
     let stakingType: StakingType?
-    let consensus: ConsensusType
+    let consensus: RelayStkConsensusType
     let chainAsset: ChainAsset
 
     let relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol
@@ -72,7 +72,7 @@ final class RelaychainStartStakingState: RelaychainStartStakingStateProtocol {
 
     init(
         stakingType: StakingType?,
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
         chainAsset: ChainAsset,
         relaychainGlobalSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         relaychainAccountSubscriptionService: StakingAccountUpdatingServiceProtocol,

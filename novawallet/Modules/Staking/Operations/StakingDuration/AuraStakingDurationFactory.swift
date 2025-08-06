@@ -22,12 +22,12 @@ final class AuraStakingDurationFactory: StakingDurationOperationFactoryProtocol 
         let runtimeFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let unlockingOperation: BaseOperation<UInt32> = PrimitiveConstantOperation.operation(
-            for: .lockUpPeriod,
+            for: Staking.lockUpPeriodPath,
             dependingOn: runtimeFactoryOperation
         )
 
         let eraLengthOperation: BaseOperation<SessionIndex> = PrimitiveConstantOperation.operation(
-            for: .eraLength,
+            for: Staking.eraLengthPath,
             dependingOn: runtimeFactoryOperation
         )
 

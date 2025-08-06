@@ -118,7 +118,7 @@ final class ValidatorOperationFactory {
         nominatorAddress: AccountAddress
     ) -> CompoundOperationWrapper<[ValidatorMyNominationStatus]> {
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 
@@ -206,7 +206,7 @@ final class ValidatorOperationFactory {
         let rewardCalculatorOperation = rewardService.fetchCalculatorOperation()
 
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 
@@ -271,7 +271,7 @@ final class ValidatorOperationFactory {
         let rewardCalculatorOperation = rewardService.fetchCalculatorOperation()
 
         let maxNominatorsWrapper: CompoundOperationWrapper<UInt32?> = PrimitiveConstantOperation.wrapperNilIfMissing(
-            for: .maxNominatorRewardedPerValidator,
+            for: Staking.maxNominatorRewardedPerValidatorPath,
             runtimeService: runtimeService
         )
 

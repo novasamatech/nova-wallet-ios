@@ -15,7 +15,7 @@ protocol StakingServiceFactoryProtocol {
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol
 
-    func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel
+    func createTimeModel(for chainId: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel
 }
 
 final class StakingServiceFactory: StakingServiceFactoryProtocol {
@@ -106,7 +106,7 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         )
     }
 
-    func createTimeModel(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel {
+    func createTimeModel(for chainId: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel {
         switch consensus {
         case .babe:
             return .babe

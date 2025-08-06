@@ -3,7 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol RelaychainStakingSharedStateProtocol: AnyObject {
-    var consensus: ConsensusType { get }
+    var consensus: RelayStkConsensusType { get }
     var stakingOption: Multistaking.ChainAssetOption { get }
     var globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol { get }
     var accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol { get }
@@ -26,7 +26,7 @@ protocol RelaychainStakingSharedStateProtocol: AnyObject {
 }
 
 final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
-    let consensus: ConsensusType
+    let consensus: RelayStkConsensusType
     let timeModel: StakingTimeModel
     let stakingOption: Multistaking.ChainAssetOption
     let globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol
@@ -47,7 +47,7 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
     var chain: ChainModel { stakingOption.chainAsset.chain }
 
     init(
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
         stakingOption: Multistaking.ChainAssetOption,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,

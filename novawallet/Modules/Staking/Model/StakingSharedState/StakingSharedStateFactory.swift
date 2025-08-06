@@ -9,7 +9,7 @@ protocol StakingSharedStateFactoryProtocol {
 
     func createNominationPools(
         for chainAsset: ChainAsset,
-        consensus: ConsensusType
+        consensus: RelayStkConsensusType
     ) throws -> NPoolsStakingSharedStateProtocol
 
     func createParachain(
@@ -18,7 +18,7 @@ protocol StakingSharedStateFactoryProtocol {
 
     func createStartRelaychainStaking(
         for chainAsset: ChainAsset,
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
         selectedStakingType: StakingType?
     ) throws -> RelaychainStartStakingStateProtocol
 
@@ -88,7 +88,7 @@ final class StakingSharedStateFactory {
     }
 
     private func createRelaychainGlobalCommonServices(
-        for consensus: ConsensusType,
+        for consensus: RelayStkConsensusType,
         chainAsset: ChainAsset
     ) throws -> RelaychainGlobalCommonServices {
         let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
@@ -126,7 +126,9 @@ final class StakingSharedStateFactory {
 
         let timeModel = try stakingServiceFactory.createTimeModel(for: chainId, consensus: consensus)
 
-        let durationFactory = RelaychainConsensusStateDependingFactory().createStakingDurationOperationFactory(
+        let durationFactory = RelaychainConsensusStateDependingFactory(
+            chainRegistry: chainRegistry
+        ).createStakingDurationOperationFactory(
             for: chainAsset.chain,
             timeModel: timeModel
         )
@@ -149,7 +151,7 @@ final class StakingSharedStateFactory {
     }
 
     private func createRelaychainCommonServices(
-        for consensus: ConsensusType,
+        for consensus: RelayStkConsensusType,
         chainAsset: ChainAsset
     ) throws -> RelaychainCommonServices {
         let globalServices = try createRelaychainGlobalCommonServices(for: consensus, chainAsset: chainAsset)
@@ -276,7 +278,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
     func createRelaychain(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> RelaychainStakingSharedStateProtocol {
-        guard let consensus = ConsensusType(stakingType: stakingOption.type) else {
+        guard let consensus = RelayStkConsensusType(stakingType: stakingOption.type) else {
             throw StakingSharedStateFactoryError.unsupported
         }
 
@@ -312,7 +314,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
 
     func createNominationPools(
         for chainAsset: ChainAsset,
-        consensus: ConsensusType
+        consensus: RelayStkConsensusType
     ) throws -> NPoolsStakingSharedStateProtocol {
         let relaychainServices = try createRelaychainGlobalCommonServices(for: consensus, chainAsset: chainAsset)
         let nominationPoolServices = try createNominationPoolsServices(
@@ -428,7 +430,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
 
     func createStartRelaychainStaking(
         for chainAsset: ChainAsset,
-        consensus: ConsensusType,
+        consensus: RelayStkConsensusType,
         selectedStakingType: StakingType?
     ) throws -> RelaychainStartStakingStateProtocol {
         let relaychainServices = try createRelaychainCommonServices(for: consensus, chainAsset: chainAsset)
