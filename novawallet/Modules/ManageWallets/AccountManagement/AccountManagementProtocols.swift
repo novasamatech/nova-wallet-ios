@@ -52,7 +52,8 @@ protocol AccountManagementWireframeProtocol: AlertPresentable,
     ActionsManagePresentable,
     CloudBackupRemindPresentable,
     CopyAddressPresentable,
-    UnifiedAddressPopupPresentable
+    UnifiedAddressPopupPresentable,
+    AddressOptionsPresentable
 {
     func showCreateAccount(
         from view: ControllerBackedProtocol?,

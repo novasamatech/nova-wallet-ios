@@ -25,6 +25,8 @@ extension AccountManageWalletViewModel.WalletContext {
     struct Multisig {
         let signatory: AccountDelegateViewModel
         let otherSignatories: [WalletInfoView<WalletView>.ViewModel]
+        let otherSignatoriesTitle: String
+        let signatoryInfoClosure: (String) -> Void
     }
 
     struct Proxied {

@@ -1,14 +1,17 @@
 import Foundation
 import UIKit
 
+struct AccountManagementViewModelParams {
+    let wallet: MetaAccountModel
+    let delegateWallet: MetaAccountModel?
+    let chains: [ChainModel.Id: ChainModel]
+    let signatoryInfoAction: (String) -> Void
+    let legacyLedgerAction: () -> Void
+    let locale: Locale
+}
+
 protocol AccountManagementViewModelFactoryProtocol {
-    func createViewModel(
-        wallet: MetaAccountModel,
-        delegateWallet: MetaAccountModel?,
-        chains: [ChainModel.Id: ChainModel],
-        legacyLedgerAction: @escaping () -> Void,
-        locale: Locale
-    ) -> AccountManageWalletViewModel
+    func createViewModel(params: AccountManagementViewModelParams) -> AccountManageWalletViewModel
 }
 
 final class AccountManagementViewModelFactory {
@@ -74,9 +77,7 @@ private extension AccountManagementViewModelFactory {
             )
         case .multisig:
             .hint(
-                text: R.string.localizable.multisigDetailsHint(
-                    preferredLanguages: locale.rLanguages
-                ),
+                text: createMultisigMessage(for: wallet.multisigAccount?.anyChainMultisig, locale: locale),
                 icon: R.image.iconMultisig()
             )
         case .genericLedger:
@@ -89,10 +90,33 @@ private extension AccountManagementViewModelFactory {
         }
     }
 
+    func createMultisigMessage(
+        for multisigContext: DelegatedAccount.MultisigAccountModel?,
+        locale: Locale
+    ) -> String {
+        guard let multisigContext else {
+            return R.string.localizable.multisigDetailsHint(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return [
+            R.string.localizable.multisigWalletDetailsThreshold(
+                multisigContext.threshold,
+                multisigContext.otherSignatories.count + 1,
+                preferredLanguages: locale.rLanguages
+            ),
+            R.string.localizable.multisigDetailsHint(
+                preferredLanguages: locale.rLanguages
+            )
+        ].joined(separator: "\n\n")
+    }
+
     func createContext(
         wallet: MetaAccountModel,
         delegateWallet: MetaAccountModel?,
         chains: [ChainModel.Id: ChainModel],
+        signatoryInfoAction: @escaping (String) -> Void,
         locale: Locale
     ) -> AccountManageWalletViewModel.WalletContext? {
         guard let delegateWallet else { return nil }
@@ -103,6 +127,7 @@ private extension AccountManagementViewModelFactory {
                 delegateWallet: delegateWallet,
                 multisigWallet: wallet,
                 chains: chains,
+                signatoryInfoAction: signatoryInfoAction,
                 locale: locale
             ) else { return nil }
 
@@ -125,6 +150,7 @@ private extension AccountManagementViewModelFactory {
         delegateWallet: MetaAccountModel,
         multisigWallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
+        signatoryInfoAction: @escaping (String) -> Void,
         locale: Locale
     ) -> AccountManageWalletViewModel.WalletContext.Multisig? {
         guard
@@ -143,7 +169,7 @@ private extension AccountManagementViewModelFactory {
             .defaultSubstrateFormat
         }
 
-        let signatoryViewmodel = createDelegateViewModel(
+        let signatoryViewModel = createDelegateViewModel(
             delegatedWallet: multisigWallet,
             delegateWallet: delegateWallet,
             locale: locale
@@ -170,9 +196,15 @@ private extension AccountManagementViewModelFactory {
             )
         }
 
+        let otherSignatoriesTitle = R.string.localizable.multisigWalletDetailsOtherSignatories(
+            preferredLanguages: locale.rLanguages
+        )
+
         return .init(
-            signatory: signatoryViewmodel,
-            otherSignatories: otherSignatoriesViewModels
+            signatory: signatoryViewModel,
+            otherSignatories: otherSignatoriesViewModels,
+            otherSignatoriesTitle: "\(otherSignatoriesTitle):",
+            signatoryInfoClosure: signatoryInfoAction
         )
     }
 
@@ -198,24 +230,19 @@ private extension AccountManagementViewModelFactory {
 // MARK: - AccountManagementViewModelFactoryProtocol
 
 extension AccountManagementViewModelFactory: AccountManagementViewModelFactoryProtocol {
-    func createViewModel(
-        wallet: MetaAccountModel,
-        delegateWallet: MetaAccountModel?,
-        chains: [ChainModel.Id: ChainModel],
-        legacyLedgerAction: @escaping () -> Void,
-        locale: Locale
-    ) -> AccountManageWalletViewModel {
+    func createViewModel(params: AccountManagementViewModelParams) -> AccountManageWalletViewModel {
         let messageType = createMessageType(
-            for: wallet,
-            chains: chains,
-            legacyLedgerAction: legacyLedgerAction,
-            locale: locale
+            for: params.wallet,
+            chains: params.chains,
+            legacyLedgerAction: params.legacyLedgerAction,
+            locale: params.locale
         )
         let context = createContext(
-            wallet: wallet,
-            delegateWallet: delegateWallet,
-            chains: chains,
-            locale: locale
+            wallet: params.wallet,
+            delegateWallet: params.delegateWallet,
+            chains: params.chains,
+            signatoryInfoAction: params.signatoryInfoAction,
+            locale: params.locale
         )
 
         return AccountManageWalletViewModel(

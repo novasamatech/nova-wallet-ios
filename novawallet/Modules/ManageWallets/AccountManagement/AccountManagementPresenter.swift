@@ -49,15 +49,20 @@ private extension AccountManagementPresenter {
     func provideWalletViewModel() {
         guard let wallet else { return }
 
-        let viewModel = viewModelFactory.createViewModel(
+        let params = AccountManagementViewModelParams(
             wallet: wallet,
             delegateWallet: delegateWallet,
             chains: chains,
+            signatoryInfoAction: { [weak self] address in
+                self?.showSignatoryInfo(address: address)
+            },
             legacyLedgerAction: { [weak self] in
                 self?.showLegacyLedgerFindMore()
             },
             locale: selectedLocale
         )
+
+        let viewModel = viewModelFactory.createViewModel(params: params)
 
         view?.didReceive(walletViewModel: viewModel)
     }
@@ -101,6 +106,29 @@ private extension AccountManagementPresenter {
             url: applicationConfig.ledgerMigrationURL,
             from: view,
             style: .automatic
+        )
+    }
+
+    func showSignatoryInfo(address: String) {
+        guard
+            let view,
+            let multisigAccount = wallet?.multisigAccount
+        else { return }
+
+        let chain: ChainModel? = switch multisigAccount {
+        case let .singleChain(chainAccount):
+            chains[chainAccount.chainId]
+        case .universal:
+            chains[KnowChainId.polkadot]
+        }
+
+        guard let chain else { return }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
         )
     }
 

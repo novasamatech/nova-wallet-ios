@@ -73,25 +73,20 @@ final class AccountManagementHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AccountManageWalletViewModel) {
+    func bind(viewModel: AccountManageWalletViewModel, locale _: Locale = Locale.current) {
         messageType = viewModel.messageType
 
         switch viewModel.messageType {
         case let .hint(text, icon):
             hintView?.bindHint(text: text, icon: icon)
+
+            guard let context = viewModel.context else { return }
+
+            hintView?.bindDelegatedWalletContext(context)
         case let .banner(bannerViewModel):
             bannerView?.bind(viewModel: bannerViewModel)
         case .none:
             break
-        }
-
-        guard let context = viewModel.context else { return }
-
-        switch context {
-        case let .multisig(multisigContext):
-            hintView?.bindDelegate(viewModel: multisigContext.signatory)
-        case let .proxied(proxiedContext):
-            hintView?.bindDelegate(viewModel: proxiedContext.proxy)
         }
     }
 
