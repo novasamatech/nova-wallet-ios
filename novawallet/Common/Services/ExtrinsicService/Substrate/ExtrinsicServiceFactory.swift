@@ -6,26 +6,26 @@ protocol ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending]
+        extensions: [TransactionExtending]
     ) -> ExtrinsicServiceProtocol
 
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending],
+        extensions: [TransactionExtending],
         customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicServiceProtocol
 
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending]
+        extensions: [TransactionExtending]
     ) -> ExtrinsicOperationFactoryProtocol
 
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending],
+        extensions: [TransactionExtending],
         customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicOperationFactoryProtocol
 
@@ -156,7 +156,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending]
+        extensions: [TransactionExtending]
     ) -> ExtrinsicServiceProtocol {
         let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
             chainAccount: account,
@@ -198,7 +198,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending],
+        extensions: [TransactionExtending],
         customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicServiceProtocol {
         let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
@@ -241,7 +241,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending]
+        extensions: [TransactionExtending]
     ) -> ExtrinsicOperationFactoryProtocol {
         let senderResolvingFactory = ExtrinsicSenderResolutionFactory(
             chainAccount: account,
@@ -284,7 +284,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createOperationFactory(
         account: ChainAccountResponse,
         chain: ChainModel,
-        extensions: [ExtrinsicSignedExtending],
+        extensions: [TransactionExtending],
         customFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFactoryProtocol
     ) -> ExtrinsicOperationFactoryProtocol {
         let senderResolvingFactory = ExtrinsicSenderResolutionFactory(

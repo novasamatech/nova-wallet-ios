@@ -88,7 +88,7 @@ final class DAppExtrinsicBuilderOperationFactory {
             }
 
             for signedExtension in signedExtensionFactory.createExtensions() {
-                builder = builder.adding(extrinsicSignedExtension: signedExtension)
+                builder = builder.adding(transactionExtension: signedExtension)
             }
 
             builder = try result.extrinsic.method.accept(builder: builder)
@@ -108,7 +108,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                     assetId: rawFeeAssetId
                 )
 
-                builder = builder.adding(extrinsicSignedExtension: txPayment)
+                builder = builder.adding(transactionExtension: txPayment)
             }
 
             let isModifiedExtrinsic = metadataHashResult.modifiedOriginal
@@ -237,7 +237,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                 context: context,
                 codingFactory: codingFactory
             )
-            .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+            .build(using: codingFactory, metadata: codingFactory.metadata)
 
             return DAppExtrinsicRawExtrinsicResult(sender: builderResult.sender, signedExtrinsic: signedExtrinsic)
         }
@@ -313,7 +313,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                 using: { data in
                     try signingClosure(data, .substrateExtrinsic(context))
                 },
-                encoder: codingFactory.createEncoder(),
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
 
@@ -322,7 +322,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                     with: { _, _ in rawSignature },
                     context: context,
                     codingFactory: codingFactory
-                ).build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+                ).build(using: codingFactory, metadata: codingFactory.metadata)
             } else {
                 nil
             }
