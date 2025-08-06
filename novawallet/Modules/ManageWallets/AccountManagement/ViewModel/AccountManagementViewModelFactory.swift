@@ -219,10 +219,21 @@ private extension AccountManagementViewModelFactory {
 
         let type = delegatedWallet.proxy?.type.title(locale: locale) ?? ""
 
+        let marker = AttributedReplacementStringDecorator.marker
+
+        let template = "\(delegateWallet.name) \(marker)"
+
+        let decorator = AttributedReplacementStringDecorator(
+            pattern: marker,
+            replacements: [type],
+            attributes: [.foregroundColor: R.color.colorTextSecondary()!]
+        )
+
+        let nameWithType = decorator.decorate(attributedString: NSAttributedString(string: template))
+
         return .init(
-            name: delegateWallet.name,
-            icon: icon,
-            type: type
+            name: nameWithType,
+            icon: icon
         )
     }
 }

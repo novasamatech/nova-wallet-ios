@@ -18,15 +18,11 @@ final class AccountManagementHintView: UIView {
         $0.cornerRadius = Constants.cornerRadius
     }
 
-    private let delegateView: GenericPairValueView<IconDetailsView, UILabel> = .create {
-        $0.sView.apply(style: .footnoteSecondary)
-        $0.sView.setContentCompressionResistancePriority(.high, for: .horizontal)
-        $0.fView.detailsLabel.apply(style: .footnotePrimary)
-        $0.fView.iconWidth = Constants.delegateIconSize
-        $0.fView.mode = .iconDetails
-        $0.makeHorizontal()
+    private let delegateView: IconDetailsView = .create {
+        $0.detailsLabel.apply(style: .footnotePrimary)
+        $0.iconWidth = Constants.delegateIconSize
+        $0.mode = .iconDetails
         $0.spacing = Constants.delegateSpacing
-        $0.fView.spacing = Constants.delegateSpacing
     }
 
     private lazy var contentView = UIView.vStack(spacing: Constants.mainSpacing, [
@@ -97,7 +93,7 @@ private extension AccountManagementHintView {
         }
 
         delegateView.snp.makeConstraints { make in
-            make.height.equalTo(Constants.delegateViewHeight)
+            make.height.greaterThanOrEqualTo(Constants.delegateViewHeight)
         }
 
         contextViewContainer.isHidden = true
@@ -107,13 +103,12 @@ private extension AccountManagementHintView {
     func bindDelegate(viewModel: AccountDelegateViewModel) {
         contextViewContainer.isHidden = false
 
-        delegateView.fView.detailsLabel.text = viewModel.name
-        delegateView.sView.text = viewModel.type
+        delegateView.detailsLabel.attributedText = viewModel.name
 
-        delegateIcon?.cancel(on: delegateView.fView.imageView)
+        delegateIcon?.cancel(on: delegateView.imageView)
 
         viewModel.icon?.loadImage(
-            on: delegateView.fView.imageView,
+            on: delegateView.imageView,
             targetSize: .init(width: Constants.delegateIconSize, height: Constants.delegateIconSize),
             animated: true
         )
