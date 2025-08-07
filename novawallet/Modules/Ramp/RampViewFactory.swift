@@ -14,6 +14,7 @@ final class RampViewFactory {
         let wireframe = RampWireframe(delegate: delegate)
 
         let rampProvider = RampAggregator.defaultAggregator()
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let interactor = RampInteractor(
             wallet: wallet,
@@ -21,14 +22,14 @@ final class RampViewFactory {
             rampProvider: rampProvider,
             eventCenter: EventCenter.shared,
             action: action,
+            operationQueue: operationQueue,
             logger: logger
         )
 
         let presenter = RampPresenter(
             wireframe: wireframe,
             interactor: interactor,
-            chainAsset: chainAsset,
-            action: action
+            chainAsset: chainAsset
         )
 
         view.presenter = presenter

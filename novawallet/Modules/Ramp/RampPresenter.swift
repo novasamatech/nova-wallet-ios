@@ -6,18 +6,15 @@ final class RampPresenter {
     var interactor: RampInteractorInputProtocol!
 
     let chainAsset: ChainAsset
-    let action: RampAction
 
     init(
         wireframe: RampWireframeProtocol!,
         interactor: RampInteractorInputProtocol!,
-        chainAsset: ChainAsset,
-        action: RampAction
+        chainAsset: ChainAsset
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.chainAsset = chainAsset
-        self.action = action
     }
 }
 

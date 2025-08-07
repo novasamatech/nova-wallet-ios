@@ -55,7 +55,9 @@ extension SelectRampProviderPresenter: SelectRampProviderPresenterProtocol {
     }
 
     func selectProvider(with id: String) {
-        guard let action = rampActions?.first(where: { $0.url == URL(string: id) }) else {
+        guard let action = rampActions?.first(where: { $0.displayURLString
+                == id
+        }) else {
             return
         }
 
