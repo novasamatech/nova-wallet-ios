@@ -9,6 +9,16 @@ final class WalletView: GenericTitleValueView<
 >, WalletViewProtocol {
     var viewModel: ViewModel?
 
+    var iconTitleSpacing: CGFloat {
+        get {
+            spacing
+        }
+        set {
+            spacing = newValue
+        }
+    }
+
+    var iconContainerView: WalletIconView { titleView }
     var iconImageView: UIImageView { titleView.iconViewImageView }
     var networkImageView: UIImageView { titleView.networkIconImageView }
 

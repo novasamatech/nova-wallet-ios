@@ -40,6 +40,15 @@ private extension WalletInfoView {
 }
 
 extension WalletInfoView: WalletViewProtocol {
+    var iconTitleSpacing: CGFloat {
+        get {
+            walletView.iconTitleSpacing
+        }
+        set {
+            walletView.iconTitleSpacing = newValue
+        }
+    }
+
     var viewModel: ViewModel? {
         get {
             walletView.viewModel
@@ -48,6 +57,8 @@ extension WalletInfoView: WalletViewProtocol {
             walletView.viewModel = newValue
         }
     }
+
+    var iconContainerView: WalletIconView { walletView.iconContainerView }
 
     var iconImageView: UIImageView { walletView.iconImageView }
 

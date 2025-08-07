@@ -79,6 +79,15 @@ private extension WalletCheckmarkView {
 }
 
 extension WalletCheckmarkView: WalletViewProtocol {
+    var iconTitleSpacing: CGFloat {
+        get {
+            walletView.iconTitleSpacing
+        }
+        set {
+            walletView.iconTitleSpacing = newValue
+        }
+    }
+
     var viewModel: ViewModel? {
         get {
             walletView.viewModel
@@ -87,6 +96,8 @@ extension WalletCheckmarkView: WalletViewProtocol {
             walletView.viewModel = newValue
         }
     }
+
+    var iconContainerView: WalletIconView { walletView.iconContainerView }
 
     var iconImageView: UIImageView { walletView.iconImageView }
 
