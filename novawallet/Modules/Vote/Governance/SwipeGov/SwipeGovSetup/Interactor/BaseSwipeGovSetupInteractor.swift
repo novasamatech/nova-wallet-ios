@@ -10,8 +10,7 @@ class BaseSwipeGovSetupInteractor: AnyCancellableCleaning {
     private let selectedAccount: MetaChainAccountResponse
     private let chain: ChainModel
     private let observableState: ReferendumsObservableState
-    private let blockTimeService: BlockTimeEstimationServiceProtocol
-    private let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    private let timelineService: ChainTimelineFacadeProtocol
     private let lockStateFactory: GovernanceLockStateFactoryProtocol
     private let connection: JSONRPCEngine
     private let runtimeProvider: RuntimeProviderProtocol
@@ -24,8 +23,8 @@ class BaseSwipeGovSetupInteractor: AnyCancellableCleaning {
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
 
-    private var blockTimeCancellable: CancellableCall?
-    private var lockDiffCancellable: CancellableCall?
+    private let blockTimeCallStore = CancellableCallStore()
+    private let lockDiffCallStore = CancellableCallStore()
 
     init(
         selectedAccount: MetaChainAccountResponse,
@@ -34,8 +33,7 @@ class BaseSwipeGovSetupInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -46,8 +44,7 @@ class BaseSwipeGovSetupInteractor: AnyCancellableCleaning {
         self.chain = chain
         self.observableState = observableState
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -81,7 +78,7 @@ extension BaseSwipeGovSetupInteractor: SwipeGovSetupInteractorInputProtocol {
         for trackVoting: ReferendumTracksVotingDistribution,
         newVotes: [ReferendumNewVote]
     ) {
-        clear(cancellable: &lockDiffCancellable)
+        lockDiffCallStore.cancel()
 
         let wrapper = lockStateFactory.calculateLockStateDiff(
             for: trackVoting,
@@ -91,26 +88,19 @@ extension BaseSwipeGovSetupInteractor: SwipeGovSetupInteractorInputProtocol {
             blockHash: nil
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.lockDiffCancellable else {
-                    return
-                }
-
-                self?.lockDiffCancellable = nil
-
-                do {
-                    let stateDiff = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveLockStateDiff(stateDiff)
-                } catch {
-                    self?.presenter?.didReceiveBaseError(.stateDiffFailed(error))
-                }
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: lockDiffCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(stateDiff):
+                self?.presenter?.didReceiveLockStateDiff(stateDiff)
+            case let .failure(error):
+                self?.presenter?.didReceiveBaseError(.stateDiffFailed(error))
             }
         }
-
-        lockDiffCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     func refreshBlockTime() {
@@ -180,47 +170,37 @@ extension BaseSwipeGovSetupInteractor: SelectedCurrencyDepending {
 
 extension BaseSwipeGovSetupInteractor {
     func clearCancellable() {
-        clear(cancellable: &blockTimeCancellable)
-        clear(cancellable: &lockDiffCancellable)
+        blockTimeCallStore.cancel()
+        lockDiffCallStore.cancel()
     }
 
     func provideBlockTime() {
-        guard blockTimeCancellable == nil else {
+        guard !blockTimeCallStore.hasCall else {
             return
         }
 
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let wrapper = timelineService.createBlockTimeOperation()
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.blockTimeCancellable else {
-                    return
-                }
-
-                self?.blockTimeCancellable = nil
-
-                do {
-                    let blockTimeModel = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveBlockTime(blockTimeModel)
-                } catch {
-                    self?.presenter?.didReceiveBaseError(.blockTimeFailed(error))
-                }
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: blockTimeCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(blockTimeModel):
+                self?.presenter?.didReceiveBlockTime(blockTimeModel)
+            case let .failure(error):
+                self?.presenter?.didReceiveBaseError(.blockTimeFailed(error))
             }
         }
-
-        blockTimeCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     func clearAndSubscribeBlockNumber() {
         blockNumberProvider?.removeObserver(self)
         blockNumberProvider = nil
 
-        blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberProvider = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     func clearAndSubscribeBalance() {

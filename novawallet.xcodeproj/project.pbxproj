@@ -981,6 +981,8 @@
 		0CBF1A0D2E437871009EE38D /* BabePallet+Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF1A0C2E437871009EE38D /* BabePallet+Path.swift */; };
 		0CBF1A0F2E437BB5009EE38D /* StorageResponse+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF1A0E2E437BB5009EE38D /* StorageResponse+Error.swift */; };
 		0CBF1A112E437DBA009EE38D /* AuraTimelineParamsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF1A102E437DBA009EE38D /* AuraTimelineParamsOperationFactory.swift */; };
+		0CBF1A152E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF1A142E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift */; };
+		0CBF1A172E44862E009EE38D /* ChainTimelineFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF1A162E44862E009EE38D /* ChainTimelineFacade.swift */; };
 		0CBF5DE72AB1A60500087EBF /* SharedOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */; };
 		0CC0F7EC2BAD8A78002C49F6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EB2BAD8A78002C49F6 /* GoogleService-Info.plist */; };
 		0CC0F7F22BADEB1D002C49F6 /* notification-ext.release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */; };
@@ -7088,6 +7090,8 @@
 		0CBF1A0C2E437871009EE38D /* BabePallet+Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BabePallet+Path.swift"; sourceTree = "<group>"; };
 		0CBF1A0E2E437BB5009EE38D /* StorageResponse+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageResponse+Error.swift"; sourceTree = "<group>"; };
 		0CBF1A102E437DBA009EE38D /* AuraTimelineParamsOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraTimelineParamsOperationFactory.swift; sourceTree = "<group>"; };
+		0CBF1A142E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTimeEstimationServiceFactory.swift; sourceTree = "<group>"; };
+		0CBF1A162E44862E009EE38D /* ChainTimelineFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainTimelineFacade.swift; sourceTree = "<group>"; };
 		0CBF5DE62AB1A60500087EBF /* SharedOperationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedOperationStatus.swift; sourceTree = "<group>"; };
 		0CC0F7E72BAD4359002C49F6 /* NovaPushNotificationServiceExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionRelease.entitlements; sourceTree = "<group>"; };
 		0CC0F7EB2BAD8A78002C49F6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -14645,6 +14649,17 @@
 			path = BabePallet;
 			sourceTree = "<group>";
 		};
+		0CBF1A132E446E61009EE38D /* BlockTime */ = {
+			isa = PBXGroup;
+			children = (
+				84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */,
+				84C3420A283187D800156569 /* BlockTimeEstimationService.swift */,
+				0CBF1A142E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift */,
+				0CBF1A162E44862E009EE38D /* ChainTimelineFacade.swift */,
+			);
+			path = BlockTime;
+			sourceTree = "<group>";
+		};
 		0CC0F7EE2BADEA6F002C49F6 /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -19389,7 +19404,6 @@
 				AE7129BB2608C068000AA3F5 /* NetworkStakingInfoOperationFactory.swift */,
 				84690796264154E80030E693 /* SlashesOperationFactory.swift */,
 				8467F4C426B1E4E200C5B6F4 /* StakingDurationFetching.swift */,
-				84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */,
 				84329ED12832636F0020BC1C /* RoundCountdown.swift */,
 				84DD261329ACA9030032A598 /* VotersInfoOperationFactory.swift */,
 				0C37AFC02B56EBC000009ECA /* MaxNominationsOperationFactory.swift */,
@@ -22955,6 +22969,7 @@
 		8490154E24ACD521008F705E /* Substrate */ = {
 			isa = PBXGroup;
 			children = (
+				0CBF1A132E446E61009EE38D /* BlockTime */,
 				0C521C052E158D1300ABAC97 /* Helpers */,
 				84468A05286652EF00BCBE00 /* AssetOperations */,
 				0CEB6B3F2CA50DB400609DC2 /* AssetConverters */,
@@ -23069,7 +23084,6 @@
 				8418167428251BBC0007684A /* StorageListSyncResult.swift */,
 				84216FD92827B25F00479375 /* StorageItemSyncService.swift */,
 				841E554C282DAA8000C8438F /* ParachainStakingServiceFactory.swift */,
-				84C3420A283187D800156569 /* BlockTimeEstimationService.swift */,
 				0CD846422BE352D10026B5CA /* PreferredValidatorsProvider.swift */,
 			);
 			path = Services;
@@ -34240,6 +34254,7 @@
 				C7E96E4185084C3E8F226E97 /* GovernanceRevokeDelegationTracksPresenter.swift in Sources */,
 				0C2A3C9A2CDCEB8A00A0E2B3 /* SwapAssetSelectionClosure.swift in Sources */,
 				0CD54E4D2BCE3B89007B58E7 /* CloudBackupSecretsImporting.swift in Sources */,
+				0CBF1A172E44862E009EE38D /* ChainTimelineFacade.swift in Sources */,
 				3592E885646B3ED9F2717412 /* GovernanceRevokeDelegationTracksViewController.swift in Sources */,
 				1F205FE059A7099A1A7391EC /* GovernanceRevokeDelegationTracksViewFactory.swift in Sources */,
 				39373DDCEE7CB9D04C310BC9 /* GovernanceRevokeDelegationConfirmProtocols.swift in Sources */,
@@ -34785,6 +34800,7 @@
 				346DD413FBE3ACE47BE799B9 /* GenericLedgerAccountSelectionViewFactory.swift in Sources */,
 				0503753EC5E2136973D13E52 /* PayCardProtocols.swift in Sources */,
 				F14CCD34D8A84AC40676615D /* PayCardWireframe.swift in Sources */,
+				0CBF1A152E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift in Sources */,
 				0962B23024B05A8733AA0796 /* PayCardPresenter.swift in Sources */,
 				877A27A443F9C4048B7FF99A /* PayCardInteractor.swift in Sources */,
 				CCF725BDBEE08A08C5450BC0 /* PayCardViewController.swift in Sources */,

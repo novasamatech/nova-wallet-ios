@@ -15,8 +15,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
     let feeProxy: MultiExtrinsicFeeProxyProtocol
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let lockStateFactory: GovernanceLockStateFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -35,8 +34,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
         currencyManager: CurrencyManagerProtocol,
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
@@ -48,8 +46,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         self.selectedAccount = selectedAccount
         self.chain = chain
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.chainRegistry = chainRegistry
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -84,15 +81,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
             return
         }
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            basePresenter?.didReceiveBaseError(.blockTimeFailed(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        let wrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
-            blockTimeEstimationService: blockTimeService
-        )
+        let wrapper = timelineService.createBlockTimeOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -136,7 +125,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         blockNumberProvider?.removeObserver(self)
         blockNumberProvider = nil
 
-        blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberProvider = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func clearAndSubscribeBalance() {

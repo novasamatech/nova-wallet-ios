@@ -214,12 +214,16 @@ final class GovernanceSharedState {
         }
     }
 
-    func createBlockTimeOperationFactory() -> BlockTimeOperationFactoryProtocol? {
-        guard let chain = settings.value?.chain else {
+    func createChainTimelineFacade() -> ChainTimelineFacadeProtocol? {
+        guard let chain = settings.value?.chain, let blockTimeService else {
             return nil
         }
 
-        return BlockTimeOperationFactory(chain: chain)
+        return ChainTimelineFacade(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry,
+            estimationService: blockTimeService
+        )
     }
 
     func createOffchainAllVotesFactory(

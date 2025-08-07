@@ -12,8 +12,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     let fetchFactory: DelegateVotedReferendaOperationFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let dataFetchOption: DelegateVotedReferendaOption
     let operationQueue: OperationQueue
 
@@ -34,8 +33,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         fetchFactory: DelegateVotedReferendaOperationFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         dataFetchOption: DelegateVotedReferendaOption,
         operationQueue: OperationQueue
     ) {
@@ -46,8 +44,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.fetchFactory = fetchFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeOperationFactory = blockTimeOperationFactory
+        self.timelineService = timelineService
         self.dataFetchOption = dataFetchOption
         self.operationQueue = operationQueue
     }
@@ -61,8 +58,8 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         clear(cancellable: &blockTimeCancellable)
     }
 
-    func subscribeToBlockNumber(for chain: ChainModel) {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+    func subscribeToBlockNumber(for _: ChainModel) {
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func subscribeToMetadata(for option: GovernanceSelectedOption) {
@@ -80,10 +77,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     func fetchBlockTime(forceVotingFetch: Bool = false) {
         clear(cancellable: &blockTimeCancellable)
 
-        let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
+        let blockTimeWrapper = timelineService.createBlockTimeOperation()
 
         blockTimeWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

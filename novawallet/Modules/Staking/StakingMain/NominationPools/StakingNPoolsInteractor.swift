@@ -172,7 +172,7 @@ final class StakingNPoolsInteractor: AnyCancellableCleaning, AnyProviderAutoClea
 
         let stakingDurationFactory = state.createStakingDurationOperationFactory()
 
-        let wrapper = stakingDurationFactory.createDurationOperation(from: runtimeCodingService)
+        let wrapper = stakingDurationFactory.createDurationOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

@@ -87,7 +87,7 @@ extension BabeTimelineParamsOperationFactory: RelayStkTimelineParamsOperationFac
 
                 return RelayStkTimelineParams(
                     sessionLength: sessionLength,
-                    currentSessionIndex: sessionLength,
+                    currentSessionIndex: sessionIndex.value,
                     currentEpochIndex: currentEpoch.value,
                     currentSlot: currentSlot.value,
                     genesisSlot: genesisSlot.value,

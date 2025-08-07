@@ -61,7 +61,7 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
                 chainRegistry: chainRegistry,
                 storageRequestFactory: storageRequestFactory
             )
-        case let .auraGeneral(blockTimeService):
+        case let .auraGeneral(_, blockTimeService):
             AuraTimelineParamsOperationFactory(
                 chainId: chain.chainId,
                 chainRegistry: chainRegistry,
@@ -70,7 +70,7 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
                 sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod),
                 storageRequestFactory: storageRequestFactory
             )
-        case let .azero(blockTimeService):
+        case let .azero(_, blockTimeService):
             AuraTimelineParamsOperationFactory(
                 chainId: chain.chainId,
                 chainRegistry: chainRegistry,
@@ -99,17 +99,24 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
     ) -> StakingDurationOperationFactoryProtocol {
         switch timeModel {
         case .babe:
-            return BabeStakingDurationFactory()
-        case let .auraGeneral(blockTimeService):
+            return BabeStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry
+            )
+        case let .auraGeneral(timelineChain, blockTimeService):
             return AuraStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry,
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: timelineChain),
                 sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
             )
-        case let .azero(blockTimeService):
+        case let .azero(timelineChain, blockTimeService):
             return AuraStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry,
                 blockTimeService: blockTimeService,
-                blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: timelineChain ?? chain),
                 sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
             )
         }

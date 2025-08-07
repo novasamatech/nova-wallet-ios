@@ -215,7 +215,7 @@ class NPoolsUnstakeBaseInteractor: AnyCancellableCleaning, NominationPoolsDataPr
     func provideStakingDuration() {
         clear(cancellable: &durationCancellable)
 
-        let wrapper = durationFactory.createDurationOperation(from: runtimeService)
+        let wrapper = durationFactory.createDurationOperation()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

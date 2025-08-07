@@ -121,15 +121,14 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
 
         minBondedProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
 
-        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
-            fetchStakingDuration(
-                runtimeCodingService: runtimeService,
-                operationFactory: stakingDurationOperationFactory,
-                operationManager: operationManager
-            ) { [weak self] result in
-                self?.presenter.didReceiveStakingDuration(result: result)
-            }
+        fetchStakingDuration(
+            operationFactory: stakingDurationOperationFactory,
+            operationManager: operationManager
+        ) { [weak self] result in
+            self?.presenter.didReceiveStakingDuration(result: result)
+        }
 
+        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,

@@ -297,6 +297,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
 
         return RelaychainStakingSharedState(
             consensus: consensus,
+            chainRegistry: chainRegistry,
             stakingOption: stakingOption,
             globalRemoteSubscriptionService: services.globalRemoteSubscriptionService,
             accountRemoteSubscriptionService: services.accountRemoteSubscriptionService,
@@ -331,6 +332,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
 
         return NPoolsStakingSharedState(
             chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
             relaychainGlobalSubscriptionService: relaychainServices.globalRemoteSubscriptionService,
             timeModel: relaychainServices.timeModel,
             relaychainLocalSubscriptionFactory: relaychainServices.localSubscriptionFactory,
@@ -393,7 +395,9 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         let collatorService = try serviceFactory.createSelectedCollatorsService(for: chainId)
-        let blockTimeService = try serviceFactory.createBlockTimeService(for: chainId)
+
+        let timelineChain = try chainRegistry.getTimelineChainOrError(for: chainId)
+        let blockTimeService = try serviceFactory.createBlockTimeService(for: timelineChain.chainId)
         let rewardService = try serviceFactory.createRewardCalculatorService(
             for: chainId,
             stakingType: stakingOption.type,
@@ -448,6 +452,7 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             stakingType: selectedStakingType,
             consensus: consensus,
             chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
             relaychainGlobalSubscriptionService: relaychainServices.globalRemoteSubscriptionService,
             relaychainAccountSubscriptionService: relaychainServices.accountRemoteSubscriptionService,
             timeModel: relaychainServices.timeModel,
@@ -478,8 +483,12 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             logger: logger
         )
 
-        let blockTimeService = try serviceFactory.createBlockTimeService(
+        let timelineChain = try chainRegistry.getTimelineChainOrError(
             for: stakingOption.chainAsset.chain.chainId
+        )
+
+        let blockTimeService = try serviceFactory.createBlockTimeService(
+            for: timelineChain.chainId
         )
 
         let collatorService = try serviceFactory.createSelectedCollatorsService(
@@ -500,10 +509,16 @@ extension StakingSharedStateFactory: StakingSharedStateFactoryProtocol {
             logger: logger
         )
 
+        let timelineService = ChainTimelineFacade(
+            chainId: timelineChain.chainId,
+            chainRegistry: chainRegistry,
+            estimationService: blockTimeService
+        )
+
         let rewardCalculatorService = try serviceFactory.createRewardCalculatorService(
             for: stakingOption.chainAsset.chainAssetId,
             collatorService: collatorService,
-            blockTimeService: blockTimeService,
+            timelineService: timelineService,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
         )
 

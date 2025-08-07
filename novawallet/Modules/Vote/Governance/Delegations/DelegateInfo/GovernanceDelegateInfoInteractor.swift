@@ -15,8 +15,7 @@ final class GovernanceDelegateInfoInteractor {
     let runtimeService: RuntimeProviderProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
@@ -35,8 +34,7 @@ final class GovernanceDelegateInfoInteractor {
         runtimeService: RuntimeProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         identityProxyFactory: IdentityProxyFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -50,8 +48,7 @@ final class GovernanceDelegateInfoInteractor {
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.identityProxyFactory = identityProxyFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
     }
@@ -113,10 +110,7 @@ final class GovernanceDelegateInfoInteractor {
     }
 
     private func fetchBlockTimeAndUpdateDetails() {
-        let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
+        let blockTimeUpdateWrapper = timelineService.createBlockTimeOperation()
 
         blockTimeUpdateWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -168,7 +162,7 @@ final class GovernanceDelegateInfoInteractor {
     }
 
     private func subscribeBlockNumber() {
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func subscribeToDelegatesMetadata() {

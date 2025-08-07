@@ -51,7 +51,7 @@ extension RelayStkEraStartOperationFactory: RelayStkEraStartOperationFactoryProt
                 let bondedEras = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
                 let optIndex = bondedEras.value?
-                    .first { $0.startSessionIndex == activeEra }?
+                    .first { $0.era == activeEra }?
                     .startSessionIndex
 
                 guard let index = optIndex else {

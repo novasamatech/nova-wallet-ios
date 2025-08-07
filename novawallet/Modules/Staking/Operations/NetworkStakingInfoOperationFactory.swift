@@ -164,7 +164,7 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
 
         let eraValidatorsOperation = eraValidatorService.fetchInfoOperation()
 
-        let stakingDurationWrapper = durationOperationFactory.createDurationOperation(from: runtimeService)
+        let stakingDurationWrapper = durationOperationFactory.createDurationOperation()
 
         let votersWrapper = votersOperationFactory.createVotersInfoWrapper(for: runtimeService)
 

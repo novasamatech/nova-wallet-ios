@@ -12,8 +12,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let offchainOperationFactory: GovernanceDelegateListFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let blockTimeService: BlockTimeEstimationServiceProtocol
-    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let timelineService: ChainTimelineFacadeProtocol
     let runtimeService: RuntimeProviderProtocol
     let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
@@ -35,8 +34,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
         offchainOperationFactory: GovernanceDelegateListFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
-        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         runtimeService: RuntimeProviderProtocol,
         govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
@@ -48,8 +46,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         self.referendumsOperationFactory = referendumsOperationFactory
         self.offchainOperationFactory = offchainOperationFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.blockTimeService = blockTimeService
-        self.blockTimeFactory = blockTimeFactory
+        self.timelineService = timelineService
         self.runtimeService = runtimeService
         self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
@@ -62,10 +59,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     private func fetchBlockTimeAndUpdateDelegates() {
         clear(cancellable: &blockTimeCancellable)
 
-        let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
+        let blockTimeUpdateWrapper = timelineService.createBlockTimeOperation()
 
         blockTimeUpdateWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -194,7 +188,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
 
     private func subscribeBlockNumber() {
         blockNumberSubscription?.removeObserver(self)
-        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+        blockNumberSubscription = subscribeToBlockNumber(for: timelineService.timelineChainId)
     }
 
     private func subscribeToDelegatesMetadata() {

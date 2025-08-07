@@ -8,7 +8,7 @@ protocol MythosStakingServiceFactoryProtocol {
     func createRewardCalculatorService(
         for chainAssetId: ChainAssetId,
         collatorService: MythosCollatorServiceProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     ) throws -> CollatorStakingRewardCalculatorServiceProtocol
 
@@ -33,22 +33,16 @@ extension MythosStakingServiceFactory: MythosStakingServiceFactoryProtocol {
     func createRewardCalculatorService(
         for chainAssetId: ChainAssetId,
         collatorService: MythosCollatorServiceProtocol,
-        blockTimeService: BlockTimeEstimationServiceProtocol,
+        timelineService: ChainTimelineFacadeProtocol,
         stakingLocalSubscriptionFactory: MythosStakingLocalSubscriptionFactoryProtocol
     ) throws -> CollatorStakingRewardCalculatorServiceProtocol {
         let chain = try chainRegisty.getChainOrError(for: chainAssetId.chainId)
         let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
 
-        let runtimeService = try chainRegisty.getRuntimeProviderOrError(for: chain.chainId)
-
-        let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
-
         return MythosRewardCalculatorService(
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            blockTimeOperationFactory: blockTimeOperationFactory,
-            blockTimeService: blockTimeService,
-            runtimeService: runtimeService,
+            timelineService: timelineService,
             collatorService: collatorService,
             operationQueue: operationQueue,
             eventCenter: eventCenter,

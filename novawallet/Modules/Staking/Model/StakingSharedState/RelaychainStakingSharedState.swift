@@ -42,12 +42,13 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
 
     private var globalSubscriptionId: UUID?
 
-    private lazy var consensusDependingFactory = RelaychainConsensusStateDependingFactory()
+    private let consensusDependingFactory: RelaychainConsensusStateDepending
 
     var chain: ChainModel { stakingOption.chainAsset.chain }
 
     init(
         consensus: RelayStkConsensusType,
+        chainRegistry: ChainRegistryProtocol,
         stakingOption: Multistaking.ChainAssetOption,
         globalRemoteSubscriptionService: StakingRemoteSubscriptionServiceProtocol,
         accountRemoteSubscriptionService: StakingAccountUpdatingServiceProtocol,
@@ -74,6 +75,10 @@ final class RelaychainStakingSharedState: RelaychainStakingSharedStateProtocol {
         self.preferredValidatorsProvider = preferredValidatorsProvider
         self.timeModel = timeModel
         self.logger = logger
+
+        consensusDependingFactory = RelaychainConsensusStateDependingFactory(
+            chainRegistry: chainRegistry
+        )
     }
 
     func setup(for accountId: AccountId?) throws {
