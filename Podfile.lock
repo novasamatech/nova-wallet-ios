@@ -1430,7 +1430,7 @@ PODS:
   - Sourcery (1.4.1)
   - sr25519c (0.2.0)
   - Starscream (4.0.12)
-  - SubstrateSdk (4.3.0):
+  - SubstrateSdk (4.4.0):
     - BigInt (~> 5.0)
     - keccak.c (~> 0.1.3)
     - NovaCrypto/ed25519 (~> 0.2.0)
@@ -1570,7 +1570,7 @@ DEPENDENCIES:
   - Sourcery (~> 1.4)
   - sr25519c (from `https://github.com/novasamatech/sr25519.c`, tag `0.2.0`)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `4.3.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `beed95ea4cc3f8a7f1ec54cde1aaffe71803f68c`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1677,8 +1677,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
+    :commit: beed95ea4cc3f8a7f1ec54cde1aaffe71803f68c
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 4.3.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   UIKit-iOS:
@@ -1732,8 +1732,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
+    :commit: beed95ea4cc3f8a7f1ec54cde1aaffe71803f68c
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 4.3.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1800,7 +1800,7 @@ SPEC CHECKSUMS:
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   sr25519c: 296fca27b68d685ef515473c4a6dfe7325195688
   Starscream: 9265e4163aeea93d4a74c49bc8cb4c0b9c6ff350
-  SubstrateSdk: b7908d7113c23132bc7ea06891438b8fe937f342
+  SubstrateSdk: 782a78dbe4e87d7caae53c5fd3955b29813cba09
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftDraw: f63484562ddd30d9682b5576acc1d98acc2bec8f
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -1818,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: e205db83ee191c7c914a669ab021e466ff64eecc
+PODFILE CHECKSUM: 11c44b383974bb19c51e3a0734062733af1c282b
 
 COCOAPODS: 1.15.2

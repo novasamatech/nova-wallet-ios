@@ -46,7 +46,7 @@ final class OnboardingMainInteractor {
         case .keystore:
             presenter?.didSuggestSecretImport(source: .keystore)
         case .mnemonic:
-            presenter?.didSuggestSecretImport(source: .mnemonic)
+            presenter?.didSuggestSecretImport(source: .mnemonic(.appDefault))
         }
     }
 }

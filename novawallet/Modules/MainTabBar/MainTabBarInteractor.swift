@@ -80,7 +80,7 @@ final class MainTabBarInteractor {
         case .keystore:
             presenter?.didRequestImportAccount(source: .keystore)
         case .mnemonic:
-            presenter?.didRequestImportAccount(source: .mnemonic)
+            presenter?.didRequestImportAccount(source: .mnemonic(.appDefault))
         }
     }
 

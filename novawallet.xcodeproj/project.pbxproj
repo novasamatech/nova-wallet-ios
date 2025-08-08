@@ -307,6 +307,9 @@
 		0C1E331A2D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */; };
 		0C1E331C2D955D0D0070D772 /* ParitySignerTxQrSetupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E331B2D955D0D0070D772 /* ParitySignerTxQrSetupModel.swift */; };
 		0C1E331E2D9587420070D772 /* ParitySignerTxFormatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1E331D2D9587420070D772 /* ParitySignerTxFormatViewModel.swift */; };
+		0C1FE0E52E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */; };
+		0C1FE0E72E4629AA00517A1D /* MetaAccountOperationFactoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */; };
+		0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */; };
 		0C1FE4F42A52EE51003769E7 /* AssetSearchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */; };
 		0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */; };
 		0C212FD72C1B4547003F1FE3 /* MetaAccountModel+CryptoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */; };
@@ -6373,6 +6376,9 @@
 		0C1E33192D951EDF0070D772 /* ParitySignerTransactionCodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTransactionCodeFormat.swift; sourceTree = "<group>"; };
 		0C1E331B2D955D0D0070D772 /* ParitySignerTxQrSetupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTxQrSetupModel.swift; sourceTree = "<group>"; };
 		0C1E331D2D9587420070D772 /* ParitySignerTxFormatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerTxFormatViewModel.swift; sourceTree = "<group>"; };
+		0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountOperationFactory.swift; sourceTree = "<group>"; };
+		0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryError.swift; sourceTree = "<group>"; };
+		0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountTests.swift; sourceTree = "<group>"; };
 		0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilder.swift; sourceTree = "<group>"; };
 		0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilderResult.swift; sourceTree = "<group>"; };
 		0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+CryptoType.swift"; sourceTree = "<group>"; };
@@ -13139,6 +13145,14 @@
 			path = HydraDx;
 			sourceTree = "<group>";
 		};
+		0C1FE0E82E4636ED00517A1D /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */,
+			);
+			path = Operation;
+			sourceTree = "<group>";
+		};
 		0C1FE4F22A52EDD5003769E7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -19674,6 +19688,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				0C1FE0E82E4636ED00517A1D /* Operation */,
 				0C27F3862DA8024800191FFF /* Substrate */,
 				771056042B717DF300EE2C20 /* Parsing */,
 				77A6F5D32A31E033004AFD1A /* JsonCanonicalizer */,
@@ -22671,13 +22686,15 @@
 				84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */,
 				0C992C3E2B53AEF700ACC129 /* OperationSearchService.swift */,
 				AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */,
+				0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */,
+				0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */,
+				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
 				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
 				841E555A282E6B0900C8438F /* StorageDecodingOperation+Init.swift */,
 				2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */,
 				2DB18C912C36D1BC00A93C75 /* PreConfiguredChainFetchFactory.swift */,
 				848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */,
 				2DAF539D2C1B2AA00076B4B6 /* NodePingOperationFactory.swift */,
-				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
 				84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */,
 				8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */,
 				0C37AFBC2B55732100009ECA /* NMapKeyEncodingOperation.swift */,
@@ -31872,6 +31889,7 @@
 				2D5D0CE32D53D514000E32F6 /* CommonRemoteImageProvider.swift in Sources */,
 				8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */,
 				2D60C9C12D1AABA100027EC6 /* ModalCardPresentationFactory.swift in Sources */,
+				0C1FE0E52E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift in Sources */,
 				0CA50CB52AFE6F31005668CD /* GetTokenOptionsInteractor.swift in Sources */,
 				F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */,
 				F4A11B5A272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift in Sources */,
@@ -34503,6 +34521,7 @@
 				3365B7C300AB4AC432F1BED0 /* StakingSetupProxyWireframe.swift in Sources */,
 				B1A789A7E8D60223F18AA407 /* StakingSetupProxyPresenter.swift in Sources */,
 				886E599110019177E0489999 /* StakingSetupProxyInteractor.swift in Sources */,
+				0C1FE0E72E4629AA00517A1D /* MetaAccountOperationFactoryError.swift in Sources */,
 				450BF207003E4DD3F5FE4D9B /* StakingSetupProxyViewController.swift in Sources */,
 				0C2285CD2E20F5720093FD44 /* Staking+Hold.swift in Sources */,
 				0CBABFEB2CED37E30047F29E /* AssetExchangeQuote.swift in Sources */,
@@ -35055,6 +35074,7 @@
 				842B2FCD2947239B002829B6 /* CoinGeckoUrlParserTests.swift in Sources */,
 				84B7C711289BFA79001A3566 /* OnboardingMainTests.swift in Sources */,
 				84625101263EDBD4001039B2 /* ExtrinsicServiceFactoryStub.swift in Sources */,
+				0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */,
 				846A2C54252A0FDF00731018 /* FilterTests.swift in Sources */,
 				0C277DBC2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift in Sources */,
 				84F13F0E26F1D9B1006725FF /* CrowdloadSettingsTests.swift in Sources */,

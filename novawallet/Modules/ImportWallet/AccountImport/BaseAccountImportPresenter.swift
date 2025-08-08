@@ -58,7 +58,10 @@ class BaseAccountImportPresenter {
         }
 
         switch selectedSourceType {
-        case .mnemonic, .seed:
+        case let .mnemonic(origin):
+            let allowAdvanced = origin == .appDefault
+            view?.setShouldShowAdvancedSettings(allowAdvanced)
+        case .seed:
             view?.setShouldShowAdvancedSettings(true)
         case .keystore:
             let shouldShowReadonlySettings = preferredInfo != nil

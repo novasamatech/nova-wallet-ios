@@ -21,7 +21,7 @@ struct MnemonicDefinition {
             genesisHash: nil,
             substrateDeriviationPath: substrateDeriviationPath,
             evmDeriviationPath: evmDeriviationPath,
-            source: .mnemonic
+            source: .mnemonic(.appDefault)
         )
     }
 }
