@@ -34,6 +34,10 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         showHardwareWalletSelection(from: view, locale: locale)
     }
 
+    func showTrustWalletImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .mnemonic(.trustWallet))
+    }
+
     func showHardwareWalletSelection(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
         guard let view = view else {
             return
