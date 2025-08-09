@@ -14,7 +14,7 @@ struct MnemonicDefinition {
     let substrateDeriviationPath: String?
     let evmDeriviationPath: String
 
-    var prefferedInfo: MetaAccountImportPreferredInfo? {
+    var prefferedInfo: MetaAccountImportPreferredInfo {
         MetaAccountImportPreferredInfo(
             username: nil,
             cryptoType: cryptoType,

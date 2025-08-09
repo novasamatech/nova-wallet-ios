@@ -49,11 +49,11 @@ class BaseAccountImportInteractor {
                     let info = try AccountImportJsonFactory().createInfo(from: keystoreDefinition)
 
                     if let text = String(data: jsonData, encoding: .utf8) {
-                        presenter.didSuggestKeystore(text: text, preferredInfo: info)
+                        presenter.didSuggestSecret(text: text, preferredInfo: info)
                     }
                 case let .mnemonic(mnemonicDefinition):
                     let text = mnemonicDefinition.mnemonic.toString()
-                    presenter.didSuggestKeystore(
+                    presenter.didSuggestSecret(
                         text: text,
                         preferredInfo: mnemonicDefinition.prefferedInfo
                     )
@@ -167,7 +167,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             let data = keystore.data(using: .utf8),
             let definition = try? jsonDecoder.decode(KeystoreDefinition.self, from: data),
             let info = try? AccountImportJsonFactory().createInfo(from: definition) {
-            presenter.didSuggestKeystore(text: keystore, preferredInfo: info)
+            presenter.didSuggestSecret(text: keystore, preferredInfo: info)
         }
     }
 }

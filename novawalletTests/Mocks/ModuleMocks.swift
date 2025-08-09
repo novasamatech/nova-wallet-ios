@@ -12943,16 +12943,16 @@ import NovaCrypto
     
     
     
-     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)  {
+     func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)  {
         
-    return cuckoo_manager.call("didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)",
+    return cuckoo_manager.call("didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)",
             parameters: (text, preferredInfo),
             escapingParameters: (text, preferredInfo),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didSuggestKeystore(text: text, preferredInfo: preferredInfo))
+            defaultCall: __defaultImplStub!.didSuggestSecret(text: text, preferredInfo: preferredInfo))
         
     }
     
@@ -12980,9 +12980,9 @@ import NovaCrypto
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didReceiveAccountImport(error: Error)", parameterMatchers: matchers))
 	    }
 	    
-	    func didSuggestKeystore<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(text: M1, preferredInfo: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(String, MetaAccountImportPreferredInfo?)> where M1.MatchedType == String, M2.OptionalMatchedType == MetaAccountImportPreferredInfo {
-	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo?)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)", parameterMatchers: matchers))
+	    func didSuggestSecret<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(text: M1, preferredInfo: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(String, MetaAccountImportPreferredInfo)> where M1.MatchedType == String, M2.MatchedType == MetaAccountImportPreferredInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -13020,9 +13020,9 @@ import NovaCrypto
 	    }
 	    
 	    @discardableResult
-	    func didSuggestKeystore<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(text: M1, preferredInfo: M2) -> Cuckoo.__DoNotUse<(String, MetaAccountImportPreferredInfo?), Void> where M1.MatchedType == String, M2.OptionalMatchedType == MetaAccountImportPreferredInfo {
-	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo?)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
-	        return cuckoo_manager.verify("didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSuggestSecret<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(text: M1, preferredInfo: M2) -> Cuckoo.__DoNotUse<(String, MetaAccountImportPreferredInfo), Void> where M1.MatchedType == String, M2.MatchedType == MetaAccountImportPreferredInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, MetaAccountImportPreferredInfo)>] = [wrap(matchable: text) { $0.0 }, wrap(matchable: preferredInfo) { $0.1 }]
+	        return cuckoo_manager.verify("didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -13054,7 +13054,7 @@ import NovaCrypto
     
     
     
-     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)   {
+     func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

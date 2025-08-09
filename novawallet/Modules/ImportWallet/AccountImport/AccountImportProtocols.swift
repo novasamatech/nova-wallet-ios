@@ -53,7 +53,7 @@ protocol AccountImportInteractorOutputProtocol: AnyObject {
     func didReceiveAccountImport(metadata: MetaAccountImportMetadata)
     func didCompleteAccountImport()
     func didReceiveAccountImport(error: Error)
-    func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)
+    func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)
 }
 
 protocol BaseAccountImportWireframeProtocol {

@@ -291,8 +291,8 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
         )
     }
 
-    func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
-        selectedSourceType = preferredInfo?.source ?? .keystore
+    func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo) {
+        selectedSourceType = preferredInfo.source
 
         applySourceType(text, preferredInfo: preferredInfo)
     }
