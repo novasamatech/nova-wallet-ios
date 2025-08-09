@@ -15,23 +15,16 @@ extension ImportChainAccount {
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
             secretImportService: SecretImportServiceProtocol,
-            eventCenter: EventCenterProtocol,
-            isEthereumBased: Bool
+            eventCenter: EventCenterProtocol
         ) {
             self.settings = settings
             self.eventCenter = eventCenter
-
-            let availableCryptoTypes: [MultiassetCryptoType] = isEthereumBased ? [.ethereumEcdsa] :
-                MultiassetCryptoType.substrateTypeList
-            let defaultCryptoType: MultiassetCryptoType = isEthereumBased ? .ethereumEcdsa : .sr25519
 
             super.init(
                 metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: metaAccountRepository,
                 operationManager: operationManager,
-                secretImportService: secretImportService,
-                availableCryptoTypes: availableCryptoTypes,
-                defaultCryptoType: defaultCryptoType
+                secretImportService: secretImportService
             )
         }
 

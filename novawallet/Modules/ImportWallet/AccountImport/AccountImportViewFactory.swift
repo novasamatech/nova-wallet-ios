@@ -11,7 +11,7 @@ final class AccountImportViewFactory {
         }
 
         let wireframe = AccountImportWireframe()
-        return createView(
+        return createWalletImportView(
             for: secretSource,
             interactor: interactor,
             wireframe: wireframe
@@ -25,7 +25,7 @@ final class AccountImportViewFactory {
 
         let wireframe = AddAccount.AccountImportWireframe()
 
-        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
+        return createWalletImportView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
     static func createViewForSwitch(for secretSource: SecretSource) -> AccountImportViewProtocol? {
@@ -34,7 +34,7 @@ final class AccountImportViewFactory {
         }
 
         let wireframe = SwitchAccount.AccountImportWireframe()
-        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
+        return createWalletImportView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(
@@ -53,7 +53,8 @@ final class AccountImportViewFactory {
             secretSource: secretSource,
             metaAccountModel: wallet,
             chainModelId: modelId,
-            isEthereumBased: isEthereumBased
+            isEthereumBased: isEthereumBased,
+            metadataFactory: ChainAccountImportMetadataFactory(isEthereumBased: isEthereumBased)
         )
 
         let localizationManager = LocalizationManager.shared
@@ -71,12 +72,16 @@ final class AccountImportViewFactory {
         return view
     }
 
-    private static func createView(
+    private static func createWalletImportView(
         for secretSource: SecretSource,
         interactor: BaseAccountImportInteractor,
         wireframe: AccountImportWireframeProtocol
     ) -> AccountImportViewProtocol? {
-        let presenter = AccountImportPresenter(secretSource: secretSource)
+        let presenter = AccountImportPresenter(
+            secretSource: secretSource,
+            metadataFactory: WalletImportMetadataFactory()
+        )
+
         let localizationManager = LocalizationManager.shared
 
         let view = AccountImportViewController(presenter: presenter, localizationManager: localizationManager)
@@ -149,7 +154,7 @@ final class AccountImportViewFactory {
     }
 
     private static func createChainAccountImportInteractor(
-        isEthereumBased: Bool
+        isEthereumBased _: Bool
     ) -> BaseAccountImportInteractor? {
         guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
@@ -172,8 +177,7 @@ final class AccountImportViewFactory {
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
                 secretImportService: secretImportService,
-                eventCenter: eventCenter,
-                isEthereumBased: isEthereumBased
+                eventCenter: eventCenter
             )
 
         return interactor

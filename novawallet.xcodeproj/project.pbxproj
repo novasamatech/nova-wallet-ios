@@ -311,6 +311,8 @@
 		0C1FE0E72E4629AA00517A1D /* MetaAccountOperationFactoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */; };
 		0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */; };
 		0C1FE0EE2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */; };
+		0C1FE0F02E476C1E00517A1D /* AccountImportMetadataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0EF2E476C1E00517A1D /* AccountImportMetadataFactory.swift */; };
+		0C1FE0F22E4770B900517A1D /* ChainAccountImportMetadataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0F12E4770B900517A1D /* ChainAccountImportMetadataFactory.swift */; };
 		0C1FE4F42A52EE51003769E7 /* AssetSearchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */; };
 		0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */; };
 		0C212FD72C1B4547003F1FE3 /* MetaAccountModel+CryptoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */; };
@@ -6381,6 +6383,8 @@
 		0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryError.swift; sourceTree = "<group>"; };
 		0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountTests.swift; sourceTree = "<group>"; };
 		0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryProvider.swift; sourceTree = "<group>"; };
+		0C1FE0EF2E476C1E00517A1D /* AccountImportMetadataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMetadataFactory.swift; sourceTree = "<group>"; };
+		0C1FE0F12E4770B900517A1D /* ChainAccountImportMetadataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountImportMetadataFactory.swift; sourceTree = "<group>"; };
 		0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilder.swift; sourceTree = "<group>"; };
 		0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilderResult.swift; sourceTree = "<group>"; };
 		0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+CryptoType.swift"; sourceTree = "<group>"; };
@@ -20236,6 +20240,8 @@
 			children = (
 				843C49DA24DF373000B71DDA /* AccountImportRequest.swift */,
 				843C49DE24DF3CB300B71DDA /* AccountImportMetadata.swift */,
+				0C1FE0EF2E476C1E00517A1D /* AccountImportMetadataFactory.swift */,
+				0C1FE0F12E4770B900517A1D /* ChainAccountImportMetadataFactory.swift */,
 				84BEE058255F4D5700D05EB3 /* AccountImportPreferredInfo.swift */,
 				84BEE0EF2562897100D05EB3 /* AccountImportJsonFactory.swift */,
 				F4AE12A0268DD69B0097D1C7 /* MnemonicTextNormalizer.swift */,
@@ -31861,6 +31867,7 @@
 				0C6108432CD755A300909928 /* AssetExchangeGraphProxy.swift in Sources */,
 				849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */,
 				2D5D0CE12D53D44C000E32F6 /* ChainLogoRemoteImageProvider.swift in Sources */,
+				0C1FE0F02E476C1E00517A1D /* AccountImportMetadataFactory.swift in Sources */,
 				84B8AA7329F8EFC700347A37 /* DAppInteractionError.swift in Sources */,
 				8485035029FBC84300AE6909 /* WalletConnectSignModelFactory.swift in Sources */,
 				2D1C5D162C24553200E2DBDD /* NetworkNodeAddPresenter.swift in Sources */,
@@ -34912,6 +34919,7 @@
 				D3A9D51421701B7FA6D4669F /* MythosStakingRedeemViewFactory.swift in Sources */,
 				F7B2FE8C0CE7E140A7C404F0 /* MythosStkYourCollatorsProtocols.swift in Sources */,
 				0CE9B7122DE6C5D1007C7F5A /* GenericLedgerFoundAddressContentView.swift in Sources */,
+				0C1FE0F22E4770B900517A1D /* ChainAccountImportMetadataFactory.swift in Sources */,
 				E448E23E66026355530D6180 /* MythosStkYourCollatorsWireframe.swift in Sources */,
 				613CCA7EFD69DBC6B96A49F1 /* MythosStkYourCollatorsPresenter.swift in Sources */,
 				4A3830B9705ADD33A1FD5BFA /* MythosStkYourCollatorsInteractor.swift in Sources */,

@@ -23,9 +23,7 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
             metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
             metaAccountRepository: accountRepository,
             operationManager: operationManager,
-            secretImportService: secretImportService,
-            availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
-            defaultCryptoType: .sr25519
+            secretImportService: secretImportService
         )
     }
 

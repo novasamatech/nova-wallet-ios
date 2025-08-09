@@ -14,23 +14,17 @@ class BaseAccountImportInteractor {
     let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
     let secretImportService: SecretImportServiceProtocol
-    let availableCryptoTypes: [MultiassetCryptoType]
-    let defaultCryptoType: MultiassetCryptoType
 
     init(
         metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
         metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
-        secretImportService: SecretImportServiceProtocol,
-        availableCryptoTypes: [MultiassetCryptoType],
-        defaultCryptoType: MultiassetCryptoType
+        secretImportService: SecretImportServiceProtocol
     ) {
         self.metaAccountOperationFactoryProvider = metaAccountOperationFactoryProvider
         self.metaAccountRepository = metaAccountRepository
         self.operationManager = operationManager
         self.secretImportService = secretImportService
-        self.availableCryptoTypes = availableCryptoTypes
-        self.defaultCryptoType = defaultCryptoType
     }
 
     private func setupSecretImportObserver() {
@@ -64,21 +58,11 @@ class BaseAccountImportInteractor {
         }
     }
 
-    private func provideMetadata() {
-        let metadata = MetaAccountImportMetadata(
-            availableCryptoTypes: availableCryptoTypes,
-            defaultCryptoType: defaultCryptoType
-        )
-
-        presenter.didReceiveAccountImport(metadata: metadata)
-    }
-
     func importAccountUsingOperation(_: BaseOperation<MetaAccountModel>) {}
 }
 
 extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     func setup() {
-        provideMetadata()
         setupSecretImportObserver()
     }
 

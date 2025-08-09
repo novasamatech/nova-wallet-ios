@@ -17,9 +17,9 @@ class BaseAccountImportPresenter {
     var wireframe: AccountImportWireframeProtocol!
     var interactor: AccountImportInteractorInputProtocol!
 
-    private(set) var selectedSourceType: SecretSource
+    let metadataFactory: AccountImportMetadataFactoryProtocol
 
-    private(set) var metadata: MetaAccountImportMetadata?
+    private(set) var selectedSourceType: SecretSource
 
     private(set) var selectedCryptoType: MultiassetCryptoType?
 
@@ -27,10 +27,11 @@ class BaseAccountImportPresenter {
     private(set) var usernameViewModel: InputViewModelProtocol?
     private(set) var passwordViewModel: InputViewModelProtocol?
     private(set) var substrateDerivationPath: String?
-    private(set) var ethereumDerivationPath: String? = DerivationPathConstants.defaultEthereum
+    private(set) var ethereumDerivationPath: String?
 
-    init(secretSource: SecretSource) {
+    init(secretSource: SecretSource, metadataFactory: AccountImportMetadataFactoryProtocol) {
         selectedSourceType = secretSource
+        self.metadataFactory = metadataFactory
     }
 
     private func applySourceType(
@@ -42,7 +43,11 @@ class BaseAccountImportPresenter {
             substrateDerivationPath = preferredInfo.substrateDeriviationPath
             ethereumDerivationPath = preferredInfo.evmDeriviationPath ?? DerivationPathConstants.defaultEthereum
         } else {
-            selectedCryptoType = selectedCryptoType ?? metadata?.defaultCryptoType
+            let metadata = metadataFactory.deriveMetadata(for: selectedSourceType)
+
+            selectedCryptoType = selectedCryptoType ?? metadata.defaultCryptoType
+            substrateDerivationPath = substrateDerivationPath ?? metadata.defaultSubstrateDerivationPath
+            ethereumDerivationPath = ethereumDerivationPath ?? metadata.defaultEthereumDerivationPath
         }
 
         view?.setSource(type: selectedSourceType)
@@ -213,6 +218,8 @@ class BaseAccountImportPresenter {
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func setup() {
+        applySourceType()
+
         interactor.setup()
     }
 
@@ -267,12 +274,6 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
 }
 
 extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
-    func didReceiveAccountImport(metadata: MetaAccountImportMetadata) {
-        self.metadata = metadata
-
-        applySourceType()
-    }
-
     func didCompleteAccountImport() {
         wireframe.proceed(from: view)
     }

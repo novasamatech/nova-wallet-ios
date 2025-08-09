@@ -50,7 +50,6 @@ protocol AccountImportInteractorInputProtocol: AnyObject {
 }
 
 protocol AccountImportInteractorOutputProtocol: AnyObject {
-    func didReceiveAccountImport(metadata: MetaAccountImportMetadata)
     func didCompleteAccountImport()
     func didReceiveAccountImport(error: Error)
     func didSuggestSecret(text: String, preferredInfo: MetaAccountImportPreferredInfo)

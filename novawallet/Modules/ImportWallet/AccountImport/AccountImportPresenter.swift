@@ -84,9 +84,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     override func shouldUseEthereumSeed() -> Bool { false }
 
     override func getAdvancedSettings() -> AdvancedWalletSettings? {
-        guard let metadata = metadata else {
-            return nil
-        }
+        let metadata = metadataFactory.deriveMetadata(for: selectedSourceType)
 
         let substrateSettings = AdvancedNetworkTypeSettings(
             availableCryptoTypes: metadata.availableCryptoTypes,

@@ -41,7 +41,11 @@ class AccountImportTests: XCTestCase {
         let expectedUsername = "myname"
         let expetedMnemonic = "great fog follow obtain oyster raw patient extend use mirror fix balance blame sudden vessel"
 
-        let presenter = AccountImportPresenter(secretSource: .mnemonic(.appDefault))
+        let presenter = AccountImportPresenter(
+            secretSource: .mnemonic(.appDefault),
+            metadataFactory: WalletImportMetadataFactory()
+        )
+        
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor

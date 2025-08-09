@@ -12898,21 +12898,6 @@ import NovaCrypto
     
     
     
-     func didReceiveAccountImport(metadata: MetaAccountImportMetadata)  {
-        
-    return cuckoo_manager.call("didReceiveAccountImport(metadata: MetaAccountImportMetadata)",
-            parameters: (metadata),
-            escapingParameters: (metadata),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceiveAccountImport(metadata: metadata))
-        
-    }
-    
-    
-    
      func didCompleteAccountImport()  {
         
     return cuckoo_manager.call("didCompleteAccountImport()",
@@ -12965,11 +12950,6 @@ import NovaCrypto
 	    }
 	    
 	    
-	    func didReceiveAccountImport<M1: Cuckoo.Matchable>(metadata: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportMetadata)> where M1.MatchedType == MetaAccountImportMetadata {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMetadata)>] = [wrap(matchable: metadata) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didReceiveAccountImport(metadata: MetaAccountImportMetadata)", parameterMatchers: matchers))
-	    }
-	    
 	    func didCompleteAccountImport() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorOutputProtocol.self, method: "didCompleteAccountImport()", parameterMatchers: matchers))
@@ -13002,12 +12982,6 @@ import NovaCrypto
 	
 	    
 	    @discardableResult
-	    func didReceiveAccountImport<M1: Cuckoo.Matchable>(metadata: M1) -> Cuckoo.__DoNotUse<(MetaAccountImportMetadata), Void> where M1.MatchedType == MetaAccountImportMetadata {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMetadata)>] = [wrap(matchable: metadata) { $0 }]
-	        return cuckoo_manager.verify("didReceiveAccountImport(metadata: MetaAccountImportMetadata)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func didCompleteAccountImport() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("didCompleteAccountImport()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -13033,12 +13007,6 @@ import NovaCrypto
 
     
 
-    
-    
-    
-     func didReceiveAccountImport(metadata: MetaAccountImportMetadata)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
     
     
     
