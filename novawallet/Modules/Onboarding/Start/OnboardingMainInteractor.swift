@@ -5,14 +5,14 @@ import Foundation_iOS
 final class OnboardingMainInteractor {
     weak var presenter: OnboardingMainInteractorOutputProtocol?
 
-    let keystoreImportService: KeystoreImportServiceProtocol
+    let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
 
     init(
-        keystoreImportService: KeystoreImportServiceProtocol,
+        secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol
     ) {
-        self.keystoreImportService = keystoreImportService
+        self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
     }
 
@@ -38,7 +38,7 @@ final class OnboardingMainInteractor {
     }
 
     private func suggestSecretImportIfNeeded() {
-        guard let definition = keystoreImportService.definition else {
+        guard let definition = secretImportService.definition else {
             return
         }
 
@@ -53,7 +53,7 @@ final class OnboardingMainInteractor {
 
 extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     func setup() {
-        keystoreImportService.add(observer: self)
+        secretImportService.add(observer: self)
         suggestSecretImportIfNeeded()
 
         setupWalletMigration()
@@ -61,7 +61,7 @@ extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     }
 }
 
-extension OnboardingMainInteractor: KeystoreImportObserver {
+extension OnboardingMainInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
         suggestSecretImportIfNeeded()
     }

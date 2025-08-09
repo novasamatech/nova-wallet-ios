@@ -3592,7 +3592,7 @@
 		8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467F4C426B1E4E200C5B6F4 /* StakingDurationFetching.swift */; };
 		8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467F4C826B2943A00C5B6F4 /* ImportantFlowNavigationController.swift */; };
 		8467FCFC24E5C3BD005D486C /* URLHandlingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FCFB24E5C3BD005D486C /* URLHandlingService.swift */; };
-		8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FCFD24E5C50B005D486C /* KeystoreImportService.swift */; };
+		8467FCFE24E5C50B005D486C /* SecretImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FCFD24E5C50B005D486C /* SecretImportService.swift */; };
 		8467FD0224E5D2D9005D486C /* OnboardingMainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD0124E5D2D9005D486C /* OnboardingMainInteractor.swift */; };
 		8467FD0624E5E0A5005D486C /* invalidKeystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD0524E5E0A5005D486C /* invalidKeystore.json */; };
 		8467FD0824E5E0BD005D486C /* KeystoreDefinition+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD0724E5E0BD005D486C /* KeystoreDefinition+Test.swift */; };
@@ -9630,7 +9630,7 @@
 		8467F4C426B1E4E200C5B6F4 /* StakingDurationFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDurationFetching.swift; sourceTree = "<group>"; };
 		8467F4C826B2943A00C5B6F4 /* ImportantFlowNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantFlowNavigationController.swift; sourceTree = "<group>"; };
 		8467FCFB24E5C3BD005D486C /* URLHandlingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLHandlingService.swift; sourceTree = "<group>"; };
-		8467FCFD24E5C50B005D486C /* KeystoreImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystoreImportService.swift; sourceTree = "<group>"; };
+		8467FCFD24E5C50B005D486C /* SecretImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretImportService.swift; sourceTree = "<group>"; };
 		8467FD0124E5D2D9005D486C /* OnboardingMainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingMainInteractor.swift; sourceTree = "<group>"; };
 		8467FD0524E5E0A5005D486C /* invalidKeystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = invalidKeystore.json; sourceTree = "<group>"; };
 		8467FD0724E5E0BD005D486C /* KeystoreDefinition+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeystoreDefinition+Test.swift"; sourceTree = "<group>"; };
@@ -21047,7 +21047,7 @@
 				0C2F8C542D547059003A9DA0 /* UniversalLink */,
 				774A98122B0D3638009146CA /* Parsing */,
 				8467FCFB24E5C3BD005D486C /* URLHandlingService.swift */,
-				8467FCFD24E5C50B005D486C /* KeystoreImportService.swift */,
+				8467FCFD24E5C50B005D486C /* SecretImportService.swift */,
 				0C21D77B2AB42A3500EB2DBD /* ScreenOpenService.swift */,
 				0C21D77D2AB42D4100EB2DBD /* UrlHandlingAction.swift */,
 				0C8B0EBF2B84A4D600A2A53F /* URLLocalRouter.swift */,
@@ -30144,7 +30144,7 @@
 				0CEB4ED52AF20EB90048FD84 /* CancellableCallHelper.swift in Sources */,
 				843074F928BF6201009D463B /* NoAccountSupportPresentable.swift in Sources */,
 				77F189402A49972300E8B933 /* UILabel+bind.swift in Sources */,
-				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
+				8467FCFE24E5C50B005D486C /* SecretImportService.swift in Sources */,
 				0CC0F80A2BB2D32E002C49F6 /* FirebaseAppCheckProviderFactory.swift in Sources */,
 				0CF4ADF92CEBF71A009C51FA /* AssetExchangeMetaOperationProtocol.swift in Sources */,
 				847A259029B5D2710054F90C /* GovJsonLocalStorageHandler.swift in Sources */,

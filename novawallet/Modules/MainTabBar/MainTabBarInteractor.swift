@@ -7,7 +7,7 @@ final class MainTabBarInteractor {
     weak var presenter: MainTabBarInteractorOutputProtocol?
 
     let eventCenter: EventCenterProtocol
-    let keystoreImportService: KeystoreImportServiceProtocol
+    let secretImportService: SecretImportServiceProtocol
     let walletMigrationService: WalletMigrationServiceProtocol
     let screenOpenService: ScreenOpenServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
@@ -32,7 +32,7 @@ final class MainTabBarInteractor {
     init(
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
-        keystoreImportService: KeystoreImportServiceProtocol,
+        secretImportService: SecretImportServiceProtocol,
         walletMigrationService: WalletMigrationServiceProtocol,
         screenOpenService: ScreenOpenServiceProtocol,
         pushScreenOpenService: PushNotificationOpenScreenFacadeProtocol,
@@ -44,7 +44,7 @@ final class MainTabBarInteractor {
         logger: LoggerProtocol
     ) {
         self.eventCenter = eventCenter
-        self.keystoreImportService = keystoreImportService
+        self.secretImportService = secretImportService
         self.walletMigrationService = walletMigrationService
         self.screenOpenService = screenOpenService
         self.pushScreenOpenService = pushScreenOpenService
@@ -72,7 +72,7 @@ final class MainTabBarInteractor {
     }
 
     private func suggestSecretImportIfNeeded() {
-        guard let definition = keystoreImportService.definition else {
+        guard let definition = secretImportService.definition else {
             return
         }
 
@@ -129,7 +129,7 @@ final class MainTabBarInteractor {
 extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
-        keystoreImportService.add(observer: self)
+        secretImportService.add(observer: self)
         walletMigrationService.addObserver(self)
 
         suggestSecretImportIfNeeded()
@@ -191,7 +191,7 @@ extension MainTabBarInteractor: EventVisitorProtocol {
     }
 }
 
-extension MainTabBarInteractor: KeystoreImportObserver {
+extension MainTabBarInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.suggestSecretImportIfNeeded()

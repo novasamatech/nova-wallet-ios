@@ -13,7 +13,7 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
         settings: SelectedWalletSettings,
-        keystoreImportService: KeystoreImportServiceProtocol,
+        secretImportService: SecretImportServiceProtocol,
         eventCenter: EventCenterProtocol
     ) {
         self.settings = settings
@@ -23,7 +23,7 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
             metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
             metaAccountRepository: accountRepository,
             operationManager: operationManager,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
             defaultCryptoType: .sr25519
         )

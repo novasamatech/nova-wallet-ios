@@ -27,14 +27,14 @@ class AccountImportTests: XCTestCase {
         let keychain = InMemoryKeychain()
         let operationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keychain)
 
-        let keystoreImportService = KeystoreImportService(logger: Logger.shared)
+        let secretImportService = SecretImportService(logger: Logger.shared)
 
         let interactor = AccountImportInteractor(
             metaAccountOperationFactoryProvider: operationFactoryProvider,
             accountRepository: AnyDataProviderRepository(repository),
             operationManager: OperationManager(),
             settings: settings,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             eventCenter: eventCenter
         )
 

@@ -14,7 +14,7 @@ extension AddAccount {
             accountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
-            keystoreImportService: KeystoreImportServiceProtocol,
+            secretImportService: SecretImportServiceProtocol,
             eventCenter: EventCenterProtocol
         ) {
             self.settings = settings
@@ -24,7 +24,7 @@ extension AddAccount {
                 metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: accountRepository,
                 operationManager: operationManager,
-                keystoreImportService: keystoreImportService,
+                secretImportService: secretImportService,
                 availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
                 defaultCryptoType: .sr25519
             )

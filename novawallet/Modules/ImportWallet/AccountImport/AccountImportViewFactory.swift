@@ -92,7 +92,7 @@ final class AccountImportViewFactory {
     }
 
     private static func createAccountImportInteractor() -> BaseAccountImportInteractor? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol =
+        guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
@@ -113,7 +113,7 @@ final class AccountImportViewFactory {
             accountRepository: accountRepository,
             operationManager: OperationManagerFacade.sharedManager,
             settings: settings,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             eventCenter: eventCenter
         )
 
@@ -121,7 +121,7 @@ final class AccountImportViewFactory {
     }
 
     private static func createAddAccountImportInteractor() -> BaseAccountImportInteractor? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol =
+        guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
@@ -141,7 +141,7 @@ final class AccountImportViewFactory {
                 accountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
-                keystoreImportService: keystoreImportService,
+                secretImportService: secretImportService,
                 eventCenter: eventCenter
             )
 
@@ -151,7 +151,7 @@ final class AccountImportViewFactory {
     private static func createChainAccountImportInteractor(
         isEthereumBased: Bool
     ) -> BaseAccountImportInteractor? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol =
+        guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
@@ -171,7 +171,7 @@ final class AccountImportViewFactory {
                 metaAccountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
-                keystoreImportService: keystoreImportService,
+                secretImportService: secretImportService,
                 eventCenter: eventCenter,
                 isEthereumBased: isEthereumBased
             )

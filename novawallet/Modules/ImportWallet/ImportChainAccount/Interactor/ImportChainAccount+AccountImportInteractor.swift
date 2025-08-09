@@ -14,7 +14,7 @@ extension ImportChainAccount {
             metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
-            keystoreImportService: KeystoreImportServiceProtocol,
+            secretImportService: SecretImportServiceProtocol,
             eventCenter: EventCenterProtocol,
             isEthereumBased: Bool
         ) {
@@ -29,7 +29,7 @@ extension ImportChainAccount {
                 metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: metaAccountRepository,
                 operationManager: operationManager,
-                keystoreImportService: keystoreImportService,
+                secretImportService: secretImportService,
                 availableCryptoTypes: availableCryptoTypes,
                 defaultCryptoType: defaultCryptoType
             )

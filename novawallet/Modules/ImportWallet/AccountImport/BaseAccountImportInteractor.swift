@@ -13,7 +13,7 @@ class BaseAccountImportInteractor {
     let metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding
     let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
-    let keystoreImportService: KeystoreImportServiceProtocol
+    let secretImportService: SecretImportServiceProtocol
     let availableCryptoTypes: [MultiassetCryptoType]
     let defaultCryptoType: MultiassetCryptoType
 
@@ -21,26 +21,26 @@ class BaseAccountImportInteractor {
         metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
         metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
-        keystoreImportService: KeystoreImportServiceProtocol,
+        secretImportService: SecretImportServiceProtocol,
         availableCryptoTypes: [MultiassetCryptoType],
         defaultCryptoType: MultiassetCryptoType
     ) {
         self.metaAccountOperationFactoryProvider = metaAccountOperationFactoryProvider
         self.metaAccountRepository = metaAccountRepository
         self.operationManager = operationManager
-        self.keystoreImportService = keystoreImportService
+        self.secretImportService = secretImportService
         self.availableCryptoTypes = availableCryptoTypes
         self.defaultCryptoType = defaultCryptoType
     }
 
-    private func setupKeystoreImportObserver() {
-        keystoreImportService.add(observer: self)
-        handleIfNeededKeystoreImport()
+    private func setupSecretImportObserver() {
+        secretImportService.add(observer: self)
+        handleIfNeededSecretImport()
     }
 
-    private func handleIfNeededKeystoreImport() {
-        if let definition = keystoreImportService.definition {
-            keystoreImportService.clear()
+    private func handleIfNeededSecretImport() {
+        if let definition = secretImportService.definition {
+            secretImportService.clear()
 
             do {
                 switch definition {
@@ -79,7 +79,7 @@ class BaseAccountImportInteractor {
 extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     func setup() {
         provideMetadata()
-        setupKeystoreImportObserver()
+        setupSecretImportObserver()
     }
 
     func importAccountWithMnemonic(
@@ -172,9 +172,9 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     }
 }
 
-extension BaseAccountImportInteractor: KeystoreImportObserver {
+extension BaseAccountImportInteractor: SecretImportObserver {
     func didUpdateDefinition(from _: SecretImportDefinition?) {
-        handleIfNeededKeystoreImport()
+        handleIfNeededSecretImport()
     }
 
     func didReceiveError(secretImportError: ErrorContentConvertible & Error) {
