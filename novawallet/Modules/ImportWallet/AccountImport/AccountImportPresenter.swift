@@ -42,7 +42,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
         let ethereumDerivationPath = self.ethereumDerivationPath ?? ""
 
         switch selectedSourceType {
-        case .mnemonic:
+        case let .mnemonic(origin):
             let mnemonic = sourceViewModel.inputHandler.normalizedValue
             let request = MetaAccountImportMnemonicRequest(
                 mnemonic: mnemonic,
@@ -52,7 +52,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
                 cryptoType: selectedCryptoType
             )
 
-            interactor.importAccountWithMnemonic(request: request)
+            interactor.importAccountWithMnemonic(request: request, from: origin)
 
         case .seed:
             let seed = sourceViewModel.inputHandler.value

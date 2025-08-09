@@ -9,7 +9,7 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
     private(set) var eventCenter: EventCenterProtocol
 
     init(
-        accountOperationFactory: MetaAccountOperationFactoryProtocol,
+        metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
         settings: SelectedWalletSettings,
@@ -20,7 +20,7 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
         self.eventCenter = eventCenter
 
         super.init(
-            metaAccountOperationFactory: accountOperationFactory,
+            metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
             metaAccountRepository: accountRepository,
             operationManager: operationManager,
             keystoreImportService: keystoreImportService,

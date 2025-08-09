@@ -19,7 +19,12 @@ protocol AccountImportPresenterProtocol: AnyObject {
 
 protocol AccountImportInteractorInputProtocol: AnyObject {
     func setup()
-    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)
+
+    func importAccountWithMnemonic(
+        request: MetaAccountImportMnemonicRequest,
+        from origin: SecretSource.Origin
+    )
+
     func importAccountWithSeed(request: MetaAccountImportSeedRequest)
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)
 

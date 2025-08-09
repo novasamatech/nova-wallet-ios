@@ -102,14 +102,14 @@ final class AccountImportViewFactory {
         let keystore = Keychain()
         let settings = SelectedWalletSettings.shared
 
-        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountOperationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keystore)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
         let eventCenter = EventCenter.shared
 
         let interactor = AccountImportInteractor(
-            accountOperationFactory: accountOperationFactory,
+            metaAccountOperationFactoryProvider: accountOperationFactoryProvider,
             accountRepository: accountRepository,
             operationManager: OperationManagerFacade.sharedManager,
             settings: settings,
@@ -129,7 +129,7 @@ final class AccountImportViewFactory {
         }
 
         let keystore = Keychain()
-        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountOperationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keystore)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
@@ -137,7 +137,7 @@ final class AccountImportViewFactory {
 
         let interactor = AddAccount
             .AccountImportInteractor(
-                accountOperationFactory: accountOperationFactory,
+                metaAccountOperationFactoryProvider: accountOperationFactoryProvider,
                 accountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
@@ -159,7 +159,7 @@ final class AccountImportViewFactory {
         }
 
         let keystore = Keychain()
-        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountOperationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keystore)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
@@ -167,7 +167,7 @@ final class AccountImportViewFactory {
 
         let interactor = ImportChainAccount
             .AccountImportInteractor(
-                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountOperationFactoryProvider: accountOperationFactoryProvider,
                 metaAccountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,

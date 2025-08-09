@@ -12596,16 +12596,16 @@ import NovaCrypto
     
     
     
-     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)  {
+     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from origin: SecretSource.Origin)  {
         
-    return cuckoo_manager.call("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)",
-            parameters: (request),
-            escapingParameters: (request),
+    return cuckoo_manager.call("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from: SecretSource.Origin)",
+            parameters: (request, origin),
+            escapingParameters: (request, origin),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.importAccountWithMnemonic(request: request))
+            defaultCall: __defaultImplStub!.importAccountWithMnemonic(request: request, from: origin))
         
     }
     
@@ -12713,9 +12713,9 @@ import NovaCrypto
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func importAccountWithMnemonic<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportMnemonicRequest)> where M1.MatchedType == MetaAccountImportMnemonicRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest)>] = [wrap(matchable: request) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorInputProtocol.self, method: "importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)", parameterMatchers: matchers))
+	    func importAccountWithMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, from origin: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportMnemonicRequest, SecretSource.Origin)> where M1.MatchedType == MetaAccountImportMnemonicRequest, M2.MatchedType == SecretSource.Origin {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest, SecretSource.Origin)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: origin) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportInteractorInputProtocol.self, method: "importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from: SecretSource.Origin)", parameterMatchers: matchers))
 	    }
 	    
 	    func importAccountWithSeed<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountImportSeedRequest)> where M1.MatchedType == MetaAccountImportSeedRequest {
@@ -12771,9 +12771,9 @@ import NovaCrypto
 	    }
 	    
 	    @discardableResult
-	    func importAccountWithMnemonic<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.__DoNotUse<(MetaAccountImportMnemonicRequest), Void> where M1.MatchedType == MetaAccountImportMnemonicRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest)>] = [wrap(matchable: request) { $0 }]
-	        return cuckoo_manager.verify("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func importAccountWithMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, from origin: M2) -> Cuckoo.__DoNotUse<(MetaAccountImportMnemonicRequest, SecretSource.Origin), Void> where M1.MatchedType == MetaAccountImportMnemonicRequest, M2.MatchedType == SecretSource.Origin {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountImportMnemonicRequest, SecretSource.Origin)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: origin) { $0.1 }]
+	        return cuckoo_manager.verify("importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from: SecretSource.Origin)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -12829,7 +12829,7 @@ import NovaCrypto
     
     
     
-     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)   {
+     func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest, from origin: SecretSource.Origin)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

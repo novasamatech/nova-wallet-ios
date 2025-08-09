@@ -310,6 +310,7 @@
 		0C1FE0E52E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */; };
 		0C1FE0E72E4629AA00517A1D /* MetaAccountOperationFactoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */; };
 		0C1FE0EC2E46372800517A1D /* TrustWalletMetaAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */; };
+		0C1FE0EE2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */; };
 		0C1FE4F42A52EE51003769E7 /* AssetSearchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */; };
 		0C1FE4F62A52F137003769E7 /* AssetSearchBuilderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */; };
 		0C212FD72C1B4547003F1FE3 /* MetaAccountModel+CryptoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */; };
@@ -6379,6 +6380,7 @@
 		0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountOperationFactory.swift; sourceTree = "<group>"; };
 		0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryError.swift; sourceTree = "<group>"; };
 		0C1FE0EB2E46372800517A1D /* TrustWalletMetaAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustWalletMetaAccountTests.swift; sourceTree = "<group>"; };
+		0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountOperationFactoryProvider.swift; sourceTree = "<group>"; };
 		0C1FE4F32A52EE51003769E7 /* AssetSearchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilder.swift; sourceTree = "<group>"; };
 		0C1FE4F52A52F137003769E7 /* AssetSearchBuilderResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSearchBuilderResult.swift; sourceTree = "<group>"; };
 		0C212FD62C1B4546003F1FE3 /* MetaAccountModel+CryptoType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+CryptoType.swift"; sourceTree = "<group>"; };
@@ -22686,9 +22688,10 @@
 				84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */,
 				0C992C3E2B53AEF700ACC129 /* OperationSearchService.swift */,
 				AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */,
-				0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */,
-				0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */,
 				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
+				0C1FE0E42E4628D700517A1D /* TrustWalletMetaAccountOperationFactory.swift */,
+				0C1FE0ED2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift */,
+				0C1FE0E62E4629AA00517A1D /* MetaAccountOperationFactoryError.swift */,
 				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
 				841E555A282E6B0900C8438F /* StorageDecodingOperation+Init.swift */,
 				2DB18C8E2C36AB1C00A93C75 /* LightChainsFetchFactory.swift */,
@@ -31610,6 +31613,7 @@
 				84C4C2D7255D2B780045B582 /* PinChangeWireframe.swift in Sources */,
 				2D3C71D82E12683600DF9E49 /* MultisigOperationsPresenter.swift in Sources */,
 				2D74CA492CF87A3F004EAD8C /* DAppBrowserWidgetWireframe.swift in Sources */,
+				0C1FE0EE2E4737E900517A1D /* MetaAccountOperationFactoryProvider.swift in Sources */,
 				845353BB2886E3B4006C871A /* OnboardingMainViewLayout.swift in Sources */,
 				2D1C5D282C25ACF200E2DBDD /* CustomNetworkEditInteractor.swift in Sources */,
 				2D96D84F2DEDF81B00159E91 /* ExtrinsicPersistenceFilterProtocol.swift in Sources */,

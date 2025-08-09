@@ -10,7 +10,7 @@ extension AddAccount {
         let eventCenter: EventCenterProtocol
 
         init(
-            accountOperationFactory: MetaAccountOperationFactoryProtocol,
+            metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
             accountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
@@ -21,7 +21,7 @@ extension AddAccount {
             self.eventCenter = eventCenter
 
             super.init(
-                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: accountRepository,
                 operationManager: operationManager,
                 keystoreImportService: keystoreImportService,

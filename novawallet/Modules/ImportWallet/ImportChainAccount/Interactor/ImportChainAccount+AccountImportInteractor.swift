@@ -10,7 +10,7 @@ extension ImportChainAccount {
         let eventCenter: EventCenterProtocol
 
         init(
-            metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
+            metaAccountOperationFactoryProvider: MetaAccountOperationFactoryProviding,
             metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
@@ -26,7 +26,7 @@ extension ImportChainAccount {
             let defaultCryptoType: MultiassetCryptoType = isEthereumBased ? .ethereumEcdsa : .sr25519
 
             super.init(
-                metaAccountOperationFactory: metaAccountOperationFactory,
+                metaAccountOperationFactoryProvider: metaAccountOperationFactoryProvider,
                 metaAccountRepository: metaAccountRepository,
                 operationManager: operationManager,
                 keystoreImportService: keystoreImportService,
