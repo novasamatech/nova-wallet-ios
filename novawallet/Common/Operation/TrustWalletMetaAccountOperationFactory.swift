@@ -147,7 +147,7 @@ extension TrustWalletMetaAccountOperationFactory: MetaAccountOperationFactoryPro
             try saveEntropy(mnemonic.entropy(), metaId: metaId)
 
             return MetaAccountModel(
-                metaId: UUID().uuidString,
+                metaId: metaId,
                 name: request.username,
                 substrateAccountId: substrateAccountId,
                 substrateCryptoType: request.cryptoType.rawValue,
