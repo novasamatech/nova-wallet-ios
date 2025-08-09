@@ -86,22 +86,10 @@ final class TrustWalletMetaAccountOperationFactory {
             chaincodeList: chaincodes
         )
 
-        if isEthereumBased {
-            return (
-                publicKey: keypair.publicKey().rawData(),
-                secretKey: keypair.privateKey().rawData()
-            )
-        } else {
-            guard let factory = keypairFactory as? DerivableSeedFactoryProtocol else {
-                throw AccountOperationFactoryError.keypairFactoryFailure
-            }
-
-            let secretKey = try factory.deriveChildSeedFromParent(seed, chaincodeList: chaincodes)
-            return (
-                publicKey: keypair.publicKey().rawData(),
-                secretKey: secretKey
-            )
-        }
+        return (
+            publicKey: keypair.publicKey().rawData(),
+            secretKey: keypair.privateKey().rawData()
+        )
     }
 
     // MARK: - Validation
