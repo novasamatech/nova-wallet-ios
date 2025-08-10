@@ -41,6 +41,12 @@ final class TrustWalletMetaAccountTests: XCTestCase {
             
             XCTAssertEqual(metaAccount.substrateAccountId, expectedAccountId)
             XCTAssertEqual(metaAccount.ethereumAddress, expectedEthereumAddress)
+            
+            XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.entropyTagForMetaId(metaAccount.metaId)))
+            XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.substrateSecretKeyTagForMetaId(metaAccount.metaId)))
+            XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaAccount.metaId)))
+            XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.ethereumSeedTagForMetaId(metaAccount.metaId)))
+            XCTAssertNoThrow(try keystore.fetchKey(for: KeystoreTagV2.substrateSeedTagForMetaId(metaAccount.metaId)))
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
