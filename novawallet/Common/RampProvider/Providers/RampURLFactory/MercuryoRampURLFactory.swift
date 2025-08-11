@@ -79,6 +79,7 @@ private extension MercuryoRampURLFactory {
                 URLQueryItem(name: "type", value: type),
                 URLQueryItem(name: "address", value: address),
                 URLQueryItem(name: "widget_id", value: widgetId),
+                URLQueryItem(name: "merchant_transaction_id", value: transactionId),
                 URLQueryItem(name: "signature", value: signatureWithPrefix)
             ]
 

@@ -101,6 +101,8 @@ class WalletRampProvidersTests: XCTestCase {
         let host = providerConfig.baseUrl
         let widgetId = providerConfig.widgetId
         
+        let merchantTransactionId = "90A0270B-BB0A-4A91-BB82-AD09EE73EB78"
+        
         let ipAddressProvider = MockIPAddressProviderProtocol()
         stub(ipAddressProvider) { stub in
             stub.createIPAddressOperation().then {
@@ -111,7 +113,7 @@ class WalletRampProvidersTests: XCTestCase {
         let merchantIdFactory = MockMerchantTransactionIdFactoryProtocol()
         stub(merchantIdFactory) { stub in
             stub.createTransactionId().then {
-                "90A0270B-BB0A-4A91-BB82-AD09EE73EB78"
+                merchantTransactionId
             }
         }
         
@@ -120,10 +122,10 @@ class WalletRampProvidersTests: XCTestCase {
         // swiftlint:disable next long_string
         let expectedURL = switch rampActionType {
         case .offRamp:
-            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
+            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&merchant_transaction_id=\(merchantTransactionId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         case .onRamp:
-            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&return_url=\(redirectUrl)"
+            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&merchant_transaction_id=\(merchantTransactionId)&signature=\(signature)&return_url=\(redirectUrl)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         }
 
