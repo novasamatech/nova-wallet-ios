@@ -1570,7 +1570,7 @@ DEPENDENCIES:
   - Sourcery (~> 1.4)
   - sr25519c (from `https://github.com/novasamatech/sr25519.c`, tag `0.2.0`)
   - Starscream (from `https://github.com/novasamatech/Starscream.git`, tag `4.0.12`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `3f934feef9f938404d2cdc0cf2b4b241a48f4e7b`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `4.4.0`)
   - SwiftAlgorithms (~> 1.0.0)
   - SwiftDraw (~> 0.18.0)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -1677,8 +1677,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
-    :commit: 3f934feef9f938404d2cdc0cf2b4b241a48f4e7b
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 4.4.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
   UIKit-iOS:
@@ -1732,8 +1732,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/novasamatech/Starscream.git
     :tag: 4.0.12
   SubstrateSdk:
-    :commit: 3f934feef9f938404d2cdc0cf2b4b241a48f4e7b
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 4.4.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
@@ -1818,6 +1818,6 @@ SPEC CHECKSUMS:
   ZMarkupParser: a92d31ba40695b790f1da5fec98c3d4505341aff
   ZNSTextAttachment: 1ddd53660a8d3c42dbb716bf6866ffce22c44181
 
-PODFILE CHECKSUM: c61dc94b3108337b68905cad4b334e8778fde140
+PODFILE CHECKSUM: 83618f679a1140ed30d661d55f9ade580d99c5e8
 
 COCOAPODS: 1.15.2
