@@ -73,7 +73,7 @@ final class AccountManagementHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: AccountManageWalletViewModel, locale _: Locale = Locale.current) {
+    func bind(viewModel: AccountManageWalletViewModel) {
         messageType = viewModel.messageType
 
         switch viewModel.messageType {

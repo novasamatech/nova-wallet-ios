@@ -8,7 +8,7 @@ enum ChainFormat {
 
 extension ChainFormat {
     static var defaultSubstrateFormat: ChainFormat {
-        .substrate(0, legacyPrefix: nil)
+        .substrate(SubstrateConstants.genericAddressPrefix, legacyPrefix: nil)
     }
 }
 
