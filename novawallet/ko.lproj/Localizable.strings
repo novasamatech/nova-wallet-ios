@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "이 프록시 지갑에서는 판매가 지원되지 않습니다.";
 "feature.unsupported.sheet.title.card.proxied" = "이 프록시 지갑에서는 직불카드가 지원되지 않습니다.";
 "feature.unsupported.sheet.message.sell.proxied" = "암호화폐를 법정화폐로 판매하려면 다른 지갑으로 전환해 주세요.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Nova에서 Trust Wallet 계정을 사용하세요";

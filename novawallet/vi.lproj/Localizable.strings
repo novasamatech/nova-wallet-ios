@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Chức năng bán không được hỗ trợ cho ví được ủy quyền này";
 "feature.unsupported.sheet.title.card.proxied" = "Thẻ ghi nợ không được hỗ trợ cho ví được ủy quyền này";
 "feature.unsupported.sheet.message.sell.proxied" = "Để bán tiền điện tử lấy tiền pháp định, vui lòng chuyển sang ví khác.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Sử dụng tài khoản Trust Wallet của bạn trong Nova";

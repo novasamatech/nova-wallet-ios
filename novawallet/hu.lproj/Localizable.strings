@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Az eladás nem támogatott ennél a Proxyzott tárcánál";
 "feature.unsupported.sheet.title.card.proxied" = "A bankkártya nem támogatott ennél a közvetített pénztárcánál";
 "feature.unsupported.sheet.message.sell.proxied" = "A kripto fiat pénzre váltásához kérjük, váltson másik pénztárcára.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Használd a Trust Wallet fiókjaidat a Novában";
