@@ -3,9 +3,11 @@ import UIKit
 protocol WalletViewProtocol: UIView {
     typealias ViewModel = WalletView.ViewModel
 
+    var iconContainerView: WalletIconView { get }
     var iconImageView: UIImageView { get }
     var titleLabel: UILabel { get }
     var networkImageView: UIImageView { get }
+    var iconTitleSpacing: CGFloat { get set }
     var viewModel: ViewModel? { get set }
     func cancelIconsLoading(info: ViewModel.DelegatedAccountInfo?)
     func setAppearance(for selectionAvailable: Bool)
