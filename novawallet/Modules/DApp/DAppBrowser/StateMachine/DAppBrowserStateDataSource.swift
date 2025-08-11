@@ -47,7 +47,7 @@ final class DAppBrowserStateDataSource {
                 for: substrateAccountId,
                 genesisHash: nil,
                 name: wallet.name,
-                chainFormat: .substrate(SubstrateConstants.genericAddressPrefix),
+                chainFormat: .defaultSubstrateFormat,
                 rawCryptoType: cryptoType
             )
 
