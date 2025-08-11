@@ -31,12 +31,7 @@ extension AccountId {
     func toAddressForHWScheme(_ scheme: HardwareWalletAddressScheme) throws -> AccountAddress {
         switch scheme {
         case .substrate:
-            try toAddress(
-                using: .substrate(
-                    SubstrateConstants.genericAddressPrefix,
-                    legacyPrefix: nil
-                )
-            )
+            try toAddress(using: .defaultSubstrateFormat)
         case .evm:
             try toAddress(using: .ethereum)
         }

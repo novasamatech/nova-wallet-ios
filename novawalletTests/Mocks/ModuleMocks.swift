@@ -243,6 +243,105 @@ import Operation_iOS
 import Cuckoo
 @testable import novawallet
 
+import Foundation
+import Operation_iOS
+
+
+ class MockIPAddressProviderProtocol: IPAddressProviderProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = IPAddressProviderProtocol
+    
+     typealias Stubbing = __StubbingProxy_IPAddressProviderProtocol
+     typealias Verification = __VerificationProxy_IPAddressProviderProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: IPAddressProviderProtocol?
+
+     func enableDefaultImplementation(_ stub: IPAddressProviderProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createIPAddressOperation() -> BaseOperation<String> {
+        
+    return cuckoo_manager.call("createIPAddressOperation() -> BaseOperation<String>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createIPAddressOperation())
+        
+    }
+    
+
+	 struct __StubbingProxy_IPAddressProviderProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createIPAddressOperation() -> Cuckoo.ProtocolStubFunction<(), BaseOperation<String>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockIPAddressProviderProtocol.self, method: "createIPAddressOperation() -> BaseOperation<String>", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_IPAddressProviderProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createIPAddressOperation() -> Cuckoo.__DoNotUse<(), BaseOperation<String>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createIPAddressOperation() -> BaseOperation<String>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class IPAddressProviderProtocolStub: IPAddressProviderProtocol {
+    
+
+    
+
+    
+    
+    
+     func createIPAddressOperation() -> BaseOperation<String>  {
+        return DefaultValueRegistry.defaultValue(for: (BaseOperation<String>).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 import Foundation_iOS
 
 
@@ -1699,6 +1798,104 @@ import UIKit
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import Foundation
+
+
+ class MockMerchantTransactionIdFactoryProtocol: MerchantTransactionIdFactoryProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = MerchantTransactionIdFactoryProtocol
+    
+     typealias Stubbing = __StubbingProxy_MerchantTransactionIdFactoryProtocol
+     typealias Verification = __VerificationProxy_MerchantTransactionIdFactoryProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: MerchantTransactionIdFactoryProtocol?
+
+     func enableDefaultImplementation(_ stub: MerchantTransactionIdFactoryProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func createTransactionId() -> String {
+        
+    return cuckoo_manager.call("createTransactionId() -> String",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createTransactionId())
+        
+    }
+    
+
+	 struct __StubbingProxy_MerchantTransactionIdFactoryProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func createTransactionId() -> Cuckoo.ProtocolStubFunction<(), String> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockMerchantTransactionIdFactoryProtocol.self, method: "createTransactionId() -> String", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_MerchantTransactionIdFactoryProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func createTransactionId() -> Cuckoo.__DoNotUse<(), String> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createTransactionId() -> String", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class MerchantTransactionIdFactoryProtocolStub: MerchantTransactionIdFactoryProtocol {
+    
+
+    
+
+    
+    
+    
+     func createTransactionId() -> String  {
+        return DefaultValueRegistry.defaultValue(for: (String).self)
     }
     
 }
@@ -14215,61 +14412,31 @@ import Operation_iOS
     
     
     
-     func set(nameViewModel: InputViewModelProtocol)  {
+     func didReceive(walletViewModel: AccountManageWalletViewModel)  {
         
-    return cuckoo_manager.call("set(nameViewModel: InputViewModelProtocol)",
+    return cuckoo_manager.call("didReceive(walletViewModel: AccountManageWalletViewModel)",
+            parameters: (walletViewModel),
+            escapingParameters: (walletViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(walletViewModel: walletViewModel))
+        
+    }
+    
+    
+    
+     func didReceive(nameViewModel: InputViewModelProtocol)  {
+        
+    return cuckoo_manager.call("didReceive(nameViewModel: InputViewModelProtocol)",
             parameters: (nameViewModel),
             escapingParameters: (nameViewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.set(nameViewModel: nameViewModel))
-        
-    }
-    
-    
-    
-     func set(walletType: WalletsListSectionViewModel.SectionType)  {
-        
-    return cuckoo_manager.call("set(walletType: WalletsListSectionViewModel.SectionType)",
-            parameters: (walletType),
-            escapingParameters: (walletType),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.set(walletType: walletType))
-        
-    }
-    
-    
-    
-     func setDelegate(viewModel: AccountDelegateViewModel)  {
-        
-    return cuckoo_manager.call("setDelegate(viewModel: AccountDelegateViewModel)",
-            parameters: (viewModel),
-            escapingParameters: (viewModel),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setDelegate(viewModel: viewModel))
-        
-    }
-    
-    
-    
-     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)  {
-        
-    return cuckoo_manager.call("setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)",
-            parameters: (migrationViewModel),
-            escapingParameters: (migrationViewModel),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setLedger(migrationViewModel: migrationViewModel))
+            defaultCall: __defaultImplStub!.didReceive(nameViewModel: nameViewModel))
         
     }
     
@@ -14297,24 +14464,14 @@ import Operation_iOS
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "reload()", parameterMatchers: matchers))
 	    }
 	    
-	    func set<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
+	    func didReceive<M1: Cuckoo.Matchable>(walletViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManageWalletViewModel)> where M1.MatchedType == AccountManageWalletViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManageWalletViewModel)>] = [wrap(matchable: walletViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "didReceive(walletViewModel: AccountManageWalletViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol)>] = [wrap(matchable: nameViewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(nameViewModel: InputViewModelProtocol)", parameterMatchers: matchers))
-	    }
-	    
-	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(WalletsListSectionViewModel.SectionType)> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
-	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(walletType: WalletsListSectionViewModel.SectionType)", parameterMatchers: matchers))
-	    }
-	    
-	    func setDelegate<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountDelegateViewModel)> where M1.MatchedType == AccountDelegateViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountDelegateViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setDelegate(viewModel: AccountDelegateViewModel)", parameterMatchers: matchers))
-	    }
-	    
-	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LedgerMigrationBannerView.ViewModel)> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(LedgerMigrationBannerView.ViewModel)>] = [wrap(matchable: migrationViewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "didReceive(nameViewModel: InputViewModelProtocol)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14350,27 +14507,15 @@ import Operation_iOS
 	    }
 	    
 	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.__DoNotUse<(InputViewModelProtocol), Void> where M1.MatchedType == InputViewModelProtocol {
+	    func didReceive<M1: Cuckoo.Matchable>(walletViewModel: M1) -> Cuckoo.__DoNotUse<(AccountManageWalletViewModel), Void> where M1.MatchedType == AccountManageWalletViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountManageWalletViewModel)>] = [wrap(matchable: walletViewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(walletViewModel: AccountManageWalletViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.__DoNotUse<(InputViewModelProtocol), Void> where M1.MatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol)>] = [wrap(matchable: nameViewModel) { $0 }]
-	        return cuckoo_manager.verify("set(nameViewModel: InputViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.__DoNotUse<(WalletsListSectionViewModel.SectionType), Void> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
-	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
-	        return cuckoo_manager.verify("set(walletType: WalletsListSectionViewModel.SectionType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setDelegate<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AccountDelegateViewModel), Void> where M1.MatchedType == AccountDelegateViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountDelegateViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("setDelegate(viewModel: AccountDelegateViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setLedger<M1: Cuckoo.Matchable>(migrationViewModel: M1) -> Cuckoo.__DoNotUse<(LedgerMigrationBannerView.ViewModel), Void> where M1.MatchedType == LedgerMigrationBannerView.ViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(LedgerMigrationBannerView.ViewModel)>] = [wrap(matchable: migrationViewModel) { $0 }]
-	        return cuckoo_manager.verify("setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("didReceive(nameViewModel: InputViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -14408,25 +14553,13 @@ import Operation_iOS
     
     
     
-     func set(nameViewModel: InputViewModelProtocol)   {
+     func didReceive(walletViewModel: AccountManageWalletViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func set(walletType: WalletsListSectionViewModel.SectionType)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func setDelegate(viewModel: AccountDelegateViewModel)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func setLedger(migrationViewModel: LedgerMigrationBannerView.ViewModel)   {
+     func didReceive(nameViewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

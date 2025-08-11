@@ -9,4 +9,5 @@ struct SubstrateConstants {
     static let paraIdType = PrimitiveType.u32.name
     static let maxUnbondingRequests = 32
     static let genericAddressPrefix: UInt16 = 42
+    static let multichainDisplayPrefix: UInt16 = 0
 }

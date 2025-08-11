@@ -28,25 +28,6 @@ private extension BanxaProvider {
         return fiatPaymentsMethods
     }
 
-    func buildURL(
-        address: AccountAddress,
-        token: String,
-        network: String,
-        callbackUrl _: URL
-    ) -> URL? {
-        var components = URLComponents(string: baseUrlString)
-
-        let queryItems = [
-            URLQueryItem(name: "coinType", value: token),
-            URLQueryItem(name: "blockchain", value: network),
-            URLQueryItem(name: "walletAddress", value: address)
-        ]
-
-        components?.queryItems = queryItems
-
-        return components?.url
-    }
-
     func buildOnRampActions(
         for chainAsset: ChainAsset,
         accountId: AccountId
@@ -59,15 +40,12 @@ private extension BanxaProvider {
             return []
         }
 
-        guard let callbackUrl = self.callbackUrl,
-              let url = buildURL(
-                  address: address,
-                  token: token,
-                  network: network,
-                  callbackUrl: callbackUrl
-              ) else {
-            return []
-        }
+        let urlFactory = BanxaRampURLFactory(
+            baseURL: baseUrlString,
+            address: address,
+            token: token,
+            network: network
+        )
 
         let action = RampAction(
             type: .onRamp,
@@ -75,7 +53,7 @@ private extension BanxaProvider {
             descriptionText: LocalizableResource { locale in
                 R.string.localizable.banxaBuyActionDescription(preferredLanguages: locale.rLanguages)
             },
-            url: url,
+            urlFactory: urlFactory,
             displayURLString: displayURL,
             paymentMethods: createFiatPaymentMethods()
         )

@@ -127,6 +127,7 @@ final class ExtrinsicServiceFactory {
     private let userStorageFacade: StorageFacadeProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
     private let metadataHashOperationFactory: MetadataHashOperationFactoryProtocol
+    private let nonceOperationFactory = TransactionNonceOperationFactory()
     private let logger: LoggerProtocol
 
     init(
@@ -188,6 +189,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             runtimeRegistry: runtimeRegistry,
             senderResolvingFactory: senderResolvingFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: nonceOperationFactory,
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: extensions,
             engine: engine,
@@ -231,6 +233,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             runtimeRegistry: runtimeRegistry,
             senderResolvingFactory: senderResolvingFactory,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: nonceOperationFactory,
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: extensions,
             engine: engine,
@@ -275,6 +278,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             engine: engine,
             feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: nonceOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -319,6 +323,7 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             engine: engine,
             feeEstimationRegistry: feeEstimationRegistry,
             metadataHashOperationFactory: metadataHashOperationFactory,
+            nonceOperationFactory: nonceOperationFactory,
             senderResolvingFactory: senderResolvingFactory,
             blockHashOperationFactory: BlockHashOperationFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)

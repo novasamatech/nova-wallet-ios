@@ -151,6 +151,7 @@ class DAppOperationConfirmTests: XCTestCase {
             connection: connection,
             signingWrapperFactory: signingWrapperFactory, 
             metadataHashFactory: metadataHashFactory,
+            userStorageFacade: UserDataStorageTestFacade(),
             priceProviderFactory: priceProvider,
             currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue

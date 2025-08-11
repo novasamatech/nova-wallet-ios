@@ -1,5 +1,6 @@
+import Foundation
+
 struct AccountDelegateViewModel {
-    let name: String
+    let name: NSAttributedString
     let icon: ImageViewModelProtocol?
-    let type: String
 }
