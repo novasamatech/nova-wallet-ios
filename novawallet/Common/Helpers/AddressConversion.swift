@@ -10,9 +10,9 @@ extension ChainFormat {
     static var defaultSubstrateFormat: ChainFormat {
         .substrate(SubstrateConstants.genericAddressPrefix, legacyPrefix: nil)
     }
-    
-    static var unifiedAddressFormat: ChainFormat {
-        .substrate(SubstrateConstants.unifiedAddressPrefix, legacyPrefix: nil)
+
+    static var multichainDisplayFormat: ChainFormat {
+        .substrate(SubstrateConstants.multichainDisplayPrefix, legacyPrefix: nil)
     }
 }
 
