@@ -31,7 +31,7 @@ final class ExtrinsicNativeFeeEstimator {
                 with: context.toRawContext()
             )
 
-            if let tip = decodedExtrinsic.signature?.extra.getTip() {
+            if let tip = decodedExtrinsic.getSignedExtrinsic()?.signature.extra.getTip() {
                 let newFee = baseFee + tip
                 return RuntimeDispatchInfo(
                     fee: String(newFee),

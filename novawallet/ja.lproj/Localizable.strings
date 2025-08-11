@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "このプロキシウォレットでは売却はサポートされていません";
 "feature.unsupported.sheet.title.card.proxied" = "デビットカードはこのプロキシウォレットではサポートされていません";
 "feature.unsupported.sheet.message.sell.proxied" = "暗号資産を法定通貨に換金するには、別のウォレットに切り替えてください。";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "NovaでTrust Walletアカウントを使用する";

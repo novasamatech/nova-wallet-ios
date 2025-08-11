@@ -46,7 +46,7 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         chainId: ChainModel.Id,
         isEthereumBased: Bool
     ) {
-        let options = SecretSource.displayOptions
+        let options = SecretSource.chainAccountImportOptions
 
         let handler: (Int) -> Void = { [weak self] selectedIndex in
             self?.presentImport(

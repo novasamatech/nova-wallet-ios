@@ -7,7 +7,7 @@ enum ExtrinsicBuilderExtensionError: Error {
 
 extension ExtrinsicBuilderProtocol {
     func signing(
-        with signingClosure: (Data, ExtrinsicSigningContext) throws -> Data,
+        with signingClosure: @escaping (Data, ExtrinsicSigningContext) throws -> Data,
         context: ExtrinsicSigningContext.Substrate,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Self {
@@ -27,7 +27,7 @@ extension ExtrinsicBuilderProtocol {
                         with: codingFactory.createRuntimeJsonContext().toRawContext()
                     )
                 },
-                using: codingFactory.createEncoder(),
+                using: codingFactory,
                 metadata: codingFactory.metadata
             )
         case .substrate:
@@ -36,7 +36,7 @@ extension ExtrinsicBuilderProtocol {
                     try signingClosure(data, .substrateExtrinsic(context))
                 },
                 of: account.cryptoType.utilsType,
-                using: codingFactory.createEncoder(),
+                using: codingFactory,
                 metadata: codingFactory.metadata
             )
         }

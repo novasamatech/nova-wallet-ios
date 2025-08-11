@@ -145,8 +145,6 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
                 throw CommonError.undefined
             }
             
-            let encoder = codingFactory.createEncoder()
-            
             let customExtensions = ExtrinsicSignedExtensionFacade().createFactory(for: chain.chainId).createExtensions()
             
             var builder = ExtrinsicBuilder(
@@ -159,18 +157,18 @@ final class ParitySignerPayloadWithProofTests: XCTestCase {
             .with(signaturePayloadFormat: .paritySigner)
             
             for customExtension in customExtensions {
-                builder = builder.adding(extrinsicSignedExtension: customExtension)
+                builder = builder.adding(transactionExtension: customExtension)
             }
             
             let finalBuilder = try builderClosure(builder)
             
             let proofParams = try finalBuilder.buildExtrinsicSignatureParams(
-                encodingBy: encoder,
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
             
             let signingPayload = try finalBuilder.buildSignaturePayload(
-                encoder: encoder,
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
             

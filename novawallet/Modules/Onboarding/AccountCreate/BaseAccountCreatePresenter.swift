@@ -116,7 +116,7 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
 
         wireframe.showAdvancedSettings(
             from: view,
-            secretSource: .mnemonic,
+            secretSource: .mnemonic(.appDefault),
             settings: settings,
             delegate: self
         )
