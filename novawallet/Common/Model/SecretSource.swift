@@ -1,14 +1,19 @@
 import Foundation
 import UIKit
 
-enum SecretSource {
-    case mnemonic
+enum SecretSource: Equatable {
+    enum Origin: Equatable {
+        case appDefault
+        case trustWallet
+    }
+
+    case mnemonic(Origin)
     case seed
     case keystore
 }
 
 extension SecretSource {
-    static var displayOptions: [SecretSource] { [.mnemonic, .seed, .keystore] }
+    static var chainAccountImportOptions: [SecretSource] { [.mnemonic(.appDefault), .seed, .keystore] }
 
     func titleForLocale(_ locale: Locale?) -> String {
         switch self {

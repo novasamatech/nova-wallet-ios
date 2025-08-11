@@ -11,7 +11,7 @@ final class AccountImportViewFactory {
         }
 
         let wireframe = AccountImportWireframe()
-        return createView(
+        return createWalletImportView(
             for: secretSource,
             interactor: interactor,
             wireframe: wireframe
@@ -25,7 +25,7 @@ final class AccountImportViewFactory {
 
         let wireframe = AddAccount.AccountImportWireframe()
 
-        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
+        return createWalletImportView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
     static func createViewForSwitch(for secretSource: SecretSource) -> AccountImportViewProtocol? {
@@ -34,7 +34,7 @@ final class AccountImportViewFactory {
         }
 
         let wireframe = SwitchAccount.AccountImportWireframe()
-        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
+        return createWalletImportView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(
@@ -53,7 +53,8 @@ final class AccountImportViewFactory {
             secretSource: secretSource,
             metaAccountModel: wallet,
             chainModelId: modelId,
-            isEthereumBased: isEthereumBased
+            isEthereumBased: isEthereumBased,
+            metadataFactory: ChainAccountImportMetadataFactory(isEthereumBased: isEthereumBased)
         )
 
         let localizationManager = LocalizationManager.shared
@@ -71,12 +72,16 @@ final class AccountImportViewFactory {
         return view
     }
 
-    private static func createView(
+    private static func createWalletImportView(
         for secretSource: SecretSource,
         interactor: BaseAccountImportInteractor,
         wireframe: AccountImportWireframeProtocol
     ) -> AccountImportViewProtocol? {
-        let presenter = AccountImportPresenter(secretSource: secretSource)
+        let presenter = AccountImportPresenter(
+            secretSource: secretSource,
+            metadataFactory: WalletImportMetadataFactory()
+        )
+
         let localizationManager = LocalizationManager.shared
 
         let view = AccountImportViewController(presenter: presenter, localizationManager: localizationManager)
@@ -92,7 +97,7 @@ final class AccountImportViewFactory {
     }
 
     private static func createAccountImportInteractor() -> BaseAccountImportInteractor? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol =
+        guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
@@ -102,18 +107,18 @@ final class AccountImportViewFactory {
         let keystore = Keychain()
         let settings = SelectedWalletSettings.shared
 
-        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountOperationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keystore)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
         let eventCenter = EventCenter.shared
 
         let interactor = AccountImportInteractor(
-            accountOperationFactory: accountOperationFactory,
+            metaAccountOperationFactoryProvider: accountOperationFactoryProvider,
             accountRepository: accountRepository,
             operationManager: OperationManagerFacade.sharedManager,
             settings: settings,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             eventCenter: eventCenter
         )
 
@@ -121,7 +126,7 @@ final class AccountImportViewFactory {
     }
 
     private static func createAddAccountImportInteractor() -> BaseAccountImportInteractor? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol =
+        guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
@@ -129,7 +134,7 @@ final class AccountImportViewFactory {
         }
 
         let keystore = Keychain()
-        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountOperationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keystore)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
@@ -137,11 +142,11 @@ final class AccountImportViewFactory {
 
         let interactor = AddAccount
             .AccountImportInteractor(
-                accountOperationFactory: accountOperationFactory,
+                metaAccountOperationFactoryProvider: accountOperationFactoryProvider,
                 accountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
-                keystoreImportService: keystoreImportService,
+                secretImportService: secretImportService,
                 eventCenter: eventCenter
             )
 
@@ -149,9 +154,9 @@ final class AccountImportViewFactory {
     }
 
     private static func createChainAccountImportInteractor(
-        isEthereumBased: Bool
+        isEthereumBased _: Bool
     ) -> BaseAccountImportInteractor? {
-        guard let keystoreImportService: KeystoreImportServiceProtocol =
+        guard let secretImportService: SecretImportServiceProtocol =
             URLHandlingServiceFacade.shared.findInternalService()
         else {
             Logger.shared.error("Missing required keystore import service")
@@ -159,7 +164,7 @@ final class AccountImportViewFactory {
         }
 
         let keystore = Keychain()
-        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountOperationFactoryProvider = MetaAccountOperationFactoryProvider(keystore: keystore)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
@@ -167,13 +172,12 @@ final class AccountImportViewFactory {
 
         let interactor = ImportChainAccount
             .AccountImportInteractor(
-                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountOperationFactoryProvider: accountOperationFactoryProvider,
                 metaAccountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
-                keystoreImportService: keystoreImportService,
-                eventCenter: eventCenter,
-                isEthereumBased: isEthereumBased
+                secretImportService: secretImportService,
+                eventCenter: eventCenter
             )
 
         return interactor

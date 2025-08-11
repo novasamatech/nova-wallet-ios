@@ -47,7 +47,7 @@ final class MetaAccountOperationFactory {
         case .substrateEcdsa:
             return EcdsaKeypairFactory()
         case .ethereumEcdsa:
-            return BIP32KeypairFactory()
+            return BIP32Secp256KeypairFactory()
         }
     }
 

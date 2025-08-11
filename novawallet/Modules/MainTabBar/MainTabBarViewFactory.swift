@@ -45,7 +45,7 @@ private extension MainTabBarViewFactory {
         let urlServiceFacade: URLHandlingServiceFacadeProtocol = URLHandlingServiceFacade.shared
 
         guard
-            let keystoreImportService: KeystoreImportServiceProtocol = urlServiceFacade.findInternalService(),
+            let secretImportService: SecretImportServiceProtocol = urlServiceFacade.findInternalService(),
             let screenOpenService: ScreenOpenServiceProtocol = urlServiceFacade.findInternalService(),
             let walletMigrateService: WalletMigrationServiceProtocol = urlServiceFacade.findInternalService(),
             let pushScreenOpenService = PushNotificationHandlingService.shared.service else {
@@ -59,7 +59,7 @@ private extension MainTabBarViewFactory {
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             walletMigrationService: walletMigrateService,
             screenOpenService: screenOpenService,
             pushScreenOpenService: pushScreenOpenService,
