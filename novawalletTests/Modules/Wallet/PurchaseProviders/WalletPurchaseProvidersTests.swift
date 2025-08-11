@@ -125,7 +125,7 @@ class WalletRampProvidersTests: XCTestCase {
             "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&merchant_transaction_id=\(merchantTransactionId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         case .onRamp:
-            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&return_url=\(redirectUrl)"
+            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&merchant_transaction_id=\(merchantTransactionId)&signature=\(signature)&return_url=\(redirectUrl)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         }
 
