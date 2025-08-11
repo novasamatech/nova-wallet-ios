@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "La vente n'est pas prise en charge pour ce portefeuille proxied.";
 "feature.unsupported.sheet.title.card.proxied" = "La carte de débit n'est pas prise en charge pour ce portefeuille proxied.";
 "feature.unsupported.sheet.message.sell.proxied" = "Pour vendre des cryptomonnaies contre de la monnaie fiduciaire, veuillez changer de portefeuille.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Utilisez vos comptes Trust Wallet dans Nova";

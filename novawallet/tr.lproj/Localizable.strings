@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Bu Vekil cüzdan için Satış desteklenmiyor";
 "feature.unsupported.sheet.title.card.proxied" = "Bu Vekil cüzdan için Banka Kartı desteklenmiyor";
 "feature.unsupported.sheet.message.sell.proxied" = "Kriptoyu itibari para ile satmak için lütfen farklı bir cüzdana geçin.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Nova’da Trust Wallet hesaplarınızı kullanın";

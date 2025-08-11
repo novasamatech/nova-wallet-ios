@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "不支持此代理钱包的卖出功能";
 "feature.unsupported.sheet.title.card.proxied" = "借记卡不支持此代理钱包";
 "feature.unsupported.sheet.message.sell.proxied" = "要将加密货币兑换成法定货币，请切换到其他钱包。";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "在 Nova 中使用您的 Trust Wallet 账户";

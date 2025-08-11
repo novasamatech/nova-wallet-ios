@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Penjualan tidak didukung untuk dompet Proxied ini";
 "feature.unsupported.sheet.title.card.proxied" = "Kartu Debit tidak didukung untuk dompet Proxied ini";
 "feature.unsupported.sheet.message.sell.proxied" = "Untuk menjual kripto menjadi fiat, silakan beralih ke dompet lain.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Gunakan akun Trust Wallet Anda di Nova";
