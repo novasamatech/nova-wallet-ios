@@ -163,10 +163,10 @@ private extension AccountManagementViewModelFactory {
             if let chain = chains[chainAccount.chainId] {
                 chain.chainFormat
             } else {
-                .defaultSubstrateFormat
+                .unifiedAddressFormat
             }
         case .universal:
-            .defaultSubstrateFormat
+            .unifiedAddressFormat
         }
 
         let signatoryViewModel = createDelegateViewModel(
