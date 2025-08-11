@@ -10,10 +10,12 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
         let wireframe = AccountManagementWireframe()
 
         let iconGenerator = PolkadotIconGenerator()
-        let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
+        let viewModelFactory = AccountManagementViewModelFactory()
+        let chainAccountViewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
 
         let presenter = AccountManagementPresenter(
             viewModelFactory: viewModelFactory,
+            chainAccountViewModelFactory: chainAccountViewModelFactory,
             walletId: walletId,
             applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
