@@ -621,7 +621,10 @@ class CalculatorServiceTests: XCTestCase {
             for: chainAsset,
             stakingType: .relaychain,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            stakingDurationFactory: BabeStakingDurationFactory(),
+            stakingDurationFactory: BabeStakingDurationFactory(
+                chainId: chainId,
+                chainRegistry: chainRegistry
+            ),
             validatorService: validatorService
         )
 

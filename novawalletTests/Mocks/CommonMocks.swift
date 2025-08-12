@@ -5958,7 +5958,7 @@ import Operation_iOS
     
      func createTimeModel(for chainId: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel {
         
-    return try cuckoo_manager.callThrows("createTimeModel(for: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel",
+    return try cuckoo_manager.callThrows("createTimeModel(for: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel",
             parameters: (chainId, consensus),
             escapingParameters: (chainId, consensus),
             superclassCall:
@@ -5990,7 +5990,7 @@ import Operation_iOS
 	    
 	    func createTimeModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, RelayStkConsensusType), StakingTimeModel> where M1.MatchedType == ChainModel.Id, M2.MatchedType == RelayStkConsensusType {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, RelayStkConsensusType)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: consensus) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createTimeModel(for: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createTimeModel(for: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6024,7 +6024,7 @@ import Operation_iOS
 	    @discardableResult
 	    func createTimeModel<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, RelayStkConsensusType), StakingTimeModel> where M1.MatchedType == ChainModel.Id, M2.MatchedType == RelayStkConsensusType {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, RelayStkConsensusType)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: consensus) { $0.1 }]
-	        return cuckoo_manager.verify("createTimeModel(for: ChainModel.Id, consensus: ConsensusType) throws -> StakingTimeModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("createTimeModel(for: ChainModel.Id, consensus: RelayStkConsensusType) throws -> StakingTimeModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}

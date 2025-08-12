@@ -124,7 +124,10 @@ class StakingUnbondConfirmTests: XCTestCase {
             )
         )
 
-        let stakingDurationOperationFactory = BabeStakingDurationFactory()
+        let stakingDurationOperationFactory = BabeStakingDurationFactory(
+            chainId: chain.chainId,
+            chainRegistry: chainRegistry
+        )
 
         let interactor = StakingUnbondConfirmInteractor(
             selectedAccount: selectedAccount,

@@ -125,7 +125,10 @@ class StakingUnbondSetupTests: XCTestCase {
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            stakingDurationOperationFactory: BabeStakingDurationFactory(),
+            stakingDurationOperationFactory: BabeStakingDurationFactory(
+                chainId: chain.chainId,
+                chainRegistry: chainRegistry
+            ),
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
