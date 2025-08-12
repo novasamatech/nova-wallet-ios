@@ -50,6 +50,12 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
         completion: @escaping (GovernanceNotificationsModel) -> Void
     )
 
+    func showMultisigSetup(
+        from view: ControllerBackedProtocol?,
+        settings: MultisigNotificationsModel,
+        completion: @escaping (MultisigNotificationsModel) -> Void
+    )
+
     func complete(from view: ControllerBackedProtocol?)
 
     func saved(on view: ControllerBackedProtocol?)

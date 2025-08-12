@@ -37,6 +37,10 @@ enum Web3Alert {
         var stakingReward: Selection<C>?
         var tokenSent: Selection<C>?
         var tokenReceived: Selection<C>?
+        var multisigSignatureRequested: Selection<C>?
+        var multisigSignedBySignatory: Selection<C>?
+        var multisigTransactionExecuted: Selection<C>?
+        var multisigTransactionRejected: Selection<C>?
     }
 }
 

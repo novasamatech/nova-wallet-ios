@@ -49,6 +49,7 @@ final class NotificationsManagementPresenter {
             isAnnouncementsOn: isAnnouncementsOn(),
             isSentTokensOn: settings.notifications.tokenSent == .all,
             isReceiveTokensOn: settings.notifications.tokenReceived == .all,
+            isMultisigTransactionsOn: isMultisigOn(),
             isGovernanceOn: isGovernanceOn(),
             isStakingOn: settings.notifications.stakingReward?.notificationsEnabled ?? false
         )
@@ -80,6 +81,15 @@ final class NotificationsManagementPresenter {
                 return false
             }
         }
+    }
+
+    func isMultisigOn() -> Bool {
+        guard let notifications = modifiedSettings?.notifications else { return false }
+
+        return notifications.multisigSignatureRequested?.notificationsEnabled == true ||
+            notifications.multisigSignedBySignatory?.notificationsEnabled == true ||
+            notifications.multisigTransactionExecuted?.notificationsEnabled == true ||
+            notifications.multisigTransactionRejected?.notificationsEnabled == true
     }
 
     func isAnnouncementsOn() -> Bool {
@@ -202,6 +212,13 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
                 selectedChains: modifiedSettings?.notifications.stakingReward,
                 completion: changeStakingRewardsSettings
             )
+        case .multisig:
+            let settings = MultisigNotificationsModel(from: modifiedSettings)
+            wireframe.showMultisigSetup(
+                from: view,
+                settings: settings,
+                completion: changeMultisigSettings
+            )
         }
     }
 
@@ -242,6 +259,24 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
 
         disableNotificationIfNeeded()
         updateView()
+    }
+
+    func changeMultisigSettings(result: MultisigNotificationsModel?) {
+        modifiedSettings = modifiedSettings?.with {
+            guard let result else {
+                $0.multisigSignatureRequested = nil
+                $0.multisigSignedBySignatory = nil
+                $0.multisigTransactionExecuted = nil
+                $0.multisigTransactionRejected = nil
+
+                return
+            }
+
+            $0.multisigSignatureRequested = result.signatureRequested ? .all : nil
+            $0.multisigSignedBySignatory = result.signedBySignatory ? .all : nil
+            $0.multisigTransactionExecuted = result.transactionExecuted ? .all : nil
+            $0.multisigTransactionRejected = result.transactionRejected ? .all : nil
+        }
     }
 
     func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
