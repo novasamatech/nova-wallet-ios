@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Продажа не поддерживается для этого проксид кошелька";
 "feature.unsupported.sheet.title.card.proxied" = "Дебетовая карта не поддерживается для этого проксид кошелька";
 "feature.unsupported.sheet.message.sell.proxied" = "Чтобы продать криптовалюту за фиатные деньги, пожалуйста, переключитесь на другой кошелек.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Используйте свои аккаунты Trust Wallet в Nova";

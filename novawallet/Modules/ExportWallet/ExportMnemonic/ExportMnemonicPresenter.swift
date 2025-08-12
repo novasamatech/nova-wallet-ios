@@ -83,7 +83,7 @@ extension ExportMnemonicPresenter: AccountCreatePresenterProtocol {
             advancedSettings = AdvancedWalletSettings.substrate(settings: networkSettings)
         }
 
-        wireframe.showAdvancedSettings(from: view, secretSource: .mnemonic, settings: advancedSettings)
+        wireframe.showAdvancedSettings(from: view, secretSource: .mnemonic(.appDefault), settings: advancedSettings)
     }
 
     func provideMnemonic() {

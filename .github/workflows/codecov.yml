@@ -34,7 +34,7 @@ jobs:
           platform: ${{ 'iOS Simulator' }}
           device: ${{ 'iPhone 14' }}
           os_version: ${{ '15.2' }}
-        run: set -o pipefail && xcodebuild test -workspace novawallet.xcworkspace -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" build test EXCLUDED_ARCHS=arm64 | xcpretty --test
+        run: set -o pipefail && xcodebuild test -workspace novawallet.xcworkspace -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" build test | xcpretty --test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

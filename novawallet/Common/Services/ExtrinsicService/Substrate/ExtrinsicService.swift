@@ -237,7 +237,7 @@ final class ExtrinsicService {
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
         nonceOperationFactory: TransactionNonceOperationFactoryProtocol,
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
-        extensions: [ExtrinsicSignedExtending],
+        extensions: [TransactionExtending],
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
     ) {

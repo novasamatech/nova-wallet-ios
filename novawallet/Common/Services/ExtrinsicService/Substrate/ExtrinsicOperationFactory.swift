@@ -155,7 +155,7 @@ extension ExtrinsicOperationFactoryProtocol {
 
 final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     let chain: ChainModel
-    let customExtensions: [ExtrinsicSignedExtending]
+    let customExtensions: [TransactionExtending]
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
     let blockHashOperationFactory: BlockHashOperationFactoryProtocol
     let senderResolvingFactory: ExtrinsicSenderResolutionFactoryProtocol
@@ -165,7 +165,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
     init(
         chain: ChainModel,
         runtimeRegistry: RuntimeCodingServiceProtocol,
-        customExtensions: [ExtrinsicSignedExtending],
+        customExtensions: [TransactionExtending],
         engine: JSONRPCEngine,
         feeEstimationRegistry: ExtrinsicFeeEstimationRegistring,
         metadataHashOperationFactory: MetadataHashOperationFactoryProtocol,
@@ -196,7 +196,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         indexes: [Int],
         chain: ChainModel,
-        customExtensions: [ExtrinsicSignedExtending],
+        customExtensions: [TransactionExtending],
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[ExtrinsicBuilderProtocol]> {
         let genesisBlockOperation = blockHashOperationFactory.createBlockHashOperation(connection: engine, for: { 0 })
@@ -242,7 +242,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                 }
 
                 for customExtension in customExtensions {
-                    builder = builder.adding(extrinsicSignedExtension: customExtension)
+                    builder = builder.adding(transactionExtension: customExtension)
                 }
 
                 return try customClosure(builder, index)
@@ -294,7 +294,7 @@ final class ExtrinsicOperationFactory: BaseExtrinsicOperationFactory {
                     codingFactory: codingFactory
                 )
 
-                return try builder.build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+                return try builder.build(using: codingFactory, metadata: codingFactory.metadata)
             }
 
             return (extrinsics, senderResolution)

@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "La función de venta no está disponible para esta billetera con proxied";
 "feature.unsupported.sheet.title.card.proxied" = "La tarjeta de débito no es compatible con esta billetera proxied";
 "feature.unsupported.sheet.message.sell.proxied" = "Para vender criptomonedas por dinero fiat, por favor cambie a una billetera diferente.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Use your Trust Wallet accounts in Nova";

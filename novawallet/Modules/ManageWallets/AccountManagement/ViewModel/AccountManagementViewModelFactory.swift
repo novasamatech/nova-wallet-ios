@@ -196,7 +196,7 @@ private extension AccountManagementViewModelFactory {
             )
         }
 
-        let otherSignatoriesTitle = R.string.localizable.multisigWalletDetailsOtherSignatories(
+        let otherSignatoriesTitle = R.string.localizable.multisigOtherSignatories(
             preferredLanguages: locale.rLanguages
         )
 

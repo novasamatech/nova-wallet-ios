@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-protocol RuntimeCoderFactoryProtocol {
+protocol RuntimeCoderFactoryProtocol: DynamicScaleEncodingFactoryProtocol {
     var specVersion: UInt32 { get }
     var txVersion: UInt32 { get }
     var metadata: RuntimeMetadataProtocol { get }
@@ -39,7 +39,7 @@ extension RuntimeCoderFactoryProtocol {
 
     func supportsMetadataHash() -> Bool {
         let hasSignedExtension = metadata.getSignedExtensions().contains(
-            Extrinsic.SignedExtensionId.checkMetadataHash
+            Extrinsic.TransactionExtensionId.checkMetadataHash
         )
 
         return atLeastV15Runtime() && hasSignedExtension

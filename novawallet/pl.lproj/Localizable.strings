@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Sprzedaż nie jest obsługiwana dla tego portfela Proxied";
 "feature.unsupported.sheet.title.card.proxied" = "Karta debetowa nie jest obsługiwana dla tego portfela pośredniego";
 "feature.unsupported.sheet.message.sell.proxied" = "Aby sprzedać kryptowaluty za walutę tradycyjną, przełącz się na inny portfel.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Używaj swoich kont Trust Wallet w Nova";

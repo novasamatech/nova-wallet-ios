@@ -54,8 +54,6 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
                 throw CommonError.undefined
             }
             
-            let encoder = codingFactory.createEncoder()
-            
             let callFactory = SubstrateCallFactory()
             let call = callFactory.nativeTransfer(
                 to: AccountId.random(of: 32)!,
@@ -75,11 +73,11 @@ final class ExtrinsicProofGenerationTests: XCTestCase {
             .adding(call: call)
             
             for customExtension in customExtensions {
-                builder = builder.adding(extrinsicSignedExtension: customExtension)
+                builder = builder.adding(transactionExtension: customExtension)
             }
             
             let params = try builder.buildExtrinsicSignatureParams(
-                encodingBy: encoder,
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
             
