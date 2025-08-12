@@ -2,6 +2,8 @@ import XCTest
 @testable import novawallet
 import UIKit.UIColor
 import SubstrateSdk
+import Cuckoo
+import Operation_iOS
 
 class WalletRampProvidersTests: XCTestCase {
     let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
@@ -54,17 +56,28 @@ class WalletRampProvidersTests: XCTestCase {
             TransakProvider()
         }
         
+        let operationQueue = OperationQueue()
+        
         // when
         let expectation = XCTestExpectation()
 
         let actions = provider.buildRampActions(for: chainAsset, accountId: accountId)
             .filter { $0.type == rampActionType }
         
-        XCTAssertEqual(actions[0].url.absoluteString, expectedURL)
-        expectation.fulfill()
+        let urlWrapper = actions[0].urlFactory.createURLWrapper()
+        
+        operationQueue.addOperations(urlWrapper.allOperations, waitUntilFinished: true)
+        
+        do {
+            let url = try urlWrapper.targetOperation.extractNoCancellableResultData()
+            // then
+            XCTAssertEqual(url.absoluteString, expectedURL)
+            expectation.fulfill()
 
-        // then
-        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+            wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+        } catch {
+            XCTFail("Can't build ramp provider URL: \(error)")
+        }
     }
     
     func performMercuryoRampTest(rampActionType: RampActionType) throws {
@@ -87,24 +100,50 @@ class WalletRampProvidersTests: XCTestCase {
         let providerConfig = MercuryoProvider.Configuration.debug
         let host = providerConfig.baseUrl
         let widgetId = providerConfig.widgetId
-        let signature = "9435d34696f6a8cc508b8cb79b871fd24f3acf033e3ca13af147a5b65cdfcc6ab249fc0ee29ad6a00d09d315cb9bd674a353750e4c77443788637b91128c1d23"
+        
+        let merchantTransactionId = "90A0270B-BB0A-4A91-BB82-AD09EE73EB78"
+        
+        let ipAddressProvider = MockIPAddressProviderProtocol()
+        stub(ipAddressProvider) { stub in
+            stub.createIPAddressOperation().then {
+                .createWithResult("8.8.8.8")
+            }
+        }
+        
+        let merchantIdFactory = MockMerchantTransactionIdFactoryProtocol()
+        stub(merchantIdFactory) { stub in
+            stub.createTransactionId().then {
+                merchantTransactionId
+            }
+        }
+        
+        let signature = "v2:5f5817088fbc190d4b58b99618d2ea1c0ccd77f3aa4fc81db729b4edf5a59810465b8e8e2ed39f402c2b515ced678d89a91a8f9bf7c9597b811e16cbc50cfa8f"
 
         // swiftlint:disable next long_string
         let expectedURL = switch rampActionType {
         case .offRamp:
-            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
+            "\(host)?currency=\(asset.symbol)&type=sell&address=\(address)&widget_id=\(widgetId)&merchant_transaction_id=\(merchantTransactionId)&signature=\(signature)&hide_refund_address=true&refund_address=\(address)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         case .onRamp:
-            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&signature=\(signature)&return_url=\(redirectUrl)"
+            "\(host)?currency=\(asset.symbol)&type=buy&address=\(address)&widget_id=\(widgetId)&merchant_transaction_id=\(merchantTransactionId)&signature=\(signature)&return_url=\(redirectUrl)"
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         }
 
         let provider = switch rampActionType {
         case .offRamp:
-            MercuryoProvider()
+            MercuryoProvider(
+                merchantIdFactory: merchantIdFactory,
+                ipAddressProvider: ipAddressProvider
+            )
         case .onRamp:
-            MercuryoProvider().with(callbackUrl: redirectUrl)
+            MercuryoProvider(
+                merchantIdFactory: merchantIdFactory,
+                ipAddressProvider: ipAddressProvider
+            )
+                .with(callbackUrl: redirectUrl)
         }
+        
+        let operationQueue = OperationQueue()
 
         // when
         let expectation = XCTestExpectation()
@@ -112,10 +151,19 @@ class WalletRampProvidersTests: XCTestCase {
         let actions = provider.buildRampActions(for: chainAsset, accountId: accountId)
             .filter { $0.type == rampActionType }
         
-        XCTAssertEqual(actions[0].url.absoluteString, expectedURL)
-        expectation.fulfill()
+        var urlWrapper = actions[0].urlFactory.createURLWrapper()
+        
+        operationQueue.addOperations(urlWrapper.allOperations, waitUntilFinished: true)
+        
+        do {
+            let url = try urlWrapper.targetOperation.extractNoCancellableResultData()
+            // then
+            XCTAssertEqual(url.absoluteString, expectedURL)
+            expectation.fulfill()
 
-        // then
-        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+            wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+        } catch {
+            XCTFail("Can't build ramp provider URL: \(error)")
+        }
     }
 }

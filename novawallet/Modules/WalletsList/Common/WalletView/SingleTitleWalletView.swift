@@ -3,6 +3,16 @@ import UIKit
 class SingleTitleWalletView: GenericTitleValueView<WalletIconView, UILabel>, WalletViewProtocol {
     var viewModel: ViewModel?
 
+    var iconTitleSpacing: CGFloat {
+        get {
+            spacing
+        }
+        set {
+            spacing = newValue
+        }
+    }
+
+    var iconContainerView: WalletIconView { titleView }
     var iconImageView: UIImageView { titleView.iconViewImageView }
     var networkImageView: UIImageView { titleView.networkIconImageView }
     var titleLabel: UILabel { valueView }

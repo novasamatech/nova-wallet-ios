@@ -17,7 +17,7 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
         }
 
         guard
-            let kestoreImportService: KeystoreImportServiceProtocol = urlHandlingFacade.findInternalService()
+            let secretImportService: SecretImportServiceProtocol = urlHandlingFacade.findInternalService()
         else {
             Logger.shared.error("Can't find required keystore import service")
             return nil
@@ -38,7 +38,7 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
         )
 
         let interactor = OnboardingMainInteractor(
-            keystoreImportService: kestoreImportService,
+            secretImportService: secretImportService,
             walletMigrationService: walletMigrationService
         )
 

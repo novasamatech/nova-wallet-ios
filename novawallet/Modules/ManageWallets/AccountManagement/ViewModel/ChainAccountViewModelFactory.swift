@@ -11,12 +11,6 @@ protocol ChainAccountViewModelFactoryProtocol {
     ) -> ChainAccountListViewModel
 
     func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
-
-    func createDelegateViewModel(
-        delegatedWallet: MetaAccountModel,
-        delegateWallet: MetaAccountModel,
-        locale: Locale
-    ) -> AccountDelegateViewModel
 }
 
 final class ChainAccountViewModelFactory {
@@ -315,25 +309,5 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         case .genericLedger:
             return createGenericLedgerSections(from: wallet, chains: chains, for: locale)
         }
-    }
-
-    func createDelegateViewModel(
-        delegatedWallet: MetaAccountModel,
-        delegateWallet: MetaAccountModel,
-        locale: Locale
-    ) -> AccountDelegateViewModel {
-        let optIcon = delegateWallet.walletIdenticonData().flatMap {
-            try? walletIconGenerator.generateFromAccountId($0)
-        }
-        let iconViewModel = optIcon.map {
-            DrawableIconViewModel(icon: $0)
-        }
-        let type = delegatedWallet.proxy?.type.title(locale: locale) ?? ""
-
-        return .init(
-            name: delegateWallet.name,
-            icon: iconViewModel,
-            type: type
-        )
     }
 }

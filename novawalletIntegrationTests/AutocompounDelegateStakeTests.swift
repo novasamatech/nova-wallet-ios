@@ -221,6 +221,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
                 operationQueue: operationQueue
             ),
+            nonceOperationFactory: TransactionNonceOperationFactory(),
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,
@@ -320,6 +321,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
                 metadataRepositoryFactory: RuntimeMetadataRepositoryFactory(storageFacade: storageFacade),
                 operationQueue: operationQueue
             ),
+            nonceOperationFactory: TransactionNonceOperationFactory(),
             feeEstimationRegistry: feeEstimationRegistry,
             extensions: signedExtensionFactory.createExtensions(),
             engine: connection,

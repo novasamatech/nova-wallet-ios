@@ -1923,3 +1923,5 @@
 "feature.unsupported.sheet.title.sell.proxied" = "Venda não é suportada para esta carteira Proxiada";
 "feature.unsupported.sheet.title.card.proxied" = "Cartão de débito não é compatível com esta carteira Proxied";
 "feature.unsupported.sheet.message.sell.proxied" = "Para vender criptomoedas por dinheiro fiduciário, por favor, mude para uma carteira diferente.";
+"common.trust.wallet" = "Trust Wallet";
+"trust.wallet.import.description" = "Use suas contas do Trust Wallet no Nova";

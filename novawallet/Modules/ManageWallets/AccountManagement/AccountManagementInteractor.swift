@@ -278,7 +278,7 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
                 accountId: accountId
             )
             if try keystore.checkKey(for: entropyTag) {
-                options.append(.mnemonic)
+                options.append(.mnemonic(.appDefault))
             }
 
             // use private key for ethereum and seed for substrate

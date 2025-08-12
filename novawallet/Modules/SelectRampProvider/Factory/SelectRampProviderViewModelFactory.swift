@@ -43,7 +43,7 @@ class SelectRampProviderViewModelFactory: SelectRampProviderViewModelFactoryProt
             }
 
             return SelectRampProvider.ViewModel.ProviderViewModel(
-                id: action.url.absoluteString,
+                id: action.displayURLString,
                 logo: action.logo,
                 descriptionText: action.descriptionText.value(for: locale),
                 fiatPaymentMethods: paymentMethods
