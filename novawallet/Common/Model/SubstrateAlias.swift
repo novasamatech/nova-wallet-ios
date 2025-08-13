@@ -19,6 +19,7 @@ typealias ExtrinsicIndex = UInt32
 typealias ExtrinsicHash = String
 typealias BlockHash = String
 typealias Percent = UInt8
+typealias Perbill = BigUInt
 
 extension AccountId {
     static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {

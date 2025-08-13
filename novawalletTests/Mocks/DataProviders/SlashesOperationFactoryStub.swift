@@ -20,12 +20,12 @@ final class SlashesOperationFactoryStub: SlashesOperationFactoryProtocol {
     }
     
     func createUnappliedSlashesWrapper(
-        activeErasClosure: @escaping () throws -> [Staking.EraIndex]?,
+        erasClosure: @escaping () throws -> [Staking.EraIndex]?,
         engine: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<RelayStkUnappliedSlashes> {
         let operation = ClosureOperation<RelayStkUnappliedSlashes> {
-            if let eras = try activeErasClosure() {
+            if let eras = try erasClosure() {
                 let erasSet = Set(eras)
                 return self.unappliedSlashes.filter { erasSet.contains($0.key) }
             } else {
