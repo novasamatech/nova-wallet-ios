@@ -1,7 +1,7 @@
 import os
 import sys
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 
 
@@ -81,7 +81,7 @@ def parse_base_params(comment_link: str) -> None:
     version = version_raw[1:] if version_raw.lower().startswith("v") else version_raw
 
     severity = severity_raw
-    time_iso = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    time_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     try:
         with open(env_file, "a", encoding="utf-8") as f:
