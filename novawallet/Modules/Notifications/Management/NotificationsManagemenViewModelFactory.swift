@@ -67,7 +67,7 @@ final class NotificationsManagemenViewModelFactory: NotificationsManagemenViewMo
             (.others, [
                 createAccessoryViewModel(
                     row: .multisig,
-                    isOn: parameters.isGovernanceOn,
+                    isOn: parameters.isMultisigTransactionsOn,
                     isActive: parameters.isNotificationsOn,
                     locale: locale
                 ),

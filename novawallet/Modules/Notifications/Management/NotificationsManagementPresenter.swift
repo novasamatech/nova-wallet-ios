@@ -261,22 +261,16 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
         updateView()
     }
 
-    func changeMultisigSettings(result: MultisigNotificationsModel?) {
+    func changeMultisigSettings(result: MultisigNotificationsModel) {
         modifiedSettings = modifiedSettings?.with {
-            guard let result else {
-                $0.multisigSignatureRequested = nil
-                $0.multisigSignedBySignatory = nil
-                $0.multisigTransactionExecuted = nil
-                $0.multisigTransactionRejected = nil
-
-                return
-            }
-
             $0.multisigSignatureRequested = result.signatureRequested ? .all : nil
             $0.multisigSignedBySignatory = result.signedBySignatory ? .all : nil
             $0.multisigTransactionExecuted = result.transactionExecuted ? .all : nil
             $0.multisigTransactionRejected = result.transactionRejected ? .all : nil
         }
+
+        disableNotificationIfNeeded()
+        updateView()
     }
 
     func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
