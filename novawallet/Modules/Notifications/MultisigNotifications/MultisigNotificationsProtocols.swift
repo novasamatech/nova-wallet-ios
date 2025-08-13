@@ -4,7 +4,7 @@ protocol MultisigNotificationsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: MultisigNotificationsViewModel)
 }
 
-protocol MultisigNotificationsPresenterProtocol: ChainNotificationSettingsPresenterProtocol {
+protocol MultisigNotificationsPresenterProtocol: BaseNotificationSettingsPresenterProtocol {
     func proceed()
 }
 
@@ -20,4 +20,8 @@ protocol MultisigNotificationsWireframeProtocol: AnyObject {
 
 struct MultisigNotificationsViewModel {
     let switchModels: [SwitchTitleIconViewModel]
+
+    var enabled: Bool {
+        switchModels.contains(where: { $0.isOn })
+    }
 }

@@ -6,7 +6,16 @@ final class MultisigNotificationsPresenter {
     let wireframe: MultisigNotificationsWireframeProtocol
     let localizationManager: LocalizationManagerProtocol
 
-    private var settings: MultisigNotificationsModel
+    private var settings: MultisigNotificationsModel {
+        didSet { enabled = settings.isEnabled }
+    }
+
+    private var enabled: Bool {
+        didSet {
+            guard oldValue != enabled else { return }
+            provideViewModel()
+        }
+    }
 
     init(
         wireframe: MultisigNotificationsWireframeProtocol,
@@ -16,6 +25,7 @@ final class MultisigNotificationsPresenter {
         self.wireframe = wireframe
         self.settings = settings
         self.localizationManager = localizationManager
+        enabled = settings.isEnabled
     }
 }
 
@@ -23,6 +33,14 @@ final class MultisigNotificationsPresenter {
 
 private extension MultisigNotificationsPresenter {
     func provideViewModel() {
+        let enableModel = SwitchTitleIconViewModel(
+            title: R.string.localizable.notificationsManagementEnableNotifications(
+                preferredLanguages: localizationManager.selectedLocale.rLanguages
+            ),
+            icon: nil,
+            isOn: settings.isEnabled,
+            action: actionEnableNotifications
+        )
         let signatureRequestedModel = SwitchTitleIconViewModel(
             title: R.string.localizable.notificationsManagementMultisigSignatureRequested(
                 preferredLanguages: localizationManager.selectedLocale.rLanguages
@@ -58,6 +76,7 @@ private extension MultisigNotificationsPresenter {
 
         let viewModel = MultisigNotificationsViewModel(
             switchModels: [
+                enableModel,
                 signatureRequestedModel,
                 signedBySignatoryModel,
                 signedTransactionExecutedModel,
@@ -68,28 +87,29 @@ private extension MultisigNotificationsPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
-    func actionSignatureRequested(_ selected: Bool) {
+    func actionEnableNotifications(_ selected: Bool) {
         settings.signatureRequested = selected
+        settings.signedBySignatory = selected
+        settings.transactionExecuted = selected
+        settings.transactionRejected = selected
 
         provideViewModel()
+    }
+
+    func actionSignatureRequested(_ selected: Bool) {
+        settings.signatureRequested = selected
     }
 
     func actionSignedBySignatory(_ selected: Bool) {
         settings.signedBySignatory = selected
-
-        provideViewModel()
     }
 
     func actionTransactionExecuted(_ selected: Bool) {
         settings.transactionExecuted = selected
-
-        provideViewModel()
     }
 
     func actionTransactionRejected(_ selected: Bool) {
         settings.transactionRejected = selected
-
-        provideViewModel()
     }
 }
 
@@ -102,12 +122,5 @@ extension MultisigNotificationsPresenter: MultisigNotificationsPresenterProtocol
 
     func setup() {
         provideViewModel()
-    }
-
-    func clear() {
-        settings.signatureRequested = false
-        settings.signedBySignatory = false
-        settings.transactionExecuted = false
-        settings.transactionRejected = false
     }
 }

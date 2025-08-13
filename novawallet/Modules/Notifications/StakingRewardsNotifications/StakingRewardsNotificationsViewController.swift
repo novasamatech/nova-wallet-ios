@@ -2,7 +2,7 @@ import UIKit
 import Foundation_iOS
 
 // swiftlint:disable:next type_name
-final class StakingRewardsNotificationsViewController: ChainNotificationSettingsViewController {
+final class StakingRewardsNotificationsViewController: BaseNotificationSettingsViewController {
     let presenter: StakingRewardsNotificationsPresenterProtocol
 
     init(
