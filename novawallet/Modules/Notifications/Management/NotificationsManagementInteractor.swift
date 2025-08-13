@@ -4,11 +4,16 @@ import Keystore_iOS
 
 final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     weak var presenter: NotificationsManagementInteractorOutputProtocol?
+    let walletRepository: AnyDataProviderRepository<MetaAccountModel>
     let settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
     let localPushSettingsFactory: PushNotificationSettingsFactoryProtocol
     let selectedWallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
+
+    private let callStore = CancellableCallStore()
 
     private var settingsProvider: StreamableProvider<Web3Alert.LocalSettings>?
     private var topicsSettingsProvider: StreamableProvider<PushNotification.TopicSettings>?
@@ -25,17 +30,27 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
     }
 
     init(
+        walletRepository: AnyDataProviderRepository<MetaAccountModel>,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
         settingsLocalSubscriptionFactory: SettingsLocalSubscriptionFactoryProtocol,
         localPushSettingsFactory: PushNotificationSettingsFactoryProtocol,
         selectedWallet: MetaAccountModel,
-        chainRegistry: ChainRegistryProtocol
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
+        self.walletRepository = walletRepository
         self.pushNotificationsFacade = pushNotificationsFacade
         self.settingsLocalSubscriptionFactory = settingsLocalSubscriptionFactory
         self.localPushSettingsFactory = localPushSettingsFactory
         self.chainRegistry = chainRegistry
         self.selectedWallet = selectedWallet
+        self.operationQueue = operationQueue
+        self.logger = logger
+    }
+
+    deinit {
+        callStore.cancel()
     }
 
     private func subscribeToSettings() {
@@ -92,12 +107,31 @@ final class NotificationsManagementInteractor: AnyProviderAutoCleaning {
             presenter?.didReceive(settings: settings)
         }
     }
+
+    func provideWallets() {
+        let fetchOperation = walletRepository.fetchAllOperation(with: .init())
+
+        execute(
+            operation: fetchOperation,
+            inOperationQueue: operationQueue,
+            backingCallIn: callStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(wallets):
+                self?.presenter?.didReceive(wallets: wallets)
+            case let .failure(error):
+                self?.logger.error("Failed to fetch wallets: \(error)")
+            }
+        }
+    }
 }
 
 extension NotificationsManagementInteractor: NotificationsManagementInteractorInputProtocol {
     func setup() {
         subscribeToSettings()
         subscribeToTopicsSettings()
+        provideWallets()
         provideNotificationsStatus()
     }
 

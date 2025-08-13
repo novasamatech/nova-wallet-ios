@@ -12,10 +12,14 @@ protocol MultisigNotificationsInteractorInputProtocol: AnyObject {
     func setup()
 }
 
-protocol MultisigNotificationsInteractorOutputProtocol: AnyObject {}
+protocol MultisigNotificationsInteractorOutputProtocol: AnyObject {
+    func didReceive(multisigWallets: [MetaAccountModel])
+}
 
-protocol MultisigNotificationsWireframeProtocol: AnyObject {
+protocol MultisigNotificationsWireframeProtocol: AnyObject, AlertPresentable, WebPresentable {
     func complete(settings: MultisigNotificationsModel)
+
+    func showLearnMore(from view: ControllerBackedProtocol?)
 }
 
 struct MultisigNotificationsViewModel {

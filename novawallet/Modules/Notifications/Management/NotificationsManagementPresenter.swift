@@ -7,6 +7,7 @@ final class NotificationsManagementPresenter {
     let interactor: NotificationsManagementInteractorInputProtocol
     let viewModelFactory: NotificationsManagemenViewModelFactoryProtocol
 
+    private var allWallets: [MetaAccountModel]?
     private var notificationStatus: PushNotificationsStatus?
 
     private var settings: Web3Alert.LocalSettings?
@@ -214,9 +215,12 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
             )
         case .multisig:
             let settings = MultisigNotificationsModel(from: modifiedSettings)
+            let selectedMetaIds = Set(modifiedSettings?.wallets.map(\.metaId) ?? [])
+
             wireframe.showMultisigSetup(
                 from: view,
                 settings: settings,
+                selectedMetaIds: selectedMetaIds,
                 completion: changeMultisigSettings
             )
         }
@@ -274,7 +278,27 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
     }
 
     func changeWalletsSettings(wallets: [Web3Alert.LocalWallet]) {
-        modifiedSettings = modifiedSettings?.with(wallets: wallets)
+        guard let allWallets else { return }
+
+        let allWalletsMap = allWallets.reduceToDict()
+
+        let selectedMultisigs = wallets
+            .compactMap { allWalletsMap[$0.metaId] }
+            .filter { $0.type == .multisig }
+
+        if selectedMultisigs.isEmpty {
+            modifiedSettings = modifiedSettings?
+                .with(wallets: wallets)
+                .with {
+                    $0.newMultisig = nil
+                    $0.multisigApproval = nil
+                    $0.multisigExecuted = nil
+                    $0.multisigCanceled = nil
+                }
+        } else {
+            modifiedSettings = modifiedSettings?.with(wallets: wallets)
+        }
+
         updateView()
     }
 
@@ -305,6 +329,10 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
 }
 
 extension NotificationsManagementPresenter: NotificationsManagementInteractorOutputProtocol {
+    func didReceive(wallets: [MetaAccountModel]) {
+        allWallets = wallets
+    }
+
     func didReceive(settings: Web3Alert.LocalSettings) {
         self.settings = settings
         if modifiedSettings == nil {

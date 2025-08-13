@@ -62,10 +62,12 @@ final class NotificationsManagementWireframe: NotificationsManagementWireframePr
     func showMultisigSetup(
         from view: (any ControllerBackedProtocol)?,
         settings: MultisigNotificationsModel,
+        selectedMetaIds: Set<MetaAccountModel.Id>,
         completion: @escaping (MultisigNotificationsModel) -> Void
     ) {
         guard let multisigNotificationsView = MultisigNotificationsViewFactory.createView(
             with: settings,
+            selectedMetaIds: selectedMetaIds,
             completion: completion
         ) else {
             return

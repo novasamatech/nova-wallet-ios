@@ -24,6 +24,7 @@ protocol NotificationsManagementInteractorInputProtocol: AnyObject {
 
 protocol NotificationsManagementInteractorOutputProtocol: AnyObject {
     func didReceive(settings: Web3Alert.LocalSettings)
+    func didReceive(wallets: [MetaAccountModel])
     func didReceive(topicsSettings: PushNotification.TopicSettings)
     func didReceive(error: NotificationsManagementError)
     func didReceive(notificationStatus: PushNotificationsStatus)
@@ -51,8 +52,9 @@ protocol NotificationsManagementWireframeProtocol: AnyObject, AlertPresentable, 
     )
 
     func showMultisigSetup(
-        from view: ControllerBackedProtocol?,
+        from view: (any ControllerBackedProtocol)?,
         settings: MultisigNotificationsModel,
+        selectedMetaIds: Set<MetaAccountModel.Id>,
         completion: @escaping (MultisigNotificationsModel) -> Void
     )
 
