@@ -70,34 +70,50 @@ private extension SlashesOperationFactory {
         engine: JSONRPCEngine,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> CompoundOperationWrapper<RelayStkUnappliedSlashes> {
-        let wrapper: CompoundOperationWrapper<[Staking.UnappliedSlashSyncKey: [Staking.UnappliedSlash]]>
+        if let eras {
+            let fetchWrapper: CompoundOperationWrapper<[StorageResponse<[Staking.UnappliedSlash]>]>
+            fetchWrapper = storageRequestFactory.queryItems(
+                engine: engine,
+                keyParams: {
+                    eras.map { StringCodable(wrappedValue: $0) }
+                },
+                factory: { codingFactory },
+                storagePath: Staking.unappliedSlashes
+            )
 
-        let request: RemoteStorageRequestProtocol = if let eras {
-            MapRemoteStorageRequest(storagePath: Staking.unappliedSlashes) {
-                eras.map { StringCodable(wrappedValue: $0) }
+            let mappingOperation = ClosureOperation<RelayStkUnappliedSlashes> {
+                let result = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+
+                return zip(eras, result).reduce(into: RelayStkUnappliedSlashes()) {
+                    $0[$1.0] = $1.1.value
+                }
             }
+
+            mappingOperation.addDependency(fetchWrapper.targetOperation)
+
+            return fetchWrapper.insertingTail(operation: mappingOperation)
         } else {
-            UnkeyedRemoteStorageRequest(storagePath: Staking.unappliedSlashes)
-        }
+            let fetchWrapper: CompoundOperationWrapper<[Staking.UnappliedSlashSyncKey: [Staking.UnappliedSlash]]>
 
-        wrapper = storageRequestFactory.queryByPrefix(
-            engine: engine,
-            request: request,
-            storagePath: Staking.unappliedSlashes,
-            factory: { codingFactory }
-        )
+            fetchWrapper = storageRequestFactory.queryByPrefix(
+                engine: engine,
+                request: UnkeyedRemoteStorageRequest(storagePath: Staking.unappliedSlashes),
+                storagePath: Staking.unappliedSlashes,
+                factory: { codingFactory }
+            )
 
-        let mappingOperation = ClosureOperation<RelayStkUnappliedSlashes> {
-            let result = try wrapper.targetOperation.extractNoCancellableResultData()
+            let mappingOperation = ClosureOperation<RelayStkUnappliedSlashes> {
+                let result = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return result.reduce(into: RelayStkUnappliedSlashes()) {
-                $0[$1.key.era] = $1.value
+                return result.reduce(into: RelayStkUnappliedSlashes()) {
+                    $0[$1.key.era] = $1.value
+                }
             }
+
+            mappingOperation.addDependency(fetchWrapper.targetOperation)
+
+            return fetchWrapper.insertingTail(operation: mappingOperation)
         }
-
-        mappingOperation.addDependency(wrapper.targetOperation)
-
-        return wrapper.insertingTail(operation: mappingOperation)
     }
 
     func unappliedSlashesAsyncWrapper(
@@ -107,23 +123,20 @@ private extension SlashesOperationFactory {
     ) -> CompoundOperationWrapper<RelayStkUnappliedSlashes> {
         let wrapper: CompoundOperationWrapper<[Staking.UnappliedSlashAsyncKey: Staking.UnappliedSlash]>
 
-        let request: RemoteStorageRequestProtocol = if let eras {
-            MapRemoteStorageRequest(storagePath: Staking.unappliedSlashes) {
-                eras.map { StringCodable(wrappedValue: $0) }
-            }
-        } else {
-            UnkeyedRemoteStorageRequest(storagePath: Staking.unappliedSlashes)
-        }
-
         wrapper = storageRequestFactory.queryByPrefix(
             engine: engine,
-            request: request,
+            request: UnkeyedRemoteStorageRequest(storagePath: Staking.unappliedSlashes),
             storagePath: Staking.unappliedSlashes,
             factory: { codingFactory }
         )
 
         let mappingOperation = ClosureOperation<RelayStkUnappliedSlashes> {
-            let result = try wrapper.targetOperation.extractNoCancellableResultData()
+            var result = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            if let eras {
+                let erasSet = Set(eras)
+                result = result.filter { erasSet.contains($0.key.era) }
+            }
 
             return result.reduce(into: RelayStkUnappliedSlashes()) { accum, keyValue in
                 let era = keyValue.key.era

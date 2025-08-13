@@ -11,6 +11,10 @@ struct EraCountdown {
     let currentSlot: Slot
     let genesisSlot: Slot
     let blockCreationTime: Moment
+
+    // when the timeline chain differs from current on we might
+    // add some blocks delay
+    let eraDelayInBlocks: UInt32
     let createdAtDate: Date
 
     var blockTimeInSeconds: TimeInterval {
@@ -50,7 +54,10 @@ struct EraCountdown {
 
         let distanceBetweenEras = TimeInterval(targetEra - (activeEra + 1))
         let targetEraDuration = distanceBetweenEras * TimeInterval(eraLengthInSlots) * blockTimeInSeconds
-        return max(0.0, targetEraDuration + activeEraRemainedTime)
+
+        let eraDelay = TimeInterval(eraDelayInBlocks) * blockTimeInSeconds
+
+        return max(0.0, targetEraDuration + activeEraRemainedTime + eraDelay)
     }
 
     func timeIntervalTillNextActiveEraStart() -> TimeInterval {

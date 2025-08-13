@@ -88,6 +88,7 @@ extension RelayStkEraCountdownOperationFactory: EraCountdownOperationFactoryProt
                     currentSlot: timeline.currentSlot,
                     genesisSlot: timeline.genesisSlot,
                     blockCreationTime: timeline.blockTime,
+                    eraDelayInBlocks: timeline.eraDelayInBlocks,
                     createdAtDate: Date()
                 )
             }
