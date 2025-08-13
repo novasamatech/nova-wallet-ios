@@ -10,6 +10,11 @@ protocol SlashesOperationFactoryProtocol {
         runtimeService: RuntimeCodingServiceProtocol
     )
         -> CompoundOperationWrapper<SlashingSpans?>
+    
+    func createAllUnappliedSlashesWrapper(
+        engine: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[UnappliedSlash]>
 }
 
 final class SlashesOperationFactory {
@@ -48,7 +53,12 @@ extension SlashesOperationFactory: SlashesOperationFactoryProtocol {
         fetchOperation.allOperations.forEach { $0.addDependency(runtimeFetchOperation) }
 
         let mapOperation = ClosureOperation<SlashingSpans?> {
-            try fetchOperation.targetOperation.extractNoCancellableResultData().first?.value
+            do {
+                return try fetchOperation.targetOperation.extractNoCancellableResultData().first?.value
+            } catch StorageKeyEncodingOperationError.invalidStoragePath {
+                // the Staking.SlashingSpans is removed in the lates staking pallet version
+                return nil
+            }
         }
 
         mapOperation.addDependency(fetchOperation.targetOperation)

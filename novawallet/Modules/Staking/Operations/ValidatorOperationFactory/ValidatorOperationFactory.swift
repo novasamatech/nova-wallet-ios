@@ -91,16 +91,20 @@ final class ValidatorOperationFactory {
         slashingSpansWrapper.allOperations.forEach { $0.addDependency(runtimeOperation) }
 
         let operation = ClosureOperation<[Bool]> {
-            let slashingSpans = try slashingSpansWrapper.targetOperation.extractNoCancellableResultData()
+            do {
+                let slashingSpans = try slashingSpansWrapper.targetOperation.extractNoCancellableResultData()
 
-            return validatorIds.enumerated().map { index, _ in
-                let slashingSpan = slashingSpans[index]
+                return validatorIds.enumerated().map { index, _ in
+                    let slashingSpan = slashingSpans[index]
 
-                if let lastSlashEra = slashingSpan.value?.lastNonzeroSlash, lastSlashEra > nomination.submittedIn {
-                    return true
+                    if let lastSlashEra = slashingSpan.value?.lastNonzeroSlash, lastSlashEra > nomination.submittedIn {
+                        return true
+                    }
+
+                    return false
                 }
-
-                return false
+            } catch StorageKeyEncodingOperationError.invalidStoragePath {
+                return validatorIds.map { _ in false }
             }
         }
 
