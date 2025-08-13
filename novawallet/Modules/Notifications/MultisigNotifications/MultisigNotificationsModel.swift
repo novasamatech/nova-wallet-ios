@@ -21,10 +21,10 @@ struct MultisigNotificationsModel {
     init(from localSettings: Web3Alert.LocalSettings?) {
         if let localSettings {
             self = .init(
-                signatureRequested: localSettings.notifications.multisigSignatureRequested != nil,
-                signedBySignatory: localSettings.notifications.multisigSignedBySignatory != nil,
-                transactionExecuted: localSettings.notifications.multisigTransactionExecuted != nil,
-                transactionRejected: localSettings.notifications.multisigTransactionRejected != nil
+                signatureRequested: localSettings.notifications.newMultisig != nil,
+                signedBySignatory: localSettings.notifications.multisigApproval != nil,
+                transactionExecuted: localSettings.notifications.multisigExecuted != nil,
+                transactionRejected: localSettings.notifications.multisigCanceled != nil
             )
         } else {
             self = .empty()

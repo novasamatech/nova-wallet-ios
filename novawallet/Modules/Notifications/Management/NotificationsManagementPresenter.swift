@@ -86,10 +86,10 @@ final class NotificationsManagementPresenter {
     func isMultisigOn() -> Bool {
         guard let notifications = modifiedSettings?.notifications else { return false }
 
-        return notifications.multisigSignatureRequested?.notificationsEnabled == true ||
-            notifications.multisigSignedBySignatory?.notificationsEnabled == true ||
-            notifications.multisigTransactionExecuted?.notificationsEnabled == true ||
-            notifications.multisigTransactionRejected?.notificationsEnabled == true
+        return notifications.newMultisig?.notificationsEnabled == true ||
+            notifications.multisigApproval?.notificationsEnabled == true ||
+            notifications.multisigExecuted?.notificationsEnabled == true ||
+            notifications.multisigCanceled?.notificationsEnabled == true
     }
 
     func isAnnouncementsOn() -> Bool {
@@ -263,10 +263,10 @@ extension NotificationsManagementPresenter: NotificationsManagementPresenterProt
 
     func changeMultisigSettings(result: MultisigNotificationsModel) {
         modifiedSettings = modifiedSettings?.with {
-            $0.multisigSignatureRequested = result.signatureRequested ? .all : nil
-            $0.multisigSignedBySignatory = result.signedBySignatory ? .all : nil
-            $0.multisigTransactionExecuted = result.transactionExecuted ? .all : nil
-            $0.multisigTransactionRejected = result.transactionRejected ? .all : nil
+            $0.newMultisig = result.signatureRequested ? .all : nil
+            $0.multisigApproval = result.signedBySignatory ? .all : nil
+            $0.multisigExecuted = result.transactionExecuted ? .all : nil
+            $0.multisigCanceled = result.transactionRejected ? .all : nil
         }
 
         disableNotificationIfNeeded()

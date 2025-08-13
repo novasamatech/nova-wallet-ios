@@ -39,10 +39,10 @@ extension Web3Alert {
                 stakingReward: local.notifications.stakingReward?.mapConcreteValue { closure($0) },
                 tokenSent: local.notifications.tokenSent?.mapConcreteValue { closure($0) },
                 tokenReceived: local.notifications.tokenReceived?.mapConcreteValue { closure($0) },
-                multisigSignatureRequested: local.notifications.multisigSignatureRequested?.mapConcreteValue { closure($0) },
-                multisigSignedBySignatory: local.notifications.multisigSignedBySignatory?.mapConcreteValue { closure($0) },
-                multisigTransactionExecuted: local.notifications.multisigTransactionExecuted?.mapConcreteValue { closure($0) },
-                multisigTransactionRejected: local.notifications.multisigTransactionRejected?.mapConcreteValue { closure($0) }
+                newMultisig: local.notifications.newMultisig?.mapConcreteValue { closure($0) },
+                multisigApproval: local.notifications.multisigApproval?.mapConcreteValue { closure($0) },
+                multisigExecuted: local.notifications.multisigExecuted?.mapConcreteValue { closure($0) },
+                multisigCanceled: local.notifications.multisigCanceled?.mapConcreteValue { closure($0) }
             )
         }
     }
