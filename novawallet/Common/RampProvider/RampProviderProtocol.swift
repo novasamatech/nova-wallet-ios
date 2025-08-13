@@ -6,7 +6,7 @@ struct RampAction {
     let type: RampActionType
     let logo: UIImage
     let descriptionText: LocalizableResource<String>
-    let url: URL
+    let urlFactory: RampURLFactory
     let displayURLString: String
     let paymentMethods: [FiatPaymentMethods]
 }
@@ -80,10 +80,7 @@ extension RampProviderProtocol where Self: BaseURLStringProviding, Self: RampHoo
         using params: OffRampHookParams,
         for delegate: RampHookDelegate
     ) -> [RampHook] {
-        guard
-            let host = action.url.host(),
-            baseUrlString.contains(substring: host)
-        else { return [] }
+        guard baseUrlString.contains(substring: action.displayURLString) else { return [] }
 
         return switch action.type {
         case .onRamp:

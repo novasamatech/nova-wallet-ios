@@ -103,18 +103,18 @@ class OnboardingMainTests: XCTestCase {
         let view = MockOnboardingMainViewProtocol()
         let wireframe = MockOnboardingMainWireframeProtocol()
 
-        let keystoreImportService = KeystoreImportService(logger: Logger.shared)
+        let secretImportService = SecretImportService(logger: Logger.shared)
 
         let presenter = setupPresenterForWireframe(wireframe,
                                                    view: view,
                                                    legal: dummyLegalData,
-                                                   keystoreImportService: keystoreImportService)
+                                                   secretImportService: secretImportService)
 
         // when
 
         presenter.setup()
 
-        XCTAssertTrue(keystoreImportService.handle(url: KeystoreDefinition.validURL))
+        XCTAssertTrue(secretImportService.handle(url: KeystoreDefinition.validURL))
 
         // then
 
@@ -131,7 +131,7 @@ class OnboardingMainTests: XCTestCase {
     private func setupPresenterForWireframe(_ wireframe: MockOnboardingMainWireframeProtocol,
                                             view: MockOnboardingMainViewProtocol,
                                             legal: LegalData,
-                                            keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared),
+                                            secretImportService: SecretImportServiceProtocol = SecretImportService(logger: Logger.shared),
                                             migrationService: WalletMigrationServiceProtocol = WalletMigrationService(
                                                 localDeepLinkScheme: "novawallet",
                                                 queryFactory: WalletMigrationQueryFactory()
@@ -139,7 +139,7 @@ class OnboardingMainTests: XCTestCase {
     )
         -> OnboardingMainPresenter {
         let interactor = OnboardingMainInteractor(
-            keystoreImportService: keystoreImportService,
+            secretImportService: secretImportService,
             walletMigrationService: migrationService
         )
 

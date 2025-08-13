@@ -6,6 +6,16 @@ enum ChainFormat {
     case substrate(_ prefix: UInt16, legacyPrefix: UInt16? = nil)
 }
 
+extension ChainFormat {
+    static var defaultSubstrateFormat: ChainFormat {
+        .substrate(SubstrateConstants.genericAddressPrefix, legacyPrefix: nil)
+    }
+
+    static var multichainDisplayFormat: ChainFormat {
+        .substrate(SubstrateConstants.multichainDisplayPrefix, legacyPrefix: nil)
+    }
+}
+
 extension AccountId {
     func toAddress(using conversion: ChainFormat) throws -> AccountAddress {
         switch conversion {

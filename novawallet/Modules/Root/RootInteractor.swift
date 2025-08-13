@@ -49,7 +49,7 @@ final class RootInteractor {
             validators: screenOpenURLActivityValidators
         )
 
-        let keystoreImportService = KeystoreImportService(
+        let secretImportService = SecretImportService(
             validators: screenOpenURLActivityValidators,
             logger: logger
         )
@@ -78,7 +78,7 @@ final class RootInteractor {
                 walletMigrationService,
                 purchaseHandler,
                 wcHandlingService,
-                keystoreImportService
+                secretImportService
             ]
         )
 

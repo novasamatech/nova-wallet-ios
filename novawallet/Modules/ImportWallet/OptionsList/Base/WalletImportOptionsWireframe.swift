@@ -27,11 +27,15 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
     }
 
     func showPassphraseImport(from view: WalletImportOptionsViewProtocol?) {
-        showWalletRestore(from: view, secretSource: .mnemonic)
+        showWalletRestore(from: view, secretSource: .mnemonic(.appDefault))
     }
 
     func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
         showHardwareWalletSelection(from: view, locale: locale)
+    }
+
+    func showTrustWalletImport(from view: WalletImportOptionsViewProtocol?) {
+        showWalletRestore(from: view, secretSource: .mnemonic(.trustWallet))
     }
 
     func showHardwareWalletSelection(from view: WalletImportOptionsViewProtocol?, locale: Locale) {

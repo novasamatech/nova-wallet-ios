@@ -14,36 +14,36 @@ struct MnemonicDefinition {
     let substrateDeriviationPath: String?
     let evmDeriviationPath: String
 
-    var prefferedInfo: MetaAccountImportPreferredInfo? {
+    var prefferedInfo: MetaAccountImportPreferredInfo {
         MetaAccountImportPreferredInfo(
             username: nil,
             cryptoType: cryptoType,
             genesisHash: nil,
             substrateDeriviationPath: substrateDeriviationPath,
             evmDeriviationPath: evmDeriviationPath,
-            source: .mnemonic
+            source: .mnemonic(.appDefault)
         )
     }
 }
 
-protocol KeystoreImportObserver: AnyObject {
+protocol SecretImportObserver: AnyObject {
     func didUpdateDefinition(from oldDefinition: SecretImportDefinition?)
     func didReceiveError(secretImportError: ErrorContentConvertible & Error)
 }
 
-protocol KeystoreImportServiceProtocol: URLHandlingServiceProtocol {
+protocol SecretImportServiceProtocol: URLHandlingServiceProtocol {
     var definition: SecretImportDefinition? { get }
 
-    func add(observer: KeystoreImportObserver)
+    func add(observer: SecretImportObserver)
 
-    func remove(observer: KeystoreImportObserver)
+    func remove(observer: SecretImportObserver)
 
     func clear()
 }
 
-final class KeystoreImportService {
+final class SecretImportService {
     private struct ObserverWrapper {
-        weak var observer: KeystoreImportObserver?
+        weak var observer: SecretImportObserver?
     }
 
     private var observers: [ObserverWrapper] = []
@@ -62,7 +62,7 @@ final class KeystoreImportService {
     }
 }
 
-extension KeystoreImportService: KeystoreImportServiceProtocol {
+extension SecretImportService: SecretImportServiceProtocol {
     func handle(url: URL) -> Bool {
         if !handleDeeplink(url: url) {
             return handleKeystore(url: url)
@@ -129,7 +129,7 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
         }
     }
 
-    func add(observer: KeystoreImportObserver) {
+    func add(observer: SecretImportObserver) {
         observers = observers.filter { $0.observer !== nil }
 
         if observers.contains(where: { $0.observer === observer }) {
@@ -140,7 +140,7 @@ extension KeystoreImportService: KeystoreImportServiceProtocol {
         observers.append(wrapper)
     }
 
-    func remove(observer: KeystoreImportObserver) {
+    func remove(observer: SecretImportObserver) {
         observers = observers.filter { $0.observer !== nil && observer !== observer }
     }
 

@@ -4,8 +4,8 @@ import SubstrateSdk
 enum AvailSignedExtension {
     static let checkAppId = "CheckAppId"
 
-    final class CheckAppId: Codable, OnlyExtrinsicSignedExtending {
-        var signedExtensionId: String { AvailSignedExtension.checkAppId }
+    final class CheckAppId: Codable, OnlyExplicitTransactionExtending {
+        var txExtensionId: String { AvailSignedExtension.checkAppId }
 
         let appId: UInt32
 
@@ -28,7 +28,7 @@ enum AvailSignedExtension {
 }
 
 enum AvailSignedExtensionCoders {
-    static func getCoders(for metadata: RuntimeMetadataProtocol) -> [ExtrinsicSignedExtensionCoding] {
+    static func getCoders(for metadata: RuntimeMetadataProtocol) -> [TransactionExtensionCoding] {
         let extensionId = AvailSignedExtension.checkAppId
 
         guard let extraType = metadata.getSignedExtensionType(for: extensionId) else {
@@ -36,9 +36,9 @@ enum AvailSignedExtensionCoders {
         }
 
         return [
-            DefaultExtrinsicSignedExtensionCoder(
-                signedExtensionId: extensionId,
-                extraType: extraType
+            DefaultTransactionExtensionCoder(
+                txExtensionId: extensionId,
+                extensionExplicitType: extraType
             )
         ]
     }

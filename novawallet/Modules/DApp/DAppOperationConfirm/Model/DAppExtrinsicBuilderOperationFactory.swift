@@ -102,7 +102,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                     assetId: rawFeeAssetId
                 )
 
-                builder = builder.adding(extrinsicSignedExtension: txPayment)
+                builder = builder.adding(transactionExtension: txPayment)
             }
 
             return builder
@@ -215,7 +215,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                 .with(nonce: senderUpdate.nonce)
 
             for signedExtension in signedExtensionFactory.createExtensions() {
-                builder = builder.adding(extrinsicSignedExtension: signedExtension)
+                builder = builder.adding(transactionExtension: signedExtension)
             }
 
             return ExtrinsicSenderBuilderResult(
@@ -348,7 +348,7 @@ final class DAppExtrinsicBuilderOperationFactory {
                 context: context,
                 codingFactory: codingFactory
             )
-            .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+            .build(using: codingFactory, metadata: codingFactory.metadata)
 
             return DAppExtrinsicRawExtrinsicResult(sender: builderResult.sender, signedExtrinsic: signedExtrinsic)
         }
@@ -424,7 +424,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                 using: { data in
                     try signingClosure(data, .substrateExtrinsic(context))
                 },
-                encoder: codingFactory.createEncoder(),
+                encodingFactory: codingFactory,
                 metadata: codingFactory.metadata
             )
 
@@ -433,7 +433,7 @@ extension DAppExtrinsicBuilderOperationFactory: ExtrinsicBuilderOperationFactory
                     with: { _, _ in rawSignature },
                     context: context,
                     codingFactory: codingFactory
-                ).build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
+                ).build(using: codingFactory, metadata: codingFactory.metadata)
             } else {
                 nil
             }
