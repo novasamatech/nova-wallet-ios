@@ -75,9 +75,10 @@ struct MultisigOperationConfirmViewFactory {
         currencyManager: CurrencyManagerProtocol,
         flowState: MultisigOperationsFlowState
     ) -> MultisigOperationConfirmInteractor? {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chainRegistry = ChainRegistryFacade.sharedRegistry as? ChainRegistry
 
         guard
+            let chainRegistry,
             let multisig = multisigWallet.getMultisig(
                 for: chain
             ),
@@ -107,8 +108,10 @@ struct MultisigOperationConfirmViewFactory {
         let pendingOperationsProvider = MultisigOperationProviderProxy(
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             callFormattingFactory: CallFormattingOperationFactory(
-                chainRegistry: chainRegistry,
-                walletRepository: walletRepository
+                chainProvider: chainRegistry,
+                runtimeCodingServiceProvider: chainRegistry,
+                walletRepository: walletRepository,
+                operationQueue: operationQueue
             ),
             operationQueue: operationQueue
         )

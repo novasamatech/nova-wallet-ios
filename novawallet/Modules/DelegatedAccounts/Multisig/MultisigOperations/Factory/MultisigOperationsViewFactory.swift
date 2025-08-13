@@ -4,6 +4,7 @@ import Foundation_iOS
 final class MultisigOperationsViewFactory {
     static func createView() -> MultisigOperationsViewProtocol? {
         guard
+            let chainRegistry = ChainRegistryFacade.sharedRegistry as? ChainRegistry,
             let selectedWallet = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared
         else {
@@ -14,7 +15,7 @@ final class MultisigOperationsViewFactory {
 
         let wireframe = MultisigOperationsWireframe()
 
-        let walletsRepository = AccountRepositoryFactory(
+        let walletRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
         ).createMetaAccountRepository(
             for: nil,
@@ -24,8 +25,10 @@ final class MultisigOperationsViewFactory {
         let pendingOperationsProvider = MultisigOperationProviderProxy(
             pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactory.shared,
             callFormattingFactory: CallFormattingOperationFactory(
-                chainRegistry: ChainRegistryFacade.sharedRegistry,
-                walletRepository: walletsRepository
+                chainProvider: chainRegistry,
+                runtimeCodingServiceProvider: chainRegistry,
+                walletRepository: walletRepository,
+                operationQueue: operationQueue
             ),
             operationQueue: operationQueue
         )
