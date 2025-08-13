@@ -26,7 +26,31 @@ final class CrosschainExchangeEdge {
                 destinationChain: destinationChain
             )
 
-            return !metadata.paysDeliveryFee
+            // xcm execute allows to pay delivery fee from holding
+            return !metadata.paysDeliveryFee || metadata.supportsXcmExecute
+        } catch {
+            return false
+        }
+    }
+
+    private func shouldProhibitTransferOutAll() -> Bool {
+        guard
+            let originChain = host.allChains[origin.chainId],
+            let originChainAsset = originChain.chainAsset(for: origin.assetId),
+            let destinationChain = host.allChains[destination.chainId] else {
+            return false
+        }
+
+        do {
+            let metadata = try host.xcmTransfers.getTransferMetadata(
+                for: originChainAsset,
+                destinationChain: destinationChain
+            )
+
+            return host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
+                assetIn: originChainAsset,
+                metadata: metadata
+            )
         } catch {
             return false
         }
@@ -69,15 +93,7 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     }
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {
-        guard
-            let chainIn = host.allChains[origin.chainId],
-            let chainAssetIn = chainIn.chainAsset(for: origin.assetId) else {
-            return false
-        }
-
-        return host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
-            assetIn: chainAssetIn
-        )
+        shouldProhibitTransferOutAll()
     }
 
     func beginMetaOperation(
@@ -100,9 +116,7 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
             throw ChainModelFetchError.noAsset(assetId: destination.assetId)
         }
 
-        let keepAlive = host.fungibilityPreservationProvider.requiresPreservationForCrosschain(
-            assetIn: assetIn
-        )
+        let keepAlive = shouldProhibitTransferOutAll()
 
         return CrosschainExchangeMetaOperation(
             assetIn: assetIn,

@@ -196,6 +196,7 @@ extension XcmUni.WildAsset: Codable {
         switch self {
         case .all:
             try container.encode("All")
+            try container.encode(JSON.null)
         case let .allCounted(value):
             try container.encode("AllCounted")
             try container.encode(StringScaleMapper(value: value))

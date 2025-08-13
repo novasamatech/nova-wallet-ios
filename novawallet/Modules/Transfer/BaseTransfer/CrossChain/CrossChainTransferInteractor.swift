@@ -360,8 +360,13 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func provideOriginRequiresKeepAlive() {
+        guard let transferParties else {
+            return
+        }
+
         let keepAlive = fungibilityPreservationProvider.requiresPreservationForCrosschain(
-            assetIn: originChainAsset
+            assetIn: originChainAsset,
+            metadata: transferParties.metadata
         )
 
         presenter?.didReceiveRequiresOriginKeepAlive(keepAlive)
