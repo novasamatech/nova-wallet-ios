@@ -3,7 +3,6 @@ import Operation_iOS
 import NovaCrypto
 
 extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
-    // swiftlint:disable function_body_length
     func allElectedOperation() -> CompoundOperationWrapper<[ElectedValidatorInfo]> {
         let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -32,7 +31,6 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
 
         let slashingsWrapper = createUnappliedSlashesWrapper(
             dependingOn: { try eraValidatorsOperation.extractNoCancellableResultData().activeEra },
-            runtime: runtimeOperation,
             slashDefer: slashDeferOperation
         )
 
@@ -87,7 +85,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
 
         statusesWrapper.allOperations.forEach { $0.addDependency(electedValidatorsOperation) }
 
-        let slashesWrapper = createSlashesOperation(for: targets, nomination: nomination)
+        let slashesWrapper = createUnappliedSlashesWrapper(for: targets, nomination: nomination)
 
         slashesWrapper.allOperations.forEach { $0.addDependency(electedValidatorsOperation) }
 
@@ -247,7 +245,6 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
 
         let slashingsWrapper = createUnappliedSlashesWrapper(
             dependingOn: { try eraValidatorsOperation.extractNoCancellableResultData().activeEra },
-            runtime: runtimeOperation,
             slashDefer: slashDeferOperation
         )
 
@@ -278,7 +275,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             let stakeInfoList = try stakeInfoWrapper.targetOperation.extractNoCancellableResultData()
 
             let slashed: Set<Data> = slashings.reduce(into: Set<Data>()) { result, slashInEra in
-                slashInEra.value?.forEach { slash in
+                slashInEra.value.forEach { slash in
                     result.insert(slash.validator)
                 }
             }

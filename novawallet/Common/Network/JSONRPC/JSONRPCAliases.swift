@@ -11,5 +11,5 @@ typealias SuperIdentityWrapper = CompoundOperationWrapper<[StorageResponse<Super
 typealias IdentityOperation = BaseOperation<[StorageResponse<Identity>]>
 typealias IdentityWrapper = CompoundOperationWrapper<[StorageResponse<Identity>]>
 typealias SlashingSpansWrapper = CompoundOperationWrapper<[StorageResponse<Staking.SlashingSpans>]>
-typealias UnappliedSlashesOperation = BaseOperation<[StorageResponse<[Staking.UnappliedSlash]>]>
-typealias UnappliedSlashesWrapper = CompoundOperationWrapper<[StorageResponse<[Staking.UnappliedSlash]>]>
+typealias UnappliedSlashesOperation = BaseOperation<RelayStkUnappliedSlashes>
+typealias UnappliedSlashesWrapper = CompoundOperationWrapper<RelayStkUnappliedSlashes>

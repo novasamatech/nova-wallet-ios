@@ -10,6 +10,7 @@ final class ValidatorOperationFactory {
     let storageRequestFactory: StorageRequestFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let identityProxyFactory: IdentityProxyFactoryProtocol
+    let slashesOperationFactory: SlashesOperationFactoryProtocol
     let engine: JSONRPCEngine
 
     init(
@@ -19,7 +20,8 @@ final class ValidatorOperationFactory {
         storageRequestFactory: StorageRequestFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        identityProxyFactory: IdentityProxyFactoryProtocol
+        identityProxyFactory: IdentityProxyFactoryProtocol,
+        slashesOperationFactory: SlashesOperationFactoryProtocol
     ) {
         self.chainInfo = chainInfo
         self.eraValidatorService = eraValidatorService
@@ -28,31 +30,24 @@ final class ValidatorOperationFactory {
         self.runtimeService = runtimeService
         self.engine = engine
         self.identityProxyFactory = identityProxyFactory
+        self.slashesOperationFactory = slashesOperationFactory
     }
 
     func createUnappliedSlashesWrapper(
         dependingOn activeEraClosure: @escaping () throws -> Staking.EraIndex,
-        runtime: BaseOperation<RuntimeCoderFactoryProtocol>,
         slashDefer: BaseOperation<UInt32>
     ) -> UnappliedSlashesWrapper {
-        let path = Staking.unappliedSlashes
-
-        let keyParams: () throws -> [String] = {
+        let keyParams: () throws -> [Staking.EraIndex] = {
             let activeEra = try activeEraClosure()
             let duration = try slashDefer.extractNoCancellableResultData()
             let startEra = activeEra > duration ? activeEra - duration : 0
-            return (startEra ... activeEra).map { String($0) }
+            return (startEra ... activeEra).map { $0 }
         }
 
-        let factory: () throws -> RuntimeCoderFactoryProtocol = {
-            try runtime.extractNoCancellableResultData()
-        }
-
-        return storageRequestFactory.queryItems(
+        return slashesOperationFactory.createUnappliedSlashesWrapper(
+            erasClosure: keyParams,
             engine: engine,
-            keyParams: keyParams,
-            factory: factory,
-            storagePath: path
+            runtimeService: runtimeService
         )
     }
 
@@ -74,46 +69,30 @@ final class ValidatorOperationFactory {
         return operation
     }
 
-    func createSlashesOperation(
+    func createUnappliedSlashesWrapper(
         for validatorIds: [AccountId],
         nomination: Staking.Nomination
     ) -> CompoundOperationWrapper<[Bool]> {
-        let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
+        let unappliedSlashesWrapper = slashesOperationFactory.createAllUnappliedSlashesWrapper(
+            engine: engine,
+            runtimeService: runtimeService
+        )
 
-        let slashingSpansWrapper: CompoundOperationWrapper<[StorageResponse<Staking.SlashingSpans>]> =
-            storageRequestFactory.queryItems(
-                engine: engine,
-                keyParams: { validatorIds },
-                factory: { try runtimeOperation.extractNoCancellableResultData() },
-                storagePath: Staking.slashingSpans
-            )
+        let mappingOperation = ClosureOperation<[Bool]> {
+            let unappliedSlashes = try unappliedSlashesWrapper.targetOperation.extractNoCancellableResultData()
 
-        slashingSpansWrapper.allOperations.forEach { $0.addDependency(runtimeOperation) }
+            let slashedValidators = unappliedSlashes
+                .filter { $0.key >= nomination.submittedIn }
+                .flatMap { $0.value.map(\.validator) }
 
-        let operation = ClosureOperation<[Bool]> {
-            do {
-                let slashingSpans = try slashingSpansWrapper.targetOperation.extractNoCancellableResultData()
+            let slashedValidatorsSet = Set(slashedValidators)
 
-                return validatorIds.enumerated().map { index, _ in
-                    let slashingSpan = slashingSpans[index]
-
-                    if let lastSlashEra = slashingSpan.value?.lastNonzeroSlash, lastSlashEra > nomination.submittedIn {
-                        return true
-                    }
-
-                    return false
-                }
-            } catch StorageKeyEncodingOperationError.invalidStoragePath {
-                return validatorIds.map { _ in false }
-            }
+            return validatorIds.map { slashedValidatorsSet.contains($0) }
         }
 
-        operation.addDependency(slashingSpansWrapper.targetOperation)
+        mappingOperation.addDependency(unappliedSlashesWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: operation,
-            dependencies: [runtimeOperation] + slashingSpansWrapper.allOperations
-        )
+        return unappliedSlashesWrapper.insertingTail(operation: mappingOperation)
     }
 
     func createStatusesOperation(
@@ -353,7 +332,7 @@ final class ValidatorOperationFactory {
             let calculator = try rewardOperation.extractNoCancellableResultData()
 
             let slashed: Set<Data> = slashings.reduce(into: Set<Data>()) { result, slashInEra in
-                slashInEra.value?.forEach { slash in
+                slashInEra.value.forEach { slash in
                     result.insert(slash.validator)
                 }
             }
